@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
@@ -40,7 +34,10 @@ import {MetadataModel} from './metadata/metadata_model.js';
 import {Command} from './ui/command.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import {DragSelector} from './ui/drag_selector.js';
-import {List} from './ui/list.js';
+import type {FileGrid} from './ui/file_grid.js';
+import type {FileTableList} from './ui/file_table_list.js';
+import type {Grid} from './ui/grid.js';
+import type {List} from './ui/list.js';
 import {ListContainer} from './ui/list_container.js';
 import {ListItem} from './ui/list_item.js';
 import {TreeItem} from './ui/tree.js';
@@ -148,7 +145,7 @@ export class FileTransferController {
 
   private destinationEntry_: DirectoryEntry|FilesAppDirEntry|null = null;
 
-  private lastEnteredTarget_: Element|null = null;
+  private lastEnteredTarget_: HTMLElement|null = null;
 
   private dropTarget_: Element|null = null;
 
@@ -180,7 +177,7 @@ export class FileTransferController {
     this.selectionHandler_.addEventListener(
         FileSelectionHandler.EventType.CHANGE_THROTTLED,
         this.onFileSelectionChangedThrottled_.bind(this));
-    this.attachDragSource_(this.listContainer_.table.list);
+    this.attachDragSource_(this.listContainer_.table.list as FileTableList);
     this.attachFileListDropTarget_(this.listContainer_.table.list);
     this.attachDragSource_(this.listContainer_.grid);
     this.attachFileListDropTarget_(this.listContainer_.grid);
@@ -194,7 +191,7 @@ export class FileTransferController {
   /**
    * Attaches items in the `list` that will be draggable.
    */
-  private attachDragSource_(list: List) {
+  private attachDragSource_(list: FileTableList|FileGrid) {
     if ('webkitUserDrag' in list.style) {
       list.style.webkitUserDrag = 'element';
     }
@@ -207,7 +204,7 @@ export class FileTransferController {
         'touchcancel', this.onTouchEnd_.bind(this), true);
   }
 
-  private attachFileListDropTarget_(list: List) {
+  private attachFileListDropTarget_(list: List|Grid) {
     list.addEventListener('dragover', this.onDragOver_.bind(this, false, list));
     list.addEventListener(
         'dragenter', this.onDragEnterFileList_.bind(this, list));
@@ -617,7 +614,7 @@ export class FileTransferController {
     return container;
   }
 
-  private onDragStart_(list: List, event: MouseEvent) {
+  private onDragStart_(list: FileGrid|FileTableList, event: MouseEvent) {
     // If renaming is in progress, drag operation should be used for selecting
     // substring of the text. So we don't drag files here.
     if ('currentEntry' in this.listContainer_.renameInput &&
@@ -628,7 +625,8 @@ export class FileTransferController {
 
     // If this drag operation is initiated by mouse, check if we should start
     // selecting area.
-    if (!this.touching_ && list.shouldStartDragSelection(event)) {
+    // TODO: Remove `as FileGrid` once FileTableList is converted to TS.
+    if (!this.touching_ && (list as FileGrid).shouldStartDragSelection(event)) {
       event.preventDefault();
       this.dragSelector_.startDragSelection(list, event);
       return;
@@ -638,7 +636,7 @@ export class FileTransferController {
     // drag.
     if (this.touching_ && !list.hasDragHitElement(event)) {
       event.preventDefault();
-      list.selectionModel.unselectAll();
+      list.selectionModel!.unselectAll();
       return;
     }
 
@@ -716,7 +714,7 @@ export class FileTransferController {
   private onDragEnterFileList_(list: List, event: DragEvent) {
     event.preventDefault();  // Required to prevent the cursor flicker.
 
-    this.lastEnteredTarget_ = event.target as Element;
+    this.lastEnteredTarget_ = event.target as HTMLElement;
     let item: ListItem|null = list.getListItemAncestor(this.lastEnteredTarget_);
     item = item && list.isItem(item) ? item : null;
 
@@ -724,7 +722,7 @@ export class FileTransferController {
       return;
     }
 
-    const entry = item && list.dataModel.item(item.listIndex);
+    const entry = item && list.dataModel!.item(item.listIndex);
     if (entry && event.dataTransfer) {
       this.setDropTarget_(item, event.dataTransfer, entry);
     } else {
@@ -742,7 +740,7 @@ export class FileTransferController {
       return;
     }
 
-    this.lastEnteredTarget_ = event.target as Element;
+    this.lastEnteredTarget_ = event.target as HTMLElement;
     let item = event.target as Element;
     while (item && !(item instanceof TreeItem || item instanceof XfTreeItem)) {
       item = item.parentNode as Element;

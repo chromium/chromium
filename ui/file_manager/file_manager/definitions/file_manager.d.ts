@@ -39,6 +39,13 @@ declare global {
     webkitResolveLocalFileSystemURL(
         url: string, successCallback: FileSystemEntryCallback,
         errorCallback: ErrorCallback): void;
+
+    // Only used for grid.ts
+    cvox?: {
+      Api?: {
+        isChromeVoxActive: () => boolean,
+      },
+    };
   }
 }
 

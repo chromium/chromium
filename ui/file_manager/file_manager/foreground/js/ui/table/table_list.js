@@ -18,21 +18,11 @@ import {Table} from './table.js';
  * Creates a new table list element.
  */
 export class TableList extends List {
-  /**
-   * @param {Object=} opt_propertyBag Optional properties.
-   */
-  constructor(opt_propertyBag) {
-    // @ts-ignore: error TS2554: Expected 0 arguments, but got 1.
-    super(opt_propertyBag);
+  constructor() {
+    super();
 
     /** @private @type {?Table} */
     this.table_ = null;
-
-    /**
-     * Actually defined and managed by List.
-     * @private @type {?HTMLElement}
-     * */
-    this.afterFiller_;
   }
 
   // @ts-ignore: error TS7006: Parameter 'el' implicitly has an 'any' type.
@@ -85,13 +75,14 @@ export class TableList extends List {
       // 'Element'.
       row.style.width = cm.totalWidth + 'px';
     }
-    // @ts-ignore: error TS2339: Property 'afterFiller_' does not exist on type
-    // 'TableList'.
-    this.afterFiller_.style.width = cm.totalWidth + 'px';
+    if (this.afterFiller_) {
+      this.afterFiller_.style.width = cm.totalWidth + 'px';
+    }
   }
 
   /**
    * Redraws the viewport.
+   * @override
    */
   redraw() {
     // @ts-ignore: error TS2339: Property 'batchCount_' does not exist on type
@@ -203,6 +194,7 @@ export class TableList extends List {
    * Creates a new list item.
    * @param {*} dataItem The value to use for the item.
    * @return {!ListItem} The newly created list item.
+   * @override
    */
   createItem(dataItem) {
     return /** @type {!ListItem} */ (

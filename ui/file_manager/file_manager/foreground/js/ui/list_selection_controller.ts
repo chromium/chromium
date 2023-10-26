@@ -5,128 +5,113 @@
 import {ListSelectionModel} from './list_selection_model.js';
 
 /**
- * Creates a selection controller that is to be used with lists. This is
- * implemented for vertical lists but changing the behavior for horizontal
- * lists or icon views is a matter of overriding {@code getIndexBefore},
- * {@code getIndexAfter}, {@code getIndexAbove} as well as
- * {@code getIndexBelow}.
- *
- * @param {ListSelectionModel} selectionModel The selection model to
- *     interact with.
- *
- * @constructor
+ * The selection controller that is to be used with lists. This is implemented
+ * for vertical lists but changing the behavior for horizontal lists or icon
+ * views is a matter of overriding `getIndexBefore()`, `getIndexAfter()`,
+ * `getIndexAbove()` as well as `getIndexBelow()`.
  */
-export function ListSelectionController(selectionModel) {
-  this.selectionModel_ = selectionModel;
-}
+export class ListSelectionController {
+  /**
+   * @param {ListSelectionModel} selectionModel The selection model to
+   *     interact with.
+   */
+  constructor(private selectionModel_: ListSelectionModel) {}
 
-ListSelectionController.prototype = {
 
   /**
    * The selection model we are interacting with.
-   * @type {ListSelectionModel}
    */
-  get selectionModel() {
-    // @ts-ignore: error TS2551: Property 'selectionModel_' does not exist on
-    // type '{ readonly selectionModel: ListSelectionModel; getIndexBelow(index:
-    // number): number; getIndexAbove(index: number): number;
-    // getIndexBefore(index: number): number; ... 7 more ...; handleKeyDown(e:
-    // Event): void; }'. Did you mean 'selectionModel'?
+  get selectionModel(): ListSelectionModel {
     return this.selectionModel_;
-  },
+  }
 
   /**
    * Returns the index below (y axis) the given element.
-   * @param {number} index The index to get the index below.
-   * @return {number} The index below or -1 if not found.
+   * @param index The index to get the index below.
+   * @return The index below or -1 if not found.
    */
-  getIndexBelow(index) {
+  getIndexBelow(index: number): number {
     if (index === this.getLastIndex()) {
       return -1;
     }
     return index + 1;
-  },
+  }
 
   /**
    * Returns the index above (y axis) the given element.
-   * @param {number} index The index to get the index above.
-   * @return {number} The index below or -1 if not found.
+   * @param index The index to get the index above.
+   * @return The index below or -1 if not found.
    */
-  getIndexAbove(index) {
+  getIndexAbove(index: number): number {
     return index - 1;
-  },
+  }
 
   /**
    * Returns the index before (x axis) the given element. This returns -1
    * by default but override this for icon view and horizontal selection
    * models.
    *
-   * @param {number} index The index to get the index before.
-   * @return {number} The index before or -1 if not found.
+   * @param _index The index to get the index before.
    */
-  // @ts-ignore: error TS6133: 'index' is declared but its value is never read.
-  getIndexBefore(index) {
+  getIndexBefore(_index: number): number {
     return -1;
-  },
+  }
 
   /**
    * Returns the index after (x axis) the given element. This returns -1
    * by default but override this for icon view and horizontal selection
    * models.
    *
-   * @param {number} index The index to get the index after.
-   * @return {number} The index after or -1 if not found.
+   * @param index The index to get the index after.
    */
-  // @ts-ignore: error TS6133: 'index' is declared but its value is never read.
-  getIndexAfter(index) {
+  getIndexAfter(_index: number): number {
     return -1;
-  },
+  }
 
   /**
    * Returns the next list index. This is the next logical and should not
    * depend on any kind of layout of the list.
-   * @param {number} index The index to get the next index for.
-   * @return {number} The next index or -1 if not found.
+   * @param index The index to get the next index for.
+   * @return The next index or -1 if not found.
    */
-  getNextIndex(index) {
+  getNextIndex(index: number): number {
     if (index === this.getLastIndex()) {
       return -1;
     }
     return index + 1;
-  },
+  }
 
   /**
    * Returns the previous list index. This is the previous logical and should
    * not depend on any kind of layout of the list.
-   * @param {number} index The index to get the previous index for.
-   * @return {number} The previous index or -1 if not found.
+   * @param index The index to get the previous index for.
+   * @return The previous index or -1 if not found.
    */
-  getPreviousIndex(index) {
+  getPreviousIndex(index: number): number {
     return index - 1;
-  },
+  }
 
   /**
-   * @return {number} The first index.
+   * @return The first index.
    */
-  getFirstIndex() {
+  getFirstIndex(): number {
     return 0;
-  },
+  }
 
   /**
-   * @return {number} The last index.
+   * @return The last index.
    */
-  getLastIndex() {
+  getLastIndex(): number {
     return this.selectionModel.length - 1;
-  },
+  }
 
   /**
    * Called by the view when the user does a mousedown or mouseup on the
    * list.
-   * @param {!Event} e The browser mouse event.
-   * @param {number} index The index that was under the mouse pointer, -1 if
-   *     none.
+   * @param e The browser mouse event.
+   * @param index The index that was under the mouse pointer, -1 if none.
    */
-  handlePointerDownUp(e, index) {
+  handlePointerDownUp(e: MouseEvent, index: number) {
     const sm = this.selectionModel;
     const anchorIndex = sm.anchorIndex;
     const isDown = (e.type === 'mousedown');
@@ -138,8 +123,6 @@ ListSelectionController.prototype = {
       sm.leadIndex = sm.anchorIndex = -1;
       sm.unselectAll();
     } else {
-      // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
-      // 'Event'.
       if (sm.multiple && (e.ctrlKey && !e.shiftKey)) {
         // Selection is handled at mouseUp on windows/linux, mouseDown on mac.
         if (!isDown) {
@@ -148,8 +131,6 @@ ListSelectionController.prototype = {
           sm.leadIndex = index;
           sm.anchorIndex = index;
         }
-        // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
-        // 'Event'.
       } else if (e.shiftKey && anchorIndex !== -1 && anchorIndex !== index) {
         // Shift is done in mousedown.
         if (isDown) {
@@ -163,8 +144,6 @@ ListSelectionController.prototype = {
         }
       } else {
         // Right click for a context menu needs to not clear the selection.
-        // @ts-ignore: error TS2339: Property 'button' does not exist on type
-        // 'Event'.
         const isRightClick = e.button === 2;
 
         // If the index is selected this is handled in mouseup.
@@ -177,7 +156,7 @@ ListSelectionController.prototype = {
     }
 
     sm.endChange();
-  },
+  }
 
   /**
    * Called by the view when it receives either a touchstart, touchmove,
@@ -185,41 +164,32 @@ ListSelectionController.prototype = {
    * Sub-classes may override this function to handle touch events separately
    * from mouse events, instead of waiting for emulated mouse events sent
    * after the touch events.
-   * @param {Event} e The event.
-   * @param {number} index The index that was under the touched point, -1 if
-   *     none.
+   * @param _e The event.
+   * @param _index The index that was under the touched point, -1 if none.
    */
-  // @ts-ignore: error TS6133: 'index' is declared but its value is never read.
-  handleTouchEvents(e, index) {
+  handleTouchEvents(_e: Event, _index: number) {
     // Do nothing.
-  },
+  }
 
   /**
    * Called by the view when it receives a keydown event.
-   * @param {Event} e The keydown event.
+   * @param e The keydown event.
    */
-  handleKeyDown(e) {
-    // @ts-ignore: error TS2339: Property 'tagName' does not exist on type
-    // 'EventTarget'.
-    const tagName = e.target.tagName;
+  handleKeyDown(e: KeyboardEvent) {
+    const target = e.target as HTMLElement;
+    const tagName = target.tagName;
     // If focus is in an input field of some kind, only handle navigation keys
     // that aren't likely to conflict with input interaction (e.g., text
     // editing, or changing the value of a checkbox or select).
     if (tagName === 'INPUT') {
-      // @ts-ignore: error TS2339: Property 'type' does not exist on type
-      // 'EventTarget'.
-      const inputType = e.target.type;
+      const inputType = (target as HTMLInputElement).type;
       // Just protect space (for toggling) for checkbox and radio.
       if (inputType === 'checkbox' || inputType === 'radio') {
-        // @ts-ignore: error TS2339: Property 'key' does not exist on type
-        // 'Event'.
         if (e.key === ' ') {
           return;
         }
         // Protect all but the most basic navigation commands in anything
         // else.
-        // @ts-ignore: error TS2339: Property 'key' does not exist on type
-        // 'Event'.
       } else if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') {
         return;
       }
@@ -235,20 +205,15 @@ ListSelectionController.prototype = {
     let prevent = true;
 
     // Ctrl/Meta+A
-    // @ts-ignore: error TS2339: Property 'ctrlKey' does not exist on type
-    // 'Event'.
     if (sm.multiple && e.keyCode === 65 && e.ctrlKey) {
       sm.selectAll();
       e.preventDefault();
       return;
     }
 
-    // @ts-ignore: error TS2339: Property 'key' does not exist on type 'Event'.
     if (e.key === ' ') {
       if (leadIndex !== -1) {
         const selected = sm.getIndexSelected(leadIndex);
-        // @ts-ignore: error TS2339: Property 'ctrlKey' does not exist on type
-        // 'Event'.
         if (e.ctrlKey || !selected) {
           sm.setIndexSelected(leadIndex, !selected || !sm.multiple);
           return;
@@ -256,7 +221,6 @@ ListSelectionController.prototype = {
       }
     }
 
-    // @ts-ignore: error TS2339: Property 'key' does not exist on type 'Event'.
     switch (e.key) {
       case 'Home':
         newIndex = this.getFirstIndex();
@@ -290,8 +254,6 @@ ListSelectionController.prototype = {
       sm.beginChange();
 
       sm.leadIndex = newIndex;
-      // @ts-ignore: error TS2339: Property 'shiftKey' does not exist on type
-      // 'Event'.
       if (e.shiftKey) {
         const anchorIndex = sm.anchorIndex;
         if (sm.multiple) {
@@ -317,5 +279,5 @@ ListSelectionController.prototype = {
         e.preventDefault();
       }
     }
-  },
-};
+  }
+}

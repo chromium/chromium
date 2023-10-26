@@ -7,16 +7,14 @@ import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
-import {List} from './list.js';
+import {createList, List} from './list.js';
 import {ListSingleSelectionModel} from './list_single_selection_model.js';
+
 
 /**
  * DefaultTaskDialog contains a message, a list box, an ok button, and a
  * cancel button.
  * This dialog should be used as task picker for file operations.
- */
-/**
- * Creates dialog in DOM tree.
  */
 export class DefaultTaskDialog extends FileManagerDialogBase {
   /**
@@ -28,7 +26,7 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.frame.id = 'default-task-dialog';
 
-    this.list_ = new List();
+    this.list_ = createList();
     this.list_.id = 'default-tasks-list';
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.frame.insertBefore(this.list_, this.text.nextSibling);

@@ -916,7 +916,7 @@ export class FileTable extends Table {
     }
 
     // If we're outside of the element list, start the drag selection.
-    if (!this.list.hasDragHitElement(event)) {
+    if (!/** @type {FileTableList} */ (this.list).hasDragHitElement(event)) {
       return true;
     }
 
@@ -937,7 +937,8 @@ export class FileTable extends Table {
     // Faster alternative to Math.floor for non-negative numbers.
     // @ts-ignore: error TS2339: Property 'y' does not exist on type 'Object'.
     const itemIndex = ~~(pos.y / itemHeight);
-    if (itemIndex >= this.list.dataModel.length) {
+    const length = this.dataModel?.length ?? 0;
+    if (itemIndex >= length) {
       return true;
     }
 
@@ -965,7 +966,7 @@ export class FileTable extends Table {
         }
 
         const spanElement = item.querySelector('.filename-label span');
-        const spanRect = spanElement.getBoundingClientRect();
+        const spanRect = spanElement && spanElement.getBoundingClientRect();
         // The this.list.cachedBounds_ object is set by
         // DragSelector.getScrolledPosition.
         // @ts-ignore: error TS2339: Property 'cachedBounds' does not exist on
@@ -1247,7 +1248,8 @@ export class FileTable extends Table {
         // @ts-ignore: error TS2551: Property 'list_' does not exist on type
         // 'FileTable'. Did you mean 'list'?
         const listItem = this.list_.getListItemAncestor(cell);
-        const entry = this.dataModel.item(listItem.listIndex);
+        const index = listItem?.listIndex ?? 0;
+        const entry = this.dataModel.item(index);
         if (entry && urls.indexOf(entry.toURL()) !== -1) {
           callback.call(this, cell, entry, listItem);
         }

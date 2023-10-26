@@ -313,8 +313,7 @@ export class ListThumbnailLoader extends EventTarget {
     }
 
     if (index > -1) {
-      this.dispatchEvent(
-          new ListThumbnailLoader.ThumbnailLoadedEvent(index, thumbnail));
+      this.dispatchEvent(new ThumbnailLoadedEvent(index, thumbnail));
     }
   }
 }
@@ -346,8 +345,7 @@ ListThumbnailLoader.VolumeType;
 /**
  * Thumbnail loaded event.
  */
-ListThumbnailLoader.ThumbnailLoadedEvent =
-    class ThumbnailLoadedEvent extends Event {
+export class ThumbnailLoadedEvent extends Event {
   /**
    * @param {number} index Index of an original image in the current data
    *     model.
@@ -371,7 +369,7 @@ ListThumbnailLoader.ThumbnailLoadedEvent =
     /** @type {?number}*/
     this.height = thumbnail.height;
   }
-};
+}
 
 /**
  * A class to represent thumbnail data.

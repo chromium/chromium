@@ -4,6 +4,13 @@
 
 import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecated.js';
 
+
+export type PropertyChangeEvent<T> = Event&{
+  propertyName: string,
+  newValue?: T,
+  oldValue?: T,
+};
+
 /**
  * Setter used by the deprecated cr.ui elements.
  * It sets the value of type T in the private `${name}_`.

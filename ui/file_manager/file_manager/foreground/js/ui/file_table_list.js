@@ -91,7 +91,7 @@ implicitly has an 'any' return type.
       if (!item) {
         continue;
       }
-      const isSelected = this.selectionModel.getIndexSelected(i);
+      const isSelected = !!this.selectionModel?.getIndexSelected(i);
       if (item.selected !== isSelected) {
         item.selected = isSelected;
       }
@@ -261,7 +261,8 @@ implicitly has an 'any' return type.
     const itemHeight = this.getDefaultItemHeight_();
     const countOfGroupHeadings =
         this.getGroupHeadingCountAfterIndex_(lastIndex);
-    return (this.dataModel.length - lastIndex) * itemHeight +
+    const length = this.dataModel?.length ?? 0;
+    return (length - lastIndex) * itemHeight +
         countOfGroupHeadings * this.getGroupHeadingHeight_();
   }
 
@@ -304,7 +305,8 @@ implicitly has an 'any' return type.
     const currentSelection = [];
     const startHeight = y;
     const endHeight = y + (opt_height || 0);
-    for (let i = 0; i < this.selectionModel.length; i++) {
+    const length = this.selectionModel?.length ?? 0;
+    for (let i = 0; i < length; i++) {
       // @ts-ignore: error TS2339: Property 'getHeightsForIndex' does not exist
       // on type 'FileTableList'.
       const itemMetrics = this.getHeightsForIndex(i);
@@ -496,7 +498,7 @@ filelist.isDlpBlocked = (entry, metadataModel, volumeManager) => {
  * Render the type column of the detail table.
  * @param {!Document} doc Owner document.
  * @param {!Entry} entry The Entry object to render.
- * @param {EntryLocation} locationInfo
+ * @param {?EntryLocation} locationInfo
  * @param {string=} opt_mimeType Optional mime type for the file.
  * @return {!HTMLDivElement} Created element.
  */
@@ -525,7 +527,7 @@ filelist.renderIconBadge = (doc) => {
  * Render filename label for grid and list view.
  * @param {!Document} doc Owner document.
  * @param {!Entry|!FilesAppEntry} entry The Entry object to render.
- * @param {EntryLocation} locationInfo
+ * @param {?EntryLocation} locationInfo
  * @return {!HTMLDivElement} The label.
  */
 filelist.renderFileNameLabel = (doc, entry, locationInfo) => {

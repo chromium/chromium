@@ -408,7 +408,8 @@ function enableGroupByForDataModel(fileListModel) {
 export function testGetItemTop() {
   const tableList = setupFileTableList();
   // No group heading, so only the item height is used.
-  for (let i = 0; i < tableList.dataModel.length; i++) {
+  const len = tableList.dataModel?.length ?? 0;
+  for (let i = 0; i < len; i++) {
     assertEquals(tableList.getItemTop(i), i * ITEM_HEIGHT);
   }
 
@@ -449,7 +450,7 @@ export function testGetAfterFillerHeight() {
   const tableList = setupFileTableList();
 
   // No group heading, so only the item height is used.
-  const totalLength = tableList.dataModel.length;
+  const totalLength = tableList.dataModel?.length ?? 0;
   for (let i = 0; i < totalLength; i++) {
     assertEquals(
         tableList.getAfterFillerHeight(i),

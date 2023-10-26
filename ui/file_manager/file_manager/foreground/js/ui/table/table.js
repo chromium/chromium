@@ -262,7 +262,7 @@ export class Table {
 
   /**
    * Sets render function for row.
-   * @param {function(*, Table): HTMLElement} renderFunction Render
+   * @param {function(*, Table): ListItem} renderFunction Render
    *     function.
    */
   setRenderFunction(renderFunction) {

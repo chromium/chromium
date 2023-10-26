@@ -21,7 +21,6 @@ group("js_modules") {
     ":dialogs",
     ":directory_tree",
     ":drag_selector",
-    ":file_grid",
     ":file_list_selection_model",
     ":file_manager_dialog_base",
     ":file_manager_ui",
@@ -33,12 +32,9 @@ group("js_modules") {
     ":files_confirm_dialog",
     ":files_menu",
     ":gear_menu",
-    ":grid",
     ":import_crostini_image_dialog",
     ":install_linux_package_dialog",
-    ":list",
     ":list_container",
-    ":list_selection_controller",
     ":list_selection_model",
     ":list_single_selection_model",
     ":multi_menu",
@@ -144,7 +140,6 @@ js_unittest("context_menu_handler_unittest") {
 js_library("default_task_dialog") {
   deps = [
     ":file_manager_dialog_base",
-    ":list",
     ":list_single_selection_model",
     "//ash/webui/common/resources:cr_deprecated",
     "//ui/file_manager/file_manager/common/js:array_data_model",
@@ -212,40 +207,12 @@ js_unittest("directory_tree_unittest") {
 }
 
 js_library("drag_selector") {
-  deps = [ ":list" ]
   externs_list = [ "//ui/file_manager/file_manager/externs/drag_target.js" ]
-}
-
-js_library("file_grid") {
-  deps = [
-    ":a11y_announce",
-    ":drag_selector",
-    ":file_table_list",
-    ":file_tap_handler",
-    ":grid",
-    ":list",
-    ":list_selection_model",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:cr_deprecated",
-    "//ash/webui/common/resources:util",
-    "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/foreground/js:file_list_model",
-    "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-  ]
-  externs_list = [
-    "//ui/file_manager/file_manager/externs/polymer_elements/files_tooltip.js",
-  ]
 }
 
 js_unittest("file_grid_unittest") {
   deps = [
     ":a11y_announce",
-    ":file_grid",
     ":list_selection_model",
     "//ash/webui/common/resources:load_time_data.m",
     "//chrome/test/data/webui/chromeos:chai_assert",
@@ -300,7 +267,6 @@ js_library("file_manager_ui") {
     ":dialog_footer",
     ":dialogs",
     ":directory_tree",
-    ":file_grid",
     ":file_table",
     ":files_alert_dialog",
     ":files_confirm_dialog",
@@ -382,8 +348,6 @@ js_library("file_table_list") {
     ":drag_selector",
     ":file_list_selection_model",
     ":file_tap_handler",
-    ":list",
-    ":list_selection_controller",
     ":list_selection_model",
     "table:table",
     "table:table_list",
@@ -458,18 +422,8 @@ js_library("gear_menu") {
   ]
 }
 
-js_library("grid") {
-  deps = [
-    ":list",
-    ":list_selection_controller",
-    ":list_selection_model",
-    "//ui/file_manager/file_manager/common/js:ui",
-  ]
-}
-
 js_unittest("grid_unittest") {
   deps = [
-    ":grid",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:array_data_model",
   ]
@@ -496,19 +450,8 @@ js_library("import_crostini_image_dialog") {
   deps = [ ":dialogs" ]
 }
 
-js_library("list") {
-  deps = [
-    ":list_selection_controller",
-    ":list_selection_model",
-    "//ash/webui/common/resources:cr_deprecated",
-    "//ui/file_manager/file_manager/common/js:array_data_model",
-    "//ui/file_manager/file_manager/common/js:ui",
-  ]
-}
-
 js_unittest("list_unittest") {
   deps = [
-    ":list",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/common/js:ui",
@@ -517,9 +460,7 @@ js_unittest("list_unittest") {
 
 js_library("list_container") {
   deps = [
-    ":file_grid",
     ":file_table",
-    ":list",
     ":list_selection_model",
     ":list_single_selection_model",
     "//ash/webui/common/resources:assert",
@@ -528,10 +469,6 @@ js_library("list_container") {
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
   ]
-}
-
-js_library("list_selection_controller") {
-  deps = [ ":list_selection_model" ]
 }
 
 js_library("list_selection_model") {

@@ -2,28 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
+import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {isRTL} from 'chrome://resources/ash/common/util.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {RateLimiter} from '../../../common/js/async_util.js';
+import {decorate} from '../../../common/js/cr_ui.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {isDriveShortcutsEnabled, isJellyEnabled} from '../../../common/js/flags.js';
 import {str, util} from '../../../common/js/util.js';
-import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
-import {VolumeManager} from '../../../externs/volume_manager.js';
-import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupValue} from '../file_list_model.js';
-import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
-import {MetadataModel} from '../metadata/metadata_model.js';
+import type {VolumeManager} from '../../../externs/volume_manager.js';
+import type {FilesTooltip} from '../../elements/files_tooltip.js';
+import {type FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupValue} from '../file_list_model.js';
+import {ListThumbnailLoader, type ThumbnailLoadedEvent} from '../list_thumbnail_loader.js';
+import {type MetadataItem} from '../metadata/metadata_item.js';
+import {type MetadataModel} from '../metadata/metadata_model.js';
 
-import {A11yAnnounce} from './a11y_announce.js';
+import type {A11yAnnounce} from './a11y_announce.js';
 import {DragSelector} from './drag_selector.js';
 import {filelist} from './file_table_list.js';
 import {FileTapHandler} from './file_tap_handler.js';
-// @ts-ignore: error TS2305: Module '"./grid.js"' has no exported member
-// 'GridSelectionController'.
 import {Grid, GridSelectionController} from './grid.js';
 import {List} from './list.js';
 import {ListItem} from './list_item.js';
@@ -41,113 +42,45 @@ const GROUP_MARGIN_TOP = 16;
  *
  * Represents grid for the Grid View in the File Manager.
  */
-
 export class FileGrid extends Grid {
-  constructor() {
-    super();
+  private paddingTop_: number = 0;
+  private paddingStart_: number = 0;
+  private beginIndex_: number = 0;
+  private endIndex_: number = 0;
+  private metadataModel_: MetadataModel|null = null;
+  private listThumbnailLoader_: ListThumbnailLoader|null = null;
+  private volumeManager_: VolumeManager|null = null;
+  private relayoutRateLimiter_: RateLimiter|null = null;
+  private onThumbnailLoadedBound_: null|((_: Event) => void) = null;
+  a11y: A11yAnnounce|null = null;
 
-    /** @private @type {number} */
-    this.paddingTop_ = 0;
-
-    /** @private @type {number} */
-    this.paddingStart_ = 0;
-
-    /** @private @type {number} */
-    this.beginIndex_ = 0;
-
-    /** @private @type {number} */
-    this.endIndex_ = 0;
-
-    /**
-     * Inherited from Grid <- List
-     * @private @type {?Element}
-     * */
-    this.beforeFiller_ = null;
-
-    /**
-     * Inherited from Grid <- List
-     * @private @type {?Element}
-     * */
-    this.afterFiller_ = null;
-
-    /** @private @type {?MetadataModel} */
-    this.metadataModel_ = null;
-
-    /** @private @type {?ListThumbnailLoader} */
-    this.listThumbnailLoader_ = null;
-
-    /** @private @type {?VolumeManager} */
-    this.volumeManager_ = null;
-
-    /** @private @type {?RateLimiter} */
-    this.relayoutRateLimiter_ = null;
-
-    // @ts-ignore: error TS7014: Function type, which lacks return-type
-    // annotation, implicitly has an 'any' return type.
-    /** @private @type {?function(!Event)} */
-    this.onThumbnailLoadedBound_ = null;
-
-    // @ts-ignore: error TS2304: Cannot find name 'ObjectPropertyDescriptor'.
-    /** @private @type {?ObjectPropertyDescriptor|undefined} */
-    this.dataModelDescriptor_ = null;
-
-    /** @public @type {?A11yAnnounce} */
-    this.a11y = null;
-
-    throw new Error('Use FileGrid.decorate');
+  override get dataModel() {
+    return super.dataModel as FileListModel;
   }
 
-  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
-  // '@override' tag because it overrides a member in the base class 'Grid'.
-  get dataModel() {
-    if (!this.dataModelDescriptor_) {
-      // We get the property descriptor for dataModel from List, because
-      // Grid doesn't have its own descriptor.
-      this.dataModelDescriptor_ =
-          Object.getOwnPropertyDescriptor(List.prototype, 'dataModel');
-    }
-    return this.dataModelDescriptor_.get.call(this);
-  }
-
-  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
-  // '@override' tag because it overrides a member in the base class 'Grid'.
-  set dataModel(model) {
+  override set dataModel(model: FileListModel) {
     // The setter for dataModel is overridden to remove/add the 'splice'
     // listener for the current data model.
     if (this.dataModel) {
       this.dataModel.removeEventListener('splice', this.onSplice_.bind(this));
       this.dataModel.removeEventListener('sorted', this.onSorted_.bind(this));
     }
-    this.dataModelDescriptor_.set.call(this, model);
+    super.dataModel = model;
     if (this.dataModel) {
       this.dataModel.addEventListener('splice', this.onSplice_.bind(this));
-      this.classList.toggle('image-dominant', this.dataModel.isImageDominant());
       this.dataModel.addEventListener('sorted', this.onSorted_.bind(this));
     }
   }
 
   /**
    * Decorates an HTML element to be a FileGrid.
-   * @param {!Element} element The grid to decorate.
-   * @param {!MetadataModel} metadataModel File system metadata.
-   * @param {!VolumeManager} volumeManager Volume manager instance.
-   * @param {!A11yAnnounce} a11y
    */
-  static decorate(element, metadataModel, volumeManager, a11y) {
-    // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
-    // 'typeof Grid'.
-    if (Grid.decorate) {
-      // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
-      // 'typeof Grid'.
-      Grid.decorate(element);
-    }
-    const self = /** @type {!FileGrid} */ (element);
-    // @ts-ignore: error TS2339: Property '__proto__' does not exist on type
-    // 'FileGrid'.
-    self.__proto__ = FileGrid.prototype;
-    // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-    // parameter of type 'string'.
-    self.setAttribute('aria-multiselectable', true);
+  static override decorate(
+      element: HTMLElement, metadataModel: MetadataModel,
+      volumeManager: VolumeManager, a11y: A11yAnnounce) {
+    const self = element as FileGrid;
+    decorate(self, FileGrid);
+    self.setAttribute('aria-multiselectable', 'true');
     self.setAttribute('aria-describedby', 'more-actions-info');
     self.metadataModel_ = metadataModel;
     self.volumeManager_ = volumeManager;
@@ -164,16 +97,10 @@ export class FileGrid extends Grid {
     self.endIndex_ = 0;
     self.onThumbnailLoadedBound_ = self.onThumbnailLoaded_.bind(self);
 
-    // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
-    self.itemConstructor = function(entry) {
-      let item = self.ownerDocument.createElement('li');
-      // @ts-ignore: error TS2339: Property '__proto__' does not exist on type
-      // 'HTMLLIElement'.
-      item.__proto__ = FileGrid.Item.prototype;
-      item = /** @type {!FileGrid.Item} */ (item);
-      // @ts-ignore: error TS2345: Argument of type 'HTMLLIElement' is not
-      // assignable to parameter of type 'ListItem'.
-      self.decorateThumbnail_(item, /** @type {!Entry} */ (entry));
+    self.itemConstructor = function(entry: Entry) {
+      const item = self.ownerDocument.createElement('li') as FileGridItem;
+      self.decorateThumbnail_(item, entry);
+      decorate(item, FileGridItem);
       return item;
     };
 
@@ -192,20 +119,17 @@ export class FileGrid extends Grid {
     self.addEventListener(
         'cachedItemRestored',
         (e) => filelist.updateCacheItemInlineStatus(
-            // @ts-ignore: error TS2339: Property 'detail' does not exist on
-            // type 'Event'.
-            e.detail, self.dataModel, self.metadataModel_));
+            e.detail, self.dataModel!, self.metadataModel_!));
   }
 
-  // @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
-  onMouseOver_(event) {
+  private onMouseOver_(event: MouseEvent) {
     this.maybeShowToolTip(event);
   }
 
-  // @ts-ignore: error TS7006: Parameter 'event' implicitly has an 'any' type.
-  maybeShowToolTip(event) {
+  maybeShowToolTip(event: Event) {
     let target = null;
-    for (const el of event.composedPath()) {
+    for (const element of event.composedPath()) {
+      const el = element as HTMLElement;
       if (el.classList?.contains('thumbnail-item')) {
         target = el;
         break;
@@ -214,7 +138,7 @@ export class FileGrid extends Grid {
     if (!target) {
       return;
     }
-    const labelElement = target.querySelector('.filename-label');
+    const labelElement = target.querySelector('.filename-label') as HTMLElement;
     if (!labelElement) {
       return;
     }
@@ -223,30 +147,26 @@ export class FileGrid extends Grid {
   }
 
   /**
-   * @param {number} index Index of the list item.
-   * @return {string}
+   * @param index Index of the list item.
    */
-  getItemLabel(index) {
+  getItemLabel(index: number): string {
     if (index === -1) {
       return '';
     }
 
-    /** @type {Entry|FilesAppEntry} */
-    const entry = this.dataModel.item(index);
+    const entry: Entry|null = this.dataModel?.item(index) as Entry;
     if (!entry) {
       return '';
     }
 
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
-    const locationInfo = this.volumeManager_.getLocationInfo(entry);
+    const locationInfo = this.volumeManager_!.getLocationInfo(entry);
     return util.getEntryLabel(locationInfo, entry);
   }
 
   /**
    * Sets list thumbnail loader.
-   * @param {ListThumbnailLoader} listThumbnailLoader A list thumbnail loader.
    */
-  setListThumbnailLoader(listThumbnailLoader) {
+  setListThumbnailLoader(listThumbnailLoader: ListThumbnailLoader) {
     if (this.listThumbnailLoader_) {
       this.listThumbnailLoader_.removeEventListener(
           'thumbnailLoaded', this.onThumbnailLoadedBound_);
@@ -256,7 +176,7 @@ export class FileGrid extends Grid {
 
     if (this.listThumbnailLoader_) {
       this.listThumbnailLoader_.addEventListener(
-          'thumbnailLoaded', this.onThumbnailLoadedBound_);
+          'thumbnailLoaded', this.onThumbnailLoadedBound_!);
       this.listThumbnailLoader_.setHighPriorityRange(
           this.beginIndex_, this.endIndex_);
     }
@@ -265,71 +185,50 @@ export class FileGrid extends Grid {
   /**
    * Returns the element containing the thumbnail of a certain list item as
    * background image.
-   * @param {number} index The index of the item containing the desired
-   *     thumbnail.
-   * @return {?Element} The element containing the thumbnail, or null, if an
-   *     error occurred.
+   * @param index The index of the item containing the desired thumbnail.
+   * @return  The element containing the thumbnail, or null, if an error
+   *     occurred.
    */
-  getThumbnail(index) {
-    const listItem = this.getListItemByIndex(index);
-    if (!listItem) {
-      return null;
-    }
-    const container = listItem.querySelector('.img-container');
-    if (!container) {
-      return null;
-    }
-    return container.querySelector('.thumbnail');
+  getThumbnail(index: number): HTMLElement|null {
+    return this.getListItemByIndex(index)
+               ?.querySelector('.img-container')
+               ?.querySelector('.thumbnail') ??
+        null;
   }
 
-  /**
-   * Handles thumbnail loaded event.
-   * @param {!Event} event An event.
-   * @private
-   */
-  onThumbnailLoaded_(event) {
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
+  private onThumbnailLoaded_(e: Event) {
+    const event = e as ThumbnailLoadedEvent;
+    assert(this.dataModel);
+    assert(this.metadataModel_);
     const listItem = this.getListItemByIndex(event.index);
     const entry = listItem && this.dataModel.item(listItem.listIndex);
-    if (entry) {
-      const box = listItem.querySelector('.img-container');
-      if (box) {
-        const mimeType =
-            // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-            this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
-                .contentMimeType;
-        // @ts-ignore: error TS2339: Property 'dataUrl' does not exist on type
-        // 'Event'.
-        if (!event.dataUrl) {
-          FileGrid.clearThumbnailImage_(assertInstanceof(box, HTMLDivElement));
-          this.setGenericThumbnail_(
-              assertInstanceof(box, HTMLDivElement), entry, mimeType);
-        } else {
-          FileGrid.setThumbnailImage_(
-              assertInstanceof(box, HTMLDivElement), entry,
-              // @ts-ignore: error TS2339: Property 'height' does not exist on
-              // type 'Event'.
-              assert(event.dataUrl), assert(event.width), assert(event.height),
-              mimeType);
-        }
-      }
-      // @ts-ignore: error TS2339: Property 'dataUrl' does not exist on type
-      // 'Event'.
-      listItem.classList.toggle('thumbnail-loaded', !!event.dataUrl);
+    if (!entry) {
+      return;
     }
+    const box = listItem.querySelector('.img-container');
+    if (box) {
+      const mimeType =
+          this.metadataModel_.getCache(
+                                 [entry],
+                                 ['contentMimeType'])[0]!.contentMimeType;
+      if (!event.dataUrl) {
+        FileGrid.clearThumbnailImage_(assertInstanceof(box, HTMLDivElement));
+        this.setGenericThumbnail_(
+            assertInstanceof(box, HTMLDivElement), entry, mimeType);
+      } else {
+        assert(event.width);
+        assert(event.height);
+        FileGrid.setThumbnailImage_(
+            assertInstanceof(box, HTMLDivElement), entry, event.dataUrl,
+            event.width, event.height, mimeType);
+      }
+    }
+    listItem.classList.toggle('thumbnail-loaded', !!event.dataUrl);
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'endIndex' implicitly has an 'any'
-  // type.
-  mergeItems(beginIndex, endIndex) {
-    // @ts-ignore: error TS2339: Property 'mergeItems' does not exist on type
-    // 'List'.
+  override mergeItems(beginIndex: number, endIndex: number) {
     List.prototype.mergeItems.call(this, beginIndex, endIndex);
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const fileListModel = this.dataModel;
     const groupBySnapshot =
         fileListModel ? fileListModel.getGroupBySnapshot() : [];
     const startIndexToGroupLabel = new Map(groupBySnapshot.map(group => {
@@ -344,7 +243,7 @@ export class FileGrid extends Grid {
       if (!item) {
         continue;
       }
-      const isSelected = this.selectionModel.getIndexSelected(i);
+      const isSelected = !!this.selectionModel?.getIndexSelected(i);
       if (item.selected !== isSelected) {
         item.selected = isSelected;
       }
@@ -353,8 +252,7 @@ export class FileGrid extends Grid {
         // For first item in each group, we add a title div before the element.
         const title = document.createElement('div');
         title.setAttribute('role', 'heading');
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        title.innerText = startIndexToGroupLabel.get(i).label;
+        title.innerText = startIndexToGroupLabel.get(i)!.label;
         title.classList.add(
             'grid-title', `group-by-${fileListModel.groupByField}`);
         this.insertBefore(title, item);
@@ -369,40 +267,30 @@ export class FileGrid extends Grid {
     }
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
-  getItemTop(index) {
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+  override getItemTop(index: number) {
+    const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
     let top = 0;
     let totalItemCount = 0;
     for (let groupIndex = 0; groupIndex < groupBySnapshot.length;
          groupIndex++) {
-      const group = groupBySnapshot[groupIndex];
-      // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
+      const group = groupBySnapshot[groupIndex]!;
       if (index <= group.endIndex) {
         // The index falls into the current group. Calculates how many rows
         // we have in the current group up until this index.
         const indexInCurGroup = index - totalItemCount;
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         const rowsInCurGroup = Math.floor(indexInCurGroup / this.columns);
         top +=
             (rowsInCurGroup > 0 ? this.getGroupHeadingHeight_(groupIndex) : 0) +
-            // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
             rowsInCurGroup * this.getGroupItemHeight_(group.group);
         break;
       } else {
         // The index is not in the current group. Add all row heights in this
         // group to the final result.
-        // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
         const groupItemCount = group.endIndex - group.startIndex + 1;
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         const groupRowCount = Math.ceil(groupItemCount / this.columns);
         top += this.getGroupHeadingHeight_(groupIndex) +
-            // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
             groupRowCount * this.getGroupItemHeight_(group.group);
         totalItemCount += groupItemCount;
       }
@@ -410,12 +298,8 @@ export class FileGrid extends Grid {
     return top;
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
-  getItemRow(index) {
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+  override getItemRow(index: number) {
+    const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
     let rows = 0;
@@ -425,14 +309,12 @@ export class FileGrid extends Grid {
         // The index falls into the current group. Calculates how many rows
         // we have in the current group up until this index.
         const indexInCurGroup = index - totalItemCount;
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         rows += Math.floor(indexInCurGroup / this.columns);
         break;
       } else {
         // The index is not in the current group. Add all rows in this
         // group to the final result.
         const groupItemCount = group.endIndex - group.startIndex + 1;
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         rows += Math.ceil(groupItemCount / this.columns);
         totalItemCount += groupItemCount;
       }
@@ -442,10 +324,10 @@ export class FileGrid extends Grid {
 
   /**
    * Returns the column of an item which has given index.
-   * @param {number} index The item index.
+   * @param index The item index.
    */
-  getItemColumn(index) {
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+  getItemColumn(index: number) {
+    const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
     let totalItemCount = 0;
@@ -454,7 +336,6 @@ export class FileGrid extends Grid {
         // The index falls into the current group. Calculates the column index
         // with the remaining index in this group.
         const indexInCurGroup = index - totalItemCount;
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         return indexInCurGroup % this.columns;
       }
       const groupItemCount = group.endIndex - group.startIndex + 1;
@@ -466,29 +347,26 @@ export class FileGrid extends Grid {
   /**
    * Return the item index which is placed at the given position.
    * If there is no item in the given position, returns -1.
-   * @param {number} row The row index.
-   * @param {number} column The column index.
+   * @param row The row index.
+   * @param column The column index.
    */
-  getItemIndex(row, column) {
-    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
+  getItemIndex(row: number, column: number) {
     if (row < 0 || column < 0 || column >= this.columns) {
       return -1;
     }
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
     let curRow = 0;
     let index = 0;
     for (const group of groupBySnapshot) {
       const groupItemCount = group.endIndex - group.startIndex + 1;
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       const groupRowCount = Math.ceil(groupItemCount / this.columns);
       if (row < curRow + groupRowCount) {
         // The row falls into the current group. Calculate the index based on
         // the column value and return.
         const isLastRowInGroup = row === curRow + groupRowCount - 1;
         const itemCountInLastRow =
-            // @ts-ignore: error TS2532: Object is possibly 'undefined'.
             groupItemCount - (groupRowCount - 1) * this.columns;
         if (isLastRowInGroup && column >= itemCountInLastRow) {
           // column is larger than the item count in this row, return -1.
@@ -505,7 +383,6 @@ export class FileGrid extends Grid {
           //   is not existed in the below row.
           return -1;
         }
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         return index + (row - curRow) * this.columns + column;
       }
       curRow += groupRowCount;
@@ -515,23 +392,15 @@ export class FileGrid extends Grid {
     return -1;
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'row' implicitly has an 'any' type.
-  getFirstItemInRow(row) {
+  override getFirstItemInRow(row: number) {
     if (row < 0) {
       return 0;
     }
     const index = this.getItemIndex(row, 0);
-    return index === -1 ? this.dataModel.length : index;
+    return index === -1 ? this.dataModel!.length : index;
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
-  scrollIndexIntoView(index) {
+  override scrollIndexIntoView(index: number) {
     const dataModel = this.dataModel;
     if (!dataModel || index < 0 || index >= dataModel.length) {
       return;
@@ -573,12 +442,7 @@ export class FileGrid extends Grid {
     }
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'clientHeight' implicitly has an 'any'
-  // type.
-  getItemsInViewPort(scrollTop, clientHeight) {
+  override getItemsInViewPort(scrollTop: number, clientHeight: number) {
     // Render 1 more row above to make the scrolling more smooth.
     const beginRow = this.getRowForListOffset_(scrollTop) - 1;
     // Render 1 more rows below, +2 here because "endIndex" is the first item
@@ -587,7 +451,7 @@ export class FileGrid extends Grid {
     const endRow = this.getRowForListOffset_(scrollTop + clientHeight - 1) + 2;
     const beginIndex = Math.max(0, this.getFirstItemInRow(beginRow));
     const endIndex =
-        Math.min(this.getFirstItemInRow(endRow), this.dataModel.length);
+        Math.min(this.getFirstItemInRow(endRow), this.dataModel!.length);
     const result = {
       // beginIndex + 1 here because "first" will be -1 when it's being
       // consumed in redraw() method in the parent class.
@@ -598,13 +462,8 @@ export class FileGrid extends Grid {
     return result;
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'lastIndex' implicitly has an 'any'
-  // type.
-  getAfterFillerHeight(lastIndex) {
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+  override getAfterFillerHeight(lastIndex: number) {
+    const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
     // Excluding the current index, because [firstIndex, lastIndex) is used
     // in mergeItems().
@@ -616,16 +475,12 @@ export class FileGrid extends Grid {
     // Find the group of "index" and accumulate the height after that group.
     for (let groupIndex = 0; groupIndex < groupBySnapshot.length;
          groupIndex++) {
-      const group = groupBySnapshot[groupIndex];
-      // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
+      const group = groupBySnapshot[groupIndex]!;
       const groupItemCount = group.endIndex - group.startIndex + 1;
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       const groupRowCount = Math.ceil(groupItemCount / this.columns);
       if (shouldAdd) {
         afterFillerHeight += this.getGroupHeadingHeight_(groupIndex) +
-            // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
             groupRowCount * this.getGroupItemHeight_(group.group);
-        // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
       } else if (index <= group.endIndex) {
         // index falls into the current group. Starting from this group we need
         // to add all remaining group heights into the final result.
@@ -633,9 +488,7 @@ export class FileGrid extends Grid {
         // For current group, we need to add the row heights starting from the
         // row which current index locates.
         afterFillerHeight +=
-            // @ts-ignore: error TS2532: Object is possibly 'undefined'.
             (groupRowCount - Math.floor(indexInCurGroup / this.columns)) *
-            // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
             this.getGroupItemHeight_(group.group);
         shouldAdd = true;
       }
@@ -646,9 +499,9 @@ export class FileGrid extends Grid {
 
   /**
    * Returns the height of folder items in grid view.
-   * @return {number} The height of folder items.
+   * @return The height of folder items.
    */
-  getFolderItemHeight_() {
+  private getFolderItemHeight_(): number {
     // Align with CSS value for .thumbnail-item.directory: height + margin +
     // border.
     const height = isJellyEnabled() ? 48 : 40;
@@ -657,22 +510,18 @@ export class FileGrid extends Grid {
 
   /**
    * Returns the height of file items in grid view.
-   * @return {number} The height of file items.
+   * @return The height of file items.
    */
-  getFileItemHeight_() {
+  private getFileItemHeight_() {
     // Align with CSS value for .thumbnail-item: height + margin + border.
     return 160 + this.getItemMarginTop_() + 2;
   }
 
   /**
    * Returns the height of group heading.
-   *
-   * @param {number} groupIndex
-   * @return {number}
-   * @private
    */
-  getGroupHeadingHeight_(groupIndex) {
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+  private getGroupHeadingHeight_(groupIndex: number): number {
+    const fileListModel = this.dataModel;
     // For FilesRefresh, we have an additional margin for non-first group, check
     // the CSS rule ".grid-title ~ .grid-title" for more information in the CSS
     // file.
@@ -690,12 +539,9 @@ export class FileGrid extends Grid {
 
   /**
    * Returns the height of the item in the group based on the group value.
-   * @param {GroupValue|undefined} groupValue
-   * @return {number}
-   * @private
    */
-  getGroupItemHeight_(groupValue) {
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+  private getGroupItemHeight_(groupValue?: GroupValue): number {
+    const fileListModel = this.dataModel;
     switch (fileListModel.groupByField) {
       case GROUP_BY_FIELD_DIRECTORY:
         return groupValue === true ? this.getFolderItemHeight_() :
@@ -709,12 +555,9 @@ export class FileGrid extends Grid {
 
   /**
    * Returns the height of the item specified by the index.
-   * @param {number} index
-   * @return {number}
-   * @private
    */
-  getItemHeightByIndex_(index) {
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+  protected override getItemHeightByIndex_(index: number): number {
+    const fileListModel = this.dataModel;
     if (fileListModel.groupByField === GROUP_BY_FIELD_MODIFICATION_TIME) {
       return this.getFileItemHeight_();
     }
@@ -732,9 +575,8 @@ export class FileGrid extends Grid {
 
   /**
    * Returns the width of grid items.
-   * @return {number}
    */
-  getItemWidth_() {
+  private getItemWidth_(): number {
     // Align with CSS value for .thumbnail-item: width + margin + border.
     const width = isJellyEnabled() ? 160 : 180;
     return width + this.getItemMarginLeft_() + 2;
@@ -742,31 +584,28 @@ export class FileGrid extends Grid {
 
   /**
    * Returns the margin top of grid items.
-   * @return {number};
    */
-  getItemMarginTop_() {
+  private getItemMarginTop_(): number {
     // Align with CSS value for .thumbnail-item: margin-top.
     return 16;
   }
 
   /**
    * Returns the margin left of grid items.
-   * @return {number}
    */
-  getItemMarginLeft_() {
+  private getItemMarginLeft_(): number {
     // Align with CSS value for .thumbnail-item: margin-inline-start.
     return 16;
   }
 
   /**
    * Returns index of a row which contains the given y-position(offset).
-   * @param {number} offset The offset from the top of grid.
-   * @return {number} Row index corresponding to the given offset.
-   * @private
+   * @param offset The offset from the top of grid.
+   * @return Row index corresponding to the given offset.
    */
-  getRowForListOffset_(offset) {
+  private getRowForListOffset_(offset: number): number {
+    const fileListModel = this.dataModel;
     const innerOffset = Math.max(0, offset - this.paddingTop_);
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
     // Loop through all the groups, calculate the accumulated height for all
@@ -777,13 +616,10 @@ export class FileGrid extends Grid {
     let curRow = 0;
     for (let groupIndex = 0; groupIndex < groupBySnapshot.length;
          groupIndex++) {
-      const group = groupBySnapshot[groupIndex];
-      // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
+      const group = groupBySnapshot[groupIndex]!;
       const groupItemCount = group.endIndex - group.startIndex + 1;
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       const groupRowCount = Math.ceil(groupItemCount / this.columns);
       const groupHeight = this.getGroupHeadingHeight_(groupIndex) +
-          // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
           groupRowCount * this.getGroupItemHeight_(group.group);
 
       if (currentHeight + groupHeight > innerOffset) {
@@ -795,7 +631,6 @@ export class FileGrid extends Grid {
                 this.getGroupHeadingHeight_(groupIndex));
         return curRow +
             Math.floor(
-                // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
                 offsetInCurGroup / this.getGroupItemHeight_(group.group));
       }
       currentHeight += groupHeight;
@@ -804,50 +639,43 @@ export class FileGrid extends Grid {
     return this.getItemRow(fileListModel.length - 1);
   }
 
-  /**
-   * @override
-   */
-  // @ts-ignore: error TS7006: Parameter 'sm' implicitly has an 'any' type.
-  createSelectionController(sm) {
-    return new FileGridSelectionController(assert(sm), this);
+  override createSelectionController(sm: ListSelectionModel):
+      GridSelectionController {
+    assert(sm);
+    return new FileGridSelectionController(sm, this);
   }
 
-  updateGroupHeading_() {
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+  private updateGroupHeading_() {
+    const fileListModel = this.dataModel;
     if (fileListModel &&
         fileListModel.groupByField === GROUP_BY_FIELD_MODIFICATION_TIME) {
       // TODO(crbug.com/1353650): find a way to update heading instead of
       // redraw.
-      // @ts-ignore: error TS2339: Property 'redraw' does not exist on type
-      // 'FileGrid'.
       this.redraw();
     }
   }
 
   /**
    * Updates items to reflect metadata changes.
-   * @param {string} type Type of metadata changed.
-   * @param {Array<Entry>} entries Entries whose metadata changed.
+   * @param _type Type of metadata changed.
+   * @param entries Entries whose metadata changed.
    */
-  // @ts-ignore: error TS6133: 'type' is declared but its value is never read.
-  updateListItemsMetadata(type, entries) {
+  updateListItemsMetadata(_type: string, entries: Entry[]) {
     const urls = entriesToURLs(entries);
-    // @ts-ignore: error TS2315: Type 'NodeList' is not generic.
-    const boxes = /** @type {!NodeList<!HTMLElement>} */ (
-        this.querySelectorAll('.img-container'));
-    for (let i = 0; i < boxes.length; i++) {
-      const box = boxes[i];
-      let listItem = this.getListItemAncestor(box);
-      const entry = listItem && this.dataModel.item(listItem.listIndex);
+    const boxes =
+        Array.from(this.querySelectorAll<HTMLElement>('.img-container'));
+    assert(this.metadataModel_);
+    assert(this.volumeManager_);
+    for (const box of boxes) {
+      const listItem = this.getListItemAncestor(box)!;
+      const entry = listItem && this.dataModel!.item(listItem.listIndex);
       if (!entry || urls.indexOf(entry.toURL()) === -1) {
         continue;
       }
 
-      listItem = /** @type {!FileGrid.Item} */ (listItem);
       this.decorateThumbnailBox_(listItem, entry);
       this.updateSharedStatus_(listItem, entry);
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      const metadata = this.metadataModel_.getCache(
+      const metadata = this.metadataModel_!.getCache(
                            [entry],
                            [
                              'availableOffline',
@@ -857,16 +685,12 @@ export class FileGrid extends Grid {
                              'progress',
                              'syncCompletedTime',
                            ])[0] ||
-          {};
-      // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
-      // parameter of type 'MetadataItem'.
+          {} as MetadataItem;
       filelist.updateInlineStatus(listItem, metadata);
       listItem.toggleAttribute(
           'disabled',
           filelist.isDlpBlocked(
-              // @ts-ignore: error TS2345: Argument of type 'MetadataModel |
-              // null' is not assignable to parameter of type 'MetadataModel'.
-              entry, assert(this.metadataModel_), assert(this.volumeManager_)));
+              entry, this.metadataModel_, this.volumeManager_));
     }
     this.updateGroupHeading_();
   }
@@ -875,47 +699,36 @@ export class FileGrid extends Grid {
    * Redraws the UI. Skips multiple consecutive calls.
    */
   relayout() {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
-    this.relayoutRateLimiter_.run();
+    this.relayoutRateLimiter_!.run();
   }
 
   /**
    * Redraws the UI immediately.
-   * @private
    */
-  relayoutImmediately_() {
-    // @ts-ignore: error TS2339: Property 'startBatchUpdates' does not exist on
-    // type 'FileGrid'.
+  private relayoutImmediately_() {
     this.startBatchUpdates();
     this.columns = 0;
-    // @ts-ignore: error TS2339: Property 'redraw' does not exist on type
-    // 'FileGrid'.
     this.redraw();
-    // @ts-ignore: error TS2339: Property 'endBatchUpdates' does not exist on
-    // type 'FileGrid'.
     this.endBatchUpdates();
     dispatchSimpleEvent(this, 'relayout');
   }
 
   /**
    * Decorates thumbnail.
-   * @param {ListItem} li List item.
-   * @param {!Entry} entry Entry to render a thumbnail for.
-   * @private
+   * @param  entry Entry to render a thumbnail for.
    */
-  decorateThumbnail_(li, entry) {
+  private decorateThumbnail_(li: ListItem, entry: Entry) {
     li.className = 'thumbnail-item';
+    assert(this.metadataModel_);
+    assert(this.volumeManager_);
     if (entry) {
       filelist.decorateListItem(
-          // @ts-ignore: error TS2345: Argument of type 'MetadataModel | null'
-          // is not assignable to parameter of type 'MetadataModel'.
-          li, entry, assert(this.metadataModel_), assert(this.volumeManager_));
+          li, entry, this.metadataModel_, this.volumeManager_);
     }
 
     const frame = li.ownerDocument.createElement('div');
     frame.className = 'thumbnail-frame';
     li.appendChild(frame);
-
 
     const box = li.ownerDocument.createElement('div');
     box.classList.add('img-container', 'no-thumbnail');
@@ -924,7 +737,6 @@ export class FileGrid extends Grid {
     const bottom = li.ownerDocument.createElement('div');
     bottom.className = 'thumbnail-bottom';
 
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const metadata = this.metadataModel_.getCache(
                          [entry],
                          [
@@ -936,16 +748,12 @@ export class FileGrid extends Grid {
                            'progress',
                            'syncCompletedTime',
                          ])[0] ||
-        {};
+        {} as MetadataItem;
 
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const detailIcon = filelist.renderFileTypeIcon(
-        // @ts-ignore: error TS2339: Property 'contentMimeType' does not exist
-        // on type '{}'.
         li.ownerDocument, entry, locationInfo, metadata.contentMimeType);
 
-    // For FilesNg we add the checkmark in the same location.
     const checkmark = li.ownerDocument.createElement('div');
     checkmark.className = 'detail-checkmark';
     detailIcon.appendChild(checkmark);
@@ -954,8 +762,6 @@ export class FileGrid extends Grid {
       bottom.appendChild(filelist.renderIconBadge(li.ownerDocument));
     }
     bottom.appendChild(
-        // @ts-ignore: error TS2345: Argument of type 'EntryLocation | null' is
-        // not assignable to parameter of type 'EntryLocation'.
         filelist.renderFileNameLabel(li.ownerDocument, entry, locationInfo));
     frame.appendChild(bottom);
     li.setAttribute('file-name', util.getEntryLabel(locationInfo, entry));
@@ -970,20 +776,16 @@ export class FileGrid extends Grid {
       this.decorateThumbnailBox_(assertInstanceof(li, HTMLLIElement), entry);
     }
     this.updateSharedStatus_(li, entry);
-    // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
-    // parameter of type 'MetadataItem'.
     filelist.updateInlineStatus(li, metadata);
   }
 
   /**
    * Decorates the box containing a centered thumbnail image.
    *
-   * @param {!HTMLLIElement} li List item which contains the box to be
-   *     decorated.
-   * @param {Entry} entry Entry which thumbnail is generating for.
-   * @private
+   * @param li List item which contains the box to be decorated.
+   * @param entry Entry which thumbnail is generating for.
    */
-  decorateThumbnailBox_(li, entry) {
+  private decorateThumbnailBox_(li: HTMLLIElement, entry: Entry) {
     const box =
         assertInstanceof(li.querySelector('.img-container'), HTMLDivElement);
 
@@ -994,13 +796,13 @@ export class FileGrid extends Grid {
 
     // Set thumbnail if it's already in cache, and the thumbnail data is not
     // empty.
-    const thumbnailData = this.listThumbnailLoader_ ?
-        this.listThumbnailLoader_.getThumbnailFromCache(entry) :
-        null;
+    const thumbnailData =
+        this.listThumbnailLoader_?.getThumbnailFromCache(entry);
+    assert(this.metadataModel_);
     const mimeType =
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
-            .contentMimeType;
+        this.metadataModel_.getCache(
+                               [entry],
+                               ['contentMimeType'])[0]!.contentMimeType;
     if (thumbnailData && thumbnailData.dataUrl) {
       FileGrid.setThumbnailImage_(
           box, entry, thumbnailData.dataUrl, (thumbnailData.width || 0),
@@ -1014,18 +816,16 @@ export class FileGrid extends Grid {
 
   /**
    * Added 'shared' class to icon and placeholder of a folder item.
-   * @param {!HTMLLIElement} li The grid item.
-   * @param {!Entry} entry File entry for the grid item.
-   * @private
+   * @param  li The grid item.
+   * @param  entry File entry for the grid item.
    */
-  updateSharedStatus_(li, entry) {
+  private updateSharedStatus_(li: ListItem, entry: Entry) {
     if (!entry.isDirectory) {
       return;
     }
 
     const shared =
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        !!this.metadataModel_.getCache([entry], ['shared'])[0].shared;
+        !!this.metadataModel_!.getCache([entry], ['shared'])[0]!.shared;
     const box = li.querySelector('.img-container');
     if (box) {
       box.classList.toggle('shared', shared);
@@ -1039,143 +839,126 @@ export class FileGrid extends Grid {
   /**
    * Handles the splice event of the data model to change the view based on
    * whether image files is dominant or not in the directory.
-   * @private
    */
-  onSplice_() {
+  private onSplice_() {
     // When adjusting search parameters, |dataModel| is transiently empty.
     // Updating whether image-dominant is active at these times can cause
     // spurious changes. Avoid this problem by not updating whether
     // image-dominant is active when |dataModel| is empty.
-    if (this.dataModel.getFileCount() === 0 &&
-        this.dataModel.getFolderCount() === 0) {
+    assert(this.dataModel);
+    const fileListModel = this.dataModel;
+    if (fileListModel.getFileCount() === 0 &&
+        fileListModel.getFolderCount() === 0) {
       return;
     }
-    this.classList.toggle('image-dominant', this.dataModel.isImageDominant());
   }
 
-  /**
-   * @private
-   */
-  onSorted_() {
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+  private onSorted_() {
+    const fileListModel = this.dataModel;
     const hasGroupHeadingAfterSort = fileListModel.shouldShowGroupHeading();
     // Sort doesn't trigger redraw sometimes, e.g. if we sort by Name for now,
     // then we sort by time, if the list order doesn't change, no permuted event
     // is triggered, thus no redraw is triggered. In this scenario, we need to
     // manually trigger a redraw to remove/add the group heading.
     if (hasGroupHeadingAfterSort !== fileListModel.hasGroupHeadingBeforeSort) {
-      // @ts-ignore: error TS2339: Property 'redraw' does not exist on type
-      // 'FileGrid'.
       this.redraw();
     }
   }
 
   /**
    * Sets thumbnail image to the box.
-   * @param {!HTMLDivElement} box A div element to hold thumbnails.
-   * @param {!Entry} entry An entry of the thumbnail.
-   * @param {string} dataUrl Data url of thumbnail.
-   * @param {number} width Width of thumbnail.
-   * @param {number} height Height of thumbnail.
-   * @param {string=} opt_mimeType Optional mime type for the image.
-   * @private
+   * @param box A div element to hold thumbnails.
+   * @param entry An entry of the thumbnail.
+   * @param dataUrl Data url of thumbnail.
+   * @param width Width of thumbnail.
+   * @param height Height of thumbnail.
+   * @param mimeType Optional mime type for the image.
    */
-  static setThumbnailImage_(box, entry, dataUrl, width, height, opt_mimeType) {
+  private static setThumbnailImage_(
+      box: HTMLDivElement, entry: Entry, dataUrl: string, width: number,
+      height: number, mimeType?: string) {
     const thumbnail = box.ownerDocument.createElement('div');
     thumbnail.classList.add('thumbnail');
     box.classList.toggle('no-thumbnail', false);
 
     // If the image is JPEG or the thumbnail is larger than the grid size,
     // resize it to cover the thumbnail box.
-    const type = FileType.getType(entry, opt_mimeType);
+    const type = FileType.getType(entry, mimeType);
     if ((type.type === 'image' && type.subtype === 'JPEG') ||
-        width > FileGrid.GridSize() || height > FileGrid.GridSize()) {
+        width > gridSize() || height > gridSize()) {
       thumbnail.style.backgroundSize = 'cover';
     }
 
     thumbnail.style.backgroundImage = 'url(' + dataUrl + ')';
 
-    const oldThumbnails = box.querySelectorAll('.thumbnail');
-    for (let i = 0; i < oldThumbnails.length; i++) {
-      // @ts-ignore: error TS2345: Argument of type 'Element | undefined' is not
-      // assignable to parameter of type 'Node'.
-      box.removeChild(oldThumbnails[i]);
+    const oldThumbnails = Array.from(box.querySelectorAll('.thumbnail'));
+    for (const oldThumbnail of oldThumbnails) {
+      box.removeChild(oldThumbnail);
     }
 
     box.appendChild(thumbnail);
   }
 
-
   /**
    * Clears thumbnail image from the box.
-   * @param {!HTMLDivElement} box A div element to hold thumbnails.
-   * @private
+   * @param box A div element to hold thumbnails.
    */
-  static clearThumbnailImage_(box) {
-    const oldThumbnails = box.querySelectorAll('.thumbnail');
-    for (let i = 0; i < oldThumbnails.length; i++) {
-      // @ts-ignore: error TS2345: Argument of type 'Element | undefined' is not
-      // assignable to parameter of type 'Node'.
-      box.removeChild(oldThumbnails[i]);
+  private static clearThumbnailImage_(box: HTMLDivElement) {
+    const oldThumbnails = Array.from(box.querySelectorAll('.thumbnail'));
+    for (const oldThumbnail of oldThumbnails) {
+      box.removeChild(oldThumbnail);
     }
     box.classList.toggle('no-thumbnail', true);
-    return;
   }
 
   /**
    * Sets a generic thumbnail on the box.
-   * @param {!HTMLDivElement} box A div element to hold thumbnails.
-   * @param {!Entry} entry An entry of the thumbnail.
-   * @param {string=} opt_mimeType Optional mime type for the file.
-   * @private
+   * @param box A div element to hold thumbnails.
+   * @param entry An entry of the thumbnail.
+   * @param mimeType Optional mime type for the file.
    */
-  setGenericThumbnail_(box, entry, opt_mimeType) {
+  private setGenericThumbnail_(
+      box: HTMLDivElement, entry: Entry, mimeType?: string) {
     if (entry.isDirectory) {
-      // There is no space to show the thumbnail so don't adde one for Jelly.
+      // There is no space to show the thumbnail so don't add one for Jelly.
       if (!isJellyEnabled()) {
         box.setAttribute('generic-thumbnail', 'folder');
       }
-    } else if (FileType.isEncrypted(entry, opt_mimeType)) {
+    } else if (FileType.isEncrypted(entry, mimeType)) {
       box.setAttribute('generic-thumbnail', 'encrypted');
       box.setAttribute('aria-label', str('ENCRYPTED_ICON_TOOLTIP'));
-      // @ts-ignore: error TS2304: Cannot find name 'FilesTooltip'.
-      /** @type {!FilesTooltip} */ (document.querySelector('files-tooltip'))
-          .addTarget(box);
+      document.querySelector<FilesTooltip>('files-tooltip')!.addTarget(box);
     } else {
       box.classList.toggle('no-thumbnail', true);
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      const locationInfo = this.volumeManager_.getLocationInfo(entry);
+      const locationInfo = this.volumeManager_!.getLocationInfo(entry);
       const rootType = locationInfo && locationInfo.rootType || undefined;
-      const icon = FileType.getIcon(entry, opt_mimeType, rootType);
+      const icon = FileType.getIcon(entry, mimeType, rootType);
       box.setAttribute('generic-thumbnail', icon);
     }
   }
 
   /**
-   * Returns whether the drag event is inside a file entry in the list (and not
-   * the background padding area).
-   * @param {MouseEvent} event Drag start event.
-   * @return {boolean} True if the mouse is over an element in the list, False
-   *     if
-   *                   it is in the background.
+   * Returns whether the drag event is inside a entry in the list (and not the
+   * background padding area).
+   * @param event Drag start event.
+   * @return True if the mouse is over an element in the list, False if it is in
+   *     the background.
    */
-  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
-  // '@override' tag because it overrides a member in the base class 'Grid'.
-  hasDragHitElement(event) {
+  hasDragHitElement(event: MouseEvent): boolean {
     const pos = DragSelector.getScrolledPosition(this, event);
-    // @ts-ignore: error TS2339: Property 'y' does not exist on type 'Object'.
+    if (!pos) {
+      return false;
+    }
     return this.getHitElements(pos.x, pos.y).length !== 0;
   }
 
   /**
    * Obtains if the drag selection should be start or not by referring the mouse
    * event.
-   * @param {MouseEvent} event Drag start event.
-   * @return {boolean} True if the mouse is hit to the background of the list.
+   * @param event Drag start event.
+   * @return True if the mouse is hit to the background of the list.
    */
-  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
-  // '@override' tag because it overrides a member in the base class 'Grid'.
-  shouldStartDragSelection(event) {
+  shouldStartDragSelection(event: MouseEvent): boolean {
     // Start dragging area if the drag starts outside of the contents of the
     // grid.
     return !this.hasDragHitElement(event);
@@ -1188,13 +971,9 @@ export class FileGrid extends Grid {
    * bottom of grid items is greater than or equal to y. Otherwise, this returns
    * index of the last row in which top of grid items is less than or equal to
    * y.
-   * @param {number} y
-   * @param {boolean} isStart
-   * @return {number}
-   * @private
    */
-  getHitRowIndex_(y, isStart) {
-    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+  private getHitRowIndex_(y: number, isStart: boolean): number {
+    const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
     let currentHeight = 0;
@@ -1203,13 +982,10 @@ export class FileGrid extends Grid {
     const yAfterShift = y + shift;
     for (let groupIndex = 0; groupIndex < groupBySnapshot.length;
          groupIndex++) {
-      const group = groupBySnapshot[groupIndex];
-      // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
+      const group = groupBySnapshot[groupIndex]!;
       const groupItemCount = group.endIndex - group.startIndex + 1;
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       const groupRowCount = Math.ceil(groupItemCount / this.columns);
       const groupHeight = this.getGroupHeadingHeight_(groupIndex) +
-          // @ts-ignore: error TS18048: 'group' is possibly 'undefined'.
           groupRowCount * this.getGroupItemHeight_(group.group);
       if (yAfterShift < currentHeight + groupHeight) {
         // The y falls into the current group.
@@ -1224,8 +1000,6 @@ export class FileGrid extends Grid {
             curRow + groupRowCount - 1,
             curRow +
                 Math.floor(
-                    // @ts-ignore: error TS18048: 'group' is possibly
-                    // 'undefined'.
                     yInCurGroup / this.getGroupItemHeight_(group.group)));
       }
       currentHeight += groupHeight;
@@ -1241,12 +1015,8 @@ export class FileGrid extends Grid {
    * left of grid items is greater than or equal to x. Otherwise, this returns
    * index of the last column in which right of grid items is less than or equal
    * to x.
-   * @param {number} x
-   * @param {boolean} isStart
-   * @return {number}
-   * @private
    */
-  getHitColumnIndex_(x, isStart) {
+  private getHitColumnIndex_(x: number, isStart: boolean): number {
     const itemWidth = this.getItemWidth_();
     const shift = isStart ? 0 : -this.getItemMarginLeft_();
     return Math.floor((x + shift) / itemWidth);
@@ -1258,20 +1028,21 @@ export class FileGrid extends Grid {
    *
    * We should match its argument interface with FileList.getHitElements.
    *
-   * @param {number} x X coordinate value.
-   * @param {number} y Y coordinate value.
-   * @param {number=} opt_width Width of the coordinate.
-   * @param {number=} opt_height Height of the coordinate.
-   * @return {Array<number>} Index list of hit elements.
+   * @param x X coordinate value.
+   * @param y Y coordinate value.
+   * @param width Width of the coordinate.
+   * @param height Height of the coordinate.
+   * @return Indexes of the hit elements.
    */
-  getHitElements(x, y, opt_width, opt_height) {
+  getHitElements(x: number, y: number, width?: number, height?: number):
+      number[] {
     const currentSelection = [];
-    // @ts-ignore: error TS18048: 'opt_width' is possibly 'undefined'.
-    const startXWithPadding = isRTL() ? this.clientWidth - (x + opt_width) : x;
+    const startXWithPadding =
+        isRTL() ? this.clientWidth - (x + (width ?? 0)) : x;
     const startX = Math.max(0, startXWithPadding - this.paddingStart_);
-    const endX = startX + (opt_width ? opt_width - 1 : 0);
+    const endX = startX + (width ? width - 1 : 0);
     const top = Math.max(0, y - this.paddingTop_);
-    const bottom = top + (opt_height ? opt_height - 1 : 0);
+    const bottom = top + (height ? height - 1 : 0);
 
     const firstRow = this.getHitRowIndex_(top, /* isStart= */ true);
     const lastRow = this.getHitRowIndex_(bottom, /* isStart= */ false);
@@ -1281,7 +1052,7 @@ export class FileGrid extends Grid {
     for (let row = firstRow; row <= lastRow; row++) {
       for (let col = firstColumn; col <= lastColumn; col++) {
         const index = this.getItemIndex(row, col);
-        if (0 <= index && index < this.dataModel.length) {
+        if (0 <= index && index < this.dataModel!.length) {
           currentSelection.push(index);
         }
       }
@@ -1292,123 +1063,78 @@ export class FileGrid extends Grid {
 
 /**
  * Grid size, in "px".
- * @return {number}
  */
-FileGrid.GridSize = () => {
+function gridSize(): number {
   return isJellyEnabled() ? 160 : 180;
-};
+}
 
-FileGrid.Item = class extends ListItem {
-  constructor() {
-    super();
-    throw new Error('Use FileGrid.Item.decorate');
-  }
-
+class FileGridItem extends ListItem {
   /**
-   * @return {string} Label of the item.
+   * Label of the item.
    */
-  // @ts-ignore: error TS4119: This member must have a JSDoc comment with an
-  // '@override' tag because it overrides a member in the base class 'ListItem'.
-  get label() {
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
-    return this.querySelector('filename-label').textContent;
+  override get label(): string {
+    return this.querySelector('filename-label')?.textContent ?? '';
   }
 
-  // @ts-ignore: error TS6133: 'newLabel' is declared but its value is never
-  // read.
-  set label(newLabel) {
+  override set label(_newLabel: string) {
     // no-op setter. List calls this setter but Files app doesn't need it.
   }
 
-  /**
-   * @override
-   */
-  decorate() {
+  override decorate() {
     super.decorate();
     // Override the default role 'listitem' to 'option' to match the parent's
     // role (listbox).
     this.setAttribute('role', 'option');
     const nameId = this.id + '-entry-name';
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
-    this.querySelector('.entry-name').setAttribute('id', nameId);
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
-    this.querySelector('.img-container')
-        .setAttribute('aria-labelledby', nameId);
+    this.querySelector('.entry-name')!.setAttribute('id', nameId);
+    this.querySelector('.img-container')!.setAttribute(
+        'aria-labelledby', nameId);
     this.setAttribute('aria-labelledby', nameId);
   }
-};
+}
 
 /**
  * Selection controller for the file grid.
  */
 export class FileGridSelectionController extends GridSelectionController {
+  private readonly tapHandler_ = new FileTapHandler();
   /**
-   * @param {!ListSelectionModel} selectionModel The selection model to
-   *     interact with.
-   * @param {!Grid} grid The grid to interact with.
+   * @param selectionModel The selection model to interact with.
+   * @param grid The grid to interact with.
    */
-  constructor(selectionModel, grid) {
+  constructor(selectionModel: ListSelectionModel, grid: FileGrid) {
     super(selectionModel, grid);
-
-    /**
-     * @type {!FileTapHandler}
-     * @const
-     */
-    this.tapHandler_ = new FileTapHandler();
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
-  handlePointerDownUp(e, index) {
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'ListSelectionController'.
+  override handlePointerDownUp(e: Event, index: number) {
     filelist.handlePointerDownUp.call(this, e, index);
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
-  handleTouchEvents(e, index) {
+  override handleTouchEvents(e: Event, index: number) {
+    assert(e);
     if (this.tapHandler_.handleTouchEvents(
-            // @ts-ignore: error TS2769: No overload matches this call.
-            assert(e), index, filelist.handleTap.bind(this))) {
+            e, index, filelist.handleTap.bind(this))) {
       filelist.focusParentList(e);
     }
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
-  handleKeyDown(e) {
-    // @ts-ignore: error TS2345: Argument of type 'this' is not assignable to
-    // parameter of type 'ListSelectionController'.
+  override handleKeyDown(e: KeyboardEvent) {
     filelist.handleKeyDown.call(this, e);
   }
 
-  /** @return {!FileGrid} */
-  get filesView() {
-    // @ts-ignore: error TS2339: Property 'grid_' does not exist on type
-    // 'FileGridSelectionController'.
-    return /** @type {!FileGrid} */ (this.grid_);
+  get filesView(): FileGrid {
+    return this.grid_ as FileGrid;
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
-  getIndexBelow(index) {
-    // @ts-ignore: error TS2339: Property 'isAccessibilityEnabled' does not
-    // exist on type 'FileGridSelectionController'.
+  override getIndexBelow(index: number): number {
     if (this.isAccessibilityEnabled()) {
-      // @ts-ignore: error TS2339: Property 'getIndexAfter' does not exist on
-      // type 'FileGridSelectionController'.
       return this.getIndexAfter(index);
     }
-    // @ts-ignore: error TS2339: Property 'getLastIndex' does not exist on type
-    // 'FileGridSelectionController'.
     if (index === this.getLastIndex()) {
       return -1;
     }
 
-    // @ts-ignore: error TS2339: Property 'grid_' does not exist on type
-    // 'FileGridSelectionController'.
-    const grid = /** @type {!FileGrid} */ (this.grid_);
+    const grid = this.filesView;
     const row = grid.getItemRow(index);
     const col = grid.getItemColumn(index);
     const nextIndex = grid.getItemIndex(row + 1, col);
@@ -1417,12 +1143,10 @@ export class FileGridSelectionController extends GridSelectionController {
       // columns to get the column (index `col`), and `row + 1` must be the
       // last row of the group. We just need to return the last index of that
       // group.
-      const fileListModel = /** @type {FileListModel} */ (grid.dataModel);
-      const groupBySnapshot = fileListModel.getGroupBySnapshot();
+      const groupBySnapshot = grid.dataModel.getGroupBySnapshot();
       let curRow = 0;
       for (const group of groupBySnapshot) {
         const groupItemCount = group.endIndex - group.startIndex + 1;
-        // @ts-ignore: error TS18048: 'grid.columns' is possibly 'undefined'.
         const groupRowCount = Math.ceil(groupItemCount / grid.columns);
         if (row + 1 < curRow + groupRowCount) {
           // The row falls into the current group. Return the last index in the
@@ -1431,28 +1155,20 @@ export class FileGridSelectionController extends GridSelectionController {
         }
         curRow += groupRowCount;
       }
-      return grid.dataModel.length - 1;
+      return grid.dataModel!.length - 1;
     }
     return nextIndex;
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'index' implicitly has an 'any' type.
-  getIndexAbove(index) {
-    // @ts-ignore: error TS2339: Property 'isAccessibilityEnabled' does not
-    // exist on type 'FileGridSelectionController'.
+  override getIndexAbove(index: number) {
     if (this.isAccessibilityEnabled()) {
-      // @ts-ignore: error TS2551: Property 'getIndexBefore' does not exist on
-      // type 'FileGridSelectionController'. Did you mean 'getIndexBelow'?
       return this.getIndexBefore(index);
     }
     if (index === 0) {
       return -1;
     }
 
-    // @ts-ignore: error TS2339: Property 'grid_' does not exist on type
-    // 'FileGridSelectionController'.
-    const grid = /** @type {!FileGrid} */ (this.grid_);
+    const grid = this.filesView;
     const row = grid.getItemRow(index);
     // First row, no items above, just return the first index.
     if (row - 1 < 0) {

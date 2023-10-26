@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {getFile} from '../../common/js/api.js';
+import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {isFakeEntry, isSameEntry} from '../../common/js/entry_utils.js';
 import {strf, UserCanceledError, util} from '../../common/js/util.js';
@@ -16,6 +17,7 @@ import {FileSelectionHandler} from './file_selection.js';
 import {ConfirmDialog} from './ui/dialogs.js';
 import {FilesAlertDialog} from './ui/files_alert_dialog.js';
 import {ListContainer} from './ui/list_container.js';
+import {ListSelectionModel} from './ui/list_selection_model.js';
 
 /**
  * Controller to handle naming.
@@ -172,8 +174,9 @@ export class NamingController {
     }
     const label = item.querySelector('.filename-label');
     const input = this.listContainer_.renameInput;
-    const currentEntry =
-        this.listContainer_.currentList.dataModel.item(item.listIndex);
+    const dataModel = /** @type {!ArrayDataModel} */ (
+        this.listContainer_.currentList.dataModel);
+    const currentEntry = dataModel.item(item.listIndex);
 
     // @ts-ignore: error TS18047: 'label' is possibly 'null'.
     input.value = label.textContent;
@@ -357,8 +360,11 @@ export class NamingController {
         await this.directoryModel_.onRenameEntry(entry, assert(newEntry));
       }
 
+      const selectionModel = /** @type {!ListSelectionModel} */ (
+          this.listContainer_.currentList.selectionModel);
+
       // Select new entry.
-      this.listContainer_.currentList.selectionModel.selectedIndex =
+      selectionModel.selectedIndex =
           this.directoryModel_.getFileList().indexOf(newEntry);
       // Force to update selection immediately.
       this.selectionHandler_.onFileSelectionChanged();

@@ -64,8 +64,8 @@ export class DragSelector {
    * mouse event.
    *
    * @param {HTMLElement} element Element that has the scroll bars.
-   * @param {Event} event The mouse event.
-   * @return {Object} Scrolled position.
+   * @param {MouseEvent} event The mouse event.
+   * @return {?{x:number, y:number}} Scrolled position.
    */
   static getScrolledPosition(element, event) {
     // @ts-ignore: error TS2339: Property 'cachedBounds' does not exist on type
@@ -77,8 +77,6 @@ export class DragSelector {
       // @ts-ignore: error TS2339: Property 'cachedBounds' does not exist on
       // type 'HTMLElement'.
       if (!element.cachedBounds) {
-        // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-        // 'Object'.
         return null;
       }
     }
@@ -86,11 +84,7 @@ export class DragSelector {
     // 'HTMLElement'.
     const rect = element.cachedBounds;
     return {
-      // @ts-ignore: error TS2339: Property 'clientX' does not exist on type
-      // 'Event'.
       x: event.clientX - rect.left + element.scrollLeft,
-      // @ts-ignore: error TS2339: Property 'clientY' does not exist on type
-      // 'Event'.
       y: event.clientY - rect.top + element.scrollTop,
     };
   }
@@ -101,7 +95,7 @@ export class DragSelector {
    *
    * @this {DragSelector}
    * @param {List} list List where the drag selection starts.
-   * @param {Event} event The dragstart event.
+   * @param {MouseEvent} event The dragstart event.
    */
   startDragSelection(list, event) {
     // Precondition check
@@ -158,7 +152,7 @@ export class DragSelector {
   /**
    * Handles the mousemove event.
    * @private
-   * @param {Event} event The mousemove event.
+   * @param {MouseEvent} event The mousemove event.
    */
   onMouseMove_(event) {
     event = /** @type {MouseEvent} */ (event);
@@ -286,10 +280,9 @@ export class DragSelector {
   /**
    * Handle the mouseup event.
    * @private
-   * @param {Event} event The mouseup event.
+   * @param {MouseEvent} event The mouseup event.
    */
   onMouseUp_(event) {
-    event = /** @type {MouseEvent} */ (event);
     this.onMouseMove_(event);
     this.target_.removeChild(this.border_);
     this.target_.ownerDocument.removeEventListener(

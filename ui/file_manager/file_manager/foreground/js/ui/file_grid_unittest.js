@@ -99,11 +99,11 @@ function setupFileGrid() {
   grid.dataModel = dataModel;
   /** @suppress {accessControls} modify protected method in test. */
   // Mock item size.
-  grid.getFileItemHeight_ = () => FILE_ITEM_HEIGHT;
-  grid.getFolderItemHeight_ = () => FOLDER_ITEM_HEIGHT;
-  grid.getItemWidth_ = () => ITEM_WIDTH;
-  grid.getItemMarginTop_ = () => ITEM_MARGIN_TOP;
-  grid.getItemMarginLeft_ = () => ITEM_MARGIN_LEFT;
+  grid['getFileItemHeight_'] = () => FILE_ITEM_HEIGHT;
+  grid['getFolderItemHeight_'] = () => FOLDER_ITEM_HEIGHT;
+  grid['getItemWidth_'] = () => ITEM_WIDTH;
+  grid['getItemMarginTop_'] = () => ITEM_MARGIN_TOP;
+  grid['getItemMarginLeft_'] = () => ITEM_MARGIN_LEFT;
   // 3 columns in each row.
   grid.columns = 3;
   return grid;
@@ -188,10 +188,7 @@ function groupByDirectory(fileListModel) {
 
 export function testGetItemTop() {
   const grid = setupFileGrid();
-  /** @suppress {accessControls} modify protected method in test. */
-  // @ts-ignore: error TS2341: Property 'getGroupHeadingHeight_' is private and
-  // only accessible within class 'FileGrid'.
-  grid.getGroupHeadingHeight_ = () => GROUP_HEADING_HEIGHT;
+  grid['getGroupHeadingHeight_'] = () => GROUP_HEADING_HEIGHT;
   const ROW_HEIGHT = FILE_ITEM_HEIGHT;
   // Enable group by modification time.
   groupByModificationTime(grid.dataModel);

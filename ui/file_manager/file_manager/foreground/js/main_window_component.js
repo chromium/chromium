@@ -27,6 +27,7 @@ import {Command} from './ui/command.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FileTapHandler} from './ui/file_tap_handler.js';
 import {ListContainer} from './ui/list_container.js';
+import {ListSelectionModel} from './ui/list_selection_model.js';
 
 /**
  * Component for the main window.
@@ -529,8 +530,9 @@ export class MainWindowComponent {
     for (let index = 0; index < dm.length; ++index) {
       const name = dm.item(index).name;
       if (name.substring(0, text.length).toLowerCase() == text) {
-        this.ui_.listContainer.currentList.selectionModel.selectedIndexes =
-            [index];
+        const selectionModel = /** @type {ListSelectionModel} */ (
+            this.ui_.listContainer.currentList.selectionModel);
+        selectionModel.selectedIndexes = [index];
         return;
       }
     }
