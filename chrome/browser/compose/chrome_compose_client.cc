@@ -17,6 +17,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -43,6 +44,8 @@ const char kComposeURL[] = "chrome://compose/";
 
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
     : content::WebContentsUserData<ChromeComposeClient>(*web_contents),
+      translate_language_provider_(new TranslateLanguageProvider()),
+      compose_enabling_(translate_language_provider_.get()),
       manager_(this),
       close_page_receiver_(this) {
   profile_ = Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
@@ -50,7 +53,7 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
 
   if (GetOptimizationGuide()) {
     std::vector<optimization_guide::proto::OptimizationType> types;
-    if (ComposeEnabling::IsEnabledForProfile(profile_)) {
+    if (compose_enabling_.IsEnabledForProfile(profile_)) {
       types.push_back(optimization_guide::proto::OptimizationType::COMPOSE);
     }
 
@@ -165,6 +168,29 @@ compose::ComposeManager& ChromeComposeClient::GetManager() {
   return manager_;
 }
 
+ComposeEnabling& ChromeComposeClient::GetComposeEnabling() {
+  return compose_enabling_;
+}
+
+bool ChromeComposeClient::ShouldTriggerPopup(std::string autocomplete_attribute,
+                                             autofill::FieldGlobalId field_id) {
+  // TODO(b/303502029): When we make an enum for return state, check to see if
+  // we have saved state for the current field, and offer the saved state
+  // bubble.
+  bool saved_state = !sessions_.empty();
+  translate::TranslateManager* translate_manager =
+      ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
+  return compose_enabling_.ShouldTriggerPopup(autocomplete_attribute, profile_,
+                                              translate_manager, saved_state);
+}
+
+bool ChromeComposeClient::ShouldTriggerContextMenu() {
+  translate::TranslateManager* translate_manager =
+      ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
+  return compose_enabling_.ShouldTriggerContextMenu(profile_,
+                                                    translate_manager);
+}
+
 optimization_guide::OptimizationGuideModelExecutor*
 ChromeComposeClient::GetModelExecutor() {
   return model_executor_for_test_.value_or(
@@ -197,7 +223,7 @@ compose::ComposeHintDecision ChromeComposeClient::GetOptimizationGuidanceForUrl(
     return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
   }
 
-  if (!ComposeEnabling::IsEnabledForProfile(profile_)) {
+  if (!compose_enabling_.IsEnabledForProfile(profile_)) {
     return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED;
   }
 

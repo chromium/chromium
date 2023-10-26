@@ -37,6 +37,9 @@ class ComposeClient {
       std::optional<autofill::AutofillClient::PopupScreenLocation>
           popup_screen_location,
       ComposeCallback callback) = 0;
+  virtual bool ShouldTriggerPopup(std::string autocomplete_attribute,
+                                  autofill::FieldGlobalId field_id) = 0;
+  virtual bool ShouldTriggerContextMenu() = 0;
 };
 
 }  // namespace compose

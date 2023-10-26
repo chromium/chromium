@@ -5,20 +5,34 @@
 #ifndef CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_
 #define CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_
 
+#include "chrome/browser/compose/translate_language_provider.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/translate/core/browser/translate_manager.h"
 
 class ComposeEnabling {
  public:
-  static bool IsEnabledForProfile(Profile* profile);
-  static void SetEnabledForTesting();
-  static void ClearEnabledForTesting();
+  explicit ComposeEnabling(
+      TranslateLanguageProvider* translate_language_provider);
+  ~ComposeEnabling();
+  bool IsEnabledForProfile(Profile* profile);
+  bool IsEnabled(Profile* profile, signin::IdentityManager* identity_manager);
+  void SetEnabledForTesting();
+  void ClearEnabledForTesting();
+  std::string GetLanguage();
+  bool ShouldTriggerPopup(std::string_view autocomplete_attribute,
+                          Profile* profile,
+                          translate::TranslateManager* translate_manager,
+                          bool has_saved_state);
+  bool ShouldTriggerContextMenu(Profile* profile,
+                                translate::TranslateManager* translate_manager);
 
  private:
-  friend class ComposeEnablingTest;
-  static bool enabled_for_testing_;
-  static bool IsEnabled(Profile* profile,
-                        signin::IdentityManager* identity_manager);
+  raw_ptr<TranslateLanguageProvider> translate_language_provider_;
+  bool enabled_for_testing_;
+
+  bool PageLevelChecks(Profile* profile,
+                       translate::TranslateManager* translate_manager);
 };
 
 #endif  // CHROME_BROWSER_COMPOSE_COMPOSE_ENABLING_H_

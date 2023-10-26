@@ -7977,6 +7977,8 @@ static_library("browser") {
       "compose/compose_enabling.h",
       "compose/compose_session.cc",
       "compose/compose_session.h",
+      "compose/translate_language_provider.cc",
+      "compose/translate_language_provider.h",
     ]
 
     deps += [

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/compose/compose_session.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -56,6 +57,10 @@ class ChromeComposeClient
   // triggered the close.
   void CloseUI(compose::mojom::CloseReason reason) override;
 
+  bool ShouldTriggerPopup(std::string autocomplete_attribute,
+                          autofill::FieldGlobalId field_id) override;
+  bool ShouldTriggerContextMenu() override;
+
   void BindComposeDialog(
       mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
           close_handler,
@@ -73,9 +78,13 @@ class ChromeComposeClient
   // to guide our decision to enable the feature and trigger the nudge.
   compose::ComposeHintDecision GetOptimizationGuidanceForUrl(const GURL& url);
 
+  ComposeEnabling& GetComposeEnabling();
+
  protected:
   optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuide();
+  std::unique_ptr<TranslateLanguageProvider> translate_language_provider_;
+  ComposeEnabling compose_enabling_;
 
  private:
   friend class content::WebContentsUserData<ChromeComposeClient>;

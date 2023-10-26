@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -16,13 +17,38 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/translate/core/browser/mock_translate_client.h"
+#include "components/translate/core/browser/mock_translate_driver.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::Return;
+
 namespace {
 constexpr char kEmail[] = "example@gmail.com";
+using translate::testing::MockTranslateClient;
+
+class MockTranslateLanguageProvider : public TranslateLanguageProvider {
+ public:
+  MOCK_METHOD(std::string,
+              GetSourceLanguage,
+              (translate::TranslateManager * translate_manager));
+};
+
+// Mock translate manager.  We need it for dependency injection.
+class MockTranslateManager : public translate::TranslateManager {
+ public:
+  MOCK_METHOD(translate::LanguageState*, GetLanguageState, ());
+  // Other methods are uninteresting, we don't want to mock them.  We use a
+  // NiceMock so there are no warnings if other methods are called.
+
+  explicit MockTranslateManager(translate::TranslateClient* translate_client)
+      : TranslateManager(translate_client, nullptr, nullptr) {}
+};
+
 }  // namespace
 
 class ComposeEnablingTest : public testing::Test {
@@ -46,10 +72,6 @@ class ComposeEnablingTest : public testing::Test {
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
-  bool IsEnabled(Profile* profile, signin::IdentityManager* identity_manager) {
-    return ComposeEnabling::IsEnabled(profile, identity_manager);
-  }
-
   void SetMsbbState(bool new_state) {
     PrefService* prefs = test_profile_->GetPrefs();
     prefs->SetBoolean(
@@ -57,25 +79,34 @@ class ComposeEnablingTest : public testing::Test {
         new_state);
   }
 
+  translate::TranslateDriver* translate_driver() { return &translate_driver_; }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<TestingProfile> test_profile_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
+  std::unique_ptr<ComposeEnabling> compose_enabling_;
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  translate::testing::MockTranslateDriver translate_driver_;
 };
 
 TEST_F(ComposeEnablingTest, EverythingDisabledTest) {
+  MockTranslateLanguageProvider mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
   scoped_feature_list_.InitAndDisableFeature(compose::features::kEnableCompose);
   // We intentionally don't call sign in to make our state not signed in.
   SetMsbbState(false);
-  EXPECT_FALSE(IsEnabled(test_profile_, identity_test_env_.identity_manager()));
+  EXPECT_FALSE(compose_enabling.IsEnabled(
+      test_profile_, identity_test_env_.identity_manager()));
 }
 
 TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
+  MockTranslateLanguageProvider mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
   // Ensure feature flag is off.
   scoped_feature_list_.InitAndDisableFeature(compose::features::kEnableCompose);
   // Sign in, with sync turned on.
@@ -83,33 +114,211 @@ TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
   // Turn on MSBB.
   SetMsbbState(true);
 
-  EXPECT_FALSE(IsEnabled(test_profile_, identity_test_env_.identity_manager()));
+  EXPECT_FALSE(compose_enabling.IsEnabled(
+      test_profile_, identity_test_env_.identity_manager()));
 }
 
 TEST_F(ComposeEnablingTest, MsbbDisabledTest) {
+  MockTranslateLanguageProvider mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
   // Turn on our chrome feature
   scoped_feature_list_.InitAndEnableFeature(compose::features::kEnableCompose);
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
   // MSBB turned off.
   SetMsbbState(false);
-  EXPECT_FALSE(IsEnabled(test_profile_, identity_test_env_.identity_manager()));
+  EXPECT_FALSE(compose_enabling.IsEnabled(
+      test_profile_, identity_test_env_.identity_manager()));
 }
 
 TEST_F(ComposeEnablingTest, NotSignedInTest) {
+  MockTranslateLanguageProvider mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
   // Turn on our chrome feature
   scoped_feature_list_.InitAndEnableFeature(compose::features::kEnableCompose);
   // Turn on MSBB.
   SetMsbbState(true);
-  EXPECT_FALSE(IsEnabled(test_profile_, identity_test_env_.identity_manager()));
+  EXPECT_FALSE(compose_enabling.IsEnabled(
+      test_profile_, identity_test_env_.identity_manager()));
 }
 
 TEST_F(ComposeEnablingTest, EverythingEnabledTest) {
+  MockTranslateLanguageProvider mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
   // Turn on our chrome feature
   scoped_feature_list_.InitAndEnableFeature(compose::features::kEnableCompose);
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
   // Turn on MSBB.
   SetMsbbState(true);
-  EXPECT_TRUE(IsEnabled(test_profile_, identity_test_env_.identity_manager()));
+  EXPECT_TRUE(compose_enabling.IsEnabled(
+      test_profile_, identity_test_env_.identity_manager()));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // We intentionally don't enable the feature.
+
+  // Set the language to something we support. "en" is English.
+  translate::testing::MockTranslateClient mock_translate_client(
+      translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  ON_CALL(mock_translate_language_provider,
+          GetSourceLanguage(&mock_translate_manager))
+      .WillByDefault(Return(std::string("en")));
+
+  EXPECT_FALSE(compose_enabling.ShouldTriggerContextMenu(
+      test_profile_, &mock_translate_manager));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable everything.
+  compose_enabling.SetEnabledForTesting();
+
+  // Set the mock language to something we don't support. "eo" is Esperanto.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  EXPECT_CALL(mock_translate_language_provider,
+              GetSourceLanguage(&mock_translate_manager))
+      .WillOnce(Return(std::string("eo")));
+
+  EXPECT_FALSE(compose_enabling.ShouldTriggerContextMenu(
+      test_profile_, &mock_translate_manager));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable everything.
+  compose_enabling.SetEnabledForTesting();
+
+  // Set the language to something we support.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  EXPECT_CALL(mock_translate_language_provider,
+              GetSourceLanguage(&mock_translate_manager))
+      .WillOnce(Return(std::string("en")));
+
+  EXPECT_TRUE(compose_enabling.ShouldTriggerContextMenu(
+      test_profile_, &mock_translate_manager));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // We intentionally don't enable the feature.
+  std::string autocomplete_attribute;
+  bool has_saved_state = false;
+
+  // Set the language to something we support. "en" is English.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  ON_CALL(mock_translate_language_provider,
+          GetSourceLanguage(&mock_translate_manager))
+      .WillByDefault(Return(std::string("en")));
+
+  EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+      autocomplete_attribute, test_profile_, &mock_translate_manager,
+      has_saved_state));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable the feature.
+  compose_enabling.SetEnabledForTesting();
+  std::string autocomplete_attribute;
+  bool has_saved_state = false;
+
+  // Set the mock language to something we don't support. "eo" is Esperanto.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  EXPECT_CALL(mock_translate_language_provider,
+              GetSourceLanguage(&mock_translate_manager))
+      .WillOnce(Return(std::string("eo")));
+
+  EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+      autocomplete_attribute, test_profile_, &mock_translate_manager,
+      has_saved_state));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerPopupAutocompleteTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable everything.
+  compose_enabling.SetEnabledForTesting();
+  // Autocomplete is set to off for this page.
+  std::string autocomplete_attribute("off");
+  bool has_saved_state = false;
+
+  // Set the language to something we support.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  ON_CALL(mock_translate_language_provider,
+          GetSourceLanguage(&mock_translate_manager))
+      .WillByDefault(Return(std::string("en")));
+
+  EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+      autocomplete_attribute, test_profile_, &mock_translate_manager,
+      has_saved_state));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerPopupSavedStateTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable everything..
+  compose_enabling.SetEnabledForTesting();
+  std::string autocomplete_attribute;
+  // We have saved state.
+  bool has_saved_state = true;
+
+  // Set the language to something we support.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  ON_CALL(mock_translate_language_provider,
+          GetSourceLanguage(&mock_translate_manager))
+      .WillByDefault(Return(std::string("en")));
+
+  EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+      autocomplete_attribute, test_profile_, &mock_translate_manager,
+      has_saved_state));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerPopupAllEnabledTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable everything.
+  compose_enabling.SetEnabledForTesting();
+  std::string autocomplete_attribute;
+  bool has_saved_state = false;
+
+  // Set the language to something we support.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  EXPECT_CALL(mock_translate_language_provider,
+              GetSourceLanguage(&mock_translate_manager))
+      .WillOnce(Return(std::string("en")));
+
+  EXPECT_TRUE(compose_enabling.ShouldTriggerPopup(
+      autocomplete_attribute, test_profile_, &mock_translate_manager,
+      has_saved_state));
 }

@@ -161,13 +161,22 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   GURL GetPageUrl() { return GURL("http://foo/1"); }
 
   void TearDown() override {
+    ClearEnabled();
     client_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
   }
 
-  void SetEnabled() { ComposeEnabling::SetEnabledForTesting(); }
+  void SetEnabled() {
+    if (client_ != nullptr) {
+      client_->GetComposeEnabling().SetEnabledForTesting();
+    }
+  }
 
-  void ClearEnabled() { ComposeEnabling::ClearEnabledForTesting(); }
+  void ClearEnabled() {
+    if (client_ != nullptr) {
+      client_->GetComposeEnabling().ClearEnabledForTesting();
+    }
+  }
 
  protected:
   compose_proto::ComposeRequest ComposeRequest(std::string user_input) {
@@ -480,7 +489,6 @@ TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceShowNudgeTest) {
   GURL example(kExampleURL);
   compose::ComposeHintDecision decision =
       client().GetOptimizationGuidanceForUrl(example);
-  ClearEnabled();
 
   // Verify response from CanApplyOptimization is as we expect.
   EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED,
@@ -512,7 +520,6 @@ TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceFeatureOffTest) {
   GURL example(kExampleURL);
   compose::ComposeHintDecision decision =
       client().GetOptimizationGuidanceForUrl(example);
-  ClearEnabled();
 
   // Verify response from CanApplyOptimization is as we expect.
   EXPECT_EQ(
@@ -545,7 +552,6 @@ TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceNoFeedbackTest) {
   GURL example(kExampleURL);
   compose::ComposeHintDecision decision =
       client().GetOptimizationGuidanceForUrl(example);
-  ClearEnabled();
 
   // Verify response from CanApplyOptimization is as we expect.
   EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED,
@@ -575,7 +581,6 @@ TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceNoComposeMetadataTest) {
   GURL example(kExampleURL);
   compose::ComposeHintDecision decision =
       client().GetOptimizationGuidanceForUrl(example);
-  ClearEnabled();
 
   // Verify response from CanApplyOptimization is as we expect.
   EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED,

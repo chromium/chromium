@@ -63,14 +63,13 @@ ComposeManagerImpl::~ComposeManagerImpl() = default;
 
 bool ComposeManagerImpl::ShouldOfferComposePopup(
     const autofill::FormFieldData& trigger_field) {
-  // TODO(b/300941076): Improve should-offer logic.
-  return IsEnabled();
+  return client_->ShouldTriggerPopup(trigger_field.autocomplete_attribute,
+                                     trigger_field.global_id());
 }
 
 bool ComposeManagerImpl::ShouldOfferComposeContextMenu() {
-  // TODO(b/300941076): Improve should-offer logic.
   // TODO(b/301371110): Pass in the field type here when it is ready.
-  return IsEnabled();
+  return client_->ShouldTriggerContextMenu();
 }
 
 bool ComposeManagerImpl::HasSavedState(

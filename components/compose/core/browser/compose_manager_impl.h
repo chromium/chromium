@@ -23,11 +23,11 @@ class ComposeManagerImpl : public ComposeManager {
 
   // ComposeManager:
   bool ShouldOfferComposeContextMenu() override;
-
-  // AutofillComposeDelegate
   bool ShouldOfferComposePopup(
       const autofill::FormFieldData& trigger_field) override;
   bool HasSavedState(const autofill::FieldGlobalId& trigger_field_id) override;
+
+  // AutofillComposeDelegate
   void OpenCompose(UiEntryPoint ui_entry_point,
                    const autofill::FormFieldData& trigger_field,
                    std::optional<PopupScreenLocation> popup_screen_location,
