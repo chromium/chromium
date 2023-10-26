@@ -6681,28 +6681,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.SplitViewOverviewSession.SplitViewOverviewSessionExitPoint"
+    name="Ash.SplitViewOverviewSession.SplitViewOverviewSessionExitPoint.{TabletOrClamshell}"
     enum="SplitViewOverviewSessionExitPoint" expires_after="2024-10-25">
   <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
-    Recorded at the exit point of the split view overview session. The recorded
-    enum indicates the reason that triggers the split view overview session
-    exit.
+    Recorded at the exit point of the split view overview session in
+    {TabletOrClamshell}. The recorded enum indicates the reason that triggers
+    the split view overview session exit.
   </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit"
+    name="Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit.{TabletOrClamshell}"
     enum="Boolean" expires_after="2024-10-25">
   <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
-    Recorded at the exit point of the split view overview session. Emits true if
-    the window layout setup is complete, false otherwise.
+    Recorded at the exit point of the split view overview session in
+    {TabletOrClamshell}. Emits true if the window layout setup is complete,
+    false otherwise.
   </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.SplitViewResize.AnimationSmoothness.DividerAnimation"

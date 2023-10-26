@@ -57,6 +57,13 @@ bool InClamshellSplitViewMode(SplitViewController* controller) {
          GetOverviewSession();
 }
 
+std::string BuildHistogramName(const char* const base_name) {
+  std::string histogram_name(base_name);
+  histogram_name.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
+                                                       : ".ClamshellMode");
+  return histogram_name;
+}
+
 }  // namespace
 
 SplitViewOverviewSession::SplitViewOverviewSession(
@@ -110,12 +117,12 @@ void SplitViewOverviewSession::RecordSplitViewOverviewSessionExitPointMetrics(
             SplitViewOverviewSessionExitPoint::kCompleteByActivating ||
         user_action == SplitViewOverviewSessionExitPoint::kSkip) {
       base::UmaHistogramBoolean(
-          kWindowLayoutCompleteOnSessionExit,
+          BuildHistogramName(kWindowLayoutCompleteOnSessionExit),
           user_action ==
               SplitViewOverviewSessionExitPoint::kCompleteByActivating);
     }
-    base::UmaHistogramEnumeration(kSplitViewOverviewSessionExitPoint,
-                                  user_action);
+    base::UmaHistogramEnumeration(
+        BuildHistogramName(kSplitViewOverviewSessionExitPoint), user_action);
   }
 }
 
