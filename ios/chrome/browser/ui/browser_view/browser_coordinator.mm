@@ -2398,15 +2398,10 @@ enum class ToolbarKind {
                                      forStep:(ParcelTrackingStep)step {
   web::WebState* activeWebState = self.activeWebState;
   CHECK(activeWebState);
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (!commerce::ShoppingServiceFactory::GetForBrowserState(browserState)
+  if (!commerce::ShoppingServiceFactory::GetForBrowserState(
+           self.browser->GetBrowserState())
            ->IsParcelTrackingEligible()) {
     return;
-  }
-  if (step == ParcelTrackingStep::kNewPackageTracked) {
-    feature_engagement::Tracker* engagementTracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(browserState);
-    engagementTracker->NotifyEvent(feature_engagement::events::kParcelTracked);
   }
   std::unique_ptr<ParcelTrackingInfobarDelegate> delegate =
       std::make_unique<ParcelTrackingInfobarDelegate>(
@@ -2420,10 +2415,6 @@ enum class ToolbarKind {
       InfobarType::kInfobarTypeParcelTracking, std::move(delegate));
   infobar_manager->AddInfoBar(std::move(infobar),
                               /*replace_existing=*/true);
-}
-
-- (void)showParcelTrackingIPH {
-  [_bubblePresenter presentParcelTrackingTipBubble];
 }
 
 #pragma mark - ParcelTrackingOptInCommands helpers

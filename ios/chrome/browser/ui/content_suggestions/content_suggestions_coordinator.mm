@@ -41,7 +41,6 @@
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
-#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -56,7 +55,6 @@
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -261,11 +259,6 @@
   self.contentSuggestionsViewController.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   self.contentSuggestionsViewController.setUpListViewDelegate = self;
-  self.contentSuggestionsViewController.layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
-  self.contentSuggestionsViewController.parcelTrackingCommandHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         ParcelTrackingOptInCommands);
 
   self.contentSuggestionsMediator.consumer =
       self.contentSuggestionsViewController;
