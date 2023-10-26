@@ -18,8 +18,9 @@ from wptserve.utils import isomorphic_decode, isomorphic_encode
 #         "<url>, body: <body>".
 #     "errors" is a list of an errors that occurred.
 #
-# A dispatch of "request_list" will return the "trackedRequests" dictionary
-# associated with the in uuid, as a JSON string.
+# A dispatch of "tracked_data" will return all tracked information associated
+# with the uuid, as a JSON string. The "errors" field should be checked by
+# the caller before checking other fields.
 #
 # A dispatch of "clean_up" will delete all information associated with the uuid.
 def main(request, response):
@@ -48,7 +49,7 @@ def main(request, response):
 
         # Return the list of entries in the stash. Need to add data back to the
         # stash first.
-        if dispatch == b"request_list":
+        if dispatch == b"tracked_data":
             stash.put(uuid, server_state)
             return simple_response(request, response, 200, b"OK",
                                    json.dumps(server_state))
@@ -66,7 +67,7 @@ def main(request, response):
 
         # Tracks a request that's expected to be a POST.
         # In addition to the method, check the Content-Type, which is currently
-        # always text/plain, and compare the body against the expected body.
+        # always text/plain. The request body is stored in trackedRequests.
         if dispatch == b"track_post":
             contentType = request.headers.get(b"Content-Type", b"missing")
             if request.method != "POST":
