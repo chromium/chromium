@@ -3298,6 +3298,10 @@ crbug.com/1126305 external/wpt/speculation-rules/prerender/restrictions.html [ S
 # This test is failing on Mac due to the race condition between visibility
 # change and prerender activation.
 crbug.com/1431109 [ Mac ] virtual/speculation-rules-prerender-target-hint/http/tests/inspector-protocol/prerender/prerender-status-update-with-target-hint.js [ Failure Pass ]
+# Tentatively allowed to fail to roll changes in the DevTools frontend.
+crbug.com/1478888 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Pass Failure ]
+crbug.com/1478888 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Pass Failure ]
+crbug.com/1478888 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Pass Failure ]
 
 ### See crbug.com/891427 comment near the top of this file:
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-004.svg [ Failure ]
