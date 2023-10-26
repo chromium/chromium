@@ -55,6 +55,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     static final WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_TO_TOP_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the dropdown should draw over top of the anchor view. */
+    static final WritableBooleanPropertyKey DRAW_OVER_ANCHOR = new WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 VISIBLE,
@@ -65,6 +68,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 DROPDOWN_HEIGHT_CHANGE_LISTENER,
                 DROPDOWN_SCROLL_LISTENER,
                 DROPDOWN_SCROLL_TO_TOP_LISTENER,
-                LIST_IS_FINAL
+                LIST_IS_FINAL,
+                DRAW_OVER_ANCHOR
             };
 }

@@ -34,6 +34,7 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_side_spacing_smallest">12dp</dimen>
     <dimen name="omnibox_suggestion_list_padding_top">12dp</dimen>
     <dimen name="omnibox_suggestion_list_padding_bottom">12dp</dimen>
+    <dimen name="omnibox_suggestion_list_toolbar_overlap">2dp</dimen>
     <dimen name="omnibox_min_space_above_window_bottom">84dp</dimen>
 
     <!-- NTP dimensions -->

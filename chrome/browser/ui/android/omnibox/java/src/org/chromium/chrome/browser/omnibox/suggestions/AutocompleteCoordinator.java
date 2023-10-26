@@ -110,6 +110,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
 
         listModel.set(SuggestionListProperties.EMBEDDER, dropdownEmbedder);
         listModel.set(SuggestionListProperties.VISIBLE, false);
+        listModel.set(SuggestionListProperties.DRAW_OVER_ANCHOR, false);
         listModel.set(SuggestionListProperties.SUGGESTION_MODELS, listItems);
 
         mMediator =

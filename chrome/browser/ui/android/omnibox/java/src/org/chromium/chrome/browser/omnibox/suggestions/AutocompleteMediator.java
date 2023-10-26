@@ -55,6 +55,7 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -204,6 +205,10 @@ class AutocompleteMediator
         var dialIntent = new Intent(Intent.ACTION_DIAL);
         OmniboxActionFactoryImpl.get()
                 .setDialerAvailable(!pm.queryIntentActivities(dialIntent, 0).isEmpty());
+        mListPropertyModel.set(
+                SuggestionListProperties.DRAW_OVER_ANCHOR,
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)
+                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
     }
 
     /** Initialize the Mediator with default set of suggestion processors. */

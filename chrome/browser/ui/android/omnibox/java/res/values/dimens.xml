@@ -88,6 +88,7 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_list_active_top_big_margin">16dp</dimen>
     <dimen name="omnibox_suggestion_list_non_active_top_small_margin">4dp</dimen>
     <dimen name="omnibox_suggestion_list_non_active_top_big_margin">12dp</dimen>
+    <dimen name="omnibox_suggestion_list_toolbar_overlap">0dp</dimen>
     <dimen name="omnibox_carousel_suggestion_padding">12dp</dimen>
     <dimen name="omnibox_carousel_suggestion_padding_smaller">5dp</dimen>
     <dimen name="omnibox_carousel_suggestion_padding_smallest">1dp</dimen>

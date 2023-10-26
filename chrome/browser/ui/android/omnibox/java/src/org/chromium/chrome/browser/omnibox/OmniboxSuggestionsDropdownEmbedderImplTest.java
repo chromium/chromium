@@ -51,6 +51,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     private static final int ANCHOR_WIDTH = 600;
     private static final int ANCHOR_HEIGHT = 80;
     private static final int ANCHOR_TOP = 31;
+    private static final int TABLET_OVERLAP = 2;
+
     private static final int ALIGNMENT_WIDTH = 400;
     // Sentinel value for mistaken use of alignment view top instead of left. If you see a 43, it's
     // probably because you used position[1] instead of position[0].
@@ -228,12 +230,13 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         assertTrue(mImpl.isTablet());
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        int expectedTop = ANCHOR_HEIGHT + ANCHOR_TOP - TABLET_OVERLAP;
         assertEquals(
                 new OmniboxAlignment(
                         ALIGNMENT_LEFT - sideSpacing,
-                        ANCHOR_HEIGHT + ANCHOR_TOP,
+                        expectedTop,
                         ALIGNMENT_WIDTH + 2 * sideSpacing,
-                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP),
+                        getExpectedHeight(expectedTop),
                         0,
                         0),
                 alignment);
@@ -286,12 +289,13 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         mImpl.onConfigurationChanged(newConfig);
         assertTrue(mImpl.isTablet());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
+        int expectedTop = ANCHOR_HEIGHT + ANCHOR_TOP - TABLET_OVERLAP;
         assertEquals(
                 new OmniboxAlignment(
                         ALIGNMENT_LEFT - sideSpacing,
-                        ANCHOR_HEIGHT + ANCHOR_TOP,
+                        expectedTop,
                         ALIGNMENT_WIDTH + 2 * sideSpacing,
-                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP),
+                        getExpectedHeight(expectedTop),
                         0,
                         0),
                 newAlignment);
@@ -356,12 +360,13 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(60).when(mHorizontalAlignmentView).getTop();
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        int expectedTop = ANCHOR_HEIGHT + ANCHOR_TOP - TABLET_OVERLAP;
         assertEquals(
                 new OmniboxAlignment(
                         ALIGNMENT_LEFT - sideSpacing,
-                        ANCHOR_HEIGHT + ANCHOR_TOP,
+                        expectedTop,
                         ALIGNMENT_WIDTH + 2 * sideSpacing,
-                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP),
+                        getExpectedHeight(expectedTop),
                         0,
                         0),
                 alignment);
@@ -384,12 +389,13 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         mImpl.recalculateOmniboxAlignment();
         int expectedWidth = ALIGNMENT_WIDTH + 2 * sideSpacing;
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        int expectedTop = ANCHOR_HEIGHT + ANCHOR_TOP - TABLET_OVERLAP;
         assertEquals(
                 new OmniboxAlignment(
                         -(ANCHOR_WIDTH - expectedWidth - ALIGNMENT_LEFT + sideSpacing),
-                        ANCHOR_HEIGHT + ANCHOR_TOP,
+                        expectedTop,
                         expectedWidth,
-                        getExpectedHeight(ANCHOR_HEIGHT + ANCHOR_TOP),
+                        getExpectedHeight(expectedTop),
                         0,
                         0),
                 alignment);
@@ -411,7 +417,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
 
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        int top = ANCHOR_HEIGHT + ANCHOR_TOP;
+        int top = ANCHOR_HEIGHT + ANCHOR_TOP - TABLET_OVERLAP;
         assertEquals(
                 new OmniboxAlignment(
                         ALIGNMENT_LEFT - sideSpacing,

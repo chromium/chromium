@@ -206,7 +206,11 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                     mAnchorView, mHorizontalAlignmentView, mPositionArray);
             if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)) {
                 // Case 1: tablets with revamp enabled. Width equal to alignment view and left
-                // equivalent to left of alignment view.
+                // equivalent to left of alignment view. Top minus a small overlap.
+                top -=
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.omnibox_suggestion_list_toolbar_overlap);
                 int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContext);
                 width = mHorizontalAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
 
