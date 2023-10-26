@@ -2079,7 +2079,7 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
     }
     case CSSSelector::kPseudoPart:
       DCHECK(part_names_);
-      for (const auto& part_name : *selector.PartNames()) {
+      for (const auto& part_name : selector.IdentList()) {
         if (!part_names_->Contains(part_name)) {
           return false;
         }

@@ -446,8 +446,9 @@ class CORE_EXPORT CSSSelector {
   // pseudo selector at all), or if we are a & rule that's in a non-nesting
   // context (which is valid, but won't match anything).
   const CSSSelector* SelectorListOrParent() const;
-  const Vector<AtomicString>* PartNames() const {
-    return has_rare_data_ ? data_.rare_data_->part_names_.get() : nullptr;
+  const Vector<AtomicString>& IdentList() const {
+    CHECK(has_rare_data_ && data_.rare_data_->ident_list_);
+    return *data_.rare_data_->ident_list_;
   }
   const ToggleRoot::State* ToggleValue() const {
     return has_rare_data_ ? data_.rare_data_->toggle_value_.get() : nullptr;
@@ -472,7 +473,7 @@ class CORE_EXPORT CSSSelector {
   void SetAttribute(const QualifiedName&, AttributeMatchType);
   void SetArgument(const AtomicString&);
   void SetSelectorList(CSSSelectorList*);
-  void SetPartNames(std::unique_ptr<Vector<AtomicString>>);
+  void SetIdentList(std::unique_ptr<Vector<AtomicString>>);
   void SetToggle(const AtomicString& name,
                  std::unique_ptr<ToggleRoot::State>&& value);
   void SetContainsPseudoInsideHasPseudoClass();
@@ -635,7 +636,7 @@ class CORE_EXPORT CSSSelector {
     Member<CSSSelectorList>
         selector_list_;  // Used :is, :not, :-webkit-any, etc.
     std::unique_ptr<Vector<AtomicString>>
-        part_names_;  // Used for ::part() selectors.
+        ident_list_;  // Used for ::part(), :active-view-transition().
     std::unique_ptr<ToggleRoot::State> toggle_value_;  // used for :toggle()
 
     void Trace(Visitor* visitor) const;

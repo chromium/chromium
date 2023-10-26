@@ -1065,7 +1065,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
     switch (GetPseudoType()) {
       case kPseudoPart: {
         char separator = '(';
-        for (AtomicString part : *PartNames()) {
+        for (AtomicString part : IdentList()) {
           builder.Append(separator);
           if (separator == '(') {
             separator = ' ';
@@ -1540,10 +1540,10 @@ bool CSSSelector::RareData::MatchNth(unsigned unsigned_count) {
   return (NthBValue() - count) % (-NthAValue()) == 0;
 }
 
-void CSSSelector::SetPartNames(
-    std::unique_ptr<Vector<AtomicString>> part_names) {
+void CSSSelector::SetIdentList(
+    std::unique_ptr<Vector<AtomicString>> ident_list) {
   CreateRareData();
-  data_.rare_data_->part_names_ = std::move(part_names);
+  data_.rare_data_->ident_list_ = std::move(ident_list);
 }
 
 void CSSSelector::Trace(Visitor* visitor) const {

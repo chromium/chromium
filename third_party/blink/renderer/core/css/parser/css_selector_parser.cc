@@ -1677,7 +1677,7 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
         }
         parts.push_back(ident.Value().ToAtomicString());
       } while (!block.AtEnd());
-      selector.SetPartNames(std::make_unique<Vector<AtomicString>>(parts));
+      selector.SetIdentList(std::make_unique<Vector<AtomicString>>(parts));
       output_.push_back(std::move(selector));
       return true;
     }
