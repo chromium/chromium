@@ -4,6 +4,8 @@
 
 #include <objc/runtime.h>
 
+#import "third_party/ocmock/OCMock/NSInvocation+OCMAdditions.h"
+#import "third_party/ocmock/OCMock/OCMArgAction.h"
 #include "third_party/ocmock/ocmock_extensions.h"
 
 #define CR_OCMOCK_RETURN_IMPL(type_name, type) \
@@ -66,11 +68,73 @@ CR_OCMOCK_RETURN_IMPL(CGFloat, CGFloat);
 
 @end
 
+@interface cr_OCMAsyncBlockArgCaller : OCMArgAction {
+  dispatch_queue_t _queue;
+  NSArray* _arguments;
+}
+
+- (instancetype)initWithQueue:(dispatch_queue_t)queue
+            andBlockArguments:(NSArray*)args;
+
+@end
+
+@implementation cr_OCMAsyncBlockArgCaller
+
+- (instancetype)initWithQueue:(dispatch_queue_t)queue
+            andBlockArguments:(NSArray*)args {
+  self = [super init];
+  if (self) {
+    _queue = queue;
+    dispatch_retain(_queue);
+    _arguments = [args copy];
+  }
+  return self;
+}
+
+- (void)dealloc {
+  [_arguments release];
+  dispatch_release(_queue);
+  [super dealloc];
+}
+
+- (void)handleArgument:(id)aBlock {
+  if (aBlock) {
+    id copiedBlock = Block_copy(aBlock);
+    NSArray* retainedArgs = [_arguments retain];
+    dispatch_async(_queue, ^{
+      NSInvocation* inv = [NSInvocation invocationForBlock:copiedBlock
+                                             withArguments:retainedArgs];
+      [inv invokeWithTarget:copiedBlock];
+      [retainedArgs release];
+      Block_release(copiedBlock);
+    });
+  }
+}
+
+@end
+
 @implementation OCMArg(CrExtensions)
 
 + (id)conformsToProtocol:(Protocol*)protocol {
   return [[[cr_OCMConformToProtocolConstraint alloc] initWithProtocol:protocol]
           autorelease];
+}
+
++ (id)invokeBlockOnQueue:(dispatch_queue_t)queue
+                withArgs:(id)first, ... NS_REQUIRES_NIL_TERMINATION {
+  NSMutableArray* params = [NSMutableArray array];
+  va_list args;
+  if (first) {
+    [params addObject:first];
+    va_start(args, first);
+    id obj;
+    while ((obj = va_arg(args, id))) {
+      [params addObject:obj];
+    }
+    va_end(args);
+  }
+  return [[[cr_OCMAsyncBlockArgCaller alloc] initWithQueue:queue
+                                         andBlockArguments:params] autorelease];
 }
 
 @end
