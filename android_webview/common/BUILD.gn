@@ -22,11 +22,15 @@ source_set("common") {
     "aw_resource_bundle.h",
     "aw_switches.cc",
     "aw_switches.h",
+    "components/aw_apps_package_names_allowlist_component_utils.cc",
+    "components/aw_apps_package_names_allowlist_component_utils.h",
     "crash_reporter/aw_crash_reporter_client.cc",
     "crash_reporter/aw_crash_reporter_client.h",
     "crash_reporter/crash_keys.cc",
     "crash_reporter/crash_keys.h",
     "devtools_instrumentation.h",
+    "metrics/app_package_name_logging_rule.cc",
+    "metrics/app_package_name_logging_rule.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -72,5 +76,16 @@ mojom("mojom") {
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [ "metrics/app_package_name_logging_rule_unittests.cc" ]
+  deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
   ]
 }
