@@ -544,6 +544,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
 // Tracker: https://crbug.com/1356128
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKeepAliveInBrowserMigration);
 
+// Enables attribution reporting to be proxied via the browser process using the
+// same path as other fetch keepalive requests.
+// See https://crbug.com/1374121.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAttributionReportingInBrowserMigration);
+
 // Enables changing the influence of acceleration based on change of direction.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kKalmanHeuristics);
 // Enables discarding the prediction if the predicted direction is opposite from

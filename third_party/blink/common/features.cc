@@ -1021,6 +1021,10 @@ BASE_FEATURE(kKeepAliveInBrowserMigration,
              "KeepAliveInBrowserMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAttributionReportingInBrowserMigration,
+             "kAttributionReportingInBrowserMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables reporting as LCP of the time the first frame of an animated image was
 // painted.
 BASE_FEATURE(kLCPAnimatedImagesReporting,

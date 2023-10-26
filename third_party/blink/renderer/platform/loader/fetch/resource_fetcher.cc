@@ -1567,9 +1567,14 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       unfreezable_task_runner_;
   const bool request_is_fetch_later = request.IsFetchLaterAPI();
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kKeepAliveInBrowserMigration) &&
-      request.GetKeepalive() && !request_is_fetch_later) {
+  if (request.GetKeepalive() &&
+      (!base::FeatureList::IsEnabled(
+           blink::features::kKeepAliveInBrowserMigration) ||
+       (request.GetAttributionReportingEligibility() !=
+            network::mojom::AttributionReportingEligibility::kUnset &&
+        !base::FeatureList::IsEnabled(
+            features::kAttributionReportingInBrowserMigration))) &&
+      !request_is_fetch_later) {
     base::UmaHistogramBoolean("Blink.Fetch.KeepAlive.Total", true);
     // Set the `task_runner` to the `AgentGroupScheduler`'s task-runner for
     // keepalive fetches because we want it to keep running even after the
@@ -2122,10 +2127,11 @@ void ResourceFetcher::ClearContext() {
   // first choice font failed to load).
   StopFetching();
 
-  if ((!loaders_.empty() || !non_blocking_loaders_.empty()) &&
-      // This branch is not relevant to FetchLater.
-      !base::FeatureList::IsEnabled(
-          blink::features::kKeepAliveInBrowserMigration)) {
+  if (!loaders_.empty() || !non_blocking_loaders_.empty()) {
+    CHECK(!base::FeatureList::IsEnabled(
+              blink::features::kKeepAliveInBrowserMigration) ||
+          !base::FeatureList::IsEnabled(
+              blink::features::kAttributionReportingInBrowserMigration));
     // There are some keepalive requests.
 
     // Records the current time to estimate how long the remaining requests will
@@ -2532,12 +2538,7 @@ void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {
 }
 
 void ResourceFetcher::StopFetching() {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kKeepAliveInBrowserMigration)) {
-    StopFetchingInternal(StopFetchingTarget::kIncludingKeepaliveLoaders);
-  } else {
-    StopFetchingInternal(StopFetchingTarget::kExcludingKeepaliveLoaders);
-  }
+  StopFetchingInternal(StopFetchingTarget::kExcludingKeepaliveLoaders);
 }
 
 void ResourceFetcher::SetDefersLoading(LoaderFreezeMode mode) {

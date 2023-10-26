@@ -1310,14 +1310,30 @@ void ResourceLoader::ActivateCacheAwareLoadingIfNeeded(
 }
 
 bool ResourceLoader::ShouldBeKeptAliveWhenDetached() const {
-  bool extra_check = true;
-  if (base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI)) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kKeepAliveInBrowserMigration) &&
+      resource_->GetResourceRequest().GetKeepalive()) {
+    if (resource_->GetResourceRequest().GetAttributionReportingEligibility() ==
+        network::mojom::AttributionReportingEligibility::kUnset) {
+      // When enabled, non-attribution reporting Fetch keepalive requests should
+      // not be kept alive by renderer.
+      return false;
+    }
+    if (base::FeatureList::IsEnabled(
+            blink::features::kAttributionReportingInBrowserMigration)) {
+      // Attribution reporting keepalive requests with its owned migration
+      // enabled should not be kept alive by renderer.
+      return false;
+    }
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
+      resource_->GetResourceRequest().IsFetchLaterAPI()) {
     // FetchLater requests should not be kept alive by renderer.
-    extra_check = !resource_->GetResourceRequest().IsFetchLaterAPI();
+    return false;
   }
 
   return resource_->GetResourceRequest().GetKeepalive() &&
-         resource_->GetResponse().IsNull() && extra_check;
+         resource_->GetResponse().IsNull();
 }
 
 void ResourceLoader::AbortResponseBodyLoading() {

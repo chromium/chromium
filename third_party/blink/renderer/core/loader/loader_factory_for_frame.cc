@@ -218,9 +218,13 @@ void LoaderFactoryForFrame::IssueKeepAliveHandleIfRequested(
     mojom::blink::LocalFrameHost& local_frame_host,
     mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver) {
   DCHECK(pending_receiver);
-  if (!base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration) &&
-      request.GetKeepalive() && keep_alive_handle_factory_.is_bound() &&
-      !request.IsFetchLaterAPI()) {
+  if (request.GetKeepalive() &&
+      (!base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration) ||
+       (request.GetAttributionReportingEligibility() !=
+            network::mojom::AttributionReportingEligibility::kUnset &&
+        !base::FeatureList::IsEnabled(
+            features::kAttributionReportingInBrowserMigration))) &&
+      keep_alive_handle_factory_.is_bound() && !request.IsFetchLaterAPI()) {
     keep_alive_handle_factory_->IssueKeepAliveHandle(
         std::move(pending_receiver));
   }

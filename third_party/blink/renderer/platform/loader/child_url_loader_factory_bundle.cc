@@ -268,7 +268,11 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
   // request to the factory (the new path) when only one of them is enabled.
   if (request.keepalive && keep_alive_loader_factory_ &&
       ((!request_is_fetch_later &&
-        base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration)) ||
+        base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration) &&
+        (request.attribution_reporting_eligibility ==
+             network::mojom::AttributionReportingEligibility::kUnset ||
+         base::FeatureList::IsEnabled(
+             features::kAttributionReportingInBrowserMigration))) ||
        (request_is_fetch_later &&
         base::FeatureList::IsEnabled(features::kFetchLaterAPI)))) {
     keep_alive_loader_factory_->CreateLoaderAndStart(
