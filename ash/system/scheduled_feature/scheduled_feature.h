@@ -46,6 +46,23 @@ class ASH_EXPORT ScheduledFeature
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
+  // Reasons why the feature's state may be modified.
+  enum class RefreshReason {
+    // An internally scheduled update to feature state (ex: sunrise or sunset
+    // when the `kSunsetToSunrise` schedule type is active).
+    kScheduled,
+    // Schedule's settings have been changed by the user (schedule type, custom
+    // start/end time, etc).
+    kSettingsChanged,
+    // Something about the environment has changed (ex: waking up after
+    // suspend, new geoposition, etc), so the feature's state needs to be
+    // recomputed.
+    kReset,
+    // An external caller explicitly modified the feature's state to something
+    // potentially different from what the schedule dictates.
+    kExternal
+  };
+
   // May be overridden for testing purposes (see SetClockForTesting()). By
   // default, returns system time.
   class Clock : public base::Clock, public base::TickClock {
@@ -129,7 +146,7 @@ class ASH_EXPORT ScheduledFeature
  protected:
   // Called by `Refresh()` and `RefreshScheduleTimer()` to refresh the feature
   // state such as display temperature in Night Light.
-  virtual void RefreshFeatureState() {}
+  virtual void RefreshFeatureState(RefreshReason reason) {}
 
  private:
   // Contains all of the data required to restore `ScheduledFeature` to a state
@@ -158,6 +175,8 @@ class ASH_EXPORT ScheduledFeature
 
   void InitFromUserPrefs();
 
+  void SetEnabledInternal(bool enabled, RefreshReason reason);
+
   // Called when the user pref for the enabled status of ScheduledFeature is
   // changed.
   void OnEnabledPrefChanged();
@@ -173,25 +192,21 @@ class ASH_EXPORT ScheduledFeature
   void OnCustomSchedulePrefsChanged();
 
   // Refreshes the state of ScheduledFeature according to the currently set
-  // parameters. `did_schedule_change` is true when Refresh() is called as a
-  // result of a change in one of the schedule related prefs, and false
-  // otherwise.
+  // parameters.
+  //
   // If `keep_manual_toggles_during_schedules` is true, refreshing the schedule
   // will not override a previous user's decision to toggle the
   // ScheduledFeature status while the schedule is being used.
-  void Refresh(bool did_schedule_change,
-               bool keep_manual_toggles_during_schedules);
+  void Refresh(RefreshReason reason, bool keep_manual_toggles_during_schedules);
 
   // Given the desired start and end times that determine the time interval
   // during which the feature will be ON, depending on the time of "now", it
   // refreshes the `timer_` to either schedule the future start or end of
   // the feature, as well as update the current status if needed.
-  // For `did_schedule_change` and `keep_manual_toggles_during_schedules`, see
-  // Refresh() above.
   // This function should never be called if the schedule type is `kNone`.
   void RefreshScheduleTimer(base::Time start_time,
                             base::Time end_time,
-                            bool did_schedule_change,
+                            RefreshReason reason,
                             bool keep_manual_toggles_during_schedules);
 
   // Schedule the next upcoming refresh of the feature state and save a copy of
@@ -258,6 +273,10 @@ class ASH_EXPORT ScheduledFeature
 
   // When a call to `Refresh()` fails, retry with exponential backoff.
   net::BackoffEntry refresh_failure_backoff_;
+
+  // Transient storage of the `RefreshReason` to be plumbed from
+  // `SetEnabledInternal()` to the `OnEnabledPrefChanged()` callback.
+  RefreshReason set_enabled_refresh_reason_ = RefreshReason::kExternal;
 };
 
 }  // namespace ash
