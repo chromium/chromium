@@ -4314,6 +4314,139 @@ TEST_F(MLGraphBuilderTest, TanhTest) {
   }
 }
 
+MLOperand* BuildMatmul(V8TestingScope& scope,
+                       MLGraphBuilder* builder,
+                       const MLOperand* a,
+                       const MLOperand* b) {
+  auto* output = builder->matmul(a, b, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Type(), a->Type());
+  auto* matmul = output->Operator();
+  EXPECT_NE(matmul, nullptr);
+  EXPECT_EQ(matmul->Kind(), MLOperator::OperatorKind::kMatmul);
+  EXPECT_EQ(matmul->IsConnected(), true);
+  EXPECT_EQ(matmul->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, MatmulTest) {
+  V8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test throwing exception when the rank of input is smaller than 2.
+    auto* a = BuildInput(builder, "a", {2}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    auto* b = BuildInput(builder, "b", {2}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    auto* output = builder->matmul(a, b, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The rank of input must be larger than or equal to 2.");
+  }
+  {
+    // Test building matmul with 2-D * 4-D inputs.
+    auto* a = BuildInput(builder, "a", {1, 4}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    auto* b =
+        BuildInput(builder, "b", {2, 2, 4, 2}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* output = BuildMatmul(scope, builder, a, b);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 2, 1, 2}));
+  }
+  {
+    // Test building matmul with 2-D * 2-D inputs.
+    auto* a = BuildInput(builder, "a", {4, 2}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    auto* b = BuildInput(builder, "b", {2, 3}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    auto* output = BuildMatmul(scope, builder, a, b);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 3}));
+  }
+  {
+    // Test building matmul with 3-D * 3-D inputs using broadcast.
+    auto* a =
+        BuildInput(builder, "a", {2, 3, 4}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* b =
+        BuildInput(builder, "b", {1, 4, 1}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* output = BuildMatmul(scope, builder, a, b);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 3, 1}));
+  }
+  {
+    // Test building matmul with 4-D * 3-D inputs using broadcast.
+    auto* a =
+        BuildInput(builder, "a", {2, 2, 3, 4}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* b =
+        BuildInput(builder, "b", {1, 4, 5}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* output = BuildMatmul(scope, builder, a, b);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 2, 3, 5}));
+  }
+  {
+    // Test building matmul with 3-D * 3-D inputs.
+    auto* a =
+        BuildInput(builder, "a", {2, 3, 4}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* b =
+        BuildInput(builder, "b", {2, 4, 5}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* output = BuildMatmul(scope, builder, a, b);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 3, 5}));
+  }
+  {
+    // Test throwing exception when the types of first two inputs don't match.
+    auto* a = BuildInput(builder, "a", {2, 3}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    auto* b = BuildInput(builder, "b", {3, 4}, V8MLOperandType::Enum::kInt32,
+                         scope.GetExceptionState());
+    auto* output = builder->matmul(a, b, scope.GetExceptionState());
+    ;
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The types of first two inputs don't match.");
+  }
+  {
+    // Test throwing exception when the number in first matrix mismatches with
+    // the numbers in second matrix is .
+    auto* a = BuildInput(builder, "a", {2, 3}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    auto* b = BuildInput(builder, "b", {2, 4}, V8MLOperandType::Enum::kFloat32,
+                         scope.GetExceptionState());
+    auto* output = builder->matmul(a, b, scope.GetExceptionState());
+    ;
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The number of columns (3) in the first matrix isn't equal to "
+              "the number of rows (2) in the second matrix.");
+  }
+  {
+    // Test throwing exception when the input shapes are not broadcastable..
+    auto* a =
+        BuildInput(builder, "a", {3, 3, 4}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* b =
+        BuildInput(builder, "b", {2, 4, 1}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* output = builder->matmul(a, b, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The matmul input shapes are not broadcastable.");
+  }
+}
+
 class FakeMLGraphBackend final : public MLGraph {
  public:
   // Create and build a FakeMLGraphBackend object. Resolve the promise with

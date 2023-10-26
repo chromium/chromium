@@ -652,6 +652,7 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kCeil:
     case MLOperator::OperatorKind::kFloor:
     case MLOperator::OperatorKind::kNeg:
+    case MLOperator::OperatorKind::kMatmul:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                               " is not implemented.");
   }

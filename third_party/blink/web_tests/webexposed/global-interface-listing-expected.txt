@@ -5661,6 +5661,7 @@ interface MLGraphBuilder
     method hardSwish
     method input
     method leakyRelu
+    method matmul
     method max
     method maxPool2d
     method min

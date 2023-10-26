@@ -401,6 +401,67 @@ base::expected<Operand, std::string> ValidatePadAndInferOutput(
   return Operand(input.data_type, std::move(output_shape));
 }
 
+base::expected<Operand, std::string> ValidateMatmulAndInferOutput(
+    const Operand& a,
+    const Operand& b) {
+  if (a.data_type != b.data_type) {
+    return base::unexpected("The types of first two inputs don't match.");
+  }
+
+  std::vector<uint32_t> a_dimensions = a.dimensions;
+  std::vector<uint32_t> b_dimensions = b.dimensions;
+
+  // Based on the WG discussion:
+  // https://github.com/webmachinelearning/webnn/issues/470, prototype the
+  // matmul without 1-D input tensors support.
+  if (a_dimensions.size() < 2 || b_dimensions.size() < 2) {
+    return base::unexpected(
+        "The rank of input must be larger than or equal to 2.");
+  }
+
+  // The number of columns in the first matrix must be equal to the number of
+  // rows in the second matrix.
+  const uint32_t a_cols = a_dimensions[a_dimensions.size() - 1];
+  const uint32_t a_rows = a_dimensions[a_dimensions.size() - 2];
+  const uint32_t b_cols = b_dimensions[b_dimensions.size() - 1];
+  const uint32_t b_rows = b_dimensions[b_dimensions.size() - 2];
+  if (a_cols != b_rows) {
+    return base::unexpected(base::StringPrintf(
+        "The number of columns (%u) in the first matrix isn't equal to "
+        "the number of rows (%u) in the second matrix.",
+        a_cols, b_rows));
+  }
+
+  size_t output_rank = std::max(a_dimensions.size(), b_dimensions.size());
+  std::vector<uint32_t> output_dimensions;
+  // Figure out the output shape by broadcasting all the dimensions except the
+  // last two. The output is 2-D tensor of shape [M, N].
+  if (a_dimensions.size() > 2 && b_dimensions.size() > 2) {
+    std::vector<uint32_t> sliced_a_dimensions(a_dimensions.begin(),
+                                              a_dimensions.end() - 2);
+    std::vector<uint32_t> sliced_b_dimensions(b_dimensions.begin(),
+                                              b_dimensions.end() - 2);
+    absl::optional<std::vector<uint32_t>> optional_output_dimensions =
+        BroadcastShapes(sliced_a_dimensions, sliced_b_dimensions, true);
+    if (!optional_output_dimensions) {
+      return base::unexpected("The matmul input shapes are not broadcastable.");
+    }
+    output_dimensions = *optional_output_dimensions;
+    output_dimensions.push_back(a_rows);
+    output_dimensions.push_back(b_cols);
+  } else if (a_dimensions.size() == 2 && b_dimensions.size() == 2) {
+    output_dimensions.push_back(a_rows);
+    output_dimensions.push_back(b_cols);
+  } else {
+    output_dimensions =
+        a_dimensions.size() > b_dimensions.size() ? a_dimensions : b_dimensions;
+    output_dimensions[output_rank - 2] = a_rows;
+    output_dimensions[output_rank - 1] = b_cols;
+  }
+  CHECK_EQ(output_rank, output_dimensions.size());
+  return Operand(a.data_type, std::move(output_dimensions));
+}
+
 base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
     const Operand& input,
     const Pool2dAttributes& attributes) {

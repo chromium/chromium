@@ -217,6 +217,12 @@ base::expected<Operand, std::string> ValidatePadAndInferOutput(
     base::span<const uint32_t> beginning_padding,
     base::span<const uint32_t> ending_padding);
 
+// Validate and infer output information of matmul operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-matmul
+base::expected<Operand, std::string> ValidateMatmulAndInferOutput(
+    const Operand& a,
+    const Operand& b);
+
 // Validate and infer output information of 2-D pooling operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d
 base::expected<Operand, std::string> ValidatePool2dAndInferOutput(

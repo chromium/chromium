@@ -172,6 +172,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLActivation* leakyRelu(const MLLeakyReluOptions* options,
                           ExceptionState& exception_state);
 
+  MLOperand* matmul(const MLOperand* a,
+                    const MLOperand* b,
+                    ExceptionState& exception_state);
+
   MLOperand* pad(const MLOperand* input,
                  const Vector<uint32_t>& beginningPadding,
                  const Vector<uint32_t>& endingPadding,

@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] matmul float32 1D and 1D tensors all positive produces a scalar / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2."
+[FAIL] matmul float32 1D and 1D tensors all negative produces a scalar / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2."
+[FAIL] matmul float32 positive 1D and negative 1D tensors produces a scalar / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2."
+[FAIL] matmul float32 negative 1D and positive 1D tensors produces a scalar / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2."
+[FAIL] matmul float32 1D and 2D tensors / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2."
+[FAIL] matmul float32 1D and 4D tensors / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2."
+[FAIL] matmul float32 2D and 1D tensors / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2."
+[FAIL] matmul float32 2D and 2D tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (matmul) is not supported."
+[FAIL] matmul float32 3D and 3D tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (matmul) is not supported."
+[FAIL] matmul float32 3D and 3D (broadcast) tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (matmul) is not supported."
+[FAIL] matmul float32 3D and 2D tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (matmul) is not supported."
+[FAIL] matmul float32 3D and 1D tensors / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2."
+[FAIL] matmul float32 4D and 4D (broadcast) tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (matmul) is not supported."
+[FAIL] matmul float32 4D and 3D tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (matmul) is not supported."
+[FAIL] matmul float32 5D and 5D tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (matmul) is not supported."
+[FAIL] matmul float32 5D and 2D tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (matmul) is not supported."
+Harness: the test ran to completion.
+

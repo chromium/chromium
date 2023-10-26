@@ -1173,6 +1173,34 @@ MLActivation* MLGraphBuilder::leakyRelu(const MLLeakyReluOptions* options,
       this, MLOperator::OperatorKind::kLeakyRelu, options);
 }
 
+MLOperand* MLGraphBuilder::matmul(const MLOperand* a,
+                                  const MLOperand* b,
+                                  ExceptionState& exception_state) {
+  auto validated_output = webnn::ValidateMatmulAndInferOutput(
+      ConvertToComponentOperand(a), ConvertToComponentOperand(b));
+  if (!validated_output.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        WTF::String::FromUTF8(validated_output.error()));
+    return nullptr;
+  }
+  // Create matmul operator and its output operand. Connect the matmul operator
+  // to its input and output operands.
+  auto* matmul =
+      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kMatmul);
+  auto output = MLOperand::ValidateAndCreateOutput(
+      this, ComponentOperandTypeToBlink(validated_output.value().data_type),
+      Vector<uint32_t>(validated_output.value().dimensions), matmul);
+  if (!output.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      output.error());
+    return nullptr;
+  }
+  HeapVector<Member<const MLOperand>> inputs = {a, b};
+  matmul->Connect(std::move(inputs), {output.value()});
+  return output.value();
+}
+
 MLOperand* MLGraphBuilder::pad(const MLOperand* input,
                                const Vector<uint32_t>& beginning_padding,
                                const Vector<uint32_t>& ending_padding,

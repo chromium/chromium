@@ -152,6 +152,8 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand hardSwish(MLOperand x);
   [RaisesException] MLActivation hardSwish();
 
+  [RaisesException] MLOperand matmul(MLOperand a, MLOperand b);
+
   [RaisesException] MLOperand leakyRelu(MLOperand x, optional MLLeakyReluOptions options = {});
   [RaisesException] MLActivation leakyRelu(optional MLLeakyReluOptions options = {});
 
