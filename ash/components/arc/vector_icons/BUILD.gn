@@ -13,7 +13,6 @@ aggregate_vector_icons("components_arc_vector_icons") {
 
   sources = [
     "compat_mode_splashscreen.icon",
-    "resizable.icon",
     "save.icon",
   ]
 }

@@ -14,6 +14,7 @@
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/arc_compat_mode_util.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -466,6 +467,7 @@ void GameDashboardMainMenuView::AddFeatureDetailsRows() {
           views::BoxLayout::Orientation::kVertical,
           /*inside_border_insets=*/gfx::Insets(),
           /*between_child_spacing=*/2));
+  // TODO(b/303351913): Update corners of detail rows to match UI specs.
   MaybeAddGameControlsDetailsRow(feature_details_container);
   MaybeAddScreenSizeSettingsRow(feature_details_container);
 }
@@ -569,22 +571,25 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
 
 void GameDashboardMainMenuView::MaybeAddScreenSizeSettingsRow(
     views::View* container) {
-  if (IsArcWindow(context_->game_window())) {
-    auto* details = container->AddChildView(std::make_unique<FeatureDetailsRow>(
-        base::BindRepeating(
-            &GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed,
-            base::Unretained(this)),
-        RoundedContainer::Behavior::kBottomRounded,
-        /*default_drill_in_arrow=*/true,
-        /*icon=*/kGdScreenSizeSettingsIcon, /*title=*/
-        l10n_util::GetStringUTF16(
-            IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE)));
-
-    details->SetID(VIEW_ID_GD_SCREEN_SIZE_TILE);
-    // TODO(b/286455407): Update with final localized string.
-    // TODO(b/286917169): Dynamically updating the sub-title.
-    details->SetSubtitle(u"Landscape");
+  aura::Window* game_window = context_->game_window();
+  if (!IsArcWindow(game_window)) {
+    return;
   }
+
+  const auto resize_mode = compat_mode_util::PredictCurrentMode(game_window);
+  auto* screen_size_row = container->AddChildView(CreateFeatureTile(
+      base::BindRepeating(
+          &GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed,
+          base::Unretained(this)),
+      /*is_togglable=*/false, FeatureTile::TileType::kPrimary,
+      VIEW_ID_GD_SCREEN_SIZE_TILE,
+      /*icon=*/compat_mode_util::GetIcon(resize_mode),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE),
+      /*sub_label=*/compat_mode_util::GetText(resize_mode)));
+  // TODO(b/303351905): Investigate why drill in arrow isn't placed in correct
+  // location.
+  screen_size_row->CreateDecorativeDrillInArrow();
 }
 
 void GameDashboardMainMenuView::AddUtilityClusterRow() {

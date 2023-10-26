@@ -64,6 +64,8 @@ component("cpp") {
     "app_types_util.h",
     "arc_app_id_provider.cc",
     "arc_app_id_provider.h",
+    "arc_compat_mode_util.cc",
+    "arc_compat_mode_util.h",
     "arc_game_controls_flag.h",
     "arc_resize_lock_type.h",
     "ash_constants.h",

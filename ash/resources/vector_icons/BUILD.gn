@@ -18,6 +18,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "add_cellular_network.icon",
     "add_cellular_network_rtl.icon",
     "always_show_shelf.icon",
+    "app_compat_resizable.icon",
     "auto_hide.icon",
     "autoclick.icon",
     "autoclick_close.icon",
