@@ -26,7 +26,7 @@ import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './wallpaper_search.html.js';
 
 export const DESCRIPTOR_D_VALUE =
-    ['#EF4837', '#0984E3', '#F9CC18', '#23CC6A', '#474747'];
+    ['#ef4837', '#0984e3', '#f9cc18', '#23cc6a', '#474747'];
 
 export interface WallpaperSearchElement {
   $: {

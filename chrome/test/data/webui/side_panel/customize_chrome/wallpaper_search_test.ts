@@ -142,9 +142,10 @@ suite('WallpaperSearchTest', () => {
       assertEquals('bar', handler.getArgs('getWallpaperSearchResults')[0][0]);
       assertEquals('foo', handler.getArgs('getWallpaperSearchResults')[0][1]);
       assertEquals('baz', handler.getArgs('getWallpaperSearchResults')[0][2]);
+      const skColor = hexColorToSkColor(DESCRIPTOR_D_VALUE[0]!);
+      assertNotEquals(skColor, {value: 0});
       assertDeepEquals(
-          {color: hexColorToSkColor(DESCRIPTOR_D_VALUE[0]!)},
-          handler.getArgs('getWallpaperSearchResults')[0][3]);
+          {color: skColor}, handler.getArgs('getWallpaperSearchResults')[0][3]);
     });
 
     test('sends hue to backend', async () => {
