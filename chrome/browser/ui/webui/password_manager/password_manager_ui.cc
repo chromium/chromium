@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -384,8 +385,9 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_WIN},
 #endif
   };
-  for (const auto& str : kStrings)
+  for (const auto& str : kStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
+  }
 
   source->AddString(
       "passwordsSectionDescription",
@@ -598,6 +600,7 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<settings::PasskeysHandler>());
 #endif
   auto* source = CreateAndAddPasswordsUIHTMLSource(profile, web_ui);
+  policy_indicator::AddLocalizedStrings(source);
   AddPluralStrings(web_ui);
   ManagedUIHandler::Initialize(web_ui, source);
   content::URLDataSource::Add(profile,
