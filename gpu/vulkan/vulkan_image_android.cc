@@ -6,6 +6,7 @@
 
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -13,6 +14,10 @@
 namespace gpu {
 
 namespace {
+BASE_FEATURE(kLimitVkImageUsageToFormatFeaturesForAHB,
+             "LimitVkImageUsageToFormatFeaturesForAHB",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsSinglePlaneRGBVulkanAHBFormat(VkFormat format) {
   switch (format) {
     // AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM
@@ -30,6 +35,48 @@ bool IsSinglePlaneRGBVulkanAHBFormat(VkFormat format) {
       return false;
   }
 }
+
+VkImageUsageFlags AHBUsageToImageUsage(uint64_t ahb_usage) {
+  VkImageUsageFlags usage_flags = 0;
+
+  // Get Vulkan Image usage flag equivalence of AHB usage.
+  if (ahb_usage & AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE) {
+    usage_flags |=
+        VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+  }
+  if (ahb_usage & AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT) {
+    usage_flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+  }
+
+  // All AHB support these usages when imported into vulkan.
+  usage_flags |=
+      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+  return usage_flags;
+}
+
+VkImageUsageFlags VkFormatFeaturesToImageUsage(VkFormatFeatureFlags features) {
+  VkImageUsageFlags usage_flags = 0;
+
+  if (features & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT) {
+    usage_flags |= VK_IMAGE_USAGE_SAMPLED_BIT;
+  }
+
+  if (features & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT) {
+    usage_flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                   VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+  }
+
+  if (features & VK_FORMAT_FEATURE_TRANSFER_SRC_BIT) {
+    usage_flags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+  }
+
+  if (features & VK_FORMAT_FEATURE_TRANSFER_DST_BIT) {
+    usage_flags |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+  }
+
+  return usage_flags;
+}
+
 }  // namespace
 
 bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
@@ -107,29 +154,22 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
   base::AndroidHardwareBufferCompat::GetInstance().Describe(ahb_handle.get(),
                                                             &ahb_desc);
 
-  // Intended usage of the image.
-  VkImageUsageFlags usage_flags = 0;
   // Get Vulkan Image usage flag equivalence of AHB usage.
-  if (ahb_desc.usage & AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE) {
-    usage_flags = usage_flags | VK_IMAGE_USAGE_SAMPLED_BIT |
-                  VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
-  }
-  if (ahb_desc.usage & AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT) {
-    usage_flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-  }
+  VkImageUsageFlags usage_flags = AHBUsageToImageUsage(ahb_desc.usage);
 
-  // TODO(vikassoni) : AHARDWAREBUFFER_USAGE_GPU_CUBE_MAP is supported from API
-  // level 28 which is not part of current android_ndk version in chromium. Add
-  // equivalent VK usage later.
-  if (!usage_flags) {
+  if (!(usage_flags &
+        (VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT))) {
     LOG(ERROR) << "No valid usage flags found";
     return false;
   }
 
-  // Skia currently requires all wrapped VkImages to have transfer src and dst
-  // usage. Additionally all AHB support these usages when imported into vulkan.
-  usage_flags |=
-      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+  // If we're using external format, we should limit our usage to supported
+  // format features.
+  if (should_use_external_format &&
+      base::FeatureList::IsEnabled(kLimitVkImageUsageToFormatFeaturesForAHB)) {
+    usage_flags &=
+        VkFormatFeaturesToImageUsage(ahb_format_props.formatFeatures);
+  }
 
   VkImageCreateFlags create_flags = 0;
   if (ahb_desc.usage & AHARDWAREBUFFER_USAGE_PROTECTED_CONTENT) {

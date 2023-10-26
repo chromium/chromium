@@ -349,6 +349,13 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image,
   image_info.fProtected = is_protected ? GrProtected::kYes : GrProtected::kNo;
   image_info.fYcbcrConversionInfo = gr_ycbcr_info;
 
+  // Skia currently requires all wrapped VkImages to have transfer src and dst
+  // usage. Note, that driver _should_ advertise transfer support if any usage
+  // is supported, but spec hasn't updated yet:
+  // https://github.com/KhronosGroup/Vulkan-Docs/issues/1223#issuecomment-1379078493
+  image_info.fImageUsageFlags |=
+      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+
   return image_info;
 }
 
