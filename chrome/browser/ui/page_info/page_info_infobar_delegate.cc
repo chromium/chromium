@@ -14,6 +14,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 // static
 void PageInfoInfoBarDelegate::Create(
@@ -32,7 +33,9 @@ PageInfoInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& PageInfoInfoBarDelegate::GetVectorIcon() const {
-  return vector_icons::kSettingsIcon;
+  return features::IsChromeRefresh2023()
+             ? vector_icons::kSettingsChromeRefreshIcon
+             : vector_icons::kSettingsIcon;
 }
 
 std::u16string PageInfoInfoBarDelegate::GetMessageText() const {
