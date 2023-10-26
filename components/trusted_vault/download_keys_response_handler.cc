@@ -27,9 +27,12 @@ struct ExtractedSharedKey {
 };
 
 const trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership*
-FindSyncMembership(const trusted_vault_pb::SecurityDomainMember& member) {
+FindMembershipForSecurityDomain(
+    const trusted_vault_pb::SecurityDomainMember& member,
+    SecurityDomainId security_domain) {
   for (const auto& membership : member.memberships()) {
-    if (membership.security_domain() == kSyncSecurityDomainName) {
+    if (membership.security_domain() ==
+        GetSecurityDomainName(security_domain)) {
       return &membership;
     }
   }
@@ -168,9 +171,11 @@ DownloadKeysResponseHandler::GetErrorFromHttpStatus(
 }
 
 DownloadKeysResponseHandler::DownloadKeysResponseHandler(
+    SecurityDomainId security_domain,
     const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair)
-    : last_trusted_vault_key_and_version_(last_trusted_vault_key_and_version),
+    : security_domain_(security_domain),
+      last_trusted_vault_key_and_version_(last_trusted_vault_key_and_version),
       device_key_pair_(std::move(device_key_pair)) {
   DCHECK(device_key_pair_);
 }
@@ -195,9 +200,9 @@ DownloadKeysResponseHandler::ProcessResponse(
 
   // TODO(crbug.com/1113598): consider validation of member public key.
   const trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership*
-      membership = FindSyncMembership(member);
+      membership = FindMembershipForSecurityDomain(member, security_domain_);
   if (!membership) {
-    // Member is not in sync security domain.
+    // Member is not in this security domain.
     return ProcessedResponse(
         /*status=*/TrustedVaultDownloadKeysStatus::kMembershipNotFound);
   }

@@ -346,12 +346,13 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
       access_token_fetcher_->Clone(),
       TrustedVaultURLFetchReasonForUMA::kDownloadKeys);
 
-  request->FetchAccessTokenAndSendRequest(base::BindOnce(
-      &ProcessDownloadKeysResponse,
-      /*response_processor=*/
-      std::make_unique<DownloadKeysResponseHandler>(
-          last_trusted_vault_key_and_version, std::move(device_key_pair)),
-      std::move(callback)));
+  request->FetchAccessTokenAndSendRequest(
+      base::BindOnce(&ProcessDownloadKeysResponse,
+                     /*response_processor=*/
+                     std::make_unique<DownloadKeysResponseHandler>(
+                         security_domain_, last_trusted_vault_key_and_version,
+                         std::move(device_key_pair)),
+                     std::move(callback)));
 
   return request;
 }

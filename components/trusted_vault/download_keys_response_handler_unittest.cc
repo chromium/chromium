@@ -81,7 +81,8 @@ std::string CreateGetSecurityDomainMemberResponseWithSyncMembership(
 class DownloadKeysResponseHandlerTest : public testing::Test {
  public:
   DownloadKeysResponseHandlerTest()
-      : handler_(TrustedVaultKeyAndVersion(kKnownTrustedVaultKey,
+      : handler_(SecurityDomainId::kChromeSync,
+                 TrustedVaultKeyAndVersion(kKnownTrustedVaultKey,
                                            kKnownTrustedVaultKeyVersion),
                  MakeTestKeyPair()) {}
 
@@ -404,6 +405,33 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleEmptyMembership) {
                       /*response_body=*/member.SerializeAsString())
                   .status,
               Eq(TrustedVaultDownloadKeysStatus::kMembershipEmpty));
+}
+
+TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAllSecurityDomains) {
+  for (const SecurityDomainId security_domain : kAllSecurityDomainIdValues) {
+    trusted_vault_pb::SecurityDomainMember member;
+    AddSecurityDomainMembership(
+        GetSecurityDomainName(security_domain), MakeTestKeyPair()->public_key(),
+        /*trusted_vault_keys=*/{kTrustedVaultKey1},
+        /*trusted_vault_keys_versions=*/{kKnownTrustedVaultKeyVersion + 1},
+        /*signing_keys=*/{kKnownTrustedVaultKey}, &member);
+
+    const DownloadKeysResponseHandler::ProcessedResponse processed_response =
+        DownloadKeysResponseHandler(
+            security_domain,
+            TrustedVaultKeyAndVersion(kKnownTrustedVaultKey,
+                                      kKnownTrustedVaultKeyVersion),
+            MakeTestKeyPair())
+            .ProcessResponse(
+                /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
+                /*response_body=*/member.SerializeAsString());
+
+    EXPECT_THAT(processed_response.status,
+                Eq(TrustedVaultDownloadKeysStatus::kSuccess));
+    EXPECT_THAT(processed_response.new_keys, ElementsAre(kTrustedVaultKey1));
+    EXPECT_THAT(processed_response.last_key_version,
+                Eq(kKnownTrustedVaultKeyVersion + 1));
+  }
 }
 
 // Tests handling presence of other security domain memberships.
