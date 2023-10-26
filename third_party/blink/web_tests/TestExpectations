@@ -2614,6 +2614,10 @@ crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-
 crbug.com/1446038 [ Debug Mac13-arm64 ] external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/no-cors.https.html [ Crash ]
 
 # ====== Test expectations added to unblock wpt-importer ======
+crbug.com/626703 external/wpt/xhr/send-authentication-basic-repeat-no-args.htm [ Failure ]
+crbug.com/626703 external/wpt/xhr/send-authentication-basic-setrequestheader-and-arguments.htm [ Failure ]
+crbug.com/626703 external/wpt/xhr/send-authentication-basic-setrequestheader.htm [ Failure ]
+crbug.com/626703 external/wpt/xhr/send-authentication-basic.htm [ Failure ]
 crbug.com/626703 external/wpt/web-animations/animation-model/keyframe-effects/effect-value-opacity-replaced-effect.html [ Failure ]
 crbug.com/626703 external/wpt/service-workers/service-worker/controlled-dedicatedworker-postMessage.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/service-workers/service-worker/controlled-iframe-postMessage.https.html [ Failure Timeout ]
@@ -2659,6 +2663,8 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] external/wpt/service-workers/service-worker/worker-interception-redirect.https.html [ Failure Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/service-workers/service-worker/worker-interception-redirect.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/jpegxl/srgb.html [ Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/generic/only-valid-whitespaces-are-allowed.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/css/css-grid/animation/grid-template-rows-interpolation.html [ Timeout ]

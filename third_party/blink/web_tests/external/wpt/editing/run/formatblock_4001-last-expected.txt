@@ -1,12 +1,5 @@
 This is a testharness.js-based test.
-Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<h1>foo<br>bar</h1>"
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandIndeterm("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandState("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandValue("defaultparagraphseparator") before
-[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandIndeterm("defaultparagraphseparator") after
+Found 1028 tests; 949 PASS, 79 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandState("defaultparagraphseparator") after
 [FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<h1>[foo<br>bar]</h1>" queryCommandValue("defaultparagraphseparator") after
   assert_equals: Wrong result returned expected "p" but got "div"
@@ -650,8 +643,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>": execCommand("defaultparagraphseparator", false, "div") return value
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>": execCommand("formatblock", false, "<p>") return value
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><p>foo</p><p>bar</p></div>" but got "<p>foo</p><div><p>bar</p></div>"
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" compare innerHTML
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandValue("defaultparagraphseparator") before
@@ -670,8 +662,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>": execCommand("defaultparagraphseparator", false, "p") return value
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>": execCommand("formatblock", false, "<p>") return value
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><p>foo</p><p>bar</p></div>" but got "<p>foo</p><div><p>bar</p></div>"
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" compare innerHTML
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div>[foo<p>bar]</p></div>" queryCommandValue("defaultparagraphseparator") before
@@ -690,8 +681,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<xmp>[foo]</xmp>": execCommand("defaultparagraphseparator", false, "div") return value
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<xmp>[foo]</xmp>": execCommand("formatblock", false, "<p>") return value
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p>" but got "<p><xmp>foo</xmp></p>"
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" compare innerHTML
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" queryCommandValue("defaultparagraphseparator") before
@@ -707,8 +697,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<xmp>[foo]</xmp>": execCommand("defaultparagraphseparator", false, "p") return value
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<xmp>[foo]</xmp>": execCommand("formatblock", false, "<p>") return value
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p>" but got "<p><xmp>foo</xmp></p>"
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" compare innerHTML
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<p>"]] "<xmp>[foo]</xmp>" queryCommandValue("defaultparagraphseparator") before
@@ -724,8 +713,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<xmp>[foo]</xmp>": execCommand("defaultparagraphseparator", false, "div") return value
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<xmp>[foo]</xmp>": execCommand("formatblock", false, "<div>") return value
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div>" but got "<div><xmp>foo</xmp></div>"
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" compare innerHTML
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" queryCommandValue("defaultparagraphseparator") before
@@ -741,8 +729,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<xmp>[foo]</xmp>": execCommand("defaultparagraphseparator", false, "p") return value
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<xmp>[foo]</xmp>": execCommand("formatblock", false, "<div>") return value
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo</div>" but got "<div><xmp>foo</xmp></div>"
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" compare innerHTML
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<xmp>[foo]</xmp>" queryCommandValue("defaultparagraphseparator") before
@@ -758,8 +745,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>": execCommand("defaultparagraphseparator", false, "div") return value
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>": execCommand("formatblock", false, "<div>") return value
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><ol><li><div>foo</div></li></ol></div>" but got "<div><ol><li>foo</li></ol></div>"
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" compare innerHTML
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandValue("defaultparagraphseparator") before
@@ -768,16 +754,14 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandValue("defaultparagraphseparator") after
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandIndeterm("formatblock") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandState("formatblock") before
-[FAIL] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandValue("formatblock") before
-  assert_equals: Wrong result returned expected "" but got "div"
+[PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandValue("formatblock") before
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandIndeterm("formatblock") after
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandState("formatblock") after
 [PASS] [["defaultparagraphseparator","div"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandValue("formatblock") after
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>": execCommand("defaultparagraphseparator", false, "p") return value
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>": execCommand("formatblock", false, "<div>") return value
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" checks for modifications to non-editable content
-[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><ol><li><div>foo</div></li></ol></div>" but got "<div><ol><li>foo</li></ol></div>"
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" compare innerHTML
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandIndeterm("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandState("defaultparagraphseparator") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandValue("defaultparagraphseparator") before
@@ -786,8 +770,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandValue("defaultparagraphseparator") after
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandIndeterm("formatblock") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandState("formatblock") before
-[FAIL] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandValue("formatblock") before
-  assert_equals: Wrong result returned expected "" but got "div"
+[PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandValue("formatblock") before
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandIndeterm("formatblock") after
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandState("formatblock") after
 [PASS] [["defaultparagraphseparator","p"],["formatblock","<div>"]] "<div><ol><li>[foo]</ol></div>" queryCommandValue("formatblock") after
@@ -945,8 +928,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>": execCommand("defaultparagraphseparator", false, "div") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>": execCommand("formatblock", false, "<p>") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" checks for modifications to non-editable content
-[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p>" but got "<p style=\"color:rgb(0, 0, 255)\">foo</p>"
+[PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" compare innerHTML
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandIndeterm("stylewithcss") before
 [FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
@@ -970,8 +952,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>": execCommand("defaultparagraphseparator", false, "div") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>": execCommand("formatblock", false, "<p>") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" checks for modifications to non-editable content
-[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"#0000ff\">foo</font></p>" but got "<p style=\"color:rgb(0, 0, 255)\">foo</p>"
+[PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" compare innerHTML
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","div"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandValue("stylewithcss") before
@@ -994,8 +975,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>": execCommand("defaultparagraphseparator", false, "p") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>": execCommand("formatblock", false, "<p>") return value
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" checks for modifications to non-editable content
-[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><span style=\"color:rgb(0, 0, 255)\">foo</span></p>" but got "<p style=\"color:rgb(0, 0, 255)\">foo</p>"
+[PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" compare innerHTML
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","true"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandValue("stylewithcss") before
@@ -1018,8 +998,7 @@ Found 1034 tests; 940 PASS, 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>": execCommand("defaultparagraphseparator", false, "p") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>": execCommand("formatblock", false, "<p>") return value
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" checks for modifications to non-editable content
-[FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"#0000ff\">foo</font></p>" but got "<p style=\"color:rgb(0, 0, 255)\">foo</p>"
+[PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" compare innerHTML
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandIndeterm("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandState("stylewithcss") before
 [PASS] [["stylewithcss","false"],["defaultparagraphseparator","p"],["formatblock","<p>"]] "<div style=color:blue>[foo]</div>" queryCommandValue("stylewithcss") before

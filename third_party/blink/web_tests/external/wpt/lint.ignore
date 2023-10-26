@@ -310,8 +310,6 @@ GENERATE_TESTS: dom/ranges/Range-selectNode.html
 GENERATE_TESTS: dom/ranges/Range-set.html
 GENERATE_TESTS: dom/traversal/TreeWalker.html
 GENERATE_TESTS: domparsing/createContextualFragment.html
-GENERATE_TESTS: domxpath/001.html
-GENERATE_TESTS: domxpath/002.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-applyConstraints-reject.https.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getCapabilities.https.html
 GENERATE_TESTS: mediacapture-image/MediaStreamTrack-getConstraints.https.html
