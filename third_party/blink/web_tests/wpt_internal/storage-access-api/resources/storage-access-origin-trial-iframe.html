@@ -17,6 +17,7 @@
     let handle = await document.requestStorageAccess({all: true});
     handle.sessionStorage.clear();
     handle.localStorage.clear();
+    await handle.indexedDB.databases();
   } catch (_) {
     message = "NoAccess";
   }

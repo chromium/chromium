@@ -1553,6 +1553,7 @@ mojom("mojom_modules") {
     "indexeddb/indexeddb.mojom",
     "shared_storage/shared_storage.mojom",
     "shared_storage/shared_storage_worklet_service.mojom",
+    "storage_access/storage_access_handle.mojom",
   ]
 
   public_deps = [

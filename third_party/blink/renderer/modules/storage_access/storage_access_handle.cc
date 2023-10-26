@@ -22,11 +22,16 @@ const char StorageAccessHandle::kSessionStorageNotRequested[] =
 const char StorageAccessHandle::kLocalStorageNotRequested[] =
     "Local storage not requested when storage access handle was initialized.";
 
+// static
+const char StorageAccessHandle::kIndexedDBNotRequested[] =
+    "IndexedDB not requested when storage access handle was initialized.";
+
 StorageAccessHandle::StorageAccessHandle(
     LocalDOMWindow& window,
     const StorageAccessTypes* storage_access_types)
     : Supplement<LocalDOMWindow>(window),
-      storage_access_types_(storage_access_types) {
+      storage_access_types_(storage_access_types),
+      remote_(window.GetExecutionContext()) {
   window.CountUse(
       WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies);
   if (storage_access_types_->all()) {
@@ -43,11 +48,19 @@ StorageAccessHandle::StorageAccessHandle(
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage);
   }
+  if (storage_access_types_->indexedDB()) {
+    window.CountUse(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB);
+  }
   if (storage_access_types_->all() || storage_access_types_->sessionStorage()) {
     InitSessionStorage();
   }
   if (storage_access_types_->all() || storage_access_types_->localStorage()) {
     InitLocalStorage();
+  }
+  if (storage_access_types_->all() || storage_access_types_->indexedDB()) {
+    InitIndexedDB();
   }
 }
 
@@ -55,6 +68,8 @@ void StorageAccessHandle::Trace(Visitor* visitor) const {
   visitor->Trace(storage_access_types_);
   visitor->Trace(session_storage_);
   visitor->Trace(local_storage_);
+  visitor->Trace(remote_);
+  visitor->Trace(indexed_db_);
   ScriptWrappable::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
@@ -106,6 +121,18 @@ StorageArea* StorageAccessHandle::localStorage(
   return local_storage_;
 }
 
+IDBFactory* StorageAccessHandle::indexedDB(
+    ExceptionState& exception_state) const {
+  if (!storage_access_types_->all() && !storage_access_types_->indexedDB()) {
+    exception_state.ThrowSecurityError(kIndexedDBNotRequested);
+    return nullptr;
+  }
+  GetSupplementable()->CountUse(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use);
+  return indexed_db_;
+}
+
 void StorageAccessHandle::InitSessionStorage() {
   LocalDOMWindow* window = GetSupplementable();
   if (!window->GetFrame()) {
@@ -141,6 +168,32 @@ void StorageAccessHandle::InitLocalStorage() {
       window, {}, StorageNamespace::StorageContext::kStorageAccessAPI);
   local_storage_ = StorageArea::Create(window, std::move(storage_area),
                                        StorageArea::StorageType::kLocalStorage);
+}
+
+HeapMojoRemote<mojom::blink::StorageAccessHandle>&
+StorageAccessHandle::GetRemote() {
+  if (!remote_) {
+    mojo::PendingRemote<mojom::blink::StorageAccessHandle> remote;
+    GetSupplementable()
+        ->GetExecutionContext()
+        ->GetBrowserInterfaceBroker()
+        .GetInterface(remote.InitWithNewPipeAndPassReceiver());
+    remote_.Bind(std::move(remote),
+                 GetSupplementable()->GetExecutionContext()->GetTaskRunner(
+                     TaskType::kMiscPlatformAPI));
+  }
+  return remote_;
+}
+
+void StorageAccessHandle::InitIndexedDB() {
+  HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
+  if (!remote) {
+    return;
+  }
+  indexed_db_ = MakeGarbageCollected<IDBFactory>(GetSupplementable());
+  mojo::PendingRemote<mojom::blink::IDBFactory> indexed_db_remote;
+  remote->BindIndexedDB(indexed_db_remote.InitWithNewPipeAndPassReceiver());
+  indexed_db_->SetRemote(std::move(indexed_db_remote));
 }
 
 }  // namespace blink

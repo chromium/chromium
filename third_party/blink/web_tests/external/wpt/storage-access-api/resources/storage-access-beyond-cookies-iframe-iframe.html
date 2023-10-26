@@ -34,6 +34,19 @@
         handle.localStorage.clear();
         break;
       }
+      case "indexedDB": {
+        const handle = await document.requestStorageAccess({indexedDB: true});
+        const handle_dbs = await handle.indexedDB.databases();
+        if (handle_dbs.length != 1 || handle_dbs[0].name != id) {
+          message = "No first-party IndexedDB access";
+        }
+        const local_dbs = await window.indexedDB.databases();
+        if (local_dbs.length != 0) {
+          message = "Handle should not override window IndexedDB";
+        }
+        await handle.indexedDB.deleteDatabase(id);
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;

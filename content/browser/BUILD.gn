@@ -2191,6 +2191,8 @@ source_set("browser") {
     "startup_helper.h",
     "startup_task_runner.cc",
     "startup_task_runner.h",
+    "storage_access/storage_access_handle.cc",
+    "storage_access/storage_access_handle.h",
     "storage_partition_impl.cc",
     "storage_partition_impl.h",
     "storage_partition_impl_map.cc",

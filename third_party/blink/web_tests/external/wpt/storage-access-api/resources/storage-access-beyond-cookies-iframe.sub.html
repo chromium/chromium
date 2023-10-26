@@ -26,6 +26,13 @@
         }
         break;
       }
+      case "indexedDB": {
+        const dbs = await handle.indexedDB.databases();
+        if (dbs.length != 0) {
+          message = "Cross-site first-party IndexedDB should be empty";
+        }
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;
