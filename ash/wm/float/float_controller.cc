@@ -13,16 +13,18 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/float/scoped_window_tucker.h"
 #include "ash/wm/float/tablet_mode_tuck_education.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/scoped_window_tucker.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
@@ -46,6 +48,8 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -181,6 +185,86 @@ class FloatLayoutManager : public WmDefaultLayoutManager {
   }
 };
 
+class FloatScopedWindowTuckerDelegate : public ScopedWindowTucker::Delegate {
+ public:
+  FloatScopedWindowTuckerDelegate() = default;
+  FloatScopedWindowTuckerDelegate(const FloatScopedWindowTuckerDelegate&) =
+      delete;
+  FloatScopedWindowTuckerDelegate& operator=(
+      const FloatScopedWindowTuckerDelegate&) = delete;
+  ~FloatScopedWindowTuckerDelegate() override = default;
+
+  void PaintTuckHandle(gfx::Canvas* canvas, int width, bool left) override {
+    // Flip the canvas horizontally for `left` tuck handle.
+    if (left) {
+      canvas->Translate(gfx::Vector2d(width, 0));
+      canvas->Scale(-1, 1);
+    }
+
+    // We draw three icons on top of each other because we need separate
+    // themeing on different parts which is not supported by `VectorIcon`.
+    const bool dark_mode =
+        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+
+    // Paint the container bottom layer with default 80% opacity.
+    SkColor color = dark_mode ? gfx::kGoogleGrey500 : gfx::kGoogleGrey600;
+    const SkColor bottom_color =
+        SkColorSetA(color, std::round(SkColorGetA(color) * 0.8f));
+
+    const gfx::ImageSkia& tuck_container_bottom = gfx::CreateVectorIcon(
+        kTuckHandleContainerBottomIcon, ScopedWindowTucker::kTuckHandleWidth,
+        bottom_color);
+    canvas->DrawImageInt(tuck_container_bottom, 0, 0);
+
+    // Paint the container top layer. This is mostly transparent, with 12%
+    // opacity.
+    color = dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey600;
+    const SkColor top_color =
+        SkColorSetA(color, std::round(SkColorGetA(color) * 0.12f));
+    const gfx::ImageSkia& tuck_container_top =
+        gfx::CreateVectorIcon(kTuckHandleContainerTopIcon,
+                              ScopedWindowTucker::kTuckHandleWidth, top_color);
+    canvas->DrawImageInt(tuck_container_top, 0, 0);
+
+    const gfx::ImageSkia& tuck_icon = gfx::CreateVectorIcon(
+        kTuckHandleChevronIcon, ScopedWindowTucker::kTuckHandleWidth,
+        SK_ColorWHITE);
+    canvas->DrawImageInt(tuck_icon, 0, 0);
+  }
+
+  int ParentContainerId() const override {
+    return kShellWindowId_FloatContainer;
+  }
+
+  void UpdateWindowPosition(aura::Window* window, bool left) override {
+    TabletModeWindowState::UpdateWindowPosition(
+        WindowState::Get(window),
+        WindowState::BoundsChangeAnimationType::kNone);
+  }
+
+  void UntuckWindow(aura::Window* window) override {
+    Shell::Get()->float_controller()->MaybeUntuckFloatedWindowForTablet(window);
+  }
+
+  void OnAnimateTuckEnded(aura::Window* window) override {
+    ScopedAnimationDisabler disable(window);
+    window->Hide();
+  }
+
+  gfx::Rect GetTuckHandleBounds(bool left,
+                                const gfx::Rect& window_bounds) const override {
+    const gfx::Point tuck_handle_origin =
+        left ? window_bounds.right_center() -
+                   gfx::Vector2d(0, ScopedWindowTucker::kTuckHandleHeight / 2)
+             : window_bounds.left_center() -
+                   gfx::Vector2d(ScopedWindowTucker::kTuckHandleWidth,
+                                 ScopedWindowTucker::kTuckHandleHeight / 2);
+    return gfx::Rect(tuck_handle_origin,
+                     gfx::Size(ScopedWindowTucker::kTuckHandleWidth,
+                               ScopedWindowTucker::kTuckHandleHeight));
+  }
+};
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -241,8 +325,9 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
     // while in the constructor and also before `AnimateUntuck()` gets the
     // tucked window bounds.
     is_tucked_for_tablet_ = true;
-    scoped_window_tucker_ =
-        std::make_unique<ScopedWindowTucker>(floated_window_, left);
+    scoped_window_tucker_ = std::make_unique<ScopedWindowTucker>(
+        std::make_unique<FloatScopedWindowTuckerDelegate>(), floated_window_,
+        left);
     scoped_window_tucker_->AnimateTuck();
 
     // Education doesn't need to happen after the user has successfully tucked
