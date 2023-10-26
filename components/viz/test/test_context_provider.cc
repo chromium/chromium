@@ -188,16 +188,16 @@ TestSharedImageInterface::CreateSharedImage(
   return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
 }
 
-gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
-    SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
-    gpu::SurfaceHandle surface_handle,
-    gfx::BufferUsage buffer_usage) {
+scoped_refptr<gpu::ClientSharedImage>
+TestSharedImageInterface::CreateSharedImage(SharedImageFormat format,
+                                            const gfx::Size& size,
+                                            const gfx::ColorSpace& color_space,
+                                            GrSurfaceOrigin surface_origin,
+                                            SkAlphaType alpha_type,
+                                            uint32_t usage,
+                                            base::StringPiece debug_label,
+                                            gpu::SurfaceHandle surface_handle,
+                                            gfx::BufferUsage buffer_usage) {
   // Create a GMBHandle and a mailbox and associate the two for usage in
   // MapSharedImage().
   auto mailbox =
@@ -211,7 +211,7 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
           gpu::GpuMemoryBufferHandleInfo(std::move(gmb_handle), format, size,
                                          buffer_usage));
 
-  return mailbox;
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
 }
 
 gpu::Mailbox TestSharedImageInterface::CreateSharedImage(

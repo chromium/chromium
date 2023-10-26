@@ -27,6 +27,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -355,16 +356,16 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
 
     // Allocate MappableSharedImage if necessary.
     if (staging_buffer->mailbox.IsZero()) {
-      staging_buffer->mailbox = sii->CreateSharedImage(
+      auto client_shared_image = sii->CreateSharedImage(
           format, staging_buffer->size, dst_color_space,
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
           gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "OneCopyRasterStaging",
           gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
-    }
-
-    if (staging_buffer->mailbox.IsZero()) {
-      LOG(ERROR) << "Creation of MappableSharedImage failed.";
-      return false;
+      if (!client_shared_image) {
+        LOG(ERROR) << "Creation of MappableSharedImage failed.";
+        return false;
+      }
+      staging_buffer->mailbox = client_shared_image->mailbox();
     }
 
     mapping = sii->MapSharedImage(staging_buffer->mailbox);

@@ -16,6 +16,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -510,10 +511,15 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     // many backings do not support SHARED_IMAGE_USAGE_CPU_WRITE.
     // TODO(crbug.com/1478238): Add that usage flag back here once the issue is
     // resolved.
-    shared_image_mailbox = shared_image_interface->CreateSharedImage(
+
+    auto client_shared_image = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
         surface_alpha_type, shared_image_usage_flags, "CanvasResourceRasterGmb",
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+    if (!client_shared_image) {
+      return;
+    }
+    shared_image_mailbox = client_shared_image->mailbox();
   } else if (gpu_memory_buffer_) {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,

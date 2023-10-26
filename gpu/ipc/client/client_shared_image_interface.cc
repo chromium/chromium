@@ -117,7 +117,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
                                 alpha_type, usage, debug_label, pixel_data)));
 }
 
-Mailbox ClientSharedImageInterface::CreateSharedImage(
+scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -129,9 +129,13 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     gfx::BufferUsage buffer_usage) {
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
   DCHECK(gpu::IsValidClientUsage(usage)) << usage;
-  return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
-                                              surface_origin, alpha_type, usage,
-                                              debug_label, buffer_usage));
+  auto mailbox =
+      proxy_->CreateSharedImage(format, size, color_space, surface_origin,
+                                alpha_type, usage, debug_label, buffer_usage);
+  if (mailbox.IsZero()) {
+    return nullptr;
+  }
+  return base::MakeRefCounted<ClientSharedImage>(AddMailbox(mailbox));
 }
 
 Mailbox ClientSharedImageInterface::CreateSharedImage(

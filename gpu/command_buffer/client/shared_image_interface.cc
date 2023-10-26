@@ -12,7 +12,7 @@
 
 namespace gpu {
 
-Mailbox SharedImageInterface::CreateSharedImage(
+scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -23,7 +23,7 @@ Mailbox SharedImageInterface::CreateSharedImage(
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
   NOTREACHED();
-  return Mailbox();
+  return base::MakeRefCounted<ClientSharedImage>(Mailbox());
 }
 
 SharedImageInterface::ScopedMapping::ScopedMapping() = default;

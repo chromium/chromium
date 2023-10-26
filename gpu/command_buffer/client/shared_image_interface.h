@@ -161,15 +161,16 @@ class GPU_EXPORT SharedImageInterface {
   // TODO(crbug.com/1467584): Merge this method to above existing methods once
   // we figure out mapping between BufferUsage and SharedImageUsage and
   // eliminate all usages of BufferUsage.
-  virtual Mailbox CreateSharedImage(viz::SharedImageFormat format,
-                                    const gfx::Size& size,
-                                    const gfx::ColorSpace& color_space,
-                                    GrSurfaceOrigin surface_origin,
-                                    SkAlphaType alpha_type,
-                                    uint32_t usage,
-                                    base::StringPiece debug_label,
-                                    gpu::SurfaceHandle surface_handle,
-                                    gfx::BufferUsage buffer_usage);
+  virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      gpu::SurfaceHandle surface_handle,
+      gfx::BufferUsage buffer_usage);
 
   // Creates a shared image out an existing buffer. The buffer described by
   // `buffer_handle` must hold all planes based `format` and `size. `usage` is a
