@@ -140,11 +140,12 @@ class CookieControlsController
 
   // Determine the confidence of site being broken and user needing to use
   // cookie controls. It affects the prominence of UI entry points. It takes
-  // into account blocked third-party cookie access, exceptions
-  // lifecycle, site engagement index and recent user activity (like frequent
-  // page reloads).
+  // into account blocked third-party cookie access, enforcement by 3PCD
+  // metadata grant, exceptions lifecycle, site engagement index and recent user
+  // activity (like frequent page reloads).
   CookieControlsBreakageConfidenceLevel GetConfidenceLevel(
       CookieControlsStatus status,
+      CookieControlsEnforcement enforcement,
       int allowed_sites,
       int blocked_sites,
       int bounce_count);

@@ -147,9 +147,9 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
                                status.blocking_status, status.expiration);
       observer.OnSitesCountChanged(third_party_allowed_sites,
                                    third_party_blocked_sites);
-      observer.OnBreakageConfidenceLevelChanged(
-          GetConfidenceLevel(status.status, third_party_allowed_sites,
-                             third_party_blocked_sites, bounce_count));
+      observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
+          status.status, status.enforcement, third_party_allowed_sites,
+          third_party_blocked_sites, bounce_count));
     }
   } else {
     int allowed_cookies = GetAllowedCookieCount();
@@ -236,16 +236,21 @@ CookieControlsController::Status CookieControlsController::GetStatus(
 }
 
 CookieControlsBreakageConfidenceLevel
-CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
-                                             int allowed_sites,
-                                             int blocked_sites,
-                                             int bounce_count) {
+CookieControlsController::GetConfidenceLevel(
+    CookieControlsStatus status,
+    CookieControlsEnforcement enforcement,
+    int allowed_sites,
+    int blocked_sites,
+    int bounce_count) {
   // If 3PC cookies are not blocked by default:
   switch (status) {
     case CookieControlsStatus::kDisabled:
     case CookieControlsStatus::kUninitialized:
       return CookieControlsBreakageConfidenceLevel::kUninitialized;
     case CookieControlsStatus::kDisabledForSite:
+      if (enforcement == CookieControlsEnforcement::kEnforcedByTpcdGrant) {
+        return CookieControlsBreakageConfidenceLevel::kUninitialized;
+      }
       return CookieControlsBreakageConfidenceLevel::kMedium;
     case CookieControlsStatus::kEnabled:
       // Check other conditions to determine the level.
@@ -362,8 +367,8 @@ CookieControlsController::GetBreakageConfidenceLevel() {
     int allowed_sites = GetAllowedSitesCount();
     int blocked_sites = GetBlockedSitesCount();
     int bounce_count = GetStatefulBounceCount();
-    return GetConfidenceLevel(status.status, allowed_sites, blocked_sites,
-                              bounce_count);
+    return GetConfidenceLevel(status.status, status.enforcement, allowed_sites,
+                              blocked_sites, bounce_count);
   } else {
     return CookieControlsBreakageConfidenceLevel::kUninitialized;
   }
@@ -467,9 +472,9 @@ void CookieControlsController::PresentBlockedCookieCounter() {
     for (auto& observer : observers_) {
       observer.OnSitesCountChanged(third_party_allowed_sites,
                                    third_party_blocked_sites);
-      observer.OnBreakageConfidenceLevelChanged(
-          GetConfidenceLevel(status.status, third_party_allowed_sites,
-                             third_party_blocked_sites, bounce_count));
+      observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
+          status.status, status.enforcement, third_party_allowed_sites,
+          third_party_blocked_sites, bounce_count));
     }
   } else {
     int allowed_cookies = GetAllowedCookieCount();
@@ -525,8 +530,9 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
   int bounce_count = GetStatefulBounceCount();
 
   for (auto& observer : observers_) {
-    observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
-        status.status, allowed_sites, blocked_sites, bounce_count));
+    observer.OnBreakageConfidenceLevelChanged(
+        GetConfidenceLevel(status.status, status.enforcement, allowed_sites,
+                           blocked_sites, bounce_count));
   }
 }
 
