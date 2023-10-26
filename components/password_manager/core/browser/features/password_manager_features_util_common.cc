@@ -44,8 +44,7 @@ bool CanAccountStorageBeEnabled(const syncer::SyncService* sync_service) {
 // - Sync-the-transport is enabled (i.e. there's a signed-in user, Sync is not
 //   disabled by policy, etc).
 // - Desktop-only: There is no custom passphrase (because Sync transport offers
-//   no way to enter the passphrase yet). Note that checking this requires the
-//   SyncEngine to be initialized.
+//   no way to enter the passphrase yet).
 bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
   if (!CanAccountStorageBeEnabled(sync_service)) {
     return false;
@@ -68,8 +67,7 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
       break;
   }
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  if (!sync_service->IsEngineInitialized() ||
-      sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
+  if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return false;
   }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
@@ -80,14 +78,8 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
 
 bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service) {
-  // `sync_service` is null in incognito mode, or if --disable-sync was
-  // specified on the command-line.
-  // TODO(crbug.com/1462978): Delete the !IsSyncFeatureEnabled() check when
-  // ConsentLevel::kSync is deleted. See ConsentLevel::kSync documentation for
-  // details.
-  return sync_service && !sync_service->IsSyncFeatureEnabled() &&
-         (IsOptedInForAccountStorage(pref_service, sync_service) ||
-          internal::IsUserEligibleForAccountStorage(sync_service));
+  // Opted in implies eligible, so that case is covered here too.
+  return internal::IsUserEligibleForAccountStorage(sync_service);
 }
 
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(

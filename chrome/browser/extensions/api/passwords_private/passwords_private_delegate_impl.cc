@@ -670,8 +670,7 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
 
-  if (!client->GetPasswordFeatureManager()->IsOptedInForAccountStorage() ||
-      SyncServiceFactory::GetForProfile(profile_)->IsSyncFeatureEnabled()) {
+  if (!client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
     return;
   }
 
