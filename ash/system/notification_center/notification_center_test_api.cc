@@ -158,22 +158,18 @@ std::string NotificationCenterTestApi::AddProgressNotification() {
 }
 
 std::string NotificationCenterTestApi::AddNotificationWithSettingsButton() {
-  auto notification = CreateSimpleNotification();
-  auto id = notification->id();
+  const auto id = GenerateNotificationId();
+  auto notification = std::make_unique<message_center::Notification>(
+      message_center::NOTIFICATION_TYPE_SIMPLE, id, u"test_title",
+      u"test_message", /*icon=*/ui::ImageModel(),
+      /*display_source=*/base::EmptyString16(), GURL(),
+      message_center::NotifierId(), message_center::RichNotificationData(),
+      new message_center::NotificationDelegate());
   // Setting this to a value other than the default
   // `message_center::SettingsButtonHandler::NONE` makes the settings control
   // button visible.
   notification->set_settings_button_handler(
       message_center::SettingsButtonHandler::DELEGATE);
-  message_center::MessageCenter::Get()->AddNotification(
-      std::move(notification));
-  return id;
-}
-
-std::string NotificationCenterTestApi::AddLowPriorityNotification() {
-  auto notification = CreateSimpleNotification();
-  auto id = notification->id();
-  notification->set_priority(message_center::LOW_PRIORITY);
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
   return id;
@@ -426,16 +422,6 @@ NotificationCenterTestApi::CreateNotification(
   return std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message, icon,
       display_source, url, notifier_id, optional_fields,
-      new message_center::NotificationDelegate());
-}
-
-std::unique_ptr<message_center::Notification>
-NotificationCenterTestApi::CreateSimpleNotification() {
-  return std::make_unique<message_center::Notification>(
-      message_center::NOTIFICATION_TYPE_SIMPLE, GenerateNotificationId(),
-      u"test_title", u"test_message", /*icon=*/ui::ImageModel(),
-      /*display_source=*/base::EmptyString16(), GURL(),
-      message_center::NotifierId(), message_center::RichNotificationData(),
       new message_center::NotificationDelegate());
 }
 

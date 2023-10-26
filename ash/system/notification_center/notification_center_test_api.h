@@ -109,9 +109,6 @@ class NotificationCenterTestApi {
   // and returns its id.
   std::string AddNotificationWithSettingsButton();
 
-  // Adds a notification with priority `LOW_PRIORITY` and returns its id.
-  std::string AddLowPriorityNotification();
-
   // Removes the notification associated with the provided id.
   void RemoveNotification(const std::string& id);
 
@@ -264,12 +261,6 @@ class NotificationCenterTestApi {
       const GURL& url,
       const message_center::NotifierId& notifier_id,
       const message_center::RichNotificationData& optional_fields);
-
-  // Creates and returns a `NOTIFICATION_TYPE_SIMPLE` notification with mostly
-  // default parameters. The notification's id is obtained via
-  // `GenerateNotificationId()`, and the title and description are "test_title"
-  // and "test_message", respectively.
-  std::unique_ptr<message_center::Notification> CreateSimpleNotification();
 
   int notification_id_ = 0;
   const raw_ptr<NotificationCenterTray, DanglingUntriaged | ExperimentalAsh>
