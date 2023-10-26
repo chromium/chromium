@@ -171,31 +171,32 @@ void UserCloudSigninRestrictionPolicyFetcher::
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
 
   absl::optional<int> response_code;
-  if (url_loader && url_loader->ResponseInfo() &&
-      url_loader->ResponseInfo()->headers) {
-    response_code = url_loader->ResponseInfo()->headers->response_code();
-  }
+  if (url_loader) {
+    if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
+      response_code = url_loader->ResponseInfo()->headers->response_code();
+    }
 
-  if (response_code) {
-    base::UmaHistogramSparse(
-        "Enterprise.ProfileSeparation.DasherPolicyFetch.HttpResponse",
-        response_code.value());
-  }
-
-  base::UmaHistogramSparse(
-      "Enterprise.ProfileSeparation.DasherPolicyFetch.NetworkError",
-      url_loader->NetError());
-  if (url_loader->NetError() != net::OK) {
     if (response_code) {
-      LOG_POLICY(WARNING, POLICY_AUTH) << "ManagedAccountsSigninRestriction "
-                                          "request failed with HTTP code: "
-                                       << response_code.value();
-    } else {
-      error =
-          GoogleServiceAuthError::FromConnectionError(url_loader->NetError());
-      LOG_POLICY(WARNING, POLICY_AUTH)
-          << "ManagedAccountsSigninRestriction request failed with error: "
-          << url_loader->NetError();
+      base::UmaHistogramSparse(
+          "Enterprise.ProfileSeparation.DasherPolicyFetch.HttpResponse",
+          response_code.value());
+    }
+
+    base::UmaHistogramSparse(
+        "Enterprise.ProfileSeparation.DasherPolicyFetch.NetworkError",
+        url_loader->NetError());
+    if (url_loader->NetError() != net::OK) {
+      if (response_code) {
+        LOG_POLICY(WARNING, POLICY_AUTH) << "ManagedAccountsSigninRestriction "
+                                            "request failed with HTTP code: "
+                                         << response_code.value();
+      } else {
+        error =
+            GoogleServiceAuthError::FromConnectionError(url_loader->NetError());
+        LOG_POLICY(WARNING, POLICY_AUTH)
+            << "ManagedAccountsSigninRestriction request failed with error: "
+            << url_loader->NetError();
+      }
     }
   }
 
