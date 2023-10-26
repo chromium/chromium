@@ -60,8 +60,19 @@ void FakeCrosNetworkConfig::GetVpnProviders(GetVpnProvidersCallback callback) {
 }
 
 void FakeCrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
-                                            mojom::ApnPropertiesPtr apn) {
-  custom_apns_.push_back(std::move(apn));
+                                            mojom::ApnPropertiesPtr apn,
+                                            CreateCustomApnCallback callback) {
+  pending_create_custom_apn_callbacks_.push(
+      std::make_pair(std::move(callback), std::move(apn)));
+}
+
+void FakeCrosNetworkConfig::InvokePendingCreateCustomApnCallback(bool success) {
+  if (success) {
+    custom_apns_.push_back(
+        std::move(pending_create_custom_apn_callbacks_.front().second));
+  }
+  std::move(pending_create_custom_apn_callbacks_.front().first).Run(success);
+  pending_create_custom_apn_callbacks_.pop();
 }
 
 void FakeCrosNetworkConfig::SetDeviceProperties(

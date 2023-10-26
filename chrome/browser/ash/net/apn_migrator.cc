@@ -191,10 +191,7 @@ void ApnMigrator::OnSetShillCustomApnListSuccess(const std::string iccid) {
 
   // The network has just been migrated.
   if (!managed_cellular_pref_handler_->ContainsApnMigratedIccid(iccid)) {
-    NET_LOG(EVENT) << "ApnMigrator: Mark network with ICCID: " << iccid
-                   << " as migrated";
-    managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
-    iccids_in_migration_.erase(iccid);
+    CompleteMigrationAttempt(iccid, /*success=*/true);
   }
 }
 
@@ -206,7 +203,7 @@ void ApnMigrator::OnSetShillCustomApnListFailure(
                  << "list in Shill for network: " << guid << ": [" << error_name
                  << ']';
 
-  iccids_in_migration_.erase(iccid);
+  CompleteMigrationAttempt(iccid, /*success=*/false);
 }
 
 void ApnMigrator::MigrateNetwork(const NetworkState& network) {
@@ -261,13 +258,13 @@ void ApnMigrator::OnGetManagedProperties(
   if (error.has_value()) {
     NET_LOG(ERROR) << "Error fetching managed properties for " << iccid
                    << ", error: " << error.value();
-    iccids_in_migration_.erase(iccid);
+    CompleteMigrationAttempt(iccid, /*success=*/false);
     return;
   }
 
   if (!properties) {
     NET_LOG(ERROR) << "Error fetching managed properties for " << iccid;
-    iccids_in_migration_.erase(iccid);
+    CompleteMigrationAttempt(iccid, /*success=*/false);
     return;
   }
 
@@ -275,7 +272,7 @@ void ApnMigrator::OnGetManagedProperties(
       network_state_handler_->GetNetworkStateFromGuid(guid);
   if (!network) {
     NET_LOG(ERROR) << "Network no longer exists: " << guid;
-    iccids_in_migration_.erase(iccid);
+    CompleteMigrationAttempt(iccid, /*success=*/false);
     return;
   }
 
@@ -336,8 +333,7 @@ void ApnMigrator::OnGetManagedProperties(
       CellularNetworkMetricsLogger::LogManagedCustomApnMigrationType(
           CellularNetworkMetricsLogger::ManagedApnMigrationType::
               kMatchesSelectedApn);
-      remote_cros_network_config_->CreateCustomApn(
-          guid, std::move(pre_revamp_custom_apn));
+      CreateCustomApn(iccid, guid, std::move(pre_revamp_custom_apn));
     } else {
       NET_LOG(EVENT)
           << "Managed network's selected APN doesn't match the saved custom "
@@ -383,8 +379,8 @@ void ApnMigrator::OnGetManagedProperties(
       }
       pre_revamp_custom_apn->apn_types =
           GetMigratedApnTypes(pre_revamp_custom_apn);
-      remote_cros_network_config_->CreateCustomApn(
-          guid, std::move(pre_revamp_custom_apn));
+      CreateCustomApn(iccid, guid, std::move(pre_revamp_custom_apn));
+
     } else if (last_connected_attach_apn && last_connected_default_apn &&
                pre_revamp_custom_apn->access_point_name ==
                    (*last_connected_attach_apn)->access_point_name &&
@@ -400,8 +396,7 @@ void ApnMigrator::OnGetManagedProperties(
       CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
           CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
               kMatchesLastConnectedAttachAndDefault);
-      remote_cros_network_config_->CreateCustomApn(
-          guid, std::move(pre_revamp_custom_apn));
+      CreateCustomApn(iccid, guid, std::move(pre_revamp_custom_apn));
     } else if (last_connected_attach_apn && last_connected_default_apn &&
                pre_revamp_custom_apn->access_point_name ==
                    (*last_connected_attach_apn)->access_point_name &&
@@ -427,11 +422,42 @@ void ApnMigrator::OnGetManagedProperties(
         CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
             CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
                 kMatchesLastConnectedAttachHasMatchingDatabaseApn);
-        remote_cros_network_config_->CreateCustomApn(
-            guid, last_connected_default_apn->Clone());
+
+        // Default custom APN in the enabled state must be created before attach
+        // APN is created in the enabled state. See b/303565348.
+        auto create_custom_attach_apn_callback = base::BindOnce(
+            &ApnMigrator::CreateCustomApn, weak_factory_.GetWeakPtr(), iccid,
+            guid, last_connected_attach_apn->Clone(), absl::nullopt);
+
+        auto on_create_default_apn_callback = base::BindOnce(
+            [](base::OnceClosure success_callback, const std::string& guid,
+               bool success) {
+              if (success) {
+                NET_LOG(EVENT)
+                    << "ApnMigrator: Succeeded migrating custom default APN "
+                       "for network guid in the enabled state: "
+                    << guid
+                    << ", now migrating different custom attach APN in enabled "
+                       "state.";
+                std::move(success_callback).Run();
+                return;
+              }
+              NET_LOG(ERROR)
+                  << "ApnMigrator: Failed to create custom default APN for "
+                     "network of guid: "
+                  << guid
+                  << ", so will not proceed to create associated custom attach "
+                     "APN";
+            },
+            std::move(create_custom_attach_apn_callback), guid);
+
+        CreateCustomApn(iccid, guid, last_connected_default_apn->Clone(),
+                        std::move(on_create_default_apn_callback));
       } else {
         //  Fallback to the catch-all case where the attach APN with a disabled
         //  state is migrated so that Shill will know to use the revamped logic.
+        //  TODO(b/303565348): Fix CrosNetworkConfig to allow creating disabled
+        //  attach apns.
         NET_LOG(EVENT)
             << "Network's last connected default APN does not match an "
             << "APN in the network list, migrating last connected "
@@ -442,10 +468,8 @@ void ApnMigrator::OnGetManagedProperties(
         CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
             CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
                 kMatchesLastConnectedAttachHasNoMatchingDatabaseApn);
+        CreateCustomApn(iccid, guid, last_connected_attach_apn->Clone());
       }
-
-      remote_cros_network_config_->CreateCustomApn(
-          guid, last_connected_attach_apn->Clone());
     } else if (!last_connected_attach_apn && last_connected_default_apn &&
                pre_revamp_custom_apn->access_point_name ==
                    (*last_connected_default_apn)->access_point_name) {
@@ -460,8 +484,7 @@ void ApnMigrator::OnGetManagedProperties(
       CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
           CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
               kMatchesLastConnectedDefaultNoLastConnectedAttach);
-      remote_cros_network_config_->CreateCustomApn(
-          guid, std::move(pre_revamp_custom_apn));
+      CreateCustomApn(iccid, guid, std::move(pre_revamp_custom_apn));
     } else {
       NET_LOG(EVENT) << "Network's last connected default APN and attach APN "
                      << "do not match the saved custom APN, migrating APN: "
@@ -473,15 +496,32 @@ void ApnMigrator::OnGetManagedProperties(
       CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
           CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
               kNoMatchingConnectedApn);
-      remote_cros_network_config_->CreateCustomApn(
-          guid, std::move(pre_revamp_custom_apn));
+      CreateCustomApn(iccid, guid, std::move(pre_revamp_custom_apn));
     }
   }
+}
 
-  NET_LOG(EVENT) << "ApnMigrator: Mark network with ICCID: " << iccid
-                 << " as migrated";
-  managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
+void ApnMigrator::CreateCustomApn(
+    const std::string& iccid,
+    const std::string& network_guid,
+    chromeos::network_config::mojom::ApnPropertiesPtr apn,
+    absl::optional<base::OnceCallback<void(bool)>> success_callback) {
+  remote_cros_network_config_->CreateCustomApn(
+      network_guid, std::move(apn),
+      success_callback ? std::move(*success_callback)
+                       : base::BindOnce(&ApnMigrator::CompleteMigrationAttempt,
+                                        weak_factory_.GetWeakPtr(), iccid));
+}
+
+void ApnMigrator::CompleteMigrationAttempt(const std::string& iccid,
+                                           bool success) {
   iccids_in_migration_.erase(iccid);
+
+  if (success) {
+    NET_LOG(EVENT) << "ApnMigrator: Mark network with ICCID: " << iccid
+                   << " as migrated";
+    managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
+  }
 }
 
 NetworkMetadataStore* ApnMigrator::GetNetworkMetadataStore() {
