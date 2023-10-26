@@ -104,6 +104,7 @@ GetUnusedSitePermissionsFromDict(
 
 // Returns the state of Safe Browsing setting.
 SafeBrowsingState GetSafeBrowsingState(PrefService* pref_service) {
+  // TODO(crbug.com/1443466): Use SafeBrowsingResult from Safety Hub instead.
   if (safe_browsing::IsEnhancedProtectionEnabled(*pref_service))
     return SafeBrowsingState::kEnabledEnhanced;
   if (safe_browsing::IsSafeBrowsingEnabled(*pref_service))

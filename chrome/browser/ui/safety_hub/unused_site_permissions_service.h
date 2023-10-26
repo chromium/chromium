@@ -204,9 +204,6 @@ class UnusedSitePermissionsService : public SafetyHubService,
       const scoped_refptr<HostContentSettingsMap> hcsm);
 
   // SafetyHubService implementation
-  std::unique_ptr<SafetyHubService::Result> GetResultFromDictValue(
-      const base::Value::Dict& dict) override;
-
   // Returns a weak pointer to the service.
   base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
 

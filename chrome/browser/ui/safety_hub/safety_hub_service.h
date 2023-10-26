@@ -106,10 +106,6 @@ class SafetyHubService : public KeyedService,
   // Returns the latest result that is available in memory.
   absl::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
 
-  // Initializes a result object from a base::Value::Dict value.
-  virtual std::unique_ptr<SafetyHubService::Result> GetResultFromDictValue(
-      const base::Value::Dict& dict) = 0;
-
   // KeyedService implementation.
   void Shutdown() override;
 

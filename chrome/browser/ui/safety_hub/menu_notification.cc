@@ -8,7 +8,11 @@
 #include <string>
 
 #include "base/json/values_util.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 
 SafetyHubMenuNotification::SafetyHubMenuNotification()
     : is_currently_active_(false),
@@ -19,7 +23,8 @@ SafetyHubMenuNotification::SafetyHubMenuNotification()
 SafetyHubMenuNotification::~SafetyHubMenuNotification() = default;
 
 SafetyHubMenuNotification::SafetyHubMenuNotification(
-    const base::Value::Dict& dict) {
+    const base::Value::Dict& dict,
+    safety_hub::SafetyHubModuleType type) {
   is_currently_active_ =
       dict.FindBool(kSafetyHubMenuNotificationActiveKey).value();
   impression_count_ =
@@ -28,6 +33,10 @@ SafetyHubMenuNotification::SafetyHubMenuNotification(
       dict.Find(kSafetyHubMenuNotificationFirstImpressionKey));
   last_impression_time_ =
       base::ValueToTime(dict.Find(kSafetyHubMenuNotificationLastImpressionKey));
+  if (dict.contains(kSafetyHubMenuNotificationResultKey)) {
+    result_ = GetResultFromDict(
+        *dict.FindDict(kSafetyHubMenuNotificationResultKey), type);
+  }
 }
 
 base::Value::Dict SafetyHubMenuNotification::ToDictValue() const {
@@ -134,18 +143,6 @@ void SafetyHubMenuNotification::UpdateResult(
   result_ = std::move(result);
 }
 
-// static
-std::unique_ptr<SafetyHubMenuNotification>
-SafetyHubMenuNotification::FromDictValue(const base::Value::Dict& dict,
-                                         SafetyHubService* service) {
-  auto notification = std::make_unique<SafetyHubMenuNotification>(dict);
-  if (dict.contains(kSafetyHubMenuNotificationResultKey)) {
-    notification->result_ = service->GetResultFromDictValue(
-        *dict.FindDict(kSafetyHubMenuNotificationResultKey));
-  }
-  return notification;
-}
-
 std::u16string SafetyHubMenuNotification::GetNotificationString() const {
   CHECK(result_);
   return result_->GetNotificationString();
@@ -159,4 +156,22 @@ int SafetyHubMenuNotification::GetNotificationCommandId() const {
 SafetyHubService::Result* SafetyHubMenuNotification::GetResultForTesting()
     const {
   return result_.get();
+}
+
+// static
+std::unique_ptr<SafetyHubService::Result>
+SafetyHubMenuNotification::GetResultFromDict(
+    const base::Value::Dict& dict,
+    safety_hub::SafetyHubModuleType type) {
+  switch (type) {
+    case safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS:
+      return std::make_unique<
+          UnusedSitePermissionsService::UnusedSitePermissionsResult>(dict);
+    case safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS:
+      return std::make_unique<
+          NotificationPermissionsReviewService::NotificationPermissionsResult>(
+          dict);
+    case safety_hub::SafetyHubModuleType::SAFE_BROWSING:
+      return std::make_unique<SafetyHubSafeBrowsingResult>(dict);
+  }
 }

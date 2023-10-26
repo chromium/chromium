@@ -10,6 +10,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,7 +32,8 @@ constexpr int kSafetyHubMenuNotificationMinImpressionCount = 5;
 class SafetyHubMenuNotification {
  public:
   SafetyHubMenuNotification();
-  explicit SafetyHubMenuNotification(const base::Value::Dict& dict);
+  explicit SafetyHubMenuNotification(const base::Value::Dict& dict,
+                                     safety_hub::SafetyHubModuleType type);
 
   SafetyHubMenuNotification(const SafetyHubMenuNotification&) = delete;
   SafetyHubMenuNotification& operator=(const SafetyHubMenuNotification&) =
@@ -40,10 +42,6 @@ class SafetyHubMenuNotification {
   ~SafetyHubMenuNotification();
 
   base::Value::Dict ToDictValue() const;
-
-  static std::unique_ptr<SafetyHubMenuNotification> FromDictValue(
-      const base::Value::Dict& dict,
-      SafetyHubService* service);
 
   // Called when the menu notification will be shown. This will make the
   // notification the currently active one.
@@ -88,6 +86,10 @@ class SafetyHubMenuNotification {
   // Returns whether any notification for the same type of result has been
   // shown.
   bool HasAnyNotificationBeenShown() const;
+  // Returns a result based on the values defined in the provided dictionary.
+  static std::unique_ptr<SafetyHubService::Result> GetResultFromDict(
+      const base::Value::Dict& dict,
+      safety_hub::SafetyHubModuleType type);
 
   // Indicates whether the notification is actively being shown.
   bool is_currently_active_ = false;

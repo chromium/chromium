@@ -12,6 +12,7 @@ namespace safety_hub {
 extern const char kCardHeaderKey[];
 extern const char kCardSubheaderKey[];
 extern const char kCardStateKey[];
+extern const char kSafetyHubSafeBrowsingStatusKey[];
 
 // State that a top card in the SafetyHub page can be in.
 // Should be kept in sync with the corresponding enum in
@@ -29,6 +30,15 @@ extern const base::TimeDelta kMinTimeBetweenPasswordChecks;
 // When the password check didn't run at its scheduled time (e.g. client was
 // offline) it will be scheduled to run within this time frame.
 extern const base::TimeDelta kPasswordCheckOverdueTimeWindow;
+
+// An enum of the different Safety Hub modules that are available. This should
+// be updated whenever a notification for a new module is added to or removed
+// from the three-dot menu.
+enum class SafetyHubModuleType {
+  UNUSED_SITE_PERMISSIONS,
+  NOTIFICATION_PERMISSIONS,
+  SAFE_BROWSING,
+};
 
 }  // namespace safety_hub
 

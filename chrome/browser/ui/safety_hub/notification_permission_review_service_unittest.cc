@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+
+#include <memory>
+
 #include "base/run_loop.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
@@ -295,15 +298,11 @@ TEST_F(NotificationPermissionReviewServiceTest, ResultToFromDict) {
 
   // When the Dict is restored into a NotificationPermissionsResult, the values
   // should be correctly created.
-  auto* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
-  std::unique_ptr<SafetyHubService::Result> new_result =
-      service->GetResultFromDictValue(dict);
+  auto new_result = std::make_unique<
+      NotificationPermissionsReviewService::NotificationPermissionsResult>(
+      dict);
   std::vector<std::pair<ContentSettingsPattern, int>> new_notification_perms =
-      static_cast<
-          NotificationPermissionsReviewService::NotificationPermissionsResult*>(
-          new_result.get())
-          ->GetNotificationPermissions();
+      new_result->GetNotificationPermissions();
   EXPECT_EQ(1U, new_notification_perms.size());
   EXPECT_EQ(origin, new_notification_perms.front().first);
   EXPECT_EQ(notification_count, new_notification_perms.front().second);

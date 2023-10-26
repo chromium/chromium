@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -109,8 +110,9 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
 
   // Using the dict from before, we can create another menu notification object
   // that should have the same properties as when it was initially created.
-  std::unique_ptr<SafetyHubMenuNotification> new_notification =
-      SafetyHubMenuNotification::FromDictValue(std::move(dict), service());
+  auto new_notification = std::make_unique<SafetyHubMenuNotification>(
+      std::move(dict),
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
   EXPECT_TRUE(new_notification->is_currently_active_);
   EXPECT_EQ(42, new_notification->impression_count_);
   EXPECT_EQ(kPastTime, new_notification->first_impression_time_);
@@ -230,3 +232,6 @@ TEST_F(SafetyHubMenuNotificationTest, IsCurrentlyActive) {
   notification->Dismiss();
   ASSERT_FALSE(notification->IsCurrentlyActive());
 }
+
+// TODO(crbug.com/1443466): Add tests for other types of Safety Hub services and
+// Safety Hub results.

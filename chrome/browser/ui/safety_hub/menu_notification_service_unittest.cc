@@ -23,6 +23,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/pref_names.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -138,7 +139,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
   EXPECT_TRUE(notification.has_value());
   SafetyHubMenuNotification* old_notification =
       menu_notification_service()->GetNotificationForTesting(
-          SafetyHubServiceType::UNUSED_SITE_PERMISSIONS);
+          safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
   EXPECT_TRUE(old_notification->IsCurrentlyActive());
   auto* old_result =
       static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
@@ -156,7 +157,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
   // new one.
   SafetyHubMenuNotification* new_notification =
       new_service->GetNotificationForTesting(
-          SafetyHubServiceType::UNUSED_SITE_PERMISSIONS);
+          safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
   EXPECT_TRUE(new_notification->IsCurrentlyActive());
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
@@ -257,6 +258,32 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
 
   // Both notifications have been shown sufficiently, so no new notification
   // should be shown.
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+}
+
+TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingOverride) {
+  // Create a notification for a module that has low priority notifications.
+  CreateMockUnusedSitePermissionsEntry();
+  absl::optional<MenuNotificationEntry> notification;
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  ExpectPluralString(
+      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+      notification->label);
+
+  // Disable safe browsing, which generates a medium-priority Safe Browsing
+  // notification that should override the low priority notification.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION),
+            notification.value().label);
+
+  // Re-enabling Safe Browsing should clear the notification. Because the unused
+  // site permission notification was dismissed, it will not be shown either.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_FALSE(notification.has_value());
 }

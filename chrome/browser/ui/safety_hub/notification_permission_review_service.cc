@@ -289,12 +289,6 @@ void NotificationPermissionsReviewService::OnContentSettingChanged(
 
 void NotificationPermissionsReviewService::Shutdown() {}
 
-std::unique_ptr<SafetyHubService::Result>
-NotificationPermissionsReviewService::GetResultFromDictValue(
-    const base::Value::Dict& dict) {
-  return std::make_unique<NotificationPermissionsResult>(dict);
-}
-
 void NotificationPermissionsReviewService::
     AddPatternToNotificationPermissionReviewBlocklist(
         const ContentSettingsPattern& primary_pattern,
