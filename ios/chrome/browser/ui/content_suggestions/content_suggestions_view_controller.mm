@@ -17,9 +17,12 @@
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
@@ -1229,6 +1232,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   _magicStack.axis = UILayoutConstraintAxisHorizontal;
   _magicStack.distribution = UIStackViewDistributionEqualSpacing;
   _magicStack.spacing = kMagicStackSpacing;
+  [self.layoutGuideCenter referenceView:_magicStack underName:kMagicStackGuide];
   _magicStack.accessibilityIdentifier = kMagicStackViewAccessibilityIdentifier;
   // Ensures modules take up entire height of the Magic Stack.
   _magicStack.alignment = UIStackViewAlignmentFill;
@@ -1404,6 +1408,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         constraintEqualToConstant:kMagicStackEditButtonWidth],
     [editButton.heightAnchor constraintEqualToAnchor:editButton.widthAnchor]
   ]];
+  [self.parcelTrackingCommandHandler showParcelTrackingIPH];
 }
 
 // Adds two placeholder modules to Magic Stack.

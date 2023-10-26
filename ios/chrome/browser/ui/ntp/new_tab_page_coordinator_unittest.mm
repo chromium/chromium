@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -273,6 +274,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     snackbar_commands_handler_mock =
         OCMProtocolMock(@protocol(SnackbarCommands));
     fakebox_focuser_handler_mock = OCMProtocolMock(@protocol(FakeboxFocuser));
+    parcel_tracking_commands_handler_mock_ =
+        OCMProtocolMock(@protocol(ParcelTrackingOptInCommands));
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:omnibox_commands_handler_mock
                      forProtocol:@protocol(OmniboxCommands)];
@@ -282,6 +285,9 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:fakebox_focuser_handler_mock
                      forProtocol:@protocol(FakeboxFocuser)];
+    [browser_.get()->GetCommandDispatcher()
+        startDispatchingToTarget:parcel_tracking_commands_handler_mock_
+                     forProtocol:@protocol(ParcelTrackingOptInCommands)];
   }
 
   // Dynamically calls a selector on an object.
@@ -345,6 +351,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   id omnibox_commands_handler_mock;
   id snackbar_commands_handler_mock;
   id fakebox_focuser_handler_mock;
+  id parcel_tracking_commands_handler_mock_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -736,6 +743,7 @@ TEST_F(NewTabPageCoordinatorTest, SelectFeedType) {
   scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
 
   CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
   [coordinator_ start];
   // Simulate the view appearing.
   [coordinator_.NTPViewController beginAppearanceTransition:YES animated:NO];

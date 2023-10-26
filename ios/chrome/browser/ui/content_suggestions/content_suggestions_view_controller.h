@@ -12,9 +12,11 @@
 @protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
+@protocol ParcelTrackingOptInCommands;
 @protocol SafetyCheckViewDelegate;
 @protocol SetUpListViewDelegate;
 @class ContentSuggestionsMetricsRecorder;
+@class LayoutGuideCenter;
 class UrlLoadingBrowserAgent;
 
 // CollectionViewController to display the suggestions items.
@@ -48,6 +50,13 @@ class UrlLoadingBrowserAgent;
 
 // Delegate for SetUpListView events.
 @property(nonatomic, weak) id<SetUpListViewDelegate> setUpListViewDelegate;
+
+// Handler for the Parcel Tracking Commands.
+@property(nonatomic, weak) id<ParcelTrackingOptInCommands>
+    parcelTrackingCommandHandler;
+
+// The layout guide center to use to refer to the Magic Stack.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 @end
 

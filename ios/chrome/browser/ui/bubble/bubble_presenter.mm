@@ -76,6 +76,8 @@
     priceNotificationsWhileBrowsingBubbleTipPresenter;
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* lensKeyboardPresenter;
+@property(nonatomic, strong)
+    BubbleViewControllerPresenter* parcelTrackingTipBubblePresenter;
 @property(nonatomic, assign) WebStateList* webStateList;
 @property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
 @property(nonatomic, assign) HostContentSettingsMap* settingsMap;
@@ -151,6 +153,7 @@
   [self.whatsNewBubblePresenter dismissAnimated:NO];
   [self.lensKeyboardPresenter dismissAnimated:NO];
   [self.defaultPageModeTipBubblePresenter dismissAnimated:NO];
+  [self.parcelTrackingTipBubblePresenter dismissAnimated:NO];
 }
 
 - (void)presentDiscoverFeedHeaderTipBubble {
@@ -326,6 +329,37 @@
   }
 
   self.lensKeyboardPresenter = presenter;
+}
+
+- (void)presentParcelTrackingTipBubble {
+  if (![self canPresentBubble]) {
+    return;
+  }
+
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+  NSString* text = l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_IPH);
+
+  UIView* magicStack =
+      [self.layoutGuideCenter referencedViewUnderName:kMagicStackGuide];
+  CGPoint magicStackAnchor =
+      [magicStack.superview convertPoint:magicStack.frame.origin toView:nil];
+  magicStackAnchor.x = [[UIScreen mainScreen] bounds].size.width / 2;
+
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHiOSParcelTrackingFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentCenter
+                         text:text
+        voiceOverAnnouncement:text
+                  anchorPoint:magicStackAnchor
+                presentAction:nil
+                dismissAction:nil];
+
+  if (!presenter) {
+    return;
+  }
+
+  self.parcelTrackingTipBubblePresenter = presenter;
 }
 
 #pragma mark - Private
