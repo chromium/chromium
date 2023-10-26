@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -148,12 +149,15 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
   }
 
   // Simulates receiving the model from the server, with metadata attached.
-  void SimulateRetrieveModelFromServer() {
+  // An optional `confidence_threshold` for the metadata can be provided.
+  void SimulateRetrieveModelFromServer(
+      std::optional<float> confidence_threshold = std::nullopt) {
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         optimization_guide::TestModelInfoBuilder()
             .SetModelFilePath(
                 test_data_dir_.AppendASCII("autofill_model-br-overfit.tflite"))
-            .SetModelMetadata(WrapMetadata(ConstructorModelMetadata()))
+            .SetModelMetadata(
+                WrapMetadata(ConstructorModelMetadata(confidence_threshold)))
             .Build();
     model_handler_->OnModelUpdated(
         optimization_guide::proto::
@@ -166,8 +170,9 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
   // Constructs metadata for the model:
   // - `input_token()`s are constructed from a test dictionary file
   // - `output_type()`s are constructed from `kSupportedFieldTypes`.
+  // - A `confidence_threshold`, if provided.
   optimization_guide::proto::AutofillFieldClassificationModelMetadata
-  ConstructorModelMetadata() const {
+  ConstructorModelMetadata(std::optional<float> confidence_threshold) const {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;
     // Construct `input_token()`.
@@ -177,6 +182,9 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
     // Construct `output_type()`.
     for (ServerFieldType type : kSupportedFieldTypes) {
       metadata.add_output_type(static_cast<int>(type));
+    }
+    if (confidence_threshold) {
+      metadata.set_confidence_threshold(*confidence_threshold);
     }
     return metadata;
   }
@@ -230,6 +238,24 @@ TEST_F(AutofillMlPredictionModelHandlerTest, GetModelPredictionsForForm) {
                                              future.GetCallback());
   EXPECT_THAT(future.Get()->fields(),
               testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
+}
+
+// Tests that predictions with a confidence below the threshold are reported as
+// UNKNOWN_TYPE.
+TEST_F(AutofillMlPredictionModelHandlerTest,
+       GetModelPredictionsForForm_Threshold) {
+  // The test model's outputs are unnormalized and below 20 for the
+  // `CreateOverfittedForm()`. Set a really high threshold and expect that
+  // all predictions are suppressed.
+  SimulateRetrieveModelFromServer(/*confidence_threshold=*/100);
+  std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future;
+  model_handler().GetModelPredictionsForForm(std::move(form_structure),
+                                             future.GetCallback());
+  EXPECT_THAT(future.Get()->fields(),
+              testing::Pointwise(
+                  MlTypeEq(), std::vector<ServerFieldType>(
+                                  future.Get()->field_count(), UNKNOWN_TYPE)));
 }
 
 TEST_F(AutofillMlPredictionModelHandlerTest, GetModelPredictionsForForms) {

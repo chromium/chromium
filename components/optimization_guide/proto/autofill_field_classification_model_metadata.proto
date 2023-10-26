@@ -21,4 +21,11 @@ message AutofillFieldClassificationModelMetadata {
   // The mapping from the model's outputs to the (integer representation of) the
   // corresponding `autofill::ServerFieldType`.
   repeated fixed32 output_type = 2;
+
+  // For every field, the model outputs a list of confidences for every
+  // `output_type`. If no `confidence_threshold` is specified, the final type
+  // prediction is simply the one with the highest confidence. If a threshold
+  // is specified and the highest confidence is below it, the prediction becomes
+  // UNKNOWN_TYPE instead.
+  optional float confidence_threshold = 3;
 }

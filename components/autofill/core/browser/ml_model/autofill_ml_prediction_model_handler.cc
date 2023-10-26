@@ -141,8 +141,12 @@ ServerFieldType AutofillMlPredictionModelHandler::GetMostLikelyType(
   int max_index =
       base::ranges::max_element(model_output) - model_output.begin();
   CHECK_LT(max_index, state_->metadata.output_type_size());
-  return ToSafeServerFieldType(state_->metadata.output_type(max_index),
-                               UNKNOWN_TYPE);
+  if (!state_->metadata.has_confidence_threshold() ||
+      model_output[max_index] >= state_->metadata.confidence_threshold()) {
+    return ToSafeServerFieldType(state_->metadata.output_type(max_index),
+                                 UNKNOWN_TYPE);
+  }
+  return UNKNOWN_TYPE;
 }
 
 }  // namespace autofill
