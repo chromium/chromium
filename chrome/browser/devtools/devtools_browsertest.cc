@@ -2374,8 +2374,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsReattachAfterCrashTest,
   RunTestWithPanel("timeline");
 }
 
+// TODO(crbug.com/1496262): Gardener 2023-10-26: Flaky on bots.
 IN_PROC_BROWSER_TEST_F(DevToolsReattachAfterCrashTest,
-                       TestReattachAfterCrashOnNetwork) {
+                       DISABLED_TestReattachAfterCrashOnNetwork) {
   RunTestWithPanel("network");
 }
 
