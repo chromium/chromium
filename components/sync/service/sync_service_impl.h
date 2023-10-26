@@ -58,6 +58,7 @@ namespace syncer {
 
 class BackendMigrator;
 class SyncAuthManager;
+class SyncFeatureStatusForMigrationsRecorder;
 
 // Look at the SyncService interface for information on how to use this class.
 // You should not need to know about SyncServiceImpl directly.
@@ -518,6 +519,8 @@ class SyncServiceImpl : public SyncService,
 
   // Used to track download status changes during browser startup.
   std::unique_ptr<DownloadStatusRecorder> download_status_recorder_;
+
+  std::unique_ptr<SyncFeatureStatusForMigrationsRecorder> sync_status_recorder_;
 
   base::ScopedObservation<SyncPrefs, SyncPrefObserver> sync_prefs_observation_{
       this};

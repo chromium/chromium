@@ -47,6 +47,7 @@
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_api_component_factory.h"
 #include "components/sync/service/sync_auth_manager.h"
+#include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/trusted_vault_histograms.h"
@@ -378,6 +379,10 @@ void SyncServiceImpl::Initialize() {
           GetDeferredInitDelay());
     }
   }
+
+  sync_status_recorder_ =
+      std::make_unique<SyncFeatureStatusForMigrationsRecorder>(
+          sync_client_->GetPrefService(), this);
 }
 
 void SyncServiceImpl::StartSyncingWithServer() {
