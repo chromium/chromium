@@ -5,6 +5,7 @@
 #include "ash/wm/overview/overview_grid.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -104,6 +105,10 @@ constexpr int kNoItemsIndicatorVerticalPaddingDp = 8;
 // the first overview item.
 constexpr int kSaveDeskAsTemplateOverviewItemSpacingDp = 45;
 
+// Distance from the bottom of the last overview item to the top of the faster
+// splitscreen toast widget.
+constexpr int kFasterSplitScreenToastSpacingDp = 40;
+
 // Windows are not allowed to get taller than this.
 constexpr int kMaxHeight = 512;
 
@@ -134,6 +139,12 @@ constexpr base::TimeDelta kOcclusionUnpauseDurationForScroll =
 
 constexpr base::TimeDelta kOcclusionUnpauseDurationForRotation =
     base::Milliseconds(300);
+
+// TODO(b/305980930): Replace with UX string when it is approved.
+const std::u16string kFasterSplitScreenToastNoWindows =
+    u"Create a window to use split screen, or click empty area to skip.";
+const std::u16string kFasterSplitScreenToast =
+    u"Choose a window to use split screen, or click empty area to skip.";
 
 // Toast id for the toast that is displayed when a user tries to move a window
 // that is visible on all desks to another desk.
@@ -1974,7 +1985,8 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
                                          bool is_continuous_enter) {
   // Hide the widget if there is an item in overview or the saved desk grid is
   // visible.
-  if (!no_items || IsShowingSavedDeskLibrary()) {
+  if (!window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled() &&
+      (!no_items || IsShowingSavedDeskLibrary())) {
     no_windows_widget_.reset();
     return;
   }
@@ -1988,6 +2000,11 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
     params.rounding_dp = kNoItemsIndicatorRoundingDp;
     params.preferred_height = kNoItemsIndicatorHeightDp;
     params.message = IDS_ASH_OVERVIEW_NO_RECENT_ITEMS;
+    if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+      params.message =
+          no_items ? kFasterSplitScreenToastNoWindows : kFasterSplitScreenToast;
+    }
+
     params.parent =
         root_window_->GetChildById(desks_util::GetActiveDeskContainerId());
     params.disable_default_visibility_animation = !animate;
@@ -2014,12 +2031,33 @@ void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
   if (!no_windows_widget_)
     return;
 
-  no_windows_widget_->SetBoundsCenteredIn(GetGridEffectiveBounds(), animate);
+  const gfx::Rect grid_bounds(GetGridEffectiveBounds());
+  no_windows_widget_->SetBoundsCenteredIn(grid_bounds, animate);
+
+  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+    // If there are no windows, set it in the center of the grid.
+    if (window_list_.empty()) {
+      return;
+    }
+    // Position the widget under the bottom of the last overview item, but
+    // centered horizontally.
+    const gfx::RectF last_overview_item_bounds =
+        window_list_.back()->target_bounds();
+    const int center_x =
+        no_windows_widget_->GetBoundsCenteredIn(grid_bounds).x();
+    const gfx::Point available_origin(
+        center_x,
+        last_overview_item_bounds.bottom() + kFasterSplitScreenToastSpacingDp);
+    no_windows_widget_->SetBounds(
+        gfx::Rect(available_origin,
+                  no_windows_widget_->GetContentsView()->GetPreferredSize()));
+  }
 }
 
 void OverviewGrid::RefreshGridBounds(bool animate) {
   SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
                               /*ignored_items=*/{}, animate);
+  UpdateNoWindowsWidget(empty(), animate, /*is_continuous_enter=*/false);
 }
 
 void OverviewGrid::UpdateSaveDeskButtons() {
