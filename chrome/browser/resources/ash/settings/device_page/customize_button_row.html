@@ -75,10 +75,6 @@
     padding-inline-start: 0;
   }
 
-  :host([remove-top-border]) .settings-box {
-    border-top: none;
-  }
-
   select {
     padding-inline-end: 12px;
     padding-inline-start: 16px;
@@ -87,12 +83,6 @@
   .edit-icon-container {
     align-items: center;
     flex: auto;
-    size: 48px;
-  }
-
-  .move-icon-container {
-    align-items: center;
-    margin-inline-end: 24px;
     size: 48px;
   }
 
@@ -105,8 +95,13 @@
   #keyCombination {
     display: none;
   }
+
+  cr-icon-button {
+    margin-inline-end: 24px;
+    margin-inline-start: 0;
+  }
 </style>
-<div id="container" class="settings-box first"
+<div id="container" class="settings-box"
     on-mousedown="onContainerMouseDown_"
     on-dragstart="onDragStart_" on-dragend="onDragEnd_" draggable="true">
   <div class="move-icon-container">

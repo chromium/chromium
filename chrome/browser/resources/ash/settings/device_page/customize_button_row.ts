@@ -60,6 +60,7 @@ function concateKeyString(firstStr: string, secondStr: string): string {
 
 export interface CustomizeButtonRowElement {
   $: {
+    container: HTMLDivElement,
     remappingActionDropdown: HTMLSelectElement,
   };
 }
@@ -132,11 +133,6 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
 
       actionList: {
         type: Array,
-      },
-
-      removeTopBorder: {
-        type: Boolean,
-        reflectToAttribute: true,
       },
 
       keyCombinationLabel_: {
@@ -358,6 +354,10 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         !this.buttonRemappingList[this.remappingIndex]) {
       return;
     }
+    if (this.remappingIndex === 0) {
+      this.$.container.classList.add('first');
+    }
+
     this.isInitialized_ = false;
     this.buttonRemapping_ = this.buttonRemappingList[this.remappingIndex];
     this.setUpButtonMapTargets_();
