@@ -834,8 +834,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
       /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 1);
 }
 
+// TODO(crbug.com/1496255): Gardener 2023-20-26: Fails consistently on bots, and ~10% locally.
 IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
-                       PrerenderNonHttps) {
+                       DISABLED_PrerenderNonHttps) {
   base::HistogramTester histogram_tester;
   // Navigate to an non-empty tab
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
