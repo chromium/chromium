@@ -165,7 +165,7 @@ void ProcessFileUpload(base::WeakPtr<FileUploadJob::Delegate> delegate,
               [](ScopedReservation scoped_reservation,
                  base::OnceCallback<void(Status)> done_cb,
                  StatusOr<FileUploadJob*> job_or_error) {
-                if (!job_or_error.ok()) {
+                if (!job_or_error.has_value()) {
                   LOG(WARNING) << "Failed to locate/create upload job, status="
                                << job_or_error.status();
                   // Upload the event as is.
@@ -330,7 +330,7 @@ RecordHandlerImpl::SequenceInformationValueToProto(
 
   const auto parse_seq_id_gen_id_result =
       ParseSequencingIdAndGenerationId(sequencing_id, generation_id);
-  if (!parse_seq_id_gen_id_result.ok()) {
+  if (!parse_seq_id_gen_id_result.has_value()) {
     return Status(error::INVALID_ARGUMENT,
                   base::StrCat({"Provided value did not conform to a valid "
                                 "SequenceInformation proto. Invalid sequencing "
@@ -585,7 +585,7 @@ void RecordHandlerImpl::ReportUploader::OnUploadComplete(
   // `base::Value::Dict request` it was referring to.
   scoped_reservation_.Reduce(0uL);
 
-  if (!response.ok()) {
+  if (!response.has_value()) {
     HandleFailedUpload(response.status());
     return;
   }
@@ -630,7 +630,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
   if (last_succeed_uploaded_record != nullptr) {
     auto seq_info_result =
         SequenceInformationValueToProto(*last_succeed_uploaded_record);
-    if (seq_info_result.ok()) {
+    if (seq_info_result.has_value()) {
       highest_sequence_information_ = std::move(seq_info_result.value());
     } else {
       LOG(ERROR) << "Server responded with an invalid SequenceInformation "
@@ -695,7 +695,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
       base::FeatureList::IsEnabled(kShouldRequestConfigurationFile)) {
     auto seq_info_result =
         GetConfigurationProtoFromDict(*signed_configuration_file_record);
-    if (seq_info_result.ok()) {
+    if (seq_info_result.has_value()) {
       // TODO(b/289117140): Call the callback when it is in place.
     } else {
       base::UmaHistogramEnumeration("Browser.ERP.ConfigFileParsingError",
@@ -755,7 +755,7 @@ RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequenceInformation(
   }
 
   auto seq_info_result = SequenceInformationValueToProto(sequence_information);
-  if (!seq_info_result.ok()) {
+  if (!seq_info_result.has_value()) {
     LOG(ERROR) << "Server responded with an invalid SequenceInformation for "
                   "firstFailedUploadedRecord.failedUploadedRecord:"
                << sequence_information;

@@ -49,7 +49,7 @@ void Encryptor::Handle::ProduceEncryptedRecord(
   const auto self_destruct = base::WrapUnique(this);
 
   // Validate and accept asymmetric peer key.
-  if (!asymmetric_key_result.ok()) {
+  if (!asymmetric_key_result.has_value()) {
     std::move(cb).Run(asymmetric_key_result.status());
     return;
   }

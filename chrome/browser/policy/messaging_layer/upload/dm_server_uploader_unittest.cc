@@ -151,7 +151,7 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
                           callback_waiter.cb(), sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
-  EXPECT_OK(response);
+  EXPECT_TRUE(response.has_value());
 }
 
 TEST_P(DmServerUploaderTest, ProcessesRecords) {
@@ -209,7 +209,7 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
                           callback_waiter.cb(), sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
-  EXPECT_OK(response);
+  EXPECT_TRUE(response.has_value());
 }
 
 TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
@@ -290,7 +290,7 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
 
   const auto response = callback_waiter.result();
   if (need_encryption_key()) {
-    EXPECT_OK(response);
+    EXPECT_TRUE(response.has_value());
   } else {
     EXPECT_THAT(response.status(),
                 Property(&Status::error_code, Eq(error::INVALID_ARGUMENT)));

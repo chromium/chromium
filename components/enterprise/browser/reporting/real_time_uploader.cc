@@ -68,7 +68,7 @@ void RealTimeUploader::CreateReportQueue(const std::string& dm_token,
       dm_token, destination,
       base::BindRepeating([]() { return reporting::Status::StatusOK(); }));
 
-  if (!config.ok()) {
+  if (!config.has_value()) {
     // No special handler as we never record reporting queue config creation
     // failure.
     LOG(ERROR) << "Failed to create CBCM reporting queue config: "
@@ -78,7 +78,7 @@ void RealTimeUploader::CreateReportQueue(const std::string& dm_token,
 
   auto report_queue = reporting::ReportQueueProvider::CreateSpeculativeQueue(
       std::move(config.value()));
-  if (!report_queue.ok()) {
+  if (!report_queue.has_value()) {
     // No special handler as we never record reporting queue creation failure.
     LOG(ERROR) << "Failed to create CBCM reporting queue. "
                << report_queue.status();

@@ -365,7 +365,7 @@ class DlpContentManagerReportingBrowserTest
     auto config_result = ::reporting::ReportQueueConfiguration::Create(
         ::reporting::EventType::kDevice, destination_, policy_check_callback_);
 
-    ASSERT_TRUE(config_result.ok());
+    ASSERT_TRUE(config_result.has_value());
 
     // Create a report queue with the test storage module, and attach it
     // to an actual speculative report queue so we can override the one used in
@@ -378,7 +378,7 @@ class DlpContentManagerReportingBrowserTest
                                          report_queue_event.cb());
     auto report_queue_result = report_queue_event.result();
 
-    ASSERT_TRUE(report_queue_result.ok());
+    ASSERT_TRUE(report_queue_result.has_value());
 
     auto speculative_report_queue =
         ::reporting::SpeculativeReportQueueImpl::Create();

@@ -271,7 +271,7 @@ void ReportingServerConnector::UploadEncryptedReport(
                  payload_size_per_hour_uma_reporter,
              StatusOr<base::Value::Dict> result) {
             DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-            if (!result.ok()) {
+            if (!result.has_value()) {
               std::move(callback).Run(std::move(result));
               return;
             }

@@ -36,7 +36,7 @@ namespace reporting {
 //   StatusOr<reporting::ReportQueueConfiguration> config_result =
 //      reporting::ReportQueueConfiguration::Create({...}).Set...().Build();
 //   // Bail out if configuration failed to create.
-//   if (!config_result.ok()) {
+//   if (!config_result.has_value()) {
 //     std::move(done_cb).Run(config_result.status());
 //     return;
 //   }
@@ -55,7 +55,7 @@ namespace reporting {
 //                        reporting::StatusOr<std::unique_ptr<
 //                            reporting::ReportQueue>> report_queue_result) {
 //                       // Bail out if queue failed to create.
-//                       if (!report_queue_result.ok()) {
+//                       if (!report_queue_result.has_value()) {
 //                         std::move(done_cb).Run(report_queue_result.status());
 //                         return;
 //                       }
@@ -85,7 +85,7 @@ namespace reporting {
 //   StatusOr<reporting::ReportQueueConfiguration> config_result =
 //      reporting::ReportQueueConfiguration::Create({...}).Set...().Build();
 //   // Bail out if configuration failed to create.
-//   if (!config_result.ok()) {
+//   if (!config_result.has_value()) {
 //     std::move(done_cb).Run(config_result.status());
 //     return;
 //   }
@@ -94,7 +94,7 @@ namespace reporting {
 //   auto report_queue_result =
 //       reporting::ReportQueueProvider::CreateSpeculativeQueue(
 //           std::move(config));
-//   if (!report_queue_result.ok()) {
+//   if (!report_queue_result.has_value()) {
 //     std::move(done_cb).Run(config_result.status());
 //     return;
 //   }

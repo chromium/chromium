@@ -69,7 +69,7 @@ TEST(StatusMacros, AssignOnOk) {
   StatusOr<int> status_or_result =
       AssignOrReturnWrapperFunction(/*fail=*/false, kReturnValue);
 
-  ASSERT_TRUE(status_or_result.ok());
+  ASSERT_TRUE(status_or_result.has_value());
   EXPECT_EQ(status_or_result.value(), kReturnValue);
 }
 
@@ -77,7 +77,7 @@ TEST(StatusMacros, AssignOnOk) {
 TEST(StatusMacros, ReturnOnError) {
   StatusOr<int> status_or_result =
       AssignOrReturnWrapperFunction(/*fail=*/true, /*return_value=*/0);
-  EXPECT_FALSE(status_or_result.ok());
+  EXPECT_FALSE(status_or_result.has_value());
 }
 
 StatusOr<int> MultipleAssignOrReturnWrapperFunction(int return_value) {
@@ -95,7 +95,7 @@ TEST(StatusMacros, MultipleAssignsSucceed) {
   constexpr int kReturnValue = 42;
   StatusOr<int> status_or_result =
       MultipleAssignOrReturnWrapperFunction(kReturnValue);
-  ASSERT_TRUE(status_or_result.ok());
+  ASSERT_TRUE(status_or_result.has_value());
   EXPECT_EQ(status_or_result.value(), kReturnValue);
 }
 
@@ -107,7 +107,7 @@ TEST(StatusMacros, AssignOnOkMoveable) {
       AssignOrReturnWrapperFunction(/*fail=*/false,
                                     std::make_unique<int>(kReturnValue));
 
-  ASSERT_TRUE(status_or_result.ok());
+  ASSERT_TRUE(status_or_result.has_value());
   EXPECT_EQ(*status_or_result.value(), kReturnValue);
 }
 
@@ -116,7 +116,7 @@ TEST(StatusMacros, ReturnOnErrorMoveable) {
   StatusOr<std::unique_ptr<int>> status_or_result =
       AssignOrReturnWrapperFunction(/*fail=*/true,
                                     std::make_unique<int>(/*return_value=*/0));
-  EXPECT_FALSE(status_or_result.ok());
+  EXPECT_FALSE(status_or_result.has_value());
 }
 
 // ASSIGN_OR_ONCE_CALLBACK_AND_RETURN testing

@@ -69,7 +69,7 @@ void CreateQueuePostData(
              ReportQueue::EnqueueCallback done_cb,
              StatusOr<std::unique_ptr<ReportQueue>> report_queue_result) {
             // Bail out if queue failed to create.
-            if (!report_queue_result.ok()) {
+            if (!report_queue_result.has_value()) {
               std::move(done_cb).Run(report_queue_result.status());
               return;
             }
@@ -112,7 +112,7 @@ void CreateSpeculativeQueuePostData(
   auto report_queue_result =
       ReportQueueProvider::CreateSpeculativeQueue(std::move(config));
   // Bail out if queue failed to create.
-  if (!report_queue_result.ok()) {
+  if (!report_queue_result.has_value()) {
     std::move(done_cb).Run(report_queue_result.status());
     return;
   }
@@ -144,7 +144,7 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
       ReportQueueConfiguration::Create(
           {.event_type = EventType::kDevice, .destination = destination_})
           .Build();
-  ASSERT_OK(config_result);
+  ASSERT_TRUE(config_result.has_value());
   EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
   provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
   // Use it to asynchronously create ReportingQueue and then asynchronously
@@ -183,7 +183,7 @@ TEST_F(ReportQueueProviderTest, CreateMultipleQueues) {
         ReportQueueConfiguration::Create(
             {.event_type = EventType::kDevice, .destination = s.second})
             .Build();
-    ASSERT_OK(config_result);
+    ASSERT_TRUE(config_result.has_value());
     // Compose the message.
     std::string message = std::string(kTestMessage)
                               .append(" priority=")
@@ -233,7 +233,7 @@ TEST_F(ReportQueueProviderTest, CreateMultipleSpeculativeQueues) {
         ReportQueueConfiguration::Create(
             {.event_type = EventType::kDevice, .destination = s.second})
             .Build();
-    ASSERT_OK(config_result);
+    ASSERT_TRUE(config_result.has_value());
     // Compose the message.
     std::string message = std::string(kTestMessage)
                               .append(" priority=")
@@ -266,14 +266,14 @@ TEST_F(ReportQueueProviderTest,
       ReportQueueConfiguration::Create(
           {.event_type = EventType::kDevice, .destination = destination_})
           .Build();
-  ASSERT_OK(config_result);
+  ASSERT_TRUE(config_result.has_value());
 
   test::TestEvent<ReportQueueProvider::CreateReportQueueResponse> event;
   ReportQueueProvider::CreateQueue(std::move(config_result.value()),
                                    event.cb());
   const auto result = event.result();
 
-  ASSERT_FALSE(result.ok());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.status().code(), error::FAILED_PRECONDITION);
 }
 
@@ -287,11 +287,11 @@ TEST_F(ReportQueueProviderTest,
       ReportQueueConfiguration::Create(
           {.event_type = EventType::kDevice, .destination = destination_})
           .Build();
-  ASSERT_OK(config_result);
+  ASSERT_TRUE(config_result.has_value());
 
   const auto result = ReportQueueProvider::CreateSpeculativeQueue(
       std::move(config_result.value()));
-  ASSERT_FALSE(result.ok());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.status().code(), error::FAILED_PRECONDITION);
 }
 }  // namespace

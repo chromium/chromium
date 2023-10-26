@@ -182,7 +182,7 @@ TEST_F(EncryptedReportingClientTest, Default) {
         base::StringPrintf(R"({"%s" : "%s"})", kResponseKey, kResponseValue));
 
     const auto actual_response = response_event.result();
-    ASSERT_OK(actual_response);
+    ASSERT_TRUE(actual_response.has_value());
     ASSERT_THAT(actual_response.value(), SizeIs(1));
     ASSERT_TRUE(actual_response.value().FindString(kResponseKey));
     EXPECT_THAT(*(actual_response.value().FindString(kResponseKey)),
@@ -267,7 +267,7 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
         base::StringPrintf(R"({"%s" : "%s"})", kResponseKey, kResponseValue));
 
     const auto actual_response = response_event.result();
-    ASSERT_OK(actual_response);
+    ASSERT_TRUE(actual_response.has_value());
     ASSERT_THAT(actual_response.value(), SizeIs(1));
     ASSERT_TRUE(actual_response.value().FindString(kResponseKey));
     EXPECT_THAT(*(actual_response.value().FindString(kResponseKey)),

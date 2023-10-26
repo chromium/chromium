@@ -27,7 +27,7 @@ TEST_F(EmptyDMTokenRetrieverTest, GetDMToken) {
   EmptyDMTokenRetriever empty_dm_token_retriever;
   empty_dm_token_retriever.RetrieveDMToken(dm_token_retrieved_event.cb());
   const auto dm_token_result = dm_token_retrieved_event.result();
-  ASSERT_OK(dm_token_result);
+  ASSERT_TRUE(dm_token_result.has_value());
   EXPECT_THAT(dm_token_result.value(), ::testing::IsEmpty());
 }
 

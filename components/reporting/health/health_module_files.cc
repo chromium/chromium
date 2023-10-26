@@ -46,7 +46,7 @@ std::unique_ptr<HealthModuleFiles> HealthModuleFiles::Create(
     files.emplace(header, path);
 
     auto size_result = FileSize(path);
-    if (!size_result.ok()) {
+    if (!size_result.has_value()) {
       continue;
     }
     uint32_t file_size = size_result.value();

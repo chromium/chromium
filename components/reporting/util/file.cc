@@ -113,7 +113,7 @@ Status AppendLine(const base::FilePath& file_path,
 StatusOr<uint32_t> RemoveAndTruncateLine(const base::FilePath& file_path,
                                          uint32_t pos) {
   StatusOr<std::string> status_or = MaybeReadFile(file_path, pos);
-  if (!status_or.ok()) {
+  if (!status_or.has_value()) {
     return status_or.status();
   }
   std::string content = status_or.value();

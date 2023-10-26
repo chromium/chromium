@@ -623,7 +623,7 @@ class StorageQueueTest
   void CreateTestStorageQueueOrDie(const QueueOptions& options) {
     ASSERT_FALSE(storage_queue_) << "TestStorageQueue already assigned";
     auto storage_queue_result = CreateTestStorageQueue(options);
-    ASSERT_OK(storage_queue_result)
+    ASSERT_TRUE(storage_queue_result.has_value())
         << "Failed to create TestStorageQueue, error="
         << storage_queue_result.status();
     storage_queue_ = std::move(storage_queue_result.value());
@@ -736,7 +736,7 @@ class StorageQueueTest
               LOG_IF(FATAL, ++(self->upload_count_) >= 8uL)
                   << "Too many uploads";
               auto result = self->set_mock_uploader_expectations_.Call(reason);
-              if (!result.ok()) {
+              if (!result.has_value()) {
                 LOG(ERROR) << "Upload not allowed, reason="
                            << UploaderInterface::ReasonToString(reason) << " "
                            << result.status();
@@ -2231,7 +2231,7 @@ TEST_P(StorageQueueTest, CreateStorageQueueInvalidOptionsPath) {
   options_.set_directory(base::FilePath(kInvalidDirectoryPath));
   StatusOr<scoped_refptr<StorageQueue>> queue_result =
       CreateTestStorageQueue(BuildStorageQueueOptionsPeriodic());
-  EXPECT_FALSE(queue_result.ok());
+  EXPECT_FALSE(queue_result.has_value());
   EXPECT_EQ(queue_result.status().error_code(), error::UNAVAILABLE);
 }
 

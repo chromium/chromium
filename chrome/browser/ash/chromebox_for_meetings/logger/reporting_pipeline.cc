@@ -132,7 +132,7 @@ void ReportingPipeline::UpdateToken(std::string request_token) {
       base::BindRepeating(&ReportingPipeline::CheckPolicy,
                           base::Unretained(this)));
 
-  if (!config_result.ok()) {
+  if (!config_result.has_value()) {
     LOG(ERROR) << "Report Client Configuration failed with error message: "
                << config_result.status().ToString();
     // Reset DMToken to allow future attempts at configuring the report queue.
@@ -178,7 +178,7 @@ void ReportingPipeline::OnReportQueueUpdated(
         report_queue_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!report_queue_result.ok()) {
+  if (!report_queue_result.has_value()) {
     LOG(ERROR) << "Report Queue creation failed with error message: "
                << report_queue_result.status().ToString();
     // Reset DMToken to allow future attempts at creating a report queue.

@@ -132,7 +132,7 @@ class SingleDecryptionContext {
         base::BindOnce(
             [](SingleDecryptionContext* self,
                StatusOr<std::string> private_key_result) {
-              if (!private_key_result.ok()) {
+              if (!private_key_result.has_value()) {
                 self->Respond(private_key_result.status());
                 return;
               }
@@ -149,7 +149,7 @@ class SingleDecryptionContext {
     // Decrypt shared secret from private key and peer public key.
     auto shared_secret_result = decryptor_->DecryptSecret(
         private_key, encrypted_record_.encryption_info().encryption_key());
-    if (!shared_secret_result.ok()) {
+    if (!shared_secret_result.has_value()) {
       Respond(shared_secret_result.status());
       return;
     }
@@ -165,7 +165,7 @@ class SingleDecryptionContext {
         base::BindOnce(
             [](SingleDecryptionContext* self,
                StatusOr<test::Decryptor::Handle*> handle_result) {
-              if (!handle_result.ok()) {
+              if (!handle_result.has_value()) {
                 self->Respond(handle_result.status());
                 return;
               }
@@ -808,7 +808,7 @@ class StorageTest
     ASSERT_FALSE(storage_) << "TestStorage already assigned";
     StatusOr<scoped_refptr<Storage>> storage_result =
         CreateTestStorage(options, encryption_module);
-    ASSERT_OK(storage_result)
+    ASSERT_TRUE(storage_result.has_value())
         << "Failed to create TestStorage, error=" << storage_result.status();
     storage_ = std::move(storage_result.value());
   }
@@ -886,7 +886,7 @@ class StorageTest
               LOG_IF(FATAL, ++(self->upload_count_) >= 16uL)
                   << "Too many uploads";
               auto result = self->set_mock_uploader_expectations_.Call(reason);
-              if (!result.ok()) {
+              if (!result.has_value()) {
                 LOG(ERROR) << "Upload not allowed, reason="
                            << UploaderInterface::ReasonToString(reason) << " "
                            << result.status();
@@ -966,7 +966,7 @@ class StorageTest
         std::string(reinterpret_cast<const char*>(public_value), kKeySize),
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
-    CHECK_OK(prepare_key_result) << prepare_key_result.status();
+    CHECK(prepare_key_result.has_value()) << prepare_key_result.status();
     public_key_id = prepare_key_result.value();
     // Prepare signed encryption key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
@@ -2007,7 +2007,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   ASSERT_FALSE(storage_) << "StorageTest already assigned";
   StatusOr<scoped_refptr<Storage>> storage_result =
       CreateTestStorageWithFailedKeyDelivery(BuildTestStorageOptions());
-  ASSERT_OK(storage_result)
+  ASSERT_TRUE(storage_result.has_value())
       << "Failed to create StorageTest, error=" << storage_result.status();
   storage_ = std::move(storage_result.value());
 

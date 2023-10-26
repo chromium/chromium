@@ -105,7 +105,7 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
       Priority priority,
       UploaderInterfaceResultCb start_uploader_cb,
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
-    if (!uploader_result.ok()) {
+    if (!uploader_result.has_value()) {
       std::move(start_uploader_cb).Run(uploader_result.status());
       return;
     }
@@ -193,7 +193,7 @@ class Storage::KeyDelivery {
       Priority priority,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
-    if (!uploader_result.ok()) {
+    if (!uploader_result.has_value()) {
       std::move(start_uploader_cb).Run(uploader_result.status());
       return;
     }
@@ -204,7 +204,7 @@ class Storage::KeyDelivery {
 
   void EncryptionKeyReceiverReady(
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
-    if (!uploader_result.ok()) {
+    if (!uploader_result.has_value()) {
       OnCompletion(uploader_result.status());
       return;
     }
@@ -356,7 +356,8 @@ class Storage::KeyInStorage {
             [](uint64_t new_file_index, const base::FilePath& full_name) {
               const auto file_index =
                   StorageQueue::GetFileSequenceIdFromPath(full_name);
-              if (!file_index.ok() ||  // Should not happen, will remove file.
+              if (!file_index
+                       .has_value() ||  // Should not happen, will remove file.
                   file_index.value() <
                       static_cast<int64_t>(
                           new_file_index)) {  // Lower index file, will remove
@@ -386,7 +387,7 @@ class Storage::KeyInStorage {
       }
       const auto file_index =
           StorageQueue::GetFileSequenceIdFromPath(full_name);
-      if (!file_index.ok()) {  // Shouldn't happen, something went wrong.
+      if (!file_index.has_value()) {  // Shouldn't happen, something went wrong.
         continue;
       }
       if (!found_key_files
@@ -512,7 +513,7 @@ void Storage::Create(
       // with matching key signature after deserialization.
       const auto download_key_result =
           storage_->key_in_storage_->DownloadKeyFile();
-      if (!download_key_result.ok()) {
+      if (!download_key_result.has_value()) {
         // Key not found or corrupt. Proceed with queues creation directly.
         // We will download the key on the first Enqueue.
         EncryptionSetUp(download_key_result.status());
@@ -579,7 +580,7 @@ void Storage::Create(
                   StatusOr<scoped_refptr<StorageQueue>> storage_queue_result) {
       CheckOnValidSequence();
       DCHECK_CALLED_ON_VALID_SEQUENCE(storage_->sequence_checker_);
-      if (storage_queue_result.ok()) {
+      if (storage_queue_result.has_value()) {
         auto add_result =
             storage_->queues_.emplace(priority, storage_queue_result.value());
         CHECK(add_result.second);
@@ -605,7 +606,7 @@ void Storage::Create(
       CHECK_EQ(storage_->queues_.size(), queues_options_.size());
       for (const auto& queue_options : queues_options_) {
         const auto queue_or_error = storage_->GetQueue(queue_options.first);
-        CHECK_OK(queue_or_error) << queue_or_error.status();
+        CHECK(queue_or_error.has_value()) << queue_or_error.status();
         queue_or_error.value()->AssignDegradationQueues(degradation_queues);
         // Add newly created queue to the list to be used by all the later ones.
         degradation_queues.emplace_back(queue_or_error.value());
@@ -772,7 +773,7 @@ void Storage::AsyncGetQueueAndProceed(
              base::OnceCallback<void(Status)> completion_cb) {
             // Attempt to get queue by priority on the Storage task runner.
             auto queue_result = self->GetQueue(priority);
-            if (!queue_result.ok()) {
+            if (!queue_result.has_value()) {
               // Queue not found, abort.
               std::move(completion_cb).Run(queue_result.status());
               return;

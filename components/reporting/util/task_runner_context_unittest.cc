@@ -337,7 +337,7 @@ TEST_F(TaskRunner, ActionsWithStatusOrPtr) {
     void Pick(size_t index) {
       CheckOnValidSequence();
       if (index < vector_->size()) {
-        if (!vector_->at(index).ok()) {
+        if (!vector_->at(index).has_value()) {
           Schedule(&ActionsWithStatusOrContext::Pick, base::Unretained(this),
                    index + 1);
           return;
@@ -365,7 +365,7 @@ TEST_F(TaskRunner, ActionsWithStatusOrPtr) {
   Start<ActionsWithStatusOrContext>(
       &vector, test_event.cb(), base::SequencedTaskRunner::GetCurrentDefault());
   const StatusOrPtr result = test_event.result();
-  ASSERT_TRUE(result.ok()) << result.status();
+  ASSERT_TRUE(result.has_value()) << result.status();
   EXPECT_EQ(result.value()->value(), kI);
 }
 

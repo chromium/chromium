@@ -394,7 +394,7 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStart) {
       base::StrCat({kUploadMedata, kUploadMetadataContentType}),
       init_done.cb());
   const auto& result = init_done.result();
-  ASSERT_OK(result) << result.status();
+  ASSERT_TRUE(result.has_value()) << result.status();
   ASSERT_THAT(result.value().first, Eq(static_cast<int64_t>(kTestDataSize)));
   ASSERT_THAT(result.value().second,
               StrEq(base::StrCat(
@@ -591,7 +591,7 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStep) {
       base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
       ScopedReservation(0uL, memory_resource_), step_done.cb());
   const auto& result = step_done.result();
-  ASSERT_OK(result) << result.status();
+  ASSERT_TRUE(result.has_value()) << result.status();
   ASSERT_THAT(
       result.value().first,
       Eq(static_cast<int64_t>(kMaxUploadBufferSize + kMaxUploadBufferSize)));
@@ -635,7 +635,7 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStepTillEnd) {
       base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
       ScopedReservation(0uL, memory_resource_), step_done.cb());
   const auto& result = step_done.result();
-  ASSERT_OK(result) << result.status();
+  ASSERT_TRUE(result.has_value()) << result.status();
   ASSERT_THAT(result.value().first, Eq(static_cast<int64_t>(kTestDataSize)));
   ASSERT_THAT(result.value().second,
               StrEq(base::StrCat(
@@ -673,7 +673,7 @@ TEST_F(FileUploadDelegateTest, UploadStepOutOfMemory) {
       base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
       std::move(scoped_reservation), step_done.cb());
   const auto& result = step_done.result();
-  ASSERT_OK(result) << result.status();
+  ASSERT_TRUE(result.has_value()) << result.status();
   ASSERT_THAT(result.value().first,
               Eq(static_cast<int64_t>(kTestDataSize - kMaxUploadBufferSize)));
   ASSERT_THAT(result.value().second,
@@ -875,7 +875,7 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadFinish) {
           {origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
       finish_done.cb());
   const auto& result = finish_done.result();
-  ASSERT_OK(result) << result.status();
+  ASSERT_TRUE(result.has_value()) << result.status();
   ASSERT_THAT(result.value(), StrEq(base::StrCat({"Upload_id=", kUploadId})));
 }
 

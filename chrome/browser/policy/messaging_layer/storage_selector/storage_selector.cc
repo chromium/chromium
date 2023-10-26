@@ -52,7 +52,7 @@ void StorageSelector::CreateLocalStorageModule(
           [](base::OnceCallback<void(
                  StatusOr<scoped_refptr<StorageModuleInterface>>)> cb,
              StatusOr<scoped_refptr<StorageModule>> result) {
-            if (!result.ok()) {
+            if (!result.has_value()) {
               std::move(cb).Run(result.status());
               return;
             }

@@ -235,7 +235,7 @@ class FileUploadDelegate::InitContext
       return;
     }
 
-    if (!total_result.ok()) {
+    if (!total_result.has_value()) {
       Complete(total_result.status());
       return;
     }
@@ -299,7 +299,7 @@ class FileUploadDelegate::InitContext
 
     auto status_result =
         CheckResponseAndGetStatus(std::move(url_loader_), headers);
-    if (!status_result.ok()) {
+    if (!status_result.has_value()) {
       Complete(status_result.status());
       return;
     }
@@ -314,7 +314,7 @@ class FileUploadDelegate::InitContext
 
     // Just make sure granulatiy is returned, do not use it here.
     auto upload_granularity_result = GetChunkGranularity(headers);
-    if (!upload_granularity_result.ok()) {
+    if (!upload_granularity_result.has_value()) {
       Complete(upload_granularity_result.status());
       return;
     }
@@ -426,7 +426,7 @@ class FileUploadDelegate::NextStepContext
 
     auto status_result =
         CheckResponseAndGetStatus(std::move(url_loader_), headers);
-    if (!status_result.ok()) {
+    if (!status_result.has_value()) {
       Complete(status_result.status());
       return;
     }
@@ -468,7 +468,7 @@ class FileUploadDelegate::NextStepContext
     }
 
     auto upload_granularity_result = GetChunkGranularity(headers);
-    if (!upload_granularity_result.ok()) {
+    if (!upload_granularity_result.has_value()) {
       Complete(upload_granularity_result.status());
       return;
     }
@@ -531,7 +531,7 @@ class FileUploadDelegate::NextStepContext
       return;
     }
 
-    if (!buffer_result.ok()) {
+    if (!buffer_result.has_value()) {
       Complete(buffer_result.status());
       return;
     }
@@ -559,7 +559,7 @@ class FileUploadDelegate::NextStepContext
 
     auto status_result =
         CheckResponseAndGetStatus(std::move(url_loader_), headers);
-    if (!status_result.ok()) {
+    if (!status_result.has_value()) {
       Complete(status_result.status());
       return;
     }
@@ -705,7 +705,7 @@ class FileUploadDelegate::FinalContext
 
     auto status_result =
         CheckResponseAndGetStatus(std::move(url_loader_), headers);
-    if (!status_result.ok()) {
+    if (!status_result.has_value()) {
       Complete(status_result.status());
       return;
     }
@@ -761,7 +761,7 @@ class FileUploadDelegate::FinalContext
 
     auto status_result =
         CheckResponseAndGetStatus(std::move(url_loader_), headers);
-    if (!status_result.ok()) {
+    if (!status_result.has_value()) {
       Complete(status_result.status());
       return;
     }
@@ -940,7 +940,7 @@ void FileUploadDelegate::OnAccessTokenResult(
         result_cb,
     StatusOr<std::string> access_token_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!access_token_result.ok()) {
+  if (!access_token_result.has_value()) {
     std::move(result_cb).Run(access_token_result.status());
     return;
   }

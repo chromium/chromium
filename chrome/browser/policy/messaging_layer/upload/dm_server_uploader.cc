@@ -119,7 +119,7 @@ void DmServerUploader::HandleRecords() {
 
 void DmServerUploader::Finalize(CompletionResponse upload_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (upload_result.ok()) {
+  if (upload_result.has_value()) {
     std::move(report_success_upload_cb_)
         .Run(upload_result.value().sequence_information,
              upload_result.value().force_confirm);

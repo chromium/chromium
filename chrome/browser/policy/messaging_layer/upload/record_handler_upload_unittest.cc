@@ -66,7 +66,7 @@ constexpr char kAccessParameters[] = "http://destination";
 MATCHER_P(ResponseEquals,
           expected,
           "Compares StatusOr<response> to expected response") {
-  if (!arg.ok()) {
+  if (!arg.has_value()) {
     *result_listener << "Failure status=" << arg.status();
     return false;
   }
@@ -158,14 +158,15 @@ class RecordHandlerUploadTest : public ::testing::Test {
         ReportQueueConfiguration::Create(
             {.event_type = EventType::kDevice, .destination = LOG_UPLOAD})
             .Build();
-    EXPECT_OK(config_result) << config_result.status();
+    EXPECT_TRUE(config_result.has_value()) << config_result.status();
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> create_queue_event;
     ReportQueueProvider::CreateQueue(std::move(config_result.value()),
                                      create_queue_event.cb());
     auto report_queue_result = create_queue_event.result();
     // Let everything ongoing to finish.
     task_environment_.RunUntilIdle();
-    ASSERT_OK(report_queue_result) << report_queue_result.status();
+    ASSERT_TRUE(report_queue_result.has_value())
+        << report_queue_result.status();
 
     // Enqueue event.
     test::TestEvent<Status> enqueue_record_event;

@@ -101,7 +101,7 @@ TEST_F(ReportingServerConnectorTest,
 
   test_env_.SimulateResponseForRequest(0);
 
-  EXPECT_OK(response_event.result());
+  EXPECT_TRUE(response_event.result().has_value());
 }
 
 TEST_F(ReportingServerConnectorTest,
@@ -122,7 +122,7 @@ TEST_F(ReportingServerConnectorTest,
 
   test_env_.SimulateResponseForRequest(0);
 
-  EXPECT_OK(response_event.result());
+  EXPECT_TRUE(response_event.result().has_value());
 }
 
 // This test verifies that we can upload from an unmanaged device when the
@@ -165,7 +165,7 @@ TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
 
   test_env_.SimulateResponseForRequest(0);
 
-  EXPECT_OK(response_event.result());
+  EXPECT_TRUE(response_event.result().has_value());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 

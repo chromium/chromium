@@ -15,7 +15,7 @@
 // Example client usage for a StatusOr<T>, where T is not a pointer:
 //
 //  StatusOr<float> result = DoBigCalculationThatCouldFail();
-//  if (result.ok()) {
+//  if (result.has_value()) {
 //    float answer = result.value();
 //    printf("Big calculation yielded: %f", answer);
 //  } else {
@@ -25,7 +25,7 @@
 // Example client usage for a StatusOr<T*>:
 //
 //  StatusOr<Foo*> result = FooFactory::MakeNewFoo(arg);
-//  if (result.ok()) {
+//  if (result.has_value()) {
 //    std::unique_ptr<Foo> foo(result.value());
 //    foo->DoSomethingCool();
 //  } else {
@@ -35,7 +35,7 @@
 // Example client usage for a StatusOr<std::unique_ptr<T>>:
 //
 //  StatusOr<std::unique_ptr<Foo>> result = FooFactory::MakeNewFoo(arg);
-//  if (result.ok()) {
+//  if (result.has_value()) {
 //    std::unique_ptr<Foo> foo = std::move(result.value());
 //    foo->DoSomethingCool();
 //  } else {
@@ -198,7 +198,7 @@ class [[nodiscard]] StatusOr {
   }
 
   // Indicates whether the object contains a |T| value.
-  bool ok() const { return expected_.has_value(); }
+  bool has_value() const { return expected_.has_value(); }
 
   // Gets the stored status object, or an OK status if a |T| value is stored.
   Status status() const {

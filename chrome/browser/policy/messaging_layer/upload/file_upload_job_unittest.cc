@@ -865,7 +865,7 @@ TEST_F(FileUploadJobTest, AttemptToInitiateMultipleJobs) {
                  std::vector<base::WeakPtr<FileUploadJob>>* jobs_weak_ptrs,
                  std::atomic<size_t>* failures,
                  StatusOr<FileUploadJob*> job_or_error) {
-                if (!job_or_error.ok()) {
+                if (!job_or_error.has_value()) {
                   EXPECT_THAT(job_or_error.status().error_code(),
                               Eq(error::ALREADY_EXISTS));
                   EXPECT_THAT(job_or_error.status().error_message(),
@@ -950,7 +950,7 @@ TEST_F(FileUploadJobTest, AttemptToNextStepMultipleJobs) {
                  scoped_refptr<ResourceManager> memory_resource,
                  std::atomic<size_t>* failures,
                  StatusOr<FileUploadJob*> job_or_error) {
-                if (!job_or_error.ok()) {
+                if (!job_or_error.has_value()) {
                   EXPECT_THAT(job_or_error.status().error_code(),
                               Eq(error::ALREADY_EXISTS));
                   EXPECT_THAT(job_or_error.status().error_message(),
@@ -958,7 +958,7 @@ TEST_F(FileUploadJobTest, AttemptToNextStepMultipleJobs) {
                   ++(*failures);
                   return;
                 }
-                EXPECT_OK(job_or_error) << job_or_error.status();
+                EXPECT_TRUE(job_or_error.has_value()) << job_or_error.status();
                 auto* const job = job_or_error.value();
                 jobs_weak_ptrs->push_back(job->GetWeakPtr());
                 ScopedReservation scoped_reservation(0uL, memory_resource);
@@ -1030,7 +1030,7 @@ TEST_F(FileUploadJobTest, AttemptToFinalizeMultipleJobs) {
                  std::vector<base::WeakPtr<FileUploadJob>>* jobs_weak_ptrs,
                  std::atomic<size_t>* failures,
                  StatusOr<FileUploadJob*> job_or_error) {
-                if (!job_or_error.ok()) {
+                if (!job_or_error.has_value()) {
                   EXPECT_THAT(job_or_error.status().error_code(),
                               Eq(error::ALREADY_EXISTS));
                   EXPECT_THAT(job_or_error.status().error_message(),
@@ -1038,7 +1038,7 @@ TEST_F(FileUploadJobTest, AttemptToFinalizeMultipleJobs) {
                   ++(*failures);
                   return;
                 }
-                EXPECT_OK(job_or_error) << job_or_error.status();
+                EXPECT_TRUE(job_or_error.has_value()) << job_or_error.status();
                 auto* const job = job_or_error.value();
                 jobs_weak_ptrs->push_back(job->GetWeakPtr());
                 job->Finalize(done.Release());
@@ -1097,7 +1097,7 @@ TEST_F(FileUploadJobTest, MultipleStagesJob) {
             [](base::ScopedClosureRunner done,
                base::WeakPtr<FileUploadJob>* job_weak_ptr,
                StatusOr<FileUploadJob*> job_or_error) {
-              EXPECT_OK(job_or_error) << job_or_error.status();
+              EXPECT_TRUE(job_or_error.has_value()) << job_or_error.status();
               auto* const job = job_or_error.value();
               *job_weak_ptr = job->GetWeakPtr();
               job->Initiate(done.Release());

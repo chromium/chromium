@@ -89,7 +89,7 @@ class ReportQueueConfiguration {
   //               /*max_level=*/1024,
   //               /*filling_time=*/base::Minutes(10)))
   //           .Build();
-  //   if (!config_result.ok()) {
+  //   if (!config_result.has_value()) {
   //     return config_result.status();
   //   }
   //   auto config = config_result.value();

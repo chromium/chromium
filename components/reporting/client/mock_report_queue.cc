@@ -27,7 +27,7 @@ void MockReportQueueStrict::ForwardProducedRecord(
     Priority priority,
     EnqueueCallback callback) {
   auto record_result = std::move(record_producer).Run();
-  if (!record_result.ok()) {
+  if (!record_result.has_value()) {
     std::move(callback).Run(record_result.status());
     return;
   }

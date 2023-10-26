@@ -110,7 +110,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
         std::string(reinterpret_cast<const char*>(public_value), kKeySize),
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
-    CHECK_OK(prepare_key_result) << prepare_key_result.status();
+    CHECK(prepare_key_result.has_value()) << prepare_key_result.status();
     public_key_id = prepare_key_result.value();
     // Prepare public key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
@@ -145,7 +145,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
             {.event_type = EventType::kUser, .destination = destination_})
             .SetPolicyCheckCallback(policy_checker_callback_)
             .Build();
-    EXPECT_TRUE(config_result.ok()) << config_result.status();
+    EXPECT_TRUE(config_result.has_value()) << config_result.status();
     return CreateQueueWithConfig(std::move(config_result.value()));
   }
 
@@ -172,7 +172,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
             {.event_type = EventType::kUser, .destination = destination_})
             .SetPolicyCheckCallback(policy_checker_callback_)
             .Build();
-    EXPECT_TRUE(config_result.ok()) << config_result.status();
+    EXPECT_TRUE(config_result.has_value()) << config_result.status();
 
     return CreateSpeculativeQueueWithConfig(std::move(config_result.value()));
   }
@@ -185,7 +185,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     report_queue_config_ = report_queue_config.get();
     auto speculative_queue_result = ReportQueueProvider::CreateSpeculativeQueue(
         std::move(report_queue_config));
-    EXPECT_TRUE(speculative_queue_result.ok())
+    EXPECT_TRUE(speculative_queue_result.has_value())
         << speculative_queue_result.status();
     return std::move(speculative_queue_result.value());
   }
@@ -294,10 +294,10 @@ TEST_P(ReportClientTest, CreatesReportQueueWithDMToken) {
           .SetDMToken(random_dm_token)
           .SetPolicyCheckCallback(policy_checker_callback_)
           .Build();
-  EXPECT_OK(config_result);
+  EXPECT_TRUE(config_result.has_value());
   auto report_queue_result =
       CreateQueueWithConfig(std::move(config_result.value()));
-  ASSERT_OK(report_queue_result);
+  ASSERT_TRUE(report_queue_result.has_value());
   ASSERT_THAT(std::move(report_queue_result.value()).get(), Ne(nullptr));
   EXPECT_THAT(report_queue_config_->dm_token(), StrEq(random_dm_token));
 }
@@ -306,7 +306,7 @@ TEST_P(ReportClientTest, CreatesReportQueueWithDMToken) {
 // event type.
 TEST_P(ReportClientTest, CreatesReportQueueGivenEventType) {
   auto report_queue_result = CreateQueue();
-  ASSERT_OK(report_queue_result);
+  ASSERT_TRUE(report_queue_result.has_value());
   ASSERT_THAT(std::move(report_queue_result.value()).get(), Ne(nullptr));
   EXPECT_THAT(report_queue_config_->dm_token(), StrEq(kDMToken));
 }
@@ -317,7 +317,7 @@ TEST_P(ReportClientTest, CreateReportQueueWhenDMTokenRetrievalFailure) {
   MockDMTokenRetrieverWithResult(
       Status(error::INTERNAL, "Simulated DM token retrieval failure"));
   auto report_queue_result = CreateQueue();
-  EXPECT_FALSE(report_queue_result.ok());
+  EXPECT_FALSE(report_queue_result.has_value());
   EXPECT_EQ(report_queue_result.status().error_code(), error::INTERNAL);
 }
 
@@ -325,12 +325,12 @@ TEST_P(ReportClientTest, CreateReportQueueWhenDMTokenRetrievalFailure) {
 TEST_P(ReportClientTest, CreatesTwoDifferentReportQueues) {
   // Create first queue.
   auto report_queue_result_1 = CreateQueue();
-  ASSERT_OK(report_queue_result_1);
+  ASSERT_TRUE(report_queue_result_1.has_value());
 
   // Create second queue. It will reuse the same ReportClient, so even if
   // encryption is enabled, there will be no roundtrip to server to get the key.
   auto report_queue_result_2 = CreateQueue();
-  ASSERT_OK(report_queue_result_2);
+  ASSERT_TRUE(report_queue_result_2.has_value());
 
   auto report_queue_1 = std::move(report_queue_result_1.value());
   auto report_queue_2 = std::move(report_queue_result_2.value());
@@ -348,7 +348,7 @@ TEST_P(ReportClientTest, CreatesTwoDifferentReportQueues) {
 TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
   // Create queue.
   auto report_queue_result = CreateQueue();
-  ASSERT_OK(report_queue_result);
+  ASSERT_TRUE(report_queue_result.has_value());
 
   test::TestEvent<Status> enqueue_record_event;
   std::move(report_queue_result.value())

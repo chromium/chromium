@@ -49,7 +49,7 @@ ReportQueueConfiguration::Builder::~Builder() = default;
 ReportQueueConfiguration::Builder
 ReportQueueConfiguration::Builder::SetPolicyCheckCallback(
     ReportQueueConfiguration::PolicyCheckCallback policy_check_callback) {
-  if (final_value_.ok()) {
+  if (final_value_.has_value()) {
     auto status =
         final_value_.value()->SetPolicyCheckCallback(policy_check_callback);
     if (!status.ok()) {
@@ -62,7 +62,7 @@ ReportQueueConfiguration::Builder::SetPolicyCheckCallback(
 ReportQueueConfiguration::Builder
 ReportQueueConfiguration::Builder::SetRateLimiter(
     std::unique_ptr<RateLimiterInterface> rate_limiter) {
-  if (final_value_.ok()) {
+  if (final_value_.has_value()) {
     auto status = final_value_.value()->SetRateLimiter(std::move(rate_limiter));
     if (!status.ok()) {
       final_value_ = status;
@@ -73,7 +73,7 @@ ReportQueueConfiguration::Builder::SetRateLimiter(
 
 ReportQueueConfiguration::Builder ReportQueueConfiguration::Builder::SetDMToken(
     std::string_view dm_token) {
-  if (final_value_.ok()) {
+  if (final_value_.has_value()) {
     auto status = final_value_.value()->SetDMToken(dm_token);
     if (!status.ok()) {
       final_value_ = status;
@@ -85,7 +85,7 @@ ReportQueueConfiguration::Builder ReportQueueConfiguration::Builder::SetDMToken(
 ReportQueueConfiguration::Builder
 ReportQueueConfiguration::Builder::SetSourceInfo(
     absl::optional<SourceInfo> source_info) {
-  if (final_value_.ok()) {
+  if (final_value_.has_value()) {
     auto status = final_value_.value()->SetSourceInfo(std::move(source_info));
     if (!status.ok()) {
       final_value_ = status;

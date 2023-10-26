@@ -151,7 +151,7 @@ void ReportQueueProvider::CreateNewQueue(
                        config_result) {
                   // If configuration hit an error, we abort and
                   // report this through the callback
-                  if (!config_result.ok()) {
+                  if (!config_result.has_value()) {
                     std::move(cb).Run(config_result.status());
                     return;
                   }
@@ -255,7 +255,7 @@ void ReportQueueProvider::CheckInitializationState() {
 void ReportQueueProvider::OnStorageModuleConfigured(
     StatusOr<scoped_refptr<StorageModuleInterface>> storage_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!storage_result.ok()) {
+  if (!storage_result.has_value()) {
     // Storage creation failed, kill all requests.
     while (!create_request_queue_.empty()) {
       auto& report_queue_request = create_request_queue_.front();
