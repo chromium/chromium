@@ -13,6 +13,7 @@
 #include "content/browser/devtools/protocol/inspector_handler.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/devtools/protocol/target_handler.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -20,6 +21,17 @@
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
 namespace content {
+
+namespace {
+
+RenderFrameHostImpl* ContainingLocalRoot(RenderFrameHostImpl* frame) {
+  while (!frame->is_local_root()) {
+    frame = frame->GetParent();
+  }
+  return frame;
+}
+
+}  // namespace
 
 SharedStorageWorkletDevToolsAgentHost::SharedStorageWorkletDevToolsAgentHost(
     SharedStorageWorkletHost& worklet_host,
@@ -99,6 +111,12 @@ void SharedStorageWorkletDevToolsAgentHost::WorkletDestroyed() {
   }
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
                                     ChildProcessHost::kInvalidUniqueID);
+}
+
+bool SharedStorageWorkletDevToolsAgentHost::IsRelevantTo(
+    RenderFrameHostImpl* frame) {
+  return ContainingLocalRoot(frame) ==
+         ContainingLocalRoot(worklet_host_->GetFrame());
 }
 
 protocol::TargetAutoAttacher*

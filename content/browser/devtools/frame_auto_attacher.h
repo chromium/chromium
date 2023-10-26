@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
+#include "content/browser/devtools/shared_storage_worklet_devtools_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 
 namespace content {
@@ -19,7 +20,8 @@ class ServiceWorkerDevToolsAgentHost;
 
 class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
                           public ServiceWorkerDevToolsManager::Observer,
-                          public DebuggableAuctionWorkletTracker::Observer {
+                          public DebuggableAuctionWorkletTracker::Observer,
+                          public SharedStorageWorkletDevToolsManager::Observer {
  public:
   explicit FrameAutoAttacher(DevToolsRendererChannel* renderer_channel);
   ~FrameAutoAttacher() override;
@@ -42,6 +44,12 @@ class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
   void AuctionWorkletCreated(DebuggableAuctionWorklet* worklet,
                              bool& should_pause_on_start) override;
 
+  // SharedStorageWorkletDevToolsManager::Observer implementation.
+  void SharedStorageWorkletCreated(SharedStorageWorkletDevToolsAgentHost* host,
+                                   bool& should_pause_on_start) override;
+  void SharedStorageWorkletDestroyed(
+      SharedStorageWorkletDevToolsAgentHost* host) override;
+
   void ReattachServiceWorkers();
   void UpdateFrames();
 
@@ -49,6 +57,7 @@ class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
   RenderFrameHostImpl* render_frame_host_ = nullptr;
   bool observing_service_workers_ = false;
   bool observing_auction_worklets_ = false;
+  bool observing_shared_storage_worklets_ = false;
 };
 
 }  // namespace content

@@ -884,6 +884,15 @@ RenderProcessHost* SharedStorageWorkletHost::GetProcessHost() const {
   return driver_->GetProcessHost();
 }
 
+RenderFrameHostImpl* SharedStorageWorkletHost::GetFrame() {
+  if (document_service_) {
+    return static_cast<RenderFrameHostImpl*>(
+        &document_service_->render_frame_host());
+  }
+
+  return nullptr;
+}
+
 void SharedStorageWorkletHost::OnAddModuleOnWorkletFinished(
     blink::mojom::SharedStorageDocumentService::CreateWorkletCallback callback,
     bool success,

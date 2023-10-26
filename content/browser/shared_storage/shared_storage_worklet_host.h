@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -128,6 +129,10 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // Returns the process host associated with the worklet. Returns nullptr if
   // the process has gone (e.g. during shutdown).
   RenderProcessHost* GetProcessHost() const;
+
+  // Returns the creator frame of the worklet. Returns nullptr if the frame has
+  // gone (e.g. during keep-alive phase).
+  RenderFrameHostImpl* GetFrame();
 
   const GURL& script_source_url() const {
     return script_source_url_;

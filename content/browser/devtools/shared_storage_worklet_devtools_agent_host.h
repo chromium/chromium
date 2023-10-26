@@ -31,6 +31,8 @@ class CONTENT_EXPORT SharedStorageWorkletDevToolsAgentHost
           agent_host_receiver);
   void WorkletDestroyed();
 
+  bool IsRelevantTo(RenderFrameHostImpl* frame);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SharedStorageWorkletDevToolsAgentHostTest,
                            BasicAttributes);
