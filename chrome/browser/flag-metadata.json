@@ -7651,6 +7651,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "trusted-vault-frequent-degraded-recoverability-polling",
+    "owners": [
+      "mmoskvitin@google.com",
+      "chrome-sync-dev@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "ui-debug-tools",
     "owners": [ "//ui/views/OWNERS" ],
     "expiry_milestone": -1

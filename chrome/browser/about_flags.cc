@@ -164,6 +164,7 @@
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_ranker_impl.h"
 #include "components/translate/core/common/translate_util.h"
+#include "components/trusted_vault/features.h"
 #include "components/ui_devtools/switches.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
@@ -11121,6 +11122,15 @@ const FeatureEntry kFeatureEntries[] = {
                             kAttachLogsToAutofillRaterExtensionReport)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"trusted-vault-frequent-degraded-recoverability-polling",
+     flag_descriptions::kTrustedVaultFrequentDegradedRecoverabilityPollingName,
+     flag_descriptions::
+         kTrustedVaultFrequentDegradedRecoverabilityPollingDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         trusted_vault::kTrustedVaultFrequentDegradedRecoverabilityPolling)}
+#endif
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

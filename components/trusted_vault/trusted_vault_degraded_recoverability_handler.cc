@@ -20,6 +20,9 @@ namespace trusted_vault {
 
 namespace {
 
+constexpr base::TimeDelta kFrequentDegradedRecoverabilityRefreshPeriod =
+    base::Minutes(1);
+
 base::TimeDelta ComputeTimeUntilNextRefresh(
     const base::TimeDelta& refresh_period,
     const base::TimeTicks& last_refresh_time) {
@@ -45,6 +48,22 @@ MakeDegradedRecoverabilityState(
   degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
       TimeToProtoTime(last_refresh_time));
   return degraded_recoverability_state;
+}
+
+base::TimeDelta GetLongDegradedRecoverabilityRefreshPeriod() {
+  if (base::FeatureList::IsEnabled(
+          kTrustedVaultFrequentDegradedRecoverabilityPolling)) {
+    return kFrequentDegradedRecoverabilityRefreshPeriod;
+  }
+  return kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
+}
+
+base::TimeDelta GetShortDegradedRecoverabilityRefreshPeriod() {
+  if (base::FeatureList::IsEnabled(
+          kTrustedVaultFrequentDegradedRecoverabilityPolling)) {
+    return kFrequentDegradedRecoverabilityRefreshPeriod;
+  }
+  return kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
 }
 
 }  // namespace
@@ -73,9 +92,9 @@ TrustedVaultDegradedRecoverabilityHandler::
   }
 
   long_degraded_recoverability_refresh_period_ =
-      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
+      GetLongDegradedRecoverabilityRefreshPeriod();
   short_degraded_recoverability_refresh_period_ =
-      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
+      GetShortDegradedRecoverabilityRefreshPeriod();
   UpdateCurrentRefreshPeriod();
 }
 

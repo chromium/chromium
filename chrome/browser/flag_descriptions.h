@@ -1974,6 +1974,10 @@ extern const char kTrackingProtection3pcdDescription[];
 extern const char kTrackingProtectionOnboardingRollbackName[];
 extern const char kTrackingProtectionOnboardingRollbackDescription[];
 
+extern const char kTrustedVaultFrequentDegradedRecoverabilityPollingName[];
+extern const char
+    kTrustedVaultFrequentDegradedRecoverabilityPollingDescription[];
+
 extern const char kUnifiedPasswordManagerAndroidReenrollmentName[];
 extern const char kUnifiedPasswordManagerAndroidReenrollmentDescription[];
 

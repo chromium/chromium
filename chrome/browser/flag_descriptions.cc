@@ -3353,6 +3353,11 @@ const char kTailoredSecurityRetryForSyncUsersName[] =
 const char kTailoredSecurityRetryForSyncUsersDescription[] =
     "Enables a stateful recovery mechanism for the Tailored Security feature";
 
+const char kTrustedVaultFrequentDegradedRecoverabilityPollingName[] =
+    "Enable frequent polling of trusted vault degraded recoverability state";
+const char kTrustedVaultFrequentDegradedRecoverabilityPollingDescription[] =
+    "Sets degraded recoverability polling interval to 1 minute.";
+
 const char kUnifiedPasswordManagerAndroidReenrollmentName[] =
     "Automatic reenrollement of users who were evicted from using Google "
     "Mobile Services after experiencing errors.";

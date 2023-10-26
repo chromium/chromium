@@ -62702,6 +62702,8 @@ from previous Chrome versions.
   <int value="-1480040278" label="OmniboxExpandedStateColors:enabled"/>
   <int value="-1478929417" label="MojoLinuxChannelSharedMem:enabled"/>
   <int value="-1478876902" label="disable-permission-action-reporting"/>
+  <int value="-1478562612"
+      label="TrustedVaultFrequentDegradedRecoverabilityPolling:enabled"/>
   <int value="-1478137998" label="lite-video-default-downlink-bandwidth-kbps"/>
   <int value="-1477686864" label="OmniboxRichAutocompletion:enabled"/>
   <int value="-1477560322" label="kiosk"/>
@@ -64505,6 +64507,8 @@ from previous Chrome versions.
   <int value="-612633819" label="NotificationScrollBar:disabled"/>
   <int value="-612480090" label="FasterLocationReload:enabled"/>
   <int value="-610411643" label="enable-printer-app-search"/>
+  <int value="-610319049"
+      label="TrustedVaultFrequentDegradedRecoverabilityPolling:disabled"/>
   <int value="-609747087" label="CanvasOopRasterization:enabled"/>
   <int value="-609034895" label="QuickActionSearchWidgetAndroid:enabled"/>
   <int value="-608775184" label="PasswordsWeaknessCheck:enabled"/>
