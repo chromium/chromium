@@ -942,8 +942,8 @@ html element param
     property value
     property valueType
 html element permission
-    property ondismissed
-    property onresolved
+    property ondismiss
+    property onresolve
     property type
 html element picture
 html element plaintext

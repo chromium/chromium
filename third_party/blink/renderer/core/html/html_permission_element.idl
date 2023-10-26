@@ -7,6 +7,6 @@ interface HTMLPermissionElement : HTMLElement {
   [HTMLConstructor] constructor();
   [CEReactions, Reflect] attribute DOMString type;
 
-  attribute EventHandler onresolved;
-  attribute EventHandler ondismissed;
+  attribute EventHandler onresolve;
+  attribute EventHandler ondismiss;
 };

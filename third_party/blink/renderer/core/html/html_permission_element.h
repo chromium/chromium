@@ -29,8 +29,8 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
 
   const AtomicString& GetType() const;
 
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(resolved, kResolved)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(dismissed, kDismissed)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(resolve, kResolve)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dismiss, kDismiss)
 
   void Trace(Visitor*) const override;
 

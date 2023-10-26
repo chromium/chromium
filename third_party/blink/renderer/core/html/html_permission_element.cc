@@ -201,7 +201,7 @@ void HTMLPermissionElement::OnEmbededPermissionsDecided(
     EmbeddedPermissionControlResult result) {
   switch (result) {
     case EmbeddedPermissionControlResult::kDismissed:
-      DispatchEvent(*Event::Create(event_type_names::kDismissed));
+      DispatchEvent(*Event::Create(event_type_names::kDismiss));
       return;
     case EmbeddedPermissionControlResult::kGranted:
       // TODO(crbug.com/1462930): Register and read permission statuses when
@@ -209,10 +209,10 @@ void HTMLPermissionElement::OnEmbededPermissionsDecided(
       // change.
       permissions_granted_ = true;
       PseudoStateChanged(CSSSelector::kPseudoPermissionGranted);
-      DispatchEvent(*Event::Create(event_type_names::kResolved));
+      DispatchEvent(*Event::Create(event_type_names::kResolve));
       return;
     case EmbeddedPermissionControlResult::kDenied:
-      DispatchEvent(*Event::Create(event_type_names::kResolved));
+      DispatchEvent(*Event::Create(event_type_names::kResolve));
       return;
     case EmbeddedPermissionControlResult::kNotSupported:
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
