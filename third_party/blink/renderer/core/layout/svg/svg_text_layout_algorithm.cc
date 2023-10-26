@@ -134,8 +134,7 @@ void SvgTextLayoutAlgorithm::SetFlags(
   bool found_first_character = false;
   for (wtf_size_t i : sorted_item_indexes) {
     // Zero-length item is not addressable.
-    if (RuntimeEnabledFeatures::SvgTextSkipZeroLengthItemsEnabled() &&
-        items[i]->TextLength() == 0) {
+    if (items[i]->TextLength() == 0) {
       continue;
     }
     SvgPerCharacterInfo info;
