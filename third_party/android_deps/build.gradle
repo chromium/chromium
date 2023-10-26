@@ -39,7 +39,6 @@ dependencyCheck {
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
-    // Replacement for com.android.support:design
     compile 'com.google.android.material:material:1.7.0-alpha02'
 
     compile 'com.google.android.play:feature-delivery:2.0.1'
@@ -173,8 +172,6 @@ dependencies {
     // Use testCompile to avoid having support_android = true set on
     // robolectric dependencies.
     testCompile "org.robolectric:robolectric:${robolectricVersion}"
-    testCompile "org.robolectric:shadows-multidex:${robolectricVersion}"
-    testCompile "org.robolectric:shadows-playservices:${robolectricVersion}"
     testCompile "org.robolectric:utils:${robolectricVersion}"
     // TODO(crbug.comA1484130): Remove entry once CIPD is populated.
     testCompile "org.robolectric:shadows-versioning:4.11-beta-2"
