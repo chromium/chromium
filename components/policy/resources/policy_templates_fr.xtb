@@ -1136,7 +1136,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
 <translation id="1977581177449752640">Si cette règle est configurée, l'hôte d'accès à distance utilise un certificat client avec le nom commun de l'émetteur pour s'identifier auprès de "<ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />". Pour permettre à cet hôte d'utiliser n'importe quel certificat client disponible, définissez cette règle sur "<ph name="WILDCARD_VALUE" />". Si cette règle est définie sur une chaîne vide ou qu'elle n'est pas configurée, elle est désactivée.</translation>
 <translation id="1984934843478301531">Automatisation du lancement des applis</translation>
 <translation id="1985545260037812875">Afficher l'écran de configuration de la taille d'affichage lors de la connexion</translation>
-<translation id="1985598967415986700">La réduction user-agent pourra être contrôlée via les tests en conditions réelles et la phase d'évaluation.</translation>
+<translation id="1985598967415986700">La réduction user-agent pourra être contrôlée via les essais Field-Trials et Origin-Trials.</translation>
 <translation id="1987789058026551147">Activer les rapports sur les sessions kiosque de l'appareil</translation>
 <translation id="1988345404999458987">Fournit les configurations des serveurs d'impression disponibles.
 
@@ -2386,7 +2386,7 @@ Si cette règle est activée ou n'est pas définie, l'utilisateur peut définir 
       Les formats d'URL ne doivent pas entrer en conflit avec <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est répertorié dans les deux règles.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
-<translation id="305106159605171619">La réduction user-agent est désactivée et ne peut pas être activée par les tests en conditions réelles ni la phase d'évaluation.</translation>
+<translation id="305106159605171619">La réduction user-agent est désactivée et ne peut pas être activée par les essais Field-Trials et Origin-Trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3053695107741362368">Cette règle détermine si l'utilisateur est autorisé ou non à importer des données de navigation dans un profil géré créé après qu'un compte géré s'est connecté dans la zone de contenu.
 
@@ -7624,12 +7624,11 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
 
       À l'avenir, la valeur "<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />" permettra de faire de <ph name="LACROS_NAME" /> le seul navigateur disponible dans <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="751071954873065775">Sélectionner les contenus téléchargeables qui doivent être prétéléchargés</translation>
-<translation id="7512065400265675158">Il est prévu de réduire l'en-tête de requête HTTP <ph name="USER_AGENT_HEADER_NAME" />. Afin de faciliter les tests et la compatibilité, cette règle permet d'activer la fonctionnalité de réduction de tous les sites Web ou d'empêcher la phase d'évaluation ou les tests en conditions réelles d'activer la fonctionnalité.
+<translation id="7512065400265675158">Il est prévu de réduire l'en-tête de requête HTTP <ph name="USER_AGENT_HEADER_NAME" />. Afin de faciliter les tests et la compatibilité, cette règle permet d'activer la fonctionnalité de réduction de tous les sites Web ou d'empêcher les essais "origin trials" ou "field trials" d'activer la fonctionnalité.
 
       Pour en savoir plus sur <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> et le calendrier associé, consultez la page :
 
-      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
-      </translation>
+      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html</translation>
 <translation id="7512514325152952954">Il est possible de télécharger les charges utiles de mise à jour automatique pour <ph name="PRODUCT_OS_NAME" /> via HTTP plutôt que HTTPS. Cela permet une mise en cache transparente lors des téléchargements via HTTP.
 
 Si cette règle est définie sur "True", le téléchargement des charges utiles de mise à jour automatique est effectué par <ph name="PRODUCT_OS_NAME" /> via HTTP. Si cette règle est définie sur "False", ou si elle n'est pas configurée, HTTPS est utilisé pour le téléchargement des charges utiles de mise à jour automatique.</translation>

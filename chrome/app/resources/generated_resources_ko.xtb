@@ -1254,7 +1254,7 @@
 </translation>
 <translation id="1967970931040389207">핫스팟 사용 설정</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />(USB)</translation>
-<translation id="1969550816138571473">준비하기</translation>
+<translation id="1969550816138571473">준비 중</translation>
 <translation id="1969654639948595766">WebRTC 텍스트 로그(<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970895205072379091"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 비정상 종료되는지, 어떤 기능을 사용하는지, 일반적으로 메모리를 얼마나 많이 사용하는지 등의 정보가 포함됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 앱 동기화도 사용 설정되어 있으면 Android 및 웹 앱을 포함한 다른 앱 진단 및 사용 데이터가 수집됩니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 ChromeOS 기기 설정에서 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
