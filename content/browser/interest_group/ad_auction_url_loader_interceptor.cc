@@ -105,6 +105,15 @@ void AdAuctionURLLoaderInterceptor::WillStartRequest(
 
   if (ad_auction_headers_eligible_) {
     headers.SetHeader(kAdAuctionRequestHeaderKey, "?1");
+    // Pre-warm the data-decoder.
+    RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
+    if (!rfh) {
+      return;
+    }
+    Page& page = rfh->GetPage();
+    AdAuctionPageData* ad_auction_page_data =
+        PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
+    ad_auction_page_data->GetDecoderFor(request_origin_)->GetService();
   }
 }
 
@@ -205,8 +214,6 @@ void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
               blink::features::kAdAuctionSignalsMaxSizeBytes.Get())) {
     ad_auction_page_data->AddAuctionSignalsWitnessForOrigin(request_origin_,
                                                             ad_auction_signals);
-    // Pre-warm the data-decoder.
-    ad_auction_page_data->GetDecoderFor(request_origin_)->GetService();
   }
 
   if (!nonce_additional_bids_map.empty()) {
