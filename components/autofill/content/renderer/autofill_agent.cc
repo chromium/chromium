@@ -19,6 +19,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1470,22 +1471,36 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
   if (!unsafe_render_frame()) {
     return;
   }
-  if (source == SubmissionSource::FRAME_DETACHED &&
-      unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
-    // No op.
-  } else if (source == SubmissionSource::SAME_DOCUMENT_NAVIGATION &&
-             !unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
-    // No op.
-  } else if (source == SubmissionSource::FRAME_DETACHED) {
-    // Should not access the frame because it is now detached. Instead, use
-    // |provisionally_saved_form_|.
-    if (provisionally_saved_form_.has_value())
-      FireHostSubmitEvents(provisionally_saved_form_.value(),
-                           /*known_success=*/true, source);
-  } else {
-    absl::optional<FormData> form_data = GetSubmittedForm();
-    if (form_data.has_value())
-      FireHostSubmitEvents(form_data.value(), /*known_success=*/true, source);
+  switch (source) {
+    case mojom::SubmissionSource::NONE:
+    case mojom::SubmissionSource::FORM_SUBMISSION:
+    case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
+      NOTREACHED_NORETURN();
+    case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
+      if (!unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
+        break;
+      }
+      if (absl::optional<FormData> form_data = GetSubmittedForm(); form_data) {
+        FireHostSubmitEvents(form_data.value(), /*known_success=*/true, source);
+      }
+      break;
+    // This event occurs only when either this frame or a same process parent
+    // frame of it gets detached.
+    case mojom::SubmissionSource::FRAME_DETACHED:
+      if (!unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame() &&
+          provisionally_saved_form_.has_value()) {
+        // Should not access the frame because it is now detached. Instead, use
+        // |provisionally_saved_form_|.
+        FireHostSubmitEvents(provisionally_saved_form_.value(),
+                             /*known_success=*/true, source);
+      }
+      break;
+    case mojom::SubmissionSource::XHR_SUCCEEDED:
+    case mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR:
+      if (absl::optional<FormData> form_data = GetSubmittedForm(); form_data) {
+        FireHostSubmitEvents(form_data.value(), /*known_success=*/true, source);
+      }
+      break;
   }
   ResetLastInteractedElements();
   OnFormNoLongerSubmittable();

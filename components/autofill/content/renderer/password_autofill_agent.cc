@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -19,6 +20,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -38,6 +40,7 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
@@ -1215,41 +1218,6 @@ void PasswordAutofillAgent::OnDynamicFormsSeen() {
   SendPasswordForms(false /* only_visible */);
 }
 
-void PasswordAutofillAgent::FireSubmissionIfFormDisappear(
-    SubmissionIndicatorEvent event) {
-  if (!browser_has_form_to_process_)
-    return;
-  DCHECK(FrameCanAccessPasswordManager());
-
-  // Prompt to save only if the form is now gone, either invisible or
-  // removed from the DOM.
-  // TODO(crbug.com/720347): This method could be called often and checking form
-  // visibility could be expensive. Add performance metrics for this.
-  if (event != SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR) {
-    WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
-    if (!doc.IsNull()) {
-      std::vector<WebFormControlElement> fields;
-      WebFormElement form;
-      WebFormControlElement field;
-      if (last_updated_form_renderer_id_ &&
-          !(form = FindFormByRendererId(doc, last_updated_form_renderer_id_))
-               .IsNull()) {
-        fields = form.GetFormControlElements().ReleaseVector();
-      } else if (!(field = FindFormControlByRendererId(
-                       doc, last_updated_field_renderer_id_,
-                       /*form_to_be_searched =*/FormRendererId()))
-                      .IsNull()) {
-        fields = {field};
-      }
-      if (base::ranges::any_of(fields, IsWebElementFocusableForAutofill)) {
-        return;
-      }
-    }
-  }
-  GetPasswordManagerDriver().DynamicFormSubmission(event);
-  browser_has_form_to_process_ = false;
-}
-
 void PasswordAutofillAgent::UserGestureObserved() {
   autofilled_elements_cache_.clear();
 
@@ -1443,6 +1411,8 @@ void PasswordAutofillAgent::OnFrameDetached() {
   // on purpose.
   if (browser_has_form_to_process_ && render_frame()->GetWebFrame()->Parent()) {
     DCHECK(FrameCanAccessPasswordManager());
+    // We should set `browser_has_form_to_process_ = false` here but
+    // `CleanupOnDocumentShutdown()` takes care of that.
     GetPasswordManagerDriver().DynamicFormSubmission(
         SubmissionIndicatorEvent::FRAME_DETACHED);
   }
@@ -1983,13 +1953,24 @@ void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
 }
 
 void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
-  if (source == SubmissionSource::FRAME_DETACHED) {
-    OnFrameDetached();
-  } else {
-    SubmissionIndicatorEvent event = ToSubmissionIndicatorEvent(source);
-    if (event == SubmissionIndicatorEvent::NONE)
+  switch (source) {
+    case mojom::SubmissionSource::NONE:
+    case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
+    case mojom::SubmissionSource::FORM_SUBMISSION:
+      NOTREACHED_NORETURN();
+    case mojom::SubmissionSource::FRAME_DETACHED:
+      OnFrameDetached();
       return;
-    FireSubmissionIfFormDisappear(event);
+    case mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR:
+    case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
+    case mojom::SubmissionSource::XHR_SUCCEEDED:
+      if (browser_has_form_to_process_) {
+        CHECK(FrameCanAccessPasswordManager());
+        browser_has_form_to_process_ = false;
+        GetPasswordManagerDriver().DynamicFormSubmission(
+            ToSubmissionIndicatorEvent(source));
+      }
+      return;
   }
 }
 

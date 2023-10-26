@@ -177,6 +177,9 @@ class FormTracker : public content::RenderFrameObserver,
   void FireInferredFormSubmission(mojom::SubmissionSource source);
   void FireSubmissionIfFormDisappear(mojom::SubmissionSource source);
   bool CanInferFormSubmitted();
+
+  // Tracks the cached element, as well as its ancestors, until it disappears
+  // (removed or hidden), then directly infers submission.
   void TrackElement();
 
   void ResetLastInteractedElements();

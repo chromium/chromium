@@ -415,9 +415,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // only one value per |PasswordAutofillAgent| instance.
   void LogPrefilledUsernameFillOutcome(PrefilledUsernameFillOutcome outcome);
 
-  // Helper function called when form submission is successful.
-  void FireSubmissionIfFormDisappear(mojom::SubmissionIndicatorEvent event);
-
   void OnFrameDetached();
 
   void HidePopup();
