@@ -151,6 +151,8 @@ function createBiddingScriptURL(params = {}) {
     url.searchParams.append('error', params.error);
   if (params.bid)
     url.searchParams.append('bid', params.bid);
+  if (params.bidCurrency)
+    url.searchParams.append('bidCurrency', params.bidCurrency);
   if (params.allowComponentAuction !== undefined)
     url.searchParams.append('allowComponentAuction', JSON.stringify(params.allowComponentAuction))
   return url.toString();
