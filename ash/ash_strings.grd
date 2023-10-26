@@ -5106,6 +5106,9 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_MESSAGE_CENTER_ACCELERATOR_NO_NOTIFICATIONS" desc="The toast message displayed when Alt+Shift+N is pressed but there are no notifications.">
         No notifications
       </message>
+      <message name="IDS_ASH_MESSAGE_CENTER_SILENT_NOTIFICATION_ANNOUNCEMENT" desc="Accessibility announcement informing the user of an incoming silent notification.">
+        New notification, <ph name="NOTIFICATION_COUNT">$1<ex>7</ex></ph> total
+      </message>
 
       <!-- Notification -->
       <message name="IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP" desc="The tooltip for the expand button, indicating action to expand the notification.">
