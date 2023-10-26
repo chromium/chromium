@@ -15,10 +15,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
-import android.view.ViewStub;
+import android.app.Activity;
 
-import androidx.test.core.app.ApplicationProvider;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,6 +29,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -39,13 +39,13 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.chrome.test.util.browser.Features;
@@ -67,7 +67,7 @@ public class ReadAloudControllerUnitTest {
 
     private MockTab mTab;
     private ReadAloudController mController;
-    private Context mContext;
+    private Activity mActivity;
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
@@ -77,8 +77,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private Profile mMockProfile;
     @Mock private ReadAloudReadabilityHooksImpl mHooksImpl;
     @Mock private ReadAloudPlaybackHooks mPlaybackHooks;
-    @Mock private ViewStub mViewStub;
-    @Mock private PlayerCoordinator mPlayerCoordinator;
+    @Mock private Player mPlayerCoordinator;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Highlighter mHighlighter;
     @Mock private PlaybackListener.PhraseTiming mPhraseTiming;
@@ -99,6 +98,9 @@ public class ReadAloudControllerUnitTest {
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier.set(mMockProfile);
 
+        mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
         when(mMockProfile.isOffTheRecord()).thenReturn(false);
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
 
@@ -107,7 +109,6 @@ public class ReadAloudControllerUnitTest {
         Profile.setLastUsedProfileForTesting(mMockProfile);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
-        mContext = ApplicationProvider.getApplicationContext();
         mFakeTranslateBridge = new FakeTranslateBridgeJni();
         mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mFakeTranslateBridge);
         mTabModelSelector =
@@ -119,15 +120,14 @@ public class ReadAloudControllerUnitTest {
                             return tab;
                         });
         when(mHooksImpl.isEnabled()).thenReturn(true);
-        ReadAloudController.setPlayerCoordinator(mPlayerCoordinator);
+        when(mPlaybackHooks.createPlayer(any())).thenReturn(mPlayerCoordinator);
         ReadAloudController.setReadabilityHooks(mHooksImpl);
         ReadAloudController.setPlaybackHooks(mPlaybackHooks);
         mController =
                 new ReadAloudController(
-                        mContext,
+                        mActivity,
                         mProfileSupplier,
                         mTabModelSelector.getModel(false),
-                        mViewStub,
                         mBottomSheetController);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 

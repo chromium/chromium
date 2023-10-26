@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.readaloud.player.mini;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -21,23 +25,37 @@ public class MiniPlayerCoordinator {
     private final MiniPlayerMediator mMediator;
     private final MiniPlayerLayout mLayout;
 
-    public MiniPlayerCoordinator(ViewStub viewStub, PropertyModel model) {
-        this(viewStub, model, new MiniPlayerMediator(model));
+    /**
+     * @param activity App activity containing a placeholder FrameLayout with ID
+     *     R.id.readaloud_mini_player.
+     * @param context View-inflation-capable Context for read_aloud_playback isolated split.
+     * @param model Player UI property model.
+     */
+    public MiniPlayerCoordinator(Activity activity, Context context, PropertyModel model) {
+        this(model, new MiniPlayerMediator(model), inflateLayout(activity, context));
+    }
+
+    private static MiniPlayerLayout inflateLayout(Activity activity, Context context) {
+        ViewStub stub = activity.findViewById(R.id.readaloud_mini_player_stub);
+        assert stub != null;
+        stub.setLayoutResource(R.layout.readaloud_mini_player_layout);
+        stub.setLayoutInflater(LayoutInflater.from(context));
+        return (MiniPlayerLayout) stub.inflate();
     }
 
     @VisibleForTesting
-    MiniPlayerCoordinator(ViewStub viewStub, PropertyModel model, MiniPlayerMediator mediator) {
+    MiniPlayerCoordinator(
+            PropertyModel model, MiniPlayerMediator mediator, MiniPlayerLayout layout) {
         mModel = model;
-        mLayout = (MiniPlayerLayout) viewStub.inflate();
         mModelChangeProcessor =
-                PropertyModelChangeProcessor.create(mModel, mLayout, MiniPlayerViewBinder::bind);
+                PropertyModelChangeProcessor.create(mModel, layout, MiniPlayerViewBinder::bind);
         mMediator = mediator;
+        mLayout = layout;
+        assert layout != null;
     }
 
     public void destroy() {
-        if (mLayout != null) {
-            mLayout.destroy();
-        }
+        mLayout.destroy();
     }
 
     /**
