@@ -3297,6 +3297,14 @@ TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForHostHostLists) {
   }
 }
 
+TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForOrigin_NonHttp) {
+  const url::Origin chrome_origin =
+      url::Origin::Create(GURL("chrome://settings"));
+  EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(chrome_origin));
+  EXPECT_FALSE(
+      UnloadDeprecationAllowedForOrigin(chrome_origin.DeriveNewOpaqueOrigin()));
+}
+
 TEST_F(PermissionsPolicyTest,
        UnloadDeprecationAllowedForOrigin_GradualRollout) {
   const url::Origin testing_origin =

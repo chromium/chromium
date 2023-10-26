@@ -60,13 +60,19 @@ bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin) {
   // For opaque origins we want their behaviour to be consistent with their
   // precursor. If the origin is opaque and has no precursor, we will use "",
   // there's not much else we can do in this case.
-  const std::string& host = origin.GetTupleOrPrecursorTupleIfOpaque().host();
-  static const base::NoDestructor<HostSet> hosts(
-      UnloadDeprecationAllowedHosts());
-  if (!UnloadDeprecationAllowedForHost(host, *hosts)) {
+  const url::SchemeHostPort& shp = origin.GetTupleOrPrecursorTupleIfOpaque();
+  // Only disable unload on http(s):// pages, not chrome:// etc.
+  // TODO(https://crbug.com/1495734): Remove this when all internal unload usage
+  // has been removed.
+  if (shp.scheme() != "http" && shp.scheme() != "https") {
     return false;
   }
-  return IsIncludedInGradualRollout(host,
+  static const base::NoDestructor<HostSet> hosts(
+      UnloadDeprecationAllowedHosts());
+  if (!UnloadDeprecationAllowedForHost(shp.host(), *hosts)) {
+    return false;
+  }
+  return IsIncludedInGradualRollout(shp.host(),
                                     features::kDeprecateUnloadPercent.Get(),
                                     features::kDeprecateUnloadBucket.Get());
 }
