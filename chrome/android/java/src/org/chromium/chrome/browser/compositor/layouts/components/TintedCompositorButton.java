@@ -166,7 +166,7 @@ public class TintedCompositorButton extends CompositorButton {
      */
     public @ColorInt int getBackgroundTint() {
         int tint = isIncognito() ? mBackgroundIncognitoTint : mBackgroundDefaultTint;
-        if (getIsHovered()) {
+        if (isHovered()) {
             tint =
                     isIncognito()
                             ? mApsHoverBackgroundIncognitoTint

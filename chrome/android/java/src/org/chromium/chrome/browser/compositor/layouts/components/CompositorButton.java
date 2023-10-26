@@ -231,6 +231,11 @@ public class CompositorButton implements VirtualView {
      */
     public void setPressed(boolean state) {
         mIsPressed = state;
+
+        // clear isPressedFromMouse state.
+        if (!state) {
+            setPressedFromMouse(false);
+        }
     }
 
     /**
@@ -379,14 +384,14 @@ public class CompositorButton implements VirtualView {
      *
      * @param isHovered Whether the button is hovered on.
      */
-    public void setIsHovered(boolean isHovered) {
+    public void setHovered(boolean isHovered) {
         mIsHovered = isHovered;
     }
 
     /**
      * @Return Whether the button is hovered on.
      */
-    public boolean getIsHovered() {
+    public boolean isHovered() {
         return mIsHovered;
     }
 
@@ -395,7 +400,7 @@ public class CompositorButton implements VirtualView {
      *
      * @param isPressedFromMouse Whether the button is pressed from mouse.
      */
-    public void setIsPressedFromMouse(boolean isPressedFromMouse) {
+    private void setPressedFromMouse(boolean isPressedFromMouse) {
         mIsPressedFromMouse = isPressedFromMouse;
     }
 
@@ -410,6 +415,6 @@ public class CompositorButton implements VirtualView {
      * @Return Whether hover background should be applied to the button.
      */
     public boolean getShouldApplyHoverBackground() {
-        return mIsHovered || mIsPressedFromMouse;
+        return isHovered() || isPressedFromMouse();
     }
 }

@@ -1466,8 +1466,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         boolean clickedClose = clickedTab != null
                                && clickedTab.checkCloseHitTest(x, y);
         if (clickedClose) {
-            clickedTab.setClosePressed(true);
-            mLastPressedCloseButton = clickedTab.getCloseButton();
+            clickedTab.setClosePressed(true, fromMouse);
             mRenderHost.requestRender();
         }
 
@@ -1491,7 +1490,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     public void onLongPress(long time, float x, float y) {
         final StripLayoutTab clickedTab = getTabAtPosition(x);
         if (clickedTab != null && clickedTab.checkCloseHitTest(x, y)) {
-            clickedTab.setClosePressed(false);
+            clickedTab.setClosePressed(false, false);
             mRenderHost.requestRender();
             showTabMenu(clickedTab);
         } else {
@@ -1521,6 +1520,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // Hovered into a tab on the strip.
         if (hoveredTab != null) {
             updateLastHoveredTab(hoveredTab);
+
+            // Check whether the close button on the hovered tab is being hovered on.
+            hoveredTab.setCloseHovered(hoveredTab.checkCloseHitTest(x, y));
         } else {
             // Check whether new tab button or model selector button is being hovered.
             updateCompositorButtonHoverState(x, y);
@@ -1547,13 +1549,21 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             return;
         }
 
-        // Hovered within the same tab that was last hovered into.
-        if (hoveredTab == mLastHoveredTab) return;
+        // Hovered within the same tab that was last hovered into and close button hover state
+        // remains unchanged.
+        boolean isCloseHit = hoveredTab.checkCloseHitTest(x, y);
+        if (hoveredTab == mLastHoveredTab && hoveredTab.isCloseHovered() == isCloseHit) {
+            return;
+        } else if (hoveredTab == mLastHoveredTab) {
+            // Hovered within the same tab that was last hovered into, but close button hover state
+            // has changed.
+            hoveredTab.setCloseHovered(isCloseHit);
+        } else {
+            // Hovered from one tab to another tab on the strip.
+            clearLastHoveredTab();
+            updateLastHoveredTab(hoveredTab);
+        }
 
-        // Hovered from one tab to another tab on the strip, clear the former tab's hover state.
-        clearLastHoveredTab();
-
-        updateLastHoveredTab(hoveredTab);
         mUpdateHost.requestUpdate();
     }
 
@@ -1580,16 +1590,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     /** Check whether model selector button or new tab button is being hovered. */
     private void updateCompositorButtonHoverState(float x, float y) {
         // Model selector button is being hovered.
-        mModelSelectorButton.setIsHovered(mModelSelectorButton.checkClickedOrHovered(x, y));
+        mModelSelectorButton.setHovered(mModelSelectorButton.checkClickedOrHovered(x, y));
         // There's a delay in updating NTB's position/touch target when MSB initially appears on the
         // strip, taking over NTB's position and moving NTB closer to the tabs. Consequently, hover
         // highlights are observed on both NTB and MSB. To address this, this check is added to
         // ensure only one button can be hovered at a time.
-        if (!mModelSelectorButton.getIsHovered()) {
-            mNewTabButton.setIsHovered(
+        if (!mModelSelectorButton.isHovered()) {
+            mNewTabButton.setHovered(
                     ((CompositorButton) mNewTabButton).checkClickedOrHovered(x, y));
         } else {
-            mNewTabButton.setIsHovered(false);
+            mNewTabButton.setHovered(false);
         }
     }
 
@@ -1597,8 +1607,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private void clearCompositorButtonHoverStateIfNotClicked() {
         assert isPeripheralsSupportForTabStripEnabled();
 
-        mNewTabButton.setIsHovered(false);
-        mModelSelectorButton.setIsHovered(false);
+        mNewTabButton.setHovered(false);
+        mModelSelectorButton.setHovered(false);
     }
 
     @VisibleForTesting
@@ -1626,6 +1636,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private void clearLastHoveredTab() {
         if (mLastHoveredTab == null) return;
         assert mTabHoverCardView != null : "Hover card view should not be null.";
+
+        // Clear close button hover state.
+        mLastHoveredTab.setCloseHovered(false);
+
         // Remove the highlight from the last hovered tab.
         updateHoveredFolioTabState(mLastHoveredTab, false);
         mTabHoverCardView.hide();
@@ -3147,9 +3161,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     /**
      * Displays the tab menu below the anchor tab.
+     *
      * @param anchorTab The tab the menu will be anchored to
      */
-    private void showTabMenu(StripLayoutTab anchorTab) {
+    @VisibleForTesting
+    void showTabMenu(StripLayoutTab anchorTab) {
         // 1. Bring the anchor tab to the foreground.
         int tabIndex = TabModelUtils.getTabIndexById(mModel, anchorTab.getId());
         TabModelUtils.setIndex(mModel, tabIndex, false);

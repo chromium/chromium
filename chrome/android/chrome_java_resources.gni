@@ -437,6 +437,7 @@ chrome_java_resources = [
   "java/res/drawable/shield.xml",
   "java/res/drawable/shopping_accessory_view_background.xml",
   "java/res/drawable/signin_header_animation.xml",
+  "java/res/drawable/tab_close_button_bg.xml",
   "java/res/drawable/tab_indicator.xml",
   "java/res/drawable/tab_layout_background.xml",
   "java/res/drawable/tablet_recent_tab_empty_state_illustration.xml",

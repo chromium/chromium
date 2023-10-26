@@ -181,19 +181,42 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             boolean isSelected = st.getId() == selectedTabId;
             boolean isHovered = st.getId() == hoveredTabId;
 
-            TabStripSceneLayerJni.get().putStripTabLayer(mNativePtr, TabStripSceneLayer.this,
-                    st.getId(), st.getCloseButton().getResourceId(), st.getDividerResourceId(),
-                    st.getResourceId(), st.getOutlineResourceId(), st.getCloseButton().getTint(),
-                    st.getDividerTint(), st.getTint(isSelected, isHovered),
-                    st.getOutlineTint(isSelected), isSelected, st.getClosePressed(),
-                    layoutHelper.getWidth() * mDpToPx, st.getDrawX() * mDpToPx,
-                    st.getDrawY() * mDpToPx, st.getWidth() * mDpToPx, st.getHeight() * mDpToPx,
-                    st.getContentOffsetY() * mDpToPx, st.getDividerOffsetX() * mDpToPx,
-                    st.getBottomMargin() * mDpToPx, st.getTopMargin() * mDpToPx,
-                    st.getCloseButtonPadding() * mDpToPx, st.getCloseButton().getOpacity(),
-                    st.isStartDividerVisible(), st.isEndDividerVisible(), st.isLoading(),
-                    st.getLoadingSpinnerRotation(), st.getBrightness(), st.getContainerOpacity(),
-                    layerTitleCache, resourceManager);
+            TabStripSceneLayerJni.get()
+                    .putStripTabLayer(
+                            mNativePtr,
+                            TabStripSceneLayer.this,
+                            st.getId(),
+                            st.getCloseButton().getResourceId(),
+                            st.getCloseButton().getBackgroundResourceId(),
+                            st.getDividerResourceId(),
+                            st.getResourceId(),
+                            st.getOutlineResourceId(),
+                            st.getCloseButton().getTint(),
+                            st.getCloseButton().getBackgroundTint(),
+                            st.getDividerTint(),
+                            st.getTint(isSelected, isHovered),
+                            st.getOutlineTint(isSelected),
+                            isSelected,
+                            st.getClosePressed(),
+                            layoutHelper.getWidth() * mDpToPx,
+                            st.getDrawX() * mDpToPx,
+                            st.getDrawY() * mDpToPx,
+                            st.getWidth() * mDpToPx,
+                            st.getHeight() * mDpToPx,
+                            st.getContentOffsetY() * mDpToPx,
+                            st.getDividerOffsetX() * mDpToPx,
+                            st.getBottomMargin() * mDpToPx,
+                            st.getTopMargin() * mDpToPx,
+                            st.getCloseButtonPadding() * mDpToPx,
+                            st.getCloseButton().getOpacity(),
+                            st.isStartDividerVisible(),
+                            st.isEndDividerVisible(),
+                            st.isLoading(),
+                            st.getLoadingSpinnerRotation(),
+                            st.getBrightness(),
+                            st.getContainerOpacity(),
+                            layerTitleCache,
+                            resourceManager);
         }
     }
 
@@ -255,15 +278,43 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         void updateTabStripRightFade(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
                 int resourceId, float opacity, ResourceManager resourceManager,
                 @ColorInt int rightFadeColor);
-        void putStripTabLayer(long nativeTabStripSceneLayer, TabStripSceneLayer caller, int id,
-                int closeResourceId, int dividerResourceId, int handleResourceId,
-                int handleOutlineResourceId, int closeTint, int dividerTint, int handleTint,
-                int handleOutlineTint, boolean foreground, boolean closePressed, float toolbarWidth,
-                float x, float y, float width, float height, float contentOffsetY,
-                float dividerOffsetX, float bottomMargin, float topMargin, float closeButtonPadding,
-                float closeButtonAlpha, boolean isStartDividerVisible, boolean isEndDividerVisible,
-                boolean isLoading, float spinnerRotation, float brightness, float opacity,
-                LayerTitleCache layerTitleCache, ResourceManager resourceManager);
+
+        void putStripTabLayer(
+                long nativeTabStripSceneLayer,
+                TabStripSceneLayer caller,
+                int id,
+                int closeResourceId,
+                int closeBackgroundResourceId,
+                int dividerResourceId,
+                int handleResourceId,
+                int handleOutlineResourceId,
+                int closeTint,
+                int closeHoverBackgroundTint,
+                int dividerTint,
+                int handleTint,
+                int handleOutlineTint,
+                boolean foreground,
+                boolean closePressed,
+                float toolbarWidth,
+                float x,
+                float y,
+                float width,
+                float height,
+                float contentOffsetY,
+                float dividerOffsetX,
+                float bottomMargin,
+                float topMargin,
+                float closeButtonPadding,
+                float closeButtonAlpha,
+                boolean isStartDividerVisible,
+                boolean isEndDividerVisible,
+                boolean isLoading,
+                float spinnerRotation,
+                float brightness,
+                float opacity,
+                LayerTitleCache layerTitleCache,
+                ResourceManager resourceManager);
+
         void setContentTree(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, SceneLayer contentTree);
     }

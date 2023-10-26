@@ -34,6 +34,7 @@ scoped_refptr<TabHandleLayer> TabHandleLayer::Create(
 void TabHandleLayer::SetProperties(
     int id,
     ui::Resource* close_button_resource,
+    ui::Resource* close_button_background_resource,
     ui::Resource* divider_resource,
     ui::NinePatchResource* tab_handle_resource,
     ui::NinePatchResource* tab_handle_outline_resource,
@@ -164,6 +165,12 @@ void TabHandleLayer::SetProperties(
 
   close_button_->SetUIResourceId(close_button_resource->ui_resource()->id());
   close_button_->SetBounds(close_button_resource->size());
+
+  close_button_hover_highlight_->SetUIResourceId(
+      close_button_background_resource->ui_resource()->id());
+  close_button_hover_highlight_->SetBounds(
+      close_button_background_resource->size());
+
   const float padding_right = tab_handle_resource->size().width() -
                               tab_handle_resource->padding().right();
   const float padding_left = tab_handle_resource->padding().x();
@@ -229,8 +236,10 @@ void TabHandleLayer::SetProperties(
   }
   if (close_button_alpha == 0.f) {
     close_button_->SetIsDrawable(false);
+    close_button_hover_highlight_->SetIsDrawable(false);
   } else {
     close_button_->SetIsDrawable(true);
+    close_button_hover_highlight_->SetIsDrawable(true);
     int close_y;
     float close_y_offset_mid = (tab_handle_resource->padding().y() + height -
                                 close_button_->bounds().height()) /
@@ -255,8 +264,18 @@ void TabHandleLayer::SetProperties(
       close_y += original_y;
     }
 
-    close_button_->SetPosition(gfx::PointF(close_x, close_y));
+    float background_left_offset =
+        (close_button_background_resource->size().width() -
+         close_button_resource->size().width()) /
+        2;
+    float background_top_offset =
+        (close_button_background_resource->size().height() -
+         close_button_resource->size().height()) /
+        2;
+    close_button_->SetPosition(
+        gfx::PointF(background_left_offset, background_top_offset));
     close_button_->SetOpacity(close_button_alpha);
+    close_button_hover_highlight_->SetPosition(gfx::PointF(close_x, close_y));
   }
 }
 
@@ -269,6 +288,7 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
       layer_(cc::slim::Layer::Create()),
       tab_(cc::slim::Layer::Create()),
       close_button_(cc::slim::UIResourceLayer::Create()),
+      close_button_hover_highlight_(cc::slim::UIResourceLayer::Create()),
       start_divider_(cc::slim::UIResourceLayer::Create()),
       end_divider_(cc::slim::UIResourceLayer::Create()),
       decoration_tab_(cc::slim::NinePatchLayer::Create()),
@@ -279,7 +299,8 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
 
   tab_->AddChild(decoration_tab_);
   tab_->AddChild(tab_outline_);
-  tab_->AddChild(close_button_);
+  tab_->AddChild(close_button_hover_highlight_);
+  close_button_hover_highlight_->AddChild(close_button_);
 
   // The divider is added as a separate child so its opacity can be controlled
   // separately from the other tab items.

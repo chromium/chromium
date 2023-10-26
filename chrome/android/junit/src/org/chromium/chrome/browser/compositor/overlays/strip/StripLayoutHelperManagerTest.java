@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -289,7 +291,7 @@ public class StripLayoutHelperManagerTest {
         // Verify model selector button hover highlight default tint.
         TintedCompositorButton msb =
                 ((TintedCompositorButton) spy(mStripLayoutHelperManager.getModelSelectorButton()));
-        when(msb.getIsHovered()).thenReturn(true);
+        when(msb.isHovered()).thenReturn(true);
         when(msb.isPressedFromMouse()).thenReturn(false);
 
         int hoverBackgroundDefaultColor =
@@ -302,7 +304,7 @@ public class StripLayoutHelperManagerTest {
 
         // Verify model selector button hover highlight pressed tint.
         when(msb.isPressed()).thenReturn(true);
-        when(msb.getIsHovered()).thenReturn(false);
+        when(msb.isHovered()).thenReturn(false);
         when(msb.isPressedFromMouse()).thenReturn(true);
         int hoverBackgroundPressedColor =
                 ColorUtils.setAlphaComponent(
@@ -314,7 +316,7 @@ public class StripLayoutHelperManagerTest {
         when(msb.isPressed()).thenReturn(false);
 
         // Verify model selector button incognito hover highlight default tint.
-        when(msb.getIsHovered()).thenReturn(true);
+        when(msb.isHovered()).thenReturn(true);
         when(msb.isIncognito()).thenReturn(true);
         int hoverBackgroundDefaultIncognitoColor =
                 ColorUtils.setAlphaComponent(
@@ -327,7 +329,7 @@ public class StripLayoutHelperManagerTest {
 
         // Verify model selector button incognito hover highlight pressed tint.
         when(msb.isPressed()).thenReturn(true);
-        when(msb.getIsHovered()).thenReturn(false);
+        when(msb.isHovered()).thenReturn(false);
         when(msb.isPressedFromMouse()).thenReturn(true);
         int hoverBackgroundPressedIncognitoColor =
                 ColorUtils.setAlphaComponent(
@@ -337,7 +339,6 @@ public class StripLayoutHelperManagerTest {
                 "Model selector button hover highlight pressed tint is not as expected",
                 hoverBackgroundPressedIncognitoColor,
                 msb.getBackgroundTint());
-        when(msb.isPressed()).thenReturn(false);
     }
 
     @Test
@@ -352,23 +353,20 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager
                 .getActiveStripLayoutHelper()
                 .onHoverEnter(
-                        x + 1,
-                        0); // mouse position within MSB range(32dp width + 12dp click slope).
-        assertEquals(
+                        x + 1, 0); // mouse position within MSB range(32dp width + 12dp click slop).
+        assertTrue(
                 "Model selector button should be hovered",
-                true,
-                mStripLayoutHelperManager.getModelSelectorButton().getIsHovered());
+                mStripLayoutHelperManager.getModelSelectorButton().isHovered());
 
         // Verify model selector button is NOT hovered when mouse is not on the button.
         mStripLayoutHelperManager
                 .getActiveStripLayoutHelper()
                 .onHoverEnter(
                         x + 45,
-                        0); // mouse position out of MSB range(32dp width + 12dp click slope).
-        assertEquals(
+                        0); // mouse position out of MSB range(32dp width + 12dp click slop).
+        assertFalse(
                 "Model selector button should NOT be hovered",
-                false,
-                mStripLayoutHelperManager.getModelSelectorButton().getIsHovered());
+                mStripLayoutHelperManager.getModelSelectorButton().isHovered());
     }
 
     @Test
@@ -383,13 +381,11 @@ public class StripLayoutHelperManagerTest {
         // mouse.
         mStripLayoutHelperManager.simulateOnDownForTesting(
                 mStripLayoutHelperManager.getModelSelectorButton().getX() + 1, 0, true, 1);
-        assertEquals(
+        assertFalse(
                 "Model selector button should not be hovered",
-                false,
-                mStripLayoutHelperManager.getModelSelectorButton().getIsHovered());
-        assertEquals(
+                mStripLayoutHelperManager.getModelSelectorButton().isHovered());
+        assertTrue(
                 "Model selector button should be pressed from mouse",
-                true,
                 mStripLayoutHelperManager.getModelSelectorButton().isPressedFromMouse());
     }
 
