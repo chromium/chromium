@@ -285,6 +285,7 @@ void CookieControlsIconView::OnFinishedPageReloadWithChangedSettings() {
   // it should have already been visible for the user to have changed the
   // setting.
   if (ShouldBeVisible()) {
+    SetAccessibleDescription(u"");
     AnimateIn(GetLabelForStatus());
   }
 }
