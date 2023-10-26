@@ -133,6 +133,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/frame_caption_button.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -703,6 +704,41 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
+class ViewVisibilityWaiter : public views::ViewObserver {
+ public:
+  ViewVisibilityWaiter(views::View* observed_view, bool expected_visible)
+      : view_(observed_view), expected_visible_(expected_visible) {
+    observation_.Observe(view_.get());
+  }
+  ViewVisibilityWaiter(const ViewVisibilityWaiter&) = delete;
+  ViewVisibilityWaiter& operator=(const ViewVisibilityWaiter&) = delete;
+  ~ViewVisibilityWaiter() override = default;
+
+  // Wait for changes to occur, or return immediately if view already has
+  // expected visibility.
+  bool Wait() {
+    if (expected_visible_ == view_->GetVisible()) {
+      return true;
+    }
+    return future_.Wait();
+  }
+
+ private:
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override {
+    bool visible = observed_view->GetVisible();
+    if (visible == expected_visible_) {
+      future_.SetValue();
+    }
+  }
+
+  raw_ptr<views::View> view_;
+  const bool expected_visible_;
+  base::test::TestFuture<void> future_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
 class WebAppNonClientFrameViewAshTest
     : public TopChromeMdParamTest<InProcessBrowserTest> {
  public:
@@ -754,7 +790,7 @@ class WebAppNonClientFrameViewAshTest
   void SetUpOnMainThread() override {
     TopChromeMdParamTest<InProcessBrowserTest>::SetUpOnMainThread();
 
-    WebAppToolbarButtonContainer::DisableAnimationForTesting();
+    WebAppToolbarButtonContainer::DisableAnimationForTesting(true);
 
     // Start secure local server.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -940,9 +976,9 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
       ->OnPasswordAutofilled({&password_form},
                              url::Origin::Create(password_form.url), nullptr);
   chrome::ManagePasswordsForPage(app_browser_);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(manage_passwords_icon->GetVisible());
+  // Wait for manage_passwords_icon to become visible.
+  ViewVisibilityWaiter waiter(manage_passwords_icon, true);
+  ASSERT_TRUE(waiter.Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, ShowZoomIcon) {
@@ -958,9 +994,9 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, ShowZoomIcon) {
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 
   zoom_controller->SetZoomLevel(blink::PageZoomFactorToZoomLevel(1.5));
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(zoom_icon->GetVisible());
+  // Wait for zoom_icon to become visible.
+  ViewVisibilityWaiter waiter(zoom_icon, true);
+  ASSERT_TRUE(waiter.Wait());
   EXPECT_TRUE(ZoomBubbleView::GetZoomBubble());
 }
 

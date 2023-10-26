@@ -20,7 +20,7 @@
 #include "url/gurl.h"
 
 WebAppFrameToolbarTestMixin::WebAppFrameToolbarTestMixin() {
-  WebAppToolbarButtonContainer::DisableAnimationForTesting();
+  WebAppToolbarButtonContainer::DisableAnimationForTesting(true);
 }
 
 void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(

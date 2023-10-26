@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -17,6 +18,7 @@ class BrowserNonClientFrameView;
 class BrowserView;
 class GURL;
 class WebAppFrameToolbarView;
+class WebAppOriginText;
 
 namespace base {
 class ScopedTempDir;
@@ -96,6 +98,7 @@ class WebAppFrameToolbarTestHelper {
   WebAppFrameToolbarView* web_app_frame_toolbar() {
     return web_app_frame_toolbar_;
   }
+  WebAppOriginText* origin_text_view();
 
  private:
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;

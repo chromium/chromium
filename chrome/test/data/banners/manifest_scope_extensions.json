@@ -1,0 +1,10 @@
+{
+  "name": "Manifest test app",
+  "start_url": "manifest_test_page.html",
+  "display": "fullscreen",
+  "scope_extensions": [
+    {
+      "origin": "https://test.com"
+    }
+  ]
+}
