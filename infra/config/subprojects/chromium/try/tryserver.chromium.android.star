@@ -340,6 +340,17 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-cronet-x64-dbg-14-tests",
+    description_html = "Tests Cronet against Android 14",
+    mirrors = [
+        "ci/android-cronet-x64-dbg",
+        "ci/android-cronet-x64-dbg-14-tests",
+    ],
+    contact_team_email = "cronet-team@google.com",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-cronet-x86-dbg",
     mirrors = [
         "ci/android-cronet-x86-dbg",

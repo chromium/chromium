@@ -777,6 +777,9 @@
       "android-cronet-x64-dbg-13-tests": {
         "_default": "_default"
       },
+      "android-cronet-x64-dbg-14-tests": {
+        "_default": "_default"
+      },
       "android-cronet-x64-rel": {
         "_default": "_default"
       },

@@ -916,6 +916,19 @@
           'gtest_tests': 'cronet_gtests',
         },
       },
+      'android-cronet-x64-dbg-14-tests': {
+        'mixins': [
+          '14-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
+        },
+      },
       'android-cronet-x64-rel': {
         'additional_compile_targets': [
           'cronet_package',
