@@ -3040,6 +3040,9 @@ extern const char kScreenTimeDescription[];
 extern const char kUseAngleDescriptionMac[];
 extern const char kUseAngleMetal[];
 
+extern const char kSwapBackquoteKeysInISOKeyboardName[];
+extern const char kSwapBackquoteKeysInISOKeyboardDescription[];
+
 extern const char kSystemColorChooserName[];
 extern const char kSystemColorChooserDescription[];
 

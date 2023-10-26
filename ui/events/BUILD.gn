@@ -103,6 +103,8 @@ component("events_base") {
     "event_switches.cc",
     "event_switches.h",
     "events_base_export.h",
+    "events_features.cc",
+    "events_features.h",
     "gesture_curve.h",
     "gesture_event_details.cc",
     "gesture_event_details.h",

@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/third_party/icu/icu_utf.h"
+#include "ui/events/events_features.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace ui {
@@ -858,7 +859,8 @@ int ISOKeyboardKeyCodeMap(int nativeKeyCode) {
 }
 
 DomCode DomCodeFromNSEvent(NSEvent* event) {
-  if (KBGetLayoutType(LMGetKbdType()) == kKeyboardISO) {
+  if (base::FeatureList::IsEnabled(features::kSwapBackquoteKeysInISOKeyboard) &&
+      KBGetLayoutType(LMGetKbdType()) == kKeyboardISO) {
     return ui::KeycodeConverter::NativeKeycodeToDomCode(
         ISOKeyboardKeyCodeMap(event.keyCode));
   }
