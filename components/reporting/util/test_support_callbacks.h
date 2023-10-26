@@ -49,6 +49,7 @@ class TestMultiEvent {
         !IsMovable<TupleType>(),
         "std::tuple<ResType...> is not movable. Please use result().");
     RunUntilHasResult();
+    CHECK(result_.has_value()) << "Result must have been set";
     return result_.value();
   }
 
@@ -56,8 +57,13 @@ class TestMultiEvent {
     static_assert(
         IsMovable<TupleType>(),
         "std::tuple<ResType...> is movable. Please use ref_result().");
+    CHECK(!result_retrieved_) << "Result already retrieved";
     RunUntilHasResult();
-    return std::move(result_.value());
+    CHECK(result_.has_value()) << "Result must have been set";
+    auto value = std::move(result_.value());
+    result_.reset();
+    result_retrieved_ = true;
+    return value;
   }
 
   // Returns true if the event callback was never invoked.
@@ -111,12 +117,14 @@ class TestMultiEvent {
 
   void SetResult(ResType... res) {
     base::AutoLock auto_lock(lock_);
+    CHECK(!result_.has_value()) << "Can only be called once";
     result_.emplace(std::forward<ResType>(res)...);
   }
 
   base::Lock lock_;
   absl::optional<TupleType> result_;
-  bool repeated_cb_called_{false};
+  bool repeated_cb_called_ = false;
+  bool result_retrieved_ = false;
   base::WeakPtrFactory<TestMultiEvent<ResType...>> weak_ptr_factory_{this};
 };
 
@@ -141,7 +149,7 @@ class TestEvent : public TestMultiEvent<ResType> {
 
   [[nodiscard]] const ResType& ref_result() {
     static_assert(!TestMultiEvent<ResType>::template IsMovable<ResType>(),
-                  "ResType is movable. Plesae use result().");
+                  "ResType is movable. Please use result().");
     return std::get<0>(TestMultiEvent<ResType>::ref_result());
   }
 
