@@ -77,6 +77,15 @@ const OobeWelcomeScreenBase = mixinBehaviors(
  * }}
  */
 OobeWelcomeScreenBase.$;
+
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   isDeveloperMode: boolean,
+ * }}
+ */
+let WelcomeScreenData;
+
 /**
  * @polymer
  */
@@ -244,8 +253,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
   /**
    * Event handler that is invoked just before the screen is shown.
-   * TODO (https://crbug.com/948932): Define this type.
-   * @param {Object} data Screen init payload.
+   * @param {WelcomeScreenData} data Screen init payload.
    */
   onBeforeShow(data) {
     this.debuggingLinkVisible_ =

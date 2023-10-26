@@ -87,6 +87,14 @@ const UpdateBase = mixinBehaviors(
  */
 UpdateBase.$;
 
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   isOptOutEnabled: (boolean|undefined),
+ * }}
+ */
+let UpdateScreenData;
+
 /** @polymer */
 class Update extends UpdateBase {
   static get is() {
@@ -229,11 +237,11 @@ class Update extends UpdateBase {
 
   /**
    * Event handler that is invoked just before the screen is shown.
-   * @param {Object} data Screen init payload.
+   * @param {UpdateScreenData} data Screen init payload.
    */
   onBeforeShow(data) {
-    if (data && 'is_opt_out_enabled' in data) {
-      this.isOptOutEnabled = data['is_opt_out_enabled'];
+    if (data && 'isOptOutEnabled' in data) {
+      this.isOptOutEnabled = data['isOptOutEnabled'];
     }
   }
 

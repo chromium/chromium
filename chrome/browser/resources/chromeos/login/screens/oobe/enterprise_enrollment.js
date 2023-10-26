@@ -56,6 +56,26 @@ const EnterpriseEnrollmentElementBase = mixinBehaviors(
 EnterpriseEnrollmentElementBase.$;
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   enrollment_mode: string,
+ *   is_enrollment_enforced: boolean,
+ *   attestationBased: boolean,
+ *   flow: string,
+ *   license: (string|undefined),
+ *   gaiaUrl: (string|undefined),
+ *   gaiaPath: (string|undefined),
+ *   gaia_buttons_type: (string|undefined),
+ *   clientId: (string|undefined),
+ *   hl: (string|undefined),
+ *   management_domain: (string|undefined),
+ *   email: (string|undefined),
+ *   webviewPartitionName: (string|undefined),
+ * }}
+ */
+let EnterpriseEnrollmentScreenData;
+
+/**
  * @polymer
  */
 class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
@@ -280,8 +300,8 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {Object} data Screen init payload, contains the signin frame
-   * URL.
+   * @param {EnterpriseEnrollmentScreenData|undefined} data Screen init payload,
+   * contains the signin frame URL.
    */
   onBeforeShow(data) {
     if (data == undefined) {
@@ -303,18 +323,12 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       }]);
     }
 
-    this.isManualEnrollment_ = 'enrollment_mode' in data ?
-        data.enrollment_mode === 'manual' :
-        undefined;
-    this.isForced_ = 'is_enrollment_enforced' in data ?
-        data.is_enrollment_enforced :
-        undefined;
-    this.isAutoEnroll_ =
-        'attestationBased' in data ? data.attestationBased : undefined;
-    this.hasAccountCheck_ = 'flow' in data ?
+    this.isManualEnrollment_ = (data.enrollment_mode === 'manual');
+    this.isForced_ = data.is_enrollment_enforced;
+    this.isAutoEnroll_ = data.attestationBased;
+    this.hasAccountCheck_ =
         ((data.flow === 'enterpriseLicense') ||
-         (data.flow === 'educationLicense')) :
-        false;
+         (data.flow === 'educationLicense'));
 
     this.licenseType_ = ('license' in data) ?
         this.convertLicenseType(data.license) :
@@ -650,6 +664,8 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
         return OobeTypes.LicenseType.EDUCATION;
       case 'terminal':
         return OobeTypes.LicenseType.KIOSK;
+      default:
+        return OobeTypes.LicenseType.NONE;
     }
   }
 

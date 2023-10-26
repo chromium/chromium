@@ -64,6 +64,14 @@ const NetworkScreenBase = mixinBehaviors(
 NetworkScreenBase.$;
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   ssid: (string|undefined),
+ * }}
+ */
+let NetworkScreenData;
+
+/**
  * @polymer
  */
 class NetworkScreen extends NetworkScreenBase {
@@ -144,7 +152,10 @@ class NetworkScreen extends NetworkScreenBase {
     return NetworkScreenStates.DEFAULT;
   }
 
-  /** Called when dialog is shown. */
+  /**
+   * Called when dialog is shown.
+   * @param {NetworkScreenData} data Screen init payload.
+   */
   onBeforeShow(data) {
     // Right now `ssid` is only set during quick start flow.
     this.ssid = data && 'ssid' in data && data['ssid'];
