@@ -29,7 +29,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/data_controls/component.h"
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textarea/textarea.h"
@@ -519,7 +521,8 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest,
   ASSERT_EQ(
       GetTitle(dialog,
                FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware),
-      malware_message);
+      l10n_util::GetStringFUTF16(IDS_POLICY_DLP_FROM_YOUR_ADMIN_MESSAGE,
+                                 malware_message));
 
   ASSERT_EQ(
       GetTitle(dialog, FilesPolicyDialog::BlockReason::kEnterpriseConnectors),
