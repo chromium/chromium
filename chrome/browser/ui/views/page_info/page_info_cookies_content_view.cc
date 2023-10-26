@@ -228,7 +228,9 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
   } else if (cookie_info.expiration.is_null()) {
     // Handle permanent site exception.
     title_text = l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE);
+        tracking_protection_3pcd
+            ? IDS_PAGE_INFO_TRACKING_PROTECTION_PERMANENT_ALLOWED_TITLE
+            : IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE);
     description =
         tracking_protection_3pcd
             ? IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION
@@ -362,14 +364,20 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   third_party_cookies_row_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW);
 
-  bool is_setting_enforced =
-      cookie_info.enforcement != CookieControlsEnforcement::kNoEnforcement;
-  // In the enforced state, the toggle buttons and labels are hidden; enforced
-  // icon is shown instead of the toggle button.
-  third_party_cookies_label_wrapper_->SetVisible(!is_setting_enforced);
-  third_party_cookies_toggle_->SetVisible(!is_setting_enforced);
-  third_party_cookies_enforced_icon_->SetVisible(is_setting_enforced);
-  if (is_setting_enforced) {
+  if (cookie_info.enforcement == CookieControlsEnforcement::kNoEnforcement) {
+    third_party_cookies_label_wrapper_->SetVisible(true);
+    third_party_cookies_toggle_->SetVisible(true);
+    third_party_cookies_enforced_icon_->SetVisible(false);
+  } else {
+    // In 3PCD, tell the user if they allowed the current site via settings.
+    third_party_cookies_label_wrapper_->SetVisible(
+        cookie_info.blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd &&
+        cookie_info.enforcement ==
+            CookieControlsEnforcement::kEnforcedByCookieSetting);
+    // In the enforced state, the toggle button is hidden; enforced icon is
+    // shown instead of the toggle button.
+    third_party_cookies_toggle_->SetVisible(false);
+    third_party_cookies_enforced_icon_->SetVisible(true);
     third_party_cookies_enforced_icon_->SetImage(
         PageInfoViewFactory::GetImageModel(
             CookieControlsUtil::GetEnforcedIcon(cookie_info.enforcement)));
