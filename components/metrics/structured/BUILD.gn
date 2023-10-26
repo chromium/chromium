@@ -106,6 +106,7 @@ source_set("common") {
   deps = [
     ":storage",
     ":structured_metrics_validator",
+    "//base",
     "//components/prefs",
     "//third_party/metrics_proto",
   ]

@@ -6,11 +6,13 @@
 #include "components/metrics/structured/structured_metrics_features.h"
 
 #include <memory>
+#include <numeric>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/metrics/structured/storage.pb.h"
@@ -114,6 +116,7 @@ class ExternalMetricsTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(ExternalMetricsTest, ReadOneFile) {
@@ -276,6 +279,58 @@ TEST_F(ExternalMetricsTest, DroppedEventsWhenDisabled) {
 
   // And the directory should be empty too.
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
+}
+
+TEST_F(ExternalMetricsTest, ProducedAndDroppedEventMetricCollected) {
+  base::test::ScopedFeatureList feature_list;
+  const int file_limit = 5;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kStructuredMetrics,
+      {{"file_limit", base::NumberToString(file_limit)}});
+
+  Init();
+
+  // Wifi
+  WriteToDisk("event1", MakeTestingProto({0}, UINT64_C(4320592646346933548)));
+  WriteToDisk("event2", MakeTestingProto({1}, UINT64_C(4320592646346933548)));
+  // Bluetooth
+  WriteToDisk("event3", MakeTestingProto({2}, UINT64_C(9074739597929991885)));
+  WriteToDisk("event4", MakeTestingProto({3}, UINT64_C(9074739597929991885)));
+  // Cellular
+  WriteToDisk("event5", MakeTestingProto({4}, UINT64_C(8206859287963243715)));
+  WriteToDisk("event6", MakeTestingProto({5}, UINT64_C(8206859287963243715)));
+  // WIfi
+  WriteToDisk("event7", MakeTestingProto({6}, UINT64_C(4320592646346933548)));
+  WriteToDisk("event8", MakeTestingProto({7}, UINT64_C(4320592646346933548)));
+  // Bluetooth
+  WriteToDisk("event9", MakeTestingProto({8}, UINT64_C(9074739597929991885)));
+  WriteToDisk("event10", MakeTestingProto({9}, UINT64_C(9074739597929991885)));
+
+  CollectEvents();
+
+  ASSERT_EQ(proto_.value().uma_events().size(), file_limit);
+
+  // Unable to guarantee the order the events are read in. Using counts to
+  // verify that the number of histograms produced are what is expected.
+  base::HistogramTester::CountsMap produced_map =
+      histogram_tester_.GetTotalCountsForPrefix(
+          "StructuredMetrics.ExternalMetricsProduced.");
+  int produced_acc = 0;
+  for (const auto& hist : produced_map) {
+    produced_acc += hist.second;
+  }
+
+  base::HistogramTester::CountsMap dropped_map =
+      histogram_tester_.GetTotalCountsForPrefix(
+          "StructuredMetrics.ExternalMetricsDropped.");
+
+  int dropped_acc = 0;
+  for (const auto& hist : dropped_map) {
+    dropped_acc += hist.second;
+  }
+
+  EXPECT_EQ(produced_acc, 3);
+  EXPECT_EQ(dropped_acc, 3);
 }
 
 // TODO(crbug.com/1148168): Add a test for concurrent reading and writing here

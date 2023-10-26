@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 
 namespace metrics::structured {
 
@@ -63,6 +64,20 @@ void LogExternalMetricsScanInUpload(int num_scans) {
 void LogDroppedExternalMetrics(int num_dropped) {
   base::UmaHistogramCounts1000("StructuredMetrics.ExternalMetricsDropped",
                                num_dropped);
+}
+
+void LogDroppedProjectExternalMetrics(std::string_view project_name,
+                                      int num_dropped) {
+  const std::string histogram_name =
+      base::StrCat({"StructuredMetrics.ExternalMetricsDropped.", project_name});
+  base::UmaHistogramCounts100(histogram_name, num_dropped);
+}
+
+void LogProducedProjectExternalMetrics(std::string_view project_name,
+                                       int num_produced) {
+  const std::string histogram_name = base::StrCat(
+      {"StructuredMetrics.ExternalMetricsProduced.", project_name});
+  base::UmaHistogramCounts100(histogram_name, num_produced);
 }
 
 }  // namespace metrics::structured
