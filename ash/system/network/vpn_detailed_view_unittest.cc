@@ -4,13 +4,11 @@
 
 #include "ash/system/network/vpn_detailed_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
 #include "components/onc/onc_constants.h"
@@ -37,19 +35,9 @@ constexpr char kExtensionProviderAppId[] = "extension_provider_app_id";
 constexpr char kExtensionProviderId[] = "extension_provider_id";
 constexpr char kExtensionProviderName[] = "extension_provider_name";
 
-// Tests are parameterized by QsRevamp.
-class VpnDetailedViewTest : public AshTestBase,
-                            public testing::WithParamInterface<bool> {
+class VpnDetailedViewTest : public AshTestBase {
  public:
-  VpnDetailedViewTest() {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    }
-  }
-
-  bool IsQsRevampEnabled() { return GetParam(); }
+  VpnDetailedViewTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -157,16 +145,13 @@ class VpnDetailedViewTest : public AshTestBase,
     return nullptr;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;
   raw_ptr<VpnDetailedView, DanglingUntriaged | ExperimentalAsh>
       vpn_detailed_view_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp, VpnDetailedViewTest, testing::Bool());
-
-TEST_P(VpnDetailedViewTest, Basics) {
+TEST_F(VpnDetailedViewTest, Basics) {
   // By default there is 1 provider (for built-in OpenVPN) and no networks.
   EXPECT_EQ(GetProviderViewCount(), 1u);
   EXPECT_EQ(GetNetworkViewCount(), 0u);
@@ -177,27 +162,19 @@ TEST_P(VpnDetailedViewTest, Basics) {
   EXPECT_EQ(GetNetworkViewCount(), 1u);
 }
 
-TEST_P(VpnDetailedViewTest, ParentContainerConfiguration) {
+TEST_F(VpnDetailedViewTest, ParentContainerConfiguration) {
   AddVpnProvidersAndNetwork();
   for (const views::View* view : GetProviderViews()) {
     const views::View* parent = view->parent();
-    if (IsQsRevampEnabled()) {
-      EXPECT_STREQ(parent->GetClassName(), "RoundedContainer");
-    } else {
-      EXPECT_STREQ(parent->GetClassName(), "ScrollContentsView");
-    }
+    EXPECT_STREQ(parent->GetClassName(), "RoundedContainer");
   }
   for (const views::View* view : GetNetworkViews()) {
     const views::View* parent = view->parent();
-    if (IsQsRevampEnabled()) {
-      EXPECT_STREQ(parent->GetClassName(), "RoundedContainer");
-    } else {
-      EXPECT_STREQ(parent->GetClassName(), "ScrollContentsView");
-    }
+    EXPECT_STREQ(parent->GetClassName(), "RoundedContainer");
   }
 }
 
-TEST_P(VpnDetailedViewTest, ClickOnBuiltInProviderRowToAddNetwork) {
+TEST_F(VpnDetailedViewTest, ClickOnBuiltInProviderRowToAddNetwork) {
   AddVpnProvidersAndNetwork();
 
   const views::View* built_in_provider = GetBuiltInProviderView();
@@ -211,11 +188,6 @@ TEST_P(VpnDetailedViewTest, ClickOnBuiltInProviderRowToAddNetwork) {
   const views::View* arc_provider = GetArcProviderView();
   ASSERT_TRUE(arc_provider);
   EXPECT_TRUE(arc_provider->GetEnabled());
-
-  // Only QsRevamp has clickable provider rows.
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
 
   // Clicking on the built-in provider row creates a built-in VPN network.
   LeftClickOn(built_in_provider);
