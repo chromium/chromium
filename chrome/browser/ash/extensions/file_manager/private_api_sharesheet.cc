@@ -74,9 +74,6 @@ FileManagerPrivateInternalSharesheetHasTargetsFunction::Run() {
     const GURL url(url_as_string);
     storage::FileSystemURL file_system_url(
         file_system_context->CrackURLInFirstPartyContext(url));
-    if (drive::util::HasHostedDocumentExtension(file_system_url.path())) {
-      contains_hosted_document_ = true;
-    }
     if (!ash::FileSystemBackend::CanHandleURL(file_system_url)) {
       continue;
     }
@@ -126,8 +123,7 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
     }
   }
   result = sharesheet_service->HasShareTargets(
-      apps_util::MakeShareIntent(urls_, *mime_types),
-      contains_hosted_document_);
+      apps_util::MakeShareIntent(urls_, *mime_types));
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            SharesheetHasTargets::Results::Create(result)));
 }
@@ -169,10 +165,8 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
       (properties->can_share && *properties->can_share && properties->share_url)
           ? GURL(*properties->share_url)
           : GURL();
-  bool result = sharesheet_service->HasShareTargets(
-      apps_util::MakeShareIntent(urls_[0], (*mime_types)[0], share_url,
-                                 is_directory),
-      contains_hosted_document_);
+  bool result = sharesheet_service->HasShareTargets(apps_util::MakeShareIntent(
+      urls_[0], (*mime_types)[0], share_url, is_directory));
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            SharesheetHasTargets::Results::Create(result)));
 }
@@ -210,9 +204,6 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
     const GURL url(url_string);
     storage::FileSystemURL file_system_url(
         file_system_context->CrackURLInFirstPartyContext(url));
-    if (drive::util::HasHostedDocumentExtension(file_system_url.path())) {
-      contains_hosted_document_ = true;
-    }
     if (!ash::FileSystemBackend::CanHandleURL(file_system_url)) {
       continue;
     }
@@ -264,7 +255,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
   sharesheet_service->ShowBubble(
       GetSenderWebContents(),
       apps_util::MakeShareIntent(urls_, *mime_types, dlp_source_urls_),
-      contains_hosted_document_, launch_source, base::NullCallback());
+      launch_source, base::NullCallback());
   Respond(NoArguments());
 }
 
@@ -314,7 +305,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
       GetSenderWebContents(),
       apps_util::MakeShareIntent(urls_[0], (*mime_types)[0], share_url,
                                  is_directory),
-      contains_hosted_document_, launch_source, base::NullCallback());
+      launch_source, base::NullCallback());
   Respond(NoArguments());
 }
 
