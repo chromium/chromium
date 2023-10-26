@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
   ASSERT_TRUE(GetRenderWidgetHostView());
   EXPECT_TRUE(GetRenderWidgetHostView()->IsShowing());
-  EXPECT_FALSE(GetRenderWidgetHostView()->HasFocus());
+  EXPECT_TRUE(GetRenderWidgetHostView()->HasFocus());
 
   // Also verify that the window manager agrees about which WebContents is
   // which; the opener should not be the child web contents, but the child
@@ -312,10 +312,10 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   // The first WebContents should be destroyed.
   EXPECT_TRUE(w.is_destroyed());
 
-  // The new WebContents should be visible and unfocused.
+  // The new WebContents should be visible and focused.
   ASSERT_TRUE(GetRenderWidgetHostView());
   EXPECT_TRUE(GetRenderWidgetHostView()->IsShowing());
-  EXPECT_TRUE(!GetRenderWidgetHostView()->HasFocus());
+  EXPECT_TRUE(GetRenderWidgetHostView()->HasFocus());
 }
 
 // Tests closing the document picture-in-picture window.

@@ -243,6 +243,16 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     // Once we're in PiP, the preconditions should not be met anymore.
     EXPECT_FALSE(tab_helper->AreAutoPictureInPicturePreconditionsMet());
 
+    if (should_document_pip) {
+      // Document picture-in-picture windows should not receive focus when
+      // opened due to the AutoPictureInPictureTabHelper.
+      auto* window_manager = PictureInPictureWindowManager::GetInstance();
+      ASSERT_TRUE(window_manager->GetChildWebContents());
+      EXPECT_FALSE(window_manager->GetChildWebContents()
+                       ->GetRenderWidgetHostView()
+                       ->HasFocus());
+    }
+
     // Switch back to the original tab.
     content::MediaStartStopObserver exit_pip_observer(
         original_web_contents,

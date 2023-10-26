@@ -391,8 +391,7 @@ void NormalizeDisposition(NavigateParams* params) {
       break;
 
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-      // Always show a new picture in picture window.
-      params->window_action = NavigateParams::SHOW_WINDOW_INACTIVE;
+      PictureInPictureWindowManager::SetWindowParams(*params);
       break;
 
     case WindowOpenDisposition::NEW_WINDOW:
@@ -498,7 +497,9 @@ class ScopedBrowserShower {
       window->Show();
       // If a user gesture opened a popup window, focus the contents.
       if (params_->user_gesture &&
-          params_->disposition == WindowOpenDisposition::NEW_POPUP &&
+          (params_->disposition == WindowOpenDisposition::NEW_POPUP ||
+           params_->disposition ==
+               WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) &&
           *contents_) {
         (*contents_)->Focus();
         window->Activate();
