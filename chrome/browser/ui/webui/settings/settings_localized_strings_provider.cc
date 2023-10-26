@@ -1145,8 +1145,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          autofill::payments::GetManageAddressesUrl().spec());
   html_source->AddString(
       "manageCreditCardsLabel",
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_PAYMENTS_MANAGE_CREDIT_CARDS,
-                                 chrome::kPaymentMethodsURL));
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PAYMENTS_MANAGE_CREDIT_CARDS,
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillUpdateChromeSettingsLinkToGPayWeb)
+              ? chrome::kPaymentMethodsURLForGPayWeb
+              : chrome::kPaymentMethodsURL));
   html_source->AddString("managePaymentMethodsUrl",
                          autofill::payments::GetManageInstrumentsUrl().spec());
   html_source->AddString("addressesAndPaymentMethodsLearnMoreURL",
