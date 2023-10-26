@@ -78,7 +78,6 @@
     <structures>
       <structure type="lottie" name="IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON" file="chromeos/arc_input_overlay/onboarding_illustration_dark.json" compress="gzip" />
       <structure type="lottie" name="IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_LIGHT_JSON" file="chromeos/arc_input_overlay/onboarding_illustration_light.json" compress="gzip" />
-      <structure type="lottie" name="IDS_ARC_INPUT_OVERLAY_ZERO_STATE_ILLUSTRATION_JSON" file="chromeos/arc_input_overlay/zero_state_illustration.json" compress="gzip" />
     </structures>
   </release>
 </grit>

@@ -69,7 +69,7 @@ void GameControlsTestBase::SetUp() {
   ash::Shell::GetPrimaryRootWindow()->SetBounds(gfx::Rect(1000, 800));
   widget_ = CreateArcWindowSyncAndWait(
       task_environment(), ash::Shell::GetPrimaryRootWindow(),
-      gfx::Rect(310, 300, 300, 200), kEnabledPackageName);
+      gfx::Rect(310, 300, 300, 280), kEnabledPackageName);
 
   touch_injector_ = GetTouchInjector(widget_->GetNativeWindow());
   controller_ = GetDisplayOverlayController();
