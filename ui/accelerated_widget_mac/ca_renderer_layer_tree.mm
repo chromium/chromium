@@ -110,8 +110,8 @@ bool AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
 
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer;
   os_status = CMSampleBufferCreateForImageBuffer(
-      nullptr, cv_pixel_buffer, YES, nullptr, nullptr, video_info, &timing_info,
-      sample_buffer.InitializeInto());
+      nullptr, cv_pixel_buffer, YES, nullptr, nullptr, video_info.get(),
+      &timing_info, sample_buffer.InitializeInto());
   if (os_status != noErr) {
     LOG(ERROR) << "CMSampleBufferCreateForImageBuffer failed with "
                << os_status;
@@ -120,7 +120,7 @@ bool AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
 
   // Specify to display immediately via the sample buffer attachments.
   CFArrayRef attachments = CMSampleBufferGetSampleAttachmentsArray(
-      sample_buffer, /*createIfNecessary=*/YES);
+      sample_buffer.get(), /*createIfNecessary=*/YES);
   if (!attachments) {
     LOG(ERROR) << "CMSampleBufferGetSampleAttachmentsArray failed";
     return false;
@@ -140,7 +140,7 @@ bool AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
                        kCMSampleAttachmentKey_DisplayImmediately,
                        kCFBooleanTrue);
 
-  [av_layer enqueueSampleBuffer:sample_buffer];
+  [av_layer enqueueSampleBuffer:sample_buffer.get()];
 
   switch (av_layer.status) {
     case AVQueuedSampleBufferRenderingStatusUnknown:
@@ -188,31 +188,33 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
                             gfx::ColorSpace::TransferID::HLG,
                             gfx::ColorSpace::MatrixID::BT2020_NCL,
                             gfx::ColorSpace::RangeID::LIMITED)) {
-      CVBufferSetAttachment(cv_pixel_buffer, kCVImageBufferColorPrimariesKey,
+      CVBufferSetAttachment(cv_pixel_buffer.get(),
+                            kCVImageBufferColorPrimariesKey,
                             kCVImageBufferColorPrimaries_ITU_R_2020,
                             kCVAttachmentMode_ShouldPropagate);
-      CVBufferSetAttachment(cv_pixel_buffer, kCVImageBufferYCbCrMatrixKey,
+      CVBufferSetAttachment(cv_pixel_buffer.get(), kCVImageBufferYCbCrMatrixKey,
                             kCVImageBufferYCbCrMatrix_ITU_R_2020,
                             kCVAttachmentMode_ShouldPropagate);
       switch (io_surface_color_space.GetTransferID()) {
         case gfx::ColorSpace::TransferID::HLG:
-          CVBufferSetAttachment(cv_pixel_buffer,
+          CVBufferSetAttachment(cv_pixel_buffer.get(),
                                 kCVImageBufferTransferFunctionKey,
                                 kCVImageBufferTransferFunction_ITU_R_2100_HLG,
                                 kCVAttachmentMode_ShouldPropagate);
           break;
         case gfx::ColorSpace::TransferID::PQ:
-          CVBufferSetAttachment(cv_pixel_buffer,
+          CVBufferSetAttachment(cv_pixel_buffer.get(),
                                 kCVImageBufferTransferFunctionKey,
                                 kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
                                 kCVAttachmentMode_ShouldPropagate);
           CVBufferSetAttachment(
-              cv_pixel_buffer, kCVImageBufferMasteringDisplayColorVolumeKey,
-              gfx::GenerateMasteringDisplayColorVolume(hdr_metadata),
+              cv_pixel_buffer.get(),
+              kCVImageBufferMasteringDisplayColorVolumeKey,
+              gfx::GenerateMasteringDisplayColorVolume(hdr_metadata).get(),
               kCVAttachmentMode_ShouldPropagate);
           CVBufferSetAttachment(
-              cv_pixel_buffer, kCVImageBufferContentLightLevelInfoKey,
-              gfx::GenerateContentLightLevelInfo(hdr_metadata),
+              cv_pixel_buffer.get(), kCVImageBufferContentLightLevelInfoKey,
+              gfx::GenerateContentLightLevelInfo(hdr_metadata).get(),
               kCVAttachmentMode_ShouldPropagate);
           break;
         default:
@@ -222,7 +224,7 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
   }
 
   return AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(av_layer,
-                                                        cv_pixel_buffer);
+                                                        cv_pixel_buffer.get());
 }
 
 CATransform3D ToCATransform3D(const gfx::Transform& t) {
@@ -287,21 +289,21 @@ CARendererLayerTree::SolidColorContents::Get(SkColor4f color) {
       CreateIOSurface(size, buffer_format);
   if (!io_surface)
     return nullptr;
-  IOSurfaceSetColorSpace(io_surface, color_space);
+  IOSurfaceSetColorSpace(io_surface.get(), color_space);
 
   {
     size_t bytes_per_row =
-        IOSurfaceGetBytesPerRowOfPlane(io_surface, /*planeIndex=*/0);
-    IOSurfaceLock(io_surface, /*options=*/0, /*seed=*/nullptr);
+        IOSurfaceGetBytesPerRowOfPlane(io_surface.get(), /*planeIndex=*/0);
+    IOSurfaceLock(io_surface.get(), /*options=*/0, /*seed=*/nullptr);
     char* base_address =
-        reinterpret_cast<char*>(IOSurfaceGetBaseAddress(io_surface));
+        reinterpret_cast<char*>(IOSurfaceGetBaseAddress(io_surface.get()));
     SkImageInfo info = SkImageInfo::Make(size.width(), size.height(),
                                          color_type, kPremul_SkAlphaType);
     auto canvas = SkCanvas::MakeRasterDirect(info, base_address, bytes_per_row);
     DCHECK(canvas);
     canvas->clear(color);
 
-    IOSurfaceUnlock(io_surface, /*options=*/0, /*seed=*/nullptr);
+    IOSurfaceUnlock(io_surface.get(), /*options=*/0, /*seed=*/nullptr);
   }
   return new SolidColorContents(color, io_surface);
 }
@@ -811,7 +813,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   }
 
   // Determine which type of CALayer subclass we should use.
-  if (metal::ShouldUseHDRCopier(io_surface, hdr_metadata_,
+  if (metal::ShouldUseHDRCopier(io_surface.get(), hdr_metadata_,
                                 io_surface_color_space)) {
     type_ = CALayerType::kHDRCopier;
   } else if (io_surface) {
@@ -819,7 +821,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
     // video to be promoted to AV layers.
     if (tree()->allow_av_sample_buffer_display_layer_) {
       if (contents_rect == gfx::RectF(0, 0, 1, 1)) {
-        switch (IOSurfaceGetPixelFormat(io_surface)) {
+        switch (IOSurfaceGetPixelFormat(io_surface.get())) {
           case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
             type_ = CALayerType::kVideo;
             video_type_can_downgrade_ = !io_surface_color_space.IsHDR();
@@ -848,11 +850,12 @@ CARendererLayerTree::ContentLayer::ContentLayer(
     // mismatch probably resulted from rounding the dimensions to integers. This
     // works around a macOS bug which breaks detached fullscreen playback of
     // slightly distorted videos (https://crbug.com/792632).
-    const auto av_rect(cv_pixel_buffer
-                           ? gfx::RectF(CVPixelBufferGetWidth(cv_pixel_buffer),
-                                        CVPixelBufferGetHeight(cv_pixel_buffer))
-                           : gfx::RectF(IOSurfaceGetWidth(io_surface),
-                                        IOSurfaceGetHeight(io_surface)));
+    const auto av_rect(
+        cv_pixel_buffer
+            ? gfx::RectF(CVPixelBufferGetWidth(cv_pixel_buffer.get()),
+                         CVPixelBufferGetHeight(cv_pixel_buffer.get()))
+            : gfx::RectF(IOSurfaceGetWidth(io_surface.get()),
+                         IOSurfaceGetHeight(io_surface.get())));
     const CGFloat av_ratio = av_rect.width() / av_rect.height();
     const CGFloat layer_ratio = rect_.width() / rect_.height();
     const CGFloat ratio_error = av_ratio / layer_ratio;
@@ -1203,7 +1206,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
   switch (type_) {
     case CALayerType::kHDRCopier:
       if (update_contents) {
-        metal::UpdateHDRCopierLayer(ca_layer_, io_surface_,
+        metal::UpdateHDRCopierLayer(ca_layer_, io_surface_.get(),
                                     tree()->metal_device_,
                                     io_surface_color_space_, hdr_metadata_);
       }
@@ -1213,14 +1216,15 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
         bool result = false;
         if (cv_pixel_buffer_) {
           result = AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
-              av_layer_, cv_pixel_buffer_);
+              av_layer_, cv_pixel_buffer_.get());
           if (!result) {
             LOG(ERROR)
                 << "AVSampleBufferDisplayLayerEnqueueCVPixelBuffer failed";
           }
         } else {
           result = AVSampleBufferDisplayLayerEnqueueIOSurface(
-              av_layer_, io_surface_, io_surface_color_space_, hdr_metadata_);
+              av_layer_, io_surface_.get(), io_surface_color_space_,
+              hdr_metadata_);
           if (!result) {
             LOG(ERROR) << "AVSampleBufferDisplayLayerEnqueueIOSurface failed";
           }
@@ -1238,7 +1242,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
           // Used for UMA
           tree()->changed_io_surfaces_during_commit_++;
           tree()->total_updated_io_surface_size_during_commit_ +=
-              IOSurfaceGetAllocSize(io_surface_);
+              IOSurfaceGetAllocSize(io_surface_.get());
         } else if (solid_color_contents_) {
           ca_layer_.contents = solid_color_contents_->GetContents();
         } else {
@@ -1274,7 +1278,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
         CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB));
     base::apple::ScopedCFTypeRef<CGColorRef> srgb_background_color(
         CGColorCreate(color_space.get(), rgba_color_components));
-    ca_layer_.backgroundColor = srgb_background_color;
+    ca_layer_.backgroundColor = srgb_background_color.get();
   }
   if (update_ca_edge_aa_mask) {
     ca_layer_.edgeAntialiasingMask = ca_edge_aa_mask_;
@@ -1298,7 +1302,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
   if (show_overlay_borders || fill_layers ||
       (show_rpdq_borders && is_render_pass_draw_quad_)) {
     uint32_t pixel_format =
-        io_surface_ ? IOSurfaceGetPixelFormat(io_surface_) : 0;
+        io_surface_ ? IOSurfaceGetPixelFormat(io_surface_.get()) : 0;
     float red = 0;
     float green = 0;
     float blue = 0;
@@ -1354,7 +1358,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     // Set the layer color based on usage.
     base::apple::ScopedCFTypeRef<CGColorRef> color(
         CGColorCreateGenericRGB(red, green, blue, alpha));
-    ca_layer_.borderColor = color;
+    ca_layer_.borderColor = color.get();
 
     // Flash indication of updates.
     if (fill_layers) {
@@ -1362,7 +1366,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
       if (!update_indicator_layer_)
         update_indicator_layer_ = [[CALayer alloc] init];
       if (update_anything) {
-        update_indicator_layer_.backgroundColor = color;
+        update_indicator_layer_.backgroundColor = color.get();
         update_indicator_layer_.opacity = 0.25;
         [ca_layer_ addSublayer:update_indicator_layer_];
         update_indicator_layer_.frame =

@@ -122,7 +122,7 @@ AXEventRecorderMac::~AXEventRecorderMac() {
 }
 
 void AXEventRecorderMac::AddNotification(NSString* notification) {
-  AXObserverAddNotification(observer_ref_, application_,
+  AXObserverAddNotification(observer_ref_.get(), application_.get(),
                             base::apple::NSToCFPtrCast(notification), this);
 }
 

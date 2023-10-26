@@ -44,10 +44,11 @@ bool GrabViewSnapshot(gfx::NativeView native_view,
       CGWindowListCreateImage(
           screen_snapshot_bounds.ToCGRect(), kCGWindowListOptionIncludingWindow,
           window.windowNumber, kCGWindowImageBoundsIgnoreFraming));
-  if (CGImageGetWidth(windowSnapshot) <= 0)
+  if (CGImageGetWidth(windowSnapshot.get()) <= 0) {
     return false;
+  }
 
-  *image = gfx::Image([[NSImage alloc] initWithCGImage:windowSnapshot
+  *image = gfx::Image([[NSImage alloc] initWithCGImage:windowSnapshot.get()
                                                   size:NSZeroSize]);
   return true;
 }

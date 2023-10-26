@@ -90,7 +90,8 @@ void DisplayCALayerTree::UpdateCALayerTree(
   // manually disabled.
   if (ca_layer_params.io_surface_mach_port) {
     base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface(
-        IOSurfaceLookupFromMachPort(ca_layer_params.io_surface_mach_port));
+        IOSurfaceLookupFromMachPort(
+            ca_layer_params.io_surface_mach_port.get()));
     if (io_surface) {
       GotIOSurfaceFrame(io_surface, dip_size, ca_layer_params.scale_factor);
       return;

@@ -168,7 +168,7 @@ std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
       }
 
       base::apple::ScopedCFTypeRef<AXUIElementRef> window =
-          FindAXWindowChild(node, selector.pattern);
+          FindAXWindowChild(node.get(), selector.pattern);
       if (window) {
         node = window;
       }
@@ -177,7 +177,7 @@ std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
     // ActiveTab selector.
     if (node && selector.types & AXTreeSelector::ActiveTab) {
       node = FindAXUIElement(
-          node, base::BindRepeating([](const AXUIElementRef node) {
+          node.get(), base::BindRepeating([](const AXUIElementRef node) {
             // Only active tab in exposed in browsers, thus find first
             // AXWebArea role.
             AXElementWrapper ax_node((__bridge id)node);

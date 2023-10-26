@@ -98,8 +98,8 @@ id AXRangeToAXTextMarkerRange(AXPlatformNodeDelegate::AXRange range) {
       kCFAllocatorDefault, reinterpret_cast<const UInt8*>(&serialized_focus),
       sizeof(AXPlatformNodeDelegate::SerializedPosition)));
 
-  return CFBridgingRelease(
-      AXTextMarkerRangeCreate(kCFAllocatorDefault, start_marker, end_marker));
+  return CFBridgingRelease(AXTextMarkerRangeCreate(
+      kCFAllocatorDefault, start_marker.get(), end_marker.get()));
 }
 
 id AXTextMarkerFrom(AXPlatformNodeCocoa* anchor,

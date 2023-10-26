@@ -46,14 +46,16 @@ SkColor GetPlatformImageColor(PlatformImage image, int x, int y) {
           /*width=*/1,
           /*height=*/1,
           /*bitsPerComponent=*/8,
-          /*bytesPerRow=*/4, color_space,
+          /*bytesPerRow=*/4, color_space.get(),
           kCGImageAlphaPremultipliedFirst |
               static_cast<CGImageAlphaInfo>(kCGBitmapByteOrder32Host)));
-  CGContextDrawImage(bitmap_context, CGRectMake(0, 0, 1, 1), pixel_image);
+  CGContextDrawImage(bitmap_context.get(), CGRectMake(0, 0, 1, 1),
+                     pixel_image.get());
 
   // The CGBitmapContext has the same memory layout as SkColor, so we can just
   // read an SkColor straight out of the context.
-  return *reinterpret_cast<SkColor*>(CGBitmapContextGetData(bitmap_context));
+  return *reinterpret_cast<SkColor*>(
+      CGBitmapContextGetData(bitmap_context.get()));
 }
 
 }  // namespace gfx::test

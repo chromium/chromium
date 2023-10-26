@@ -47,7 +47,7 @@ TEST(PlatformFontMacTest, DeriveFont) {
     DCHECK(traits);
 
     CFNumberRef cf_slant = GetValueFromDictionaryAndWorkAroundMacOS13Bug(
-        traits, kCTFontSlantTrait);
+        traits.get(), kCTFontSlantTrait);
     CGFloat slant;
     CFNumberGetValue(cf_slant, kCFNumberCGFloatType, &slant);
     if (isItalic)
@@ -56,7 +56,7 @@ TEST(PlatformFontMacTest, DeriveFont) {
       EXPECT_EQ(slant, 0);
 
     CFNumberRef cf_weight = GetValueFromDictionaryAndWorkAroundMacOS13Bug(
-        traits, kCTFontWeightTrait);
+        traits.get(), kCTFontWeightTrait);
     CGFloat weight;
     CFNumberGetValue(cf_weight, kCFNumberCGFloatType, &weight);
     if (weight_tri < 0)

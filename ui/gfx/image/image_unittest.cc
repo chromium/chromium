@@ -45,7 +45,7 @@ bool IsSystemColorSpaceSRGB() {
   base::apple::ScopedCFTypeRef<CFStringRef> name(
       CGColorSpaceCopyName(color_space));
   return name &&
-         CFStringCompare(name, kCGColorSpaceSRGB, 0) == kCFCompareEqualTo;
+         CFStringCompare(name.get(), kCGColorSpaceSRGB, 0) == kCFCompareEqualTo;
 }
 #endif  // BUILDFLAG(IS_MAC)
 

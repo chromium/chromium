@@ -39,7 +39,7 @@ class IOSurfaceContext
   void PoisonContextAndSharegroup();
   bool HasBeenPoisoned() const { return poisoned_; }
 
-  CGLContextObj cgl_context() const { return cgl_context_; }
+  CGLContextObj cgl_context() const { return cgl_context_.get(); }
 
   // ui::GpuSwitchingObserver implementation.
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;

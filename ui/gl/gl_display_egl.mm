@@ -96,7 +96,7 @@ bool GLDisplayEGL::CreateMetalSharedEvent(id<MTLSharedEvent>* shared_event_out,
   // the sync object immediately.
   eglDestroySync(display_, sync);
 
-  *shared_event_out = objc_storage_->metal_shared_event;
+  *shared_event_out = objc_storage_->metal_shared_event.get();
   *signal_value_out = objc_storage_->metal_signaled_value;
   return true;
 }

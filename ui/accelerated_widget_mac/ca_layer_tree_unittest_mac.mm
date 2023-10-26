@@ -53,7 +53,7 @@ struct CALayerProperties {
 base::apple::ScopedCFTypeRef<CVPixelBufferRef> CreateCVPixelBuffer(
     gfx::ScopedIOSurface io_surface) {
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
-  CVPixelBufferCreateWithIOSurface(nullptr, io_surface, nullptr,
+  CVPixelBufferCreateWithIOSurface(nullptr, io_surface.get(), nullptr,
                                    cv_pixel_buffer.InitializeInto());
   return cv_pixel_buffer;
 }
