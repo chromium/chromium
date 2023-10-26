@@ -50,7 +50,8 @@ EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
       panel_manager_(this),
       editor_switch_(std::make_unique<EditorSwitch>(profile, country_code)),
       consent_store_(
-          std::make_unique<EditorConsentStore>(profile->GetPrefs())) {
+          std::make_unique<EditorConsentStore>(profile->GetPrefs(),
+                                               editor_switch_.get())) {
   tablet_mode_observation_.Observe(TabletMode::Get());
   editor_switch_->OnTabletModeUpdated(ash::TabletMode::IsInTabletMode());
 }

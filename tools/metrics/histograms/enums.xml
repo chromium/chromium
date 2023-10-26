@@ -54488,6 +54488,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="13" label="RETURN_TO_PREVIOUS_SUGGESTIONS"/>
   <int value="14" label="CLICK_CLOSE_BUTTON"/>
   <int value="15" label="WEBUI_REQUEST"/>
+  <int value="16" label="APPROVE_CONSENT"/>
+  <int value="17" label="DECLINE_CONSENT"/>
 </enum>
 
 <enum name="IMEGrammarActions">

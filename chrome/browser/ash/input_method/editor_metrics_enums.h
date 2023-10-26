@@ -50,7 +50,11 @@ enum class EditorStates {
   // will happen right after a user initially consents, or if they get an error
   // and try again.
   kWebUIRequest = 15,
-  kMaxValue = kWebUIRequest,
+  // Increase by 1 when a user clicks to approve the consent.
+  kApproveConsent = 16,
+  // Increase by 1 when a user clicks to decline the consent.
+  kDeclineConsent = 17,
+  kMaxValue = kDeclineConsent,
 };
 
 }  // namespace ash::input_method

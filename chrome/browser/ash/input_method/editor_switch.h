@@ -7,6 +7,7 @@
 
 #include "ash/constants/app_types.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/ime/ash/text_input_method.h"
@@ -16,14 +17,14 @@ namespace ash::input_method {
 // EditorSwitch is the centralized switch that decides whether the feature is
 // available for use, and if available, further decides whether the feature
 // should be popped up given a particular input context.
-class EditorSwitch {
+class EditorSwitch : public EditorConsentStore::Delegate {
  public:
   // country_code in the lowercase ISO 3166-1 alpha-2 format to determine
   // the country where the device is situated.
   EditorSwitch(Profile* profile, std::string_view country_code);
   EditorSwitch(const EditorSwitch&) = delete;
   EditorSwitch& operator=(const EditorSwitch&) = delete;
-  ~EditorSwitch();
+  ~EditorSwitch() override;
 
   // Determines if the feature trace is ever allowed to be visible.
   bool IsAllowedForUse() const;
@@ -41,7 +42,7 @@ class EditorSwitch {
 
   void SetProfile(Profile* profile);
 
-  EditorMode GetEditorMode() const;
+  EditorMode GetEditorMode() const override;
   EditorOpportunityMode GetEditorOpportunityMode() const;
 
  private:
