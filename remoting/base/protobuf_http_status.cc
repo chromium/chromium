@@ -94,6 +94,12 @@ ProtobufHttpStatus::ProtobufHttpStatus(Code code,
                                        const std::string& error_message)
     : error_code_(code), error_message_(error_message) {}
 
+ProtobufHttpStatus::ProtobufHttpStatus(const protobufhttpclient::Status& status,
+                                       const std::string& response_body)
+    : error_code_(static_cast<ProtobufHttpStatus::Code>(status.code())),
+      error_message_(status.message()),
+      response_body_(response_body) {}
+
 ProtobufHttpStatus::~ProtobufHttpStatus() = default;
 
 bool ProtobufHttpStatus::ok() const {

@@ -74,6 +74,15 @@ void PrintHelpMessage(const char* process_name) {
           process_name);
 }
 
+void PrintCorpHelpMessage(const char* process_name) {
+  fprintf(stdout,
+          "Too many arguments provided.\nSetting up a machine for a corp user "
+          "requires the email address of that user and an optional display "
+          "name.\nExample usage: %s --corp-user=<user_email_address> "
+          "[--display-name=corp-machine-name]\n",
+          process_name);
+}
+
 // Lets us hide the PIN that a user types.
 void SetEcho(bool echo) {
 #if BUILDFLAG(IS_WIN)
@@ -202,6 +211,34 @@ bool InitializeHostStarterParams(HostStarter::Params& params,
   return true;
 }
 
+bool InitializeCorpMachineParams(HostStarter::Params& params,
+                                 const base::CommandLine* command_line) {
+  size_t corp_arg_count = 1;
+  params.owner_email =
+      base::ToLowerASCII(command_line->GetSwitchValueASCII("corp-user"));
+  // Crash reporting is always enabled for this flow.
+  params.enable_crash_reporting = true;
+
+  if (command_line->HasSwitch("display-name")) {
+    corp_arg_count++;
+    params.name = command_line->GetSwitchValueASCII("display-name");
+  }
+
+  // Allow debugging switches.
+  if (command_line->HasSwitch("v")) {
+    corp_arg_count++;
+  }
+  if (command_line->HasSwitch("vmodule")) {
+    corp_arg_count++;
+  }
+
+  if (command_line->GetSwitches().size() > corp_arg_count) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 int StartHostMain(int argc, char** argv) {
@@ -264,26 +301,10 @@ int StartHostMain(int argc, char** argv) {
   }
 
   HostStarter::Params params;
-  bool use_corp_machine_flow = false;
-  if (command_line->HasSwitch("corp-user")) {
-    use_corp_machine_flow = true;
-    params.owner_email =
-        base::ToLowerASCII(command_line->GetSwitchValueASCII("corp-user"));
-    // Crash reporting is always enabled for this flow.
-    params.enable_crash_reporting = true;
-    if (command_line->HasSwitch("display-name")) {
-      params.name = command_line->GetSwitchValueASCII("display-name");
-    }
-
-    size_t corp_arg_count = params.name.empty() ? 1 : 2;
-    if (command_line->GetSwitches().size() > corp_arg_count) {
-      fprintf(
-          stdout,
-          "Too many arguments provided.\nSetting up a machine for a corp user "
-          "requires the email address of that user and an optional display "
-          "name.\nExample usage: %s --corp-user=<user_email_address> "
-          "[--display-name=corp-machine-name]\n",
-          argv[0]);
+  bool use_corp_machine_flow = command_line->HasSwitch("corp-user");
+  if (use_corp_machine_flow) {
+    if (!InitializeCorpMachineParams(params, command_line)) {
+      PrintCorpHelpMessage(argv[0]);
       return 1;
     }
   } else if (!InitializeHostStarterParams(params, command_line)) {

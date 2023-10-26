@@ -135,9 +135,10 @@ void CorpHostStarter::OnExistingConfigLoaded(
     std::string* host_id = config->FindString("host_id");
     if (host_id) {
       existing_host_id.emplace(*host_id);
-      LOG(INFO) << "Found existing host: `" << *existing_host_id << "`. This "
-                << "instance will be deleted from the Directory before "
-                << "creating and starting a new host instance.";
+      // Formatted to make start_host output more readable.
+      LOG(INFO) << "\n  Found existing host: `" << *existing_host_id << "`.\n"
+                << "  This instance will be deleted from the Directory before "
+                << "creating the new host instance.";
     }
   }
 
@@ -293,8 +294,23 @@ void CorpHostStarter::OnNetworkError(int response_code) {
 
 void CorpHostStarter::NotifyError(const ProtobufHttpStatus& status) {
   ProtobufHttpStatus::Code error_code = status.error_code();
-  LOG(ERROR) << "Received error code: " << static_cast<int>(error_code)
+  LOG(ERROR) << "\n  Received error code: " << static_cast<int>(error_code)
              << ", message: " << status.error_message();
+
+  if (!status.response_body().empty()) {
+    // TODO(joedow): Parse this output in //remoting/internal and return a
+    // concise error message and accurate error code to increase debugability.
+    size_t pos = status.response_body().rfind("Caused by: ");
+    if (pos != std::string::npos) {
+      LOG(ERROR) << "\n  Extended error information: \n"
+                 << status.response_body().substr(pos);
+      VLOG(1) << "\n  Full error information: \n" << status.response_body();
+    } else {
+      LOG(ERROR) << "\n  Failed to find extended error information, showing "
+                 << "full output:\n"
+                 << status.response_body();
+    }
+  }
 
   // TODO(joedow): Add more error codes to HostStarter and use them here.
   switch (error_code) {

@@ -60,7 +60,8 @@ class SSLPrivateKeyWrapper : public network::mojom::SSLPrivateKey {
 };
 
 void PrintCertificateDetails(const net::X509Certificate& cert) {
-  HOST_LOG << "Client certificate details:\n"
+  // Formatted to make log output more readable.
+  HOST_LOG << "\n  Client certificate details:\n"
            << "    issued by: " << GetPreferredIssuerFieldValue(cert) << "\n"
            << "    with start date: " << cert.valid_start() << "\n"
            << "    and expiry date: " << cert.valid_expiry();
