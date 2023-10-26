@@ -245,7 +245,6 @@ All changes to this list should go through Blink's feature review process: http:
     marker-end
     marker-mid
     marker-start
-    mask
     mask-clip
     mask-composite
     mask-image
@@ -441,14 +440,6 @@ All changes to this list should go through Blink's feature review process: http:
         break-before
     -webkit-column-break-inside
         break-inside
-    -webkit-mask
-        -webkit-mask-position-x
-        -webkit-mask-position-y
-        mask-clip
-        mask-image
-        mask-origin
-        mask-repeat
-        mask-size
     -webkit-mask-box-image
         -webkit-mask-box-image-outset
         -webkit-mask-box-image-repeat
@@ -708,6 +699,15 @@ All changes to this list should go through Blink's feature review process: http:
         marker-end
         marker-mid
         marker-start
+    mask
+        -webkit-mask-position-x
+        -webkit-mask-position-y
+        mask-clip
+        mask-composite
+        mask-image
+        mask-origin
+        mask-repeat
+        mask-size
     mask-position
         -webkit-mask-position-x
         -webkit-mask-position-y
@@ -964,6 +964,8 @@ All changes to this list should go through Blink's feature review process: http:
         margin-inline-end
     -webkit-margin-start
         margin-inline-start
+    -webkit-mask
+        mask
     -webkit-mask-clip
         mask-clip
     -webkit-mask-composite

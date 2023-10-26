@@ -3784,7 +3784,7 @@ bool WebkitMask::ParseShorthand(
                                                   local_context, properties);
 }
 
-bool WebkitAlternativeMask::ParseShorthand(
+bool AlternativeMask::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -3793,6 +3793,14 @@ bool WebkitAlternativeMask::ParseShorthand(
   CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
   return css_parsing_utils::ParseBackgroundOrMask(important, range, context,
                                                   local_context, properties);
+}
+
+const CSSValue* AlternativeMask::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::ValuesForMaskShorthand(
+      alternativeMaskShorthand(), style, layout_object, allow_visited_style);
 }
 
 bool MaskPosition::ParseShorthand(

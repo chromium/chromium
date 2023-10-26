@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+[PASS] Property mask value 'none'
+[PASS] Property mask value 'linear-gradient(to left bottom, red, blue)'
+[FAIL] Property mask value 'linear-gradient(to left bottom, red, blue) luminance'
+  assert_true: 'linear-gradient(to left bottom, red, blue) luminance' is a supported value for mask. expected true got false
+[PASS] Property mask value 'url("https://example.com/")'
+[PASS] Property mask value 'linear-gradient(to left bottom, red, blue) 1px 2px'
+[PASS] Property mask value 'url("https://example.com/") 1px 2px / contain'
+[PASS] Property mask value 'repeat-y'
+[PASS] Property mask value 'border-box'
+[PASS] Property mask value 'linear-gradient(to left bottom, red, blue) padding-box'
+[PASS] Property mask value 'content-box'
+[PASS] Property mask value 'url("https://example.com/") fill-box'
+[PASS] Property mask value 'linear-gradient(to left bottom, red, blue) stroke-box'
+[PASS] Property mask value 'view-box'
+[PASS] Property mask value 'no-clip'
+[PASS] Property mask value 'url("https://example.com/") add'
+[PASS] Property mask value 'subtract'
+[PASS] Property mask value 'url("https://example.com/") intersect'
+[PASS] Property mask value 'linear-gradient(to left bottom, red, blue) exclude'
+[FAIL] Property mask value 'alpha'
+  assert_true: 'alpha' is a supported value for mask. expected true got false
+[FAIL] Property mask value 'url("https://example.com/") alpha'
+  assert_true: 'url("https://example.com/") alpha' is a supported value for mask. expected true got false
+[PASS] Property mask value 'border-box border-box'
+[PASS] Property mask value 'content-box content-box'
+[PASS] Property mask value 'border-box content-box'
+[PASS] Property mask value 'border-box no-clip'
+[FAIL] Property mask value 'intersect no-clip space round 1px 2px / contain stroke-box linear-gradient(to left bottom, red, blue) luminance'
+  assert_true: 'intersect no-clip space round 1px 2px / contain stroke-box linear-gradient(to left bottom, red, blue) luminance' is a supported value for mask. expected true got false
+[FAIL] Property mask value 'intersect no-clip space round 1px 2px / contain view-box, stroke-box linear-gradient(to left bottom, red, blue) luminance'
+  assert_true: 'intersect no-clip space round 1px 2px / contain view-box, stroke-box linear-gradient(to left bottom, red, blue) luminance' is a supported value for mask. expected true got false
+[FAIL] Property mask value 'none alpha'
+  assert_true: 'none alpha' is a supported value for mask. expected true got false
+Harness: the test ran to completion.
+

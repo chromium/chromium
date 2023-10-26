@@ -4315,14 +4315,16 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
     case CSSPropertyID::kMaskRepeat:
     case CSSPropertyID::kWebkitMaskRepeat:
       return ConsumeRepeatStyleValue(range);
+    case CSSPropertyID::kMaskComposite:
+      return ConsumeMaskComposite(range);
     default:
       return nullptr;
   };
 }
 
 const StylePropertyShorthand& WebkitMaskShorthand(CSSPropertyID shorthand_id) {
-  if (shorthand_id == CSSPropertyID::kWebkitAlternativeMask) {
-    return webkitAlternativeMaskShorthand();
+  if (shorthand_id == CSSPropertyID::kAlternativeMask) {
+    return alternativeMaskShorthand();
   }
   return webkitMaskShorthand();
 }
@@ -4345,7 +4347,7 @@ bool ParseBackgroundOrMask(bool important,
   CSSPropertyID shorthand_id = local_context.CurrentShorthand();
   DCHECK(shorthand_id == CSSPropertyID::kBackground ||
          shorthand_id == CSSPropertyID::kWebkitMask ||
-         shorthand_id == CSSPropertyID::kWebkitAlternativeMask);
+         shorthand_id == CSSPropertyID::kAlternativeMask);
   const StylePropertyShorthand& shorthand =
       shorthand_id == CSSPropertyID::kBackground
           ? backgroundShorthand()

@@ -96,13 +96,13 @@ testInner("-webkit-mask", "repeat none", "none repeat");
 testInner("-webkit-mask", "none repeat", "none repeat");
 
 // test mask-origin / mask-clip
-testInner("-webkit-mask", "padding-box", "padding-box padding-box");
-testInner("-webkit-mask", "border-box", "border-box border-box");
-testInner("-webkit-mask", "content-box", "content-box content-box");
-testInner("-webkit-mask", "padding-box none", "none padding-box padding-box");
-testInner("-webkit-mask", "none padding-box", "none padding-box padding-box");
+testInner("-webkit-mask", "padding-box", "padding-box");
+testInner("-webkit-mask", "border-box", "none");
+testInner("-webkit-mask", "content-box", "content-box");
+testInner("-webkit-mask", "padding-box none", "none padding-box");
+testInner("-webkit-mask", "none padding-box", "none padding-box");
 testInner("-webkit-mask", "padding-box content-box", "padding-box content-box");
-testInner("-webkit-mask", "content-box content-box", "content-box content-box");
+testInner("-webkit-mask", "content-box content-box", "content-box");
 testInner("-webkit-mask", "padding-box border-box", "padding-box border-box");
 testInner("-webkit-mask", "padding-box border-box none", "none padding-box border-box");
 testInner("-webkit-mask", "none padding-box border-box", "none padding-box border-box");
@@ -122,8 +122,8 @@ testInner("-webkit-mask", "none left 20px top / contain", "none left 20px top / 
 // combinations
 testInner("-webkit-mask", "none padding-box content-box", "none padding-box content-box");
 testInner("-webkit-mask", "none center right 20px", "none right 20px center");
-testInner("-webkit-mask", "none border-box left top", "none left top border-box border-box");
-testInner("-webkit-mask", "none border-box left top 20px", "none left top 20px border-box border-box");
+testInner("-webkit-mask", "none border-box left top", "none left top");
+testInner("-webkit-mask", "none border-box left top 20px", "none left top 20px");
 testInner("-webkit-mask", "none border-box content-box left top repeat-x", "none left top repeat-x border-box content-box");
 testInner("-webkit-mask", "none border-box content-box left top / auto repeat-x", "none left top / auto repeat-x border-box content-box");
 testInner("-webkit-mask", "none border-box content-box right 0px center / auto repeat-x", "none right 0px center / auto repeat-x border-box content-box");

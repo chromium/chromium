@@ -15,6 +15,7 @@ namespace blink {
 
 class CSSImageValue;
 class SVGResource;
+class StyleSVGResource;
 
 class StyleSVGMaskReferenceImage : public StyleImage {
  public:
@@ -54,6 +55,8 @@ class StyleSVGMaskReferenceImage : public StyleImage {
   ProxySVGResourceClient& GetSVGResourceClient() const;
 
   void Trace(Visitor* visitor) const override;
+
+  StyleSVGResource* CreateSVGResourceWrapper();
 
  private:
   bool IsEqual(const StyleImage&) const override;

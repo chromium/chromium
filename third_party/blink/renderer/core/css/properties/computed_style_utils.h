@@ -78,6 +78,11 @@ class CORE_EXPORT ComputedStyleUtils {
       const ComputedStyle&,
       const LayoutObject*,
       bool allow_visited_style);
+  static const CSSValueList* ValuesForMaskShorthand(
+      const StylePropertyShorthand&,
+      const ComputedStyle&,
+      const LayoutObject*,
+      bool allow_visited_style);
   static const CSSValue* BackgroundPositionOrWebkitMaskPosition(
       const CSSProperty&,
       const ComputedStyle&,

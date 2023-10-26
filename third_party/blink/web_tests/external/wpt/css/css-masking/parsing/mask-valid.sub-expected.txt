@@ -1,43 +1,32 @@
 This is a testharness.js-based test.
-Found 51 tests; 2 PASS, 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 55 tests; 25 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] e.style['mask'] = "none" should set the property value
-[FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+[PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue)" should set the property value
 [FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue) luminance" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [PASS] e.style['mask'] = "url(\"https://web-platform.test/\")" should set the property value
-[FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue) 1px 2px" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "url(\"https://web-platform.test/\") 1px 2px / contain" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "repeat-y" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "border-box" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue) padding-box" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "content-box" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "url(\"https://web-platform.test/\") fill-box" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue) stroke-box" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "view-box" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "no-clip" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "url(\"https://web-platform.test/\") add" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "subtract" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "url(\"https://web-platform.test/\") intersect" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue) exclude" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+[PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue) 1px 2px" should set the property value
+[PASS] e.style['mask'] = "url(\"https://web-platform.test/\") 1px 2px / contain" should set the property value
+[PASS] e.style['mask'] = "repeat-y" should set the property value
+[PASS] e.style['mask'] = "border-box" should set the property value
+[PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue) padding-box" should set the property value
+[PASS] e.style['mask'] = "content-box" should set the property value
+[PASS] e.style['mask'] = "url(\"https://web-platform.test/\") fill-box" should set the property value
+[PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue) stroke-box" should set the property value
+[PASS] e.style['mask'] = "view-box" should set the property value
+[PASS] e.style['mask'] = "no-clip" should set the property value
+[PASS] e.style['mask'] = "url(\"https://web-platform.test/\") add" should set the property value
+[PASS] e.style['mask'] = "subtract" should set the property value
+[PASS] e.style['mask'] = "url(\"https://web-platform.test/\") intersect" should set the property value
+[PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue) exclude" should set the property value
 [FAIL] e.style['mask'] = "alpha" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "url(\"https://web-platform.test/\") alpha" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[PASS] e.style['mask'] = "border-box border-box" should set the property value
+[PASS] e.style['mask'] = "content-box content-box" should set the property value
+[PASS] e.style['mask'] = "border-box content-box" should set the property value
+[PASS] e.style['mask'] = "border-box no-clip" should set the property value
 [FAIL] e.style['mask'] = "intersect no-clip space round 1px 2px / contain stroke-box linear-gradient(to left bottom, red, blue) luminance" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "intersect no-clip space round 1px 2px / contain view-box, stroke-box linear-gradient(to left bottom, red, blue) luminance" should set the property value
@@ -55,23 +44,21 @@ Found 51 tests; 2 PASS, 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['mask'] = "none" should set mask-border-width
   assert_equals: mask-border-width should be canonical expected (string) "auto" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none" should set mask-clip
-  assert_equals: mask-clip should be canonical expected "border-box" but got ""
+  assert_equals: mask-clip should be canonical expected "border-box" but got "initial"
 [FAIL] e.style['mask'] = "none" should set mask-composite
-  assert_equals: mask-composite should be canonical expected "add" but got ""
-[FAIL] e.style['mask'] = "none" should set mask-image
-  assert_equals: mask-image should be canonical expected "none" but got ""
+  assert_equals: mask-composite should be canonical expected "add" but got "initial"
+[PASS] e.style['mask'] = "none" should set mask-image
 [FAIL] e.style['mask'] = "none" should set mask-mode
   assert_equals: mask-mode should be canonical expected (string) "match-source" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none" should set mask-origin
-  assert_equals: mask-origin should be canonical expected "border-box" but got ""
+  assert_equals: mask-origin should be canonical expected "border-box" but got "initial"
 [FAIL] e.style['mask'] = "none" should set mask-position
-  assert_equals: mask-position should be canonical expected "0% 0%" but got ""
+  assert_equals: mask-position should be canonical expected "0% 0%" but got "initial"
 [FAIL] e.style['mask'] = "none" should set mask-repeat
-  assert_equals: mask-repeat should be canonical expected "repeat" but got ""
+  assert_equals: mask-repeat should be canonical expected "repeat" but got "initial"
 [FAIL] e.style['mask'] = "none" should set mask-size
-  assert_equals: mask-size should be canonical expected "auto" but got ""
-[FAIL] e.style['mask'] = "none" should not set unrelated longhands
-  assert_equals: expected 0 but got 1
+  assert_equals: mask-size should be canonical expected "auto" but got "initial"
+[PASS] e.style['mask'] = "none" should not set unrelated longhands
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-border-outset
   assert_equals: mask-border-outset should be canonical expected (string) "0" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-border-repeat
@@ -83,22 +70,20 @@ Found 51 tests; 2 PASS, 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-border-width
   assert_equals: mask-border-width should be canonical expected (string) "auto" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-clip
-  assert_equals: mask-clip should be canonical expected "border-box, padding-box" but got ""
+  assert_equals: mask-clip should be canonical expected "border-box, padding-box" but got "initial, padding-box"
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-composite
-  assert_equals: mask-composite should be canonical expected "add, add" but got ""
-[FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-image
-  assert_equals: mask-image should be canonical expected "none, linear-gradient(to left bottom, red, blue)" but got ""
+  assert_equals: mask-composite should be canonical expected "add, add" but got "initial, initial"
+[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-image
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-mode
   assert_equals: mask-mode should be canonical expected (string) "match-source, match-source" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-origin
-  assert_equals: mask-origin should be canonical expected "border-box, padding-box" but got ""
+  assert_equals: mask-origin should be canonical expected "border-box, padding-box" but got "initial, padding-box"
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-position
   assert_equals: mask-position should be canonical expected "0% 0%, 0% 0%" but got ""
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-repeat
-  assert_equals: mask-repeat should be canonical expected "repeat, repeat" but got ""
+  assert_equals: mask-repeat should be canonical expected "repeat, repeat" but got "initial, initial"
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-size
-  assert_equals: mask-size should be canonical expected "auto, auto" but got ""
-[FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should not set unrelated longhands
-  assert_true: expected true got false
+  assert_equals: mask-size should be canonical expected "auto, auto" but got "initial, initial"
+[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should not set unrelated longhands
 Harness: the test ran to completion.
 

@@ -932,6 +932,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAliasWebkitAlternativeAnimationDelay:
     case CSSPropertyID::kAliasWebkitAlternativeAnimationWithDelayStartEnd:
     case CSSPropertyID::kAliasWebkitAlternativeAnimationWithTimeline:
+    case CSSPropertyID::kAliasWebkitAlternativeMask:
     case CSSPropertyID::kAliasWebkitAlternativeMaskClip:
     case CSSPropertyID::kAliasWebkitAlternativeMaskComposite:
     case CSSPropertyID::kAliasWebkitAlternativeMaskImage:
@@ -1238,7 +1239,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kTransition:
     case CSSPropertyID::kViewTimeline:
     case CSSPropertyID::kAlternativeViewTimelineWithInset:
-    case CSSPropertyID::kWebkitAlternativeMask:
+    case CSSPropertyID::kAlternativeMask:
     case CSSPropertyID::kWebkitColumnBreakAfter:
     case CSSPropertyID::kWebkitColumnBreakBefore:
     case CSSPropertyID::kWebkitColumnBreakInside:

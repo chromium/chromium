@@ -398,6 +398,107 @@ const CSSValueList* ComputedStyleUtils::ValuesForBackgroundShorthand(
   return result;
 }
 
+namespace {
+
+// Append clip and origin vals (https://drafts.fxtf.org/css-masking/#the-mask):
+// * If one <geometry-box> value and the no-clip keyword are present then
+//   <geometry-box> sets mask-origin and no-clip sets mask-clip to that value.
+// * If one <geometry-box> value and no no-clip keyword are present then
+//   <geometry-box> sets both mask-origin and mask-clip to that value.
+// * If two <geometry-box> values are present, then the first sets mask-origin
+//   and the second mask-clip.
+// Additionally, simplifies when possible.
+void AppendValuesForMaskClipAndOrigin(CSSValueList* result_list,
+                                      EFillBox origin,
+                                      EFillBox clip) {
+  if (origin == clip) {
+    // If both values are border-box, omit everything as it is the default.
+    if (origin == EFillBox::kBorder) {
+      return;
+    }
+    // If the values are the same, only emit one value. Note that mask-origin
+    // does not support no-clip, so there is no need to consider no-clip
+    // special cases.
+    result_list->Append(*CSSIdentifierValue::Create(origin));
+  } else if (origin == EFillBox::kBorder && clip == EFillBox::kNoClip) {
+    // Mask-origin does not support no-clip, so mask-origin can be omitted if it
+    // is the default.
+    result_list->Append(*CSSIdentifierValue::Create(clip));
+  } else {
+    result_list->Append(*CSSIdentifierValue::Create(origin));
+    result_list->Append(*CSSIdentifierValue::Create(clip));
+  }
+}
+
+}  // namespace
+
+const CSSValueList* ComputedStyleUtils::ValuesForMaskShorthand(
+    const StylePropertyShorthand&,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) {
+  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+  // Canonical order (https://drafts.fxtf.org/css-masking/#typedef-mask-layer):
+  //   <mask-reference>              ||
+  //   <position> [ / <bg-size> ]?   ||
+  //   <repeat-style>                ||
+  //   <geometry-box>                ||
+  //   [ <geometry-box> | no-clip ]  ||
+  //   <compositing-operator>        ||
+  //   <masking-mode>
+  // The logic below omits initial values due to the following spec:
+  // https://drafts.csswg.org/cssom/#serialize-a-css-value
+  // "If component values can be omitted or replaced with a shorter
+  // representation without changing the meaning of the value, omit/replace
+  // them".
+  CSSValueList* result = CSSValueList::CreateCommaSeparated();
+  const FillLayer* layer = &style.MaskLayers();
+  for (; layer; layer = layer->Next()) {
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    // <mask-reference>
+    if (layer->GetImage()) {
+      list->Append(
+          *layer->GetImage()->ComputedCSSValue(style, allow_visited_style));
+    }
+    // <position> [ / <bg-size> ]?
+    if (layer->PositionX() !=
+            FillLayer::InitialFillPositionX(EFillLayerType::kMask) ||
+        layer->PositionY() !=
+            FillLayer::InitialFillPositionY(EFillLayerType::kMask) ||
+        layer->Size() != FillLayer::InitialFillSize(EFillLayerType::kMask)) {
+      CSSValueList* position_size_list = CSSValueList::CreateSlashSeparated();
+      position_size_list->Append(*CreatePositionListForLayer(
+          GetCSSPropertyWebkitMaskPosition(), *layer, style));
+      if (layer->Size() != FillLayer::InitialFillSize(EFillLayerType::kMask)) {
+        position_size_list->Append(*ValueForFillSize(layer->Size(), style));
+      }
+      list->Append(*position_size_list);
+    }
+    // <repeat-style>
+    if (layer->Repeat() !=
+        FillLayer::InitialFillRepeat(EFillLayerType::kMask)) {
+      list->Append(*ValueForFillRepeat(layer));
+    }
+    // <geometry-box>
+    // [ <geometry-box> | no-clip ]
+    AppendValuesForMaskClipAndOrigin(list, layer->Origin(), layer->Clip());
+    // <compositing-operator>
+    if (layer->CompositingOperator() !=
+        FillLayer::InitialFillCompositingOperator(EFillLayerType::kMask)) {
+      list->Append(*CSSIdentifierValue::Create(layer->CompositingOperator()));
+    }
+    // <masking-mode>
+    // TODO(crbug.com/1490704): Emit mask-mode here.
+
+    if (list->length()) {
+      result->Append(*list);
+    } else {
+      result->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+    }
+  }
+  return result;
+}
+
 const CSSValue* ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
     const CSSProperty& resolved_property,
     const ComputedStyle& style,

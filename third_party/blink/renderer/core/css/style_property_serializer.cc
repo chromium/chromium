@@ -400,7 +400,7 @@ static bool AllowInitialInShorthand(CSSPropertyID property_id) {
     case CSSPropertyID::kTextDecoration:
     case CSSPropertyID::kTextEmphasis:
     case CSSPropertyID::kWebkitMask:
-    case CSSPropertyID::kWebkitAlternativeMask:
+    case CSSPropertyID::kAlternativeMask:
     case CSSPropertyID::kWebkitTextStroke:
     case CSSPropertyID::kWhiteSpace:
       return true;
@@ -629,8 +629,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetLayeredShorthandValue(webkitMaskPositionShorthand());
     case CSSPropertyID::kWebkitMask:
       return GetLayeredShorthandValue(webkitMaskShorthand());
-    case CSSPropertyID::kWebkitAlternativeMask:
-      return GetLayeredShorthandValue(webkitAlternativeMaskShorthand());
+    case CSSPropertyID::kAlternativeMask:
+      return GetLayeredShorthandValue(alternativeMaskShorthand());
     case CSSPropertyID::kTextEmphasis:
       return GetShorthandValue(textEmphasisShorthand());
     case CSSPropertyID::kTextSpacing:
@@ -1564,6 +1564,48 @@ String StylePropertySerializer::Get4Values(
   return result.ReleaseString();
 }
 
+namespace {
+
+// Serialize clip and origin (https://drafts.fxtf.org/css-masking/#the-mask):
+// * If one <geometry-box> value and the no-clip keyword are present then
+//   <geometry-box> sets mask-origin and no-clip sets mask-clip to that value.
+// * If one <geometry-box> value and no no-clip keyword are present then
+//   <geometry-box> sets both mask-origin and mask-clip to that value.
+// * If two <geometry-box> values are present, then the first sets mask-origin
+//   and the second mask-clip.
+// Additionally, omits components when possible (see:
+// https://drafts.csswg.org/cssom/#serialize-a-css-value).
+void SerializeMaskOriginAndClip(StringBuilder& result,
+                                const CSSValueID& origin_id,
+                                const CSSValueID& clip_id) {
+  // If both values are border-box, omit everything as it is the default.
+  if (origin_id == CSSValueID::kBorderBox &&
+      clip_id == CSSValueID::kBorderBox) {
+    return;
+  }
+
+  if (!result.empty()) {
+    result.Append(' ');
+  }
+  if (origin_id == clip_id) {
+    // If the values are the same, only emit one value. Note that mask-origin
+    // does not support no-clip, so there is no need to consider no-clip
+    // special cases.
+    result.Append(getValueName(origin_id));
+  } else if (origin_id == CSSValueID::kBorderBox &&
+             clip_id == CSSValueID::kNoClip) {
+    // Mask-origin does not support no-clip, so mask-origin can be omitted if it
+    // is the default.
+    result.Append(getValueName(clip_id));
+  } else {
+    result.Append(getValueName(origin_id));
+    result.Append(' ');
+    result.Append(getValueName(clip_id));
+  }
+}
+
+}  // namespace
+
 String StylePropertySerializer::GetLayeredShorthandValue(
     const StylePropertyShorthand& shorthand) const {
   const unsigned size = shorthand.length();
@@ -1590,6 +1632,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
     StringBuilder layer_result;
     bool found_position_x_css_property = false;
     bool found_position_y_css_property = false;
+    CSSValueID mask_origin_value = CSSValueID::kBorderBox;
 
     for (unsigned property_index = 0; property_index < size; property_index++) {
       const CSSValue* value = nullptr;
@@ -1616,7 +1659,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         continue;
       }
 
-      bool is_initial_value = value->IsInitialValue();
+      bool omit_value = value->IsInitialValue();
 
       // The shorthand can not represent the following properties if they have
       // non-initial values. This is because they are always reset to their
@@ -1633,7 +1676,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
           DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
-        is_initial_value = true;
+        omit_value = true;
       }
       if (property->IDEquals(CSSPropertyID::kAnimationDelayEnd)) {
         if (CSSToStyleMap::MapAnimationDelayEnd(*value) !=
@@ -1641,7 +1684,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             layer > 0) {
           return g_empty_string;
         }
-        is_initial_value = true;
+        omit_value = true;
       }
       if (property->IDEquals(CSSPropertyID::kAnimationRangeStart)) {
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
@@ -1650,7 +1693,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
           DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
-        is_initial_value = true;
+        omit_value = true;
       }
       if (property->IDEquals(CSSPropertyID::kAnimationRangeEnd)) {
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
@@ -1659,7 +1702,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
           DCHECK(RuntimeEnabledFeatures::ScrollTimelineEnabled());
           return g_empty_string;
         }
-        is_initial_value = true;
+        omit_value = true;
       }
       if (property->IDEquals(CSSPropertyID::kTransitionBehavior)) {
         auto* ident = DynamicTo<CSSIdentifierValue>(value);
@@ -1672,11 +1715,36 @@ String StylePropertySerializer::GetLayeredShorthandValue(
           // shorthand serialization, so this special case is needed.
           // TODO(http://crbug.com/501673): We should have a better solution
           // before fixing all CSS properties to fix the above bug.
-          is_initial_value = true;
+          omit_value = true;
         }
       }
+      if (shorthand.id() == CSSPropertyID::kAlternativeMask) {
+        if (property->IDEquals(CSSPropertyID::kMaskOrigin)) {
+          if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+            mask_origin_value = ident->GetValueID();
+          }
+          // Omit this value as it is serialized alongside mask-clip.
+          omit_value = true;
+        } else if (property->IDEquals(CSSPropertyID::kMaskClip)) {
+          CSSValueID mask_clip_id = CSSValueID::kBorderBox;
+          if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+            mask_clip_id = To<CSSIdentifierValue>(ident)->GetValueID();
+          }
+          SerializeMaskOriginAndClip(layer_result, mask_origin_value,
+                                     mask_clip_id);
+          omit_value = true;
+        } else if (property->IDEquals(CSSPropertyID::kMaskComposite)) {
+          if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+            if (To<CSSIdentifierValue>(ident)->GetValueID() ==
+                CSSValueID::kAdd) {
+              omit_value = true;
+            }
+          }
+        }
+        // TODO(pdr): Omit default values for mask properties.
+      }
 
-      if (!is_initial_value) {
+      if (!omit_value) {
         if (property->IDEquals(CSSPropertyID::kBackgroundSize) ||
             property->IDEquals(CSSPropertyID::kWebkitMaskSize) ||
             property->IDEquals(CSSPropertyID::kMaskSize)) {
@@ -1704,6 +1772,10 @@ String StylePropertySerializer::GetLayeredShorthandValue(
           // specified, the second one defaults to "center", not the same value.
         }
       }
+    }
+    if (shorthand.id() == CSSPropertyID::kAlternativeMask &&
+        layer_result.empty()) {
+      result.Append(getValueName(CSSValueID::kNone));
     }
     if (!layer_result.empty()) {
       if (!result.empty()) {

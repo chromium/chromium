@@ -7560,6 +7560,18 @@
       longhands: ["column-width", "column-count"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
+    // This alternative of mask is active when CSSMaskingInterop is enabled.
+    {
+      name: "-alternative-mask",
+      alternative_of: "mask",
+      longhands: [
+        "mask-image", "-webkit-mask-position-x",
+        "-webkit-mask-position-y", "mask-size", "mask-repeat", "mask-origin",
+        "mask-clip", "mask-composite"
+      ],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSMaskingInterop",
+    },
     {
       name: "-webkit-mask",
       longhands: [
@@ -7574,12 +7586,7 @@
     {
       name: "-webkit-alternative-mask",
       alternative_of: "-webkit-mask",
-      longhands: [
-        "mask-image", "-webkit-mask-position-x",
-        "-webkit-mask-position-y", "mask-size", "mask-repeat",
-        "mask-origin", "mask-clip"
-      ],
-      property_methods: ["ParseShorthand"],
+      alias_for: "-alternative-mask",
       runtime_flag: "CSSMaskingInterop",
     },
     {

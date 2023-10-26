@@ -498,8 +498,9 @@ crbug.com/910537 external/wpt/svg/painting/marker-005.svg [ Failure ]
 crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-001.svg [ Failure ]
 crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-002.svg [ Failure ]
 
+crbug.com/1418401 external/wpt/css/css-masking/mask-shorthand-subproperties-reset.html [ Failure ]
+
 # Unprefixed 'mask' ('mask-image', 'mask-border') support not yet implemented.
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-clip-exclude.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-remote-mask.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-003.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-004.html [ Failure ]
@@ -511,7 +512,6 @@ crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-c.html [ Fail
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-d.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-to-mask-type.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-origin-3.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-position-4d.html [ Failure ]
 
 # New failures exposed by supporting unprefixed mask-image.
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3d.html [ Failure ]
@@ -2831,7 +2831,6 @@ crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/workers/modules/share
 crbug.com/626703 [ Mac13 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/reading-autoincrement-indexes.any.worker.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/scroll-timelines/layout-changes-on-percentage-based-timeline.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-captures-clip-path.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-masking/mask-shorthand-subproperties-reset.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/rch-in-monospace.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/ric-in-monospace.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-full-size-kana-008.html [ Failure ]

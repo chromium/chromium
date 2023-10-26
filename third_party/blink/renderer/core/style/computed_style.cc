@@ -1218,7 +1218,7 @@ static bool HasPropertyThatCreatesStackingContext(
       case CSSPropertyID::kOffsetPath:
       case CSSPropertyID::kOffsetPosition:
       case CSSPropertyID::kWebkitMask:
-      case CSSPropertyID::kWebkitAlternativeMask:
+      case CSSPropertyID::kAlternativeMask:
       case CSSPropertyID::kWebkitMaskBoxImage:
       case CSSPropertyID::kClipPath:
       case CSSPropertyID::kWebkitBoxReflect:

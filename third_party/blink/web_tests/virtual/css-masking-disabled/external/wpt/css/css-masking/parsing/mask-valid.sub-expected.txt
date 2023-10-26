@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 51 tests; 2 PASS, 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 55 tests; 2 PASS, 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] e.style['mask'] = "none" should set the property value
 [FAIL] e.style['mask'] = "linear-gradient(to left bottom, red, blue)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
@@ -37,6 +37,14 @@ Found 51 tests; 2 PASS, 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['mask'] = "alpha" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "url(\"https://web-platform.test/\") alpha" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['mask'] = "border-box border-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['mask'] = "content-box content-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['mask'] = "border-box content-box" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['mask'] = "border-box no-clip" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['mask'] = "intersect no-clip space round 1px 2px / contain stroke-box linear-gradient(to left bottom, red, blue) luminance" should set the property value
   assert_not_equals: property should be set got disallowed value ""

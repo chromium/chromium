@@ -1144,7 +1144,7 @@ void TestRepeatStyleViaShorthandsParsing(const String& testValue,
   TestRepeatStyleViaShorthandParsing(testValue, expectedCssText,
                                      CSSPropertyID::kBackground);
   TestRepeatStyleViaShorthandParsing(testValue, expectedCssText,
-                                     CSSPropertyID::kWebkitAlternativeMask);
+                                     CSSPropertyID::kAlternativeMask);
 }
 
 TEST(CSSPropertyParserTest, RepeatStyleRepeatXViaShorthand) {
