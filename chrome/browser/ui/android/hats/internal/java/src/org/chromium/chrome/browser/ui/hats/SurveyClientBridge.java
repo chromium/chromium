@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.HashMap;
@@ -34,13 +35,14 @@ class SurveyClientBridge implements SurveyClient {
     @CalledByNative
     @VisibleForTesting
     static SurveyClientBridge create(
-            long nativeSurveyClient, String trigger, SurveyUiDelegate uiDelegate) {
+            long nativeSurveyClient, String trigger, SurveyUiDelegate uiDelegate, Profile profile) {
         assert SurveyClientFactory.getInstance() != null;
         SurveyConfig config = SurveyConfig.get(trigger);
         if (config == null) return null;
 
-        return new SurveyClientBridge(nativeSurveyClient,
-                SurveyClientFactory.getInstance().createClient(config, uiDelegate));
+        return new SurveyClientBridge(
+                nativeSurveyClient,
+                SurveyClientFactory.getInstance().createClient(config, uiDelegate, profile));
     }
 
     /**

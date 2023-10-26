@@ -1658,7 +1658,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(
       prefs::kStrictMimetypeCheckForWorkerScriptsEnabled, true);
-
+  registry->RegisterBooleanPref(policy::policy_prefs::kFeedbackSurveysEnabled,
+                                true);
   registry->RegisterBooleanPref(
       prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant, true);
 

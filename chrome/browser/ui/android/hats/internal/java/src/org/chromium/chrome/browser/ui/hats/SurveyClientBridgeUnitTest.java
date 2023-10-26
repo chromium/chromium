@@ -28,6 +28,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -45,13 +46,14 @@ public class SurveyClientBridgeUnitTest {
     @Mock SurveyClientFactory mFactory;
     @Mock SurveyClient mDelegateSurveyClient;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock Profile mProfile;
 
     @Before
     public void setup() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         SurveyClientFactory.setInstanceForTesting(mFactory);
 
-        doReturn(mDelegateSurveyClient).when(mFactory).createClient(any(), any());
+        doReturn(mDelegateSurveyClient).when(mFactory).createClient(any(), any(), any());
     }
 
     @After
@@ -66,7 +68,8 @@ public class SurveyClientBridgeUnitTest {
         TestSurveyUtils.setTestSurveyConfigForTrigger(
                 TEST_TRIGGER, new String[] {}, new String[] {});
         SurveyClientBridge bridge =
-                SurveyClientBridge.create(TEST_NATIVE_POINTER, TEST_TRIGGER, testDelegate);
+                SurveyClientBridge.create(
+                        TEST_NATIVE_POINTER, TEST_TRIGGER, testDelegate, mProfile);
         assertNotNull(bridge);
 
         bridge.showSurvey(mActivity, mActivityLifecycleDispatcher);
@@ -80,7 +83,8 @@ public class SurveyClientBridgeUnitTest {
         TestSurveyUtils.setTestSurveyConfigForTrigger(
                 TEST_TRIGGER, new String[] {"bit1", "bit2"}, new String[] {"string1", "string2"});
         SurveyClientBridge bridge =
-                SurveyClientBridge.create(TEST_NATIVE_POINTER, TEST_TRIGGER, testDelegate);
+                SurveyClientBridge.create(
+                        TEST_NATIVE_POINTER, TEST_TRIGGER, testDelegate, mProfile);
         assertNotNull(bridge);
 
         Map<String, Boolean> bitValues = Map.of("bit1", true, "bit2", false);
@@ -98,7 +102,8 @@ public class SurveyClientBridgeUnitTest {
                 new TestSurveyUtils.TestSurveyUiDelegate();
         TestSurveyUtils.setTestSurveyConfigForTrigger(TEST_TRIGGER, bitFields, stringFields);
         SurveyClientBridge bridge =
-                SurveyClientBridge.create(TEST_NATIVE_POINTER, TEST_TRIGGER, testDelegate);
+                SurveyClientBridge.create(
+                        TEST_NATIVE_POINTER, TEST_TRIGGER, testDelegate, mProfile);
         assertNotNull(bridge);
 
         WindowAndroid window = mock(WindowAndroid.class);

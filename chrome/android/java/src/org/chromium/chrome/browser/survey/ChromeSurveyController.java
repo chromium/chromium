@@ -14,6 +14,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.hats.MessageSurveyUiDelegate;
 import org.chromium.chrome.browser.ui.hats.SurveyClient;
@@ -44,15 +45,19 @@ public class ChromeSurveyController {
 
     /**
      * Checks if the conditions to show the survey are met and starts the process if they are.
+     *
      * @param tabModelSelector The tab model selector to access the tab on which the survey will be
-     *                         shown.
+     *     shown.
      * @param lifecycleDispatcher Dispatcher for activity lifecycle events.
      * @param activity The {@link Activity} on which the survey will be shown.
      * @param messageDispatcher The {@link MessageDispatcher} for displaying messages.
      */
-    public static ChromeSurveyController initialize(TabModelSelector tabModelSelector,
-            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher, Activity activity,
-            MessageDispatcher messageDispatcher) {
+    public static ChromeSurveyController initialize(
+            TabModelSelector tabModelSelector,
+            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
+            Activity activity,
+            MessageDispatcher messageDispatcher,
+            Profile profile) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_HATS_REFACTOR)) return null;
 
         SurveyConfig config = SurveyConfig.get(TRIGGER_STARTUP_SURVEY);
@@ -64,7 +69,7 @@ public class ChromeSurveyController {
         MessageSurveyUiDelegate messageDelegate = new MessageSurveyUiDelegate(
                 message, messageDispatcher, tabModelSelector, ChromeSurveyController::isUMAEnabled);
         SurveyClient client =
-                SurveyClientFactory.getInstance().createClient(config, messageDelegate);
+                SurveyClientFactory.getInstance().createClient(config, messageDelegate, profile);
         if (client == null) return null;
 
         ChromeSurveyController chromeSurveyController = new ChromeSurveyController(client);

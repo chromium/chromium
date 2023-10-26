@@ -270,6 +270,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kEditBookmarksEnabled,
     bookmarks::prefs::kEditBookmarksEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kFeedbackSurveysEnabled,
+    policy::policy_prefs::kFeedbackSurveysEnabled,
+    base::Value::Type::BOOLEAN },
 // We avoid checking for BUILDFLAG(ENABLE_NACL) since we may want the policy to
 // exist (deprecated) even if NACL is no longer being built.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)

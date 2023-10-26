@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/android/hats/survey_client_android.h"
 #include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
 #include "chrome/browser/ui/android/hats/test/test_survey_utils_bridge.h"
@@ -114,8 +116,9 @@ IN_PROC_BROWSER_TEST_F(SurveyClientAndroidBrowserTest,
 
   // Create survey client with delegate.
   std::unique_ptr<SurveyClientAndroid> survey_client =
-      std::make_unique<SurveyClientAndroid>(kTestSurveyTrigger, delegate.get());
-
+      std::make_unique<SurveyClientAndroid>(
+          kTestSurveyTrigger, delegate.get(),
+          ProfileManager::GetActiveUserProfile());
   {
     MessageWaiter waiter(messages_test_helper_);
     survey_client->LaunchSurvey(window_android(),

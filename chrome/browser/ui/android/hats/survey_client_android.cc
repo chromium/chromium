@@ -10,6 +10,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ui/android/hats/internal/jni_headers/SurveyClientBridge_jni.h"
 #include "chrome/browser/ui/android/hats/survey_config_android.h"
 #include "ui/android/window_android.h"
@@ -22,13 +24,15 @@ namespace hats {
 
 // static
 SurveyClientAndroid::SurveyClientAndroid(const std::string& trigger,
-                                         SurveyUiDelegateAndroid* ui_delegate) {
+                                         SurveyUiDelegateAndroid* ui_delegate,
+                                         Profile* profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_trigger =
       ConvertUTF8ToJavaString(env, trigger);
-  jobj_ = Java_SurveyClientBridge_create(env, reinterpret_cast<int64_t>(this),
-                                         java_trigger,
-                                         ui_delegate->GetJavaObject(env));
+  jobj_ = Java_SurveyClientBridge_create(
+      env, reinterpret_cast<int64_t>(this), java_trigger,
+      ui_delegate->GetJavaObject(env),
+      ProfileAndroid::FromProfile(profile)->GetJavaObject());
 }
 
 SurveyClientAndroid::~SurveyClientAndroid() = default;

@@ -12,6 +12,7 @@
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,6 +26,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/policy_constants.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -62,7 +64,7 @@ class ScopedSetMetricsConsent {
   const bool consent_;
 };
 
-class HatsServiceBrowserTestBase : public InProcessBrowserTest {
+class HatsServiceBrowserTestBase : public policy::PolicyTest {
  protected:
   explicit HatsServiceBrowserTestBase(
       std::vector<base::test::FeatureRefAndParams> enabled_features)
@@ -171,6 +173,38 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, AlwaysShow) {
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_TRUE(HatsNextDialogCreated());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
+                       ShowWhenFeedbackSurveyPolicyEnabled) {
+  SetMetricsConsent(true);
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kFeedbackSurveysEnabled, base::Value(true));
+  UpdateProviderPolicy(policies);
+  GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
+  EXPECT_TRUE(HatsNextDialogCreated());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
+                       NeverShowWhenFeedbackSurveyPolicyDisabled) {
+  SetMetricsConsent(true);
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kFeedbackSurveysEnabled,
+            base::Value(false));
+  UpdateProviderPolicy(policies);
+  GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
+  EXPECT_FALSE(HatsNextDialogCreated());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HatsServiceProbabilityOne,
+    NeverShowWhenFeedbackSurveyPolicyEnabledWithoutMetricsConsent) {
+  SetMetricsConsent(false);
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kFeedbackSurveysEnabled, base::Value(true));
+  UpdateProviderPolicy(policies);
+  GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
+  EXPECT_FALSE(HatsNextDialogCreated());
 }
 
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, AlsoShowsSettingsSurvey) {

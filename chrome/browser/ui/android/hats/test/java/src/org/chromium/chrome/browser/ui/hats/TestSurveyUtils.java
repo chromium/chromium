@@ -21,6 +21,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Map;
@@ -162,9 +163,11 @@ public class TestSurveyUtils {
         @Override
         @Nullable
         public SurveyClient createClient(
-                @NonNull SurveyConfig config, @NonNull SurveyUiDelegate uiDelegate) {
+                @NonNull SurveyConfig config,
+                @NonNull SurveyUiDelegate uiDelegate,
+                Profile profile) {
             return new SurveyClientImpl(
-                    config, uiDelegate, mTestController, mCrashUploadPermissionSupplier);
+                    config, uiDelegate, mTestController, mCrashUploadPermissionSupplier, profile);
         }
 
         @Override

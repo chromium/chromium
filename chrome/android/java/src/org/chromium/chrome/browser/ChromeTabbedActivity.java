@@ -2114,54 +2114,80 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected void initDeferredStartupForActivity() {
         super.initDeferredStartupForActivity();
-        DeferredStartupHandler.getInstance().addDeferredTask(() -> {
-            if (isActivityFinishingOrDestroyed()) return;
+        DeferredStartupHandler.getInstance()
+                .addDeferredTask(
+                        () -> {
+                            if (isActivityFinishingOrDestroyed()) return;
 
-            LauncherShortcutActivity.updateIncognitoShortcut(ChromeTabbedActivity.this);
+                            LauncherShortcutActivity.updateIncognitoShortcut(
+                                    ChromeTabbedActivity.this);
 
-            ChromeSurveyController.initialize(mTabModelSelector, getLifecycleDispatcher(),
-                    ChromeTabbedActivity.this, MessageDispatcherProvider.from(getWindowAndroid()));
+                            ChromeSurveyController.initialize(
+                                    mTabModelSelector,
+                                    getLifecycleDispatcher(),
+                                    ChromeTabbedActivity.this,
+                                    MessageDispatcherProvider.from(getWindowAndroid()),
+                                    mTabModelProfileSupplier.get());
 
-            if (mStartSurfaceSupplier.get() != null) {
-                // The start surface is not the layout shown on startup, so wait until it is shown
-                // before notifying the start surface that is was.
-                // TODO(1292661): We should allow the start surface to be the layout that the
-                //                browser starts on to avoid logic like this.
-                // TODO(1315676): Clean up the check of LayoutType.TAB_SWITCHER once the refactoring
-                //                is done. This is because only Start surface is allowed to shown on
-                //                startup, not the Grid Tab switcher.
-                boolean isStartSurfaceLayoutShown = false;
-                if (isStartSurfaceRefactorEnabled()) {
-                    isStartSurfaceLayoutShown =
-                            getLayoutManager().getActiveLayoutType() == LayoutType.START_SURFACE
-                            || getLayoutManager().getNextLayoutType() != LayoutType.START_SURFACE;
-                } else {
-                    isStartSurfaceLayoutShown =
-                            getLayoutManager().getActiveLayoutType() == LayoutType.TAB_SWITCHER
-                            || getLayoutManager().getNextLayoutType() != LayoutType.TAB_SWITCHER;
-                }
-                if (isStartSurfaceLayoutShown) {
-                    mStartSurfaceSupplier.get().onOverviewShownAtLaunch(
-                            mOverviewShownOnStart, getOnCreateTimestampMs());
-                } else if (getLayoutManager().getNextLayoutType() == LayoutType.TAB_SWITCHER
-                        || getLayoutManager().getNextLayoutType() == LayoutType.START_SURFACE) {
-                    getLayoutManager().addObserver(new LayoutStateProvider.LayoutStateObserver() {
-                        @Override
-                        public void onStartedShowing(int layoutType) {
-                            if (layoutType != LayoutType.TAB_SWITCHER
-                                    && layoutType != LayoutType.START_SURFACE) {
-                                return;
+                            if (mStartSurfaceSupplier.get() != null) {
+                                // The start surface is not the layout shown on startup, so wait
+                                // until it is shown before notifying the start surface that is was.
+                                // TODO(1292661): We should allow the start surface to be the layout
+                                // that the browser starts on to avoid logic like this.
+                                // TODO(1315676): Clean up the check of LayoutType.TAB_SWITCHER once
+                                // the refactoring is done. This is because only Start surface is
+                                // allowed to shown on startup, not the Grid Tab switcher.
+                                boolean isStartSurfaceLayoutShown = false;
+                                if (isStartSurfaceRefactorEnabled()) {
+                                    isStartSurfaceLayoutShown =
+                                            getLayoutManager().getActiveLayoutType()
+                                                            == LayoutType.START_SURFACE
+                                                    || getLayoutManager().getNextLayoutType()
+                                                            != LayoutType.START_SURFACE;
+                                } else {
+                                    isStartSurfaceLayoutShown =
+                                            getLayoutManager().getActiveLayoutType()
+                                                            == LayoutType.TAB_SWITCHER
+                                                    || getLayoutManager().getNextLayoutType()
+                                                            != LayoutType.TAB_SWITCHER;
+                                }
+                                if (isStartSurfaceLayoutShown) {
+                                    mStartSurfaceSupplier
+                                            .get()
+                                            .onOverviewShownAtLaunch(
+                                                    mOverviewShownOnStart,
+                                                    getOnCreateTimestampMs());
+                                } else if (getLayoutManager().getNextLayoutType()
+                                                == LayoutType.TAB_SWITCHER
+                                        || getLayoutManager().getNextLayoutType()
+                                                == LayoutType.START_SURFACE) {
+                                    getLayoutManager()
+                                            .addObserver(
+                                                    new LayoutStateProvider.LayoutStateObserver() {
+                                                        @Override
+                                                        public void onStartedShowing(
+                                                                int layoutType) {
+                                                            if (layoutType
+                                                                            != LayoutType
+                                                                                    .TAB_SWITCHER
+                                                                    && layoutType
+                                                                            != LayoutType
+                                                                                    .START_SURFACE) {
+                                                                return;
+                                                            }
+
+                                                            mStartSurfaceSupplier
+                                                                    .get()
+                                                                    .onOverviewShownAtLaunch(
+                                                                            mOverviewShownOnStart,
+                                                                            getOnCreateTimestampMs());
+
+                                                            getLayoutManager().removeObserver(this);
+                                                        }
+                                                    });
+                                }
                             }
-
-                            mStartSurfaceSupplier.get().onOverviewShownAtLaunch(
-                                    mOverviewShownOnStart, getOnCreateTimestampMs());
-
-                            getLayoutManager().removeObserver(this);
-                        }
-                    });
-                }
-            }
-        });
+                        });
     }
 
     @Override

@@ -465,17 +465,23 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
 }
 
 bool HatsService::CanShowAnySurvey(bool user_prompted) const {
-  // Surveys can always be shown in Demo mode.
-  if (base::FeatureList::IsEnabled(
-          features::kHappinessTrackingSurveysForDesktopDemo)) {
-    return true;
-  }
-
   // HaTS requires metrics consent to run. This is also how HaTS can be disabled
   // by policy.
   if (!g_browser_process->GetMetricsServicesManager()
            ->IsMetricsConsentGiven()) {
     return false;
+  }
+
+  // HaTs can also be disabled by policy if metrics consent is given.
+  if (!profile_->GetPrefs()->GetBoolean(
+          policy::policy_prefs::kFeedbackSurveysEnabled)) {
+    return false;
+  }
+
+  // Surveys can always be shown in Demo mode.
+  if (base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopDemo)) {
+    return true;
   }
 
   // Do not show surveys if Chrome's last exit was a crash. This avoids

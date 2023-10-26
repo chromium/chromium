@@ -11,6 +11,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 
@@ -33,7 +34,8 @@ typedef std::map<std::string, std::string> SurveyStringData;
 class SurveyClientAndroid {
  public:
   explicit SurveyClientAndroid(const std::string& trigger,
-                               SurveyUiDelegateAndroid* ui_delegate);
+                               SurveyUiDelegateAndroid* ui_delegate,
+                               Profile* profile);
 
   SurveyClientAndroid(const SurveyClientAndroid&) = delete;
   SurveyClientAndroid& operator=(const SurveyClientAndroid&) = delete;
