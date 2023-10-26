@@ -8,10 +8,14 @@
   }
 
   customize-chrome-combobox {
+    color: var(--color-side-panel-card-primary-foreground);
     font-size: 12px;
     line-height: 16px;
-    color: var(--color-sys-on-surface);
     width: 220px;
+  }
+
+  .dropdown-item:hover {
+    background-color: var(--color-combobox-ink-drop-hovered);
   }
 
   .category {
@@ -19,7 +23,6 @@
   }
 
   #descriptorComboboxB .dropdown-item {
-    background-color: inherit;
     border: none;
     display: flex;
     height: 48px;
@@ -49,9 +52,9 @@
   }
 
   #descriptorMenuD cr-button {
-    background-color: var(--color-sys-neutral-container);
+    background-color: var(--color-menu-button-background);
     border-radius: 8px;
-    border-color: var(--color-sys-neutral-container);
+    border-color: var(--color-menu-button-background);
     height: 40px;
     min-width: 40px;
     padding: 0px;
@@ -153,7 +156,7 @@
   }
 
   [highlighted] {
-    background: yellow;
+    background: var(--color-button-background-pressed);
   }
 </style>
 <div class="sp-card">
@@ -179,10 +182,10 @@
     <customize-chrome-combobox id="descriptorComboboxB" label="Descriptor B"
         value="{{selectedDescriptorB_}}">
       <template is="dom-repeat" items="[[descriptors_.descriptorB]]">
-        <button class="dropdown-item" role="option" value="[[item.label]]">
+        <div class="dropdown-item" role="option" value="[[item.label]]">
           <img is="cr-auto-img" auto-src="[[item.imagePath]]"></img>
           <span>[[item.label]]</span>
-        </button>
+        </div>
       </template>
     </customize-chrome-combobox>
     <customize-chrome-combobox id="descriptorComboboxC" label="Descriptor C"
