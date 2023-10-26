@@ -45,6 +45,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/account_id/account_id.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -147,19 +148,22 @@ class LoginShelfView::ScopedGuestButtonBlockerImpl
       base::WeakPtr<LoginShelfView> shelf_view)
       : shelf_view_(shelf_view) {
     ++(shelf_view_->scoped_guest_button_blockers_);
-    if (shelf_view_->scoped_guest_button_blockers_ == 1)
+    if (shelf_view_->scoped_guest_button_blockers_ == 1) {
       shelf_view_->UpdateUi();
+    }
   }
 
   ~ScopedGuestButtonBlockerImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!shelf_view_)
+    if (!shelf_view_) {
       return;
+    }
 
     DCHECK_GT(shelf_view_->scoped_guest_button_blockers_, 0);
     --(shelf_view_->scoped_guest_button_blockers_);
-    if (!shelf_view_->scoped_guest_button_blockers_)
+    if (!shelf_view_->scoped_guest_button_blockers_) {
       shelf_view_->UpdateUi();
+    }
   }
 
  private:
@@ -414,6 +418,11 @@ bool LoginShelfView::LaunchAppForTesting(const std::string& app_id) {
          kiosk_apps_button_->LaunchAppForTesting(app_id);
 }
 
+bool LoginShelfView::LaunchAppForTesting(const AccountId& account_id) {
+  return kiosk_apps_button_->GetEnabled() &&
+         kiosk_apps_button_->LaunchAppForTesting(account_id);  // IN-TEST
+}
+
 void LoginShelfView::InstallTestUiUpdateDelegate(
     std::unique_ptr<TestUiUpdateDelegate> delegate) {
   DCHECK(!test_ui_update_delegate_.get());
@@ -422,15 +431,17 @@ void LoginShelfView::InstallTestUiUpdateDelegate(
 
 void LoginShelfView::OnKioskMenuShown(
     const base::RepeatingClosure& on_kiosk_menu_shown) {
-  if (kiosk_instruction_bubble_)
+  if (kiosk_instruction_bubble_) {
     kiosk_instruction_bubble_->GetWidget()->Hide();
+  }
 
   on_kiosk_menu_shown.Run();
 }
 
 void LoginShelfView::OnKioskMenuclosed() {
-  if (kiosk_instruction_bubble_)
+  if (kiosk_instruction_bubble_) {
     kiosk_instruction_bubble_->GetWidget()->Show();
+  }
 }
 
 void LoginShelfView::SetKioskApps(
@@ -486,8 +497,9 @@ void LoginShelfView::SetButtonEnabled(bool enabled) {
   // Only allow enabling shelf buttons when shelf is temporarily disabled and
   // only allow temporarily disabling shelf buttons when shelf is not already
   // disabled.
-  if (enabled != is_shelf_temp_disabled_)
+  if (enabled != is_shelf_temp_disabled_) {
     return;
+  }
   is_shelf_temp_disabled_ = !enabled;
 
   for (const auto& button_id : kButtonIds) {
@@ -500,8 +512,9 @@ void LoginShelfView::SetButtonEnabled(bool enabled) {
     for (TrayBackgroundView* tray_button : status_area_widget->tray_buttons()) {
       // Do not enable the button if it is already in disabled state before we
       // temporarily disable it.
-      if (disabled_tray_buttons_.count(tray_button))
+      if (disabled_tray_buttons_.count(tray_button)) {
         continue;
+      }
       tray_button->SetEnabled(true);
     }
     disabled_tray_buttons_.clear();
@@ -509,8 +522,9 @@ void LoginShelfView::SetButtonEnabled(bool enabled) {
     for (TrayBackgroundView* tray_button : status_area_widget->tray_buttons()) {
       // Record the tray button if it is already in disabled state before we
       // temporarily disable it.
-      if (!tray_button->GetEnabled())
+      if (!tray_button->GetEnabled()) {
         disabled_tray_buttons_.insert(tray_button);
+      }
       tray_button->SetEnabled(false);
     }
   }
@@ -606,8 +620,9 @@ void LoginShelfView::UpdateUi() {
   // Make sure observers are notified.
   base::ScopedClosureRunner fire_observer(base::BindOnce(
       [](LoginShelfView* self) {
-        if (self->test_ui_update_delegate())
+        if (self->test_ui_update_delegate()) {
           self->test_ui_update_delegate()->OnUiUpdate();
+        }
       },
       base::Unretained(this)));
 
@@ -617,8 +632,9 @@ void LoginShelfView::UpdateUi() {
       session_state == SessionState::RMA) {
     // The entire view was set invisible. The buttons are also set invisible
     // to avoid affecting calculation of the shelf size.
-    for (auto* child : children())
+    for (auto* child : children()) {
       child->SetVisible(false);
+    }
 
     return;
   }
@@ -708,8 +724,9 @@ void LoginShelfView::UpdateButtonUnionBounds() {
   button_union_bounds_ = gfx::Rect();
   View::Views children = GetChildrenInZOrder();
   for (auto* child : children) {
-    if (child->GetVisible())
+    if (child->GetVisible()) {
       button_union_bounds_.Union(child->bounds());
+    }
   }
 }
 
@@ -764,23 +781,28 @@ bool LoginShelfView::ShouldShowShutdownButton() const {
 // 6. There are no scoped guest buttons blockers active.
 // 7. The device is not in kiosk license mode.
 bool LoginShelfView::ShouldShowGuestButton() const {
-  if (!allow_guest_)
+  if (!allow_guest_) {
     return false;
+  }
 
-  if (scoped_guest_button_blockers_ > 0)
+  if (scoped_guest_button_blockers_ > 0) {
     return false;
+  }
 
-  if (!ShouldShowGuestAndAppsButtons())
+  if (!ShouldShowGuestAndAppsButtons()) {
     return false;
+  }
 
   const SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
 
-  if (session_state == SessionState::OOBE)
+  if (session_state == SessionState::OOBE) {
     return is_first_signin_step_;
+  }
 
-  if (session_state != SessionState::LOGIN_PRIMARY)
+  if (session_state != SessionState::LOGIN_PRIMARY) {
     return false;
+  }
 
   return true;
 }
@@ -816,46 +838,55 @@ bool LoginShelfView::ShouldShowAddUserButton() const {
   const SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
 
-  if (session_state != SessionState::LOGIN_PRIMARY)
+  if (session_state != SessionState::LOGIN_PRIMARY) {
     return false;
+  }
 
-  if (kiosk_license_mode_)
+  if (kiosk_license_mode_) {
     return false;
+  }
 
   if (dialog_state_ != OobeDialogState::HIDDEN &&
-      dialog_state_ != OobeDialogState::EXTENSION_LOGIN_CLOSED)
+      dialog_state_ != OobeDialogState::EXTENSION_LOGIN_CLOSED) {
     return false;
+  }
 
   return true;
 }
 
 bool LoginShelfView::ShouldShowAppsButton() const {
-  if (!ShouldShowGuestAndAppsButtons())
+  if (!ShouldShowGuestAndAppsButtons()) {
     return false;
+  }
 
   const SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
-  if (session_state != SessionState::LOGIN_PRIMARY)
+  if (session_state != SessionState::LOGIN_PRIMARY) {
     return false;
+  }
 
   return true;
 }
 
 bool LoginShelfView::ShouldShowOsInstallButton() const {
-  if (!switches::IsOsInstallAllowed())
+  if (!switches::IsOsInstallAllowed()) {
     return false;
+  }
 
-  if (!ShouldShowGuestAndAppsButtons())
+  if (!ShouldShowGuestAndAppsButtons()) {
     return false;
+  }
 
   const SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
 
-  if (session_state == SessionState::OOBE)
+  if (session_state == SessionState::OOBE) {
     return is_first_signin_step_;
+  }
 
-  if (session_state != SessionState::LOGIN_PRIMARY)
+  if (session_state != SessionState::LOGIN_PRIMARY) {
     return false;
+  }
 
   return true;
 }

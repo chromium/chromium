@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -325,15 +326,10 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
     CHECK_IS_TEST();
   }
 
-  if (kiosk_app_id.type == KioskAppType::kChromeApp) {
-    KioskAppManager::App app;
-    DCHECK(KioskAppManager::IsInitialized());
-    CHECK(KioskAppManager::Get()->GetApp(*kiosk_app_id.app_id, &app));
-    kiosk_app_id_.account_id = app.account_id;
-    if (auto_launch) {
-      KioskAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
-          *kiosk_app_id.app_id);
-    }
+  if (auto_launch && kiosk_app_id.type == KioskAppType::kChromeApp) {
+    CHECK(KioskAppManager::IsInitialized());
+    KioskAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
+        *kiosk_app_id.app_id);
   }
 
   network_ui_controller_->Start();
@@ -348,8 +344,12 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
     return;
   }
 
+  // TODO(b/304981820) remove checks once account_id is no longer optional.
+  CHECK(kiosk_app_id.account_id.has_value());
+  CHECK(kiosk_app_id.account_id.value().is_valid());
+
   kiosk_profile_loader_ = std::make_unique<KioskProfileLoader>(
-      *kiosk_app_id_.account_id, kiosk_app_id_.type, /*delegate=*/this);
+      kiosk_app_id_.account_id.value(), kiosk_app_id_.type, /*delegate=*/this);
   kiosk_profile_loader_->Start();
 }
 

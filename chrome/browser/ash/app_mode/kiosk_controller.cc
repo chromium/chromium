@@ -5,10 +5,12 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 
 #include <string>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,13 +29,14 @@ absl::optional<KioskApp> WebAppById(WebKioskAppManager& manager,
 }
 
 absl::optional<KioskApp> ChromeAppById(KioskAppManager& manager,
-                                       const std::string& app_id) {
+                                       const std::string& chrome_app_id) {
   KioskAppManager::App manager_app;
-  if (!manager.GetApp(app_id, &manager_app)) {
+  if (!manager.GetApp(chrome_app_id, &manager_app)) {
     return absl::nullopt;
   }
-  return KioskApp(KioskAppId::ForChromeApp(app_id), manager_app.name,
-                  manager_app.icon);
+  return KioskApp(
+      KioskAppId::ForChromeApp(chrome_app_id, manager_app.account_id),
+      manager_app.name, manager_app.icon);
 }
 
 absl::optional<KioskApp> ArcAppById(ArcKioskAppManager& manager,
@@ -66,6 +69,31 @@ KioskController::KioskController(WebKioskAppManager& web_app_manager,
 
 KioskController::~KioskController() {
   g_instance = nullptr;
+}
+
+std::vector<KioskApp> KioskController::GetApps() const {
+  std::vector<KioskAppManagerBase::App> web_apps;
+  web_app_manager_->GetApps(&web_apps);
+  std::vector<KioskAppManagerBase::App> chrome_apps;
+  chrome_app_manager_->GetApps(&chrome_apps);
+  std::vector<KioskAppManagerBase::App> arc_apps;
+  arc_app_manager_->GetApps(&arc_apps);
+
+  std::vector<KioskApp> apps;
+  for (const auto& web_app : web_apps) {
+    apps.emplace_back(KioskAppId::ForWebApp(web_app.account_id), web_app.name,
+                      web_app.icon);
+  }
+  for (const auto& chrome_app : chrome_apps) {
+    apps.emplace_back(
+        KioskAppId::ForChromeApp(chrome_app.app_id, chrome_app.account_id),
+        chrome_app.name, chrome_app.icon);
+  }
+  for (const auto& arc_app : arc_apps) {
+    apps.emplace_back(KioskAppId::ForArcApp(arc_app.account_id), arc_app.name,
+                      arc_app.icon);
+  }
+  return apps;
 }
 
 absl::optional<KioskApp> KioskController::GetAutoLaunchApp() const {

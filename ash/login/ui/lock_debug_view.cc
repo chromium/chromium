@@ -36,10 +36,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
@@ -69,6 +71,8 @@ constexpr const char kDebugEnterpriseInfo[] = "Asset ID: 1111";
 constexpr const char kDebugBluetoothName[] = "Bluetooth adapter";
 
 constexpr const char kDebugKioskAppId[] = "asdf1234";
+const AccountId kDebugKioskAppAccountId =
+    AccountId::FromUserEmail("fake@email.com");
 constexpr const char16_t kDebugKioskAppName[] = u"Test App Name";
 
 constexpr const char kDebugDefaultLocaleCode[] = "en-GB";
@@ -521,10 +525,9 @@ class LockDebugView::DebugDataDispatcherTransformer
   }
 
   void AddKioskApp(ShelfWidget* shelf_widget) {
-    KioskAppMenuEntry menu_item;
-    menu_item.app_id = kDebugKioskAppId;
-    menu_item.name = kDebugKioskAppName;
-    kiosk_apps_.push_back(std::move(menu_item));
+    kiosk_apps_.emplace_back(KioskAppMenuEntry::AppType::kChromeApp,
+                             kDebugKioskAppAccountId, kDebugKioskAppId,
+                             kDebugKioskAppName, gfx::ImageSkia());
     shelf_widget->GetLoginShelfView()->SetKioskApps(kiosk_apps_);
   }
 

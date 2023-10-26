@@ -58,8 +58,7 @@ void WebKioskBaseTest::PrepareAppLaunch() {
 }
 
 bool WebKioskBaseTest::LaunchApp() {
-  return LoginScreenTestApi::LaunchApp(
-      WebKioskAppManager::Get()->GetAppByAccountId(account_id())->app_id());
+  return LoginScreenTestApi::LaunchApp(account_id());
 }
 
 void WebKioskBaseTest::InitializeRegularOnlineKiosk() {

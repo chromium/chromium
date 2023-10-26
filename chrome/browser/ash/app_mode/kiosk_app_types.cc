@@ -4,6 +4,13 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 
+#include <ostream>
+#include <string>
+
+#include "base/check.h"
+#include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace ash {
 
 namespace {
@@ -21,37 +28,47 @@ std::string KioskAppTypeToString(KioskAppType type) {
 
 }  // namespace
 
-KioskAppId::KioskAppId() = default;
-KioskAppId::~KioskAppId() = default;
-KioskAppId::KioskAppId(const KioskAppId&) = default;
-
-KioskAppId::KioskAppId(KioskAppType type, const std::string& app_id)
-    : type(type), app_id(app_id) {}
-KioskAppId::KioskAppId(KioskAppType type, const AccountId& account_id)
-    : type(type), account_id(account_id) {}
-
 // static
-KioskAppId KioskAppId::ForChromeApp(const std::string& app_id) {
-  return KioskAppId(KioskAppType::kChromeApp, app_id);
+KioskAppId KioskAppId::ForChromeApp(const std::string& chrome_app_id,
+                                    absl::optional<AccountId> account_id) {
+  // TODO(b/304937903) upgrade to CHECK.
+  DUMP_WILL_BE_CHECK(!account_id.has_value() || account_id->is_valid());
+  return KioskAppId(chrome_app_id, account_id);
 }
 
 // static
 KioskAppId KioskAppId::ForArcApp(const AccountId& account_id) {
+  // TODO(b/304937903) upgrade to CHECK.
+  DUMP_WILL_BE_CHECK(account_id.is_valid());
   return KioskAppId(KioskAppType::kArcApp, account_id);
 }
 
 // static
 KioskAppId KioskAppId::ForWebApp(const AccountId& account_id) {
+  // TODO(b/304937903) upgrade to CHECK.
+  DUMP_WILL_BE_CHECK(account_id.is_valid());
   return KioskAppId(KioskAppType::kWebApp, account_id);
 }
 
-std::ostream& operator<<(std::ostream& stream, const KioskAppId& app_id) {
-  stream << "{type: " << KioskAppTypeToString(app_id.type) << ", ";
+KioskAppId::KioskAppId() = default;
+KioskAppId::KioskAppId(const std::string& chrome_app_id,
+                       absl::optional<AccountId> account_id)
+    : type(KioskAppType::kChromeApp),
+      app_id(chrome_app_id),
+      account_id(account_id) {}
+KioskAppId::KioskAppId(KioskAppType type, const AccountId& account_id)
+    : type(type), account_id(account_id) {}
+KioskAppId::KioskAppId(const KioskAppId&) = default;
+KioskAppId::~KioskAppId() = default;
 
-  if (app_id.account_id) {
-    stream << "account_id: " << app_id.account_id.value();
-  } else {
-    stream << "app_id: " << app_id.app_id.value();
+std::ostream& operator<<(std::ostream& stream, const KioskAppId& id) {
+  stream << "{type: " << KioskAppTypeToString(id.type);
+
+  if (id.account_id.has_value()) {
+    stream << ", account_id: " << id.account_id.value();
+  }
+  if (id.app_id.has_value()) {
+    stream << ", app_id: " << id.app_id.value();
   }
 
   stream << "}";
