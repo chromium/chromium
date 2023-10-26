@@ -51,6 +51,7 @@ class ShortcutInputProvider : public common::mojom::ShortcutInputProvider,
 
  private:
   void HandleObserving();
+  void AdjustShortcutBlockingIfNeeded();
 
   // Observing is only unpaused when the target window has focus, is visible,
   // and is open.

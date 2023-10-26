@@ -4,6 +4,7 @@
 
 #include "ash/webui/common/backend/shortcut_input_provider.h"
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/shortcut_input_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -28,6 +29,8 @@ ShortcutInputProvider::~ShortcutInputProvider() {
     if (shortcut_input_handler) {
       shortcut_input_handler->RemoveObserver(this);
     }
+    Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
+        /*prevent_processing_accelerators=*/false);
   }
 
   if (widget_) {
@@ -69,10 +72,12 @@ void ShortcutInputProvider::OnShortcutInputEventReleased(
 void ShortcutInputProvider::StartObservingShortcutInput(
     mojo::PendingRemote<common::mojom::ShortcutInputObserver> observer) {
   shortcut_input_observers_.Add(std::move(observer));
+  AdjustShortcutBlockingIfNeeded();
 }
 
 void ShortcutInputProvider::StopObservingShortcutInput() {
   shortcut_input_observers_.Clear();
+  AdjustShortcutBlockingIfNeeded();
 }
 
 void ShortcutInputProvider::OnWidgetVisibilityChanged(views::Widget* widget,
@@ -89,6 +94,7 @@ void ShortcutInputProvider::OnWidgetDestroying(views::Widget* widget) {
   widget_->RemoveObserver(this);
   widget_ = nullptr;
   observing_paused_ = true;
+  AdjustShortcutBlockingIfNeeded();
 }
 
 void ShortcutInputProvider::HandleObserving() {
@@ -100,6 +106,7 @@ void ShortcutInputProvider::HandleObserving() {
   const bool widget_active = widget_->IsActive();
   const bool widget_visible = widget_->IsVisible();
   observing_paused_ = !(widget_open && widget_visible && widget_active);
+  AdjustShortcutBlockingIfNeeded();
 }
 
 void ShortcutInputProvider::TieProviderToWidget(views::Widget* widget) {
@@ -112,6 +119,17 @@ void ShortcutInputProvider::TieProviderToWidget(views::Widget* widget) {
   widget_ = widget;
   widget_->AddObserver(this);
   HandleObserving();
+}
+
+void ShortcutInputProvider::AdjustShortcutBlockingIfNeeded() {
+  if (!observing_paused_ && !shortcut_input_observers_.empty()) {
+    Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
+        /*prevent_processing_accelerators=*/true);
+    return;
+  }
+
+  Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
+      /*prevent_processing_accelerators=*/false);
 }
 
 void ShortcutInputProvider::FlushMojoForTesting() {

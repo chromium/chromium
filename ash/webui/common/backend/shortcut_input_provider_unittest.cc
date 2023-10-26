@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -99,6 +101,9 @@ TEST_F(ShortcutInputProviderTest, NoWidget) {
 
   EXPECT_EQ(0, observer_->num_input_events_pressed());
   EXPECT_EQ(0, observer_->num_input_events_released());
+  EXPECT_FALSE(Shell::Get()
+                   ->accelerator_controller()
+                   ->ShouldPreventProcessingAccelerators());
 }
 
 TEST_F(ShortcutInputProviderTest, SimpleEvent) {
@@ -112,6 +117,9 @@ TEST_F(ShortcutInputProviderTest, SimpleEvent) {
 
   EXPECT_EQ(1, observer_->num_input_events_pressed());
   EXPECT_EQ(1, observer_->num_input_events_released());
+  EXPECT_TRUE(Shell::Get()
+                  ->accelerator_controller()
+                  ->ShouldPreventProcessingAccelerators());
 }
 
 TEST_F(ShortcutInputProviderTest, SimpleEventNoFocus) {
@@ -127,6 +135,9 @@ TEST_F(ShortcutInputProviderTest, SimpleEventNoFocus) {
 
   EXPECT_EQ(0, observer_->num_input_events_pressed());
   EXPECT_EQ(0, observer_->num_input_events_released());
+  EXPECT_FALSE(Shell::Get()
+                   ->accelerator_controller()
+                   ->ShouldPreventProcessingAccelerators());
 
   widget_->Show();
 
@@ -136,6 +147,9 @@ TEST_F(ShortcutInputProviderTest, SimpleEventNoFocus) {
 
   EXPECT_EQ(1, observer_->num_input_events_pressed());
   EXPECT_EQ(1, observer_->num_input_events_released());
+  EXPECT_TRUE(Shell::Get()
+                  ->accelerator_controller()
+                  ->ShouldPreventProcessingAccelerators());
 }
 
 TEST_F(ShortcutInputProviderTest, StopObservingTest) {
@@ -149,6 +163,9 @@ TEST_F(ShortcutInputProviderTest, StopObservingTest) {
 
   EXPECT_EQ(1, observer_->num_input_events_pressed());
   EXPECT_EQ(1, observer_->num_input_events_released());
+  EXPECT_TRUE(Shell::Get()
+                  ->accelerator_controller()
+                  ->ShouldPreventProcessingAccelerators());
 
   shortcut_input_provider_->StopObservingShortcutInput();
   shortcut_input_handler_->OnKeyEvent(&pressed_event);
@@ -157,6 +174,9 @@ TEST_F(ShortcutInputProviderTest, StopObservingTest) {
 
   EXPECT_EQ(1, observer_->num_input_events_pressed());
   EXPECT_EQ(1, observer_->num_input_events_released());
+  EXPECT_FALSE(Shell::Get()
+                   ->accelerator_controller()
+                   ->ShouldPreventProcessingAccelerators());
 }
 
 TEST_F(ShortcutInputProviderTest, WidgetDestroyedTest) {
