@@ -9,10 +9,10 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 
 namespace task_manager {
 
@@ -24,7 +24,7 @@ class ChildProcessTask;
 class RenderProcessHostTaskProvider
     : public TaskProvider,
       public content::RenderProcessHostCreationObserver,
-      public content::NotificationObserver {
+      public content::RenderProcessHostObserver {
  public:
   RenderProcessHostTaskProvider();
   RenderProcessHostTaskProvider(const RenderProcessHostTaskProvider&) = delete;
@@ -38,10 +38,11 @@ class RenderProcessHostTaskProvider
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // content::RenderProcessHostObserver:
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
  private:
   // task_manager::TaskProvider:
@@ -61,8 +62,9 @@ class RenderProcessHostTaskProvider
 
   std::map<int, std::unique_ptr<ChildProcessTask>> tasks_by_rph_id_;
 
-  // Object for registering notification requests.
-  content::NotificationRegistrar registrar_;
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      host_observation_{this};
 
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.

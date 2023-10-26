@@ -53,18 +53,11 @@ void RenderProcessHostTaskProvider::StartUpdating() {
     }
   }
 
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-
   is_updating_ = true;
 }
 
 void RenderProcessHostTaskProvider::StopUpdating() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  registrar_.RemoveAll();
 
   // Then delete all tasks (if any).
   tasks_by_rph_id_.clear();
@@ -110,24 +103,26 @@ void RenderProcessHostTaskProvider::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
   if (is_updating_) {
     CreateTask(host->GetID());
+    if (!host_observation_.IsObservingSource(host)) {
+      host_observation_.AddObservation(host);
+    }
   }
 }
 
-void RenderProcessHostTaskProvider::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  content::RenderProcessHost* host =
-      content::Source<content::RenderProcessHost>(source).ptr();
-  ChildProcessData data(content::PROCESS_TYPE_RENDERER);
-  switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_CLOSED:
-    case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED:
-      DeleteTask(host->GetID());
-      break;
-    default:
-      NOTREACHED();
-      break;
+void RenderProcessHostTaskProvider::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  if (is_updating_) {
+    DeleteTask(host->GetID());
+    host_observation_.RemoveObservation(host);
+  }
+}
+
+void RenderProcessHostTaskProvider::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  if (is_updating_) {
+    DeleteTask(host->GetID());
+    host_observation_.RemoveObservation(host);
   }
 }
 
