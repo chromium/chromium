@@ -85,6 +85,8 @@ blink_core_sources("animation") {
     "css_custom_length_interpolation_type.h",
     "css_custom_list_interpolation_type.cc",
     "css_custom_list_interpolation_type.h",
+    "css_custom_transform_function_interpolation_type.cc",
+    "css_custom_transform_function_interpolation_type.h",
     "css_custom_transform_interpolation_type.cc",
     "css_custom_transform_interpolation_type.h",
     "css_default_interpolation_type.cc",
