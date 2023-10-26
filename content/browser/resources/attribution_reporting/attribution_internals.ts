@@ -266,10 +266,10 @@ class Source {
     this.maxEventLevelReports = BigInt(mojo.maxEventLevelReports);
     this.sourceType = sourceTypeText[mojo.sourceType];
     this.priority = mojo.priority;
-    this.filterData = JSON.stringify(mojo.filterData, null, ' ');
+    this.filterData = JSON.stringify(mojo.filterData.filterValues, null, ' ');
     this.aggregationKeys =
         JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' ');
-    this.debugKey = mojo.debugKey ? `${mojo.debugKey.value}` : '';
+    this.debugKey = mojo.debugKey ? `${mojo.debugKey}` : '';
     this.dedupKeys = mojo.dedupKeys;
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
     this.aggregatableDedupKeys = mojo.aggregatableDedupKeys;
@@ -367,7 +367,7 @@ class Registration {
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.registrationJson = mojo.registrationJson;
     this.clearedDebugKey =
-        mojo.clearedDebugKey ? `${mojo.clearedDebugKey.value}` : '';
+        mojo.clearedDebugKey ? `${mojo.clearedDebugKey}` : '';
   }
 }
 

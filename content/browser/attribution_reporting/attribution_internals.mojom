@@ -99,9 +99,9 @@ struct WebUISource {
   int32 max_event_level_reports;
   attribution_reporting.mojom.SourceType source_type;
   int64 priority;
-  attribution_reporting.mojom.DebugKey? debug_key;
+  uint64? debug_key;
   array<uint64> dedup_keys;
-  map<string, array<string>> filter_data;
+  attribution_reporting.mojom.FilterData filter_data;
   // The value is a hex-encoded unsigned 128-bit integer.
   map<string, string> aggregation_keys;
   uint64 aggregatable_budget_consumed;
@@ -126,7 +126,7 @@ struct WebUIRegistration {
   // String instead of mojo_base.mojom.DictionaryValue because the value is
   // simply displayed in the UI, never inspected.
   string registration_json;
-  attribution_reporting.mojom.DebugKey? cleared_debug_key;
+  uint64? cleared_debug_key;
 };
 
 struct WebUITrigger {

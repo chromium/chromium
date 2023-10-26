@@ -197,10 +197,6 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
     return false;
   }
 
-  if (!data.ReadDebugKey(&out->debug_key)) {
-    return false;
-  }
-
   if (!data.ReadFilterData(&out->filter_data)) {
     return false;
   }
@@ -216,6 +212,7 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
   out->source_event_id = data.source_event_id();
   out->max_event_level_reports = data.max_event_level_reports();
   out->priority = data.priority();
+  out->debug_key = data.debug_key();
   out->debug_reporting = data.debug_reporting();
   return out->IsValid();
 }
@@ -233,14 +230,11 @@ bool StructTraits<attribution_reporting::mojom::EventTriggerDataDataView,
                   attribution_reporting::EventTriggerData>::
     Read(attribution_reporting::mojom::EventTriggerDataDataView data,
          attribution_reporting::EventTriggerData* out) {
-  if (!data.ReadDedupKey(&out->dedup_key)) {
-    return false;
-  }
-
   if (!data.ReadFilters(&out->filters)) {
     return false;
   }
 
+  out->dedup_key = data.dedup_key();
   out->data = data.data();
   out->priority = data.priority();
   return true;
@@ -282,14 +276,11 @@ bool StructTraits<attribution_reporting::mojom::AggregatableDedupKeyDataView,
                   attribution_reporting::AggregatableDedupKey>::
     Read(attribution_reporting::mojom::AggregatableDedupKeyDataView data,
          attribution_reporting::AggregatableDedupKey* out) {
-  if (!data.ReadDedupKey(&out->dedup_key)) {
-    return false;
-  }
-
   if (!data.ReadFilters(&out->filters)) {
     return false;
   }
 
+  out->dedup_key = data.dedup_key();
   return true;
 }
 
@@ -327,15 +318,12 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
     return false;
   }
 
-  if (!data.ReadDebugKey(&out->debug_key)) {
-    return false;
-  }
-
   if (!data.ReadAggregationCoordinatorOrigin(
           &out->aggregation_coordinator_origin)) {
     return false;
   }
 
+  out->debug_key = data.debug_key();
   out->debug_reporting = data.debug_reporting();
   out->source_registration_time_config = data.source_registration_time_config();
   return true;

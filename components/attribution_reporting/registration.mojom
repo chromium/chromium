@@ -12,10 +12,6 @@ import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-struct DebugKey {
-  uint64 value;
-};
-
 // Encapsulates a potentially trustworthy origin. Equivalent to
 // attribution_reporting::SuitableOrigin.
 struct SuitableOrigin {
@@ -106,7 +102,7 @@ struct SourceRegistration {
 
   // A key that is propagated through the Attribution Reporting API for
   // debugging purposes.
-  DebugKey? debug_key;
+  uint64? debug_key;
 
   FilterData filter_data;
 
@@ -116,13 +112,6 @@ struct SourceRegistration {
   bool debug_reporting = false;
 
   TriggerConfig trigger_config;
-};
-
-// Deduplication key set by a reporting origin which prevents duplicate triggers
-// from generating multiple attribution reports for a given source.
-struct TriggerDedupKey {
-  // Arbitrary value for deduplication set by the reporting origin.
-  uint64 value;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting
@@ -140,7 +129,7 @@ struct EventTriggerData {
 
   // Key which allows deduplication against existing attributions for the same
   // source.
-  TriggerDedupKey? dedup_key;
+  uint64? dedup_key;
 
   FilterPair filters;
 };
@@ -148,7 +137,7 @@ struct EventTriggerData {
 struct AggregatableDedupKey {
   // Key which allows deduplication against existing attributions for the same
   // source.
-  TriggerDedupKey? dedup_key;
+  uint64? dedup_key;
 
   FilterPair filters;
 };
@@ -172,7 +161,7 @@ struct TriggerRegistration {
 
   // A key that is propagated through the Attribution Reporting API for
   // debugging purposes.
-  DebugKey? debug_key;
+  uint64? debug_key;
 
   // List of all aggregatable dedup keys for deduplication against existing
   // aggregatable reports for the same source.

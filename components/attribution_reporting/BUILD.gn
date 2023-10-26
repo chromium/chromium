@@ -216,14 +216,6 @@ mojom("registration_mojom") {
     {
       types = [
         {
-          mojom = "attribution_reporting.mojom.DebugKey"
-          cpp = "uint64_t"
-        },
-        {
-          mojom = "attribution_reporting.mojom.TriggerDedupKey"
-          cpp = "uint64_t"
-        },
-        {
           mojom = "attribution_reporting.mojom.SuitableOrigin"
           cpp = "::attribution_reporting::SuitableOrigin"
           forward_declaration =

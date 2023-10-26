@@ -42,18 +42,6 @@ namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
-    StructTraits<attribution_reporting::mojom::DebugKeyDataView, uint64_t> {
-  static uint64_t value(uint64_t debug_key) { return debug_key; }
-
-  static bool Read(attribution_reporting::mojom::DebugKeyDataView data,
-                   uint64_t* out) {
-    *out = data.value();
-    return true;
-  }
-};
-
-template <>
-struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::SuitableOriginDataView,
                  attribution_reporting::SuitableOrigin> {
   static const url::Origin& origin(
@@ -63,19 +51,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
   static bool Read(attribution_reporting::mojom::SuitableOriginDataView data,
                    attribution_reporting::SuitableOrigin* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
-    StructTraits<attribution_reporting::mojom::TriggerDedupKeyDataView,
-                 uint64_t> {
-  static uint64_t value(uint64_t debug_key) { return debug_key; }
-
-  static bool Read(attribution_reporting::mojom::TriggerDedupKeyDataView data,
-                   uint64_t* out) {
-    *out = data.value();
-    return true;
-  }
 };
 
 template <>
