@@ -54,8 +54,8 @@ class BuildConfigGenerator extends DefaultTask {
         'androidx_profileinstaller_profileinstaller',
     ]
 
-    // Some libraries are hosted in Chromium's //third_party directory. This is a mapping between
-    // them so they can be used instead of android_deps pulling in its own copy.
+    // These targets will no be downloaded from maven. Deps onto them will be made
+    // to point to the existing targets instead.
     static final Map<String, String> EXISTING_LIBS = [
         com_ibm_icu_icu4j: '//third_party/icu4j:icu4j_java',
         com_almworks_sqlite4java_sqlite4java: '//third_party/sqlite4java:sqlite4java_java',
@@ -78,6 +78,8 @@ class BuildConfigGenerator extends DefaultTask {
             'com_google_android_accessibility_test_framework',
     ]
 
+    // These targets will still be downloaded from maven. Any deps onto them will be made
+    // to point to the aliased target instead.
     static final Map<String, String> ALIASED_LIBS = [
         // Theese libs are pulled in via doubledown, should
         // use the alias instead of the real target.

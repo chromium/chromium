@@ -119,8 +119,8 @@ dependencies {
 
     String errorproneVersion = '2.11.0'
 
-    // Used by downstream targets.
-    compile "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
+    // Provides annotations used to opt into checks.
+    compile "com.google.errorprone:error_prone_annotations:2.23.0"
     compile 'org.checkerframework:checker-compat-qual:2.5.5'
     compile 'org.checkerframework:checker-util:3.25.0'
     compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
@@ -131,6 +131,7 @@ dependencies {
 
     buildCompile "com.google.errorprone:error_prone_core:${errorproneVersion}"
     buildCompile "com.google.errorprone:error_prone_check_api:${errorproneVersion}"
+    // Provides annotations needed when writing custom checks.
     buildCompile "com.google.errorprone:error_prone_annotation:${errorproneVersion}"
     buildCompile 'com.google.errorprone:javac:9+181-r4173-1'
 
