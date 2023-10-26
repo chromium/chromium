@@ -6744,6 +6744,30 @@
             ]
         }
     ],
+    "FLEDGEBiddingAndAuctionServer": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "FledgeBiddingAndAuctionKeyConfig": "{\"https://publickeyservice.gcp.privacysandboxservices.com\": \"https://publickeyservice.pa.gcp.privacysandboxservices.com/.well-known/protected-auction/v1/public-keys\", \"https://publickeyservice.pa.gcp.privacysandboxservices.com\": \"https://publickeyservice.pa.gcp.privacysandboxservices.com/.well-known/protected-auction/v1/public-keys\"}",
+                        "FledgeBiddingAndAuctionKeyURL": "https://publickeyservice.pa.gcp.privacysandboxservices.com/.well-known/protected-auction/v1/public-keys"
+                    },
+                    "enable_features": [
+                        "FledgeBiddingAndAuctionServer"
+                    ]
+                }
+            ]
+        }
+    ],
     "FastPairPWACompanion": [
         {
             "platforms": [
