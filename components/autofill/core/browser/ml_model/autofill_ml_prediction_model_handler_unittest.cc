@@ -114,8 +114,6 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
         optimization_guide::TestOptimizationGuideModelProvider>();
     model_handler_ = std::make_unique<AutofillMlPredictionModelHandler>(
         model_provider_.get());
-    SimulateRetrieveModelFromServer(
-        test_data_dir_.AppendASCII("autofill_model-br-overfit.tflite"));
     task_environment_.RunUntilIdle();
   }
 
@@ -129,7 +127,7 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
   // The overfitted model is overtrained on this form. Which is the only form
   // that can be used for unittests. The model that is
   // provided by the server side is trained on many different other forms.
-  std::unique_ptr<FormStructure> CreateForm() const {
+  std::unique_ptr<FormStructure> CreateOverfittedForm() const {
     return std::make_unique<FormStructure>(
         test::GetFormData({.fields = {{.label = u"nome completo"},
                                       {.label = u"cpf"},
@@ -140,24 +138,56 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
                                       {.label = u"cep"}}}));
   }
 
-  // The expected types for the form in `CreateForm()` using the overfitted
-  // model.
-  std::vector<ServerFieldType> ExpectedTypes() const {
+  // The expected types for the form in `CreateOverfittedForm()` using the
+  // overfitted model.
+  std::vector<ServerFieldType> ExpectedTypesForOverfittedForm() const {
     return {NAME_FULL,       UNKNOWN_TYPE,
             UNKNOWN_TYPE,    PHONE_HOME_CITY_AND_NUMBER,
             EMAIL_ADDRESS,   UNKNOWN_TYPE,
             ADDRESS_HOME_ZIP};
   }
 
+  // Simulates receiving the model from the server, with metadata attached.
+  void SimulateRetrieveModelFromServer() {
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        optimization_guide::TestModelInfoBuilder()
+            .SetModelFilePath(
+                test_data_dir_.AppendASCII("autofill_model-br-overfit.tflite"))
+            .SetModelMetadata(WrapMetadata(ConstructorModelMetadata()))
+            .Build();
+    model_handler_->OnModelUpdated(
+        optimization_guide::proto::
+            OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
+        *model_info);
+    task_environment_.RunUntilIdle();
+  }
+
  private:
-  // Constructs metadata for the model, which can be used to construct a
-  // vectorizer containing the words from the given `dictinary_path` file. It
-  // also contains outputs mappings based on `kSupportedFieldTypes`.
+  // Constructs metadata for the model:
+  // - `input_token()`s are constructed from a test dictionary file
+  // - `output_type()`s are constructed from `kSupportedFieldTypes`.
   optimization_guide::proto::AutofillFieldClassificationModelMetadata
-  ConstructorModelMetadata(const base::FilePath dictionary_path) {
+  ConstructorModelMetadata() const {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;
-    // Constructor `input_token()`.
+    // Construct `input_token()`.
+    AddInputTokensFromFile(
+        test_data_dir_.AppendASCII("br_overfitted_dictionary_test.txt"),
+        metadata);
+    // Construct `output_type()`.
+    for (ServerFieldType type : kSupportedFieldTypes) {
+      metadata.add_output_type(static_cast<int>(type));
+    }
+    return metadata;
+  }
+
+  // Populates `metadata.input_token()` with the contents of the file located
+  // at `dictionary_path`. Each line of the dictionary file is added as a
+  // separate token.
+  void AddInputTokensFromFile(
+      const base::FilePath& dictionary_path,
+      optimization_guide::proto::AutofillFieldClassificationModelMetadata&
+          metadata) const {
     std::string dictionary_content;
     EXPECT_TRUE(base::ReadFileToString(dictionary_path, &dictionary_content));
     for (const std::string& token :
@@ -165,17 +195,12 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
                            base::SPLIT_WANT_ALL)) {
       metadata.add_input_token(token);
     }
-    // Constructor `output_type()`.
-    for (ServerFieldType type : kSupportedFieldTypes) {
-      metadata.add_output_type(static_cast<int>(type));
-    }
-    return metadata;
   }
 
   // Packs the `metadata` into an `optimization_guide::proto::Any`.
   optimization_guide::proto::Any WrapMetadata(
       const optimization_guide::proto::AutofillFieldClassificationModelMetadata&
-          metadata) {
+          metadata) const {
     std::string serialized_metadata;
     metadata.SerializeToString(&serialized_metadata);
     optimization_guide::proto::Any any;
@@ -184,23 +209,6 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
         "type.googleapis.com/"
         "optimization_guide.proto.AutofillFieldClassificationModelMetadata");
     return any;
-  }
-
-  // Simulates receiving the model stored at `model_file_path` from the server,
-  // with metadata attached.
-  void SimulateRetrieveModelFromServer(const base::FilePath& model_file_path) {
-    std::unique_ptr<optimization_guide::ModelInfo> model_info =
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(model_file_path)
-            .SetModelMetadata(WrapMetadata(
-                ConstructorModelMetadata(test_data_dir_.AppendASCII(
-                    "br_overfitted_dictionary_test.txt"))))
-            .Build();
-    model_handler_->OnModelUpdated(
-        optimization_guide::proto::
-            OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-        *model_info);
-    task_environment_.RunUntilIdle();
   }
 
   base::test::ScopedFeatureList features_{features::kAutofillModelPredictions};
@@ -214,27 +222,29 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(AutofillMlPredictionModelHandlerTest, ModelExecutedFormData) {
-  auto form_structure = CreateForm();
+TEST_F(AutofillMlPredictionModelHandlerTest, GetModelPredictionsForForm) {
+  SimulateRetrieveModelFromServer();
+  std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
   model_handler().GetModelPredictionsForForm(std::move(form_structure),
                                              future.GetCallback());
   EXPECT_THAT(future.Get()->fields(),
-              testing::Pointwise(MlTypeEq(), ExpectedTypes()));
+              testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
 }
 
-TEST_F(AutofillMlPredictionModelHandlerTest, ModelExecutedMultipleForms) {
+TEST_F(AutofillMlPredictionModelHandlerTest, GetModelPredictionsForForms) {
+  SimulateRetrieveModelFromServer();
   std::vector<std::unique_ptr<FormStructure>> forms;
-  forms.emplace_back(CreateForm());
-  forms.emplace_back(CreateForm());
+  forms.push_back(CreateOverfittedForm());
+  forms.push_back(CreateOverfittedForm());
   base::test::TestFuture<std::vector<std::unique_ptr<FormStructure>>> future;
   model_handler().GetModelPredictionsForForms(std::move(forms),
                                               future.GetCallback());
   ASSERT_EQ(future.Get().size(), 2u);
   EXPECT_THAT(future.Get()[0]->fields(),
-              testing::Pointwise(MlTypeEq(), ExpectedTypes()));
+              testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
   EXPECT_THAT(future.Get()[1]->fields(),
-              testing::Pointwise(MlTypeEq(), ExpectedTypes()));
+              testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
 }
 
 }  // namespace autofill
