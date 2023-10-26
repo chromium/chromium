@@ -294,13 +294,11 @@ void TrackingProtectionOnboarding::MaybeResetOnboardingPrefs() {
       return;
   }
 
-  // Clear all Onboarding Prefs.
+  // Clear all Onboarding Prefs. Excluding Ack prefs.
   pref_service_->ClearPref(prefs::kTrackingProtectionOnboardingStatus);
   pref_service_->ClearPref(prefs::kTrackingProtectionEligibleSince);
   pref_service_->ClearPref(prefs::kTrackingProtectionOnboardedSince);
   pref_service_->ClearPref(prefs::kTrackingProtectionNoticeLastShown);
-  pref_service_->ClearPref(prefs::kTrackingProtectionOnboardingAcked);
-  pref_service_->ClearPref(prefs::kTrackingProtectionOnboardingAckAction);
 }
 
 void TrackingProtectionOnboarding::OnboardingNoticeShown() {

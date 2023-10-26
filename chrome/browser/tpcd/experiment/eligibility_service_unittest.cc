@@ -178,12 +178,23 @@ TEST_F(EligibilityServiceTest, VersionChange_OnboardingPrefsReset) {
 
   SetChannelVersion(profile_, version_info::Channel::BETA);
 
-  profile_.GetPrefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked,
-                                  true);
+  auto* onboarding_service =
+      TrackingProtectionOnboardingFactory::GetForProfile(&profile_);
+  // Simulate onboarding a profile.
+  onboarding_service->MaybeMarkEligible();
+  onboarding_service->OnboardingNoticeShown();
+  onboarding_service->NoticeActionTaken(
+      privacy_sandbox::TrackingProtectionOnboarding::NoticeType::kOnboarding,
+      privacy_sandbox::TrackingProtectionOnboarding::NoticeAction::kGotIt);
+
+  EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
+            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+                kOnboarded);
 
   EligibilityService eligibility_service(&profile_, experiment_manager_.get());
-  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(
-      prefs::kTrackingProtectionOnboardingAcked));
+  EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
+            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+                kIneligible);
 }
 
 class EligibilityServiceOTRProfileTest

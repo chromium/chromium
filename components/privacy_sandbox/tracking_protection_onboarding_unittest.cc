@@ -360,7 +360,6 @@ TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInStable) {
   prefs()->SetInteger(
       prefs::kTrackingProtectionOnboardingStatus,
       static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
 
   // Action
   tracking_protection_onboarding()->MaybeResetOnboardingPrefs();
@@ -369,7 +368,6 @@ TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInStable) {
   EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
                 prefs::kTrackingProtectionOnboardingStatus)),
             TrackingProtectionOnboardingStatus::kOnboarded);
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kTrackingProtectionOnboardingAcked));
 }
 
 TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInCanary) {
@@ -380,7 +378,6 @@ TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInCanary) {
   prefs()->SetInteger(
       prefs::kTrackingProtectionOnboardingStatus,
       static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
 
   // Action
   tracking_protection_onboarding()->MaybeResetOnboardingPrefs();
@@ -388,10 +385,6 @@ TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInCanary) {
   // Verification
   EXPECT_FALSE(prefs()
                    ->FindPreference(prefs::kTrackingProtectionOnboardingStatus)
-                   ->HasUserSetting());
-
-  EXPECT_FALSE(prefs()
-                   ->FindPreference(prefs::kTrackingProtectionOnboardingAcked)
                    ->HasUserSetting());
 }
 
