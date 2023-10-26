@@ -127,20 +127,6 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       context_group_->feature_info()->workarounds().use_virtualized_gl_contexts;
 
   bool offscreen = (surface_handle_ == kNullSurfaceHandle);
-  gl::GLSurface* default_surface = manager->default_offscreen_surface();
-  // On low-spec Android devices, the default offscreen surface is
-  // RGB565, but WebGL rendering contexts still ask for RGBA8888 mode.
-  // That combination works for offscreen rendering, we can still use
-  // a virtualized context with the RGB565 backing surface since we're
-  // not drawing to that. Explicitly set that as the desired surface
-  // format to ensure it's treated as compatible where applicable.
-  gl::GLSurfaceFormat surface_format =
-      offscreen ? default_surface->GetFormat() : gl::GLSurfaceFormat();
-#if BUILDFLAG(IS_ANDROID)
-    // To use virtualized contexts we need on screen surface format match the
-    // offscreen.
-    surface_format = default_surface->GetFormat();
-#endif
 
   command_buffer_ = std::make_unique<CommandBufferService>(
       this, context_group_->memory_tracker());
@@ -196,27 +182,30 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     display = keyed_display;
   }
 
+  gl::GLSurface* default_surface = manager->default_offscreen_surface();
+
   if (offscreen) {
-    if (!surface_format.IsCompatible(default_surface->GetFormat())) {
-      DVLOG(1) << __FUNCTION__ << ": Hit the OwnOffscreenSurface path";
-      use_virtualized_gl_context_ = false;
-      surface_ = gl::init::CreateOffscreenGLSurfaceWithFormat(
-          display, gfx::Size(), surface_format);
-      if (!surface_) {
-        LOG(ERROR)
-            << "ContextResult::kSurfaceFailure: Failed to create surface.";
-        return gpu::ContextResult::kSurfaceFailure;
-      }
+    if (default_surface->GetGLDisplay() == display) {
+      surface_ = default_surface;
     } else {
-      if (default_surface->GetGLDisplay() == display) {
-        surface_ = default_surface;
-      } else {
-        // The default surface was created on a different display, create a
-        // new surface on the requested display.
-        surface_ = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
-      }
+      // The default surface was created on a different display, create a
+      // new surface on the requested display.
+      surface_ = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
     }
   } else {
+    gl::GLSurfaceFormat surface_format = gl::GLSurfaceFormat();
+#if BUILDFLAG(IS_ANDROID)
+    // On low-spec Android devices, the default offscreen surface is
+    // RGB565, but WebGL rendering contexts still ask for RGBA8888 mode.
+    // That combination works for offscreen rendering, we can still use
+    // a virtualized context with the RGB565 backing surface since we're
+    // not drawing to that. Explicitly set that as the desired surface
+    // format to ensure it's treated as compatible where applicable.
+    // To use virtualized contexts we need on screen surface format match the
+    // offscreen.
+    surface_format = default_surface->GetFormat();
+#endif
+
     switch (init_params.attribs.color_space) {
       case COLOR_SPACE_UNSPECIFIED:
         surface_format.SetColorSpace(
