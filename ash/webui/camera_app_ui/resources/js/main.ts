@@ -26,7 +26,6 @@ import {ModeConstraints} from './device/type.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as expert from './expert.js';
-import {Flag} from './flag.js';
 import {GalleryButton} from './gallerybutton.js';
 import {Intent} from './intent.js';
 import * as Comlink from './lib/comlink.js';
@@ -196,13 +195,6 @@ function setupEffect() {
     subtree: true,
     childList: true,
   });
-}
-
-function setupExperimentalFeatures() {
-  if (loadTimeData.getChromeFlag(Flag.TIME_LAPSE)) {
-    const modeButton = dom.get('#time-lapse-mode', HTMLDivElement);
-    modeButton.classList.remove('hidden');
-  }
 }
 
 /**
@@ -514,7 +506,6 @@ async function main() {
   setupToggles();
   localStorage.cleanup();
   setupEffect();
-  setupExperimentalFeatures();
   preloadImages();
   preloadSounds();
   setupSvgs();

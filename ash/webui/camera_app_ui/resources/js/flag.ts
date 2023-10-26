@@ -6,5 +6,5 @@
  * Name of the chrome flags.
  */
 export enum Flag {
-  TIME_LAPSE = 'timeLapse',
+  PLACEHOLDER_FLAG = '',
 }

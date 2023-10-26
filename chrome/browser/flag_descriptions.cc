@@ -5839,10 +5839,6 @@ const char kBruschettaAlphaMigrateDescription[] =
     "Enable this flag to migrate a Bruschetta installed during the alpha. "
     "Requires the bruschetta flag to be enabled.";
 
-const char kCameraAppTimeLapseName[] = "Camera App Time-lapse Recording";
-const char kCameraAppTimeLapseDescription[] =
-    "Enable this flag to record time-lapse video in Camera app.";
-
 const char kDisableBufferBWCompressionName[] =
     "Disable buffer bandwidth compression";
 const char kDisableBufferBWCompressionDescription[] =

@@ -356,11 +356,6 @@ BASE_FEATURE(kBorealisWebUIInstaller,
 // Enable or disable calendar jelly.
 BASE_FEATURE(kCalendarJelly, "CalendarJelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables to allow time-lapse video recording in the camera app.
-BASE_FEATURE(kCameraAppTimeLapse,
-             "CameraAppTimeLapse",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the camera effects are supported by hardware.
 // Note that this feature can be overridden by login_manager based on
 // whether a per-board build sets the USE camera_feature_effects flag.
