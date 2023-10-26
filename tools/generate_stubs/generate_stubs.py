@@ -69,12 +69,12 @@ class SubprocessError(Error):
 # From that, all preceding characters are considered the return value.
 # Trailing characters should have a substring matching the form (.*).  That
 # is considered the arguments.
-SIGNATURE_REGEX = re.compile('(?P<return_type>.+?)'
-                             '(?P<name>[_a-zA-Z][_a-zA-Z0-9]+)\s*'
-                             '\((?P<params>.*?)\)')
+SIGNATURE_REGEX = re.compile(r'(?P<return_type>.+?)'
+                             r'(?P<name>[_a-zA-Z][_a-zA-Z0-9]+)\s*'
+                             r'\((?P<params>.*?)\)')
 
 # Used for generating C++ identifiers.
-INVALID_C_IDENT_CHARS = re.compile('[^_a-zA-Z0-9]')
+INVALID_C_IDENT_CHARS = re.compile(r'[^_a-zA-Z0-9]')
 
 # Constants defining the supported file types options.
 FILE_TYPE_WIN_X86 = 'windows_lib'
@@ -661,7 +661,7 @@ class PosixStubWriter(object):
 
     # Generate the argument list.
     arguments = [
-        re.split('[\*& ]', arg)[-1].strip() for arg in signature['params']
+        re.split(r'[\*& ]', arg)[-1].strip() for arg in signature['params']
     ]
     # Remove square brackets from arrays, otherwise we will end with a
     # compilation failure.

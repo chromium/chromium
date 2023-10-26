@@ -44,7 +44,7 @@ def GetOptions():
   header_guard = cmdline_options.output.upper()
   if header_guard[0].isdigit():
     header_guard = '_' + header_guard
-  header_guard = re.sub('[^\w]', '_', header_guard)
+  header_guard = re.sub(r'[^\w]', '_', header_guard)
   header_guard += '_'
 
   # The actual output file is inside the gen dir.
