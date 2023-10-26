@@ -9,6 +9,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/app_specifics.pb.h"
@@ -35,6 +36,20 @@ class SingleClientExtensionAppsSyncTest : public SyncTest {
 
   bool UseVerifier() override {
     // TODO(crbug.com/1137717): rewrite tests to not use verifier profile.
+    return true;
+  }
+
+  bool SetupClients() override {
+    if (!SyncTest::SetupClients()) {
+      return false;
+    }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Apps sync is controlled by a dedicated preference on Lacros,
+    // corresponding to the Apps toggle in OS Sync settings.
+    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
+    }
+#endif
     return true;
   }
 
