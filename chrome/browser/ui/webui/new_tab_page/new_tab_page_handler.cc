@@ -30,7 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/new_tab_page/customize_chrome/customize_chrome_feature_promo_helper.h"
+#include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,6 +54,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -413,7 +415,7 @@ NewTabPageHandler::NewTabPageHandler(
     ThemeService* theme_service,
     search_provider_logos::LogoService* logo_service,
     content::WebContents* web_contents,
-    std::unique_ptr<CustomizeChromeFeaturePromoHelper>
+    std::unique_ptr<NewTabPageFeaturePromoHelper>
         customize_chrome_feature_promo_helper,
     const base::Time& ntp_navigation_start_time,
     const std::vector<std::pair<const std::string, int>> module_id_names)
@@ -425,8 +427,7 @@ NewTabPageHandler::NewTabPageHandler(
       theme_service_(theme_service),
       profile_(profile),
       web_contents_(web_contents),
-      customize_chrome_feature_promo_helper_(
-          std::move(customize_chrome_feature_promo_helper)),
+      feature_promo_helper_(std::move(customize_chrome_feature_promo_helper)),
       ntp_navigation_start_time_(ntp_navigation_start_time),
       module_id_names_(module_id_names),
       logger_(profile,
@@ -441,7 +442,7 @@ NewTabPageHandler::NewTabPageHandler(
   CHECK(theme_service_);
   CHECK(promo_service_);
   CHECK(web_contents_);
-  CHECK(customize_chrome_feature_promo_helper_);
+  CHECK(feature_promo_helper_);
   ntp_background_service_->AddObserver(this);
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   theme_service_observation_.Observe(theme_service_.get());
@@ -845,9 +846,12 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
   if (visible) {
     // Record usage for customize chrome promo.
     auto* tab = web_contents_.get();
-    customize_chrome_feature_promo_helper_->RecordCustomizeChromeFeatureUsage(
-        tab);
-    customize_chrome_feature_promo_helper_->CloseCustomizeChromeFeaturePromo(
+    feature_promo_helper_->RecordFeatureUsage(
+        feature_engagement::events::kCustomizeChromeOpened, tab);
+    feature_promo_helper_->CloseFeaturePromo(
+        features::IsChromeRefresh2023() && features::IsChromeWebuiRefresh2023()
+            ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
+            : feature_engagement::kIPHDesktopCustomizeChromeFeature,
         tab);
   }
 }
@@ -862,7 +866,8 @@ void NewTabPageHandler::IncrementCustomizeChromeButtonOpenCount() {
           1);
 }
 
-void NewTabPageHandler::MaybeShowCustomizeChromeFeaturePromo() {
+void NewTabPageHandler::MaybeShowFeaturePromo(
+    new_tab_page::mojom::IphFeature iph_feature) {
   CHECK(profile_);
   CHECK(profile_->GetPrefs());
 
@@ -870,23 +875,27 @@ void NewTabPageHandler::MaybeShowCustomizeChromeFeaturePromo() {
   // shown to avoid conflict. The sign-in dialog would be shown as soon as the
   // browser is opened, before the promo.
   bool is_signin_modal_dialog_open =
-      customize_chrome_feature_promo_helper_->IsSigninModalDialogOpen(
-          web_contents_.get());
+      feature_promo_helper_->IsSigninModalDialogOpen(web_contents_.get());
   if (is_signin_modal_dialog_open) {
     return;
   }
 
-  if (features::IsChromeRefresh2023()) {
-    customize_chrome_feature_promo_helper_
-        ->MaybeShowCustomizeChromeFeaturePromo(web_contents_.get());
-  } else {
-    const auto customize_chrome_button_open_count =
-        profile_->GetPrefs()->GetInteger(
-            prefs::kNtpCustomizeChromeButtonOpenCount);
+  if (iph_feature == new_tab_page::mojom::IphFeature::kCustomizeChrome) {
+    if (features::IsChromeRefresh2023() &&
+        features::IsChromeWebuiRefresh2023()) {
+      feature_promo_helper_->MaybeShowFeaturePromo(
+          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
+          web_contents_.get());
+    } else {
+      const auto customize_chrome_button_open_count =
+          profile_->GetPrefs()->GetInteger(
+              prefs::kNtpCustomizeChromeButtonOpenCount);
 
-    if (customize_chrome_button_open_count == 0) {
-      customize_chrome_feature_promo_helper_
-          ->MaybeShowCustomizeChromeFeaturePromo(web_contents_.get());
+      if (customize_chrome_button_open_count == 0) {
+        feature_promo_helper_->MaybeShowFeaturePromo(
+            feature_engagement::kIPHDesktopCustomizeChromeFeature,
+            web_contents_.get());
+      }
     }
   }
 }

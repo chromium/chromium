@@ -20,7 +20,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/image_service/image_service_factory.h"
-#include "chrome/browser/new_tab_page/customize_chrome/customize_chrome_feature_promo_helper.h"
+#include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive_handler.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed_handler.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
@@ -925,8 +925,8 @@ void NewTabPageUI::CreatePageHandler(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       ntp_custom_background_service_, theme_service_,
       LogoServiceFactory::GetForProfile(profile_), web_contents(),
-      std::make_unique<CustomizeChromeFeaturePromoHelper>(),
-      navigation_start_time_, module_id_names_);
+      std::make_unique<NewTabPageFeaturePromoHelper>(), navigation_start_time_,
+      module_id_names_);
 }
 
 void NewTabPageUI::CreateCustomizeThemesHandler(

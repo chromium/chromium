@@ -7949,7 +7949,7 @@ test("unit_tests") {
     sources += [
       # NTP is in native code on Android.
       "../browser/new_tab_page/chrome_colors/chrome_colors_service_unittest.cc",
-      "../browser/new_tab_page/customize_chrome/customize_chrome_feature_promo_helper_unittest.cc",
+      "../browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper_unittest.cc",
       "../browser/new_tab_page/modules/drive/drive_service_unittest.cc",
       "../browser/new_tab_page/modules/feed/feed_handler_unittest.cc",
       "../browser/new_tab_page/modules/history_clusters/cart/cart_processor_unittest.cc",
