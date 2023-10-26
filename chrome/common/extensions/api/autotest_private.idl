@@ -71,6 +71,16 @@ namespace autotestPrivate {
     UninstalledByMigration
   };
 
+  // A mapping of arc::mojom::WakefulnessMode
+  enum WakefulnessMode {
+    Unknown,
+    Asleep,
+    Awake,
+    Dreaming,
+    Dozing
+  };
+  callback WakefulnessModeCallback = void (WakefulnessMode mode);
+
   // A subset of Window State types in ash::WindowStateType. We may add more
   // into the set in the future.
   enum WindowStateType {
@@ -1588,6 +1598,10 @@ namespace autotestPrivate {
     // Returns whether a field trial exists and has been activated.
     [supportsPromises] static void isFieldTrialActive(DOMString feature_name,
         IsFieldTrialActiveCallback callback);
+
+    // ARC get wakefulness mode.
+    [supportsPromises] static void getArcWakefulnessMode(
+      WakefulnessModeCallback callback);
   };
 
   interface Events {

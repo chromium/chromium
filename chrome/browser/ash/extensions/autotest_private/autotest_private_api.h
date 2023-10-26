@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
@@ -1827,6 +1828,20 @@ class AutotestPrivateIsFieldTrialActiveFunction : public ExtensionFunction {
  private:
   ~AutotestPrivateIsFieldTrialActiveFunction() override;
   ResponseAction Run() override;
+};
+
+class AutotestPrivateGetArcWakefulnessModeFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateGetArcWakefulnessModeFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getArcWakefulnessState",
+                             AUTOTESTPRIVATE_GETARCWAKEFULNESSMODE)
+
+ private:
+  ~AutotestPrivateGetArcWakefulnessModeFunction() override;
+  ResponseAction Run() override;
+
+  // Get return value from mojo call.
+  void OnGetWakefulnessStateRespond(arc::mojom::WakefulnessMode mode);
 };
 
 template <>

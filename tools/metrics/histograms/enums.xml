@@ -38130,6 +38130,7 @@ Called by update_extension_histograms.py.-->
   <int value="1832" label="INPUTMETHODPRIVATE_GETLANGUAGEPACKSTATUS"/>
   <int value="1833" label="OS_DIAGNOSTICS_RUNFANROUTINE"/>
   <int value="1834" label="AUTOTESTPRIVATE_ISFIELDTRIALACTIVE"/>
+  <int value="1835" label="AUTOTESTPRIVATE_GETARCWAKEFULNESSMODE"/>
 </enum>
 
 <enum name="ExtensionIconState">

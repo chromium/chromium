@@ -515,6 +515,24 @@ api::autotest_private::HotseatState GetHotseatState(
   NOTREACHED();
 }
 
+api::autotest_private::WakefulnessMode GetWakefulnessMode(
+    arc::mojom::WakefulnessMode mode) {
+  switch (mode) {
+    case arc::mojom::WakefulnessMode::ASLEEP:
+      return api::autotest_private::WakefulnessMode::kAsleep;
+    case arc::mojom::WakefulnessMode::AWAKE:
+      return api::autotest_private::WakefulnessMode::kAwake;
+    case arc::mojom::WakefulnessMode::DOZING:
+      return api::autotest_private::WakefulnessMode::kDozing;
+    case arc::mojom::WakefulnessMode::DREAMING:
+      return api::autotest_private::WakefulnessMode::kDreaming;
+    case arc::mojom::WakefulnessMode::UNKNOWN:
+      return api::autotest_private::WakefulnessMode::kUnknown;
+  }
+
+  NOTREACHED();
+}
+
 // Helper function to set allowed user pref based on |pref_name| with any
 // specific pref validations. Returns error messages if any.
 std::string SetAllowedPref(Profile* profile,
@@ -6761,6 +6779,53 @@ AutotestPrivateIsFieldTrialActiveFunction::Run() {
 
   return RespondNow(
       WithArguments(base::FieldTrialList::IsTrialActive(params->feature_name)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetArcWakefulnessModeFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetArcWakefulnessModeFunction::
+    AutotestPrivateGetArcWakefulnessModeFunction() = default;
+
+AutotestPrivateGetArcWakefulnessModeFunction::
+    ~AutotestPrivateGetArcWakefulnessModeFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateGetArcWakefulnessModeFunction::Run() {
+  arc::ArcServiceManager* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager) {
+    return RespondNow(Error("ARC service manager is not available"));
+  }
+
+  arc::ArcBridgeService* arc_bridge_service =
+      arc_service_manager->arc_bridge_service();
+
+  if (!arc_bridge_service) {
+    return RespondNow(Error(
+        "ARC service manager exist, but ARC bridge service is not available"));
+  }
+
+  arc::mojom::PowerInstance* power_instance =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service->power(), SetInteractive);
+
+  if (!power_instance) {
+    return RespondNow(
+        Error("ARC bridge exist, but ARC power service is not available"));
+  }
+
+  power_instance->GetWakefulnessMode(
+      base::BindOnce(&AutotestPrivateGetArcWakefulnessModeFunction::
+                         OnGetWakefulnessStateRespond,
+                     this));
+
+  return RespondLater();
+}
+
+void AutotestPrivateGetArcWakefulnessModeFunction::OnGetWakefulnessStateRespond(
+    arc::mojom::WakefulnessMode mode) {
+  return Respond(
+      WithArguments(api::autotest_private::ToString(GetWakefulnessMode(mode))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
