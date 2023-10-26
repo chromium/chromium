@@ -144,6 +144,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private getInitialState_() {
     this.apiProxy_.requestInitialState().then(initialState => {
+      if (initialState.initialInput) {
+        this.input_ = initialState.initialInput;
+      }
       const composeState = initialState.composeState;
       this.loading_ = composeState.hasPendingRequest;
       this.submitted_ =

@@ -15,6 +15,7 @@ import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
 
 class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
+  private initialInput_: string = '';
   private initialState_: ComposeState = {
     webuiState: '',
     style: {tone: Tone.kUnset, length: Length.kUnset},
@@ -59,7 +60,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     this.methodCalled('requestInitialState');
     return Promise.resolve({
       composeState: this.initialState_,
-      initialInput: '',
+      initialInput: this.initialInput_,
     });
   }
 
@@ -67,7 +68,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     this.methodCalled('saveWebuiState', state);
   }
 
-  setInitialState(state: Partial<ComposeState>) {
+  setInitialState(state: Partial<ComposeState>, input?: string) {
     this.initialState_ = Object.assign(
         {
           webuiState: '',
@@ -75,6 +76,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
           hasPendingRequest: false,
         },
         state);
+    this.initialInput_ = input || '';
   }
 }
 
@@ -193,15 +195,21 @@ suite('ComposeApp', () => {
   });
 
   test('InitializesWithState', async () => {
-    async function initializeNewAppWithState(state: Partial<ComposeState>):
-        Promise<ComposeAppElement> {
+    async function initializeNewAppWithState(
+        state: Partial<ComposeState>,
+        input?: string): Promise<ComposeAppElement> {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      testProxy.setInitialState(state);
+      testProxy.setInitialState(state, input);
       const newApp = document.createElement('compose-app');
       document.body.appendChild(newApp);
       await flushTasks();
       return newApp;
     }
+
+    // Initial input
+    const appWithInitialInput =
+        await initializeNewAppWithState({}, 'initial input');
+    assertEquals('initial input', appWithInitialInput.$.textarea.value);
 
     // Invalid input is sent to textarea but submit is still disabled.
     const appWithInvalidInput = await initializeNewAppWithState(
@@ -264,7 +272,7 @@ suite('ComposeApp', () => {
   });
 
   test('SavesState', async () => {
-    assertEquals(0, testProxy.getCallCount('saveWebuiState'));
+    assertEquals(0, testProxy.getCallCount('saveWebuiState'), 'es');
 
     // Changing input saves state.
     mockInput('Here is my input');
