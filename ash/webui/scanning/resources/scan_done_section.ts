@@ -28,7 +28,7 @@ import {ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 const ScanDoneSectionElementBase = I18nMixin(PolymerElement);
 
-class ScanDoneSectionElement extends ScanDoneSectionElementBase {
+export class ScanDoneSectionElement extends ScanDoneSectionElementBase {
   static get is() {
     return 'scan-done-section' as const;
   }
