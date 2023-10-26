@@ -8788,10 +8788,8 @@ void NavigationRequest::OnCookiesAccessed(
     // TODO(721329): We should not send information to the current frame about
     // (potentially unrelated) ongoing navigation, but at the moment we don't
     // have another way to add messages to DevTools console.
-    for (size_t i = 0; i < details->count; ++i) {
-      EmitCookieWarningsAndMetrics(frame_tree_node()->current_frame_host(),
-                                   details);
-    }
+    EmitCookieWarningsAndMetrics(frame_tree_node()->current_frame_host(),
+                                 details);
 
     CookieAccessDetails allowed;
     CookieAccessDetails blocked;

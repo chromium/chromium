@@ -187,58 +187,10 @@ bool ShouldReportDevToolsIssueForStatus(
              net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
 }
 
-}  // namespace
-
-void SplitCookiesIntoAllowedAndBlocked(
-    const network::mojom::CookieAccessDetailsPtr& cookie_details,
-    CookieAccessDetails* allowed,
-    CookieAccessDetails* blocked) {
-  *allowed =
-      CookieAccessDetails({cookie_details->type,
-                           cookie_details->url,
-                           cookie_details->site_for_cookies.RepresentativeUrl(),
-                           {},
-                           cookie_details->count,
-                           /* blocked_by_policy=*/false});
-  int allowed_count = base::ranges::count_if(
-      cookie_details->cookie_list,
-      [](const network::mojom::CookieOrLineWithAccessResultPtr&
-             cookie_and_access_result) {
-        // "Included" cookies have no exclusion reasons so we don't also have to
-        // check for !(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES).
-        return cookie_and_access_result->access_result.status.IsInclude();
-      });
-  allowed->cookie_list.reserve(allowed_count);
-
-  *blocked =
-      CookieAccessDetails({cookie_details->type,
-                           cookie_details->url,
-                           cookie_details->site_for_cookies.RepresentativeUrl(),
-                           {},
-                           cookie_details->count,
-                           /* blocked_by_policy=*/true});
-  int blocked_count = base::ranges::count_if(
-      cookie_details->cookie_list,
-      [](const network::mojom::CookieOrLineWithAccessResultPtr&
-             cookie_and_access_result) {
-        return cookie_and_access_result->access_result.status
-            .ExcludedByUserPreferences();
-      });
-  blocked->cookie_list.reserve(blocked_count);
-
-  for (const auto& cookie_and_access_result : cookie_details->cookie_list) {
-    if (cookie_and_access_result->access_result.status
-            .ExcludedByUserPreferences()) {
-      blocked->cookie_list.emplace_back(
-          std::move(cookie_and_access_result->cookie_or_line->get_cookie()));
-    } else if (cookie_and_access_result->access_result.status.IsInclude()) {
-      allowed->cookie_list.emplace_back(
-          std::move(cookie_and_access_result->cookie_or_line->get_cookie()));
-    }
-  }
-}
-
-void EmitCookieWarningsAndMetrics(
+// Logs cookie warnings to DevTools Issues Panel and logs events to UseCounters
+// and UKM for a single cookie-accessed event. Does not log to the JS console.
+// TODO(crbug.com/977040): Remove when no longer needed.
+void EmitCookieWarningsAndMetricsOnce(
     RenderFrameHostImpl* rfh,
     const network::mojom::CookieAccessDetailsPtr& cookie_details) {
   RenderFrameHostImpl* root_frame_host = rfh->GetMainFrame();
@@ -426,6 +378,65 @@ void EmitCookieWarningsAndMetrics(
   if (cookie_has_domain_non_ascii) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kCookieDomainNonASCII);
+  }
+}
+
+}  // namespace
+
+void SplitCookiesIntoAllowedAndBlocked(
+    const network::mojom::CookieAccessDetailsPtr& cookie_details,
+    CookieAccessDetails* allowed,
+    CookieAccessDetails* blocked) {
+  *allowed =
+      CookieAccessDetails({cookie_details->type,
+                           cookie_details->url,
+                           cookie_details->site_for_cookies.RepresentativeUrl(),
+                           {},
+                           cookie_details->count,
+                           /* blocked_by_policy=*/false});
+  int allowed_count = base::ranges::count_if(
+      cookie_details->cookie_list,
+      [](const network::mojom::CookieOrLineWithAccessResultPtr&
+             cookie_and_access_result) {
+        // "Included" cookies have no exclusion reasons so we don't also have to
+        // check for !(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES).
+        return cookie_and_access_result->access_result.status.IsInclude();
+      });
+  allowed->cookie_list.reserve(allowed_count);
+
+  *blocked =
+      CookieAccessDetails({cookie_details->type,
+                           cookie_details->url,
+                           cookie_details->site_for_cookies.RepresentativeUrl(),
+                           {},
+                           cookie_details->count,
+                           /* blocked_by_policy=*/true});
+  int blocked_count = base::ranges::count_if(
+      cookie_details->cookie_list,
+      [](const network::mojom::CookieOrLineWithAccessResultPtr&
+             cookie_and_access_result) {
+        return cookie_and_access_result->access_result.status
+            .ExcludedByUserPreferences();
+      });
+  blocked->cookie_list.reserve(blocked_count);
+
+  for (const auto& cookie_and_access_result : cookie_details->cookie_list) {
+    if (cookie_and_access_result->access_result.status
+            .ExcludedByUserPreferences()) {
+      blocked->cookie_list.emplace_back(
+          std::move(cookie_and_access_result->cookie_or_line->get_cookie()));
+    } else if (cookie_and_access_result->access_result.status.IsInclude()) {
+      allowed->cookie_list.emplace_back(
+          std::move(cookie_and_access_result->cookie_or_line->get_cookie()));
+    }
+  }
+}
+
+void EmitCookieWarningsAndMetrics(
+    RenderFrameHostImpl* rfh,
+    const network::mojom::CookieAccessDetailsPtr& cookie_details) {
+  for (size_t i = 0; i < cookie_details->count; ++i) {
+    EmitCookieWarningsAndMetricsOnce(rfh, cookie_details);
   }
 }
 
