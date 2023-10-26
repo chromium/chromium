@@ -164,12 +164,12 @@ export class WallpaperSearchElement extends PolymerElement {
 
   private async onSearchClick_() {
     assert(this.descriptors_);
-    const descriptorA = this.selectedDescriptorA_ ||
+    this.selectedDescriptorA_ = this.selectedDescriptorA_ ||
         getRandomDescriptorA(this.descriptors_.descriptorA);
     this.loading_ = true;
     const {results} = await this.pageHandler_.getWallpaperSearchResults(
-        descriptorA, this.selectedDescriptorB_, this.selectedDescriptorC_,
-        this.selectedDescriptorD_);
+        this.selectedDescriptorA_, this.selectedDescriptorB_,
+        this.selectedDescriptorC_, this.selectedDescriptorD_);
     this.loading_ = false;
     this.results_ = results;
     this.emptyContainers_ = Array.from(

@@ -177,16 +177,16 @@ suite('WallpaperSearchTest', () => {
           handler.setResultFor(
               'getWallpaperSearchResults',
               Promise.resolve({results: ['123', '456']}));
-          createWallpaperSearchElement({
-            descriptorA: [{category: 'foo', labels: ['bar', 'baz']}],
-            descriptorB: [{label: 'foo', imagePath: 'bar.png'}],
-            descriptorC: ['baz'],
-          });
+          createWallpaperSearchElementWithDescriptors();
           await flushTasks();
+          assertEquals(
+              undefined, wallpaperSearchElement.$.descriptorComboboxA.value);
 
           wallpaperSearchElement.$.submitButton.click();
 
           assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
+          assertNotEquals(
+              undefined, wallpaperSearchElement.$.descriptorComboboxA.value);
           assertNotEquals(
               undefined, handler.getArgs('getWallpaperSearchResults')[0][0]);
         });
