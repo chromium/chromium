@@ -54,7 +54,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
-#include "chrome/browser/ui/webui/test_data_source.h"
 
 using content::RenderFrameHost;
 using content::WebContents;
@@ -401,14 +400,9 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
   }
 
   // For tests that run on the login screen, there is no Browser during
-  // SetUpOnMainThread() so skip adding TestDataSource. These tests don't need
-  // TestDataSource anyway.
+  // SetUpOnMainThread() so skip adding the chrome://webui-test data source.
+  // These tests don't need it anyway.
   if (browser()) {
-    // Register URLDataSource that serves files used in tests at chrome://test/
-    // e.g. `chrome://test/mocha.js`.
-    content::URLDataSource::Add(browser()->profile(),
-                                std::make_unique<TestDataSource>("webui"));
-
     // Register data sources for chrome://webui-test/ URLs
     // e.g. `chrome://webui-test/chai_assert.js`.
     webui::CreateAndAddWebUITestDataSource(browser()->profile());
