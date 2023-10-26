@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -2128,10 +2129,9 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event,
   }
 }
 
-void HTMLElement::InvokePopover(Element* invoker) {
-  CHECK(invoker);
+void HTMLElement::InvokePopover(Element& invoker) {
   CHECK(HasPopoverAttribute());
-  ShowPopoverInternal(invoker, /*exception_state=*/nullptr);
+  ShowPopoverInternal(&invoker, /*exception_state=*/nullptr);
 }
 
 Element* HTMLElement::anchorElement() {
@@ -2265,6 +2265,74 @@ bool HTMLElement::DispatchFocusEvent(
     InputDeviceCapabilities* source_capabilities) {
   return Element::DispatchFocusEvent(old_focused_element, type,
                                      source_capabilities);
+}
+
+bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
+                                       AtomicString& action) {
+  if (PopoverType() == PopoverValueType::kNone) {
+    return false;
+  }
+  auto& document = GetDocument();
+  // Note that the order is: `mousedown` which runs popover light dismiss
+  // code, then (for clicked elements) focus is set to the clicked
+  // element, then |DOMActivate| runs here. Also note that the light
+  // dismiss code will not hide popovers when an activating element is
+  // clicked. Taking that together, if the clicked control is a triggering
+  // element for a popover, light dismiss will do nothing, focus will be
+  // set to the triggering element, then this code will run and will set
+  // focus to the previously focused element. If instead the clicked
+  // control is not a triggering element, then the light dismiss code will
+  // hide the popover and set focus to the previously focused element,
+  // then the normal focus management code will reset focus to the clicked
+  // control.
+  bool can_show =
+      IsPopoverReady(PopoverTriggerAction::kShow,
+                     /*exception_state=*/nullptr,
+                     /*include_event_handler_text=*/true, &document) &&
+      (EqualIgnoringASCIICase(action, keywords::kAuto) ||
+       EqualIgnoringASCIICase(action, keywords::kTogglePopover) ||
+       EqualIgnoringASCIICase(action, keywords::kShowPopover));
+  bool can_hide =
+      IsPopoverReady(PopoverTriggerAction::kHide,
+                     /*exception_state=*/nullptr,
+                     /*include_event_handler_text=*/true, &document) &&
+      (EqualIgnoringASCIICase(action, keywords::kAuto) ||
+       EqualIgnoringASCIICase(action, keywords::kTogglePopover) ||
+       EqualIgnoringASCIICase(action, keywords::kHidePopover));
+  if (can_hide) {
+    HidePopoverInternal(
+        HidePopoverFocusBehavior::kFocusPreviousElement,
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+        /*exception_state=*/nullptr);
+    return true;
+  } else if (can_show) {
+    // TODO(crbug.com/1121840)
+    // HandleInvokeInternal is called for both `popovertarget` and
+    // `invoketarget`. `popovertarget` has one small additional behavior
+    // though; a `<selectlist>` can have a `popovertarget` button. The behavior
+    // for `<selectlist>` for `invoketarget` should be handled in
+    // `HTMLSelectListElement::HandleInvokeInternal`, but the `popovertarget`
+    // logic follows a slightly different path, and so for now lives here.
+    // The logic checks to see if the invoker was a popovertarget invoker that
+    // is intending to invoke a selectlist element, and opens the ListBox in
+    // that case.
+    auto* button = DynamicTo<HTMLButtonElement>(invoker);
+    HTMLSelectListElement* selectlist =
+        button && button->popoverTargetElement().popover &&
+                RuntimeEnabledFeatures::HTMLSelectListElementEnabled()
+            ? button->OwnerSelectList()
+            : nullptr;
+    if (selectlist) {
+      if (!selectlist->IsDisabledFormControl()) {
+        selectlist->OpenListbox();
+        return true;
+      }
+    } else {
+      InvokePopover(invoker);
+      return true;
+    }
+  }
+  return false;
 }
 
 const AtomicString& HTMLElement::autocapitalize() const {

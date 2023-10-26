@@ -67,6 +67,14 @@
     "static",
     "invisible",
 
+    // invokeaction attribute
+    // https://open-ui.org/components/invokers.explainer/
+    "auto",
+    // invokeaction for popovers
+    "togglePopover",
+    "hidePopover",
+    "showPopover",
+
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used
     "lazy",

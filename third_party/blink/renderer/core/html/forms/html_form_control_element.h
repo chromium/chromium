@@ -213,6 +213,9 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool IsValidElement() override;
   bool MatchesValidityPseudoClasses() const override;
 
+  void HandlePopoverTriggering(HTMLElement* popover,
+                               PopoverTriggerAction action);
+
   uint64_t unique_renderer_form_control_id_;
 
   WebString autofill_section_;

@@ -274,7 +274,7 @@ class CORE_EXPORT HTMLElement : public Element {
   Element* anchorElement();
   void setAnchorElement(Element*);
   static void HandlePopoverLightDismiss(const Event& event, const Node& node);
-  void InvokePopover(Element* invoker);
+  void InvokePopover(Element& invoker);
   void SetPopoverFocusOnShow();
   // This hides all visible popovers up to, but not including,
   // |endpoint|. If |endpoint| is nullptr, all popovers are hidden.
@@ -297,10 +297,17 @@ class CORE_EXPORT HTMLElement : public Element {
       InputDeviceCapabilities* source_capabilities) override;
 
   // This allows customization of how Invokes are handled, per element.
-  // The default HTMLElement has no default invoke behaviour, but specific
-  // element subclasses, such as HTMLDialogElement, do.
+  // The default HTMLElement behavior handles popovers, and specific
+  // element subclasses - such as HTMLDialogElement - can handle
+  // other invocation actions such as showModal. Implementations should return
+  // `true` if they have handled, so that overloads can exit early.
+  // Additionally, implementations should not execute their own behaviour before
+  // calling `HTMLElement::HandleInvokeInternal` as that implementation governs
+  // the logic for global attributes such as `popover`; for example a `<dialog
+  // popover>` should run `popover` invocation steps before `<dialog>`
+  // invocation steps.
   // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
-  virtual void HandleInvokeInternal(AtomicString& action) {}
+  virtual bool HandleInvokeInternal(HTMLElement& invoker, AtomicString& action);
 
  protected:
   bool SupportsFocus() const override;
