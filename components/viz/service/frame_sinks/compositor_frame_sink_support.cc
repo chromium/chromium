@@ -684,9 +684,25 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     uint64_t submit_time,
     mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback) {
   if (!client_needs_begin_frame_ && auto_needs_begin_frame_) {
+    // SetNeedsBeginFrame(true) below may cause `last_begin_frame_args_` to be
+    // updated.
+    BeginFrameId old_frame_id = last_begin_frame_args_.frame_id;
+
     handling_auto_needs_begin_frame_ = true;
     SetNeedsBeginFrame(true);
     handling_auto_needs_begin_frame_ = false;
+
+    // If the unsolicited frame has manual frame source and a new BeginFrameArgs
+    // is received because of this unsolicited frame, update the frame ID to
+    // to match the BeginFrameArgs, so that the corresponding surface won't be
+    // considered as pending.
+    if (frame.metadata.begin_frame_ack.frame_id.source_id ==
+            BeginFrameArgs::kManualSourceId &&
+        last_begin_frame_args_.frame_id != old_frame_id) {
+      CHECK(last_begin_frame_args_.frame_id.IsSequenceValid());
+
+      frame.metadata.begin_frame_ack.frame_id = last_begin_frame_args_.frame_id;
+    }
   }
 
   TRACE_EVENT(
