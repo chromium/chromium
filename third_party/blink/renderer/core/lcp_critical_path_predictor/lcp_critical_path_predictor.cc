@@ -53,6 +53,12 @@ void LCPCriticalPathPredictor::set_fetched_fonts(Vector<KURL> fonts) {
   fetched_fonts_ = std::move(fonts);
 }
 
+void LCPCriticalPathPredictor::Reset() {
+  lcp_element_locators_.clear();
+  lcp_influencer_scripts_.clear();
+  fetched_fonts_.clear();
+}
+
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     Element* lcp_element) {
   if (!lcp_element) {

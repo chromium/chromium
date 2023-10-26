@@ -55,10 +55,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   const Vector<KURL>& fetched_fonts() { return fetched_fonts_; }
 
-  void Reset() {
-    lcp_element_locators_.clear();
-    lcp_influencer_scripts_.clear();
-  }
+  void Reset();
 
   bool IsLcpInfluencerScript(const KURL& url);
 
