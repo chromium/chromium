@@ -690,8 +690,7 @@ config("compiler") {
     }
   } else if (is_win) {
     cflags_c += [ "/std:c11" ]
-    if ((defined(use_cxx17) && use_cxx17) ||
-        (!is_clang && defined(msvc_use_cxx17) && msvc_use_cxx17)) {
+    if (defined(use_cxx17) && use_cxx17) {
       cflags_cc += [ "/std:c++17" ]
     } else {
       cflags_cc += [ "/std:c++20" ]
