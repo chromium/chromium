@@ -1006,13 +1006,20 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
         gfx::ImageSkia image =
             model_->GetIcon(model_index).Rasterize(GetColorProvider());
         if (!image.isNull()) {
-          int image_x = GetMirroredXWithWidthInView(text_bounds.x(),
-                                                    ui::TableModel::kIconSize);
-          canvas->DrawImageInt(
-              image, 0, 0, image.width(), image.height(), image_x,
-              cell_bounds.y() +
-                  (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
-              ui::TableModel::kIconSize, ui::TableModel::kIconSize, true);
+          // Need to check the area where the icon is paint. And it is necessary
+          // to consider the UI layout direction.
+          gfx::Rect dest_image_bounds =
+              GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+          // The area does not have a width drawing icon.
+          if (!dest_image_bounds.IsEmpty()) {
+            gfx::Rect src_image_bounds =
+                GetPaintIconSrcBounds(image.size(), dest_image_bounds.width());
+            canvas->DrawImageInt(
+                image, src_image_bounds.x(), src_image_bounds.y(),
+                src_image_bounds.width(), src_image_bounds.height(),
+                dest_image_bounds.x(), dest_image_bounds.y(),
+                dest_image_bounds.width(), dest_image_bounds.height(), true);
+          }
         }
         text_bounds.Inset(gfx::Insets().set_left(ui::TableModel::kIconSize +
                                                  cell_element_spacing));
@@ -1201,6 +1208,51 @@ void TableView::UpdateVisibleColumnSizes() {
     visible_columns_[i].width = sizes[i];
     x += sizes[i];
   }
+}
+
+// The default drawing size for icons in a table view is 16 * 16. If the cell
+// size is not sufficient, the original image needs to be clipped. e.g if the
+// original image size is 32 * 32, the normal bounds would be src bounds (0, 0,
+// 32, 32) and dest bounds (x, y, 16, 16). If the dest bounds are (x, y, 8, 16),
+// the original image needs to be clipped to prevent stretching during drawing.
+// For LTR (left-to-right) layout, the src bounds would be (0, 0, 16, 32), and
+// the width would be calculated as width = image_size.width() *
+// image_dest_width / ui::TableModel::kIconSize.
+// For RTL (right-to-left) layout, the src bounds would be (16, 0, 16, 32),
+// and the `x` would be calculated as x = image_size.width() - src_image_width.
+// (https://crbug.com/1494675)
+gfx::Rect TableView::GetPaintIconSrcBounds(const gfx::Size& image_size,
+                                           int image_dest_width) const {
+  int src_image_x = 0;
+  int src_image_width =
+      image_size.width() * image_dest_width / ui::TableModel::kIconSize;
+  if (GetMirrored()) {
+    src_image_x = image_size.width() - src_image_width;
+  }
+  return gfx::Rect(src_image_x, 0, src_image_width, image_size.height());
+}
+
+gfx::Rect TableView::GetPaintIconDestBounds(const gfx::Rect& cell_bounds,
+                                            int text_bounds_x) const {
+  int dest_image_x =
+      GetMirroredXWithWidthInView(text_bounds_x, ui::TableModel::kIconSize);
+  int dest_image_width = ui::TableModel::kIconSize;
+  gfx::Rect mirrored_cell_bounds = GetMirroredRect(cell_bounds);
+  if (GetMirrored()) {
+    if (dest_image_x < mirrored_cell_bounds.x()) {
+      dest_image_width =
+          dest_image_x + dest_image_width - mirrored_cell_bounds.x();
+      dest_image_x = mirrored_cell_bounds.x();
+    }
+  } else {
+    if (dest_image_x + dest_image_width > mirrored_cell_bounds.right()) {
+      dest_image_width = mirrored_cell_bounds.right() - dest_image_x;
+    }
+  }
+  return gfx::Rect(
+      dest_image_x,
+      cell_bounds.y() + (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
+      dest_image_width > 0 ? dest_image_width : 0, ui::TableModel::kIconSize);
 }
 
 TableView::PaintRegion TableView::GetPaintRegion(
