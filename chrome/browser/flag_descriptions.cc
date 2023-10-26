@@ -46,10 +46,10 @@ const char kPdfOopifDescription[] =
 const char kPdfPortfolioName[] = "PDF portfolio";
 const char kPdfPortfolioDescription[] = "Enable PDF portfolio feature.";
 
-const char kPdfUseSkiaRendererName[] =
-    "Use Skia Renderer. This flag will have no effect if the renderer choice "
-    "is controlled by an enterprise policy.";
-const char kPdfUseSkiaRendererDescription[] = "Use Skia as the PDF renderer.";
+const char kPdfUseSkiaRendererName[] = "Use Skia Renderer";
+const char kPdfUseSkiaRendererDescription[] =
+    "Use Skia as the PDF renderer. This flag will have no effect if the "
+    "renderer choice is controlled by an enterprise policy.";
 #endif
 
 const char kAdvancedPeripheralsSupportName[] =
