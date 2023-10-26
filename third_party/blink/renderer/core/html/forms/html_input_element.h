@@ -454,7 +454,6 @@ class CORE_EXPORT HTMLInputElement
 
   TextControlInnerEditorElement* EnsureInnerEditorElement() const final;
   void UpdatePlaceholderText() final;
-  bool IsEmptyValue() const final { return InnerEditorValue().empty(); }
   void HandleBlurEvent() final;
   void DispatchFocusInEvent(const AtomicString& event_type,
                             Element* old_focused_element,

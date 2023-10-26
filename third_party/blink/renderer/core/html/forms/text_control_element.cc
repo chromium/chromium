@@ -213,8 +213,15 @@ void TextControlElement::UpdatePlaceholderVisibility() {
   if (placeholder) {
     placeholder->SetInlineStyleProperty(
         CSSPropertyID::kDisplay,
-        IsPlaceholderVisible() || !SuggestedValue().empty() ? CSSValueID::kBlock
-                                                            : CSSValueID::kNone,
+        // The placeholder "element" is used to display both the placeholder
+        // "value" and the suggested value. Which is why even if the placeholder
+        // value is not visible, we still show the placeholder element during a
+        // preview state so that the suggested value becomes visible. This
+        // mechanism will change, since Autofill previews are expected to move
+        // to the browser process (as per crbug.com/1474969).
+        IsPlaceholderVisible() || !SuggestedValue().IsNull()
+            ? CSSValueID::kBlock
+            : CSSValueID::kNone,
         true);
   }
 

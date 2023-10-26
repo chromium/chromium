@@ -219,12 +219,6 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   void ScheduleSelectEvent();
   void DisabledOrReadonlyAttributeChanged(const QualifiedName&);
 
-  // Returns true if user-editable value is empty. Used to check placeholder
-  // visibility.
-  virtual bool IsEmptyValue() const = 0;
-  // Returns true if suggested value is empty. Used to check placeholder
-  // visibility.
-  bool IsEmptySuggestedValue() const { return SuggestedValue().empty(); }
   // Called in dispatchFocusEvent(), after placeholder process, before calling
   // parent's dispatchFocusEvent().
   virtual void HandleFocusEvent(Element* /* oldFocusedNode */,
