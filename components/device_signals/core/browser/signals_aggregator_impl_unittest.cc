@@ -81,10 +81,10 @@ class SignalsAggregatorImplTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<MockSignalsCollector, DanglingUntriaged> av_signal_collector_;
-  raw_ptr<MockSignalsCollector, DanglingUntriaged> hotfix_signal_collector_;
   testing::StrictMock<MockUserPermissionService> mock_permission_service_;
   std::unique_ptr<SignalsAggregatorImpl> aggregator_;
+  raw_ptr<MockSignalsCollector> av_signal_collector_;
+  raw_ptr<MockSignalsCollector> hotfix_signal_collector_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   UserContext user_context_{kGaiaId};
