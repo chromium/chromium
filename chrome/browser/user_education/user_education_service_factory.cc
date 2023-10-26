@@ -4,6 +4,8 @@
 
 #include "chrome/browser/user_education/user_education_service_factory.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
@@ -34,5 +36,7 @@ UserEducationServiceFactory::~UserEducationServiceFactory() = default;
 std::unique_ptr<KeyedService>
 UserEducationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<UserEducationService>();
+  return  std::make_unique<UserEducationService>(
+      std::make_unique<BrowserFeaturePromoStorageService>(
+          Profile::FromBrowserContext(context)));
 }

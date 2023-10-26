@@ -1587,8 +1587,6 @@ static_library("ui") {
       "uma_browsing_activity_observer.h",
       "unload_controller.cc",
       "unload_controller.h",
-      "user_education/browser_feature_promo_storage_service.cc",
-      "user_education/browser_feature_promo_storage_service.h",
       "user_education/scoped_new_badge_tracker.cc",
       "user_education/scoped_new_badge_tracker.h",
       "user_education/show_promo_in_page.cc",

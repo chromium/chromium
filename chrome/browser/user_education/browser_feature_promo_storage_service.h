@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_USER_EDUCATION_BROWSER_FEATURE_PROMO_STORAGE_SERVICE_H_
-#define CHROME_BROWSER_UI_USER_EDUCATION_BROWSER_FEATURE_PROMO_STORAGE_SERVICE_H_
+#ifndef CHROME_BROWSER_USER_EDUCATION_BROWSER_FEATURE_PROMO_STORAGE_SERVICE_H_
+#define CHROME_BROWSER_USER_EDUCATION_BROWSER_FEATURE_PROMO_STORAGE_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
@@ -35,4 +35,4 @@ class BrowserFeaturePromoStorageService
   const raw_ptr<Profile> profile_;
 };
 
-#endif  // CHROME_BROWSER_UI_USER_EDUCATION_BROWSER_FEATURE_PROMO_STORAGE_SERVICE_H_
+#endif  // CHROME_BROWSER_USER_EDUCATION_BROWSER_FEATURE_PROMO_STORAGE_SERVICE_H_

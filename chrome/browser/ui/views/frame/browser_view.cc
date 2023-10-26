@@ -91,7 +91,6 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_education/browser_feature_promo_storage_service.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
@@ -902,8 +901,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       MaybeRegisterChromeFeaturePromos(
           user_education_service->feature_promo_registry());
       MaybeRegisterChromeTutorials(user_education_service->tutorial_registry());
-      feature_promo_storage_service_ =
-          std::make_unique<BrowserFeaturePromoStorageService>(GetProfile());
       feature_promo_controller_ =
           std::make_unique<BrowserFeaturePromoController>(
               this,
@@ -911,7 +908,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
                   GetProfile()),
               &user_education_service->feature_promo_registry(),
               &user_education_service->help_bubble_factory_registry(),
-              feature_promo_storage_service_.get(),
+              &user_education_service->feature_promo_storage_service(),
               &user_education_service->tutorial_service());
     }
   }

@@ -1959,6 +1959,8 @@ static_library("browser") {
       "privacy_sandbox/tracking_protection_notice_factory.h",
       "privacy_sandbox/tracking_protection_notice_service.cc",
       "privacy_sandbox/tracking_protection_notice_service.h",
+      "user_education/browser_feature_promo_storage_service.cc",
+      "user_education/browser_feature_promo_storage_service.h",
       "user_education/browser_tutorial_service.cc",
       "user_education/browser_tutorial_service.h",
       "user_education/user_education_configuration_provider.cc",
