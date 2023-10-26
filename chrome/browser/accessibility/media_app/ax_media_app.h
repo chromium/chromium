@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "content/public/browser/browser_context.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/insets.h"
 
@@ -22,6 +23,7 @@ class AXMediaApp {
 
   virtual void OcrServiceEnabledChanged(bool enabled) = 0;
   virtual void AccessibilityEnabledChanged(bool enabled) = 0;
+  virtual content::BrowserContext* GetBrowserContext() const = 0;
   virtual SkBitmap RequestBitmap(uint64_t page_index) = 0;
   virtual void SetViewport(const gfx::Insets& viewport_box) = 0;
 
