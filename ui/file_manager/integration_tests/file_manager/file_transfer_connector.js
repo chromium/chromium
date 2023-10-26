@@ -707,6 +707,8 @@ async function verifyAfterPasteBlocking(
       await sendTestMessage({name: 'doesBypassRequireJustification'}) ===
       'true';
 
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+
   if (usesNewFileTransferConnectorUI &&
       expectedNumberOfWarnedFilesByConnectors > 0) {
     // Check that the warning appears in the feedback panel.
@@ -760,8 +762,6 @@ async function verifyAfterPasteBlocking(
           appId, expectedEntries, transferInfo.destination.breadcrumbsPath);
 
       // All files should still exist at the destination.
-      const directoryTree =
-          await DirectoryTreePageObject.create(appId, remoteCall);
       await directoryTree.navigateToPath(transferInfo.source.breadcrumbsPath);
       const expectedSourceEntries = entryTestSet;
       // Wait for the expected files to appear in the file list.
@@ -784,7 +784,6 @@ async function verifyAfterPasteBlocking(
       appId, expectedEntries, transferInfo.destination.breadcrumbsPath);
 
   // Verify contents of the source directory.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath(transferInfo.source.breadcrumbsPath);
   let expectedSourceEntries = entryTestSet;
   if (transferInfo.isMove) {
