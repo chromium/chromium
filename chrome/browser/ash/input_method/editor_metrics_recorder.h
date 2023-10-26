@@ -14,6 +14,8 @@ void LogEditorState(EditorStates state,
                     EditorMode mode,
                     int quantity_to_increment = 1);
 
+void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode);
+
 }  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_METRICS_RECORDER_H_

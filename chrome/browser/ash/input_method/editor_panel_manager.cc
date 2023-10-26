@@ -147,6 +147,7 @@ bool EditorPanelManager::IsEditorMenuVisible() const {
 
 void EditorPanelManager::LogEditorMode(
     crosapi::mojom::EditorPanelMode mode) {
+  LogEditorNativeUIShowOpportunityState(delegate_->GetEditorOpportunityMode());
   switch (mode) {
     case crosapi::mojom::EditorPanelMode::kRewrite:
       LogEditorState(EditorStates::kNativeUIShown, EditorMode::kRewrite);

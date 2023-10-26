@@ -129,6 +129,14 @@ bool EditorSwitch::IsAllowedForUse() const {
        !is_managed && IsCountryAllowed(country_code_));
 }
 
+EditorOpportunityMode EditorSwitch::GetEditorOpportunityMode() const {
+  if (IsAllowedForUse() && IsInputTypeAllowed(input_type_)) {
+    return text_length_ > 0 ? EditorOpportunityMode::kRewrite
+                            : EditorOpportunityMode::kWrite;
+  }
+  return EditorOpportunityMode::kNone;
+}
+
 bool EditorSwitch::CanBeTriggered() const {
   ConsentStatus current_consent_status = GetConsentStatusFromInteger(
       profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));

@@ -29,4 +29,19 @@ void LogEditorState(EditorStates state,
   histogram->AddCount(static_cast<int>(state), quantity_to_increment);
 }
 
+void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode) {
+  switch (mode) {
+    case EditorOpportunityMode::kRewrite:
+      LogEditorState(EditorStates::kNativeUIShowOpportunity,
+                     EditorMode::kRewrite);
+      return;
+    case EditorOpportunityMode::kWrite:
+      LogEditorState(EditorStates::kNativeUIShowOpportunity,
+                     EditorMode::kWrite);
+      return;
+    case EditorOpportunityMode::kNone:
+      return;
+  }
+}
+
 }  // namespace ash::input_method

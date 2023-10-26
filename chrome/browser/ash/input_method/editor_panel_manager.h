@@ -38,6 +38,7 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
         absl::optional<std::string_view> preset_query_id,
         absl::optional<std::string_view> freeform_text) = 0;
     virtual EditorMode GetEditorMode() const = 0;
+    virtual EditorOpportunityMode GetEditorOpportunityMode() const = 0;
 
     virtual void CacheContext() = 0;
   };

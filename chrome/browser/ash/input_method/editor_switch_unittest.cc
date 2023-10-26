@@ -25,10 +25,10 @@ namespace {
 
 using ::testing::TestWithParam;
 
-const std::string kAllowedTestCountry = "allowed_country";
-const std::string kDeniedTestCountry = "denied_country";
+const char kAllowedTestCountry[] = "allowed_country";
+const char kDeniedTestCountry[] = "denied_country";
 
-const std::string kAllowedTestUrl = "https://allowed.testurl.com/allowed/path";
+const char kAllowedTestUrl[] = "https://allowed.testurl.com/allowed/path";
 
 struct EditorSwitchAvailabilityTestCase {
   std::string test_name;
@@ -56,6 +56,7 @@ struct EditorSwitchTriggerTestCase {
   size_t num_chars_selected;
 
   EditorMode expected_editor_mode;
+  EditorOpportunityMode expected_editor_opportunity_mode;
 };
 
 using EditorSwitchAvailabilityTest =
@@ -152,6 +153,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kDeclined,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kBlocked,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
         },
         {
             .test_name = "DoNotTriggerFeatureOnAPasswordField",
@@ -165,6 +167,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kApproved,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kBlocked,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kNone,
         },
         {
             .test_name = "DoNotTriggerFeatureOnADeniedWebsite",
@@ -178,6 +181,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kApproved,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kBlocked,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
         },
         {
             .test_name = "DoNotTriggerFeatureWithNonEnglishInputMethod",
@@ -191,6 +195,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kApproved,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kBlocked,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
         },
         {
             .test_name = "DoNotTriggerFeatureOnArcApps",
@@ -204,6 +209,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kApproved,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kBlocked,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
         },
         {
             .test_name = "DoNotTriggerFeatureIfSettingToggleIsOff",
@@ -217,6 +223,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kApproved,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kBlocked,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
         },
         {
             .test_name = "DoNotTriggerFeatureOnTabletMode",
@@ -230,6 +237,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kApproved,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kBlocked,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
         },
         {
             .test_name = "DoNotTriggerFeatureWhenOffline",
@@ -243,6 +251,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kApproved,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kBlocked,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
         },
         {
             .test_name = "DoNotTriggerFeatureWhenSelectingTooLongText",
@@ -256,6 +265,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kApproved,
             .num_chars_selected = 10001,
             .expected_editor_mode = EditorMode::kBlocked,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
         },
         {
             .test_name =
@@ -270,6 +280,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kPending,
             .num_chars_selected = 100,
             .expected_editor_mode = EditorMode::kConsentNeeded,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
         },
         {
             .test_name = "TriggersWriteModeForNoTextSelection",
@@ -283,6 +294,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kApproved,
             .num_chars_selected = 0,
             .expected_editor_mode = EditorMode::kWrite,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
         },
         {
             .test_name = "TriggersRewriteModeWhenSomeTextIsSelected",
@@ -296,6 +308,7 @@ INSTANTIATE_TEST_SUITE_P(
             .consent_status = ConsentStatus::kApproved,
             .num_chars_selected = 100,
             .expected_editor_mode = EditorMode::kRewrite,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kRewrite,
         },
     }),
     [](const testing::TestParamInfo<EditorSwitchTriggerTest::ParamType>& info) {
@@ -331,6 +344,8 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
 
   ASSERT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_EQ(editor_switch.GetEditorMode(), test_case.expected_editor_mode);
+  EXPECT_EQ(editor_switch.GetEditorOpportunityMode(),
+            test_case.expected_editor_opportunity_mode);
 }
 
 }  // namespace

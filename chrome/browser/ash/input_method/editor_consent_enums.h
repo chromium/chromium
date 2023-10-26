@@ -43,7 +43,14 @@ enum class ConsentStatus : int {
   kUnset = 4,
 };
 
+// TODO: b: - Migrate EditorMode and EditorOpportunityMode out of this file.
 enum class EditorMode { kBlocked, kConsentNeeded, kRewrite, kWrite };
+
+enum class EditorOpportunityMode {
+  kNone,
+  kRewrite,
+  kWrite,
+};
 
 ConsentStatus GetConsentStatusFromInteger(int status_value);
 

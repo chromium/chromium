@@ -42,6 +42,7 @@ class EditorSwitch {
   void SetProfile(Profile* profile);
 
   EditorMode GetEditorMode() const;
+  EditorOpportunityMode GetEditorOpportunityMode() const;
 
  private:
   raw_ptr<Profile> profile_;

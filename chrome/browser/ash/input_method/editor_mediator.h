@@ -65,6 +65,10 @@ class EditorMediator : public EditorEventSink,
       absl::optional<std::string_view> preset_query_id = absl::nullopt,
       absl::optional<std::string_view> freeform_text = absl::nullopt) override;
   EditorMode GetEditorMode() const override;
+  // This method is currently used for metric purposes to understand the ratio
+  // of requests being blocked vs. the potential requests that can be
+  // accommodated.
+  EditorOpportunityMode GetEditorOpportunityMode() const override;
   void CacheContext() override;
 
   // TabletModeObserver overrides

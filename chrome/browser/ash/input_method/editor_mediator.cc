@@ -239,6 +239,10 @@ EditorMode EditorMediator::GetEditorMode() const {
   return editor_switch_->GetEditorMode();
 }
 
+EditorOpportunityMode EditorMediator::GetEditorOpportunityMode() const {
+  return editor_switch_->GetEditorOpportunityMode();
+}
+
 void EditorMediator::Shutdown() {
   // Note that this method is part of the two-phase shutdown completed by a
   // KeyedService. This method is invoked as the first phase, and is called
