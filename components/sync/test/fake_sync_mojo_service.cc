@@ -24,7 +24,9 @@ void FakeSyncMojoService::BindExplicitPassphraseClient(
 
 void FakeSyncMojoService::BindUserSettingsClient(
     mojo::PendingReceiver<crosapi::mojom::SyncUserSettingsClient> receiver) {
-  fake_sync_user_settings_client_ash_.BindReceiver(std::move(receiver));
+  if (fake_sync_user_settings_client_ash_available_) {
+    fake_sync_user_settings_client_ash_.BindReceiver(std::move(receiver));
+  }
 }
 
 void FakeSyncMojoService::DEPRECATED_BindSyncedSessionClient(

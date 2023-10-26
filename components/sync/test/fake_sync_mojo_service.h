@@ -43,10 +43,18 @@ class FakeSyncMojoService : public crosapi::mojom::SyncService {
   FakeSyncExplicitPassphraseClientAsh& GetFakeSyncExplicitPassphraseClientAsh();
   FakeSyncUserSettingsClientAsh& GetFakeSyncUserSettingsClientAsh();
 
+  void SetFakeSyncUserSettingsClientAshAvailable(
+      bool fake_sync_user_settings_client_ash_available) {
+    fake_sync_user_settings_client_ash_available_ =
+        fake_sync_user_settings_client_ash_available;
+  }
+
  private:
   FakeSyncExplicitPassphraseClientAsh fake_sync_explicit_passphrase_client_ash_;
   FakeSyncedSessionClientAsh fake_synced_session_client_ash_;
   FakeSyncUserSettingsClientAsh fake_sync_user_settings_client_ash_;
+
+  bool fake_sync_user_settings_client_ash_available_ = true;
 
   mojo::Receiver<crosapi::mojom::SyncService> receiver_{this};
 };

@@ -100,6 +100,15 @@ class SyncAppsToggleSharingLacrosBrowserTestWithoutCrosapi : public SyncTest {
   }
   ~SyncAppsToggleSharingLacrosBrowserTestWithoutCrosapi() override = default;
 
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    SyncTest::CreatedBrowserMainParts(browser_main_parts);
+    // Mimic SyncUserSettingsClient Crosapi not available
+    sync_mojo_service_.SetFakeSyncUserSettingsClientAshAvailable(false);
+    chromeos::LacrosService::Get()->InjectRemoteForTesting(
+        sync_mojo_service_.BindNewPipeAndPassRemote());
+  }
+
   base::FilePath GetProfileBaseName(int index) override {
     // Apps toggle sharing is enabled only for the main profile, so SyncTest
     // should setup sync using it.
@@ -108,6 +117,7 @@ class SyncAppsToggleSharingLacrosBrowserTestWithoutCrosapi : public SyncTest {
   }
 
  private:
+  syncer::FakeSyncMojoService sync_mojo_service_;
   base::test::ScopedFeatureList override_features_;
 };
 
