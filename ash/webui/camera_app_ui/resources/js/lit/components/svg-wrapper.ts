@@ -7,8 +7,8 @@ import {
   LitElement,
 } from 'chrome://resources/mwc/lit/index.js';
 
-import {assertExists} from '../assert.js';
-import {preloadedImages} from '../preload_images.js';
+import {assertExists} from '../../assert.js';
+import {preloadedImages} from '../../preload_images.js';
 
 export class SvgWrapper extends LitElement {
   static override styles = css`
