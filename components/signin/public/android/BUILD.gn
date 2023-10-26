@@ -41,6 +41,7 @@ android_library("java") {
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
     "java/src/org/chromium/components/signin/ConnectionRetry.java",
     "java/src/org/chromium/components/signin/PatternMatcher.java",
+    "java/src/org/chromium/components/signin/SigninFeatureMap.java",
     "java/src/org/chromium/components/signin/SystemAccountManagerDelegate.java",
     "java/src/org/chromium/components/signin/base/AccountCapabilities.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
@@ -78,8 +79,8 @@ generate_jni("jni_headers") {
   namespace = "signin"
   sources = [
     "java/src/org/chromium/components/signin/AccountCapabilitiesFetcher.java",
-    "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
+    "java/src/org/chromium/components/signin/SigninFeatureMap.java",
     "java/src/org/chromium/components/signin/base/AccountCapabilities.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
     "java/src/org/chromium/components/signin/base/CoreAccountId.java",

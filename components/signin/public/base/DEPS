@@ -2,4 +2,5 @@ include_rules = [
   "+third_party/boringssl/src/include",
   "+third_party/re2/src/re2/re2.h",
   "+components/account_manager_core/account.h",
+  "+components/signin/public/android/jni_headers/SigninFeatureMap_jni.h",
 ]
