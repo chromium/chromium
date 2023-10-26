@@ -278,10 +278,29 @@ TEST_F(FasterSplitScreenTest, Basic) {
             WindowState::Get(w2.get())->GetStateType());
   EXPECT_FALSE(overview_controller->InOverviewSession());
 
-  // TODO(sophiewen): Test multiple snapped windows on top of `w1` and `w2`.
+  // Create a new `w3` and snap it on top. Test it starts overview with `w1` and
+  // `w2` in overview.
   std::unique_ptr<aura::Window> w3(CreateTestWindow());
   SnapOneTestWindow(w3.get(), chromeos::WindowStateType::kPrimarySnapped);
   VerifySplitViewOverviewSession(w3.get());
+  EXPECT_TRUE(
+      overview_controller->overview_session()->IsWindowInOverview(w1.get()));
+  EXPECT_TRUE(
+      overview_controller->overview_session()->IsWindowInOverview(w2.get()));
+
+  // Create a new `w4`. Test it auto snaps with `w3`.
+  std::unique_ptr<aura::Window> w4(CreateTestWindow());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(w4.get())->GetStateType());
+
+  // Test all the other window states remain the same.
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(w3.get())->GetStateType());
 }
 
 TEST_F(FasterSplitScreenTest, CycleSnap) {
