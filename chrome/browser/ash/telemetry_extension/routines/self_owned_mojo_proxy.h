@@ -53,12 +53,11 @@ class SelfOwnedMojoProxy : public SelfOwnedMojoProxyInterface {
       base::OnceCallback<void(SelfOwnedMojoProxyInterface*)>;
 
   template <typename... ImplArgs>
-  static raw_ptr<SelfOwnedMojoProxyInterface,
-                 DanglingUntriaged | ExperimentalAsh>
-  Create(mojo::PendingReceiver<ReceiverInterface> pending_receiver,
-         mojo::PendingRemote<RemoteInterface> pending_remote,
-         OnDisconnectCallback on_disconnect_callback,
-         ImplArgs... impl_args) {
+  static raw_ptr<SelfOwnedMojoProxyInterface> Create(
+      mojo::PendingReceiver<ReceiverInterface> pending_receiver,
+      mojo::PendingRemote<RemoteInterface> pending_remote,
+      OnDisconnectCallback on_disconnect_callback,
+      ImplArgs... impl_args) {
     auto impl = std::make_unique<ReceiverImpl>(std::move(pending_remote),
                                                std::forward(impl_args)...);
     return new SelfOwnedMojoProxy(std::move(impl), std::move(pending_receiver),

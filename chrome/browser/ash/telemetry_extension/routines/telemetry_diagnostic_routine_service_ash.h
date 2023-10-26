@@ -73,8 +73,7 @@ class TelemetryDiagnosticsRoutineServiceAsh
   void OnConnectionClosed(SelfOwnedMojoProxyInterface* closed_connection);
 
   // The routine controls and observers created for each running routine.
-  base::flat_set<
-      raw_ptr<SelfOwnedMojoProxyInterface, DanglingUntriaged | ExperimentalAsh>>
+  base::flat_set<raw_ptr<SelfOwnedMojoProxyInterface>>
       routine_controls_and_observers_;
 
   // Support any number of connections.

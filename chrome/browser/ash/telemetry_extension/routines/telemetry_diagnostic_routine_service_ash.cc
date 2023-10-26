@@ -71,7 +71,7 @@ TelemetryDiagnosticsRoutineServiceAsh::TelemetryDiagnosticsRoutineServiceAsh() =
 TelemetryDiagnosticsRoutineServiceAsh::
     ~TelemetryDiagnosticsRoutineServiceAsh() {
   for (auto&& proxy : routine_controls_and_observers_) {
-    proxy->OnServiceDestroyed();
+    proxy.ExtractAsDangling()->OnServiceDestroyed();
   }
   routine_controls_and_observers_.clear();
 }
