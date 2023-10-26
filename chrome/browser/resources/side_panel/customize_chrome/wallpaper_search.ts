@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './check_mark_wrapper.js';
 import './combobox/customize_chrome_combobox.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
@@ -18,10 +19,11 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
+import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
-import {CustomizeChromePageHandlerInterface, DescriptorA, DescriptorDValue, Descriptors, WallpaperSearchResult} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, DescriptorA, DescriptorDValue, Descriptors, Theme, WallpaperSearchResult} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './wallpaper_search.html.js';
 
@@ -78,6 +80,10 @@ export class WallpaperSearchElement extends PolymerElement {
         computed: 'computeSubmitBtnText_(results_)',
         value: 'Search',
       },
+      theme_: {
+        type: Object,
+        value: undefined,
+      },
     };
   }
 
@@ -91,17 +97,36 @@ export class WallpaperSearchElement extends PolymerElement {
   private selectedDescriptorC_: string|null;
   private selectedDescriptorD_: DescriptorDValue|null;
   private submitBtnText_: string;
+  private theme_: Theme|undefined;
 
+  private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;
+  private setThemeListenerId_: number|null = null;
 
   constructor() {
     super();
+    this.callbackRouter_ = CustomizeChromeApiProxy.getInstance().callbackRouter;
     this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
     this.pageHandler_.getDescriptors().then(({descriptors}) => {
       if (descriptors) {
         this.descriptors_ = descriptors;
       }
     });
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setThemeListenerId_ =
+        this.callbackRouter_.setTheme.addListener((theme: Theme) => {
+          this.theme_ = theme;
+        });
+    this.pageHandler_.updateTheme();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.setThemeListenerId_);
+    this.callbackRouter_.removeListener(this.setThemeListenerId_);
   }
 
   focusOnBackButton() {
@@ -111,6 +136,14 @@ export class WallpaperSearchElement extends PolymerElement {
   private computeSubmitBtnText_() {
     return this.results_ && this.results_.length > 0 ? 'Search Again' :
                                                        'Search';
+  }
+
+  private isBackgroundSelected_(id: Token): boolean {
+    return !!(
+        this.theme_ && this.theme_.backgroundImage &&
+        this.theme_.backgroundImage.localBackgroundId &&
+        this.theme_.backgroundImage.localBackgroundId.low === id.low &&
+        this.theme_.backgroundImage.localBackgroundId.high === id.high);
   }
 
   private async onBackClick_() {

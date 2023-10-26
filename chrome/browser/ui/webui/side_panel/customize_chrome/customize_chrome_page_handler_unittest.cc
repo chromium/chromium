@@ -20,6 +20,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/token.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -196,7 +197,9 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
   MOCK_METHOD(void, ResetCustomBackgroundInfo, ());
   MOCK_METHOD(void, SelectLocalBackgroundImage, (const base::FilePath&));
   MOCK_METHOD(void, SelectLocalBackgroundImage, (const std::string&));
-  MOCK_METHOD(void, SelectLocalBackgroundImage, (const SkBitmap&));
+  MOCK_METHOD(void,
+              SelectLocalBackgroundImage,
+              (const base::Token&, const SkBitmap&));
   MOCK_METHOD(void, AddObserver, (NtpCustomBackgroundServiceObserver*));
   MOCK_METHOD(void,
               SetCustomBackgroundInfo,
@@ -524,6 +527,31 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetUploadedImage) {
   ASSERT_TRUE(theme->background_image);
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
   ASSERT_TRUE(theme->background_image->is_uploaded_image);
+}
+
+TEST_P(CustomizeChromePageHandlerSetThemeTest, SetWallpaperSearchImage) {
+  side_panel::mojom::ThemePtr theme;
+  EXPECT_CALL(mock_page_, SetTheme).Times(1).WillOnce(MoveArg<0>(&theme));
+  CustomBackground custom_background;
+  base::Token token = base::Token::CreateRandom();
+  custom_background.custom_background_url = GURL("https://foo.com/img.png");
+  custom_background.is_uploaded_image = true;
+  custom_background.local_background_id = token;
+  ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
+      .WillByDefault(Return(absl::make_optional(custom_background)));
+  ON_CALL(mock_theme_service(), UsingDefaultTheme())
+      .WillByDefault(Return(false));
+  ON_CALL(mock_theme_service(), UsingSystemTheme())
+      .WillByDefault(Return(false));
+
+  UpdateTheme();
+  mock_page_.FlushForTesting();
+
+  ASSERT_TRUE(theme);
+  ASSERT_TRUE(theme->background_image);
+  EXPECT_TRUE(theme->background_image->is_uploaded_image);
+  EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
+  EXPECT_EQ(token, theme->background_image->local_background_id);
 }
 
 TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThirdPartyTheme) {
@@ -1320,13 +1348,16 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
   // Set background to bitmap2.
   SkBitmap bitmap;
+  base::Token token;
   EXPECT_CALL(mock_ntp_custom_background_service_,
-              SelectLocalBackgroundImage(An<const SkBitmap&>()))
-      .WillOnce(SaveArg<0>(&bitmap));
+              SelectLocalBackgroundImage(An<const base::Token&>(),
+                                         An<const SkBitmap&>()))
+      .WillOnce(DoAll(SaveArg<0>(&token), SaveArg<1>(&bitmap)));
 
   handler().SetBackgroundToWallpaperSearchResult(images[1]->id);
 
   // Check that the 2nd bitmap was selected by comparing color, since the
   // 2 bitmaps are different colors.
   EXPECT_EQ(bitmap.getColor(0, 0), bitmap2.getColor(0, 0));
+  EXPECT_EQ(token, images[1]->id);
 }

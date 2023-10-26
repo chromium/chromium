@@ -73,7 +73,8 @@ class NtpCustomBackgroundService : public KeyedService,
 
   // Invoked by Wallpaper Search to set background image with already decoded
   // data.
-  virtual void SelectLocalBackgroundImage(const SkBitmap& bitmap);
+  virtual void SelectLocalBackgroundImage(const base::Token& id,
+                                          const SkBitmap& bitmap);
 
   // Virtual for testing.
   virtual void RefreshBackgroundIfNeeded();
@@ -118,7 +119,12 @@ class NtpCustomBackgroundService : public KeyedService,
   virtual void VerifyCustomBackgroundImageURL();
 
  private:
+  // Set bool pref for local background and clear id.
   void SetBackgroundToLocalResource();
+
+  // Set bool pref for local background and set id.
+  void SetBackgroundToLocalResourceWithId(const base::Token& id);
+
   void ForceRefreshBackground();
   // Returns false if the custom background pref cannot be parsed, otherwise
   // returns true.
@@ -146,8 +152,9 @@ class NtpCustomBackgroundService : public KeyedService,
       int headers_response_code);
 
   // Set background pref info to say that the current background is a local
-  // resource and start color extraction of the associated bitmap.
-  void SetBackgroundToLocalResourceAndExtractColor(const SkBitmap& bitmap);
+  // resource, set the id, and start color extraction of the associated bitmap.
+  void SetBackgroundToLocalResourceAndExtractColor(const base::Token& id,
+                                                   const SkBitmap& bitmap);
 
   const raw_ptr<Profile> profile_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;

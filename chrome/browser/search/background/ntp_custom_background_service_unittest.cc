@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
@@ -1080,17 +1081,21 @@ TEST_F(NtpCustomBackgroundServiceWithWallpaperSearchTest,
   bitmap.allocN32Pixels(32, 32);
   bitmap.eraseColor(SK_ColorRED);
 
-  custom_background_service_->SelectLocalBackgroundImage(bitmap);
+  base::Token token = base::Token::CreateRandom();
+  custom_background_service_->SelectLocalBackgroundImage(token, bitmap);
   task_environment_.RunUntilIdle();
 
   // Check that local background image was set.
   auto custom_background = custom_background_service_->GetCustomBackground();
-  EXPECT_TRUE(
-      base::StartsWith(custom_background->custom_background_url.spec(),
-                       chrome::kChromeUIUntrustedNewTabPageBackgroundUrl,
-                       base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(base::StartsWith(
+      custom_background->custom_background_url.spec(),
+      chrome::kChromeUIUntrustedNewTabPageUrl + token.ToString() +
+          chrome::kChromeUIUntrustedNewTabPageBackgroundFilename,
+      base::CompareCase::SENSITIVE));
   EXPECT_TRUE(
       pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
+  EXPECT_EQ(pref_service->GetString(prefs::kNtpCustomBackgroundLocalToDeviceId),
+            token.ToString());
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
   EXPECT_EQ(true, custom_background->is_uploaded_image);
 

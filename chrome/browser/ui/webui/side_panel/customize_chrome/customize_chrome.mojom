@@ -16,6 +16,9 @@ struct BackgroundImage {
   url.mojom.Url snapshot_url;
   // Whether the image is a local resource.
   bool is_uploaded_image;
+  // Id for local resource. It is empty if it is an uploaded image and set if
+  // it is a local wallpaper search resource.
+  mojo_base.mojom.Token? local_background_id;
   // Title of the background image.
   string title;
   // Collection id of the background image.

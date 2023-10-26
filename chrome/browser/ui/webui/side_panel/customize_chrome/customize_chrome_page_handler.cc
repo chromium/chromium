@@ -280,6 +280,8 @@ void CustomizeChromePageHandler::UpdateTheme() {
     background_image->snapshot_url =
         custom_background->custom_background_snapshot_url;
     background_image->is_uploaded_image = custom_background->is_uploaded_image;
+    background_image->local_background_id =
+        custom_background->local_background_id;
     background_image->title =
         custom_background->custom_background_attribution_line_1;
     background_image->collection_id = custom_background->collection_id;
@@ -526,7 +528,7 @@ void CustomizeChromePageHandler::SetBackgroundToWallpaperSearchResult(
     const base::Token& result_id) {
   CHECK(base::Contains(wallpaper_search_results_, result_id));
   ntp_custom_background_service_->SelectLocalBackgroundImage(
-      wallpaper_search_results_[result_id]);
+      result_id, wallpaper_search_results_[result_id]);
 }
 
 void CustomizeChromePageHandler::OnDescriptorsRetrieved(

@@ -98,9 +98,7 @@
 
   .tile {
     background-color: var(--color-sys-surface2);
-    border-radius: 12px;
     outline-width: 0;
-    overflow: hidden;
     place-self: stretch;
   }
 
@@ -119,7 +117,20 @@
     transform: translateX(-50%);
   }
 
+  customize-chrome-check-mark-wrapper {
+    --customize-chrome-check-mark-wrapper-end: -4px;
+    --customize-chrome-check-mark-wrapper-size: 20px;
+    --customize-chrome-check-mark-wrapper-top: -6px;
+  }
+
+  customize-chrome-check-mark-wrapper[checked] .image-container {
+    padding-top: calc(100% - 4px);
+    width: calc(100% - 4px);
+  }
+
   .image-container {
+    border-radius: 12px;
+    overflow: hidden;
     padding-top: 100%;
     position: relative;
     width: 100%;
@@ -225,10 +236,13 @@
       <template is="dom-repeat" id="resultsRepeat" items="[[results_]]">
         <div class="tile result" tabindex="0" role="button"
             on-click="onResultClick_">
-          <div class="image-container">
-            <img src="data:image/png;base64,[[item.image]]">
-            </img>
-          </div>
+          <customize-chrome-check-mark-wrapper
+              checked="[[isBackgroundSelected_(item.id, theme_)]]">
+            <div class="image-container">
+              <img src="data:image/png;base64,[[item.image]]">
+              </img>
+            </div>
+          </customize-chrome-check-mark-wrapper>
         </div>
       </template>
       <template is="dom-repeat" id="emptyRepeat" items="[[emptyContainers_]]">
