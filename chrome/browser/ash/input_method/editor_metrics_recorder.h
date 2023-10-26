@@ -10,9 +10,7 @@
 
 namespace ash::input_method {
 
-void LogEditorState(EditorStates state,
-                    EditorMode mode,
-                    int quantity_to_increment = 1);
+void LogEditorState(EditorStates state, EditorMode mode);
 
 void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode);
 

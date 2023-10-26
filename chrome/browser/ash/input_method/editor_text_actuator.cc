@@ -33,9 +33,6 @@ EditorTextActuator::~EditorTextActuator() = default;
 void EditorTextActuator::InsertText(const std::string& text) {
   EditorMode editor_mode = delegate_->GetEditorMode();
   LogEditorState(EditorStates::kInsert, editor_mode);
-  LogEditorState(EditorStates::kCharsInserted, editor_mode, text.length());
-  LogEditorState(EditorStates::kCharsSelectedForInsert, editor_mode,
-                 delegate_->GetSelectedTextLength());
 
   // We queue the text to be inserted here rather then insert it directly into
   // the input.

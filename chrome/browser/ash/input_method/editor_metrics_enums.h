@@ -12,45 +12,43 @@ namespace ash::input_method {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class EditorStates {
-  // Increments by 1 when a user right clicks on an eligible text field and the
-  // feature itself is enabled.
+  // When a user right clicks on an eligible text field and the feature itself
+  // is enabled.
   kNativeUIShowOpportunity = 0,
-  // Increase by 1 when the native UI menu is shown.
+  // When the native UI menu is shown.
   kNativeUIShown = 1,
-  // Increase by 1 for only the first request to the server of the session from
-  // the views UI. Refines are not counted here.
+  // For only the first request to the server of the session from the views UI.
+  // Refines are not counted here.
   kNativeRequest = 2,
-  // Increase by 1 when a response page is dismissed by user clicking elsewhere
-  // or explicitly clicking the close button.
+  // When a response page is dismissed by user clicking elsewhere or explicitly
+  // clicking the close button.
   kDismiss = 3,
-  // Increase by 1 for each refine request.
+  // For each refine request and by editing the prompt directly at the top of
+  // the webUI.
   kRefineRequest = 4,
-  // Increase by 1 when a response is shown to the user.
+  // When response(s) are shown to the user.
   kSuccessResponse = 5,
-  // Increase by 1 when a error is shown to the user.
+  // When a error is shown to the user.
   kErrorResponse = 6,
-  // Increase by 1 when a thumbs up button is clicked.
+  // When a thumbs up button is clicked.
   kThumbsUp = 7,
-  // Increase by 1 when a thumbs down button is clicked.
+  // When a thumbs down button is clicked.
   kThumbsDown = 8,
-  // Increase by 1 when a response is inserted/replaced to the text field.
+  // When a response is inserted/replaced to the text field.
   kInsert = 9,
-  // Increase by #characters inserted.
-  kCharsInserted = 10,
-  // Increase by #characters selected (user writing) for an insert. This is
-  // recorded at the time of an insert.
-  kCharsSelectedForInsert = 11,
-  // Increase by #characters in a freeform request (if any) for an insert. This
-  // is recorded at the time of an insert.
-  kFreeformCharsForInsert = 12,
-  // Increase by 1 when a user returns to previous in the webUI.
+
+  // Migrated to another histogram due to incorrect use
+  // kCharsInserted = 10,
+  // kCharsSelectedForInsert = 11,
+  // kFreeformCharsForInsert = 12,
+
+  // When a user returns to previous in the webUI.
   kReturnToPreviousSuggestions = 13,
-  // Increase by 1 when a user directly clicks the WebUI close button to close
-  // the feature.
+  // When a user directly clicks the WebUI close button to close the feature.
   kClickCloseButton = 14,
-  // Increase by 1 for only the first request to the server of the session from
-  // the WebUI. This will only happen a maximum of once per user, right after
-  // they consent.
+  // For the first request to the server of the session from the WebUI. This
+  // will happen right after a user initially consents, or if they get an error
+  // and try again.
   kWebUIRequest = 15,
   kMaxValue = kWebUIRequest,
 };

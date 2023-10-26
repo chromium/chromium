@@ -1112,15 +1112,11 @@ chromium-metrics-reviews@google.com.
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The histogram captures user interactions with the editor, focusing on key
-    actions. The metric logs specific actions once for each feature
-    instantiation if initiated by the user. These actions include the initiation
-    of a new request, content insertion, display of the native UI, dismissal of
-    the editor, a refining request, errors from the backend, receiving a
-    successful responses from the backend or a user toggling the thumbs up and
-    down buttons. Additionally, this metric keeps track of character-related
-    data when users perform insertions. This includes the number of characters
-    inserted, the number of characters initially selected by the user, or the
-    number of characters utilized for freeform prompts (if applicable).
+    actions providing a high level funel of interaction. These actions include
+    the initiation of a new request, content insertion, display of the native
+    UI, dismissal of the editor, a refining request, errors from the backend,
+    receiving a successful responses from the backend or a user toggling the
+    thumbs up and down buttons.
   </summary>
   <token key="Mode">
     <variant name="Rewrite"

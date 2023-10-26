@@ -54482,9 +54482,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="THUMBS_UP"/>
   <int value="8" label="THUMBS_DOWN"/>
   <int value="9" label="INSERT"/>
-  <int value="10" label="CHARACTERS_INSERTED"/>
-  <int value="11" label="CHARACTERS_SELECTED_FOR_INSERT"/>
-  <int value="12" label="FREEFORM_CHARACTERS_FOR_INSERT"/>
+  <int value="10" label="CHARACTERS_INSERTED (Obsolete)"/>
+  <int value="11" label="CHARACTERS_SELECTED_FOR_INSERT (Obsolete)"/>
+  <int value="12" label="FREEFORM_CHARACTERS_FOR_INSERT (Obsolete)"/>
   <int value="13" label="RETURN_TO_PREVIOUS_SUGGESTIONS"/>
   <int value="14" label="CLICK_CLOSE_BUTTON"/>
   <int value="15" label="WEBUI_REQUEST"/>

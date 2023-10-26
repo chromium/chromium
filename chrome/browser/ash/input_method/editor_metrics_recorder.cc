@@ -10,9 +10,7 @@
 
 namespace ash::input_method {
 
-void LogEditorState(EditorStates state,
-                    EditorMode mode,
-                    int quantity_to_increment) {
+void LogEditorState(EditorStates state, EditorMode mode) {
   std::string histogram_name;
   if (mode == EditorMode::kWrite) {
     histogram_name = "InputMethod.Manta.Orca.States.Write";
@@ -22,11 +20,7 @@ void LogEditorState(EditorStates state,
     return;
   }
 
-  base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
-      histogram_name, 1, static_cast<int>(EditorStates::kMaxValue),
-      static_cast<size_t>(static_cast<int>(EditorStates::kMaxValue) + 1),
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->AddCount(static_cast<int>(state), quantity_to_increment);
+  base::UmaHistogramEnumeration(histogram_name, state);
 }
 
 void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode) {
