@@ -427,6 +427,7 @@ test("gl_tests") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+    sources += [ "command_buffer/service/shared_image/ozone_image_backing_factory_unittest.cc" ]
   }
 
   if (enable_vulkan) {

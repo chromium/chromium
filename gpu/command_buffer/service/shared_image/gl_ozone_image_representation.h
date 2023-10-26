@@ -34,7 +34,8 @@ class GLTextureOzoneImageRepresentation : public GLTextureImageRepresentation {
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      scoped_refptr<OzoneImageGLTexturesHolder> textures_holder);
+      scoped_refptr<OzoneImageGLTexturesHolder> textures_holder,
+      bool should_mark_context_lost_textures_holder);
   ~GLTextureOzoneImageRepresentation() override;
 
   // GLTextureImageRepresentation implementation.
@@ -43,9 +44,13 @@ class GLTextureOzoneImageRepresentation : public GLTextureImageRepresentation {
   void EndAccess() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
+                           MarksContextLostOnContextLost2);
+
   OzoneImageBacking* GetOzoneBacking();
 
   scoped_refptr<OzoneImageGLTexturesHolder> textures_holder_;
+  const bool should_mark_context_lost_textures_holder_ = false;
   GLenum current_access_mode_ = 0;
   bool need_end_fence_;
 };
@@ -59,7 +64,8 @@ class GLTexturePassthroughOzoneImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      scoped_refptr<OzoneImageGLTexturesHolder> textures_holder);
+      scoped_refptr<OzoneImageGLTexturesHolder> textures_holder,
+      bool should_mark_context_lost_textures_holder);
   ~GLTexturePassthroughOzoneImageRepresentation() override;
 
   // GLTexturePassthroughImageRepresentation implementation.
@@ -69,9 +75,13 @@ class GLTexturePassthroughOzoneImageRepresentation
   void EndAccess() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
+                           MarksContextLostOnContextLost2);
+
   OzoneImageBacking* GetOzoneBacking();
 
   scoped_refptr<OzoneImageGLTexturesHolder> textures_holder_;
+  const bool should_mark_context_lost_textures_holder_ = false;
   GLenum current_access_mode_ = 0;
   bool need_end_fence_;
 };

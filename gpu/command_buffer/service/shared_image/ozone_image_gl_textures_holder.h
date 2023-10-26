@@ -64,6 +64,8 @@ class GPU_GLES2_EXPORT OzoneImageGLTexturesHolder
 
   size_t GetNumberOfTextures() const;
 
+  bool has_context() const { return !!context_; }
+
  private:
   friend class base::RefCounted<OzoneImageGLTexturesHolder>;
 

@@ -69,13 +69,21 @@ GLTextureOzoneImageRepresentation::GLTextureOzoneImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    scoped_refptr<OzoneImageGLTexturesHolder> textures_holder)
+    scoped_refptr<OzoneImageGLTexturesHolder> textures_holder,
+    bool should_mark_context_lost_textures_holder)
     : GLTextureImageRepresentation(manager, backing, tracker),
-      textures_holder_(std::move(textures_holder)) {}
+      textures_holder_(std::move(textures_holder)),
+      should_mark_context_lost_textures_holder_(
+          should_mark_context_lost_textures_holder) {}
 
 GLTextureOzoneImageRepresentation::~GLTextureOzoneImageRepresentation() {
   if (!has_context()) {
-    textures_holder_->MarkContextLost();
+    if (should_mark_context_lost_textures_holder_) {
+      textures_holder_->MarkContextLost();
+    } else {
+      // The textures must have already been marked as context lost.
+      DCHECK(textures_holder_->WasContextLost());
+    }
   }
 }
 
@@ -105,14 +113,22 @@ GLTexturePassthroughOzoneImageRepresentation::
         SharedImageManager* manager,
         SharedImageBacking* backing,
         MemoryTypeTracker* tracker,
-        scoped_refptr<OzoneImageGLTexturesHolder> textures_holder)
+        scoped_refptr<OzoneImageGLTexturesHolder> textures_holder,
+        bool should_mark_context_lost_textures_holder)
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
-      textures_holder_(std::move(textures_holder)) {}
+      textures_holder_(std::move(textures_holder)),
+      should_mark_context_lost_textures_holder_(
+          should_mark_context_lost_textures_holder) {}
 
 GLTexturePassthroughOzoneImageRepresentation::
     ~GLTexturePassthroughOzoneImageRepresentation() {
   if (!has_context()) {
-    textures_holder_->MarkContextLost();
+    if (should_mark_context_lost_textures_holder_) {
+      textures_holder_->MarkContextLost();
+    } else {
+      // The textures must have already been marked as context lost.
+      DCHECK(textures_holder_->WasContextLost());
+    }
   }
 }
 

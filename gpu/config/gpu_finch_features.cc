@@ -166,6 +166,12 @@ BASE_FEATURE(kCanvasOopRasterization,
 );
 
 #if BUILDFLAG(IS_OZONE)
+// Enables per context GLTexture cache for OzoneImageBacking that avoids
+// unnecessary construction/destruction of GLTextures.
+BASE_FEATURE(kEnablePerContextGLTextureCache,
+             "EnablePerContextGLTextureCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Detect front buffering condition and set buffer usage as such.
 // This is a killswitch to be removed once launched.
 BASE_FEATURE(kOzoneFrontBufferUsage,
