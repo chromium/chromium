@@ -243,6 +243,14 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
     return std::u16string();
 
   if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling) &&
+      options_.card_save_type ==
+          AutofillClient::CardSaveType::kCardSaveWithCvc) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD);
+  }
+
+  if (base::FeatureList::IsEnabled(
           features::kAutofillEnableNewSaveCardBubbleUi)) {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V4);
