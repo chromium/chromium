@@ -112,6 +112,12 @@ class ExtensionMessagePort : public MessagePort {
   // frames any more, the port closes via CloseChannel().
   void UnregisterFrame(content::RenderFrameHost* render_frame_host);
 
+  // Unregisters all the frames whose outermost main frame is `main_frame`. When
+  // there are no registered frames any more, the port closes via
+  // CloseChannel().
+  // It returns if the port and the associated channel is closed.
+  bool UnregisterFramesUnderMainFrame(content::RenderFrameHost* main_frame);
+
   // Returns whether or not a live frame or Service Worker is present for this
   // port.
   bool HasReceivers() const;

@@ -82,39 +82,6 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    // There are a number of possible scenarios for the navigation:
-    // 1. Same-document navigation - Don't unregister the frame, since it can
-    // still use the port.
-    // 2. Cross-document navigation, reusing the RenderFrameHost - Unregister
-    // the frame, since the new document is not allowed to use the port.
-    // 3. Cross-document navigation, with a new RenderFrameHost - Since the
-    // navigated-to document has a new RFH, the port can not be registered for
-    // it, so it doesn't matter whether we unregister it or not. If the
-    // navigated-from document is stored in the back-forward cache, don't
-    // unregister the frame (see note below). If it is not cached, the frame
-    // will be unregistered when the RFH is deleted.
-    // 4. Restoring a cached frame from back-forward cache - This is similar to
-    // (3) in that the navigation changes RFH, with the difference that the RFH
-    // is not new and so may be registered. Don't unregister the frame in this
-    // case since it may still use the port.
-
-    // Note that we don't just disconnect channels when a frame is bf-cached
-    // since when such a document is later restored, there is no "load" and so a
-    // message channel won't be immediately available to extensions.
-    // Contrast this with a normal load where an extension is able to inject
-    // scripts at "document_start" and set up message ports.
-    if (navigation_handle->HasCommitted() &&
-        !navigation_handle->IsSameDocument() &&
-        !navigation_handle->IsServedFromBackForwardCache()) {
-      // Note: This unregisters the _new_ RenderFrameHost. In case a new RFH was
-      // created for this navigation, this will be a no-op, since we haven't
-      // seen it before. In case the RFH is reused for the navigation, this will
-      // correctly unregister the frame, to avoid messages intended for the
-      // previous document being sent to the new document. If the navigated-to
-      // RFH is served from cache, keep the port alive.
-      port_->UnregisterFrame(navigation_handle->GetRenderFrameHost());
-    }
-
     if (base::FeatureList::IsEnabled(
             features::kDisconnectExtensionMessagePortWhenPageEntersBFCache) &&
         navigation_handle->HasCommitted()) {
@@ -126,8 +93,46 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
       if (previous_rfh &&
           previous_rfh->GetLifecycleState() ==
               content::RenderFrameHost::LifecycleState::kInBackForwardCache) {
-        port_->CloseChannel();
+        if (port_->UnregisterFramesUnderMainFrame(previous_rfh)) {
+          // Since the channel and the port is already closed, we don't have to
+          // run the following block to unregister the frames any more.
+          return;
+        }
       }
+    }
+
+    // There are a number of possible scenarios for the navigation:
+    // 1. Same-document navigation - Don't unregister the frame, since it can
+    // still use the port.
+    // 2. Cross-document navigation, reusing the RenderFrameHost - Unregister
+    // the frame, since the new document is not allowed to use the port.
+    // 3. Cross-document navigation, with a new RenderFrameHost - Since the
+    // navigated-to document has a new RFH, the port can not be registered for
+    // it, so it doesn't matter whether we unregister it or not. If the
+    // navigated-from document is stored in the back-forward cache, don't
+    // unregister the frame (see note below). If it is not cached, the frame
+    // will be unregistered when the RFH is deleted.
+    // 4. Restoring a cached frame from back-forward cache or activating a
+    // prerendered frame - This is similar to (3) in that the navigation changes
+    // RFH, with the difference that the RFH is not new and so may be
+    // registered. Don't unregister the frame in this case since it may still
+    // use the port.
+
+    // Note that we don't just disconnect channels when a frame is bf-cached
+    // since when such a document is later restored, there is no "load" and so a
+    // message channel won't be immediately available to extensions.
+    // Contrast this with a normal load where an extension is able to inject
+    // scripts at "document_start" and set up message ports.
+    if (navigation_handle->HasCommitted() &&
+        !navigation_handle->IsSameDocument() &&
+        !navigation_handle->IsPageActivation()) {
+      // Note: This unregisters the _new_ RenderFrameHost. In case a new RFH was
+      // created for this navigation, this will be a no-op, since we haven't
+      // seen it before. In case the RFH is reused for the navigation, this will
+      // correctly unregister the frame, to avoid messages intended for the
+      // previous document being sent to the new document. If the navigated-to
+      // RFH is served from cache, keep the port alive.
+      port_->UnregisterFrame(navigation_handle->GetRenderFrameHost());
     }
   }
 
@@ -471,6 +476,20 @@ void ExtensionMessagePort::UnregisterFrame(
   if (frames_.erase(render_frame_host) != 0 && !HasReceivers()) {
     CloseChannel();
   }
+}
+
+bool ExtensionMessagePort::UnregisterFramesUnderMainFrame(
+    content::RenderFrameHost* main_frame) {
+  if (std::erase_if(frames_,
+                    [&main_frame](content::RenderFrameHost* frame) {
+                      return frame->GetOutermostMainFrame() == main_frame;
+                    }) != 0 &&
+      !HasReceivers()) {
+    CloseChannel();
+    return true;
+  }
+
+  return false;
 }
 
 bool ExtensionMessagePort::HasReceivers() const {

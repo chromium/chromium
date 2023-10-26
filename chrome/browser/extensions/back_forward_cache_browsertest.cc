@@ -1371,12 +1371,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Test the extension message port created during prerendering won't be closed
 // after the prerendered page is activated.
-// TODO(https://crbug.com/1472186): This test is added as a reproducing case for
-// the known bug. It will fail when
-// `DisconnectExtensionMessagePortWhenPageEntersBFCache` is disabled and crash
-// when it's enabled.
 IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheWithPrerenderBrowserTest,
-                       DISABLED_PortIsStillOpenAfterPrerenderAndActivate) {
+                       PortIsStillOpenAfterPrerenderAndActivate) {
   // This extension will automatically create a port from the content script.
   // It's only registers on title2.html, the prerendered page from this test.
   const Extension* extension =
