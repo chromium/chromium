@@ -297,10 +297,6 @@ AccessibilityTreeConverter::ConvertActionDataToProto(
   if (action_type == proto::AccessibilityActionType::ACTION_GET_TEXT_LOCATION) {
     action_data.set_start_index(data.start_index);
     action_data.set_end_index(data.end_index);
-    bool refresh_success = false;
-    if (!refresh_success) {
-      return absl::nullopt;
-    }
   }
   return action_data;
 }

@@ -252,6 +252,7 @@ void AshWebViewImpl::InitWebContents(Profile* profile) {
 
 void AshWebViewImpl::InitLayout(Profile* profile) {
   web_view_ = AddChildView(std::make_unique<views::WebView>(profile));
+  web_view_->SetID(ash::kAshWebViewChildWebViewId);
   web_view_->SetWebContents(web_contents_.get());
 }
 

@@ -71,6 +71,7 @@ class AccessibilityProvider
  private:
   ax::android::mojom::AccessibilityFilterType GetFilterType();
   void UpdateDeviceBounds(const proto::Rect& device_bounds);
+  void HandleHitTest(const ui::AXActionData& data) const;
   gfx::Rect OnGetTextLocationDataResultInternal(proto::Rect proto_rect) const;
   // Handles the result from perform action.
   void OnActionResult(const ui::AXActionData& data, bool result) const;

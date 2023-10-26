@@ -15,6 +15,9 @@ enum class WindowOpenDisposition;
 
 namespace ash {
 
+// Id to be used to get the wrapped web view using views::View::GetViewByID.
+inline constexpr int kAshWebViewChildWebViewId = 41;
+
 // A view which wraps a views::WebView (and associated WebContents) to work
 // around dependency restrictions in Ash.
 class ASH_PUBLIC_EXPORT AshWebView : public views::View {
