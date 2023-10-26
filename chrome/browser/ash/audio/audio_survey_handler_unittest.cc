@@ -44,16 +44,14 @@ class AudioSurveyHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
-    survey_handler_ = nullptr;
     delegate_ = nullptr;
+    survey_handler_ = nullptr;
   }
 
-  // The delegate_ pointer is moved to be owned by survey_handler_ and not
-  // dangling.
-  raw_ptr<MockDelegate, DisableDanglingPtrDetection> delegate_ = nullptr;
   ScopedCrasAudioHandlerForTesting cras_audio_handler_;
   base::test::ScopedFeatureList features_;
   std::unique_ptr<AudioSurveyHandler> survey_handler_;
+  raw_ptr<MockDelegate> delegate_ = nullptr;
 };
 
 class AudioSurveyHandlerNoSurveyTest : public AudioSurveyHandlerTest {
