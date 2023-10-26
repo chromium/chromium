@@ -37,13 +37,13 @@ std::string GetDisplayBaseName(const base::FilePath& path) {
   }
 
   base::apple::ScopedCFTypeRef<CFStringRef> str;
-  if (!CFURLCopyResourcePropertyForKey(url, kCFURLLocalizedNameKey,
+  if (!CFURLCopyResourcePropertyForKey(url.get(), kCFURLLocalizedNameKey,
                                        str.InitializeInto(),
                                        /*error=*/nullptr)) {
     return path.BaseName().value();
   }
 
-  return base::SysCFStringRefToUTF8(str);
+  return base::SysCFStringRefToUTF8(str.get());
 }
 
 #endif  // BUILDFLAG(IS_MAC)
