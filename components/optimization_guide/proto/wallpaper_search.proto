@@ -14,11 +14,16 @@ message Descriptors {
   optional string descriptor_d = 4;
 }
 
+message Image {
+  optional bytes encoded_image = 1;
+}
+
 message WallpaperSearchRequest {
   reserved 1;
   optional Descriptors descriptors = 2;
 }
 
 message WallpaperSearchResponse {
-  repeated bytes images = 1;
+  reserved 1;
+  repeated Image images = 2;
 }

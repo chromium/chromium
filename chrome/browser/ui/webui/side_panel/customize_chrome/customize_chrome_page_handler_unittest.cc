@@ -1131,7 +1131,8 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   std::vector<unsigned char> encoded1;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap1, /*discard_transparency=*/false,
                                     &encoded1);
-  response.add_images(std::string(encoded1.begin(), encoded1.end()));
+  response.add_images()->set_encoded_image(
+      std::string(encoded1.begin(), encoded1.end()));
 
   // Create test bitmap 2 and add it to response.
   SkBitmap bitmap2;
@@ -1140,7 +1141,8 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   std::vector<unsigned char> encoded2;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap2, /*discard_transparency=*/false,
                                     &encoded2);
-  response.add_images(std::string(encoded2.begin(), encoded2.end()));
+  response.add_images()->set_encoded_image(
+      std::string(encoded2.begin(), encoded2.end()));
 
   // Serialize and set result to later send to done_callback.
   std::string serialized_metadata;
@@ -1376,7 +1378,8 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   std::vector<unsigned char> encoded1;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap1, /*discard_transparency=*/false,
                                     &encoded1);
-  response.add_images(std::string(encoded1.begin(), encoded1.end()));
+  response.add_images()->set_encoded_image(
+      std::string(encoded1.begin(), encoded1.end()));
 
   // Create test bitmap 2 and add it to response.
   SkBitmap bitmap2;
@@ -1385,7 +1388,8 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   std::vector<unsigned char> encoded2;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap2, /*discard_transparency=*/false,
                                     &encoded2);
-  response.add_images(std::string(encoded2.begin(), encoded2.end()));
+  response.add_images()->set_encoded_image(
+      std::string(encoded2.begin(), encoded2.end()));
 
   // Serialize and set result to later send to done_callback.
   std::string serialized_metadata;

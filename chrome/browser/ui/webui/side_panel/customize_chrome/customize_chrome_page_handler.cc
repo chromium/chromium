@@ -643,7 +643,7 @@ void CustomizeChromePageHandler::OnWallpaperSearchResultsRetrieved(
   // of some issues with const gfx::Image& and base::BarrierCallback.
   for (auto& image : response->images()) {
     image_decoder_->DecodeImage(
-        image, gfx::Size(), nullptr,
+        image.encoded_image(), gfx::Size(), nullptr,
         base::BindOnce(
             [](base::RepeatingCallback<void(SkBitmap)> barrier,
                const gfx::Image& image) {
