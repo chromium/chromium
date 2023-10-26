@@ -689,20 +689,13 @@ Element& Element::CloneWithChildren(
   clone.CloneNonAttributePropertiesFrom(*this, data);
   PartRoot::CloneParts(*this, clone, data);
 
-  // - (With OptimizedNodeCloneOrder enabled) Append the clone to its parent
-  //   first, before cloning children. If this is done in the reverse order,
-  //   each new child will receive treeDepth calls to Node::InsertedInto().
-  // - (With OptimizedNodeCloneOrder DISABLED) Clone children first, then append
-  //   them.
-  if (!RuntimeEnabledFeatures::OptimizedNodeCloneOrderEnabled()) {
-    clone.CloneChildNodesFrom(*this, data);
-  }
+  // Append the clone to its parent first, before cloning children. If this is
+  // done in the reverse order, each new child will receive treeDepth calls to
+  // Node::InsertedInto().
   if (append_to) {
     append_to->AppendChild(&clone, append_exception_state);
   }
-  if (RuntimeEnabledFeatures::OptimizedNodeCloneOrderEnabled()) {
-    clone.CloneChildNodesFrom(*this, data);
-  }
+  clone.CloneChildNodesFrom(*this, data);
   return clone;
 }
 

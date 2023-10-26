@@ -1151,18 +1151,6 @@
     "expires": "Feb 1, 2024"
   },
   {
-    "prefix": "optimized-node-cloning-disabled",
-    "owners": ["masonf@chromium.org", "dom-dev@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/dom/nodes/Node-cloneNode.html",
-      "external/wpt/dom/parts/basic-dom-part-objects.tentative.html"
-    ],
-    "args": ["--disable-features=OptimizedNodeCloneOrder",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Feb 1, 2024"
-  },
-  {
     "prefix": "details-styling-disabled",
     "owners": ["dbaron@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux"],

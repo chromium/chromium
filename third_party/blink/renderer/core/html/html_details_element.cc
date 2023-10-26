@@ -287,8 +287,6 @@ void HTMLDetailsElement::MaybeCloseForExclusivity() {
   // that this causes.
   MutationEventSuppressionScope scope(GetDocument());
 
-  DCHECK(RuntimeEnabledFeatures::OptimizedNodeCloneOrderEnabled())
-      << "OptimizedNodeCloneOrder should ship before AccordionPattern";
   HeapVector<Member<HTMLDetailsElement>> details_with_name(
       OtherElementsInNameGroup());
   for (HTMLDetailsElement* other_details : details_with_name) {
