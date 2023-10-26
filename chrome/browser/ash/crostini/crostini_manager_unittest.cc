@@ -192,17 +192,15 @@ class CrostiniManagerTest : public testing::Test {
 
     scoped_feature_list_.InitWithFeatures(
         {features::kCrostini, ash::features::kCrostiniMultiContainer}, {});
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     profile_ = std::make_unique<TestingProfile>();
     crostini_manager_ = CrostiniManager::GetForProfile(profile_.get());
 
     // Login user for crostini, link gaia for DriveFS.
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     AccountId account_id = AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), "12345");
-    user_manager->AddUser(account_id);
-    user_manager->LoginUser(account_id);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
 
     mojo::Remote<device::mojom::UsbDeviceManager> fake_usb_manager;
     fake_usb_manager_.AddReceiver(
@@ -224,9 +222,9 @@ class CrostiniManagerTest : public testing::Test {
 
   void TearDown() override {
     g_browser_process->platform_part()->ShutdownSchedulerConfigurationManager();
-    scoped_user_manager_.reset();
     crostini_manager_->Shutdown();
     profile_.reset();
+    fake_user_manager_.Reset();
     ash::DlcserviceClient::Shutdown();
     browser_part_.ShutdownCrosComponentManager();
     component_manager_.reset();
@@ -237,11 +235,6 @@ class CrostiniManagerTest : public testing::Test {
   CrostiniManager* crostini_manager() { return crostini_manager_; }
   const guest_os::GuestId& container_id() { return container_id_; }
 
-  ash::FakeChromeUserManager* fake_user_manager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged | ExperimentalAsh>
       fake_cicerone_client_;
   raw_ptr<ash::FakeConciergeClient, DanglingUntriaged | ExperimentalAsh>
@@ -249,6 +242,8 @@ class CrostiniManagerTest : public testing::Test {
   raw_ptr<ash::FakeAnomalyDetectorClient, DanglingUntriaged | ExperimentalAsh>
       fake_anomaly_detector_client_;
 
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<CrostiniManager, DanglingUntriaged | ExperimentalAsh>
       crostini_manager_;
@@ -259,7 +254,6 @@ class CrostiniManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
  private:
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;

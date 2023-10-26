@@ -38,9 +38,9 @@ namespace {
 class BorealisFeaturesTest : public testing::Test {
  public:
   BorealisFeaturesTest()
-      : user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(user_manager_.get())) {
-    AllowBorealis(&profile_, &features_, user_manager_, /*also_enable=*/false);
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
+    AllowBorealis(&profile_, &features_, fake_user_manager_.Get(),
+                  /*also_enable=*/false);
   }
 
   BorealisFeatures::AllowStatus GetStatus() {
@@ -51,11 +51,10 @@ class BorealisFeaturesTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
   base::test::ScopedFeatureList features_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
-  user_manager::ScopedUserManager scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
+  TestingProfile profile_;
 };
 
 TEST_F(BorealisFeaturesTest, DisallowedWhenFeatureIsDisabled) {

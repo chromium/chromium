@@ -38,25 +38,24 @@ std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
 class DocumentScanAshTest : public testing::Test {
  public:
   void SetUp() override {
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     ash::LorgnetteScannerManagerFactory::GetInstance()->SetTestingFactory(
         &profile_, base::BindRepeating(&BuildLorgnetteScannerManager));
-  }
 
-  std::unique_ptr<ash::FakeChromeUserManager> CreateLoggedInUser() {
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
     const AccountId account_id =
         AccountId::FromUserEmail(profile_.GetProfileUserName());
     const user_manager::User* user =
-        fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
+        fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
             account_id,
             /*is_affiliated=*/false, user_manager::USER_TYPE_REGULAR,
             &profile_);
-    fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
-                                    /*browser_restart=*/false,
-                                    /*is_child=*/false);
-    fake_user_manager->SimulateUserProfileLoad(account_id);
-    return fake_user_manager;
+    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                     /*browser_restart=*/false,
+                                     /*is_child=*/false);
+    fake_user_manager_->SimulateUserProfileLoad(account_id);
   }
+
+  void TearDown() override { fake_user_manager_.Reset(); }
 
   ash::FakeLorgnetteScannerManager* GetLorgnetteScannerManager() {
     return static_cast<ash::FakeLorgnetteScannerManager*>(
@@ -69,6 +68,9 @@ class DocumentScanAshTest : public testing::Test {
   // Must outlive `profile_`.
   content::BrowserTaskEnvironment task_environment_;
 
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
+
   // Must outlive `document_scan_ash_`.
   TestingProfile profile_;
 
@@ -76,8 +78,6 @@ class DocumentScanAshTest : public testing::Test {
 };
 
 TEST_F(DocumentScanAshTest, NoScanners) {
-  user_manager::ScopedUserManager scoped_user_manager(CreateLoggedInUser());
-
   base::RunLoop run_loop;
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({});
   document_scan_ash().GetScannerNames(base::BindLambdaForTesting(
@@ -89,8 +89,6 @@ TEST_F(DocumentScanAshTest, NoScanners) {
 }
 
 TEST_F(DocumentScanAshTest, SingleScanner) {
-  user_manager::ScopedUserManager scoped_user_manager(CreateLoggedInUser());
-
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
   base::RunLoop run_loop;
   document_scan_ash().GetScannerNames(base::BindLambdaForTesting(
@@ -102,8 +100,6 @@ TEST_F(DocumentScanAshTest, SingleScanner) {
 }
 
 TEST_F(DocumentScanAshTest, MultipleScanner) {
-  user_manager::ScopedUserManager scoped_user_manager(CreateLoggedInUser());
-
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse(
       {kTestScannerName, kVirtualUSBPrinterName});
   base::RunLoop run_loop;
@@ -118,8 +114,6 @@ TEST_F(DocumentScanAshTest, MultipleScanner) {
 }
 
 TEST_F(DocumentScanAshTest, InvalidScannerName) {
-  user_manager::ScopedUserManager scoped_user_manager(CreateLoggedInUser());
-
   base::RunLoop run_loop;
   document_scan_ash().ScanFirstPage(
       "bad_scanner", base::BindLambdaForTesting(
@@ -134,8 +128,6 @@ TEST_F(DocumentScanAshTest, InvalidScannerName) {
 }
 
 TEST_F(DocumentScanAshTest, ScannerNoData) {
-  user_manager::ScopedUserManager scoped_user_manager(CreateLoggedInUser());
-
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
   base::RunLoop run_loop;
   document_scan_ash().ScanFirstPage(
@@ -151,8 +143,6 @@ TEST_F(DocumentScanAshTest, ScannerNoData) {
 }
 
 TEST_F(DocumentScanAshTest, ScannerData) {
-  user_manager::ScopedUserManager scoped_user_manager(CreateLoggedInUser());
-
   GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
   const std::vector<std::string> scan_data = {"PrettyPicture"};
   GetLorgnetteScannerManager()->SetScanResponse(scan_data);

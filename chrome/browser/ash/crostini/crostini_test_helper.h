@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
 
@@ -73,11 +74,12 @@ class CrostiniTestHelper {
  private:
   void UpdateRegistry();
 
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   vm_tools::apps::ApplicationList current_apps_;
 
   // This are used to allow Crostini.
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

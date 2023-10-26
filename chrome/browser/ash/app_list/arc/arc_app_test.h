@@ -11,6 +11,7 @@
 
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 
 namespace arc {
@@ -25,10 +26,6 @@ class FakeCompatibilityModeInstance;
 class FakeIntentHelperHost;
 class FakeIntentHelperInstance;
 }  // namespace arc
-
-namespace ash {
-class FakeChromeUserManager;
-}
 
 namespace user_manager {
 class User;
@@ -94,8 +91,6 @@ class ArcAppTest {
   const std::vector<arc::mojom::ShortcutInfo>& fake_shortcuts() const {
     return fake_shortcuts_;
   }
-
-  ash::FakeChromeUserManager* GetUserManager();
 
   arc::FakeAppInstance* app_instance() { return app_instance_.get(); }
 
@@ -180,7 +175,8 @@ class ArcAppTest {
   std::unique_ptr<arc::FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<arc::FakeIntentHelperInstance> intent_helper_instance_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   std::vector<arc::mojom::AppInfoPtr> fake_apps_;
   std::vector<arc::mojom::AppInfoPtr> fake_default_apps_;
   std::vector<arc::mojom::ArcPackageInfoPtr> fake_packages_;

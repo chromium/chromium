@@ -27,7 +27,7 @@ namespace ash::full_restore {
 class ArcWindowUtilsTest : public testing::Test {
  protected:
   ArcWindowUtilsTest()
-      : user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
     const display::Display test_display = test_screen_.GetPrimaryDisplay();
     display::Display display(test_display);
     display.set_id(TEST_DISPLAY_ID);
@@ -55,7 +55,8 @@ class ArcWindowUtilsTest : public testing::Test {
   display::test::TestScreen test_screen_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 
 TEST_F(ArcWindowUtilsTest, ArcWindowInfoInvalidDisplayValidBoundsTest) {

@@ -313,8 +313,7 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
  public:
   WebKioskAppLauncherUsingLacrosTest()
       : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()),
-        fake_user_manager_(new FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())),
+        fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         wm_helper_(std::make_unique<exo::WMHelper>()) {
     std::vector<base::test::FeatureRef> enabled =
         ash::standalone_browser::GetFeatureRefs();
@@ -324,8 +323,8 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
 
   void LoginWebKioskUser() {
     const AccountId account_id(AccountId::FromUserEmail(kUserEmail));
-    fake_user_manager()->AddWebKioskAppUser(account_id);
-    fake_user_manager()->LoginUser(account_id);
+    fake_user_manager_->AddWebKioskAppUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
   }
 
   void CreateLacrosWindowAndNotify() {
@@ -339,18 +338,13 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
     return browser_manager_.get();
   }
 
-  FakeChromeUserManager* fake_user_manager() const {
-    return fake_user_manager_;
-  }
-
   exo::WMHelper* wm_helper() const { return wm_helper_.get(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
 };
 

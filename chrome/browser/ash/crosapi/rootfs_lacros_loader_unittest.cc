@@ -43,8 +43,8 @@ class RootfsLacrosLoaderTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::FilePath metadata_path_;
 
-  user_manager::ScopedUserManager scoped_user_manager_{
-      std::make_unique<user_manager::FakeUserManager>()};
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      scoped_user_manager_{std::make_unique<user_manager::FakeUserManager>()};
   ash::FakeUpstartClient fake_upstart_client_;
   std::unique_ptr<RootfsLacrosLoader> rootfs_lacros_loader_;
 };

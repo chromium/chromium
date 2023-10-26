@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -86,17 +85,10 @@ std::vector<arc::mojom::AppInfoPtr> ArcAppTest::CloneApps(
 }
 
 ArcAppTest::ArcAppTest() {
-  user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::make_unique<ash::FakeChromeUserManager>());
   CreateFakeAppsAndPackages();
 }
 
 ArcAppTest::~ArcAppTest() = default;
-
-ash::FakeChromeUserManager* ArcAppTest::GetUserManager() {
-  return static_cast<ash::FakeChromeUserManager*>(
-      user_manager::UserManager::Get());
-}
 
 void ArcAppTest::SetUp(Profile* profile) {
   if (!ash::ConciergeClient::Get()) {
@@ -369,8 +361,8 @@ void ArcAppTest::SetUpIntentHelper() {
 const user_manager::User* ArcAppTest::CreateUserAndLogin() {
   const AccountId account_id(AccountId::FromUserEmailGaiaId(
       profile_->GetProfileUserName(), "1234567890"));
-  const user_manager::User* user = GetUserManager()->AddUser(account_id);
-  GetUserManager()->LoginUser(account_id);
+  const user_manager::User* user = fake_user_manager_->AddUser(account_id);
+  fake_user_manager_->LoginUser(account_id);
   return user;
 }
 

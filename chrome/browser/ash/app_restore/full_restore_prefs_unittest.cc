@@ -19,8 +19,7 @@ namespace ash::full_restore {
 // Unit tests for full_restore_prefs.
 class FullRestorePrefsTest : public testing::Test {
  public:
-  FullRestorePrefsTest()
-      : user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
+  FullRestorePrefsTest() = default;
 
   void SetUp() override {
     pref_service_ =
@@ -32,8 +31,7 @@ class FullRestorePrefsTest : public testing::Test {
   }
 
   FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
+    return fake_user_manager_.Get();
   }
 
   RestoreOption GetRestoreOption() const {
@@ -42,7 +40,8 @@ class FullRestorePrefsTest : public testing::Test {
   }
 
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
 };
 
 // For a brand new user, set 'ask every time' as the default value.
