@@ -82,7 +82,6 @@ class ReadingListApiUnitTest : public ExtensionServiceTestBase {
 
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
-  ScopedCurrentChannel channel_{version_info::Channel::UNKNOWN};
 };
 
 void ReadingListApiUnitTest::SetUp() {
