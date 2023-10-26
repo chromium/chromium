@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
 
 @protocol ApplicationCommands;
-@class BaseGridViewController;
 @class GridContainerViewController;
 @protocol GridCommands;
 @protocol GridShareableItemsProvider;
@@ -30,6 +29,7 @@ class GURL;
 @protocol PriceCardDataSource;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
+@class RegularGridViewController;
 @class TabGridBottomToolbar;
 @protocol TabCollectionCommands;
 @protocol TabCollectionConsumer;
@@ -123,7 +123,8 @@ enum class TabGridPageConfiguration {
     UIViewController* childViewControllerForStatusBarStyle;
 
 // Child view controllers.
-@property(nonatomic, strong) BaseGridViewController* regularTabsViewController;
+@property(nonatomic, strong)
+    RegularGridViewController* regularTabsViewController;
 @property(nonatomic, strong)
     IncognitoGridViewController* incognitoTabsViewController;
 // The view controller for remote tabs.

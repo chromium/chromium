@@ -7,14 +7,14 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class BaseGridViewController;
-@class GridContainerViewController;
 class Browser;
 @protocol DisabledGridViewControllerDelegate;
+@class GridContainerViewController;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
 @class PinnedTabsMediator;
 @class RegularGridMediator;
+@class RegularGridViewController;
 @class TabGridViewController;
 
 // Coordinator to manage regular grid.
@@ -28,7 +28,7 @@ class Browser;
 // possible.
 // TODO(crbug.com/1457146): Make it private.
 @property(nonatomic, readonly, strong)
-    BaseGridViewController* gridViewController;
+    RegularGridViewController* gridViewController;
 // The view controller to displayed when regular is disabled.
 // TODO(crbug.com/1457146): Make it private.
 @property(nonatomic, readonly, strong) UIViewController* disabledViewController;

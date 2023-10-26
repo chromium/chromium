@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator_delegate.h"
 
-@class BaseGridViewController;
 @protocol DisabledGridViewControllerDelegate;
 @class GridContainerViewController;
 @protocol GridCoordinatorAudience;

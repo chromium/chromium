@@ -11,6 +11,7 @@ source_set("regular") {
   ]
 
   deps = [
+    ":regular_ui",
     "//base",
     "//components/sessions",
     "//ios/chrome/browser/policy:policy_util",
@@ -34,6 +35,18 @@ source_set("regular") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+  ]
+}
+
+source_set("regular_ui") {
+  sources = [
+    "regular_grid_view_controller.h",
+    "regular_grid_view_controller.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
   ]
 }
 
