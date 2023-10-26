@@ -209,7 +209,7 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
 
   auto result = BuildSubTree(tree_def, ADDRESS_HOME_ADDRESS);
 
-  if (!country_code->empty()) {
+  if (!country_code->empty() && country_code != kLegacyHierarchyCountryCode) {
     // Set the address model country to the one requested.
     result->SetValueForType(ADDRESS_HOME_COUNTRY,
                             base::UTF8ToUTF16(country_code.value()),
@@ -283,7 +283,7 @@ bool IsTypeEnabledForCountry(ServerFieldType field_type,
 }
 
 bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
-  if (country_code->empty() ||
+  if (country_code->empty() || country_code == kLegacyHierarchyCountryCode ||
       !base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
     return false;
   }

@@ -99,8 +99,11 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_CountryNodeHasValue) {
   for (const auto& [country_code, tree_def] : kAutofillModelRules) {
     std::unique_ptr<AddressComponent> model = CreateAddressComponentModel(
         AddressCountryCode(std::string(country_code)));
-    EXPECT_EQ(model->GetValueForType(ADDRESS_HOME_COUNTRY),
-              base::UTF8ToUTF16(country_code));
+    std::u16string expected_country =
+        country_code != kLegacyHierarchyCountryCodeString
+            ? base::UTF8ToUTF16(country_code)
+            : u"";
+    EXPECT_EQ(model->GetValueForType(ADDRESS_HOME_COUNTRY), expected_country);
   }
 }
 
