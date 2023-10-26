@@ -34280,6 +34280,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1178" label="ContextMenuPhotoSharingSettings"/>
   <int value="1179" label="ExtensionInstallTypeBlocklist"/>
   <int value="1180" label="ParcelTrackingEnabled"/>
+  <int value="1181" label="NativeHostsExecutablesLaunchDirectly"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

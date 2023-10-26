@@ -1601,6 +1601,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWindowOcclusionEnabled,
     policy::policy_prefs::kNativeWindowOcclusionEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kNativeHostsExecutablesLaunchDirectly,
+    prefs::kNativeHostsExecutablesLaunchDirectly,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

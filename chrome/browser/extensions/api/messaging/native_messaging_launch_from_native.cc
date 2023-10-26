@@ -29,6 +29,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -75,7 +76,7 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
                 /* allow_user_level = */ true,
                 /* native_view = */ nullptr, profile->GetPath(),
                 /* require_native_initiated_connections = */ false,
-                connection_id, error_arg));
+                connection_id, error_arg, profile));
     MovableScopedKeepAlive keep_alive(
         new ScopedKeepAlive(KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT,
                             KeepAliveRestartOption::DISABLED));
@@ -239,8 +240,8 @@ void LaunchNativeMessageHostFromNativeApp(const std::string& extension_id,
       NativeProcessLauncher::CreateDefault(
           /* allow_user_level = */ true, /* native_view = */ nullptr,
           profile->GetPath(),
-          /* require_native_initiated_connections = */ true, connection_id,
-          ""));
+          /* require_native_initiated_connections = */ true, connection_id, "",
+          profile));
   auto native_message_port = std::make_unique<extensions::NativeMessagePort>(
       message_service->GetChannelDelegate(), port_id,
       std::move(native_message_host));

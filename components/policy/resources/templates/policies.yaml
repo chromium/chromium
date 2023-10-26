@@ -1179,6 +1179,7 @@ policies:
   1178: ContextMenuPhotoSharingSettings
   1179: ExtensionInstallTypeBlocklist
   1180: ParcelTrackingEnabled
+  1181: NativeHostsExecutablesLaunchDirectly
 atomic_groups:
   1: Homepage
   2: RemoteAccess

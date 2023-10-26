@@ -2028,6 +2028,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   data_controls::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
+#if BUILDFLAG(IS_WIN)
+  registry->RegisterBooleanPref(prefs::kNativeHostsExecutablesLaunchDirectly,
+                                false);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

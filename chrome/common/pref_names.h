@@ -3928,6 +3928,12 @@ inline constexpr char kZstdContentEncodingEnabled[] =
 inline constexpr char kIPv6ReachabilityOverrideEnabled[] =
     "net.ipv6_reachability_override_enabled";
 
+#if BUILDFLAG(IS_WIN)
+// Whether native hosts executables launch directly is enabled or
+// disabled.
+inline constexpr char kNativeHostsExecutablesLaunchDirectly[] =
+    "native_hosts_executables_launch_directly";
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_
