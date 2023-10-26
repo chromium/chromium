@@ -129,7 +129,8 @@ float InlineSize(const FragmentItem& item,
       AdjustCodeUnitEndOffset(item_text, end_code_unit_offset);
   PhysicalRect r = item.LocalRect(item_text, start_ifc_offset, end_ifc_offset);
   return (item.IsHorizontal() ? r.Width() : r.Height()) *
-         item.SvgFragmentData()->length_adjust_scale / item.SvgScalingFactor();
+         item.GetSvgFragmentData()->length_adjust_scale /
+         item.SvgScalingFactor();
 }
 
 std::tuple<const FragmentItem*, gfx::RectF> ScaledCharacterRectInContainer(
@@ -144,7 +145,7 @@ std::tuple<const FragmentItem*, gfx::RectF> ScaledCharacterRectInContainer(
   }
   auto char_rect =
       gfx::RectF(item->LocalRect(item_text, start_ifc_offset, end_ifc_offset));
-  char_rect.Offset(item->SvgFragmentData()->rect.OffsetFromOrigin());
+  char_rect.Offset(item->GetSvgFragmentData()->rect.OffsetFromOrigin());
   return {item, char_rect};
 }
 
@@ -252,7 +253,7 @@ float SvgTextQuery::RotationOfCharacter(unsigned index) const {
   if (item->IsHiddenForPaint()) {
     return 0.0f;
   }
-  float rotation = item->SvgFragmentData()->angle;
+  float rotation = item->GetSvgFragmentData()->angle;
   if (item->Style().IsHorizontalWritingMode()) {
     return rotation;
   }

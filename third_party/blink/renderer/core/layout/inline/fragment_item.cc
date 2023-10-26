@@ -213,7 +213,7 @@ FragmentItem::FragmentItem(const FragmentItem& source)
     case kSvgText:
       new (&svg_text_) SvgTextItem();
       svg_text_.data =
-          std::make_unique<NGSvgFragmentData>(*source.svg_text_.data);
+          std::make_unique<SvgFragmentData>(*source.svg_text_.data);
       break;
     case kGeneratedText:
       new (&generated_text_) GeneratedTextItem(source.generated_text_);
@@ -363,7 +363,7 @@ LayoutObject& FragmentItem::BlockInInline() const {
   return *block;
 }
 
-void FragmentItem::ConvertToSvgText(std::unique_ptr<NGSvgFragmentData> data,
+void FragmentItem::ConvertToSvgText(std::unique_ptr<SvgFragmentData> data,
                                     const PhysicalRect& unscaled_rect,
                                     bool is_hidden) {
   DCHECK_EQ(Type(), kText);
@@ -386,8 +386,8 @@ gfx::RectF FragmentItem::ObjectBoundingBox(const FragmentItems& items) const {
   gfx::RectF ink_bounds = scaled_font.TextInkBounds(TextPaintInfo(items));
   if (const auto* font_data = scaled_font.PrimaryFont())
     ink_bounds.Offset(0.0f, font_data->GetFontMetrics().FloatAscent());
-  ink_bounds.Scale(SvgFragmentData()->length_adjust_scale, 1.0f);
-  const gfx::RectF& scaled_rect = SvgFragmentData()->rect;
+  ink_bounds.Scale(GetSvgFragmentData()->length_adjust_scale, 1.0f);
+  const gfx::RectF& scaled_rect = GetSvgFragmentData()->rect;
   if (!IsHorizontal()) {
     ink_bounds =
         gfx::RectF(scaled_rect.width() - ink_bounds.bottom(), ink_bounds.x(),
@@ -404,7 +404,7 @@ gfx::RectF FragmentItem::ObjectBoundingBox(const FragmentItems& items) const {
 gfx::QuadF FragmentItem::SvgUnscaledQuad() const {
   DCHECK_EQ(Type(), kSvgText);
   gfx::QuadF quad = BuildSvgTransformForBoundingBox().MapQuad(
-      gfx::QuadF(SvgFragmentData()->rect));
+      gfx::QuadF(GetSvgFragmentData()->rect));
   const float scaling_factor = SvgScalingFactor();
   quad.Scale(1 / scaling_factor, 1 / scaling_factor);
   return quad;
@@ -425,13 +425,13 @@ float FragmentItem::ScaleInlineOffset(LayoutUnit inline_offset) const {
   if (Type() != kSvgText)
     return inline_offset.ToFloat();
   return inline_offset.ToFloat() * SvgScalingFactor() /
-         SvgFragmentData()->length_adjust_scale;
+         GetSvgFragmentData()->length_adjust_scale;
 }
 
 bool FragmentItem::InclusiveContains(const gfx::PointF& position) const {
   DCHECK_EQ(Type(), kSvgText);
   gfx::PointF scaled_position = gfx::ScalePoint(position, SvgScalingFactor());
-  const gfx::RectF& item_rect = SvgFragmentData()->rect;
+  const gfx::RectF& item_rect = GetSvgFragmentData()->rect;
   if (!HasSvgTransformForBoundingBox())
     return item_rect.InclusiveContains(scaled_position);
   return BuildSvgTransformForBoundingBox()
@@ -644,7 +644,7 @@ AffineTransform FragmentItem::BuildSvgTransformForPaint() const {
 
 AffineTransform FragmentItem::BuildSvgTransformForLengthAdjust() const {
   DCHECK_EQ(Type(), kSvgText);
-  const NGSvgFragmentData& svg_data = *svg_text_.data;
+  const SvgFragmentData& svg_data = *svg_text_.data;
   const bool is_horizontal = IsHorizontal();
   AffineTransform scale_transform;
   float scale = svg_data.length_adjust_scale;
@@ -670,7 +670,7 @@ AffineTransform FragmentItem::BuildSvgTransformForLengthAdjust() const {
 AffineTransform FragmentItem::BuildSvgTransformForTextPath(
     const AffineTransform& length_adjust) const {
   DCHECK_EQ(Type(), kSvgText);
-  const NGSvgFragmentData& svg_data = *svg_text_.data;
+  const SvgFragmentData& svg_data = *svg_text_.data;
   DCHECK(svg_data.in_text_path);
   DCHECK_NE(svg_data.angle, 0.0f);
 
@@ -683,7 +683,7 @@ AffineTransform FragmentItem::BuildSvgTransformForTextPath(
   // The rotation should be about the center of the baseline.
   const auto font_baseline = Style().GetFontBaseline();
   // |x| in the horizontal writing-mode and |y| in the vertical writing-mode
-  // point the center of the baseline.  See |NGSvgTextLayoutAlgorithm::
+  // point the center of the baseline.  See |SvgTextLayoutAlgorithm::
   // PositionOnPath()|.
   float x = svg_data.rect.x();
   float y = svg_data.rect.y();
@@ -708,7 +708,7 @@ AffineTransform FragmentItem::BuildSvgTransformForTextPath(
 // character and a <textPath> character are different.
 AffineTransform FragmentItem::BuildSvgTransformForBoundingBox() const {
   DCHECK_EQ(Type(), kSvgText);
-  const NGSvgFragmentData& svg_data = *svg_text_.data;
+  const SvgFragmentData& svg_data = *svg_text_.data;
   AffineTransform transform;
   if (svg_data.angle == 0.0f)
     return transform;
@@ -865,8 +865,8 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
         ink_overflow_type_ =
             static_cast<unsigned>(ink_overflow_.SetSvgTextInkOverflow(
                 InkOverflowType(), cursor, paint_info, Style(), ScaledFont(),
-                SvgFragmentData()->rect, SvgScalingFactor(),
-                SvgFragmentData()->length_adjust_scale,
+                GetSvgFragmentData()->rect, SvgScalingFactor(),
+                GetSvgFragmentData()->length_adjust_scale,
                 BuildSvgTransformForBoundingBox(), self_and_contents_rect_out));
         return;
       }
@@ -982,8 +982,8 @@ LayoutUnit FragmentItem::InlinePositionForOffset(
   if (!offset || UNLIKELY(IsRtl(Style().Direction())))
     return LayoutUnit();
   if (Type() == kSvgText) {
-    return LayoutUnit(IsHorizontal() ? SvgFragmentData()->rect.width()
-                                     : SvgFragmentData()->rect.height());
+    return LayoutUnit(IsHorizontal() ? GetSvgFragmentData()->rect.width()
+                                     : GetSvgFragmentData()->rect.height());
   }
   return IsHorizontal() ? Size().width : Size().height;
 }
@@ -1020,7 +1020,7 @@ PhysicalRect FragmentItem::LocalRect(StringView text,
   LayoutUnit width = Size().width;
   LayoutUnit height = Size().height;
   if (Type() == kSvgText) {
-    const NGSvgFragmentData& data = *SvgFragmentData();
+    const SvgFragmentData& data = *GetSvgFragmentData();
     if (IsHorizontal()) {
       width = LayoutUnit(data.rect.size().width() / data.length_adjust_scale);
       height = LayoutUnit(data.rect.size().height());

@@ -1364,13 +1364,13 @@ LineBreaker::BreakResult LineBreaker::BreakText(
 
   DCHECK_EQ(item_shape_result.StartIndex(), item.StartOffset());
   DCHECK_EQ(item_shape_result.EndIndex(), item.EndOffset());
-  class NGShapingLineBreaker : public ShapingLineBreaker {
+  class ShapingLineBreakerImpl : public ShapingLineBreaker {
     STACK_ALLOCATED();
 
    public:
-    NGShapingLineBreaker(LineBreaker* line_breaker,
-                         const InlineItem* item,
-                         scoped_refptr<const ShapeResult> result)
+    ShapingLineBreakerImpl(LineBreaker* line_breaker,
+                           const InlineItem* item,
+                           scoped_refptr<const ShapeResult> result)
         : ShapingLineBreaker(std::move(result),
                              &line_breaker->break_iterator_,
                              line_breaker->hyphenation_),
@@ -2624,7 +2624,7 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
   position_ += item_result->inline_size;
 
   if (item.IsRubyColumn()) {
-    NGAnnotationOverhang overhang = GetOverhang(*item_result);
+    AnnotationOverhang overhang = GetOverhang(*item_result);
     if (overhang.end > LayoutUnit()) {
       item_result->pending_end_overhang = overhang.end;
       maybe_have_end_overhang_ = true;

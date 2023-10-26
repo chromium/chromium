@@ -820,7 +820,7 @@ PhysicalSize SvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     const float scaling_factor = layout_object->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
     gfx::RectF unscaled_rect = gfx::ScaleRect(scaled_rect, 1 / scaling_factor);
-    auto data = std::make_unique<NGSvgFragmentData>();
+    auto data = std::make_unique<SvgFragmentData>();
     data->shape_result = item->TextShapeResult();
     data->text_offset = item->TextOffset();
     data->rect = scaled_rect;

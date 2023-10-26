@@ -633,7 +633,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
       gfx::QuadF quad;
       if (item.Type() == FragmentItem::kSvgText) {
         gfx::RectF float_rect(rect);
-        float_rect.Offset(item.SvgFragmentData()->rect.OffsetFromOrigin());
+        float_rect.Offset(item.GetSvgFragmentData()->rect.OffsetFromOrigin());
         quad = item.BuildSvgTransformForBoundingBox().MapQuad(
             gfx::QuadF(float_rect));
         const float scaling_factor = item.SvgScalingFactor();
@@ -1113,7 +1113,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
       if (svg_inline_text) {
         gfx::RectF float_rect(item_rect);
         const FragmentItem& item = *cursor.CurrentItem();
-        float_rect.Offset(item.SvgFragmentData()->rect.OffsetFromOrigin());
+        float_rect.Offset(item.GetSvgFragmentData()->rect.OffsetFromOrigin());
         if (item.HasSvgTransformForBoundingBox()) {
           float_rect =
               item.BuildSvgTransformForBoundingBox().MapRect(float_rect);

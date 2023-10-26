@@ -54,15 +54,15 @@ namespace {
 
 // This class provides hooks to switch between the default line breaker,
 // `text-wrap: balance`, and `text-wrap: pretty`.
-class NGLineBreakStrategy {
+class LineBreakStrategy {
   STACK_ALLOCATED();
 
  public:
-  NGLineBreakStrategy(InlineChildLayoutContext* context,
-                      const InlineNode& node,
-                      const ComputedStyle& block_style,
-                      const InlineBreakToken* break_token,
-                      const NGColumnSpannerPath* column_spanner_path) {
+  LineBreakStrategy(InlineChildLayoutContext* context,
+                    const InlineNode& node,
+                    const ComputedStyle& block_style,
+                    const InlineBreakToken* break_token,
+                    const NGColumnSpannerPath* column_spanner_path) {
     if (!column_spanner_path) {
       const TextWrap text_wrap = block_style.GetTextWrap();
       if (UNLIKELY(text_wrap == TextWrap::kBalance)) {
@@ -1264,7 +1264,7 @@ LayoutUnit InlineLayoutAlgorithm::SetAnnotationOverflow(
     const LineInfo& line_info,
     const LogicalLineItems& line_box,
     const FontHeight& line_box_metrics) {
-  NGAnnotationMetrics annotation_metrics = ComputeAnnotationOverflow(
+  AnnotationMetrics annotation_metrics = ComputeAnnotationOverflow(
       line_box, line_box_metrics, line_info.LineStyle());
   LayoutUnit annotation_overflow_block_start;
   LayoutUnit annotation_overflow_block_end;
@@ -1433,8 +1433,8 @@ const NGLayoutResult* InlineLayoutAlgorithm::Layout() {
   LogicalLineItems* const line_box = items_builder->AcquireLogicalLineItems();
   DCHECK(line_box);
   // Determine which line breaker to use.
-  NGLineBreakStrategy line_break_strategy(context_, Node(), Style(),
-                                          break_token, column_spanner_path_);
+  LineBreakStrategy line_break_strategy(context_, Node(), Style(), break_token,
+                                        column_spanner_path_);
   bool is_line_created = false;
   bool is_end_paragraph = false;
   LayoutUnit line_block_size;

@@ -96,8 +96,8 @@ PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
           PhysicalSize(new_line_height, rect.size.height)};
 }
 
-NGAnnotationOverhang GetOverhang(const InlineItemResult& item) {
-  NGAnnotationOverhang overhang;
+AnnotationOverhang GetOverhang(const InlineItemResult& item) {
+  AnnotationOverhang overhang;
   if (!item.layout_result)
     return overhang;
 
@@ -230,7 +230,7 @@ LayoutUnit CommitPendingEndOverhang(LineInfo* line_info) {
   return end_overhang;
 }
 
-NGAnnotationMetrics ComputeAnnotationOverflow(
+AnnotationMetrics ComputeAnnotationOverflow(
     const LogicalLineItems& logical_line,
     const FontHeight& line_box_metrics,
     const ComputedStyle& line_style) {

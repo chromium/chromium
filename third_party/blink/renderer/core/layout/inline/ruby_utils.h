@@ -25,7 +25,7 @@ PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
                                        const ShapeResultView* shape_view,
                                        WritingMode writing_mode);
 
-struct NGAnnotationOverhang {
+struct AnnotationOverhang {
   LayoutUnit start;
   LayoutUnit end;
 };
@@ -34,7 +34,7 @@ struct NGAnnotationOverhang {
 // LayoutRubyColumn.
 //
 // This is used by LineBreaker.
-NGAnnotationOverhang GetOverhang(const InlineItemResult& item);
+AnnotationOverhang GetOverhang(const InlineItemResult& item);
 
 // Returns true if |start_overhang| is applied to a previous item, and
 // clamp |start_overhang| to the width of the previous item.
@@ -55,7 +55,7 @@ LayoutUnit CommitPendingEndOverhang(LineInfo* line_info);
 // |overflow_over| and |space_over| are exclusive. Only one of them can be
 // non-zero. |overflow_under| and |space_under| are exclusive too.
 // All fields never be negative.
-struct NGAnnotationMetrics {
+struct AnnotationMetrics {
   // The amount of annotation overflow at the line-over side.
   LayoutUnit overflow_over;
   // The amount of annotation overflow at the line-under side.
@@ -69,7 +69,7 @@ struct NGAnnotationMetrics {
 };
 
 // Compute over/under annotation overflow/space for the specified line.
-NGAnnotationMetrics ComputeAnnotationOverflow(
+AnnotationMetrics ComputeAnnotationOverflow(
     const LogicalLineItems& logical_line,
     const FontHeight& line_box_metrics,
     const ComputedStyle& line_style);

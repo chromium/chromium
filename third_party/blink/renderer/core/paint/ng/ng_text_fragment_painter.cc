@@ -62,7 +62,7 @@ inline PhysicalRect PhysicalBoxRect(const InlineCursor& cursor,
                                     const PhysicalOffset& parent_offset,
                                     const LayoutTextCombine* text_combine) {
   PhysicalRect box_rect;
-  if (const auto* svg_data = cursor.CurrentItem()->SvgFragmentData()) {
+  if (const auto* svg_data = cursor.CurrentItem()->GetSvgFragmentData()) {
     box_rect = PhysicalRect::FastAndLossyFromRectF(svg_data->rect);
     const float scale = svg_data->length_adjust_scale;
     if (scale != 1.0f) {
