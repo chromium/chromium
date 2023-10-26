@@ -134,11 +134,11 @@ TEST(URLParser, Length) {
     "http://user@",
     "http:",
   };
-  for (size_t i = 0; i < std::size(length_cases); i++) {
-    int true_length = static_cast<int>(strlen(length_cases[i]));
+  for (const char* length_case : length_cases) {
+    int true_length = static_cast<int>(strlen(length_case));
 
     Parsed parsed;
-    ParseStandardURL(length_cases[i], true_length, &parsed);
+    ParseStandardURL(length_case, true_length, &parsed);
 
     EXPECT_EQ(true_length, parsed.Length());
   }
@@ -193,154 +193,159 @@ TEST(URLParser, CountCharactersBefore) {
     {"file:///c:/foo", Parsed::HOST, true, 7},
     {"file:///c:/foo", Parsed::PATH, true, 7},
   };
-  for (size_t i = 0; i < std::size(count_cases); i++) {
-    int length = static_cast<int>(strlen(count_cases[i].url));
+  for (const auto& count_case : count_cases) {
+    int length = static_cast<int>(strlen(count_case.url));
 
     // Simple test to distinguish file and standard URLs.
     Parsed parsed;
-    if (length > 0 && count_cases[i].url[0] == 'f')
-      ParseFileURL(count_cases[i].url, length, &parsed);
-    else
-      ParseStandardURL(count_cases[i].url, length, &parsed);
+    if (length > 0 && count_case.url[0] == 'f') {
+      ParseFileURL(count_case.url, length, &parsed);
+    } else {
+      ParseStandardURL(count_case.url, length, &parsed);
+    }
 
     int chars_before = parsed.CountCharactersBefore(
-        count_cases[i].component, count_cases[i].include_delimiter);
-    EXPECT_EQ(count_cases[i].expected_count, chars_before);
+        count_case.component, count_case.include_delimiter);
+    EXPECT_EQ(count_case.expected_count, chars_before);
   }
 }
 
 // Standard --------------------------------------------------------------------
 
-// Input                               Scheme  Usrname Passwd     Host         Port Path       Query        Ref
-// ------------------------------------ ------- ------- ---------- ------------ --- ---------- ------------ -----
+// clang-format off
+// Input                               Scheme  Usrname  Passwd     Host         Port Path       Query        Ref
+// ------------------------------------ ------- -------- ---------- ------------ --- ---------- ------------ -----
 static URLParseCase cases[] = {
   // Regular URL with all the parts
-{"http://user:pass@foo:21/bar;par?b#c", "http", "user", "pass",    "foo",       21, "/bar;par","b",          "c"},
+{"http://user:pass@foo:21/bar;par?b#c", "http", "user",  "pass",    "foo",       21, "/bar;par","b",          "c"},
 
   // Known schemes should lean towards authority identification
-{"http:foo.com",                        "http", NULL,  NULL,      "foo.com",    -1, NULL,      NULL,        NULL},
+{"http:foo.com",                        "http", nullptr, nullptr,   "foo.com",    -1, nullptr,   nullptr,     nullptr},
 
   // Spaces!
-{"\t   :foo.com   \n",                  "",     NULL,  NULL,      "foo.com",    -1, NULL,      NULL,        NULL},
-{" foo.com  ",                          NULL,   NULL,  NULL,      "foo.com",    -1, NULL,      NULL,        NULL},
-{"a:\t foo.com",                        "a",    NULL,  NULL,      "\t foo.com", -1, NULL,      NULL,        NULL},
-{"http://f:21/ b ? d # e ",             "http", NULL,  NULL,      "f",          21, "/ b ",    " d ",       " e"},
+{"\t   :foo.com   \n",                  "",     nullptr, nullptr,   "foo.com",    -1, nullptr,   nullptr,     nullptr},
+{" foo.com  ",                          nullptr,nullptr, nullptr,   "foo.com",    -1, nullptr,   nullptr,     nullptr},
+{"a:\t foo.com",                        "a",    nullptr, nullptr,   "\t foo.com", -1, nullptr,   nullptr,     nullptr},
+{"http://f:21/ b ? d # e ",             "http", nullptr, nullptr,   "f",          21, "/ b ",    " d ",       " e"},
 
   // Invalid port numbers should be identified and turned into -2, empty port
   // numbers should be -1. Spaces aren't allowed in port numbers
-{"http://f:/c",                         "http", NULL,  NULL,      "f",          -1, "/c",      NULL,        NULL},
-{"http://f:0/c",                        "http", NULL,  NULL,      "f",           0, "/c",      NULL,        NULL},
-{"http://f:00000000000000/c",           "http", NULL,  NULL,      "f",           0, "/c",      NULL,        NULL},
-{"http://f:00000000000000000000080/c",  "http", NULL,  NULL,      "f",          80, "/c",      NULL,        NULL},
-{"http://f:b/c",                        "http", NULL,  NULL,      "f",          -2, "/c",      NULL,        NULL},
-{"http://f: /c",                        "http", NULL,  NULL,      "f",          -2, "/c",      NULL,        NULL},
-{"http://f:\n/c",                       "http", NULL,  NULL,      "f",          -2, "/c",      NULL,        NULL},
-{"http://f:fifty-two/c",                "http", NULL,  NULL,      "f",          -2, "/c",      NULL,        NULL},
-{"http://f:999999/c",                   "http", NULL,  NULL,      "f",          -2, "/c",      NULL,        NULL},
-{"http://f: 21 / b ? d # e ",           "http", NULL,  NULL,      "f",          -2, "/ b ",    " d ",       " e"},
+{"http://f:/c",                         "http", nullptr, nullptr,   "f",          -1, "/c",      nullptr,     nullptr},
+{"http://f:0/c",                        "http", nullptr, nullptr,   "f",           0, "/c",      nullptr,     nullptr},
+{"http://f:00000000000000/c",           "http", nullptr, nullptr,   "f",           0, "/c",      nullptr,     nullptr},
+{"http://f:00000000000000000000080/c",  "http", nullptr, nullptr,   "f",          80, "/c",      nullptr,     nullptr},
+{"http://f:b/c",                        "http", nullptr, nullptr,   "f",          -2, "/c",      nullptr,     nullptr},
+{"http://f: /c",                        "http", nullptr, nullptr,   "f",          -2, "/c",      nullptr,     nullptr},
+{"http://f:\n/c",                       "http", nullptr, nullptr,   "f",          -2, "/c",      nullptr,     nullptr},
+{"http://f:fifty-two/c",                "http", nullptr, nullptr,   "f",          -2, "/c",      nullptr,     nullptr},
+{"http://f:999999/c",                   "http", nullptr, nullptr,   "f",          -2, "/c",      nullptr,     nullptr},
+{"http://f: 21 / b ? d # e ",           "http", nullptr, nullptr,   "f",          -2, "/ b ",    " d ",       " e"},
 
   // Creative URLs missing key elements
-{"",                                    NULL,   NULL,  NULL,      NULL,         -1, NULL,      NULL,        NULL},
-{"  \t",                                NULL,   NULL,  NULL,      NULL,         -1, NULL,      NULL,        NULL},
-{":foo.com/",                           "",     NULL,  NULL,      "foo.com",    -1, "/",       NULL,        NULL},
-{":foo.com\\",                          "",     NULL,  NULL,      "foo.com",    -1, "\\",      NULL,        NULL},
-{":",                                   "",     NULL,  NULL,      NULL,         -1, NULL,      NULL,        NULL},
-{":a",                                  "",     NULL,  NULL,      "a",          -1, NULL,      NULL,        NULL},
-{":/",                                  "",     NULL,  NULL,      NULL,         -1, NULL,      NULL,        NULL},
-{":\\",                                 "",     NULL,  NULL,      NULL,         -1, NULL,      NULL,        NULL},
-{":#",                                  "",     NULL,  NULL,      NULL,         -1, NULL,      NULL,        ""},
-{"#",                                   NULL,   NULL,  NULL,      NULL,         -1, NULL,      NULL,        ""},
-{"#/",                                  NULL,   NULL,  NULL,      NULL,         -1, NULL,      NULL,        "/"},
-{"#\\",                                 NULL,   NULL,  NULL,      NULL,         -1, NULL,      NULL,        "\\"},
-{"#;?",                                 NULL,   NULL,  NULL,      NULL,         -1, NULL,      NULL,        ";?"},
-{"?",                                   NULL,   NULL,  NULL,      NULL,         -1, NULL,      "",          NULL},
-{"/",                                   NULL,   NULL,  NULL,      NULL,         -1, NULL,      NULL,        NULL},
-{":23",                                 "",     NULL,  NULL,      "23",         -1, NULL,      NULL,        NULL},
-{"/:23",                                "/",    NULL,  NULL,      "23",         -1, NULL,      NULL,        NULL},
-{"//",                                  NULL,   NULL,  NULL,      NULL,         -1, NULL,      NULL,        NULL},
-{"::",                                  "",     NULL,  NULL,      NULL,         -1, NULL,      NULL,        NULL},
-{"::23",                                "",     NULL,  NULL,      NULL,         23, NULL,      NULL,        NULL},
-{"foo://",                              "foo",  NULL,  NULL,      NULL,         -1, NULL,      NULL,        NULL},
+{"",                                    nullptr,nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     nullptr},
+{"  \t",                                nullptr,nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     nullptr},
+{":foo.com/",                           "",     nullptr, nullptr,   "foo.com",    -1, "/",       nullptr,     nullptr},
+{":foo.com\\",                          "",     nullptr, nullptr,   "foo.com",    -1, "\\",      nullptr,     nullptr},
+{":",                                   "",     nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     nullptr},
+{":a",                                  "",     nullptr, nullptr,   "a",          -1, nullptr,   nullptr,     nullptr},
+{":/",                                  "",     nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     nullptr},
+{":\\",                                 "",     nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     nullptr},
+{":#",                                  "",     nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     ""},
+{"#",                                   nullptr,nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     ""},
+{"#/",                                  nullptr,nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     "/"},
+{"#\\",                                 nullptr,nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     "\\"},
+{"#;?",                                 nullptr,nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     ";?"},
+{"?",                                   nullptr,nullptr, nullptr,   nullptr,      -1, nullptr,   "",          nullptr},
+{"/",                                   nullptr,nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     nullptr},
+{":23",                                 "",     nullptr, nullptr,   "23",         -1, nullptr,   nullptr,     nullptr},
+{"/:23",                                "/",    nullptr, nullptr,   "23",         -1, nullptr,   nullptr,     nullptr},
+{"//",                                  nullptr,nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     nullptr},
+{"::",                                  "",     nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     nullptr},
+{"::23",                                "",     nullptr, nullptr,   nullptr,      23, nullptr,   nullptr,     nullptr},
+{"foo://",                              "foo",  nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     nullptr},
 
   // Username/passwords and things that look like them
-{"http://a:b@c:29/d",                   "http", "a",   "b",       "c",          29, "/d",      NULL,        NULL},
-{"http::@c:29",                         "http", "",    "",        "c",          29, NULL,      NULL,        NULL},
+{"http://a:b@c:29/d",                   "http", "a",    "b",       "c",           29, "/d",      nullptr,     nullptr},
+{"http::@c:29",                         "http", "",     "",        "c",           29, nullptr,   nullptr,     nullptr},
   // ... "]" in the password field isn't allowed, but we tolerate it here...
-{"http://&a:foo(b]c@d:2/",              "http", "&a",  "foo(b]c", "d",           2, "/",       NULL,        NULL},
-{"http://::@c@d:2",                     "http", "",    ":@c",     "d",           2, NULL,      NULL,        NULL},
-{"http://foo.com:b@d/",                 "http", "foo.com", "b",   "d",          -1, "/",       NULL,        NULL},
+{"http://&a:foo(b]c@d:2/",              "http", "&a",   "foo(b]c", "d",            2, "/",       nullptr,     nullptr},
+{"http://::@c@d:2",                     "http", "",     ":@c",     "d",            2, nullptr,   nullptr,     nullptr},
+{"http://foo.com:b@d/",                 "http", "foo.com","b",     "d",           -1, "/",       nullptr,     nullptr},
 
-{"http://foo.com/\\@",                  "http", NULL,  NULL,      "foo.com",    -1, "/\\@",    NULL,        NULL},
-{"http:\\\\foo.com\\",                  "http", NULL,  NULL,      "foo.com",    -1, "\\",      NULL,        NULL},
-{"http:\\\\a\\b:c\\d@foo.com\\",        "http", NULL,  NULL,      "a",          -1, "\\b:c\\d@foo.com\\", NULL,   NULL},
+{"http://foo.com/\\@",                  "http", nullptr, nullptr,   "foo.com",    -1, "/\\@",    nullptr,     nullptr},
+{"http:\\\\foo.com\\",                  "http", nullptr, nullptr,   "foo.com",    -1, "\\",      nullptr,     nullptr},
+{"http:\\\\a\\b:c\\d@foo.com\\",        "http", nullptr, nullptr,   "a",          -1, "\\b:c\\d@foo.com\\", nullptr,nullptr},
 
   // Tolerate different numbers of slashes.
-{"foo:/",                               "foo",  NULL,  NULL,      NULL,         -1, NULL,      NULL,        NULL},
-{"foo:/bar.com/",                       "foo",  NULL,  NULL,      "bar.com",    -1, "/",       NULL,        NULL},
-{"foo://///////",                       "foo",  NULL,  NULL,      NULL,         -1, NULL,      NULL,        NULL},
-{"foo://///////bar.com/",               "foo",  NULL,  NULL,      "bar.com",    -1, "/",       NULL,        NULL},
-{"foo:////://///",                      "foo",  NULL,  NULL,      NULL,         -1, "/////",   NULL,        NULL},
+{"foo:/",                               "foo",  nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     nullptr},
+{"foo:/bar.com/",                       "foo",  nullptr, nullptr,   "bar.com",    -1, "/",       nullptr,     nullptr},
+{"foo://///////",                       "foo",  nullptr, nullptr,   nullptr,      -1, nullptr,   nullptr,     nullptr},
+{"foo://///////bar.com/",               "foo",  nullptr, nullptr,   "bar.com",    -1, "/",       nullptr,     nullptr},
+{"foo:////://///",                      "foo",  nullptr, nullptr,   nullptr,      -1, "/////",   nullptr,     nullptr},
 
   // Raw file paths on Windows aren't handled by the parser.
-{"c:/foo",                              "c",    NULL,  NULL,      "foo",        -1, NULL,      NULL,        NULL},
-{"//foo/bar",                           NULL,   NULL,  NULL,      "foo",        -1, "/bar",    NULL,        NULL},
+{"c:/foo",                              "c",    nullptr, nullptr,   "foo",        -1, nullptr,   nullptr,     nullptr},
+{"//foo/bar",                           nullptr,nullptr, nullptr,   "foo",        -1, "/bar",    nullptr,     nullptr},
 
   // Use the first question mark for the query and the ref.
-{"http://foo/path;a??e#f#g",            "http", NULL,  NULL,      "foo",        -1, "/path;a", "?e",      "f#g"},
-{"http://foo/abcd?efgh?ijkl",           "http", NULL,  NULL,      "foo",        -1, "/abcd",   "efgh?ijkl", NULL},
-{"http://foo/abcd#foo?bar",             "http", NULL,  NULL,      "foo",        -1, "/abcd",   NULL,        "foo?bar"},
+{"http://foo/path;a??e#f#g",            "http", nullptr, nullptr,   "foo",        -1, "/path;a", "?e",        "f#g"},
+{"http://foo/abcd?efgh?ijkl",           "http", nullptr, nullptr,   "foo",        -1, "/abcd",   "efgh?ijkl", nullptr},
+{"http://foo/abcd#foo?bar",             "http", nullptr, nullptr,   "foo",        -1, "/abcd",   nullptr,     "foo?bar"},
 
   // IPv6, check also interesting uses of colons.
-{"[61:24:74]:98",                       "[61",  NULL,  NULL,      "24:74]",     98, NULL,      NULL,        NULL},
-{"http://[61:27]:98",                   "http", NULL,  NULL,      "[61:27]",    98, NULL,      NULL,        NULL},
-{"http:[61:27]/:foo",                   "http", NULL,  NULL,      "[61:27]",    -1, "/:foo",   NULL,        NULL},
-{"http://[1::2]:3:4",                   "http", NULL,  NULL,      "[1::2]:3",    4, NULL,      NULL,        NULL},
+{"[61:24:74]:98",                       "[61",  nullptr, nullptr,   "24:74]",     98, nullptr,   nullptr,     nullptr},
+{"http://[61:27]:98",                   "http", nullptr, nullptr,   "[61:27]",    98, nullptr,   nullptr,     nullptr},
+{"http:[61:27]/:foo",                   "http", nullptr, nullptr,   "[61:27]",    -1, "/:foo",   nullptr,     nullptr},
+{"http://[1::2]:3:4",                   "http", nullptr, nullptr,   "[1::2]:3",    4, nullptr,   nullptr,     nullptr},
 
   // Partially-complete IPv6 literals, and related cases.
-{"http://2001::1",                      "http", NULL,  NULL,      "2001:",       1, NULL,      NULL,        NULL},
-{"http://[2001::1",                     "http", NULL,  NULL,      "[2001::1",   -1, NULL,      NULL,        NULL},
-{"http://2001::1]",                     "http", NULL,  NULL,      "2001::1]",   -1, NULL,      NULL,        NULL},
-{"http://2001::1]:80",                  "http", NULL,  NULL,      "2001::1]",   80, NULL,      NULL,        NULL},
-{"http://[2001::1]",                    "http", NULL,  NULL,      "[2001::1]",  -1, NULL,      NULL,        NULL},
-{"http://[2001::1]:80",                 "http", NULL,  NULL,      "[2001::1]",  80, NULL,      NULL,        NULL},
-{"http://[[::]]",                       "http", NULL,  NULL,      "[[::]]",     -1, NULL,      NULL,        NULL},
+{"http://2001::1",                      "http", nullptr, nullptr,   "2001:",       1, nullptr,   nullptr,     nullptr},
+{"http://[2001::1",                     "http", nullptr, nullptr,   "[2001::1",   -1, nullptr,   nullptr,     nullptr},
+{"http://2001::1]",                     "http", nullptr, nullptr,   "2001::1]",   -1, nullptr,   nullptr,     nullptr},
+{"http://2001::1]:80",                  "http", nullptr, nullptr,   "2001::1]",   80, nullptr,   nullptr,     nullptr},
+{"http://[2001::1]",                    "http", nullptr, nullptr,   "[2001::1]",  -1, nullptr,   nullptr,     nullptr},
+{"http://[2001::1]:80",                 "http", nullptr, nullptr,   "[2001::1]",  80, nullptr,   nullptr,     nullptr},
+{"http://[[::]]",                       "http", nullptr, nullptr,   "[[::]]",     -1, nullptr,   nullptr,     nullptr},
 
 };
+// clang-format on
 
 TEST(URLParser, Standard) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   Parsed parsed;
-  for (size_t i = 0; i < std::size(cases); i++) {
-    const char* url = cases[i].input;
+  for (const auto& i : cases) {
+    const char* url = i.input;
     ParseStandardURL(url, static_cast<int>(strlen(url)), &parsed);
     int port = ParsePort(url, parsed.port);
 
-    EXPECT_TRUE(ComponentMatches(url, cases[i].scheme, parsed.scheme));
-    EXPECT_TRUE(ComponentMatches(url, cases[i].username, parsed.username));
-    EXPECT_TRUE(ComponentMatches(url, cases[i].password, parsed.password));
-    EXPECT_TRUE(ComponentMatches(url, cases[i].host, parsed.host));
-    EXPECT_EQ(cases[i].port, port);
-    EXPECT_TRUE(ComponentMatches(url, cases[i].path, parsed.path));
-    EXPECT_TRUE(ComponentMatches(url, cases[i].query, parsed.query));
-    EXPECT_TRUE(ComponentMatches(url, cases[i].ref, parsed.ref));
+    EXPECT_TRUE(ComponentMatches(url, i.scheme, parsed.scheme));
+    EXPECT_TRUE(ComponentMatches(url, i.username, parsed.username));
+    EXPECT_TRUE(ComponentMatches(url, i.password, parsed.password));
+    EXPECT_TRUE(ComponentMatches(url, i.host, parsed.host));
+    EXPECT_EQ(i.port, port);
+    EXPECT_TRUE(ComponentMatches(url, i.path, parsed.path));
+    EXPECT_TRUE(ComponentMatches(url, i.query, parsed.query));
+    EXPECT_TRUE(ComponentMatches(url, i.ref, parsed.ref));
   }
 }
 
 // PathURL --------------------------------------------------------------------
 
 // Various incarnations of path URLs.
+// clang-format off
 static PathURLParseCase path_cases[] = {
-{"",                                        NULL,          NULL},
-{":",                                       "",            NULL},
+{"",                                        nullptr,       nullptr},
+{":",                                       "",            nullptr},
 {":/",                                      "",            "/"},
-{"/",                                       NULL,          "/"},
-{" This is \\interesting// \t",             NULL,          "This is \\interesting// \t"},
-{"about:",                                  "about",       NULL},
+{"/",                                       nullptr,       "/"},
+{" This is \\interesting// \t",             nullptr,       "This is \\interesting// \t"},
+{"about:",                                  "about",       nullptr},
 {"about:blank",                             "about",       "blank"},
 {"  about: blank ",                         "about",       " blank "},
 {"javascript :alert(\"He:/l\\l#o?foo\"); ", "javascript ", "alert(\"He:/l\\l#o?foo\"); "},
 };
+// clang-format on
 
 TEST(URLParser, PathURL) {
   // Declared outside for loop to try to catch cases in init() where we forget
@@ -364,82 +369,84 @@ TEST(URLParser, PathURL) {
 }
 
 // Various incarnations of file URLs.
+// clang-format off
 static URLParseCase file_cases[] = {
 #ifdef WIN32
-{"file:server",              "file", NULL, NULL, "server", -1, NULL,          NULL, NULL},
-{"  file: server  \t",       "file", NULL, NULL, " server",-1, NULL,          NULL, NULL},
-{"FiLe:c|",                  "FiLe", NULL, NULL, NULL,     -1, "c|",          NULL, NULL},
-{"FILE:/\\\\/server/file",   "FILE", NULL, NULL, "server", -1, "/file",       NULL, NULL},
-{"file://server/",           "file", NULL, NULL, "server", -1, "/",           NULL, NULL},
-{"file://localhost/c:/",     "file", NULL, NULL, "localhost", -1, "/c:/",     NULL, NULL},
-{"file://127.0.0.1/c|\\",    "file", NULL, NULL, "127.0.0.1", -1, "/c|\\",    NULL, NULL},
-{"file:/",                   "file", NULL, NULL, NULL,     -1, NULL,          NULL, NULL},
-{"file:",                    "file", NULL, NULL, NULL,     -1, NULL,          NULL, NULL},
+{"file:server",              "file", nullptr, nullptr, "server", -1, nullptr,       nullptr, nullptr},
+{"  file: server  \t",       "file", nullptr, nullptr, " server",-1, nullptr,       nullptr, nullptr},
+{"FiLe:c|",                  "FiLe", nullptr, nullptr, nullptr,  -1, "c|",          nullptr, nullptr},
+{"FILE:/\\\\/server/file",   "FILE", nullptr, nullptr, "server", -1, "/file",       nullptr, nullptr},
+{"file://server/",           "file", nullptr, nullptr, "server", -1, "/",           nullptr, nullptr},
+{"file://localhost/c:/",     "file", nullptr, nullptr, "localhost", -1, "/c:/",     nullptr, nullptr},
+{"file://127.0.0.1/c|\\",    "file", nullptr, nullptr, "127.0.0.1", -1, "/c|\\",    nullptr, nullptr},
+{"file:/",                   "file", nullptr, nullptr, nullptr,  -1, nullptr,       nullptr, nullptr},
+{"file:",                    "file", nullptr, nullptr, nullptr,  -1, nullptr,       nullptr, nullptr},
   // If there is a Windows drive letter, treat any number of slashes as the
   // path part.
-{"file:c:\\fo\\b",           "file", NULL, NULL, NULL,     -1, "c:\\fo\\b",   NULL, NULL},
-{"file:/c:\\foo/bar",        "file", NULL, NULL, NULL,     -1, "/c:\\foo/bar",NULL, NULL},
-{"file://c:/f\\b",           "file", NULL, NULL, NULL,     -1, "/c:/f\\b",    NULL, NULL},
-{"file:///C:/foo",           "file", NULL, NULL, NULL,     -1, "/C:/foo",     NULL, NULL},
-{"file://///\\/\\/c:\\f\\b", "file", NULL, NULL, NULL,     -1, "/c:\\f\\b",   NULL, NULL},
+{"file:c:\\fo\\b",           "file", nullptr, nullptr, nullptr,  -1, "c:\\fo\\b",   nullptr, nullptr},
+{"file:/c:\\foo/bar",        "file", nullptr, nullptr, nullptr,  -1, "/c:\\foo/bar",nullptr, nullptr},
+{"file://c:/f\\b",           "file", nullptr, nullptr, nullptr,  -1, "/c:/f\\b",    nullptr, nullptr},
+{"file:///C:/foo",           "file", nullptr, nullptr, nullptr,  -1, "/C:/foo",     nullptr, nullptr},
+{"file://///\\/\\/c:\\f\\b", "file", nullptr, nullptr, nullptr,  -1, "/c:\\f\\b",   nullptr, nullptr},
   // If there is not a drive letter, we should treat is as UNC EXCEPT for
   // three slashes, which we treat as a Unix style path.
-{"file:server/file",         "file", NULL, NULL, "server", -1, "/file",       NULL, NULL},
-{"file:/server/file",        "file", NULL, NULL, "server", -1, "/file",       NULL, NULL},
-{"file://server/file",       "file", NULL, NULL, "server", -1, "/file",       NULL, NULL},
-{"file:///server/file",      "file", NULL, NULL, NULL,     -1, "/server/file",NULL, NULL},
-{"file://\\server/file",     "file", NULL, NULL, NULL,     -1, "\\server/file",NULL, NULL},
-{"file:////server/file",     "file", NULL, NULL, "server", -1, "/file",       NULL, NULL},
+{"file:server/file",         "file", nullptr, nullptr, "server", -1, "/file",       nullptr, nullptr},
+{"file:/server/file",        "file", nullptr, nullptr, "server", -1, "/file",       nullptr, nullptr},
+{"file://server/file",       "file", nullptr, nullptr, "server", -1, "/file",       nullptr, nullptr},
+{"file:///server/file",      "file", nullptr, nullptr, nullptr,  -1, "/server/file",nullptr, nullptr},
+{"file://\\server/file",     "file", nullptr, nullptr, nullptr,  -1, "\\server/file",nullptr, nullptr},
+{"file:////server/file",     "file", nullptr, nullptr, "server", -1, "/file",       nullptr, nullptr},
   // Queries and refs are valid for file URLs as well.
-{"file:///C:/foo.html?#",   "file", NULL, NULL,  NULL,     -1, "/C:/foo.html",  "",   ""},
-{"file:///C:/foo.html?query=yes#ref", "file", NULL, NULL, NULL, -1, "/C:/foo.html", "query=yes", "ref"},
+{"file:///C:/foo.html?#",   "file", nullptr, nullptr,  nullptr,  -1, "/C:/foo.html",  "",   ""},
+{"file:///C:/foo.html?query=yes#ref", "file", nullptr, nullptr, nullptr, -1, "/C:/foo.html", "query=yes", "ref"},
 #else  // WIN32
   // No slashes.
-  {"file:",                    "file", NULL, NULL, NULL,      -1, NULL,             NULL, NULL},
-  {"file:path",                "file", NULL, NULL, NULL,      -1, "path",           NULL, NULL},
-  {"file:path/",               "file", NULL, NULL, NULL,      -1, "path/",          NULL, NULL},
-  {"file:path/f.txt",          "file", NULL, NULL, NULL,      -1, "path/f.txt",     NULL, NULL},
+  {"file:",                    "file", nullptr, nullptr, nullptr,   -1, nullptr,          nullptr, nullptr},
+  {"file:path",                "file", nullptr, nullptr, nullptr,   -1, "path",           nullptr, nullptr},
+  {"file:path/",               "file", nullptr, nullptr, nullptr,   -1, "path/",          nullptr, nullptr},
+  {"file:path/f.txt",          "file", nullptr, nullptr, nullptr,   -1, "path/f.txt",     nullptr, nullptr},
   // One slash.
-  {"file:/",                   "file", NULL, NULL, NULL,      -1, "/",              NULL, NULL},
-  {"file:/path",               "file", NULL, NULL, NULL,      -1, "/path",          NULL, NULL},
-  {"file:/path/",              "file", NULL, NULL, NULL,      -1, "/path/",         NULL, NULL},
-  {"file:/path/f.txt",         "file", NULL, NULL, NULL,      -1, "/path/f.txt",    NULL, NULL},
+  {"file:/",                   "file", nullptr, nullptr, nullptr,   -1, "/",              nullptr, nullptr},
+  {"file:/path",               "file", nullptr, nullptr, nullptr,   -1, "/path",          nullptr, nullptr},
+  {"file:/path/",              "file", nullptr, nullptr, nullptr,   -1, "/path/",         nullptr, nullptr},
+  {"file:/path/f.txt",         "file", nullptr, nullptr, nullptr,   -1, "/path/f.txt",    nullptr, nullptr},
   // Two slashes.
-  {"file://",                  "file", NULL, NULL, NULL,      -1, NULL,             NULL, NULL},
-  {"file://server",            "file", NULL, NULL, "server",  -1, NULL,             NULL, NULL},
-  {"file://server/",           "file", NULL, NULL, "server",  -1, "/",              NULL, NULL},
-  {"file://server/f.txt",      "file", NULL, NULL, "server",  -1, "/f.txt",         NULL, NULL},
+  {"file://",                  "file", nullptr, nullptr, nullptr,   -1, nullptr,          nullptr, nullptr},
+  {"file://server",            "file", nullptr, nullptr, "server",  -1, nullptr,          nullptr, nullptr},
+  {"file://server/",           "file", nullptr, nullptr, "server",  -1, "/",              nullptr, nullptr},
+  {"file://server/f.txt",      "file", nullptr, nullptr, "server",  -1, "/f.txt",         nullptr, nullptr},
   // Three slashes.
-  {"file:///",                 "file", NULL, NULL, NULL,      -1, "/",              NULL, NULL},
-  {"file:///path",             "file", NULL, NULL, NULL,      -1, "/path",          NULL, NULL},
-  {"file:///path/",            "file", NULL, NULL, NULL,      -1, "/path/",         NULL, NULL},
-  {"file:///path/f.txt",       "file", NULL, NULL, NULL,      -1, "/path/f.txt",    NULL, NULL},
+  {"file:///",                 "file", nullptr, nullptr, nullptr,   -1, "/",              nullptr, nullptr},
+  {"file:///path",             "file", nullptr, nullptr, nullptr,   -1, "/path",          nullptr, nullptr},
+  {"file:///path/",            "file", nullptr, nullptr, nullptr,   -1, "/path/",         nullptr, nullptr},
+  {"file:///path/f.txt",       "file", nullptr, nullptr, nullptr,   -1, "/path/f.txt",    nullptr, nullptr},
   // More than three slashes.
-  {"file:////",                "file", NULL, NULL, NULL,      -1, "/",              NULL, NULL},
-  {"file:////path",            "file", NULL, NULL, NULL,      -1, "/path",          NULL, NULL},
-  {"file:////path/",           "file", NULL, NULL, NULL,      -1, "/path/",         NULL, NULL},
-  {"file:////path/f.txt",      "file", NULL, NULL, NULL,      -1, "/path/f.txt",    NULL, NULL},
+  {"file:////",                "file", nullptr, nullptr, nullptr,   -1, "/",              nullptr, nullptr},
+  {"file:////path",            "file", nullptr, nullptr, nullptr,   -1, "/path",          nullptr, nullptr},
+  {"file:////path/",           "file", nullptr, nullptr, nullptr,   -1, "/path/",         nullptr, nullptr},
+  {"file:////path/f.txt",      "file", nullptr, nullptr, nullptr,   -1, "/path/f.txt",    nullptr, nullptr},
   // Schemeless URLs
-  {"path/f.txt",               NULL,   NULL, NULL, NULL,       -1, "path/f.txt",    NULL, NULL},
-  {"path:80/f.txt",            "path", NULL, NULL, NULL,       -1, "80/f.txt",      NULL, NULL},
-  {"path/f.txt:80",            "path/f.txt",NULL, NULL, NULL,  -1, "80",            NULL, NULL}, // Wrong.
-  {"/path/f.txt",              NULL,   NULL, NULL, NULL,       -1, "/path/f.txt",   NULL, NULL},
-  {"/path:80/f.txt",           NULL,   NULL, NULL, NULL,       -1, "/path:80/f.txt",NULL, NULL},
-  {"/path/f.txt:80",           NULL,   NULL, NULL, NULL,       -1, "/path/f.txt:80",NULL, NULL},
-  {"//server/f.txt",           NULL,   NULL, NULL, "server",   -1, "/f.txt",        NULL, NULL},
-  {"//server:80/f.txt",        NULL,   NULL, NULL, "server:80",-1, "/f.txt",        NULL, NULL},
-  {"//server/f.txt:80",        NULL,   NULL, NULL, "server",   -1, "/f.txt:80",     NULL, NULL},
-  {"///path/f.txt",            NULL,   NULL, NULL, NULL,       -1, "/path/f.txt",   NULL, NULL},
-  {"///path:80/f.txt",         NULL,   NULL, NULL, NULL,       -1, "/path:80/f.txt",NULL, NULL},
-  {"///path/f.txt:80",         NULL,   NULL, NULL, NULL,       -1, "/path/f.txt:80",NULL, NULL},
-  {"////path/f.txt",           NULL,   NULL, NULL, NULL,       -1, "/path/f.txt",   NULL, NULL},
-  {"////path:80/f.txt",        NULL,   NULL, NULL, NULL,       -1, "/path:80/f.txt",NULL, NULL},
-  {"////path/f.txt:80",        NULL,   NULL, NULL, NULL,       -1, "/path/f.txt:80",NULL, NULL},
+  {"path/f.txt",               nullptr,nullptr, nullptr, nullptr,    -1, "path/f.txt",    nullptr, nullptr},
+  {"path:80/f.txt",            "path", nullptr, nullptr, nullptr,    -1, "80/f.txt",      nullptr, nullptr},
+  {"path/f.txt:80",            "path/f.txt",nullptr, nullptr, nullptr,-1,"80",            nullptr, nullptr}, // Wrong.
+  {"/path/f.txt",              nullptr,nullptr, nullptr, nullptr,    -1, "/path/f.txt",   nullptr, nullptr},
+  {"/path:80/f.txt",           nullptr,nullptr, nullptr, nullptr,    -1, "/path:80/f.txt",nullptr, nullptr},
+  {"/path/f.txt:80",           nullptr,nullptr, nullptr, nullptr,    -1, "/path/f.txt:80",nullptr, nullptr},
+  {"//server/f.txt",           nullptr,nullptr, nullptr, "server",   -1, "/f.txt",        nullptr, nullptr},
+  {"//server:80/f.txt",        nullptr,nullptr, nullptr, "server:80",-1, "/f.txt",        nullptr, nullptr},
+  {"//server/f.txt:80",        nullptr,nullptr, nullptr, "server",   -1, "/f.txt:80",     nullptr, nullptr},
+  {"///path/f.txt",            nullptr,nullptr, nullptr, nullptr,    -1, "/path/f.txt",   nullptr, nullptr},
+  {"///path:80/f.txt",         nullptr,nullptr, nullptr, nullptr,    -1, "/path:80/f.txt",nullptr, nullptr},
+  {"///path/f.txt:80",         nullptr,nullptr, nullptr, nullptr,    -1, "/path/f.txt:80",nullptr, nullptr},
+  {"////path/f.txt",           nullptr,nullptr, nullptr, nullptr,    -1, "/path/f.txt",   nullptr, nullptr},
+  {"////path:80/f.txt",        nullptr,nullptr, nullptr, nullptr,    -1, "/path:80/f.txt",nullptr, nullptr},
+  {"////path/f.txt:80",        nullptr,nullptr, nullptr, nullptr,    -1, "/path/f.txt:80",nullptr, nullptr},
   // Queries and refs are valid for file URLs as well.
-  {"file:///foo.html?#",       "file", NULL, NULL, NULL,       -1, "/foo.html",     "",   ""},
-  {"file:///foo.html?q=y#ref", "file", NULL, NULL, NULL,       -1, "/foo.html",    "q=y", "ref"},
+  {"file:///foo.html?#",       "file", nullptr, nullptr, nullptr,    -1, "/foo.html",     "",   ""},
+  {"file:///foo.html?q=y#ref", "file", nullptr, nullptr, nullptr,    -1, "/foo.html",    "q=y", "ref"},
 #endif  // WIN32
 };
+// clang-format on
 
 TEST(URLParser, ParseFileURL) {
   // Declared outside for loop to try to catch cases in init() where we forget
@@ -506,8 +513,8 @@ TEST(URLParser, ExtractFileName) {
       {"http://www.google.com/foo;bar;html", "foo"},
   };
 
-  for (size_t i = 0; i < std::size(extract_cases); i++) {
-    const char* url = extract_cases[i].input;
+  for (const auto& extract_case : extract_cases) {
+    const char* url = extract_case.input;
     int len = static_cast<int>(strlen(url));
 
     Parsed parsed;
@@ -516,7 +523,7 @@ TEST(URLParser, ExtractFileName) {
     Component file_name;
     ExtractFileName(url, parsed.path, &file_name);
 
-    EXPECT_TRUE(ComponentMatches(url, extract_cases[i].expected, file_name));
+    EXPECT_TRUE(ComponentMatches(url, extract_case.expected, file_name));
   }
 }
 
@@ -551,39 +558,39 @@ static bool NthParameterIs(const char* url,
       return true;
     }
   }
-  return expected_key == NULL;  // We didn't find that many parameters.
+  return expected_key == nullptr;  // We didn't find that many parameters.
 }
 
 TEST(URLParser, ExtractQueryKeyValue) {
-  EXPECT_TRUE(NthParameterIs("http://www.google.com", 1, NULL, NULL));
+  EXPECT_TRUE(NthParameterIs("http://www.google.com", 1, nullptr, nullptr));
 
   // Basic case.
   char a[] = "http://www.google.com?arg1=1&arg2=2&bar";
   EXPECT_TRUE(NthParameterIs(a, 1, "arg1", "1"));
   EXPECT_TRUE(NthParameterIs(a, 2, "arg2", "2"));
   EXPECT_TRUE(NthParameterIs(a, 3, "bar", ""));
-  EXPECT_TRUE(NthParameterIs(a, 4, NULL, NULL));
+  EXPECT_TRUE(NthParameterIs(a, 4, nullptr, nullptr));
 
   // Empty param at the end.
   char b[] = "http://www.google.com?foo=bar&";
   EXPECT_TRUE(NthParameterIs(b, 1, "foo", "bar"));
-  EXPECT_TRUE(NthParameterIs(b, 2, NULL, NULL));
+  EXPECT_TRUE(NthParameterIs(b, 2, nullptr, nullptr));
 
   // Empty param at the beginning.
   char c[] = "http://www.google.com?&foo=bar";
   EXPECT_TRUE(NthParameterIs(c, 1, "", ""));
   EXPECT_TRUE(NthParameterIs(c, 2, "foo", "bar"));
-  EXPECT_TRUE(NthParameterIs(c, 3, NULL, NULL));
+  EXPECT_TRUE(NthParameterIs(c, 3, nullptr, nullptr));
 
   // Empty key with value.
   char d[] = "http://www.google.com?=foo";
   EXPECT_TRUE(NthParameterIs(d, 1, "", "foo"));
-  EXPECT_TRUE(NthParameterIs(d, 2, NULL, NULL));
+  EXPECT_TRUE(NthParameterIs(d, 2, nullptr, nullptr));
 
   // Empty value with key.
   char e[] = "http://www.google.com?foo=";
   EXPECT_TRUE(NthParameterIs(e, 1, "foo", ""));
-  EXPECT_TRUE(NthParameterIs(e, 2, NULL, NULL));
+  EXPECT_TRUE(NthParameterIs(e, 2, nullptr, nullptr));
 
   // Empty key and values.
   char f[] = "http://www.google.com?&&==&=";
@@ -591,37 +598,39 @@ TEST(URLParser, ExtractQueryKeyValue) {
   EXPECT_TRUE(NthParameterIs(f, 2, "", ""));
   EXPECT_TRUE(NthParameterIs(f, 3, "", "="));
   EXPECT_TRUE(NthParameterIs(f, 4, "", ""));
-  EXPECT_TRUE(NthParameterIs(f, 5, NULL, NULL));
+  EXPECT_TRUE(NthParameterIs(f, 5, nullptr, nullptr));
 }
 
 // MailtoURL --------------------------------------------------------------------
 
+// clang-format off
 static MailtoURLParseCase mailto_cases[] = {
 //|input                       |scheme   |path               |query
-{"mailto:foo@gmail.com",        "mailto", "foo@gmail.com",    NULL},
-{"  mailto: to  \t",            "mailto", " to",              NULL},
-{"mailto:addr1%2C%20addr2 ",    "mailto", "addr1%2C%20addr2", NULL},
-{"Mailto:addr1, addr2 ",        "Mailto", "addr1, addr2",     NULL},
-{"mailto:addr1:addr2 ",         "mailto", "addr1:addr2",      NULL},
-{"mailto:?to=addr1,addr2",      "mailto", NULL,               "to=addr1,addr2"},
-{"mailto:?to=addr1%2C%20addr2", "mailto", NULL,               "to=addr1%2C%20addr2"},
+{"mailto:foo@gmail.com",        "mailto", "foo@gmail.com",    nullptr},
+{"  mailto: to  \t",            "mailto", " to",              nullptr},
+{"mailto:addr1%2C%20addr2 ",    "mailto", "addr1%2C%20addr2", nullptr},
+{"Mailto:addr1, addr2 ",        "Mailto", "addr1, addr2",     nullptr},
+{"mailto:addr1:addr2 ",         "mailto", "addr1:addr2",      nullptr},
+{"mailto:?to=addr1,addr2",      "mailto", nullptr,            "to=addr1,addr2"},
+{"mailto:?to=addr1%2C%20addr2", "mailto", nullptr,            "to=addr1%2C%20addr2"},
 {"mailto:addr1?to=addr2",       "mailto", "addr1",            "to=addr2"},
-{"mailto:?body=#foobar#",       "mailto", NULL,               "body=#foobar#",},
+{"mailto:?body=#foobar#",       "mailto", nullptr,            "body=#foobar#",},
 {"mailto:#?body=#foobar#",      "mailto", "#",                "body=#foobar#"},
 };
+// clang-format on
 
 TEST(URLParser, MailtoUrl) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   Parsed parsed;
-  for (size_t i = 0; i < std::size(mailto_cases); ++i) {
-    const char* url = mailto_cases[i].input;
+  for (const auto& mailto_case : mailto_cases) {
+    const char* url = mailto_case.input;
     ParseMailtoURL(url, static_cast<int>(strlen(url)), &parsed);
     int port = ParsePort(url, parsed.port);
 
-    EXPECT_TRUE(ComponentMatches(url, mailto_cases[i].scheme, parsed.scheme));
-    EXPECT_TRUE(ComponentMatches(url, mailto_cases[i].path, parsed.path));
-    EXPECT_TRUE(ComponentMatches(url, mailto_cases[i].query, parsed.query));
+    EXPECT_TRUE(ComponentMatches(url, mailto_case.scheme, parsed.scheme));
+    EXPECT_TRUE(ComponentMatches(url, mailto_case.path, parsed.path));
+    EXPECT_TRUE(ComponentMatches(url, mailto_case.query, parsed.query));
     EXPECT_EQ(PORT_UNSPECIFIED, port);
 
     // The remaining components are never used for mailto URLs.
@@ -634,46 +643,50 @@ TEST(URLParser, MailtoUrl) {
 
 // Various incarnations of filesystem URLs.
 static FileSystemURLParseCase filesystem_cases[] = {
-  // Regular URL with all the parts
-{"filesystem:http://user:pass@foo:21/temporary/bar;par?b#c", "http",  "user", "pass", "foo", 21, "/temporary",  "/bar;par",  "b",  "c"},
-{"filesystem:https://foo/persistent/bar;par/",               "https", NULL,   NULL,   "foo", -1, "/persistent", "/bar;par/", NULL, NULL},
-{"filesystem:file:///persistent/bar;par/",                   "file", NULL,    NULL,   NULL,  -1, "/persistent", "/bar;par/", NULL, NULL},
-{"filesystem:file:///persistent/bar;par/?query#ref",                   "file", NULL,    NULL,   NULL,  -1, "/persistent", "/bar;par/", "query", "ref"},
-{"filesystem:file:///persistent",                            "file", NULL,    NULL,   NULL,  -1, "/persistent", "",        NULL, NULL},
+    // Regular URL with all the parts
+    {"filesystem:http://user:pass@foo:21/temporary/bar;par?b#c", "http", "user",
+     "pass", "foo", 21, "/temporary", "/bar;par", "b", "c"},
+    {"filesystem:https://foo/persistent/bar;par/", "https", nullptr, nullptr,
+     "foo", -1, "/persistent", "/bar;par/", nullptr, nullptr},
+    {"filesystem:file:///persistent/bar;par/", "file", nullptr, nullptr,
+     nullptr, -1, "/persistent", "/bar;par/", nullptr, nullptr},
+    {"filesystem:file:///persistent/bar;par/?query#ref", "file", nullptr,
+     nullptr, nullptr, -1, "/persistent", "/bar;par/", "query", "ref"},
+    {"filesystem:file:///persistent", "file", nullptr, nullptr, nullptr, -1,
+     "/persistent", "", nullptr, nullptr},
 };
 
 TEST(URLParser, FileSystemURL) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   Parsed parsed;
-  for (size_t i = 0; i < std::size(filesystem_cases); i++) {
-    const FileSystemURLParseCase* parsecase = &filesystem_cases[i];
-    const char* url = parsecase->input;
+  for (const auto& filesystem_case : filesystem_cases) {
+    const char* url = filesystem_case.input;
     ParseFileSystemURL(url, static_cast<int>(strlen(url)), &parsed);
 
     EXPECT_TRUE(ComponentMatches(url, "filesystem", parsed.scheme));
-    EXPECT_EQ(!parsecase->inner_scheme, !parsed.inner_parsed());
+    EXPECT_EQ(!filesystem_case.inner_scheme, !parsed.inner_parsed());
     // Only check the inner_parsed if there is one.
     if (parsed.inner_parsed()) {
-      EXPECT_TRUE(ComponentMatches(url, parsecase->inner_scheme,
+      EXPECT_TRUE(ComponentMatches(url, filesystem_case.inner_scheme,
           parsed.inner_parsed()->scheme));
-      EXPECT_TRUE(ComponentMatches(url, parsecase->inner_username,
+      EXPECT_TRUE(ComponentMatches(url, filesystem_case.inner_username,
           parsed.inner_parsed()->username));
-      EXPECT_TRUE(ComponentMatches(url, parsecase->inner_password,
+      EXPECT_TRUE(ComponentMatches(url, filesystem_case.inner_password,
           parsed.inner_parsed()->password));
-      EXPECT_TRUE(ComponentMatches(url, parsecase->inner_host,
+      EXPECT_TRUE(ComponentMatches(url, filesystem_case.inner_host,
           parsed.inner_parsed()->host));
       int port = ParsePort(url, parsed.inner_parsed()->port);
-      EXPECT_EQ(parsecase->inner_port, port);
+      EXPECT_EQ(filesystem_case.inner_port, port);
 
       // The remaining components are never used for filesystem URLs.
       ExpectInvalidComponent(parsed.inner_parsed()->query);
       ExpectInvalidComponent(parsed.inner_parsed()->ref);
     }
 
-    EXPECT_TRUE(ComponentMatches(url, parsecase->path, parsed.path));
-    EXPECT_TRUE(ComponentMatches(url, parsecase->query, parsed.query));
-    EXPECT_TRUE(ComponentMatches(url, parsecase->ref, parsed.ref));
+    EXPECT_TRUE(ComponentMatches(url, filesystem_case.path, parsed.path));
+    EXPECT_TRUE(ComponentMatches(url, filesystem_case.query, parsed.query));
+    EXPECT_TRUE(ComponentMatches(url, filesystem_case.ref, parsed.ref));
 
     // The remaining components are never used for filesystem URLs.
     ExpectInvalidComponent(parsed.username);
