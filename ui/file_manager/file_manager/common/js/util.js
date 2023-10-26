@@ -381,7 +381,7 @@ util.splitExtension = path => {
 util.getRootTypeLabel = locationInfo => {
   switch (locationInfo.rootType) {
     case VolumeManagerCommon.RootType.DOWNLOADS:
-      return locationInfo.volumeInfo.label;
+      return locationInfo.volumeInfo?.label ?? '';
     case VolumeManagerCommon.RootType.DRIVE:
       return str('DRIVE_MY_DRIVE_LABEL');
     case VolumeManagerCommon.RootType.SHARED_DRIVE:
@@ -418,7 +418,7 @@ util.getRootTypeLabel = locationInfo => {
     case VolumeManagerCommon.RootType.MEDIA_VIEW:
       const mediaViewRootType =
           VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(
-              locationInfo.volumeInfo.volumeId);
+              locationInfo.volumeInfo?.volumeId || '');
       switch (mediaViewRootType) {
         case VolumeManagerCommon.MediaViewRootType.IMAGES:
           return str('MEDIA_VIEW_IMAGES_ROOT_LABEL');
@@ -430,7 +430,7 @@ util.getRootTypeLabel = locationInfo => {
           return str('MEDIA_VIEW_DOCUMENTS_ROOT_LABEL');
       }
       console.error('Unsupported media view root type: ' + mediaViewRootType);
-      return locationInfo.volumeInfo.label;
+      return locationInfo.volumeInfo?.label ?? '';
     case VolumeManagerCommon.RootType.ARCHIVE:
     case VolumeManagerCommon.RootType.REMOVABLE:
     case VolumeManagerCommon.RootType.MTP:
@@ -439,10 +439,10 @@ util.getRootTypeLabel = locationInfo => {
     case VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER:
     case VolumeManagerCommon.RootType.SMB:
     case VolumeManagerCommon.RootType.GUEST_OS:
-      return locationInfo.volumeInfo.label;
+      return locationInfo.volumeInfo?.label ?? '';
     default:
       console.error('Unsupported root type: ' + locationInfo.rootType);
-      return locationInfo.volumeInfo.label;
+      return locationInfo.volumeInfo?.label ?? '';
   }
 };
 

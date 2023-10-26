@@ -22,7 +22,7 @@ export class EntryLocationImpl implements EntryLocation {
   hasFixedLabel: boolean;
 
   constructor(
-      public volumeInfo: VolumeInfo,
+      public volumeInfo: VolumeInfo|null,
       public rootType: VolumeManagerCommon.RootType,
       public isRootEntry: boolean, public isReadOnly: boolean) {
     this.isSpecialSearchRoot =

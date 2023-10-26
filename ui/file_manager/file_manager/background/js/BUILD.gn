@@ -97,7 +97,6 @@ js_library("file_operation_util") {
 js_library("mock_volume_manager") {
   visibility += related_apps
   deps = [
-    ":volume_manager_impl",
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:util",
@@ -159,23 +158,8 @@ js_library("test_util") {
   ]
 }
 
-js_library("volume_manager_impl") {
-  deps = [
-    ":volume_manager_util",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:cr_deprecated",
-    "//ash/webui/common/resources:event_target",
-    "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/ts:store",
-  ]
-}
-
 js_unittest("volume_manager_unittest") {
   deps = [
-    ":volume_manager_impl",
     ":volume_manager_util",
     "//ash/webui/common/resources:load_time_data.m",
     "//chrome/test/data/webui/chromeos:chai_assert",

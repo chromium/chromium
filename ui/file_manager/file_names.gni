@@ -23,7 +23,6 @@ static_js_files = [
   "file_manager/background/js/runtime_loaded_test_util.js",
   "file_manager/background/js/test_util.js",
   "file_manager/background/js/test_util_base.js",
-  "file_manager/background/js/volume_manager_impl.js",
   "file_manager/background/js/volume_manager_util.js",
 
   # Files Common:
@@ -295,6 +294,7 @@ ts_files = [
   "file_manager/background/js/volume_info_impl.ts",
   "file_manager/background/js/volume_info_list_impl.ts",
   "file_manager/background/js/volume_manager_factory.ts",
+  "file_manager/background/js/volume_manager_impl.ts",
 
   # Foreground.
   "file_manager/foreground/js/file_transfer_controller.ts",

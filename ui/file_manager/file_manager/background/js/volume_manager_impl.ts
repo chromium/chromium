@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {promisify} from '../../common/js/api.js';
-import {isComputersRoot, isFakeEntry, isSameEntry, isSameFileSystem, isTeamDriveRoot} from '../../common/js/entry_utils.js';
+import {getRootType, isComputersRoot, isFakeEntry, isSameEntry, isSameFileSystem, isTeamDriveRoot} from '../../common/js/entry_utils.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {removeVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
@@ -17,54 +20,59 @@ import {EntryLocationImpl} from './entry_location_impl.js';
 import {VolumeInfoListImpl} from './volume_info_list_impl.js';
 import {volumeManagerUtil} from './volume_manager_util.js';
 
+type VolumeAlreadyMountedEvent = Event&{
+  volumeId: string,
+};
+
+type RequestSuccessCallback = (volumeInfo?: VolumeInfo) => void;
+type RequestErrorCallback = (error: VolumeManagerCommon.VolumeError) => void;
+interface Request {
+  successCallbacks: RequestSuccessCallback[];
+  errorCallbacks: RequestErrorCallback[];
+  timeout: number;
+}
+
 /**
  * VolumeManager is responsible for tracking list of mounted volumes.
- * @implements {VolumeManager}
  */
-export class VolumeManagerImpl extends EventTarget {
+export class VolumeManagerImpl extends EventTarget implements VolumeManager {
+  volumeInfoList = new VolumeInfoListImpl();
+
+  /**
+   * The list of archives requested to mount. We will show contents once
+   * archive is mounted, but only for mounts from within this filebrowser tab.
+   * TODO: Add interface to replace `any` below.
+   */
+  private requests_: Record<string, Request> = {};
+
+  // The status should be merged into VolumeManager.
+  // TODO(hidehiko): Remove them after the migration.
+  /**
+   * Connection state of the Drive.
+   */
+  private driveConnectionState_:
+      chrome.fileManagerPrivate.DriveConnectionState = {
+    type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
+    reason: chrome.fileManagerPrivate.DriveOfflineReason.NO_SERVICE,
+  };
+
+  /**
+   * Holds the resolver for the `waitForInitialization_` promise.
+   */
+  private finishInitialization_: (() => void)|null = null;
+
+  /**
+   * Promise used to wait for the initialize() method to finish.
+   */
+  private waitForInitialization_: Promise<void> =
+      new Promise(resolve => this.finishInitialization_ = resolve);
+
   constructor() {
     super();
-
-    /** @override */
-    this.volumeInfoList = new VolumeInfoListImpl();
-
-    /**
-     * The list of archives requested to mount. We will show contents once
-     * archive is mounted, but only for mounts from within this filebrowser tab.
-     * TODO: Add interface to replace `any` below.
-     * @type {Record<string, any>}
-     * @private
-     */
-    this.requests_ = {};
-
-    // The status should be merged into VolumeManager.
-    // TODO(hidehiko): Remove them after the migration.
-    /**
-     * Connection state of the Drive.
-     * @type {chrome.fileManagerPrivate.DriveConnectionState}
-     * @private
-     */
-    this.driveConnectionState_ = {
-      type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
-      reason: chrome.fileManagerPrivate.DriveOfflineReason.NO_SERVICE,
-    };
 
     chrome.fileManagerPrivate.onDriveConnectionStatusChanged.addListener(
         this.onDriveConnectionStatusChanged_.bind(this));
     this.onDriveConnectionStatusChanged_();
-
-    /**
-     * Holds the resolver for the `waitForInitialization_` promise.
-     * @private @type {null|function():void}
-     */
-    this.finishInitialization_ = null;
-
-    /**
-     * Promise used to wait for the initialize() method to finish.
-     * @private @type {!Promise<void>}
-     */
-    this.waitForInitialization_ =
-        new Promise(resolve => this.finishInitialization_ = resolve);
 
     // Subscribe to mount event as early as possible, but after the
     // waitForInitialization_ above.
@@ -72,51 +80,35 @@ export class VolumeManagerImpl extends EventTarget {
         this.onMountCompleted_.bind(this));
   }
 
-  /** @override */
-  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
-  // '@override' tag because it is not declared in the base class 'EventTarget'.
-  getFuseBoxOnlyFilterEnabled() {
+  getFuseBoxOnlyFilterEnabled(): boolean {
     return false;
   }
 
-  /** @override */
-  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
-  // '@override' tag because it is not declared in the base class 'EventTarget'.
-  getMediaStoreFilesOnlyFilterEnabled() {
+  getMediaStoreFilesOnlyFilterEnabled(): boolean {
     return false;
   }
 
-  /** @override */
-  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
-  // '@override' tag because it is not declared in the base class 'EventTarget'.
-  dispose() {}
+  dispose(): void {}
 
   /**
    * Invoked when the drive connection status is changed.
-   * @private
    */
-  onDriveConnectionStatusChanged_() {
+  private onDriveConnectionStatusChanged_() {
     chrome.fileManagerPrivate.getDriveConnectionState(state => {
       this.driveConnectionState_ = state;
       dispatchSimpleEvent(this, 'drive-connection-changed');
     });
   }
 
-  /** @override */
-  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
-  // '@override' tag because it is not declared in the base class 'EventTarget'.
-  getDriveConnectionState() {
+  getDriveConnectionState(): chrome.fileManagerPrivate.DriveConnectionState {
     return this.driveConnectionState_;
   }
 
   /**
    * Adds new volume info from the given volumeMetadata. If the corresponding
    * volume info has already been added, the volumeMetadata is ignored.
-   * @param {!import("../../externs/volume_info.js").VolumeInfo} volumeInfo
-   * @return {!import("../../externs/volume_info.js").VolumeInfo}
-   * @private
    */
-  addVolumeInfo_(volumeInfo) {
+  private addVolumeInfo_(volumeInfo: VolumeInfo): VolumeInfo {
     const volumeType = volumeInfo.volumeType;
 
     // We don't show Downloads and Drive on volume list if they have
@@ -159,9 +151,8 @@ export class VolumeManagerImpl extends EventTarget {
 
   /**
    * Initializes mount points.
-   * @return {!Promise<void>}
    */
-  async initialize() {
+  async initialize(): Promise<void> {
     let finished = false;
     /**
      * Resolves the initialization promise to unblock any code awaiting for
@@ -173,28 +164,26 @@ export class VolumeManagerImpl extends EventTarget {
       }
       finished = true;
       console.warn('Volumes initialization finished');
-      // @ts-ignore: error TS2554: Expected 1 arguments, but got 0.
-      this.finishInitialization_();
+      if (this.finishInitialization_) {
+        this.finishInitialization_();
+      }
     };
 
     try {
       console.warn('Getting volumes');
-      let volumeMetadataList =
+      let volumeMetadataList: chrome.fileManagerPrivate.VolumeMetadata[] =
           await promisify(chrome.fileManagerPrivate.getVolumeMetadataList);
       if (!volumeMetadataList) {
         console.warn('Cannot get volumes');
         finishInitialization();
         return;
       }
-      // @ts-ignore: error TS7006: Parameter 'volume' implicitly has an 'any'
-      // type.
       volumeMetadataList = volumeMetadataList.filter(volume => !volume.hidden);
       console.debug(`There are ${volumeMetadataList.length} volumes`);
 
       let counter = 0;
 
       // Create VolumeInfo for each volume.
-      // @ts-ignore: error TS7006: Parameter 'idx' implicitly has an 'any' type.
       volumeMetadataList.map(async (volumeMetadata, idx) => {
         const volumeId = volumeMetadata.volumeId;
         let volumeInfo = null;
@@ -239,10 +228,9 @@ export class VolumeManagerImpl extends EventTarget {
 
   /**
    * Event handler called when some volume was mounted or unmounted.
-   * @param {chrome.fileManagerPrivate.MountCompletedEvent} event
-   * @private
    */
-  async onMountCompleted_(event) {
+  private async onMountCompleted_(
+      event: chrome.fileManagerPrivate.MountCompletedEvent) {
     // Wait for the initialization to guarantee that the initialize() runs for
     // some volumes before any mount event, because the mounted volume can be
     // unresponsive, getting stuck when resolving the root in the method
@@ -271,11 +259,10 @@ export class VolumeManagerImpl extends EventTarget {
             try {
               volumeInfo =
                   await volumeManagerUtil.createVolumeInfo(volumeMetadata);
-            } catch (error) {
+            } catch (error: any) {
               console.warn(
                   'Unable to create volumeInfo for ' +
                   `${volumeId} mounted on ${sourcePath}.` +
-                  // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
                   `Mount status: ${status}. Error: ${error.stack || error}.`);
               this.finishRequest_(requestKey, status);
               throw (error);
@@ -291,9 +278,8 @@ export class VolumeManagerImpl extends EventTarget {
             console.debug(`Cannot mount '${sourcePath}': Already mounted as '${
                 volumeId}'`);
             const navigationEvent =
-                new Event(VolumeManagerCommon.VOLUME_ALREADY_MOUNTED);
-            // @ts-ignore: error TS2339: Property 'volumeId' does not exist on
-            // type 'Event'.
+                new Event(VolumeManagerCommon.VOLUME_ALREADY_MOUNTED) as
+                VolumeAlreadyMountedEvent;
             navigationEvent.volumeId = volumeId;
             this.dispatchEvent(navigationEvent);
             this.finishRequest_(requestKey, status);
@@ -345,39 +331,29 @@ export class VolumeManagerImpl extends EventTarget {
 
   /**
    * Creates string to match mount events with requests.
-   * @param {string} requestType 'mount' | 'unmount'. TODO(hidehiko): Replace by
-   *     enum.
-   * @param {string} argument Argument describing the request, eg. source file
+   * @param requestType 'mount' | 'unmount'. TODO(hidehiko): Replace by enum.
+   * @param argument Argument describing the request, eg. source file
    *     path of the archive to be mounted, or a volumeId for unmounting.
-   * @return {string} Key for |this.requests_|.
-   * @private
+   * @return Key for |this.requests_|.
    */
-  makeRequestKey_(requestType, argument) {
+  private makeRequestKey_(requestType: string, argument: string): string {
     return requestType + ':' + argument;
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'password' implicitly has an 'any'
-  // type.
-  async mountArchive(fileUrl, password) {
-    const path =
+  async mountArchive(fileUrl: string, password?: string): Promise<VolumeInfo> {
+    const path: string =
         await promisify(chrome.fileManagerPrivate.addMount, fileUrl, password);
     console.debug(`Mounting '${path}'`);
     const key = this.makeRequestKey_('mount', path);
     return this.startRequest_(key);
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'fileUrl' implicitly has an 'any' type.
-  async cancelMounting(fileUrl) {
+  async cancelMounting(fileUrl: string): Promise<void> {
     console.debug(`Cancelling mounting archive at '${fileUrl}'`);
     return promisify(chrome.fileManagerPrivate.cancelMounting, fileUrl);
   }
 
-  /** @override */
-  // @ts-ignore: error TS7031: Binding element 'volumeId' implicitly has an
-  // 'any' type.
-  async unmount({volumeId}) {
+  async unmount({volumeId}: VolumeInfo): Promise<void> {
     console.debug(`Unmounting '${volumeId}'`);
     const key = this.makeRequestKey_('unmount', volumeId);
     const request = this.startRequest_(key);
@@ -385,17 +361,12 @@ export class VolumeManagerImpl extends EventTarget {
     await request;
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'volumeInfo' implicitly has an 'any'
-  // type.
-  configure(volumeInfo) {
+  configure(volumeInfo: VolumeInfo): Promise<void> {
     return promisify(
         chrome.fileManagerPrivate.configureVolume, volumeInfo.volumeId);
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
-  getVolumeInfo(entry) {
+  getVolumeInfo(entry: Entry|FilesAppEntry): VolumeInfo|null {
     if (!entry) {
       console.warn(`Invalid entry passed to getVolumeInfo: ${entry}`);
       return null;
@@ -419,10 +390,8 @@ export class VolumeManagerImpl extends EventTarget {
     return null;
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'volumeType' implicitly has an 'any'
-  // type.
-  getCurrentProfileVolumeInfo(volumeType) {
+  getCurrentProfileVolumeInfo(volumeType: VolumeManagerCommon.VolumeType):
+      VolumeInfo|null {
     for (let i = 0; i < this.volumeInfoList.length; i++) {
       const volumeInfo = this.volumeInfoList.item(i);
       if (volumeInfo.profile.isCurrentProfile &&
@@ -433,9 +402,7 @@ export class VolumeManagerImpl extends EventTarget {
     return null;
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
-  getLocationInfo(entry) {
+  getLocationInfo(entry: Entry|FilesAppEntry): EntryLocation|null {
     if (!entry) {
       console.warn(`Invalid entry passed to getLocationInfo: ${entry}`);
       return null;
@@ -444,19 +411,20 @@ export class VolumeManagerImpl extends EventTarget {
     const volumeInfo = this.getVolumeInfo(entry);
 
     if (isFakeEntry(entry)) {
+      const rootType = getRootType(entry);
+      assert(rootType);
+
       // Aggregated views like RECENTS and TRASH exist as fake entries but may
       // actually defer their logic to some underlying implementation or
       // delegate to the location filesystem.
       let isReadOnly = true;
-      if (entry.rootType === VolumeManagerCommon.RootType.RECENT ||
-          entry.rootType === VolumeManagerCommon.RootType.TRASH) {
+      if (rootType === VolumeManagerCommon.RootType.RECENT ||
+          rootType === VolumeManagerCommon.RootType.TRASH) {
         isReadOnly = false;
       }
       return new EntryLocationImpl(
-          // @ts-ignore: error TS2345: Argument of type 'VolumeInfo | null' is
-          // not assignable to parameter of type 'VolumeInfo'.
-          volumeInfo, assert(entry.rootType),
-          true /* The entry points a root directory. */, isReadOnly);
+          volumeInfo, rootType, true /* The entry points a root directory. */,
+          isReadOnly);
     }
 
     if (!volumeInfo) {
@@ -544,8 +512,9 @@ export class VolumeManagerImpl extends EventTarget {
         return null;
       }
     } else {
-      rootType = VolumeManagerCommon.getRootTypeFromVolumeType(
-          assert(volumeInfo.volumeType));
+      assert(volumeInfo.volumeType);
+      rootType =
+          VolumeManagerCommon.getRootTypeFromVolumeType(volumeInfo.volumeType);
       isRootEntry = isSameEntry(entry, volumeInfo.fileSystem.root);
       // Although "Play files" root directory is writable in file system level,
       // we prohibit write operations on it in the UI level to avoid confusion.
@@ -563,10 +532,7 @@ export class VolumeManagerImpl extends EventTarget {
     return new EntryLocationImpl(volumeInfo, rootType, isRootEntry, isReadOnly);
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'devicePath' implicitly has an 'any'
-  // type.
-  findByDevicePath(devicePath) {
+  findByDevicePath(devicePath: string): VolumeInfo|null {
     for (let i = 0; i < this.volumeInfoList.length; i++) {
       const volumeInfo = this.volumeInfoList.item(i);
       if (volumeInfo.devicePath && volumeInfo.devicePath === devicePath) {
@@ -576,10 +542,7 @@ export class VolumeManagerImpl extends EventTarget {
     return null;
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'volumeId' implicitly has an 'any'
-  // type.
-  whenVolumeInfoReady(volumeId) {
+  whenVolumeInfoReady(volumeId: string): Promise<VolumeInfo> {
     return new Promise((fulfill) => {
       const handler = () => {
         const index = this.volumeInfoList.findIndex(volumeId);
@@ -593,30 +556,27 @@ export class VolumeManagerImpl extends EventTarget {
     });
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any'
-  // type.
-  getDefaultDisplayRoot(callback) {
+  getDefaultDisplayRoot(
+      callback: ((arg0: DirectoryEntry|FilesAppDirEntry|null) => void)) {
     console.warn('Unexpected call to VolumeManagerImpl.getDefaultDisplayRoot');
     callback(null);
   }
 
   /**
-   * @param {string} key Key produced by |makeRequestKey_|.
-   * @return {!Promise<!import("../../externs/volume_info.js").VolumeInfo>}
-   *     Fulfilled on success, otherwise rejected with a
+   * @param key Key produced by |makeRequestKey_|.
+   * @return Fulfilled on success, otherwise rejected with a
    *     VolumeManagerCommon.VolumeError.
-   * @private
    */
-  startRequest_(key) {
+  private startRequest_(key: string): Promise<VolumeInfo> {
     return new Promise((successCallback, errorCallback) => {
       if (key in this.requests_) {
-        const request = this.requests_[key];
-        request.successCallbacks.push(successCallback);
+        const request = this.requests_[key]!;
+        request.successCallbacks.push(
+            successCallback as RequestSuccessCallback);
         request.errorCallbacks.push(errorCallback);
       } else {
         this.requests_[key] = {
-          successCallbacks: [successCallback],
+          successCallbacks: [successCallback as RequestSuccessCallback],
           errorCallbacks: [errorCallback],
 
           timeout: setTimeout(
@@ -628,79 +588,58 @@ export class VolumeManagerImpl extends EventTarget {
 
   /**
    * Called if no response received in |TIMEOUT|.
-   * @param {string} key Key produced by |makeRequestKey_|.
-   * @private
+   * @param key Key produced by |makeRequestKey_|.
    */
-  onTimeout_(key) {
+  private onTimeout_(key: string) {
     this.invokeRequestCallbacks_(
-        this.requests_[key], VolumeManagerCommon.VolumeError.TIMEOUT);
+        this.requests_[key]!, VolumeManagerCommon.VolumeError.TIMEOUT);
     delete this.requests_[key];
   }
 
   /**
-   * @param {string} key Key produced by |makeRequestKey_|.
-   * @param {!VolumeManagerCommon.VolumeError|string} status Status received
-   *     from the API.
-   * @param {import("../../externs/volume_info.js").VolumeInfo=} opt_volumeInfo
-   *     Volume info of the mounted volume.
-   * @private
+   * @param key Key produced by |makeRequestKey_|.
+   * @param status Status received from the API.
+   * @param volumeInfo Volume info of the mounted volume.
    */
-  finishRequest_(key, status, opt_volumeInfo) {
+  private finishRequest_(
+      key: string, status: VolumeManagerCommon.VolumeError|string,
+      volumeInfo?: VolumeInfo) {
     const request = this.requests_[key];
     if (!request) {
       return;
     }
 
     clearTimeout(request.timeout);
-    this.invokeRequestCallbacks_(request, status, opt_volumeInfo);
+    this.invokeRequestCallbacks_(request, status, volumeInfo);
     delete this.requests_[key];
   }
 
   /**
-   * @param {Object} request Structure created in |startRequest_|.
-   * @param {!VolumeManagerCommon.VolumeError|string} status If status ===
-   *     'success' success callbacks are called.
-   * @param {import("../../externs/volume_info.js").VolumeInfo=} opt_volumeInfo
-   *     Volume info of the mounted volume.
-   * @private
+   * @param request Structure created in |startRequest_|.
+   * @param status If status === 'success' success callbacks are called.
+   * @param volumeInfo Volume info of the mounted volume.
    */
-  invokeRequestCallbacks_(request, status, opt_volumeInfo) {
-    // @ts-ignore: error TS7006: Parameter 'args' implicitly has an 'any' type.
-    const callEach = (callbacks, self, args) => {
-      for (let i = 0; i < callbacks.length; i++) {
-        callbacks[i].apply(self, args);
-      }
-    };
-
+  private invokeRequestCallbacks_(
+      request: Request, status: VolumeManagerCommon.VolumeError,
+      volumeInfo?: VolumeInfo) {
     if (status === 'success') {
-      // @ts-ignore: error TS2339: Property 'successCallbacks' does not exist on
-      // type 'Object'.
-      callEach(request.successCallbacks, this, [opt_volumeInfo]);
+      request.successCallbacks.map(cb => cb(volumeInfo));
+
     } else {
       volumeManagerUtil.validateError(status);
-      // @ts-ignore: error TS2339: Property 'errorCallbacks' does not exist on
-      // type 'Object'.
-      callEach(request.errorCallbacks, this, [status]);
+      request.errorCallbacks.map(cb => cb(status));
     }
   }
 
-  /** @override */
-  // @ts-ignore: error TS4122: This member cannot have a JSDoc comment with an
-  // '@override' tag because it is not declared in the base class 'EventTarget'.
-  hasDisabledVolumes() {
+  hasDisabledVolumes(): boolean {
     return false;
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'volume' implicitly has an 'any' type.
-  isDisabled(volume) {
+  isDisabled(_volume: VolumeManagerCommon.VolumeType): boolean {
     return false;
   }
 
-  /** @override */
-  // @ts-ignore: error TS7006: Parameter 'volumeInfo' implicitly has an 'any'
-  // type.
-  isAllowedVolume(volumeInfo) {
+  isAllowedVolume(_volumeInfo: VolumeInfo): boolean {
     return true;
   }
 }

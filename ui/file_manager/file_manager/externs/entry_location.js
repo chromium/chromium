@@ -13,7 +13,7 @@ export class EntryLocation {
   constructor() {
     /**
      * Volume information.
-     * @type {import("./volume_info.js").VolumeInfo}
+     * @type {?import("./volume_info.js").VolumeInfo}
      */
     this.volumeInfo;
 

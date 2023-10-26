@@ -202,7 +202,7 @@ export class VolumeManager {
 
   /**
    * Obtains the default display root entry.
-   * @param {function((DirectoryEntry|FilesAppDirEntry)):void} callback
+   * @param {function((DirectoryEntry|FilesAppDirEntry|null)):void} callback
    * Callback passed the default display root.
    */
   // @ts-ignore: error TS6133: 'callback' is declared but its value is never

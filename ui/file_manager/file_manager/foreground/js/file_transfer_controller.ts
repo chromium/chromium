@@ -1174,6 +1174,7 @@ export class FileTransferController {
     }
 
     const sourceUrls = (clipboardData.getData('fs/sources') || '').split('\n');
+    assert(destinationLocationInfo.volumeInfo);
     if (this.getSourceRootUrl_(
             clipboardData, this.getDragAndDropGlobalData_()) !==
         destinationLocationInfo.volumeInfo.fileSystem.root.toURL()) {
@@ -1391,6 +1392,7 @@ export class FileTransferController {
       }
       // TODO(mtomasz): Use volumeId instead of comparing roots, as soon as
       // volumeId gets unique.
+      assert(destinationLocationInfo.volumeInfo);
       if (this.getSourceRootUrl_(event.dataTransfer!, dragAndDropData) ===
               destinationLocationInfo.volumeInfo.fileSystem.root.toURL() &&
           !event.ctrlKey) {
