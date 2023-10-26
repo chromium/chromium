@@ -1781,6 +1781,10 @@ extern const char kSidePanelJourneysQuerylessFlagId[];
 extern const char kSidePanelJourneysQuerylessName[];
 extern const char kSidePanelJourneysQuerylessDescription[];
 
+extern const char kSidePanelPinningFlagId[];
+extern const char kSidePanelPinningName[];
+extern const char kSidePanelPinningDescription[];
+
 extern const char kSharedZstdName[];
 extern const char kSharedZstdDescription[];
 

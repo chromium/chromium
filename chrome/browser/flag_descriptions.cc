@@ -3089,6 +3089,12 @@ const char kSidePanelJourneysQuerylessName[] = "Side panel journeys queryless";
 const char kSidePanelJourneysQuerylessDescription[] =
     "Enables Journeys queryless view within the side panel.";
 
+const char kSidePanelPinningFlagId[] = "side-panel-pinning";
+const char kSidePanelPinningName[] =
+    "Side panel navigation and pinning updates";
+const char kSidePanelPinningDescription[] =
+    "Enables support for side panel pinning and updates to navigation.";
+
 const char kSharedZstdName[] = "Shared Zstd";
 const char kSharedZstdDescription[] =
     "Enables compression dictionary transport with Zstandard (aka Shared "

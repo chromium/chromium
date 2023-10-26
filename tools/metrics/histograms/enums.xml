@@ -66976,6 +66976,7 @@ from previous Chrome versions.
   <int value="571349694" label="AllowAllSitesToInitiateMirroring:enabled"/>
   <int value="571562912" label="InstallableAmbientBadgeMessage:disabled"/>
   <int value="573385109" label="SharedClipboardUI:enabled"/>
+  <int value="574090181" label="SidePanelPinning:disabled"/>
   <int value="574535845"
       label="HistoryClustersNavigationContextClustering:disabled"/>
   <int value="575380532" label="ExperimentalAccessibilityLabels:disabled"/>
@@ -68723,6 +68724,7 @@ from previous Chrome versions.
       label="CacheControlNoStoreEnterBackForwardCache:enabled"/>
   <int value="1427905064" label="CreditCardAutofillTouchBar:enabled"/>
   <int value="1428004502" label="PaymentRequestOptionalTotal:enabled"/>
+  <int value="1428027882" label="SidePanelPinning:enabled"/>
   <int value="1428221397" label="QueryTilesInNTP:enabled"/>
   <int value="1429031731"
       label="CrossOriginEmbedderPolicyCredentialless:enabled"/>
