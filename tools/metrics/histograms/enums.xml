@@ -62228,6 +62228,7 @@ from previous Chrome versions.
       label="InternalServerSideSpeechRecognition:disabled"/>
   <int value="-1703308540" label="disable-webaudio"/>
   <int value="-1702323888" label="MediaAppPdfSignature:disabled"/>
+  <int value="-1701728664" label="TrackingProtectionSentimentSurvey:enabled"/>
   <int value="-1701123067" label="ShowManagedUi:enabled"/>
   <int value="-1700764114" label="HelpAppBackgroundPage:enabled"/>
   <int value="-1699960514" label="ChromeOSSyncedSessionSharing:enabled"/>
@@ -64097,6 +64098,7 @@ from previous Chrome versions.
   <int value="-810684526"
       label="AutofillToolkitViewsCreditCardDialogsMac:disabled"/>
   <int value="-810110236" label="EditPasswordsInSettings:enabled"/>
+  <int value="-809965615" label="TrackingProtectionSentimentSurvey:disabled"/>
   <int value="-809640965" label="ShelfAutoHideSeparation:enabled"/>
   <int value="-809456392" label="WebViewVulkanIntermediateBuffer:enabled"/>
   <int value="-808486493" label="NewWallpaperPicker:disabled"/>

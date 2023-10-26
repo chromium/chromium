@@ -1257,6 +1257,48 @@ BASE_FEATURE(kInsecureDownloadWarnings,
              "InsecureDownloadWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TrackingProtectionSentimentSurvey
+#if !BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(kTrackingProtectionSentimentSurvey,
+             "TrackingProtectionSentimentSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyControlImmediateProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-immediate-probability", 0.0};
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyTreatmentImmediateProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-immediate-probability", 0.0};
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyControlDelayedProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-delayed-probability", 0.0};
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyTreatmentDelayedProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-delayed-probability", 0.0};
+
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyControlImmediateTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-immediate-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyTreatmentImmediateTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-immediate-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyControlDelayedTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-delayed-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyTreatmentDelayedTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-delayed-trigger-id", ""};
+#endif
+
 // TrustSafetySentimentSurvey
 #if !BUILDFLAG(IS_ANDROID)
 // Enables surveying of users of Trust & Safety features with HaTS.
