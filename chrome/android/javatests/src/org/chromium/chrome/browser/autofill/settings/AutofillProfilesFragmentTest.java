@@ -34,6 +34,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
@@ -70,6 +71,7 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.AUTOFILL_ACCOUNT_PROFILE_STORAGE,
     ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE
 })
+@DisabledTest(message = "https://crbug.com/1496405")
 public class AutofillProfilesFragmentTest {
     private static final AutofillProfile sLocalOrSyncProfile =
             AutofillProfile.builder()
