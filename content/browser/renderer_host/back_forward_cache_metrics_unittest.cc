@@ -325,7 +325,7 @@ TEST_F(BackForwardCacheMetricsTest, PageWithFormsMetricsStoredRecorded) {
 }
 
 TEST_F(BackForwardCacheMetricsTest,
-       PageWithFormsMetricsRecordedForSameDocumentNavigation) {
+       PageWithFormsMetricsRecordedForSameSiteNavigation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       GetBasicBackForwardCacheFeatureForTesting(),
@@ -339,12 +339,8 @@ TEST_F(BackForwardCacheMetricsTest,
                                                      main_test_rfh());
   BackForwardCache::SetHadFormDataAssociated(main_test_rfh()->GetPage());
 
-  // Navigating to the same document does not create a new RFH.
-  RenderFrameHostWrapper old_rfh(main_test_rfh());
   NavigationSimulator::NavigateAndCommitFromDocument(url_with_form_with_handle,
                                                      main_test_rfh());
-  EXPECT_EQ(old_rfh->GetLifecycleState(),
-            RenderFrameHost::LifecycleState::kActive);
 
   // Record PageSeen without stored in cache.
   histogram_tester_.ExpectBucketCount(

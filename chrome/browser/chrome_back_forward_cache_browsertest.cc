@@ -338,7 +338,6 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // 1) Load page A that has mixed content.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_a));
-  content::RenderFrameHostWrapper rfh_a(current_frame_host());
   // Mixed content should be blocked at first.
   EXPECT_FALSE(MixedContentSettingsTabHelper::FromWebContents(web_contents())
                    ->IsRunningInsecureContentAllowed(*current_frame_host()));
@@ -356,6 +355,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // 3) Wait for reload.
   observer.Wait();
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
   // Mixed content should no longer be blocked.
   EXPECT_TRUE(MixedContentSettingsTabHelper::FromWebContents(web_contents())
@@ -708,12 +708,19 @@ IN_PROC_BROWSER_TEST_P(
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
   // Navigate to B.
+  bool will_change_rfh =
+      rfh_a->ShouldChangeRenderFrameHostOnSameSiteNavigation();
+
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title2.html")));
 
   // Verify A is NOT stored in the BackForwardCache.
-  EXPECT_NE(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  if (will_change_rfh) {
+    EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  } else {
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  }
 
   // Navigate back to A.
   ASSERT_TRUE(content::HistoryGoBack(web_contents()));
@@ -739,12 +746,19 @@ IN_PROC_BROWSER_TEST_P(
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
   // Navigate to B.
+  bool will_change_rfh =
+      rfh_a->ShouldChangeRenderFrameHostOnSameSiteNavigation();
+
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title2.html")));
 
   // Verify A is NOT stored in the BackForwardCache.
-  EXPECT_NE(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  if (will_change_rfh) {
+    EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  } else {
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  }
 
   // Navigate back to A.
   ASSERT_TRUE(content::HistoryGoBack(web_contents()));
@@ -787,8 +801,13 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
       web_contents(), embedded_test_server()->GetURL("a.com", "/title2.html")));
 
   // Verify A is NOT stored in the BackForwardCache.
-  EXPECT_NE(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  if (content::WillSameSiteNavigationChangeRenderFrameHosts(
+          /*is_main_frame=*/true)) {
+    EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  } else {
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  }
 
   //  Navigate back to A.
   ASSERT_TRUE(content::HistoryGoBack(web_contents()));
@@ -846,13 +865,19 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
   )",
                                       tag, GetSrcAttributeForTag(tag))));
 
+  bool will_change_rfh =
+      rfh_a->ShouldChangeRenderFrameHostOnSameSiteNavigation();
   // Navigate to B.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title2.html")));
 
   // Verify A is NOT stored in the BackForwardCache.
-  EXPECT_NE(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  if (will_change_rfh) {
+    EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  } else {
+    EXPECT_NE(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  }
 
   // Navigate back to A.
   ASSERT_TRUE(content::HistoryGoBack(web_contents()));

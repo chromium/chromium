@@ -1812,39 +1812,26 @@ IN_PROC_BROWSER_TEST_F(
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  if (AreStrictSiteInstancesEnabled()) {
-    // Both sticky and non-sticky features are recorded.
-    ExpectNotRestored(
-        {NotRestoredReason::kRelatedActiveContentsExist,
-         NotRestoredReason::kBlocklistedFeatures,
-         NotRestoredReason::kBrowsingInstanceNotSwapped},
-        {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
-         blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
-        {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
-        FROM_HERE);
+  // Both sticky and non-sticky features are recorded.
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures,
+       NotRestoredReason::kBrowsingInstanceNotSwapped},
+      {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
+       blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
+      {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
+      FROM_HERE);
 
-    ASSERT_TRUE(HistoryGoForward(web_contents()));
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
 
-    ExpectBrowsingInstanceNotSwappedReason(
-        ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance,
-        FROM_HERE);
+  ExpectBrowsingInstanceNotSwappedReason(
+      ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance,
+      FROM_HERE);
 
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-    ExpectBrowsingInstanceNotSwappedReason(
-        ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance,
-        FROM_HERE);
-  } else {
-    ExpectNotRestored(
-        {
-            NotRestoredReason::kBlocklistedFeatures,
-            NotRestoredReason::kBrowsingInstanceNotSwapped,
-        },
-        {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
-         blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
-        {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
-        FROM_HERE);
-  }
+  ExpectBrowsingInstanceNotSwappedReason(
+      ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance,
+      FROM_HERE);
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used
