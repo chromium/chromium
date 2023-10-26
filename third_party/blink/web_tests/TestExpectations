@@ -257,6 +257,9 @@ crbug.com/309675 compositing/gestures/gesture-tapHighlight-simple-longPress.html
 crbug.com/845267 [ Mac ] http/tests/inspector-protocol/page/page-lifecycleEvents.js [ Failure Pass ]
 crbug.com/1046784 http/tests/inspector-protocol/page/page-events-associated-isolation.js [ Failure Pass ]
 
+# Counters failures to be fixed with new implementation
+crbug.com/990657 external/wpt/css/css-contain/contain-style-counters-004.html [ Failure ]
+
 # Service Worker registration.update() Network Requests require more instrumentation
 crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-classic-update-network-id-disallowed-content-type.js [ Failure ]
 crbug.com/1334900 http/tests/inspector-protocol/fetch/service-worker-classic-update-network-id-disallowed-redirect.js [ Failure ]
@@ -1108,8 +1111,10 @@ crbug.com/1270480 external/wpt/css/css-lists/marker-webkit-text-fill-color.html 
 crbug.com/1270483 external/wpt/css/css-lists/li-value-counter-reset-001.html [ Failure ]
 crbug.com/947844 external/wpt/css/css-lists/list-item-definition.html [ Failure ]
 
+crbug.com/1330383 external/wpt/css/css-lists/counter-list-item-slot-order.html [ Failure ]
 crbug.com/1330383 external/wpt/css/css-lists/counter-order-display-contents.html [ Failure ]
 crbug.com/1330383 external/wpt/css/css-lists/counter-slot-order-scoping.html [ Failure ]
+crbug.com/1330383 external/wpt/css/css-lists/counter-slot-order.html [ Failure ]
 
 # [css-counter-styles-3]
 crbug.com/1176323 external/wpt/css/css-counter-styles/counter-style-at-rule/prefix-suffix-syntax.html [ Failure ]
@@ -1211,9 +1216,29 @@ crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-collapse-pres
 crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-collapse-discard-001.xht [ Failure ]
 crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-trim-trim-inner-001.xht [ Failure ]
 
+# css counters failures to be fixed with new implementation.
+crbug.com/990657 external/wpt/css/css-contain/contain-style-counters-005.html [ Failure ]
+crbug.com/990657 fast/css/containment/style-contain-dialogue-element.html [ Failure ]
+
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
 crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Failure ]
+
+# CSS counters tests to be fixed with new implementation.
+crbug.com/990657 external/wpt/css/css-lists/counter-001.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counter-002.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counter-003.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-001.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-002.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-003.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-004.html [ Failure ]
+
+# CSS counters scope tests to be fixed with new implementation.
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-001.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-002.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-003.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-004.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-contain/counter-scoping-004.html [ Failure ]
 
 # LayoutNG failures that needs to be triaged
 crbug.com/591099 virtual/text-antialias/selection/selection-rect-line-height-too-small.html [ Failure ]
@@ -3000,6 +3025,7 @@ crbug.com/626703 [ Linux ] virtual/pending-beacon/external/wpt/pending-beacon/pe
 crbug.com/626703 external/wpt/css/css-transitions/transition-events-with-document-change.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-animations/animation-canceled-by-parent-details-element-being-closed.html [ Timeout ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-animations/animation-canceled-by-parent-details-element-being-closed.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-counter-styles/hebrew/counter-hebrew-nested.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/japanese-formal/counter-japanese-formal.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/japanese-informal/counter-japanese-informal.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/korean-hanja-informal/counter-korean-hanja-informal.html [ Failure ]

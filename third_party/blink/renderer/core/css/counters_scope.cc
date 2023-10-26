@@ -272,9 +272,6 @@ bool CountersScope::UpdateOwnCounters(bool force_update,
     }
     counter->SetValueBefore(value);
     counter->CalculateValueAfter(should_reset_increment, num_counters_in_scope);
-    if (auto* layout_counter = DynamicTo<LayoutCounter>(counter->Owner())) {
-      layout_counter->UpdateCounter();
-    }
     if (!counter->HasUseType()) {
       should_reset_increment = false;
     }

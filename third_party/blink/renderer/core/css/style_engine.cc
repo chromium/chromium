@@ -3371,7 +3371,6 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   // Update quotes only if there are any scopes marked dirty.
   if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
     tree->UpdateQuotes();
-    tree->UpdateCounters();
   }
   if (container == GetDocument().documentElement()) {
     // If the container is the root element, there may be body styles which have
@@ -3549,7 +3548,6 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
     // Update quotes only if there are any scopes marked dirty.
     if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
       tree->UpdateQuotes();
-      tree->UpdateCounters();
     }
   } else {
     style_recalc_root_.Clear();

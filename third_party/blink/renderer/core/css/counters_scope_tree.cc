@@ -475,15 +475,12 @@ void CountersScopeTree::RemoveCounterFromScope(CounterNode& counter,
 }
 
 void CountersScopeTree::CreateCounterForLayoutCounter(LayoutCounter& counter) {
-  CHECK(!counter.GetCounterNode());
   CounterNode* counter_node = MakeGarbageCollected<CounterNode>(counter, 0u, 0);
   AttachCounter(*counter_node, counter.Identifier());
-  counter.SetCounterNode(counter_node);
 }
 
 void CountersScopeTree::RemoveCounterForLayoutCounter(LayoutCounter& counter) {
   CounterNode* counter_node = counter.GetCounterNode();
-  counter.SetCounterNode(nullptr);
   CHECK(counter_node);
   CHECK(counter_node->HasUseType());
   CountersScope* scope = counter_node->Scope();
