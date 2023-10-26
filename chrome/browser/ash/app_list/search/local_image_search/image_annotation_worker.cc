@@ -31,9 +31,9 @@ namespace {
 using TokenizedString = ::ash::string_matching::TokenizedString;
 using Mode = ::ash::string_matching::TokenizedString::Mode;
 
-// ~ 20MiB
-constexpr int kMaxFileSizeBytes = 2e+7;
+constexpr int kMaxFileSizeBytes = 2e+7;    // ~ 20MiB
 constexpr int kConfidenceThreshold = 128;  // 50% of 255 (max of ICA)
+constexpr int kOcrMinWordLength = 3;
 constexpr base::TimeDelta kInitialIndexingDelay = base::Seconds(1);
 
 // Exclude animated WebPs.
@@ -358,7 +358,7 @@ void ImageAnnotationWorker::OnPerformOcr(
                            Mode::kWords);
     for (const auto& word : tokens.tokens()) {
       std::string lower_case_word = base::UTF16ToUTF8(word);
-      if (word.size() > 3 && !IsStopWord(lower_case_word) &&
+      if (word.size() >= kOcrMinWordLength && !IsStopWord(lower_case_word) &&
           base::IsAsciiAlpha(lower_case_word[0])) {
         image_info.annotations.insert(std::move(lower_case_word));
       }
