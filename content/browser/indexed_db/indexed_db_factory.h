@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -14,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -235,7 +235,7 @@ class CONTENT_EXPORT IndexedDBFactory
   IndexedDBBucketContext::InstanceClosure for_each_bucket_context_;
 
   // TODO(crbug.com/1474996): these bucket contexts need to be `SequenceBound`.
-  base::flat_map<storage::BucketId, std::unique_ptr<IndexedDBBucketContext>>
+  std::map<storage::BucketId, std::unique_ptr<IndexedDBBucketContext>>
       bucket_contexts_;
 
   std::set<storage::BucketLocator> backends_opened_since_startup_;

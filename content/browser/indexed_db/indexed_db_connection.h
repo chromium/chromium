@@ -5,11 +5,11 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONNECTION_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONNECTION_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -99,8 +99,8 @@ class CONTENT_EXPORT IndexedDBConnection {
       storage::mojom::DisallowInactiveClientReason reason,
       base::OnceCallback<void(bool)> callback);
 
-  const base::flat_map<int64_t, std::unique_ptr<IndexedDBTransaction>>&
-  transactions() const {
+  const std::map<int64_t, std::unique_ptr<IndexedDBTransaction>>& transactions()
+      const {
     return transactions_;
   }
 
@@ -118,10 +118,9 @@ class CONTENT_EXPORT IndexedDBConnection {
   base::RepeatingClosure on_version_change_ignored_;
   base::OnceCallback<void(IndexedDBConnection*)> on_close_;
 
-  // The connection owns transactions created on this connection.
-  // This is `flat_map` to preserve ordering, and because the vast majority of
-  // users have less than 200 transactions.
-  base::flat_map<int64_t, std::unique_ptr<IndexedDBTransaction>> transactions_;
+  // The connection owns transactions created on this connection. It's important
+  // to preserve ordering.
+  std::map<int64_t, std::unique_ptr<IndexedDBTransaction>> transactions_;
 
   // The callbacks_ member is cleared when the connection is closed.
   // May be nullptr in unit tests.
