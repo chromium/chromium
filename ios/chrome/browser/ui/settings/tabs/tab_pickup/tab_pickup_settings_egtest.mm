@@ -184,4 +184,60 @@ id<GREYMatcher> TabPickupSettingsSwitchItem(bool is_toggled_on, bool enabled) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Tests that for a signed in user, after declining twice History Sync, the
+// History Sync is still shown when tapping on the tab switcher item.
+- (void)testTabPickupSettingsDelineRepeatedlyHistorySyncIfSignedIn {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  OpenTabsSettings();
+  [[EarlGrey selectElementWithMatcher:TabsSettingsTabPickupDetailText(false)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  OpenTabPickupFromTabsSettings();
+  [[EarlGrey selectElementWithMatcher:SettingsTabPickupTableView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on switch item and decline History Sync 3 times.
+  for (int i = 0; i <= 2; i++) {
+    // Toogle and Sign-in.
+    [[EarlGrey
+        selectElementWithMatcher:TabPickupSettingsSwitchItem(
+                                     /*is_toggled_on=*/false, /*enabled=*/true)]
+        performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+
+    // Verify that the History Sync Opt-In screen is shown.
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(
+                                     kHistorySyncViewAccessibilityIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    // Decline History Sync.
+    [[[EarlGrey selectElementWithMatcher:
+                    chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()]
+           usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+        onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+        performAction:grey_tap()];
+    [ChromeEarlGrey
+        waitForUIElementToDisappearWithMatcher:
+            grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+  }
+
+  // Toogle and Sign-in.
+  [[EarlGrey
+      selectElementWithMatcher:TabPickupSettingsSwitchItem(
+                                   /*is_toggled_on=*/false, /*enabled=*/true)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+
+  // Accept History Sync.
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           HistoryOptInPrimaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TabPickupSettingsSwitchItem(
+                                   /*is_toggled_on=*/true, /*enabled=*/true)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 @end
