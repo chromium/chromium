@@ -107,10 +107,10 @@
     MIDI devices
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX" desc="The label used for system exclusive messages for MIDI devices site settings controls.">
-    MIDI devices
+    MIDI device control and reprogramming
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_MIDI_SYSEX_MID_SENTENCE" desc="The label used for system exclusive messages for MIDI devices site settings controls when used mid-sentence.">
-    MIDI devices
+    MIDI device control and reprogramming
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_MOTION_SENSORS" desc="The label used for the motion sensor (accelerometer, gyroscope, magnetometer) site settings controls.">
     Motion sensors
