@@ -1,11 +1,14 @@
     <style>
+      :host {
+        --cr-drawer-width: 256px;
+      }
+
       :host dialog {
-        --drawer-width: 256px;
         --transition-timing: 200ms ease;
         background-color: var(--cr-drawer-background-color, #fff);
         border: none;
         bottom: 0;
-        left: calc(-1 * var(--drawer-width));
+        left: calc(-1 * var(--cr-drawer-width));
         margin: 0;
         max-height: initial;
         max-width: initial;
@@ -14,7 +17,7 @@
         position: absolute;
         top: 0;
         transition: left var(--transition-timing);
-        width: var(--drawer-width);
+        width: var(--cr-drawer-width);
       }
 
       @media (prefers-color-scheme: dark) {
@@ -36,7 +39,7 @@
 
       :host([align=rtl]) dialog {
         left: auto;
-        right: calc(-1 * var(--drawer-width));
+        right: calc(-1 * var(--cr-drawer-width));
         transition: right var(--transition-timing);
       }
 
