@@ -5,7 +5,10 @@
 import './scanning_mojom_imports.js';
 import 'chrome://scanning/page_size_select.js';
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PageSizeSelectElement} from 'chrome://scanning/page_size_select.js';
 import {PageSize} from 'chrome://scanning/scanning.mojom-webui.js';
 import {getPageSizeString} from 'chrome://scanning/scanning_app_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -14,28 +17,40 @@ import {assertOrderedAlphabetically, changeSelect} from './scanning_app_test_uti
 
 
 suite('pageSizeSelectTest', function() {
-  /** @type {?PageSizeSelectElement} */
-  let pageSizeSelect = null;
+  let pageSizeSelect: PageSizeSelectElement|null = null;
 
   setup(() => {
-    pageSizeSelect = /** @type {!PageSizeSelectElement} */ (
-        document.createElement('page-size-select'));
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    pageSizeSelect = document.createElement('page-size-select');
     assertTrue(!!pageSizeSelect);
     document.body.appendChild(pageSizeSelect);
   });
 
   teardown(() => {
-    pageSizeSelect.remove();
+    pageSizeSelect?.remove();
     pageSizeSelect = null;
   });
 
+  function getSelect(): HTMLSelectElement {
+    assert(pageSizeSelect);
+    const select =
+        strictQuery('select', pageSizeSelect.shadowRoot, HTMLSelectElement);
+    assert(select);
+    return select;
+  }
+
+  function getOption(index: number): HTMLOptionElement {
+    const options = Array.from(getSelect().querySelectorAll('option'));
+    assert(index < options.length);
+    return options[index]!;
+  }
+
   // Verify that adding page sizes results in the dropdown displaying the
   // correct options.
-  test('initializePageSizeSelect', () => {
+  test('initializePageSizeSelect', async () => {
+    assert(pageSizeSelect);
     // Before options are added, the dropdown should be enabled and empty.
-    const select =
-        /** @type {!HTMLSelectElement} */ (
-            pageSizeSelect.shadowRoot.querySelector('select'));
+    const select = getSelect();
     assertTrue(!!select);
     assertFalse(select.disabled);
     assertEquals(0, select.length);
@@ -47,23 +62,20 @@ suite('pageSizeSelectTest', function() {
 
     assertEquals(2, select.length);
     assertEquals(
-        getPageSizeString(firstPageSize), select.options[0].textContent.trim());
+        getPageSizeString(firstPageSize), getOption(0).textContent!.trim());
     assertEquals(
-        getPageSizeString(secondPageSize),
-        select.options[1].textContent.trim());
+        getPageSizeString(secondPageSize), getOption(1).textContent!.trim());
     assertEquals(firstPageSize.toString(), select.value);
 
     // Selecting a different option should update the selected value.
-    return changeSelect(
-               select, secondPageSize.toString(), /* selectedIndex */ null)
-        .then(() => {
-          assertEquals(
-              secondPageSize.toString(), pageSizeSelect.selectedOption);
-        });
+    await changeSelect(
+        select, secondPageSize.toString(), /* selectedIndex */ null);
+    assertEquals(secondPageSize.toString(), pageSizeSelect.selectedOption);
   });
 
   // Verify the pages sizes are sorted correctly.
   test('pageSizesSortedCorrectly', () => {
+    assert(pageSizeSelect);
     pageSizeSelect.options = [
       PageSize.kTabloid,
       PageSize.kNaLetter,
@@ -80,7 +92,7 @@ suite('pageSizeSelectTest', function() {
     // selected by default.
     assertOrderedAlphabetically(
         pageSizeSelect.options.slice(0, pageSizeSelect.options.length - 1),
-        (pageSize) => getPageSizeString(pageSize));
+        (pageSize: PageSize) => getPageSizeString(pageSize));
     assertEquals(
         PageSize.kMax,
         pageSizeSelect.options[pageSizeSelect.options.length - 1]);
@@ -88,6 +100,7 @@ suite('pageSizeSelectTest', function() {
   });
 
   test('firstPageSizeUsedWhenDefaultNotAvailable', () => {
+    assert(pageSizeSelect);
     pageSizeSelect.options = [PageSize.kMax, PageSize.kIsoA4];
     flush();
 
@@ -98,28 +111,21 @@ suite('pageSizeSelectTest', function() {
 
   // Verify the correct default option is selected when a scanner is selected
   // and the options change.
-  test('selectDefaultWhenOptionsChange', () => {
-    const select =
-        /** @type {!HTMLSelectElement} */ (
-            pageSizeSelect.shadowRoot.querySelector('select'));
+  test('selectDefaultWhenOptionsChange', async () => {
+    assert(pageSizeSelect);
+    const select = getSelect();
     pageSizeSelect.options =
         [PageSize.kNaLetter, PageSize.kMax, PageSize.kIsoA4];
     flush();
-    return changeSelect(select, /* value */ null, /* selectedIndex */ 0)
-        .then(() => {
-          assertEquals(
-              PageSize.kIsoA4.toString(), pageSizeSelect.selectedOption);
-          assertEquals(
-              PageSize.kIsoA4.toString(),
-              select.options[select.selectedIndex].value);
+    await changeSelect(select, /* value */ null, /* selectedIndex */ 0);
+    assertEquals(PageSize.kIsoA4.toString(), pageSizeSelect.selectedOption);
+    assertEquals(
+        PageSize.kIsoA4.toString(), getOption(select.selectedIndex).value);
 
-          pageSizeSelect.options = [PageSize.kNaLetter, PageSize.kMax];
-          flush();
-          assertEquals(
-              PageSize.kNaLetter.toString(), pageSizeSelect.selectedOption);
-          assertEquals(
-              PageSize.kNaLetter.toString(),
-              select.options[select.selectedIndex].value);
-        });
+    pageSizeSelect.options = [PageSize.kNaLetter, PageSize.kMax];
+    flush();
+    assertEquals(PageSize.kNaLetter.toString(), pageSizeSelect.selectedOption);
+    assertEquals(
+        PageSize.kNaLetter.toString(), getOption(select.selectedIndex).value);
   });
 });
