@@ -17443,6 +17443,27 @@
             ]
         }
     ],
+    "StructuredMetricsExternalMetrics": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "StructuredMetricsServiceExternalMetrics_100_20231025",
+                    "params": {
+                        "file_limit": "100"
+                    }
+                },
+                {
+                    "name": "StructuredMetricsServiceExternalMetrics_70_20231025",
+                    "params": {
+                        "file_limit": "70"
+                    }
+                }
+            ]
+        }
+    ],
     "SubprocessMetricsAsync": [
         {
             "platforms": [
