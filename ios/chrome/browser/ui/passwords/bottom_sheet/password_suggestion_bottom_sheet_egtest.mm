@@ -75,6 +75,21 @@ id<GREYMatcher> SubtitleString(const GURL& url) {
           url)));
 }
 
+// Verifies the number of Password Details visits recorded.
+void CheckPasswordDetailsVisitMetricCount(int count) {
+  NSString* histogram = @"PasswordManager.iOS.PasswordDetailsVisit";
+
+  // Check password details visit metric.
+  NSError* error = [MetricsAppInterface expectTotalCount:count
+                                            forHistogram:histogram];
+  GREYAssertNil(error, @"Unexpected Password Details Visit histogram count");
+
+  error = [MetricsAppInterface expectCount:count
+                                 forBucket:YES
+                              forHistogram:histogram];
+  GREYAssertNil(error, @"Unexpected Password Details Visit histogram count");
+}
+
 }  // namespace
 
 @interface PasswordSuggestionBottomSheetEGTest : ChromeTestCase
@@ -400,14 +415,19 @@ id<GREYMatcher> NavigationBarEditButton() {
                                    IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME)]
       assertWithMatcher:grey_notVisible()];
 
-  // Emit auth result so password details surface is revealed.
+  // Verify visit metric was not recorded yet.
+  CheckPasswordDetailsVisitMetricCount(0);
 
+  // Emit auth result so password details surface is revealed.
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
                                    IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME)]
       assertWithMatcher:grey_textFieldValue(@"user2")];
+
+  // Verify visit metric was recorded.
+  CheckPasswordDetailsVisitMetricCount(1);
 }
 
 - (void)testOpenPasswordBottomSheetOpenPasswordDetailsWithoutAuthentication {
@@ -460,6 +480,9 @@ id<GREYMatcher> NavigationBarEditButton() {
       selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
                                    IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME)]
       assertWithMatcher:grey_textFieldValue(@"user2")];
+
+  // Verify visit metric was recorded.
+  CheckPasswordDetailsVisitMetricCount(1);
 }
 
 - (void)testOpenPasswordBottomSheetDeletePassword {
