@@ -697,8 +697,17 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
 
 // The hover card should stop showing memory usage data after navigating to
 // another site since the data is now out of date
+//
+// TODO(crbug.com/1496296): Gardener 2023-10-26: Times out on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HoverCardStopShowingMemoryOnNavigation \
+  DISABLED_HoverCardStopShowingMemoryOnNavigation
+#else
+#define MAYBE_HoverCardStopShowingMemoryOnNavigation \
+  HoverCardStopShowingMemoryOnNavigation
+#endif
 IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
-                       HoverCardStopShowingMemoryOnNavigation) {
+                       MAYBE_HoverCardStopShowingMemoryOnNavigation) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetTestingURL("a.com")),
