@@ -47,8 +47,8 @@ TEST(ScriptSerializationUnitTest, ParseMinimalScript) {
       SerializedScriptFromJson(kMinimalScriptJson);
 
   auto stub_extension = ExtensionBuilder("foo").Build();
-  std::unique_ptr<UserScript> script =
-      ParseSerializedUserScript(serialized_script, *stub_extension);
+  std::unique_ptr<UserScript> script = ParseSerializedUserScript(
+      serialized_script, *stub_extension, /*allowed_in_incognito=*/false);
 
   ASSERT_TRUE(script);
 
@@ -98,8 +98,8 @@ TEST(ScriptSerializationUnitTest, ParseMaximalScript) {
       SerializedScriptFromJson(kMaximalScriptJson);
 
   auto stub_extension = ExtensionBuilder("foo").Build();
-  std::unique_ptr<UserScript> script =
-      ParseSerializedUserScript(serialized_script, *stub_extension);
+  std::unique_ptr<UserScript> script = ParseSerializedUserScript(
+      serialized_script, *stub_extension, /*allowed_in_incognito=*/false);
 
   ASSERT_TRUE(script);
 
@@ -193,7 +193,8 @@ TEST(ScriptSerializationUnitTest, DisallowMatchOriginAsFallbackWithPaths) {
   std::u16string error;
   auto stub_extension = ExtensionBuilder("foo").Build();
   std::unique_ptr<UserScript> script =
-      ParseSerializedUserScript(serialized_script, *stub_extension, &error);
+      ParseSerializedUserScript(serialized_script, *stub_extension,
+                                /*allowed_in_incognito=*/false, &error);
 
   EXPECT_FALSE(script);
   EXPECT_EQ(error, manifest_errors::kMatchOriginAsFallbackCantHavePaths);

@@ -485,6 +485,7 @@ ContentScriptDictToSerializedUserScript(const base::Value::Dict& dict) {
 
 // Converts the list of values in `list` to a UserScriptList.
 UserScriptList ConvertValueToScripts(const Extension& extension,
+                                     bool allowed_in_incognito,
                                      const base::Value::List& list) {
   UserScriptList scripts;
   for (const base::Value& value : list) {
@@ -516,8 +517,8 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
     }
 
     std::unique_ptr<UserScript> parsed_script =
-        script_serialization::ParseSerializedUserScript(*serialized_script,
-                                                        extension);
+        script_serialization::ParseSerializedUserScript(
+            *serialized_script, extension, allowed_in_incognito);
 
     if (!parsed_script) {
       continue;  // Bad entry.
@@ -812,8 +813,9 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::
 
   UserScriptList scripts;
   if (value && value->is_list()) {
-    UserScriptList dynamic_scripts =
-        ConvertValueToScripts(*extension, value->GetList());
+    UserScriptList dynamic_scripts = ConvertValueToScripts(
+        *extension, util::IsIncognitoEnabled(extension->id(), browser_context_),
+        value->GetList());
 
     // TODO(crbug.com/1385165): Write back `dynamic_scripts` into the StateStore
     // if scripts in the StateStore do not have prefixed IDs.

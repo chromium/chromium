@@ -23,12 +23,15 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
 
 // Attempts to deserialize `serialized_script` into a new `UserScript`. This can
 // fail if `serialized_script` has invalid values for parsed types (e.g.,
-// match patterns). If `error_out` is provided, it will be populated on failure.
+// match patterns). `allowed_in_incognito` indicates if the corresponding
+// extension (and thus, user script) is allowed in incognito mode.
+// If `error_out` is provided, it will be populated on failure.
 // TODO(devlin): It'd be nice to use absl::optional here, but UserScripts are
 // currently passed by pointer a lot.
 std::unique_ptr<UserScript> ParseSerializedUserScript(
     const api::scripts_internal::SerializedUserScript& serialized_script,
     const Extension& extension,
+    bool allowed_in_incognito,
     std::u16string* error_out = nullptr);
 
 }  // namespace script_serialization

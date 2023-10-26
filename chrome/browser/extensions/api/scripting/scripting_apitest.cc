@@ -35,7 +35,18 @@
 
 namespace extensions {
 
+namespace {
+
 constexpr const char kSimulatedResourcePath[] = "/simulated-resource.html";
+
+// Returns the IDs of all divs in a page; used for testing script injections.
+constexpr char kGetDivIds[] =
+    R"(let childIds = [];
+       for (const child of document.body.children)
+         childIds.push(child.id);
+       JSON.stringify(childIds.sort());)";
+
+}  // namespace
 
 class ScriptingAPITest : public ExtensionApiTest {
  public:
@@ -465,6 +476,75 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
 
   EXPECT_EQ(base::Value(expected_default_result), get_default_result());
   EXPECT_EQ(base::Value(expected_immediate_result), get_immediate_result());
+}
+
+// Verifies dynamic scripts are properly injected in incognito.
+// Regression test for https://crbug.com/1495191.
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
+                       PRE_DynamicContentScriptsInjectInIncognito) {
+  // Load up two extensions, one that's allowed in incognito and one that's
+  // not.
+  const Extension* incognito_allowed =
+      LoadExtension(test_data_dir_.AppendASCII("scripting/incognito_allowed"),
+                    {.allow_in_incognito = true});
+  const Extension* incognito_disallowed = LoadExtension(
+      test_data_dir_.AppendASCII("scripting/incognito_disallowed"),
+      {.allow_in_incognito = false});
+  ASSERT_TRUE(incognito_allowed);
+  ASSERT_TRUE(incognito_disallowed);
+
+  auto register_scripts = [this](const ExtensionId& extension_id) {
+    ResultCatcher result_catcher;
+    BackgroundScriptExecutor::ExecuteScriptAsync(profile(), extension_id,
+                                                 "registerScript();");
+    ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  };
+
+  // In each extension, register a script that will inject a div with a given
+  // ID indicating if it injected.
+  register_scripts(incognito_allowed->id());
+  register_scripts(incognito_disallowed->id());
+
+  // Navigate to a page in the on-the-record profile. Both extensions should
+  // inject.
+  const GURL page_url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  content::RenderFrameHost* regular_page =
+      ui_test_utils::NavigateToURL(browser(), page_url);
+  EXPECT_EQ(R"(["incognito-allowed","incognito-disallowed"])",
+            content::EvalJs(regular_page, kGetDivIds));
+
+  // Now, navigate to a page in incognito. Only the incognito-allowed extension
+  // should inject.
+  Browser* incognito_browser = OpenURLOffTheRecord(profile(), page_url);
+  content::WebContents* incognito_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  content::WaitForLoadStop(incognito_web_contents);
+
+  EXPECT_EQ(R"(["incognito-allowed"])",
+            content::EvalJs(incognito_web_contents, kGetDivIds));
+}
+
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
+                       DynamicContentScriptsInjectInIncognito) {
+  // Repeat the steps of navigating to an on-the-record and off-the-record page
+  // to validate injection after a restart. This verifies the incognito bit
+  // is properly set when restoring scripts after a restart.
+
+  const GURL page_url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  content::RenderFrameHost* regular_page =
+      ui_test_utils::NavigateToURL(browser(), page_url);
+  EXPECT_EQ(R"(["incognito-allowed","incognito-disallowed"])",
+            content::EvalJs(regular_page, kGetDivIds));
+
+  Browser* incognito_browser = OpenURLOffTheRecord(profile(), page_url);
+  content::WebContents* incognito_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  content::WaitForLoadStop(incognito_web_contents);
+
+  EXPECT_EQ(R"(["incognito-allowed"])",
+            content::EvalJs(incognito_web_contents, kGetDivIds));
 }
 
 // Base test fixture for tests spanning multiple sessions where a custom arg is

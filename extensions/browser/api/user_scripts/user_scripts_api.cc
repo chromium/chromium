@@ -16,6 +16,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/api/user_scripts.h"
@@ -84,6 +85,7 @@ ConvertRegisteredUserScriptToSerializedUserScript(
 std::unique_ptr<UserScript> ParseUserScript(
     const Extension& extension,
     api::user_scripts::RegisteredUserScript user_script,
+    bool allowed_in_incognito,
     std::u16string* error) {
   // Custom validation unique to user scripts.
   // `matches` must be specified for newly-registered scripts, despite being
@@ -116,8 +118,8 @@ std::unique_ptr<UserScript> ParseUserScript(
   api::scripts_internal::SerializedUserScript serialized_script =
       ConvertRegisteredUserScriptToSerializedUserScript(std::move(user_script));
 
-  return script_serialization::ParseSerializedUserScript(serialized_script,
-                                                         extension, error);
+  return script_serialization::ParseSerializedUserScript(
+      serialized_script, extension, allowed_in_incognito, error);
 }
 
 // Converts a UserScript object to a api::user_scripts::RegisteredUserScript
@@ -211,9 +213,12 @@ ExtensionFunction::ResponseAction UserScriptsRegisterFunction::Run() {
   parsed_scripts->reserve(scripts.size());
   std::u16string parse_error;
 
+  bool allowed_in_incognito = scripting::ScriptsShouldBeAllowedInIncognito(
+      extension()->id(), browser_context());
+
   for (auto& script : scripts) {
-    std::unique_ptr<UserScript> user_script =
-        ParseUserScript(*extension(), std::move(script), &parse_error);
+    std::unique_ptr<UserScript> user_script = ParseUserScript(
+        *extension(), std::move(script), allowed_in_incognito, &parse_error);
     if (!user_script) {
       return RespondNow(Error(base::UTF16ToASCII(parse_error)));
     }
@@ -444,8 +449,13 @@ std::unique_ptr<UserScript> UserScriptsUpdateFunction::ApplyUpdate(
     original_script.world = std::move(new_script.world);
   }
 
+  // Note: for the update application, we disregard allowed_in_incognito.
+  // We'll set it on the resulting scripts.
+  constexpr bool kAllowedInIncognito = false;
+
   std::unique_ptr<UserScript> parsed_script =
-      ParseUserScript(*extension(), std::move(original_script), parse_error);
+      ParseUserScript(*extension(), std::move(original_script),
+                      kAllowedInIncognito, parse_error);
   return parsed_script;
 }
 
@@ -465,9 +475,13 @@ void UserScriptsUpdateFunction::OnUserScriptFilesValidated(
           ->user_script_manager()
           ->GetUserScriptLoaderForExtension(extension()->id());
 
+  bool allowed_in_incognito = scripting::ScriptsShouldBeAllowedInIncognito(
+      extension()->id(), browser_context());
+
   std::set<std::string> script_ids;
   for (const auto& script : *scripts) {
     script_ids.insert(script->id());
+    script->set_incognito_enabled(allowed_in_incognito);
   }
 
   if (error.has_value()) {

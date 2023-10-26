@@ -32,6 +32,12 @@ std::string AddPrefixToDynamicScriptId(const std::string& script_id,
 // prefix) is valid. Populates `error` if invalid.
 bool IsScriptIdValid(const std::string& script_id, std::string* error);
 
+// Returns whether new scripts added for the extension with the given
+// `extension_id` should be allowed in incognito contexts.
+bool ScriptsShouldBeAllowedInIncognito(
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context);
+
 // Returns a set of unique dynamic script IDs (with an added prefix
 // corresponding to `source`) for all given `scripts`. If the script is invalid
 // or duplicated in `existing_script_ids` or the new ids, populates error and

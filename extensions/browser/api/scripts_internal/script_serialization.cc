@@ -118,6 +118,7 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
 std::unique_ptr<UserScript> ParseSerializedUserScript(
     const api::scripts_internal::SerializedUserScript& serialized_script,
     const Extension& extension,
+    bool allowed_in_incognito,
     std::u16string* error_out) {
   bool source_matches_id = true;
   switch (serialized_script.source) {
@@ -199,6 +200,8 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
           error_out)) {
     return nullptr;
   }
+
+  user_script->set_incognito_enabled(allowed_in_incognito);
 
   return user_script;
 }
