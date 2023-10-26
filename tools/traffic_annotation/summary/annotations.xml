@@ -420,7 +420,7 @@ Refer to README.md for content description and update process.
  <item id="page_insights" added_in_milestone="116" type="partial" second_id="web_history_service" content_hash_code="05f02912" os_list="android" semantics_fields="1,2,3,4,5,7,8,9" policy_fields="-1,3,4" file_path="chrome/browser/ui/android/page_insights/page_insights_swaa_checker.cc" />
  <item id="ntp_image_url_verification" added_in_milestone="116" content_hash_code="00ed230b" os_list="linux,windows,chromeos" file_path="chrome/browser/search/background/ntp_background_service.cc" />
  <item id="device_bound_session_register" added_in_milestone="116" content_hash_code="0682bd33" os_list="linux,windows" file_path="chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.cc" />
- <item id="passkey_enclave_client" added_in_milestone="117" content_hash_code="06c3fa70" os_list="linux,windows" file_path="device/fido/enclave/enclave_http_client.cc" />
+ <item id="passkey_enclave_client" added_in_milestone="117" content_hash_code="06c3fa70" os_list="linux,windows,chromeos" file_path="device/fido/enclave/enclave_websocket_client.cc" />
  <item id="iwa_update_discovery_update_manifest" added_in_milestone="117" type="partial" second_id="iwa_update_manifest_fetcher" content_hash_code="021e8cdf" os_list="linux,windows,chromeos" semantics_fields="1,2,3,7,8,9" policy_fields="3,4" file_path="chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.cc" />
  <item id="iwa_update_discovery_web_bundle" added_in_milestone="117" type="partial" second_id="iwa_bundle_downloader" content_hash_code="044a85c3" os_list="linux,windows,chromeos" semantics_fields="1,2,3,7,8,9" policy_fields="3,4" file_path="chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.cc" />
  <item id="almanac_launcher_app" added_in_milestone="118" content_hash_code="0556e032" os_list="chromeos" file_path="chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.cc" />
@@ -439,4 +439,7 @@ Refer to README.md for content description and update process.
  <item id="almanac_icon_cache" added_in_milestone="120" content_hash_code="04ca8028" os_list="chromeos" file_path="chrome/browser/apps/almanac_api_client/almanac_icon_cache.cc" />
  <item id="remoting_provision_corp_machine" added_in_milestone="120" content_hash_code="043ecef7" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_service_client.cc" />
  <item id="blink_fetch_later_manager" added_in_milestone="120" content_hash_code="04eb549b" os_list="linux,windows,android" file_path="third_party/blink/renderer/core/fetch/fetch_manager.cc" />
+ <item id="carrier_lock_manager_fetch_configuration" added_in_milestone="120" content_hash_code="05a883cb" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/provisioning_config_fetcher_impl.cc" />
+ <item id="carrier_lock_manager_check_membership" added_in_milestone="120" content_hash_code="0471f29c" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/psm_claim_verifier_impl.cc" />
+ <item id="carrier_lock_manager_fcm_topic" added_in_milestone="120" content_hash_code="00c05900" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/topic_subscription_request.cc" />
 </annotations>

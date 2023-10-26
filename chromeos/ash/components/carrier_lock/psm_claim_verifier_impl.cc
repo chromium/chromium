@@ -38,11 +38,21 @@ const net::NetworkTrafficAnnotationTag traffic_annotation =
                    "boot to check if the cellular modem should be locked."
           data: "Manufacturer, model, serial of the device and API key."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+                email: "cros-cellular-core@google.com"
+            }
+          }
+          user_data {
+            type: DEVICE_ID
+            type: HW_OS_INFO
+          }
+          last_reviewed: "2023-10-24"
         }
         policy {
           cookies_allowed: NO
           setting: "This feature cannot be disabled in settings."
-          policy_exception_justification: "Not implemented."
+          policy_exception_justification: "Carrier Lock is always enforced."
         })");
 
 std::vector<psm_rlwe::RlwePlaintextId> GetPsmDeviceId(std::string serial,

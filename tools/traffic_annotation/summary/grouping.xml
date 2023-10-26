@@ -295,6 +295,9 @@ after discussions on the right group.
       <annotation id="customize_chrome_page_handler"/>
       <annotation id="almanac_icon_cache"/>
       <annotation id="blink_fetch_later_manager"/>
+      <annotation id="carrier_lock_manager_fetch_configuration"/>
+      <annotation id="carrier_lock_manager_check_membership"/>
+      <annotation id="carrier_lock_manager_fcm_topic"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

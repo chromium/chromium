@@ -44,14 +44,25 @@ const net::NetworkTrafficAnnotationTag traffic_annotation =
             "Request Carrier Lock configuration to setup modem locks."
           trigger: "Carrier Lock manager makes this network request every time "
                    "lock configuration needs to be updated on modem."
-          data: "FCM token, manufacturer, model, serial number, IMEI, device "
-                "id, android id and API key."
+          data: "FCM token, manufacturer, model, serial number, IMEI, device id"
+                "and API key."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+                email: "cros-cellular-core@google.com"
+            }
+          }
+          user_data {
+            type: DEVICE_ID
+            type: HW_OS_INFO
+            type: SESSION_ID
+          }
+          last_reviewed: "2023-10-24"
         }
         policy {
           cookies_allowed: NO
           setting: "This feature cannot be disabled in settings."
-          policy_exception_justification: "Not implemented."
+          policy_exception_justification: "Carrier Lock is always enforced."
         })");
 
 }  // namespace
