@@ -19,6 +19,7 @@
 #include "components/exo/surface_test_util.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/test/surface_tree_host_test_util.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -27,6 +28,7 @@
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/khronos/GLES2/gl2.h"
+#include "ui/aura/test/window_occlusion_tracker_test_api.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/display/display.h"
@@ -1456,6 +1458,33 @@ TEST_P(SurfaceTest, UpdatesOcclusionOnDestroyingSubsurface) {
   EXPECT_EQ(1, observer.num_occlusion_changes());
   EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
             child_surface->window()->GetOcclusionState());
+}
+
+TEST_P(SurfaceTest, OcclusionNotRecomputedOnWidgetCommit) {
+  constexpr gfx::Size kBufferSize(32, 32);
+  auto shell_surface =
+      test::ShellSurfaceBuilder(kBufferSize).BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  // Turn on occlusion tracking.
+  surface->SetOcclusionTracking(true);
+  surface->Commit();
+
+  // Commit the surface with no changes and expect not to get an occlusion
+  // update.
+  aura::test::WindowOcclusionTrackerTestApi window_occlusion_tracker_test_api(
+      aura::Env::GetInstance()->GetWindowOcclusionTracker());
+  const int num_times_occlusion_recomputed =
+      window_occlusion_tracker_test_api.GetNumTimesOcclusionRecomputed();
+  surface->Commit();
+  EXPECT_EQ(num_times_occlusion_recomputed,
+            window_occlusion_tracker_test_api.GetNumTimesOcclusionRecomputed());
+
+  // Set a non-null alpha shape and make sure occlusion is recomputed.
+  shell_surface->SetShape(cc::Region(gfx::Rect(0, 0, 24, 24)));
+  surface->Commit();
+  EXPECT_EQ(num_times_occlusion_recomputed + 1,
+            window_occlusion_tracker_test_api.GetNumTimesOcclusionRecomputed());
 }
 
 // TODO(crbug.com/1427023): Flaky test on Linux ChromiumOS MSan Tests.

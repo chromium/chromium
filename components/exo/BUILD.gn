@@ -325,6 +325,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/aura",
+    "//ui/aura:test_support",
     "//ui/base:test_support",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/dragdrop:types",

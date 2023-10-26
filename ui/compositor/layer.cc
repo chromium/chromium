@@ -697,7 +697,22 @@ void Layer::SetBackgroundOffset(const gfx::Point& background_offset) {
 }
 
 void Layer::SetAlphaShape(std::unique_ptr<ShapeRects> shape) {
+  // Do some brief checks to avoid recomputing occlusion and layer filters.
+  // See crbug.com/1493406.
+  bool changed = true;
+  if (alpha_shape_ == nullptr && shape == nullptr) {
+    changed = false;
+  }
+  if (alpha_shape_ != nullptr && shape != nullptr) {
+    // This doesn't catch the case where the `ShapeRects` are different but the
+    // same if sorted, but we just want to prevent most unnecessary updates.
+    changed = *alpha_shape_ != *shape;
+  }
   alpha_shape_ = std::move(shape);
+
+  if (!changed) {
+    return;
+  }
 
   SetLayerFilters();
 
