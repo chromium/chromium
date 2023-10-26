@@ -2514,6 +2514,8 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessTargetAddressSpaceCheck) {
   auto initiator = url::Origin::Create(GURL("https://foo.example"));
   ResetFactoryParams factory_params;
   factory_params.is_trusted = true;
+  factory_params.client_security_state = mojom::ClientSecurityState::New();
+  factory_params.client_security_state->is_web_secure_context = true;
   ResetFactory(initiator, mojom::kBrowserProcessId, factory_params);
 
   ResourceRequest request;

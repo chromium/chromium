@@ -25,6 +25,7 @@
 #include "services/network/masked_domain_list/network_service_resource_block_list.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service_memory_cache.h"
+#include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
@@ -878,10 +879,9 @@ void CorsURLLoader::StartRequest() {
   // need_pna_permission check in the code base.
   const mojom::ClientSecurityState* state = GetClientSecurityState();
   const bool needs_pna_permission =
-      base::FeatureList::IsEnabled(
-          features::kPrivateNetworkAccessPermissionPrompt) &&
-      state && state->is_web_secure_context &&
-      !IsUrlPotentiallyTrustworthy(request_.url);
+      state && PrivateNetworkAccessChecker::NeedPermission(
+                   request_.url, state->is_web_secure_context,
+                   request_.target_address_space);
   if (needs_pna_permission &&
       url_loader_network_service_observer_->is_bound()) {
     // Fail the request if `targetAddressSpace` on fetch option is not the same
@@ -902,8 +902,8 @@ void CorsURLLoader::StartRequest() {
       PreflightController::WithTrustedHeaderClient(
           options_ & mojom::kURLLoadOptionUseHeaderClient),
       context_->cors_non_wildcard_request_headers_support(),
-      GetPrivateNetworkAccessPreflightBehavior(), tainted_,
-      net::NetworkTrafficAnnotationTag(traffic_annotation_),
+      GetPrivateNetworkAccessPreflightBehavior(request_.target_address_space),
+      tainted_, net::NetworkTrafficAnnotationTag(traffic_annotation_),
       network_loader_factory_, isolation_info_, CloneClientSecurityState(),
       weak_devtools_observer_factory_.GetWeakPtr(), net_log_,
       context_->acam_preflight_spec_conformant(), std::move(remote_observer));
@@ -961,7 +961,8 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
 
   // Private Network Access warning: ignore net and CORS errors.
   if (net_error == net::OK || sending_pna_only_warning_preflight_) {
-    CHECK(ShouldIgnorePrivateNetworkAccessErrors());
+    CHECK(
+        ShouldIgnorePrivateNetworkAccessErrors(request_.target_address_space));
     CHECK_EQ(*reason, PreflightRequiredReason::kPrivateNetworkAccess);
 
     // Record the existence of the warning so that we can report it to
@@ -1138,7 +1139,8 @@ void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
       // private network access, then we rely on `PreflightController` to ignore
       // PNA-specific preflight errors during this second preflight request.
       sending_pna_only_warning_preflight_ =
-          ShouldIgnorePrivateNetworkAccessErrors() &&
+          ShouldIgnorePrivateNetworkAccessErrors(
+              request_.target_address_space) &&
           !(NeedsPreflight(request_).has_value() && fetch_cors_flag_);
 
       network_client_receiver_.reset();
@@ -1296,23 +1298,26 @@ mojom::ClientSecurityStatePtr CorsURLLoader::CloneClientSecurityState() const {
   return state->Clone();
 }
 
-bool CorsURLLoader::ShouldIgnorePrivateNetworkAccessErrors() const {
+bool CorsURLLoader::ShouldIgnorePrivateNetworkAccessErrors(
+    mojom::IPAddressSpace target_address_space) const {
   const mojom::ClientSecurityState* state = GetClientSecurityState();
-  // When the PNA permission prompt shown, we should always respect the
-  // preflight results, otherwise it would be a bypass of mixed content checker.
-  if (base::FeatureList::IsEnabled(
-          network::features::kPrivateNetworkAccessPermissionPrompt) &&
-      state->is_web_secure_context &&
-      !network::IsUrlPotentiallyTrustworthy(request_.url)) {
+  if (!state) {
     return false;
   }
-  return state && state->private_network_request_policy ==
-                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
+  // When the PNA permission prompt shown, we should always respect the
+  // preflight results, otherwise it would be a bypass of mixed content checker.
+  if (PrivateNetworkAccessChecker::NeedPermission(
+          request_.url, state->is_web_secure_context, target_address_space)) {
+    return false;
+  }
+  return state->private_network_request_policy ==
+         mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
 }
 
 PrivateNetworkAccessPreflightBehavior
-CorsURLLoader::GetPrivateNetworkAccessPreflightBehavior() const {
-  if (!ShouldIgnorePrivateNetworkAccessErrors()) {
+CorsURLLoader::GetPrivateNetworkAccessPreflightBehavior(
+    mojom::IPAddressSpace target_address_space) const {
+  if (!ShouldIgnorePrivateNetworkAccessErrors(target_address_space)) {
     return PrivateNetworkAccessPreflightBehavior::kEnforce;
   }
   if (sending_pna_only_warning_preflight_) {

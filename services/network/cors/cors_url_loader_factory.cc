@@ -20,6 +20,7 @@
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/network_service.h"
+#include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
@@ -739,20 +740,16 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
       return false;
     }
 
-    if (base::FeatureList::IsEnabled(
-            features::kPrivateNetworkAccessPermissionPrompt)) {
-      if (request.target_ip_address_space == mojom::IPAddressSpace::kPublic) {
+    if (client_security_state_ &&
+        PrivateNetworkAccessChecker::NeedPermission(
+            request.url, client_security_state_->is_web_secure_context,
+            request.target_address_space)) {
+      if (request.target_address_space == mojom::IPAddressSpace::kPublic) {
         mojo::ReportBadMessage(
-            "CorsURLLoaderFactory: target_ip_address_space "
+            "CorsURLLoaderFactory: target_address_space "
             "is set to public.");
         return false;
       }
-
-      // TODO(https://crbug.com/1455395):
-      // * `target_ip_address_space` should be `kLoopback` or `kLocal` when the
-      // request is bypassing mixed content.
-      // * `target_ip_address_space` should be `kUnknown` otherwise.
-      // * Anything else is forbidden.
     } else if (request.target_ip_address_space !=
                mojom::IPAddressSpace::kUnknown) {
       mojo::ReportBadMessage(

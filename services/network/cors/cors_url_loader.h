@@ -198,7 +198,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   //
   // TODO(https://crbug.com/1268378): Remove this once preflight enforcement
   // is enabled.
-  bool ShouldIgnorePrivateNetworkAccessErrors() const;
+  bool ShouldIgnorePrivateNetworkAccessErrors(
+      mojom::IPAddressSpace target_address_space) const;
 
   // Returns the PNA-specific behavior to apply to the next preflight request.
   //
@@ -208,7 +209,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // TODO(https://crbug.com/1268378): Remove this once preflight enforcement
   // is enabled.
   PrivateNetworkAccessPreflightBehavior
-  GetPrivateNetworkAccessPreflightBehavior() const;
+  GetPrivateNetworkAccessPreflightBehavior(
+      mojom::IPAddressSpace target_address_space) const;
 
   // Returns `pna_preflight_result_`'s value, then resets it.
   mojom::PrivateNetworkAccessPreflightResult
