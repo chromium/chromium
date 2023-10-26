@@ -5020,16 +5020,16 @@ are declared in tools/grit/grit_rule.gni.
       <if expr="enable_extensions">
         <!-- Extension blocked action bubble -->
         <message name="IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING" desc="Heading of the bubble to tell users that in order to run or not run an extension, they'll need to refresh the page. Deliberately similar to IDS_PAGE_INFO_INFOBAR_TEXT, but used for an different permission setting so they are not combined. If updating the one, please update the other or consult the extensions and privacy teams.">
-          To apply your updated settings to this site, reload this page
+          Reload this page to apply your updated settings on this site
         </message>
         <message name="IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON" desc="The text of the button to proceed with the page refresh for running an extension.">
           Reload
         </message>
         <message name="IDS_EXTENSION_RELOAD_PAGE_BUBBLE_ALLOW_SINGLE_EXTENSION_TITLE" desc="Title of the bubble to tell users that in order to run or block an extension, they'll need to refresh the page.">
-          To apply your updated settings for "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>" to this site, reload this page
+          Reload this page to apply your updated settings for "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>" on this site
         </message>
         <message name="IDS_EXTENSION_RELOAD_PAGE_BUBBLE_ALLOW_MULTIPLE_EXTENSIONS_TITLE" desc="Title of the bubble to tell users that in order to run or block an extension, they'll need to refresh the page.">
-          To apply your updated settings to this site for these extensions, reload this page
+          Reload this page to apply your updated extension settings to this site
         </message>
       </if>
 
