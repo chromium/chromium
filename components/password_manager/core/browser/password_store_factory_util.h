@@ -18,13 +18,13 @@ namespace password_manager {
 
 class CredentialsCleanerRunner;
 
-// Creates a LoginDatabase. Looks in |profile_path| for the database file.
+// Creates a LoginDatabase. Looks in |db_directory| for the database file.
 // Does not call LoginDatabase::Init() -- to avoid UI jank, that needs to be
 // called by PasswordStore::Init() on the background thread.
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
-    const base::FilePath& profile_path);
+    const base::FilePath& db_directory);
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
-    const base::FilePath& profile_path);
+    const base::FilePath& db_directory);
 
 // This function handles the following clean-ups of credentials:
 // (1) Removing blocklisted duplicates: if two blocklisted credentials have the

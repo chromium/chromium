@@ -19,17 +19,17 @@
 namespace password_manager {
 
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
-    const base::FilePath& profile_path) {
+    const base::FilePath& db_directory) {
   base::FilePath login_db_file_path =
-      profile_path.Append(kLoginDataForProfileFileName);
+      db_directory.Append(kLoginDataForProfileFileName);
   return std::make_unique<LoginDatabase>(login_db_file_path,
                                          IsAccountStore(false));
 }
 
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
-    const base::FilePath& profile_path) {
+    const base::FilePath& db_directory) {
   base::FilePath login_db_file_path =
-      profile_path.Append(kLoginDataForAccountFileName);
+      db_directory.Append(kLoginDataForAccountFileName);
   return std::make_unique<LoginDatabase>(login_db_file_path,
                                          IsAccountStore(true));
 }
