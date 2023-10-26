@@ -9,15 +9,18 @@
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -41,6 +44,8 @@ using chrome_test_util::ManualFallbackPasswordTableViewWindowMatcher;
 using chrome_test_util::ManualFallbackSuggestPasswordMatcher;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
+using chrome_test_util::SettingsAccountButton;
+using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsPasswordMatcher;
 using chrome_test_util::SettingsPasswordSearchMatcher;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
@@ -52,6 +57,8 @@ namespace {
 
 const char kFormElementUsername[] = "username";
 const char kFormElementPassword[] = "password";
+
+NSString* const kPassphrase = @"hello";
 
 const char kExampleUsername[] = "concrete username";
 
@@ -119,6 +126,19 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordUISplit);
+
+  if ([self
+          isRunningTest:@selector
+          (testPasswordGenerationOnManualFallbackSignedInNotSyncingAccount)] ||
+      [self isRunningTest:@selector
+            (testPasswordGenerationFallbackSignedInNotSyncingPassowrdsDisbaled
+                )] ||
+      [self
+          isRunningTest:@selector
+          (testPasswordGenerationFallbackSignedInNotSyncingEncryptionError)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
 
   return config;
 }
@@ -686,6 +706,117 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
       [NSString stringWithFormat:@"document.getElementById('%s').value !== ''",
                                  kFormElementPassword];
   [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
+}
+
+// Tests password generation on manual fallback for signed in not syncing users.
+- (void)testPasswordGenerationOnManualFallbackSignedInNotSyncingAccount {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:base::Seconds(10)];
+
+  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementPassword)];
+
+  // Tap on the passwords icon.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+      performAction:grey_tap()];
+
+  // Verify the password controller table view is visible.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify a 'Suggest Password...' option is showing.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Select a 'Suggest Password...' option.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
+      performAction:grey_tap()];
+}
+
+// Tests password generation on manual fallback not showing for signed in not
+// syncing users with Passwords toggle in account settings disbaled.
+- (void)testPasswordGenerationFallbackSignedInNotSyncingPassowrdsDisbaled {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:base::Seconds(10)];
+
+  // Disable Passwords toggle in account settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncPasswordsIdentifier)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementPassword)];
+
+  // Tap on the passwords icon.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+      performAction:grey_tap()];
+
+  // Verify the password controller table view is visible.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify the 'Suggest Password...' option is not shown.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests password generation on manual fallback not showing for signed in not
+// syncing users with encryption error.
+- (void)testPasswordGenerationFallbackSignedInNotSyncingEncryptionError {
+  // Encrypt synced data with a passphrase to enable passphrase encryption for
+  // the signed in account.
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:base::Seconds(10)];
+
+  // Verify encryption error is showing in in account settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  // Verify the error section is showing.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementPassword)];
+
+  // Tap on the passwords icon.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+      performAction:grey_tap()];
+
+  // Verify the password controller table view is visible.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify the 'Suggest Password...' option is not shown.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end
