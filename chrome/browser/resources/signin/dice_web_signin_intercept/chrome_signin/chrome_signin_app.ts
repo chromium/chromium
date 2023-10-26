@@ -62,8 +62,7 @@ export class ChromeSigninAppElement extends ChromeSigninAppElementBase {
   }
 
   private onAccept_() {
-    // TODO(b/301431278): change to accept when the reaction is implemented.
-    this.diceWebSigninInterceptBrowserProxy_.cancel();
+    this.diceWebSigninInterceptBrowserProxy_.accept();
   }
 }
 

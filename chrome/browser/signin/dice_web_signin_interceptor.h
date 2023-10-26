@@ -207,7 +207,8 @@ class DiceWebSigninInterceptor : public KeyedService,
                              SigninInterceptionResult switch_profile);
   // Called after the user chose whether they want to sign in to chrome or not
   // via the Chrome Signin Bubble.
-  void OnChromeSigninChoice(SigninInterceptionResult result);
+  void OnChromeSigninChoice(const AccountInfo& account_info,
+                            SigninInterceptionResult result);
 
   // Called when the new profile is created or loaded from disk.
   // `profile_color` is set as theme color for the profile ; it should be

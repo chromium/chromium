@@ -423,6 +423,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
+    case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
       break;
@@ -632,6 +633,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+    case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Signin_Impression_From* user actions"
                    << " are not recorded for access point "

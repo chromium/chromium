@@ -12,7 +12,14 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
       ChromeSigninInterceptionParameters;
 
   constructor() {
-    super(['accept', 'cancel', 'guest', 'pageLoaded', 'initializedWithHeight']);
+    super([
+      'accept',
+      'cancel',
+      'guest',
+      'pageLoaded',
+      'chromeSigninPageLoaded',
+      'initializedWithHeight',
+    ]);
 
     this.interceptionParameters_ = {
       headerText: '',
@@ -41,6 +48,11 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
 
   setInterceptionParameters(parameters: InterceptionParameters) {
     this.interceptionParameters_ = parameters;
+  }
+
+  setChromeSigninInterceptionParameters(
+      parameters: ChromeSigninInterceptionParameters) {
+    this.chromeSigninInterceptionParameters_ = parameters;
   }
 
   accept() {

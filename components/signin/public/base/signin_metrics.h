@@ -208,6 +208,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID = 52,
   // Access point for the Save to Photos feature on iOS.
   ACCESS_POINT_SAVE_TO_PHOTOS_IOS = 53,
+  // Access point for the Chrome Signin Intercept Bubble.
+  ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE = 54,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml

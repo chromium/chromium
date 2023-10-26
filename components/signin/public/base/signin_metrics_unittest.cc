@@ -175,6 +175,7 @@ class SigninMetricsTest : public ::testing::Test {
         return "PasswordMigrationWarning";
       case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
         return "SaveToPhotos";
+      case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

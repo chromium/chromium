@@ -100771,6 +100771,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="50" label="Search companion"/>
   <int value="51" label="Set Up List on iOS only"/>
   <int value="52" label="Password migration warning on Android only"/>
+  <int value="53" label="Save to photos iOS"/>
+  <int value="54" label="Chrome Sign-in intercept bubble."/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

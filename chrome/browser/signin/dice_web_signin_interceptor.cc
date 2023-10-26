@@ -13,6 +13,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -717,7 +718,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       break;
     case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
       callback = base::BindOnce(&DiceWebSigninInterceptor::OnChromeSigninChoice,
-                                base::Unretained(this));
+                                base::Unretained(this), info);
       break;
   }
   ShowSigninInterceptionBubble(bubble_parameters, std::move(callback));
@@ -771,13 +772,30 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
 }
 
 void DiceWebSigninInterceptor::OnChromeSigninChoice(
+    const AccountInfo& account_info,
     SigninInterceptionResult result) {
-  if (result == SigninInterceptionResult::kDeclined) {
-    Reset();
-    return;
-  }
+  // In all cases we want to close the bubble after the choice is taken.
+  Reset();
 
-  // TODO(b/301431278): Implement the rest of the cases.
+  switch (result) {
+    case SigninInterceptionResult::kIgnored:
+      // Can happen if the browser isclosed while the bubble is still opened.
+    case SigninInterceptionResult::kNotDisplayed:
+      // Can happen if the web contents is destroyed between the time the bubble
+      // was requested to be displayed and actually being displayed.
+    case SigninInterceptionResult::kDeclined:
+      // The user declined the bubble.
+      break;
+    case SigninInterceptionResult::kAcceptedWithGuest:
+    case SigninInterceptionResult::kAcceptedWithExistingProfile:
+      NOTREACHED_NORETURN()
+          << "Those results are not expected within the Chrome Signin Bubble.";
+    case SigninInterceptionResult::kAccepted:
+      identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          account_info.account_id, signin::ConsentLevel::kSignin,
+          signin_metrics::AccessPoint::
+              ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+  }
 }
 
 void DiceWebSigninInterceptor::OnProfileSwitchChoice(

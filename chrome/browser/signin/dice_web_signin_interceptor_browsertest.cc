@@ -41,6 +41,9 @@
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -232,6 +235,21 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
         }));
   }
 
+  AccountInfo MakeAccountInfoAvailableAndUpdate(
+      const std::string email,
+      const std::string& hosted_domain = "example.com") {
+    AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
+    // Fill the account info, in particular for the hosted_domain field.
+    account_info.full_name = "fullname";
+    account_info.given_name = "givenname";
+    account_info.hosted_domain = hosted_domain;
+    account_info.locale = "en";
+    account_info.picture_url = "https://example.com";
+    DCHECK(account_info.IsValid());
+    identity_test_env()->UpdateAccountInfoForAccount(account_info);
+    return account_info;
+  }
+
  private:
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -272,16 +290,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   base::HistogramTester histogram_tester;
   // Setup profile for interception.
   identity_test_env()->MakeAccountAvailable("alice@example.com");
-  AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("bob@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = kNoHostedDomainFound;
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  AccountInfo account_info = MakeAccountInfoAvailableAndUpdate(
+      "bob@example.com", kNoHostedDomainFound);
 
   SetupGaiaResponses();
 
@@ -353,15 +363,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
   // Add a profile in the cache (simulate the profile on disk).
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage* profile_storage =
@@ -429,15 +431,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
   // Create another profile with a browser window.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   const base::FilePath profile_path =
@@ -510,15 +504,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
   // Setup profile for interception.
   identity_test_env()->MakeAccountAvailable("alice@example.com");
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("bob@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = kNoHostedDomainFound;
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("bob@example.com");
 
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
@@ -559,6 +545,103 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
       GURL("chrome://newtab/"));
 }
 
+// Test to sign in to Chrome from the Chrome Signin Bubble Intercept with Uno
+// Desktop enabled.
+class DiceWebSigninInterceptorWithUnoEnabledBrowserTest
+    : public DiceWebSigninInterceptorBrowserTest {
+  base::test::ScopedFeatureList feature_list_{switches::kUnoDesktop};
+};
+
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
+                       ChromeSigninInterceptAccepted) {
+  base::HistogramTester histogram_tester;
+
+  // Setup profile for interception.
+  AccountInfo account_info =
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
+  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // bubble.
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* contents = AddTab(intercepted_url);
+
+  // Set up the result expectations.
+  // By default the delegate accepts the bubble.
+  FakeDiceWebSigninInterceptorDelegate* interceptor_delegate =
+      GetInterceptorDelegate(GetProfile());
+  interceptor_delegate->set_expected_interception_type(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
+
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(
+          Profile::FromBrowserContext(contents->GetBrowserContext()));
+  interceptor->MaybeInterceptWebSignin(contents, account_info.account_id,
+                                       /*is_new_account=*/true,
+                                       /*is_sync_signin=*/false);
+
+  EXPECT_TRUE(interceptor_delegate->intercept_bubble_shown());
+
+  // The handling of the response to the bubble is done asynchronously in
+  // `FakeDiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble()`.
+  base::RunLoop().RunUntilIdle();
+
+  // We are expected to be signed in to Chrome and the bubble is destroyed.
+  EXPECT_TRUE(interceptor_delegate->intercept_bubble_destroyed());
+  EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  CheckHistograms(histogram_tester,
+                  SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
+                       ChromeSigninInterceptDeclined) {
+  base::HistogramTester histogram_tester;
+
+  // Setup profile for interception.
+  AccountInfo account_info =
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
+  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // bubble.
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* contents = AddTab(intercepted_url);
+
+  // Set up the result expectations.
+  FakeDiceWebSigninInterceptorDelegate* interceptor_delegate =
+      GetInterceptorDelegate(GetProfile());
+  interceptor_delegate->set_expected_interception_type(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
+  interceptor_delegate->set_expected_interception_result(
+      SigninInterceptionResult::kDeclined);
+
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(
+          Profile::FromBrowserContext(contents->GetBrowserContext()));
+  interceptor->MaybeInterceptWebSignin(contents, account_info.account_id,
+                                       /*is_new_account=*/true,
+                                       /*is_sync_signin=*/false);
+
+  EXPECT_TRUE(interceptor_delegate->intercept_bubble_shown());
+
+  // The handling of the response to the bubble is done asynchronously in
+  // `FakeDiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble()`.
+  base::RunLoop().RunUntilIdle();
+
+  // We are not expected to be signed in to Chrome (declining the bubble) and
+  // the bubble is destroyed.
+  EXPECT_TRUE(interceptor_delegate->intercept_bubble_destroyed());
+  EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  CheckHistograms(histogram_tester,
+                  SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
+}
+
 // WebApps do not trigger interception. Regression test for
 // https://crbug.com/1414988
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
@@ -567,15 +650,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   // Setup profile for interception.
   identity_test_env()->MakeAccountAvailable("alice@example.com");
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("bob@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = kNoHostedDomainFound;
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("bob@example.com");
 
   SetupGaiaResponses();
 
@@ -617,30 +692,14 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   base::HistogramTester histogram_tester;
 
   AccountInfo primary_account_info =
-      identity_test_env()->MakeAccountAvailable("bob@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  primary_account_info.full_name = "fullname";
-  primary_account_info.given_name = "givenname";
-  primary_account_info.hosted_domain = "example.com";
-  primary_account_info.locale = "en";
-  primary_account_info.picture_url = "https://example.com";
-  DCHECK(primary_account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
+      MakeAccountInfoAvailableAndUpdate("bob@example.com");
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
       ->SetPrimaryAccount(primary_account_info.account_id,
                           signin::ConsentLevel::kSync);
 
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
 
   // Enforce enterprise profile sepatation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -723,26 +782,10 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        EnterpriseInterceptionDeclined) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
 
   AccountInfo primary_account_info =
-      identity_test_env()->MakeAccountAvailable("bob@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  primary_account_info.full_name = "fullname";
-  primary_account_info.given_name = "givenname";
-  primary_account_info.hosted_domain = "example.com";
-  primary_account_info.locale = "en";
-  primary_account_info.picture_url = "https://example.com";
-  DCHECK(primary_account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
+      MakeAccountInfoAvailableAndUpdate("bob@example.com");
 
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
@@ -801,15 +844,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        ForcedEnterpriseInterceptionTestAccountLevelPolicy) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
 
   // Enforce enterprise profile sepatation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -894,15 +929,7 @@ IN_PROC_BROWSER_TEST_F(
     ForcedEnterpriseInterceptionTestAccountLevelPolicyDeclined) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
 
   // Enforce enterprise profile sepatation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -961,15 +988,7 @@ IN_PROC_BROWSER_TEST_F(
     ForcedEnterpriseInterceptionTestAccountLevelPolicyStrictDeclined) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
 
   // Enforce enterprise profile sepatation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -1027,15 +1046,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        ForcedEnterpriseInterceptionTest) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
 
   // Enforce enterprise profile separation.
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -1118,15 +1129,7 @@ IN_PROC_BROWSER_TEST_F(
     ForcedEnterpriseInterceptionPrimaryACcountReauthSyncDisabledTest) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
 
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
@@ -1185,15 +1188,7 @@ IN_PROC_BROWSER_TEST_F(
     ForcedEnterpriseInterceptionPrimaryACcountReauthSyncEnabledTest) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
 
   IdentityManagerFactory::GetForProfile(GetProfile())
       ->GetPrimaryAccountMutator()
@@ -1252,15 +1247,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
                                       "primary_account_strict");
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
 
   // Add a profile in the cache (simulate the profile on disk).
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1336,15 +1323,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
                                       "primary_account_strict");
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-  // Fill the account info, in particular for the hosted_domain field.
-  account_info.full_name = "fullname";
-  account_info.given_name = "givenname";
-  account_info.hosted_domain = "example.com";
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  DCHECK(account_info.IsValid());
-  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+      MakeAccountInfoAvailableAndUpdate("alice@example.com");
   // Create another profile with a browser window.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   const base::FilePath profile_path =
