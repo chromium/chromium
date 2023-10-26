@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_partial_view.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
@@ -141,7 +143,8 @@ class SuppressBubbleSettingRow : public views::View,
         views::ViewTargeterDelegate::TargetForRect(root, rect);
     // Links should operate as expected, but all other gestures on this view
     // should be forwarded to the checkbox.
-    if (target->GetClassName() == views::LinkFragment::kViewClassName) {
+    if (std::string_view(target->GetClassName()) ==
+        std::string_view(views::LinkFragment::kViewClassName)) {
       return target;
     }
 

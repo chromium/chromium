@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/app_types.h"
@@ -1774,7 +1775,8 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
       ash::GetSavedDeskDialogAcceptButton();
   ASSERT_TRUE(dialog_accept_button);
   // MaterialNext uses PillButton instead of dialog buttons.
-  if (dialog_accept_button->GetClassName() == ash::PillButton::kViewClassName) {
+  if (std::string_view(dialog_accept_button->GetClassName()) ==
+      std::string_view(ash::PillButton::kViewClassName)) {
     ClickButton(dialog_accept_button);
   } else {
     // Use a key press to accept the dialog instead of a click as

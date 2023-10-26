@@ -4,6 +4,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -1108,8 +1109,10 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
     // TODO(https://crbug.com/1262236): class name comparision and static cast
     // should be avoided in the production code. Find a better way to guarantee
     // the item's selection status.
-    if (focused_view->GetClassName() == AppListItemView::kViewClassName)
+    if (std::string_view(focused_view->GetClassName()) ==
+        std::string_view(AppListItemView::kViewClassName)) {
       static_cast<AppListItemView*>(focused_view)->EnsureSelected();
+    }
 
     focused_view->SchedulePaint();
   }
