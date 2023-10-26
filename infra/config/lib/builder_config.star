@@ -759,8 +759,10 @@ def _set_builder_config_property(ctx):
                 "linux-chromeos-archive-rel",
                 "mac-arm64-dbg",
             ]
-            is_excluded = builder.name in excluded_builders or any(
-                [s.key.id in excluded_rotations for s in rotations],
+            is_excluded = (
+                builder.name in excluded_builders or
+                any([s.key.id in excluded_rotations for s in rotations]) or
+                json.decode(builder.properties)["recipe"] != "chromium"
             )
             if rotations and not mirroring_builders and not is_excluded:
                 fail("{} is on a sheriff/gardener rotation, but lacks a matching trybot".format(builder.name))

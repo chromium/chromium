@@ -3,7 +3,6 @@ chromium/try/android-12-x64-dbg
 chromium/try/android-12-x64-dual-coverage-exp-rel
 chromium/try/android-12-x64-rel
 chromium/try/android-12l-x64-dbg
-chromium/try/android-angle-chromium-try
 chromium/try/android-arm-compile-dbg
 chromium/try/android-arm64-all-targets-dbg
 chromium/try/android-arm64-rel
@@ -55,7 +54,6 @@ chromium/try/dawn-try-win10-x64-nvidia-asan
 chromium/try/dawn-try-win10-x86-rel
 chromium/try/dawn-win10-x64-deps-rel
 chromium/try/dawn-win10-x86-deps-rel
-chromium/try/fuchsia-angle-try
 chromium/try/fuchsia-arm64-cast-receiver-rel
 chromium/try/fuchsia-arm64-rel
 chromium/try/fuchsia-compile-x64-dbg
@@ -65,7 +63,6 @@ chromium/try/fuchsia-fyi-x64-dbg
 chromium/try/fuchsia-fyi-x64-dbg-persistent-emulator
 chromium/try/fuchsia-x64-cast-receiver-rel
 chromium/try/fuchsia-x64-rel
-chromium/try/ios-angle-try-intel
 chromium/try/ios-asan
 chromium/try/ios-catalyst
 chromium/try/ios-device
@@ -81,7 +78,6 @@ chromium/try/lacros-arm-generic-rel
 chromium/try/lacros-arm-generic-rel-skylab
 chromium/try/lacros-arm64-generic-rel-skylab
 chromium/try/layout_test_leak_detection
-chromium/try/linux-angle-chromium-try
 chromium/try/linux-arm64-castos
 chromium/try/linux-arm64-rel-cft
 chromium/try/linux-asan-dbg
@@ -138,7 +134,6 @@ chromium/try/linux_chromium_dbg_ng
 chromium/try/linux_chromium_msan_rel_ng
 chromium/try/linux_chromium_tsan_rel_ng
 chromium/try/linux_chromium_tsan_siso_rel_ng
-chromium/try/mac-angle-chromium-try
 chromium/try/mac-arm64-clobber-rel
 chromium/try/mac-arm64-on-arm64-rel
 chromium/try/mac-asan-media-rel
@@ -163,8 +158,6 @@ chromium/try/mac_chromium_compile_dbg_ng
 chromium/try/mac_chromium_compile_rel_ng
 chromium/try/mac_chromium_dbg_ng
 chromium/try/network_service_linux
-chromium/try/win-angle-chromium-x64-try
-chromium/try/win-angle-chromium-x86-try
 chromium/try/win-asan
 chromium/try/win-asan-media-rel
 chromium/try/win-asan-rel
