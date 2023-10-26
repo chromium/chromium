@@ -38,9 +38,7 @@
 #import "components/sync_user_events/user_event_service.h"
 #import "components/trusted_vault/trusted_vault_service.h"
 #import "components/variations/service/google_groups_updater_service.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/dom_distiller/model/dom_distiller_service_factory.h"
@@ -101,32 +99,35 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
       SupervisedUserSettingsServiceFactory::GetForBrowserState(browser_state);
 #endif
 
+  sync_bookmarks::BookmarkSyncService* local_or_syncable_bookmark_sync_service =
+      ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
+          browser_state_);
+  sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service =
+      ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
+          browser_state_);
+
   component_factory_ =
       std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
           this, ::GetChannel(), web::GetUIThreadTaskRunner({}), db_thread_,
           profile_web_data_service_, account_web_data_service_,
           profile_password_store_, account_password_store_,
-          ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
-              browser_state_),
-          ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
-              browser_state_),
+          local_or_syncable_bookmark_sync_service,
+          account_bookmark_sync_service,
           PowerBookmarkServiceFactory::GetForBrowserState(browser_state_),
           supervised_user_settings_service);
 
   local_data_query_helper_ =
       std::make_unique<browser_sync::LocalDataQueryHelper>(
           profile_password_store_.get(), account_password_store_.get(),
-          ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-              browser_state_),
-          ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_),
+          local_or_syncable_bookmark_sync_service,
+          account_bookmark_sync_service,
           ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
               browser_state_));
   local_data_migration_helper_ =
       std::make_unique<browser_sync::LocalDataMigrationHelper>(
           profile_password_store_.get(), account_password_store_.get(),
-          ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-              browser_state_),
-          ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_),
+          local_or_syncable_bookmark_sync_service,
+          account_bookmark_sync_service,
           ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
               browser_state_));
 }

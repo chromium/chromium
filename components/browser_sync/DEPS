@@ -20,6 +20,7 @@ include_rules = [
   "+components/sync_preferences",
   "+components/sync_sessions",
   "+components/sync_user_events",
+  "+components/undo",
   "+components/url_formatter",
   "+components/version_info",
   "+components/webdata/common",

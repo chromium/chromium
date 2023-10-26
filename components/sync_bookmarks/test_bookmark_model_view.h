@@ -18,14 +18,17 @@ class TestBookmarkClient;
 
 namespace sync_bookmarks {
 
-class TestBookmarkModelView : public BookmarkModelView {
+class TestBookmarkModelView
+    : public BookmarkModelViewUsingLocalOrSyncableNodes {
  public:
   TestBookmarkModelView();
   explicit TestBookmarkModelView(
       std::unique_ptr<bookmarks::TestBookmarkClient> bookmark_client);
   ~TestBookmarkModelView() override;
 
-  bookmarks::BookmarkModel* underlying_model() { return bookmark_model_.get(); }
+  bookmarks::BookmarkModel* underlying_model() {
+    return BookmarkModelView::underlying_model();
+  }
   bookmarks::TestBookmarkClient* underlying_client() {
     return static_cast<bookmarks::TestBookmarkClient*>(
         bookmark_model_->client());

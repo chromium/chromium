@@ -25,6 +25,7 @@
 #include "components/history/core/browser/url_database.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/power_bookmarks/core/suggested_save_location_provider.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
 
@@ -212,12 +213,19 @@ void ChromeBookmarkClient::DecodeBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {
   local_or_syncable_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
-      metadata_str, schedule_save_closure, model_);
+      metadata_str, schedule_save_closure,
+      std::make_unique<
+          sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model_));
   // TODO(crbug.com/1494120): Pass along sync metadata once BookmarkClient API
   // is capable of reading it from BookmarkModel.
   if (account_bookmark_sync_service_) {
+    // TODO(crbug.com/1494120): `BookmarkModelViewUsingLocalOrSyncableNodes` is
+    // not the right thing to use here, because the underlying model is shared.
     account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
-        std::string(), schedule_save_closure, model_);
+        std::string(), schedule_save_closure,
+        std::make_unique<
+            sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(
+            model_));
   }
 }
 

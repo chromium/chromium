@@ -60,18 +60,6 @@ const bookmarks::BookmarkNode* BookmarkModelView::root_node() const {
   return bookmark_model_->root_node();
 }
 
-const bookmarks::BookmarkNode* BookmarkModelView::bookmark_bar_node() const {
-  return bookmark_model_->bookmark_bar_node();
-}
-
-const bookmarks::BookmarkNode* BookmarkModelView::other_node() const {
-  return bookmark_model_->other_node();
-}
-
-const bookmarks::BookmarkNode* BookmarkModelView::mobile_node() const {
-  return bookmark_model_->mobile_node();
-}
-
 bool BookmarkModelView::is_permanent_node(
     const bookmarks::BookmarkNode* node) const {
   return bookmark_model_->is_permanent_node(node);
@@ -170,6 +158,29 @@ void BookmarkModelView::SetNodeMetaInfoMap(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode::MetaInfoMap& meta_info_map) {
   bookmark_model_->SetNodeMetaInfoMap(node, meta_info_map);
+}
+
+BookmarkModelViewUsingLocalOrSyncableNodes::
+    BookmarkModelViewUsingLocalOrSyncableNodes(
+        bookmarks::BookmarkModel* bookmark_model)
+    : BookmarkModelView(bookmark_model) {}
+
+BookmarkModelViewUsingLocalOrSyncableNodes::
+    ~BookmarkModelViewUsingLocalOrSyncableNodes() = default;
+
+const bookmarks::BookmarkNode*
+BookmarkModelViewUsingLocalOrSyncableNodes::bookmark_bar_node() const {
+  return underlying_model()->bookmark_bar_node();
+}
+
+const bookmarks::BookmarkNode*
+BookmarkModelViewUsingLocalOrSyncableNodes::other_node() const {
+  return underlying_model()->other_node();
+}
+
+const bookmarks::BookmarkNode*
+BookmarkModelViewUsingLocalOrSyncableNodes::mobile_node() const {
+  return underlying_model()->mobile_node();
 }
 
 }  // namespace sync_bookmarks

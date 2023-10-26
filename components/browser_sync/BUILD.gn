@@ -89,6 +89,7 @@ source_set("unit_tests") {
     "//components/sync_bookmarks",
     "//components/sync_device_info",
     "//components/sync_device_info:test_support",
+    "//components/undo",
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//components/webdata/common",

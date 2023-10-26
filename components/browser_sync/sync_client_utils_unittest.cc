@@ -21,6 +21,9 @@
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
+#include "components/sync_bookmarks/bookmark_sync_service.h"
+#include "components/undo/bookmark_undo_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,7 +60,13 @@ syncer::LocalDataDescription CreateLocalDataDescription(
 
 class LocalDataQueryHelperTest : public testing::Test {
  public:
-  LocalDataQueryHelperTest() {
+  LocalDataQueryHelperTest()
+      : local_bookmark_sync_service_(
+            &bookmark_undo_service_,
+            syncer::WipeModelUponSyncDisabledBehavior::kNever),
+        account_bookmark_sync_service_(
+            &bookmark_undo_service_,
+            syncer::WipeModelUponSyncDisabledBehavior::kNever) {
     local_password_store_->Init(/*prefs=*/nullptr,
                                 /*affiliated_match_helper=*/nullptr);
     account_password_store_->Init(/*prefs=*/nullptr,
@@ -69,6 +78,20 @@ class LocalDataQueryHelperTest : public testing::Test {
     local_bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(
             std::move(local_bookmark_client));
+
+    // Make sure BookmarkSyncService is aware of bookmarks having been loaded.
+    local_bookmark_sync_service_.DecodeBookmarkSyncMetadata(
+        /*metadata_str=*/"",
+        /*schedule_save_closure=*/base::DoNothing(),
+        std::make_unique<
+            sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(
+            local_bookmark_model_.get()));
+    account_bookmark_sync_service_.DecodeBookmarkSyncMetadata(
+        /*metadata_str=*/"",
+        /*schedule_save_closure=*/base::DoNothing(),
+        std::make_unique<
+            sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(
+            account_bookmark_model_.get()));
 
     // TODO(crbug.com/1451508): Simplify by wrapping into a helper.
     auto local_reading_list_storage =
@@ -96,12 +119,13 @@ class LocalDataQueryHelperTest : public testing::Test {
     local_reading_list_storage_ptr->TriggerLoadCompletion();
     account_reading_list_storage_ptr->TriggerLoadCompletion();
 
-    local_data_query_helper_ = std::make_unique<LocalDataQueryHelper>(
-        /*profile_password_store=*/local_password_store_.get(),
-        /*account_password_store=*/account_password_store_.get(),
-        /*local_bookmark_model=*/local_bookmark_model_.get(),
-        /*account_bookmark_model=*/account_bookmark_model_.get(),
-        /*dual_reading_list_model=*/dual_reading_list_model_.get());
+    local_data_query_helper_ =
+        std::make_unique<browser_sync::LocalDataQueryHelper>(
+            /*profile_password_store=*/local_password_store_.get(),
+            /*account_password_store=*/account_password_store_.get(),
+            /*local_bookmark_sync_service=*/&local_bookmark_sync_service_,
+            /*account_bookmark_sync_service=*/&account_bookmark_sync_service_,
+            /*dual_reading_list_model=*/dual_reading_list_model_.get());
 
     // Make sure PasswordStore is fully initialized.
     RunAllPendingTasks();
@@ -128,6 +152,10 @@ class LocalDataQueryHelperTest : public testing::Test {
   raw_ptr<bookmarks::TestBookmarkClient> local_bookmark_client_;
   std::unique_ptr<bookmarks::BookmarkModel> account_bookmark_model_ =
       bookmarks::TestBookmarkClient::CreateModel();
+
+  BookmarkUndoService bookmark_undo_service_;  // Needed by BookmarkSyncService.
+  sync_bookmarks::BookmarkSyncService local_bookmark_sync_service_;
+  sync_bookmarks::BookmarkSyncService account_bookmark_sync_service_;
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
@@ -161,8 +189,8 @@ TEST_F(LocalDataQueryHelperTest, ShouldHandleUnusableTypes) {
   LocalDataQueryHelper helper(
       /*profile_password_store=*/nullptr,
       /*account_password_store=*/nullptr,
-      /*local_bookmark_model=*/nullptr,
-      /*account_bookmark_model=*/nullptr,
+      /*local_bookmark_sync_service=*/nullptr,
+      /*account_bookmark_sync_service=*/nullptr,
       /*dual_reading_list_model=*/nullptr);
   helper.Run(syncer::ModelTypeSet(
                  {syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST}),
@@ -466,7 +494,13 @@ TEST_F(LocalDataQueryHelperTest, ShouldWorkForUrlsWithNoTLD) {
 
 class LocalDataMigrationHelperTest : public testing::Test {
  public:
-  LocalDataMigrationHelperTest() {
+  LocalDataMigrationHelperTest()
+      : local_bookmark_sync_service_(
+            &bookmark_undo_service_,
+            syncer::WipeModelUponSyncDisabledBehavior::kNever),
+        account_bookmark_sync_service_(
+            &bookmark_undo_service_,
+            syncer::WipeModelUponSyncDisabledBehavior::kNever) {
     local_password_store_->Init(/*prefs=*/nullptr,
                                 /*affiliated_match_helper=*/nullptr);
     account_password_store_->Init(/*prefs=*/nullptr,
@@ -478,6 +512,20 @@ class LocalDataMigrationHelperTest : public testing::Test {
     local_bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(
             std::move(local_bookmark_client));
+
+    // Make sure BookmarkSyncService is aware of bookmarks having been loaded.
+    local_bookmark_sync_service_.DecodeBookmarkSyncMetadata(
+        /*metadata_str=*/"",
+        /*schedule_save_closure=*/base::DoNothing(),
+        std::make_unique<
+            sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(
+            local_bookmark_model_.get()));
+    account_bookmark_sync_service_.DecodeBookmarkSyncMetadata(
+        /*metadata_str=*/"",
+        /*schedule_save_closure=*/base::DoNothing(),
+        std::make_unique<
+            sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(
+            account_bookmark_model_.get()));
 
     // TODO(crbug.com/1451508): Simplify by wrapping into a helper.
     auto local_reading_list_storage =
@@ -505,12 +553,13 @@ class LocalDataMigrationHelperTest : public testing::Test {
     local_reading_list_storage_ptr->TriggerLoadCompletion();
     account_reading_list_storage_ptr->TriggerLoadCompletion();
 
-    local_data_migration_helper_ = std::make_unique<LocalDataMigrationHelper>(
-        /*profile_password_store=*/local_password_store_.get(),
-        /*account_password_store=*/account_password_store_.get(),
-        /*local_bookmark_model=*/local_bookmark_model_.get(),
-        /*account_bookmark_model=*/account_bookmark_model_.get(),
-        /*dual_reading_list_model=*/dual_reading_list_model_.get());
+    local_data_migration_helper_ =
+        std::make_unique<browser_sync::LocalDataMigrationHelper>(
+            /*profile_password_store=*/local_password_store_.get(),
+            /*account_password_store=*/account_password_store_.get(),
+            /*local_bookmark_sync_service=*/&local_bookmark_sync_service_,
+            /*account_bookmark_sync_service=*/&account_bookmark_sync_service_,
+            /*dual_reading_list_model=*/dual_reading_list_model_.get());
 
     // Make sure PasswordStore is fully initialized.
     RunAllPendingTasks();
@@ -537,6 +586,10 @@ class LocalDataMigrationHelperTest : public testing::Test {
   raw_ptr<bookmarks::TestBookmarkClient> local_bookmark_client_;
   std::unique_ptr<bookmarks::BookmarkModel> account_bookmark_model_ =
       bookmarks::TestBookmarkClient::CreateModel();
+
+  BookmarkUndoService bookmark_undo_service_;  // Needed by BookmarkSyncService.
+  sync_bookmarks::BookmarkSyncService local_bookmark_sync_service_;
+  sync_bookmarks::BookmarkSyncService account_bookmark_sync_service_;
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;

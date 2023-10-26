@@ -31,21 +31,21 @@ class BookmarkModelView {
 
   BookmarkModelView& operator=(const BookmarkModelView&) = delete;
 
-  // Functions that don't map directly to equivalent ones in BookmarkModel.
-
   // Returns whether `node` is actually relevant in the context of this view,
   // which allows filtering which subset of bookmarks should be sync-ed. Note
   // that some other APIs, such as traversing root(), can expose nodes that are
   // NOT meant to be sync-ed, hence the need for this predicate.
   bool IsNodeSyncable(const bookmarks::BookmarkNode* node) const;
 
+  // Functions that allow influencing which bookmark tree is exposed to sync.
+  virtual const bookmarks::BookmarkNode* bookmark_bar_node() const = 0;
+  virtual const bookmarks::BookmarkNode* other_node() const = 0;
+  virtual const bookmarks::BookmarkNode* mobile_node() const = 0;
+
   // See bookmarks::BookmarkModel for documentation, as all functions below
   // mimic the same API.
   bool loaded() const;
   const bookmarks::BookmarkNode* root_node() const;
-  const bookmarks::BookmarkNode* bookmark_bar_node() const;
-  const bookmarks::BookmarkNode* other_node() const;
-  const bookmarks::BookmarkNode* mobile_node() const;
   bool is_permanent_node(const bookmarks::BookmarkNode* node) const;
   void AddObserver(bookmarks::BookmarkModelObserver* observer);
   void RemoveObserver(bookmarks::BookmarkModelObserver* observer);
@@ -86,6 +86,12 @@ class BookmarkModelView {
       const bookmarks::BookmarkNode* node,
       const bookmarks::BookmarkNode::MetaInfoMap& meta_info_map);
 
+ protected:
+  bookmarks::BookmarkModel* underlying_model() { return bookmark_model_.get(); }
+  const bookmarks::BookmarkModel* underlying_model() const {
+    return bookmark_model_.get();
+  }
+
  private:
   // Using WeakPtr here allows detecting violations of the constructor
   // precondition and CHECK fail if BookmarkModel is destroyed earlier.
@@ -93,6 +99,19 @@ class BookmarkModelView {
   // complicates the way to achieve a reasonable destruction order for
   // TestBookmarkModelView.
   const base::WeakPtr<bookmarks::BookmarkModel> bookmark_model_;
+};
+
+class BookmarkModelViewUsingLocalOrSyncableNodes : public BookmarkModelView {
+ public:
+  // `bookmark_model` must not be null and must outlive this object.
+  explicit BookmarkModelViewUsingLocalOrSyncableNodes(
+      bookmarks::BookmarkModel* bookmark_model);
+  ~BookmarkModelViewUsingLocalOrSyncableNodes() override;
+
+  // BookmarkModelView overrides.
+  const bookmarks::BookmarkNode* bookmark_bar_node() const override;
+  const bookmarks::BookmarkNode* other_node() const override;
+  const bookmarks::BookmarkNode* mobile_node() const override;
 };
 
 }  // namespace sync_bookmarks

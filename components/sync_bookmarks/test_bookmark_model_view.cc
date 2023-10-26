@@ -25,7 +25,7 @@ TestBookmarkModelView::~TestBookmarkModelView() = default;
 
 TestBookmarkModelView::TestBookmarkModelView(
     std::unique_ptr<bookmarks::BookmarkModel> bookmark_model)
-    : BookmarkModelView(bookmark_model.get()),
+    : BookmarkModelViewUsingLocalOrSyncableNodes(bookmark_model.get()),
       bookmark_model_(std::move(bookmark_model)) {
   CHECK(bookmark_model_);
 }

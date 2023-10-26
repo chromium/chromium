@@ -55,6 +55,7 @@ source_set("unit_tests") {
     "bookmark_model_merger_unittest.cc",
     "bookmark_model_observer_impl_unittest.cc",
     "bookmark_model_type_processor_unittest.cc",
+    "bookmark_model_view_unittest.cc",
     "bookmark_remote_updates_handler_unittest.cc",
     "bookmark_specifics_conversions_unittest.cc",
     "local_bookmark_model_merger_unittest.cc",
