@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
@@ -2481,7 +2482,31 @@ TEST(TimeLogging, DCheckEqCompiles) {
 TEST(TimeLogging, ChromeBirthdate) {
   Time birthdate;
   ASSERT_TRUE(Time::FromString("Tue, 02 Sep 2008 09:42:18 GMT", &birthdate));
-  EXPECT_EQ("2008-09-02 09:42:18.000 UTC", ToString(birthdate));
+  EXPECT_EQ("2008-09-02 09:42:18.000000 UTC", ToString(birthdate));
+}
+
+TEST(TimeLogging, Microseconds) {
+  // Some Time with a non-zero number of microseconds.
+  Time now = Time::Now();
+  if (now.ToDeltaSinceWindowsEpoch().InMicroseconds() %
+          Time::kMicrosecondsPerMillisecond ==
+      0) {
+    now += Microseconds(1);
+  }
+
+  // Crudely parse the microseconds portion out of the stringified Time. Use
+  // find() and ASSERTs to try to give an accurate test result, without
+  // crashing, even if the logging format changes in the future (e.g. someone
+  // removes microseconds, adds nanoseconds, changes the timezone format, etc.).
+  const std::string now_str = ToString(now);
+  ASSERT_GT(now_str.length(), 6u);
+  const size_t period = now_str.find('.');
+  ASSERT_LT(period, now_str.length() - 6);
+  int microseconds = 0;
+  EXPECT_TRUE(StringToInt(now_str.substr(period + 4, 3), &microseconds));
+
+  // The stringified microseconds should also be nonzero.
+  EXPECT_NE(0, microseconds);
 }
 
 TEST(TimeLogging, DoesNotMessUpFormattingFlags) {
