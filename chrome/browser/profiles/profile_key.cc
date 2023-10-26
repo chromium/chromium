@@ -8,10 +8,6 @@
 #include "build/build_config.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/profiles/profile_key_android.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 ProfileKey::ProfileKey(const base::FilePath& path, ProfileKey* original_key)
     : SimpleFactoryKey(path, original_key != nullptr /* is_off_the_record */),
       original_key_(original_key) {}

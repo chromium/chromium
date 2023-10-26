@@ -1473,8 +1473,6 @@ static_library("browser") {
     "profiles/profile_impl.h",
     "profiles/profile_io_data.cc",
     "profiles/profile_io_data.h",
-    "profiles/profile_key.cc",
-    "profiles/profile_key.h",
     "profiles/profile_manager.cc",
     "profiles/profile_manager.h",
     "profiles/profile_manager_observer.h",
@@ -2013,6 +2011,7 @@ static_library("browser") {
     "//base",
     "//chrome/browser/google",
     "//chrome/browser/headless",
+    "//chrome/browser/profiles",
     "//chrome/common",
     "//chrome/common:buildflags",
     "//chrome/common:constants",
@@ -2104,7 +2103,6 @@ static_library("browser") {
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/policy/messaging_layer/storage_selector",
     "//chrome/browser/privacy_budget",
-    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiling_host",
     "//chrome/browser/promos:utils",
@@ -3342,8 +3340,10 @@ static_library("browser") {
       "profiles/android/profile_resolver.h",
       "profiles/profile_android.cc",
       "profiles/profile_android.h",
+
+      # TODO(b/307628893): Move profile_key_android to
+      # chrome/browser/profiles:profiles once the circular dependency is removed
       "profiles/profile_key_android.cc",
-      "profiles/profile_key_android.h",
       "profiles/profile_manager_android.cc",
       "profiles/profile_manager_android.h",
       "query_tiles/android/tile_provider_factory.cc",

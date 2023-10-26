@@ -223,6 +223,7 @@ source_set("chromeos") {
     "//build:chromeos_buildflags",
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/common/extensions/api",

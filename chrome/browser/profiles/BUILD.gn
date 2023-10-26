@@ -12,10 +12,18 @@ source_set("profiles") {
   sources = [
     "incognito_helpers.cc",
     "incognito_helpers.h",
+    "profile_key.cc",
+    "profile_key.h",
+
+    # TODO(b/307628893): Move profile_key_android.cc to
+    # chrome/browser/profiles:profiles once the circular dependency is removed.
+    "profile_key_android.h",
   ]
 
   # Cannot depend on //chrome/browser:browser.
   deps = [ ":profile" ]
+
+  public_deps = [ "//components/leveldb_proto" ]
 }
 
 # This target should be very minimal, likely no new sources should be added

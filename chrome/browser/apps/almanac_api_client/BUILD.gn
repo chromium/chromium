@@ -24,16 +24,13 @@ source_set("almanac_api_client") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/system",
     "//chromeos/version",
     "//components/image_fetcher/core",
     "//components/language/core/browser",
-
-    # TODO(elitsa@google.com): This is needed because of profile_key.
-    # Split the target out of //chrome/browser.
-    "//components/leveldb_proto",
     "//components/prefs",
     "//components/version_info",
     "//google_apis",
