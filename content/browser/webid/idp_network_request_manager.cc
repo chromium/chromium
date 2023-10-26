@@ -629,17 +629,17 @@ void OnTokenRequestParsed(
   TokenResult token_result;
 
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
-    if (IsFedCmErrorEnabled() &&
-        fetch_status.parse_status == ParseStatus::kNoResponseError) {
+    if (IsFedCmErrorEnabled()) {
       token_result.error = TokenError{"server_error", GURL()};
     }
-
     std::move(callback).Run(fetch_status, token_result);
     return;
   }
 
   const base::Value::Dict& response = result->GetDict();
-  const std::string* token = response.FindString(kTokenKey);
+  const std::string* token = fetch_status.response_code / 100 == 2
+                                 ? response.FindString(kTokenKey)
+                                 : nullptr;
   const std::string* continue_on = response.FindString(kContinueOnKey);
 
   if (IsFedCmErrorEnabled()) {
@@ -922,6 +922,12 @@ void IdpNetworkRequestManager::DownloadUrl(
   if (url_encoded_post_data) {
     url_loader->AttachStringForUpload(*url_encoded_post_data,
                                       kUrlEncodedContentType);
+    // We should parse the response body for the ID assertion endpoint request
+    // even if the response code is non-2xx because the server may include the
+    // error details with the Error API.
+    if (IsFedCmErrorEnabled()) {
+      url_loader->SetAllowHttpErrorResults(true);
+    }
   }
 
   network::SimpleURLLoader* url_loader_ptr = url_loader.get();

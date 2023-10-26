@@ -228,12 +228,9 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
           run_loop.Quit();
         });
 
-    auto on_continue =
-        base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {});
-
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
     manager->SendTokenRequest(token_endpoint, account, request,
-                              std::move(callback), std::move(on_continue));
+                              std::move(callback), base::DoNothing());
     run_loop.Run();
     return {fetch_status, token_result};
   }
@@ -1313,12 +1310,9 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorWithProperField) {
         run_loop.Quit();
       });
 
-  auto on_continue =
-      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {});
-
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request",
-                            std::move(callback), std::move(on_continue));
+                            std::move(callback), base::DoNothing());
   run_loop.Run();
 }
 
@@ -1348,12 +1342,9 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorWithRelativePath) {
         run_loop.Quit();
       });
 
-  auto on_continue =
-      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {});
-
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request",
-                            std::move(callback), std::move(on_continue));
+                            std::move(callback), base::DoNothing());
   run_loop.Run();
 }
 
@@ -1383,12 +1374,10 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorWithCrossSiteUrl) {
         run_loop.Quit();
       });
 
-  auto on_continue =
-      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {});
 
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request",
-                            std::move(callback), std::move(on_continue));
+                            std::move(callback), base::DoNothing());
   run_loop.Run();
 }
 
@@ -1418,12 +1407,9 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorWithUntrustworthyUrl) {
         run_loop.Quit();
       });
 
-  auto on_continue =
-      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {});
-
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request",
-                            std::move(callback), std::move(on_continue));
+                            std::move(callback), base::DoNothing());
   run_loop.Run();
 }
 
@@ -1453,12 +1439,9 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorWithEmptyUrl) {
         run_loop.Quit();
       });
 
-  auto on_continue =
-      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {});
-
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request",
-                            std::move(callback), std::move(on_continue));
+                            std::move(callback), base::DoNothing());
   run_loop.Run();
 }
 
@@ -1466,16 +1449,74 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequestServerError) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmError);
 
+  net::HttpStatusCode http_status = net::HTTP_INTERNAL_SERVER_ERROR;
+  const std::string& mime_type = "application/json";
+
+  const char response[] = R"({}})";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult result) {
+        EXPECT_TRUE(result.error);
+        EXPECT_EQ("server_error", result.error->code);
+        EXPECT_EQ(GURL(), result.error->url);
+        run_loop.Quit();
+      });
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            std::move(callback), base::DoNothing());
+  run_loop.Run();
+}
+
+TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithErrorAndHttpError) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  net::HttpStatusCode http_status = net::HTTP_SERVICE_UNAVAILABLE;
+  const std::string& mime_type = "application/json";
+
+  const char response[] =
+      R"({
+        "error": {
+          "code": "temporarily_unavailable",
+          "url": "https://idp.test/error"
+        }
+      })";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult result) {
+        EXPECT_TRUE(result.error);
+        EXPECT_EQ("temporarily_unavailable", result.error->code);
+        EXPECT_EQ("https://idp.test/error", result.error->url);
+        run_loop.Quit();
+      });
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            std::move(callback), base::DoNothing());
+  run_loop.Run();
+}
+
+TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithTokenAndHttpError) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
   FetchStatus fetch_status;
   TokenResult token_result;
+
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
-      "account", "request", net::HTTP_INTERNAL_SERVER_ERROR);
+      "account", "request", net::HTTP_FORBIDDEN);
+
   EXPECT_EQ("", token_result.token);
-  EXPECT_TRUE(token_result.error);
-  EXPECT_EQ("server_error", token_result.error->code);
-  EXPECT_EQ(GURL(), token_result.error->url);
-  EXPECT_EQ(ParseStatus::kNoResponseError, fetch_status.parse_status);
-  EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, fetch_status.response_code);
+  EXPECT_FALSE(token_result.error);
+  EXPECT_EQ(net::HTTP_FORBIDDEN, fetch_status.response_code);
+  EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
 }
 
 }  // namespace
