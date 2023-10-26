@@ -641,9 +641,8 @@ export class Camera extends View implements CameraViewUI {
         await this.resultSaver.savePhoto(
             portraitBlob, ToteMetricFormat.PHOTO, name, portraitMetadata);
       } catch (e) {
+        // We tolerate the error when no face is detected for the scene.
         toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
-        // Throws PortraitErrorNoFaceDetected error if no face is detected for
-        // the scene.
         if (!(e instanceof PortraitErrorNoFaceDetected)) {
           throw e;
         }
