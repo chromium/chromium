@@ -21,13 +21,12 @@ import sys
 from mojom.generate import module
 from mojom.generate import translate
 from mojom.parse import parser
+from pathlib import Path
 
 # pylint: disable=raise-missing-from
 
-
 class ParseError(Exception):
   pass
-
 
 def _ValidateDelta(root, delta):
   """Parses all modified mojoms (including all transitive mojom dependencies,
@@ -46,8 +45,7 @@ def _ValidateDelta(root, delta):
   old_files = {}
   new_files = {}
   for change in delta:
-    # TODO(crbug.com/953884): Use pathlib once we're migrated fully to Python 3.
-    filename = change['filename'].replace('\\', '/')
+    filename = Path(change['filename'])
     affected_files.add(filename)
     if change['old']:
       old_files[filename] = change['old']
@@ -163,7 +161,6 @@ def _ValidateDelta(root, delta):
                       'Chromium bug against the "Internals>Mojo>Bindings" '
                       'component.' % qualified_name)
 
-
 def Run(command_line, delta=None):
   """Runs the tool with the given command_line. Normally this will read the
   change description from stdin as a JSON-encoded list, but tests may pass a
@@ -189,7 +186,6 @@ change, or null if the file is being deleted.""")
   if not delta:
     delta = json.load(sys.stdin)
   _ValidateDelta(args.src_root, delta)
-
 
 if __name__ == '__main__':
   Run(sys.argv[1:])
