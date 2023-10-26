@@ -62,6 +62,50 @@ TEST_F(FrameVisibilityDecoratorTest, SetPageVisible) {
   EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kNotVisible);
 }
 
+TEST_F(FrameVisibilityDecoratorTest, PageIsBeingMirrored) {
+  auto page_node = CreateNode<PageNodeImpl>();
+  EXPECT_FALSE(page_node->is_visible());
+  auto frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
+  frame_node->SetIsCurrent(true);
+
+  EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kNotVisible);
+
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node.get())
+      ->SetIsBeingMirroredForTesting(true);
+
+  EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kVisible);
+}
+
+// Checks the interaction with PageLiveStateDecorator::Data::IsBeingMirrored and
+// PageNode::IsVisible.
+TEST_F(FrameVisibilityDecoratorTest, PageUserVisible) {
+  auto page_node = CreateNode<PageNodeImpl>();
+  EXPECT_FALSE(page_node->is_visible());
+  auto frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
+  frame_node->SetIsCurrent(true);
+
+  // Frame starts not visible, and the page is neither visible or being
+  // mirrored.
+  EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kNotVisible);
+
+  // Pretend the page starts getting mirrored.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node.get())
+      ->SetIsBeingMirroredForTesting(true);
+  EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kVisible);
+
+  // Now also set the IsVisible property. Stays visible.
+  page_node->SetIsVisible(true);
+  EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kVisible);
+
+  // Pretend the page is no longer getting mirrored. Stays visible.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node.get())
+      ->SetIsBeingMirroredForTesting(false);
+
+  // Set the IsVisible property to false. Now the frame becomes not visible.
+  page_node->SetIsVisible(false);
+  EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kNotVisible);
+}
+
 TEST_F(FrameVisibilityDecoratorTest, SetPageVisibleWithChildNodes) {
   auto page_node = CreateNode<PageNodeImpl>();
   EXPECT_FALSE(page_node->is_visible());

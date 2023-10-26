@@ -226,8 +226,11 @@ class FrameNode : public Node {
   // the viewport.
   virtual absl::optional<bool> IntersectsViewport() const = 0;
 
-  // Returns true if the frame is visible. This value is based on if the frame
-  // intersect with the viewport, and if the page is visible to the user.
+  // Returns true if the frame is visible. This value is based on the viewport
+  // intersection of the frame, and the visibility of the page.
+  //
+  // Note that for the visibility of the page, page mirroring *is* taken into
+  // account, as opposed to `PageNode::IsVisible()`.
   virtual Visibility GetVisibility() const = 0;
 
   // Returns a proxy to the RenderFrameHost associated with this node. The
