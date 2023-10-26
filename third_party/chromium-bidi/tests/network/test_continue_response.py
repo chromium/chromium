@@ -141,7 +141,7 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
                                                      assert_no_events_in_queue,
                                                      hang_url):
     await subscribe(websocket, [
-        "network.beforeRequestSent", "cdp.Network.responseReceived",
+        "network.beforeRequestSent", "network.responseCompleted",
         "network.fetchError"
     ])
 
@@ -160,7 +160,7 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
 
     # Assert these events never happen, otherwise the test is ineffective.
     await assert_no_events_in_queue(
-        ["cdp.Network.responseReceived", "network.fetchError"], timeout=1.0)
+        ["network.responseCompleted", "network.fetchError"], timeout=1.0)
 
     assert not before_request_sent_event["params"]["isBlocked"]
 

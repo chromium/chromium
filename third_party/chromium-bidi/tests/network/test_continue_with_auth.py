@@ -68,14 +68,10 @@ async def test_continue_with_auth_invalid_phase(websocket, context_id,
 @pytest.mark.asyncio
 async def test_continue_with_auth_non_blocked_request(
         websocket, context_id, assert_no_events_in_queue, hang_url):
-    await subscribe(
-        websocket,
-        [
-            # TODO: Use "network.responseCompleted" BiDi event instead of the CDP event.
-            "network.beforeRequestSent",
-            "cdp.Network.responseReceived",
-            "network.fetchError"
-        ])
+    await subscribe(websocket, [
+        "network.beforeRequestSent", "network.responseCompleted",
+        "network.fetchError"
+    ])
 
     await send_JSON_command(
         websocket, {
@@ -92,7 +88,7 @@ async def test_continue_with_auth_non_blocked_request(
 
     # Assert these events never happen, otherwise the test is ineffective.
     await assert_no_events_in_queue(
-        ["cdp.Network.responseReceived", "network.fetchError"], timeout=1.0)
+        ["network.responseCompleted", "network.fetchError"], timeout=1.0)
 
     assert not before_request_sent_event["params"]["isBlocked"]
 

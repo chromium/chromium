@@ -45,6 +45,7 @@ async def create_blocked_request(websocket, context_id: str, *, url: str,
             "params": {
                 "url": url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
     event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
