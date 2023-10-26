@@ -265,6 +265,30 @@ function preloadImages() {
   document.body.appendChild(imagesContainer);
 }
 
+/**
+ * Append dynamic color CSS files and setup watcher for color changes.
+ */
+async function setupDynamicColor(): Promise<void> {
+  function loadCSS(url: string): Promise<void> {
+    return new Promise((resolve) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = url;
+      link.addEventListener('load', () => resolve());
+      document.head.appendChild(link);
+    });
+  }
+  ColorChangeUpdater.forDocument().start();
+  // Note that this has to be loaded after
+  // ColorChangeUpdater.forDocument.start() is called, since we override the
+  // force dark theme on the color_change_listener BindInterface in
+  // camera_app_ui.cc
+  // TODO(pihsun): Check if there's way to override color scheme earlier before
+  // HTML load, so the CSS can be put into .html file instead of being injected
+  // by JS.
+  await loadCSS('chrome://theme/colors.css?sets=ref,sys');
+}
+
 async function setupMultiWindowHandling(
     cameraManager: CameraManager, cameraView: Camera,
     cameraResourceInitialized: WaitableEvent): Promise<void> {
@@ -427,7 +451,8 @@ async function main() {
 
   const perfLogger = createPerfLogger();
 
-  ColorChangeUpdater.forDocument().start();
+  // toast and splash style depends on dynamic color css being imported.
+  await setupDynamicColor();
 
   if (DEPLOYED_VERSION !== undefined) {
     // eslint-disable-next-line no-console
