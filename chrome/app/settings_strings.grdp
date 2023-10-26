@@ -2251,7 +2251,7 @@
   </message>
   <message name="IDS_SETTINGS_ADVANCED_PROTECTION_PROGRAM_DESC" desc="Description of the Google
     Advanced Protection Program">
-    Safeguards the personal Google Accounts of anyone at risk of targeted attacks
+    Provides Google’s strongest account security for people at risk of targeted attacks
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE" desc="Text for HTTPS-Only Mode toggle in Security settings">
     Always use secure connections
