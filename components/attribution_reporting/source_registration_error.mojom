@@ -52,4 +52,16 @@ enum SourceRegistrationError {
 
   kTriggerDataMatchingWrongType = 37,
   kTriggerDataMatchingUnknownValue = 38,
+
+  kTriggerSpecsWrongType = 39,
+  kTriggerSpecWrongType = 40,
+  kTriggerSpecTriggerDataMissing = 41,
+  kTriggerSpecTriggerDataWrongType = 42,
+  kTriggerSpecTriggerDataEmpty = 43,
+  kTriggerSpecTriggerDataValueWrongType = 44,
+  kTriggerSpecTriggerDataValueOutOfRange = 45,
+
+  kExcessiveTriggerData = 46,
+  kDuplicateTriggerData = 47,
+  kInvalidTriggerDataForMatchingMode = 48,
 };

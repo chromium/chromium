@@ -44,6 +44,11 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
            base::TimeDelta expiry,
            mojom::SourceType);
 
+  static base::expected<EventReportWindows, mojom::SourceRegistrationError>
+  ParseWindows(const base::Value::Dict&,
+               base::TimeDelta expiry,
+               const EventReportWindows& default_if_absent);
+
   // Creates a single report window at `kMaxSourceExpiry`.
   EventReportWindows();
 

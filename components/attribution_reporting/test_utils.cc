@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
@@ -15,6 +16,7 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
@@ -198,6 +200,24 @@ bool operator==(const TriggerConfig& a, const TriggerConfig& b) {
 std::ostream& operator<<(std::ostream& out, const TriggerConfig& config) {
   base::Value::Dict dict;
   config.SerializeForTesting(dict);
+  return out << dict;
+}
+
+bool operator==(const TriggerSpec& a, const TriggerSpec& b) {
+  return a.event_report_windows() == b.event_report_windows();
+}
+
+std::ostream& operator<<(std::ostream& out, const TriggerSpec& spec) {
+  return out << spec.ToJson();
+}
+
+bool operator==(const TriggerSpecs& a, const TriggerSpecs& b) {
+  return base::ranges::equal(a, b);
+}
+
+std::ostream& operator<<(std::ostream& out, const TriggerSpecs& specs) {
+  base::Value::Dict dict;
+  specs.Serialize(dict);
   return out << dict;
 }
 

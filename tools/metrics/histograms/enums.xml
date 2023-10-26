@@ -20327,6 +20327,16 @@ Called by update_net_error_codes.py.-->
              exclusive"/>
   <int value="37" label="trigger_data_matching has wrong type"/>
   <int value="38" label="trigger_data_matching value is invalid"/>
+  <int value="39" label="trigger_specs has wrong type"/>
+  <int value="40" label="trigger spec has wrong type"/>
+  <int value="41" label="trigger spec's trigger_data missing"/>
+  <int value="42" label="trigger_spec's trigger_data wrong type"/>
+  <int value="43" label="trigger_spec's trigger_data empty"/>
+  <int value="44" label="trigger_spec's trigger_data value wrong type"/>
+  <int value="45" label="trigger_spec's trigger_data value out of range"/>
+  <int value="46" label="excessive trigger data"/>
+  <int value="47" label="duplicate trigger data"/>
+  <int value="48" label="invalid trigger data for matching mode"/>
 </enum>
 
 <enum name="ConversionStorageCreateReportStatus">

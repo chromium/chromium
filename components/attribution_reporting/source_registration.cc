@@ -84,9 +84,9 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
 void RecordSourceRegistrationError(SourceRegistrationError error) {
   static_assert(
       SourceRegistrationError::kMaxValue ==
-          SourceRegistrationError::kTriggerDataMatchingUnknownValue,
-      "Bump version of Conversions.SourceRegistrationError6 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError6", error);
+          SourceRegistrationError::kInvalidTriggerDataForMatchingMode,
+      "Bump version of Conversions.SourceRegistrationError7 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError7", error);
 }
 
 SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)

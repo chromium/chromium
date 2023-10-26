@@ -343,7 +343,7 @@ TEST(SourceRegistrationTest, Parse) {
   };
 
   static constexpr char kSourceRegistrationErrorMetric[] =
-      "Conversions.SourceRegistrationError6";
+      "Conversions.SourceRegistrationError7";
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
