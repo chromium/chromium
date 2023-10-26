@@ -13,6 +13,7 @@
 #include "ash/ambient/ambient_animation_ui_launcher.h"
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_managed_slideshow_ui_launcher.h"
+#include "ash/ambient/ambient_photo_cache_settings.h"
 #include "ash/ambient/ambient_slideshow_ui_launcher.h"
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_ui_settings.h"
@@ -175,13 +176,6 @@ bool IsAmbientModeManagedScreensaverEnabled() {
 
 bool IsAmbientModeEnabled() {
   return IsUserAmbientModeEnabled() || IsAmbientModeManagedScreensaverEnabled();
-}
-
-// Get the cache root path for ambient mode.
-base::FilePath GetCacheRootPath() {
-  base::FilePath home_dir;
-  CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
-  return home_dir.Append(FILE_PATH_LITERAL(kAmbientModeDirectoryName));
 }
 
 class AmbientWidgetDelegate : public views::WidgetDelegate {
@@ -1005,14 +999,12 @@ void AmbientController::OnEnabledPrefChanged() {
     AddConsumerPrefObservers();
   }
 
-  photo_cache_ = AmbientPhotoCache::Create(
-      GetCacheRootPath().Append(
-          FILE_PATH_LITERAL(kAmbientModeCacheDirectoryName)),
-      *AmbientClient::Get(), access_token_controller_);
+  photo_cache_ = AmbientPhotoCache::Create(GetAmbientPhotoCacheRootDir(),
+                                           *AmbientClient::Get(),
+                                           access_token_controller_);
   backup_photo_cache_ = AmbientPhotoCache::Create(
-      GetCacheRootPath().Append(
-          FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName)),
-      *AmbientClient::Get(), access_token_controller_);
+      GetAmbientBackupPhotoCacheRootDir(), *AmbientClient::Get(),
+      access_token_controller_);
   CreateUiLauncher();
 
   ambient_ui_model_observer_.Observe(&ambient_ui_model_);
