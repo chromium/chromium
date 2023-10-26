@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -38,9 +39,10 @@ constexpr base::FilePath::CharType kDeprecatedTrustedVaultFilename[] =
     FILE_PATH_LITERAL("Trusted Vault");
 
 std::unique_ptr<trusted_vault::TrustedVaultClient>
-CreateStandaloneTrustedVaultClient(Profile* profile) {
+CreateChromeSyncStandaloneTrustedVaultClient(Profile* profile) {
   const base::FilePath profile_path = profile->GetPath();
   return std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
+      trusted_vault::SecurityDomainId::kChromeSync,
       profile_path.Append(kTrustedVaultFilename),
       profile_path.Append(kDeprecatedTrustedVaultFilename),
       IdentityManagerFactory::GetForProfile(profile),
@@ -49,8 +51,8 @@ CreateStandaloneTrustedVaultClient(Profile* profile) {
 }
 #endif
 
-std::unique_ptr<trusted_vault::TrustedVaultClient> CreateTrustedVaultClient(
-    Profile* profile) {
+std::unique_ptr<trusted_vault::TrustedVaultClient>
+CreateChromeSyncTrustedVaultClient(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<
       TrustedVaultClientAndroid>(/*gaia_account_info_by_gaia_id_cb=*/
@@ -68,11 +70,11 @@ std::unique_ptr<trusted_vault::TrustedVaultClient> CreateTrustedVaultClient(
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!base::FeatureList::IsEnabled(
           trusted_vault::kChromeOSTrustedVaultClientShared)) {
-    return CreateStandaloneTrustedVaultClient(profile);
+    return CreateChromeSyncStandaloneTrustedVaultClient(profile);
   }
   if (!profile->IsMainProfile()) {
     // Secondary Lacros profiles use standalone implementation.
-    return CreateStandaloneTrustedVaultClient(profile);
+    return CreateChromeSyncStandaloneTrustedVaultClient(profile);
   }
 
   auto* lacros_service = chromeos::LacrosService::Get();
@@ -84,12 +86,12 @@ std::unique_ptr<trusted_vault::TrustedVaultClient> CreateTrustedVaultClient(
     // possible to have Ash-side TrustedVault Crosapi disabled (two milestones
     // after kChromeOSTrustedVaultClientShared is guaranteed to be enabled in
     // Ash).
-    return CreateStandaloneTrustedVaultClient(profile);
+    return CreateChromeSyncStandaloneTrustedVaultClient(profile);
   }
   return std::make_unique<CrosapiTrustedVaultClient>(
       &lacros_service->GetRemote<crosapi::mojom::TrustedVaultBackend>());
 #else
-  return CreateStandaloneTrustedVaultClient(profile);
+  return CreateChromeSyncStandaloneTrustedVaultClient(profile);
 #endif
 }
 
@@ -99,7 +101,7 @@ std::unique_ptr<KeyedService> BuildTrustedVaultService(
   CHECK(!profile->IsOffTheRecord());
 
   return std::make_unique<trusted_vault::TrustedVaultService>(
-      CreateTrustedVaultClient(profile));
+      CreateChromeSyncTrustedVaultClient(profile));
 }
 
 }  // namespace

@@ -22,6 +22,7 @@
 #include "components/trusted_vault/standalone_trusted_vault_backend.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -221,6 +222,7 @@ class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
 }  // namespace
 
 StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
+    SecurityDomainId security_domain,
     const base::FilePath& file_path,
     const base::FilePath& deprecated_file_path,
     signin::IdentityManager* identity_manager,
@@ -233,7 +235,8 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
       ExtractTrustedVaultServiceURLFromCommandLine();
   if (trusted_vault_service_gurl.is_valid()) {
     connection = std::make_unique<TrustedVaultConnectionImpl>(
-        trusted_vault_service_gurl, url_loader_factory->Clone(),
+        security_domain, trusted_vault_service_gurl,
+        url_loader_factory->Clone(),
         std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
             access_token_fetcher_frontend_.GetWeakPtr()));
   }

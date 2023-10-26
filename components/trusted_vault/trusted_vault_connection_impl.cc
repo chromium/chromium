@@ -113,13 +113,15 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
 }
 
 trusted_vault_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
+    SecurityDomainId security_domain,
     const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
     int last_trusted_vault_key_version,
     const SecureBoxPublicKey& public_key,
     AuthenticationFactorType authentication_factor_type,
     absl::optional<int> authentication_factor_type_hint) {
   trusted_vault_pb::JoinSecurityDomainsRequest request;
-  request.mutable_security_domain()->set_name(kSyncSecurityDomainName);
+  request.mutable_security_domain()->set_name(
+      GetSecurityDomainName(security_domain));
   *request.mutable_security_domain_member() =
       CreateSecurityDomainMember(public_key, authentication_factor_type);
   for (const TrustedVaultKeyAndVersion& trusted_vault_key_and_version :
@@ -281,11 +283,13 @@ GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
 }  // namespace
 
 TrustedVaultConnectionImpl::TrustedVaultConnectionImpl(
+    SecurityDomainId security_domain,
     const GURL& trusted_vault_service_url,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
     std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher)
-    : pending_url_loader_factory_(std::move(pending_url_loader_factory)),
+    : security_domain_(security_domain),
+      pending_url_loader_factory_(std::move(pending_url_loader_factory)),
       access_token_fetcher_(std::move(access_token_fetcher)),
       trusted_vault_service_url_(trusted_vault_service_url) {
   DCHECK(trusted_vault_service_url_.is_valid());
@@ -334,9 +338,9 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
   // initial failure returned to the upper layers.
   auto request = std::make_unique<TrustedVaultRequest>(
       account_info.account_id, TrustedVaultRequest::HttpMethod::kGet,
-      GURL(trusted_vault_service_url_.spec() +
-           GetGetSecurityDomainMemberURLPathAndQuery(
-               device_key_pair->public_key().ExportToBytes())),
+      GetGetSecurityDomainMemberURL(
+          trusted_vault_service_url_,
+          device_key_pair->public_key().ExportToBytes()),
       /*serialized_request_proto=*/absl::nullopt,
       /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
       access_token_fetcher_->Clone(),
@@ -358,8 +362,7 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
     IsRecoverabilityDegradedCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
       account_info.account_id, TrustedVaultRequest::HttpMethod::kGet,
-      GURL(trusted_vault_service_url_.spec() +
-           kGetSecurityDomainURLPathAndQuery),
+      GetGetSecurityDomainURL(trusted_vault_service_url_, security_domain_),
       /*serialized_request_proto=*/absl::nullopt,
       /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
       access_token_fetcher_->Clone(),
@@ -382,10 +385,10 @@ TrustedVaultConnectionImpl::SendJoinSecurityDomainsRequest(
     JoinSecurityDomainsCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
       account_info.account_id, TrustedVaultRequest::HttpMethod::kPost,
-      GURL(trusted_vault_service_url_.spec() + kJoinSecurityDomainsURLPath),
+      GetJoinSecurityDomainURL(trusted_vault_service_url_, security_domain_),
       /*serialized_request_proto=*/
       CreateJoinSecurityDomainsRequest(
-          trusted_vault_keys, last_trusted_vault_key_version,
+          security_domain_, trusted_vault_keys, last_trusted_vault_key_version,
           authentication_factor_public_key, authentication_factor_type,
           authentication_factor_type_hint)
           .SerializeAsString(),

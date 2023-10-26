@@ -28,6 +28,7 @@ class SharedURLLoaderFactory;
 
 namespace trusted_vault {
 
+enum class SecurityDomainId;
 class StandaloneTrustedVaultBackend;
 
 // Standalone, file-based implementation of TrustedVaultClient that stores the
@@ -40,6 +41,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   // |identity_manager| must not be null and must outlive this object.
   // |url_loader_factory| must not be null.
   StandaloneTrustedVaultClient(
+      SecurityDomainId security_domain,
       const base::FilePath& file_path,
       const base::FilePath& deprecated_file_path,
       signin::IdentityManager* identity_manager,
