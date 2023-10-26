@@ -5422,22 +5422,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "oop_network_service_tests",
-    tests = {
-        "oop_network_service_content_browsertests": targets.legacy_test_config(
-            test = "content_browsertests",
-            args = [
-                "--enable-features=NetworkServiceOutOfProcessMemoryThreshold:network_service_oop_threshold_mb/1077",
-                "--disable-features=NetworkServiceInProcess2",
-            ],
-            swarming = targets.swarming(
-                shards = 25,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "optimization_guide_android_gtests",
     tests = {
         "optimization_guide_components_unittests": targets.legacy_test_config(

@@ -47,6 +47,27 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "12-google-atd-x64-emulator",
+    args = [
+        "--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb",
+    ],
+    swarming = targets.swarming(
+        # soft affinity so that bots with caches will be picked first
+        optional_dimensions = {
+            60: {
+                "caches": "android_31_google_atd_x64",
+            },
+        },
+        named_caches = [
+            swarming.cache(
+                name = "android_31_google_atd_x64",
+                path = ".android_emulator/android_31_google_atd_x64",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "12-x64-emulator",
     args = [
         "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
@@ -62,6 +83,27 @@ targets.mixin(
             swarming.cache(
                 name = "generic_android31",
                 path = ".android_emulator/generic_android31",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
+    name = "12l-google-atd-x64-emulator",
+    args = [
+        "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
+    ],
+    swarming = targets.swarming(
+        # soft affinity so that bots with caches will be picked first
+        optional_dimensions = {
+            60: {
+                "caches": "android_32_google_atd_x64_foldable",
+            },
+        },
+        named_caches = [
+            swarming.cache(
+                name = "android_32_google_atd_x64_foldable",
+                path = ".android_emulator/android_32_google_atd_x64_foldable",
             ),
         ],
     ),
@@ -89,21 +131,21 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "12l-x64-emulator-experimental",
+    name = "13-google-atd-x64-emulator",
     args = [
-        "--avd-config=../../tools/android/avd/proto/generic_android32_foldable_experimental.textpb",
+        "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
     ],
     swarming = targets.swarming(
         # soft affinity so that bots with caches will be picked first
         optional_dimensions = {
             60: {
-                "caches": "generic_android32_foldable_experimental",
+                "caches": "android_33_google_atd_x64",
             },
         },
         named_caches = [
             swarming.cache(
-                name = "generic_android32_foldable_experimental",
-                path = ".android_emulator/generic_android32_foldable_experimental",
+                name = "android_33_google_atd_x64",
+                path = ".android_emulator/android_33_google_atd_x64",
             ),
         ],
     ),
@@ -125,27 +167,6 @@ targets.mixin(
             swarming.cache(
                 name = "generic_android33",
                 path = ".android_emulator/generic_android33",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
-    name = "13-x64-emulator-experimental",
-    args = [
-        "--avd-config=../../tools/android/avd/proto/generic_android33_experimental.textpb",
-    ],
-    swarming = targets.swarming(
-        # soft affinity so that bots with caches will be picked first
-        optional_dimensions = {
-            60: {
-                "caches": "generic_android33_experimental",
-            },
-        },
-        named_caches = [
-            swarming.cache(
-                name = "generic_android33_experimental",
-                path = ".android_emulator/generic_android33_experimental",
             ),
         ],
     ),

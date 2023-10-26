@@ -33,13 +33,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "android_12_emulator_fyi_gtests",
-    basic_suites = {
-        "oop_network_service_tests": None,
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "android_12_emulator_gtests",
     basic_suites = {
         "android_12_fieldtrial_webview_tests": None,

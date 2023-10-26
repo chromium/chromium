@@ -88,7 +88,6 @@
         'args': [
           # https://crbug.com/1414886
           '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
-          '--emulator-debug-tags=kernel',
         ],
         'swarming': {
           'shards': 4,
@@ -1488,7 +1487,6 @@
       'android-13-x64-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter',
-          '--emulator-debug-tags=kernel',
         ],
       },
       'android-13-x64-rel': {
@@ -1966,7 +1964,6 @@
       'android-13-x64-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
-          '--emulator-debug-tags=kernel',
         ],
         'swarming': {
           'shards': 40,
@@ -3621,15 +3618,6 @@
       'ToTWin64(dbg)',
       'ToTWin64(dll)',
     ],
-  },
-  'oop_network_service_content_browsertests': {
-    'modifications': {
-       'android-12-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.oop_network_service_content_browsertests.filter',
-        ],
-      },
-    },
   },
   'ozone_unittests': {
     'modifications': {

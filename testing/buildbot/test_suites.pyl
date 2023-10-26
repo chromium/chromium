@@ -4600,19 +4600,6 @@
       },
     },
 
-    'oop_network_service_tests': {
-      'oop_network_service_content_browsertests': {
-        'test': 'content_browsertests',
-        'args': [
-          '--enable-features=NetworkServiceOutOfProcessMemoryThreshold:network_service_oop_threshold_mb/1077',
-          '--disable-features=NetworkServiceInProcess2',
-        ],
-        'swarming': {
-          'shards': 25,
-        },
-      },
-    },
-
     'optimization_guide_android_gtests': {
       'optimization_guide_components_unittests': {
         'test': 'components_unittests',
@@ -6624,10 +6611,6 @@
         ],
       },
       'webview_ui_instrumentation_tests': {},
-    },
-
-    'android_12_emulator_fyi_gtests': {
-      'oop_network_service_tests': {},
     },
 
     'android_12_emulator_gtests': {
