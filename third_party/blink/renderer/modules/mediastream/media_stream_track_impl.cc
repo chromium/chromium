@@ -666,13 +666,10 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
   return settings;
 }
 
-MediaStreamTrackVideoStats* MediaStreamTrackImpl::stats(
-    ExceptionState& exception_state) {
+MediaStreamTrackVideoStats* MediaStreamTrackImpl::stats() {
   switch (component_->GetSourceType()) {
     case MediaStreamSource::kTypeAudio:
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "MediaStreamTrack.stats is not supported on audio tracks.");
+      // `MediaStreamTrack.stats` is not supported for audio tracks.
       return nullptr;
     case MediaStreamSource::kTypeVideo: {
       absl::optional<const MediaStreamDevice> source_device = device();
@@ -690,10 +687,6 @@ MediaStreamTrackVideoStats* MediaStreamTrackImpl::stats(
         // since non-device sources aren't real-time in which case FPS can be
         // reduced by not generating the frame in the first place, so then there
         // is no need to drop it.
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kNotSupportedError,
-            "MediaStreamTrack.stats on video tracks is only supported if the "
-            "source is a getUserMedia() or getDisplayMedia() source.");
         return nullptr;
       }
       if (!video_stats_) {

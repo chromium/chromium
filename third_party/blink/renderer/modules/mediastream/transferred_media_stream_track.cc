@@ -171,13 +171,12 @@ MediaTrackSettings* TransferredMediaStreamTrack::getSettings() const {
   return MediaTrackSettings::Create();
 }
 
-MediaStreamTrackVideoStats* TransferredMediaStreamTrack::stats(
-    ExceptionState& exception_state) {
+MediaStreamTrackVideoStats* TransferredMediaStreamTrack::stats() {
   if (track_) {
-    return track_->stats(exception_state);
+    return track_->stats();
   }
   // TODO(https://crbug.com/1288839): return the transferred value.
-  return MakeGarbageCollected<MediaStreamTrackVideoStats>(nullptr);
+  return nullptr;
 }
 
 CaptureHandle* TransferredMediaStreamTrack::getCaptureHandle() const {
