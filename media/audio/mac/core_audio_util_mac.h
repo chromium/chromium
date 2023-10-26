@@ -14,9 +14,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_MAC)
 #include <CoreAudio/CoreAudio.h>
-#endif
 
 namespace media {
 namespace core_audio_mac {

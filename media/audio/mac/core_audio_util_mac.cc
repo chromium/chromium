@@ -16,15 +16,10 @@
 #include "media/audio/mac/scoped_audio_unit.h"
 #include "media/base/audio_timestamp_helper.h"
 
-#if BUILDFLAG(IS_MAC)
 #include <IOKit/audio/IOAudioTypes.h>
-#endif
 
 namespace media {
 namespace core_audio_mac {
-
-#if BUILDFLAG(IS_MAC)
-
 namespace {
 
 AudioObjectPropertyScope InputOutputScope(bool is_input) {
@@ -378,7 +373,6 @@ bool IsInputDevice(AudioObjectID device_id) {
 bool IsOutputDevice(AudioObjectID device_id) {
   return GetNumStreams(device_id, false) > 0;
 }
-#endif
 
 // static
 base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
