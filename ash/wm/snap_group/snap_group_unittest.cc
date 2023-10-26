@@ -355,6 +355,65 @@ TEST_F(FasterSplitScreenTest, EndSplitViewOverviewSession) {
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
+TEST_F(FasterSplitScreenTest, ResizeSplitViewOverviewAndWindow) {
+  // Snap one test window to start the snap group creation session.
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+  const gfx::Rect initial_bounds(w1->GetBoundsInScreen());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  // Drag the right edge of the window to resize the window and overview at the
+  // same time. Test that the bounds are updated.
+  auto* generator = GetEventGenerator();
+  generator->set_current_screen_location(
+      w1->GetBoundsInScreen().right_center());
+  const int drag_x = 50;
+  generator->DragMouseBy(drag_x, 0);
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  gfx::Rect expected_window_bounds(initial_bounds);
+  expected_window_bounds.set_width(initial_bounds.width() + drag_x);
+  EXPECT_EQ(expected_window_bounds, w1->GetBoundsInScreen());
+
+  gfx::Rect expected_grid_bounds(work_area_bounds());
+  expected_grid_bounds.Subtract(w1->GetBoundsInScreen());
+  EXPECT_EQ(expected_grid_bounds, GetOverviewGridBounds());
+
+  // Drag past the 2/3 divider position. Test no crash.
+  generator->DragMouseBy(600, 0);
+  ASSERT_FALSE(OverviewController::Get()->InOverviewSession());
+  EXPECT_EQ(work_area_bounds(), w1->GetBoundsInScreen());
+}
+
+TEST_F(FasterSplitScreenTest, ResizeAndAutoSnap) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  const gfx::Rect initial_bounds(w1->GetBoundsInScreen());
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  auto* generator = GetEventGenerator();
+  generator->set_current_screen_location(
+      w1->GetBoundsInScreen().right_center());
+  const int drag_x = 100;
+  generator->DragMouseBy(drag_x, 0);
+  ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  gfx::Rect expected_window_bounds(initial_bounds);
+  expected_window_bounds.set_width(initial_bounds.width() + drag_x);
+  EXPECT_EQ(expected_window_bounds, w1->GetBoundsInScreen());
+
+  gfx::Rect expected_grid_bounds(work_area_bounds());
+  expected_grid_bounds.Subtract(w1->GetBoundsInScreen());
+  EXPECT_EQ(expected_grid_bounds, GetOverviewGridBounds());
+
+  // Select a window to auto snap. Test it snaps to the correct ratio.
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  EXPECT_EQ(expected_grid_bounds, w2->GetBoundsInScreen());
+}
+
 // Tests the histograms for the split view overview session exit points are
 // recorded correctly in clamshell.
 TEST_F(FasterSplitScreenTest,

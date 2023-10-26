@@ -522,12 +522,12 @@ bool IsSnapGroupEnabledInClamshellMode() {
 }
 
 int GetWindowComponentForResize(aura::Window* window) {
-  SplitViewController* split_view_controller =
-      SplitViewController::Get(window->GetRootWindow());
-  CHECK(split_view_controller &&
-        split_view_controller->IsWindowInSplitView(window));
+  chromeos::WindowStateType state_type =
+      WindowState::Get(window)->GetStateType();
+  CHECK(chromeos::IsSnappedWindowStateType(state_type));
   // TODO(b/288356322): Update the component for vertical splitview.
-  return window == split_view_controller->primary_window() ? HTRIGHT : HTLEFT;
+  return state_type == chromeos::WindowStateType::kPrimarySnapped ? HTRIGHT
+                                                                  : HTLEFT;
 }
 
 views::Widget::InitParams CreateWidgetInitParams(

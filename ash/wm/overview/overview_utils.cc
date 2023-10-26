@@ -217,20 +217,6 @@ gfx::Rect GetGridBoundsInScreen(
   auto* split_view_controller = SplitViewController::Get(target_root);
   SplitViewController::State state = split_view_controller->state();
 
-  // `split_view_overview_session` may have started without updating
-  // `split_view_controller->state()`, i.e. from SnapGroupController. Convert
-  // the split view overview session window to a split view state.
-  // TODO(sophiewen): See if we can remove `state` and just check this.
-  if (auto* split_view_overview_session =
-          RootWindowController::ForWindow(target_root)
-              ->split_view_overview_session()) {
-    const chromeos::WindowStateType window_state_type =
-        split_view_overview_session->GetWindowStateType();
-    state = window_state_type == chromeos::WindowStateType::kPrimarySnapped
-                ? SplitViewController::State::kPrimarySnapped
-                : SplitViewController::State::kSecondarySnapped;
-  }
-
   // If we are in splitview mode already just use the given state, otherwise
   // convert `window_dragging_state` to a split view state. Note this will
   // override `state` from `split_view_overview_session` if there is any.
@@ -257,26 +243,41 @@ gfx::Rect GetGridBoundsInScreen(
   // 2. On one window snapped in clamshell mode with feature flag `kSnapGroup`
   // is enabled and feature param `kAutomaticallyLockGroup` is true;
   // 3. On one window snapped in clamshell in overview session.
-  switch (state) {
-    case SplitViewController::State::kPrimarySnapped:
-      bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
-          SplitViewController::SnapPosition::kSecondary,
-          /*window_for_minimum_size=*/nullptr);
-      opposite_position = SplitViewController::SnapPosition::kSecondary;
-      break;
-    case SplitViewController::State::kSecondarySnapped:
-      bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
-          SplitViewController::SnapPosition::kPrimary,
-          /*window_for_minimum_size=*/nullptr);
-      opposite_position = SplitViewController::SnapPosition::kPrimary;
-      break;
-    case SplitViewController::State::kNoSnap:
-      bounds = work_area;
-      break;
-    case SplitViewController::State::kBothSnapped:
-      // When this function is called, SplitViewController should have already
-      // handled the state change.
-      NOTREACHED();
+
+  // When `kFasterSplitScreenSetup` or `kSnapGroup` is enabled, we would only
+  // reach here if overview is in session and there is no divider.
+  // TODO(b/296935443): Consolidate split view bounds calculations.
+  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled() &&
+      !Shell::Get()->IsInTabletMode()) {
+    bounds = work_area;
+    if (auto* split_view_overview_session =
+            RootWindowController::ForWindow(target_root)
+                ->split_view_overview_session()) {
+      bounds.Subtract(
+          split_view_overview_session->window()->GetBoundsInScreen());
+    }
+  } else {
+    switch (state) {
+      case SplitViewController::State::kPrimarySnapped:
+        bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
+            SplitViewController::SnapPosition::kSecondary,
+            /*window_for_minimum_size=*/nullptr);
+        opposite_position = SplitViewController::SnapPosition::kSecondary;
+        break;
+      case SplitViewController::State::kSecondarySnapped:
+        bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
+            SplitViewController::SnapPosition::kPrimary,
+            /*window_for_minimum_size=*/nullptr);
+        opposite_position = SplitViewController::SnapPosition::kPrimary;
+        break;
+      case SplitViewController::State::kNoSnap:
+        bounds = work_area;
+        break;
+      case SplitViewController::State::kBothSnapped:
+        // When this function is called, SplitViewController should have already
+        // handled the state change.
+        NOTREACHED();
+    }
   }
 
   // Hotseat overlaps the work area / split view bounds when extended, but in

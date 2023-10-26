@@ -1353,6 +1353,9 @@ bool SplitViewController::BoundsChangeIsFromVKAndAllowed(
 }
 
 void SplitViewController::AddObserver(SplitViewObserver* observer) {
+  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+    return;
+  }
   observers_.AddObserver(observer);
 }
 
@@ -1955,11 +1958,17 @@ void SplitViewController::UpdateStateAndNotifyObservers() {
 }
 
 void SplitViewController::NotifyDividerPositionChanged() {
+  if (!InSplitViewMode()) {
+    return;
+  }
   for (auto& observer : observers_)
     observer.OnSplitViewDividerPositionChanged();
 }
 
 void SplitViewController::NotifyWindowResized() {
+  if (!InSplitViewMode()) {
+    return;
+  }
   for (auto& observer : observers_)
     observer.OnSplitViewWindowResized();
 }
@@ -2006,7 +2015,8 @@ void SplitViewController::CreateSplitViewDividerInClamshell() {
   divider_position_ = GetClosestFixedDividerPosition();
   split_view_divider_ = std::make_unique<SplitViewDivider>(this);
   UpdateSnappedWindowsAndDividerBounds();
-  NotifyDividerPositionChanged();
+  // No need to notify observers, since the divider is only created between two
+  // windows.
 }
 
 void SplitViewController::UpdateBlackScrim(
