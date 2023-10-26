@@ -18,6 +18,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.lang.annotation.Retention;
@@ -32,9 +34,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  * notifies observers when it is complete.
  *
  * <p>TODO(crbug/1176136): Move this class to components/signin/internal
- *
- * <p>TODO(crbug/1491005): Update this class with a new seedAccounts method that takes the
- * primaryAccount as parameter.
  */
 public class AccountTrackerService implements AccountsChangeObserver {
     /**
@@ -110,6 +109,10 @@ public class AccountTrackerService implements AccountsChangeObserver {
      */
     @MainThread
     public void legacySeedAccountsIfNeeded(Runnable onAccountsSeeded) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is enabled");
+        }
         ThreadUtils.checkUiThread();
         switch (mAccountsSeedingStatus) {
             case AccountsSeedingStatus.NOT_STARTED:
@@ -126,6 +129,7 @@ public class AccountTrackerService implements AccountsChangeObserver {
     }
 
     /** Implements {@link AccountsChangeObserver}. */
+    // TODO(crbug/1491005): Move the AccountInfoChanged logic to the SigninManager.
     @Override
     public void onCoreAccountInfosChanged() {
         // If mAccountsSeedingStatus is IN_PROGRESS do nothing. The promise in seedAccounts() will
@@ -158,8 +162,13 @@ public class AccountTrackerService implements AccountsChangeObserver {
      */
     private void legacySeedAccounts(boolean accountsChanged) {
         ThreadUtils.checkUiThread();
-        assert mAccountsSeedingStatus
-                != AccountsSeedingStatus.IN_PROGRESS : "There is already a seeding in progress!";
+        // The revamped signin flow will not seed accounts here.
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is enabled");
+        }
+        assert mAccountsSeedingStatus != AccountsSeedingStatus.IN_PROGRESS
+                : "There is already a seeding in progress!";
         mAccountsSeedingStatus = AccountsSeedingStatus.IN_PROGRESS;
 
         Promise<List<CoreAccountInfo>> coreAccountInfosPromise =
@@ -167,9 +176,10 @@ public class AccountTrackerService implements AccountsChangeObserver {
         if (coreAccountInfosPromise.isFulfilled()) {
             finishSeedingAccounts(coreAccountInfosPromise.getResult(), accountsChanged);
         } else {
-            coreAccountInfosPromise.then(coreAccountInfos -> {
-                finishSeedingAccounts(coreAccountInfos, accountsChanged);
-            });
+            coreAccountInfosPromise.then(
+                    coreAccountInfos -> {
+                        finishSeedingAccounts(coreAccountInfos, accountsChanged);
+                    });
         }
     }
 
@@ -180,6 +190,7 @@ public class AccountTrackerService implements AccountsChangeObserver {
                 .legacySeedAccountsInfo(
                         mNativeAccountTrackerService,
                         coreAccountInfos.toArray(new CoreAccountInfo[0]));
+
         mAccountsSeedingStatus = AccountsSeedingStatus.DONE;
 
         for (@Nullable Runnable runnable = mRunnablesWaitingForAccountsSeeding.poll();

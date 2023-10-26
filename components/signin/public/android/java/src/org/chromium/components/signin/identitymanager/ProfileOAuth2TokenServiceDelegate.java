@@ -20,6 +20,9 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.ConnectionRetry;
 import org.chromium.components.signin.ConnectionRetry.AuthTask;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.List;
@@ -170,11 +173,15 @@ final class ProfileOAuth2TokenServiceDelegate {
 
     @VisibleForTesting
     @CalledByNative
-    void seedAndReloadAccountsWithPrimaryAccount(@Nullable String primaryAccountId) {
+    void legacySeedAndReloadAccountsWithPrimaryAccount(@Nullable String primaryAccountId) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is enabled");
+        }
         ThreadUtils.assertOnUiThread();
         mAccountTrackerService.legacySeedAccountsIfNeeded(
                 () -> {
-                    final List<CoreAccountInfo> coreAccountInfos =
+                    final List<CoreAccountInfo> fetchedCoreAccountInfos =
                             AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
                                     AccountManagerFacadeProvider.getInstance()
                                             .getCoreAccountInfos());
@@ -182,9 +189,26 @@ final class ProfileOAuth2TokenServiceDelegate {
                             .reloadAllAccountsWithPrimaryAccountAfterSeeding(
                                     mNativeProfileOAuth2TokenServiceDelegate,
                                     primaryAccountId,
-                                    AccountUtils.toAccountEmails(coreAccountInfos)
+                                    AccountUtils.toAccountEmails(fetchedCoreAccountInfos)
                                             .toArray(new String[0]));
                 });
+    }
+
+    @VisibleForTesting
+    // TODO(crbug/1491005): Implement the native call to this method and then remove if from the
+    // Java layer.
+    void seedAndReloadAccountsWithPrimaryAccount(
+            List<CoreAccountInfo> coreAccountInfos, @Nullable CoreAccountId primaryAccountId) {
+        ThreadUtils.assertOnUiThread();
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is disabled");
+        }
+        ProfileOAuth2TokenServiceDelegateJni.get()
+                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+                        mNativeProfileOAuth2TokenServiceDelegate,
+                        coreAccountInfos.toArray(new CoreAccountInfo[0]),
+                        primaryAccountId);
     }
 
     @NativeMethods
@@ -201,8 +225,15 @@ final class ProfileOAuth2TokenServiceDelegate {
          */
         void onOAuth2TokenFetched(String authToken, long expirationTimeSecs,
                 boolean isTransientError, long nativeCallback);
+
         void reloadAllAccountsWithPrimaryAccountAfterSeeding(
-                long nativeProfileOAuth2TokenServiceDelegateAndroid, @Nullable String accountId,
+                long nativeProfileOAuth2TokenServiceDelegateAndroid,
+                @Nullable String accountId,
                 String[] deviceAccountEmails);
+
+        void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+                long nativeProfileOAuth2TokenServiceDelegateAndroid,
+                CoreAccountInfo[] coreAccountInfos,
+                @Nullable CoreAccountId primaryAccountId);
     }
 }

@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -29,11 +30,13 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
@@ -88,6 +91,8 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Rule public final JniMocker mocker = new JniMocker();
+
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock private AccountTrackerService mAccountTrackerServiceMock;
 
@@ -174,6 +179,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testSeedAndReloadAccountsWhenAccountsAreSeeded() {
         mAccountManagerFacade.addAccount(ACCOUNT);
         doAnswer(
@@ -186,10 +192,27 @@ public class ProfileOAuth2TokenServiceDelegateTest {
                 .legacySeedAccountsIfNeeded(any(Runnable.class));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mDelegate.seedAndReloadAccountsWithPrimaryAccount(null);
+                    mDelegate.legacySeedAndReloadAccountsWithPrimaryAccount(null);
                 });
         verify(mNativeMock)
                 .reloadAllAccountsWithPrimaryAccountAfterSeeding(
                         NATIVE_DELEGATE, null, new String[] {ACCOUNT.name});
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void testSeedAndReloadAccountsWhenAccountsAreSeeded_seedAccountRevampEnabled() {
+        mAccountManagerFacade.addAccount(ACCOUNT);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDelegate.seedAndReloadAccountsWithPrimaryAccount(
+                            List.of(CORE_ACCOUNT_INFO), CORE_ACCOUNT_INFO.getId());
+                });
+        verify(mNativeMock)
+                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+                        NATIVE_DELEGATE,
+                        new CoreAccountInfo[] {CORE_ACCOUNT_INFO},
+                        CORE_ACCOUNT_INFO.getId());
     }
 }

@@ -883,6 +883,27 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
   return info.account_id;
 }
 
+void AccountTrackerService::SeedAccountsInfo(
+    const std::vector<CoreAccountInfo>& core_account_infos,
+    const CoreAccountId& primary_account_id) {
+  DVLOG(1) << "AccountTrackerService.SeedAccountsInfo: "
+           << " number of accounts " << core_account_infos.size();
+
+  // Remove the accounts deleted from device, but don't remove the primary
+  // account.
+  for (const auto& account : GetAccounts()) {
+    CoreAccountId curr_account_id = account.account_id;
+    if (curr_account_id != primary_account_id &&
+        !base::Contains(core_account_infos, curr_account_id,
+                        &CoreAccountInfo::account_id)) {
+      RemoveAccount(curr_account_id);
+    }
+  }
+  for (const auto& core_account_info : core_account_infos) {
+    SeedAccountInfo(core_account_info.gaia, core_account_info.email);
+  }
+}
+
 void AccountTrackerService::RemoveAccount(const CoreAccountId& account_id) {
   StopTrackingAccount(account_id);
 }
@@ -920,7 +941,7 @@ void AccountTrackerService::LegacySeedAccountsInfo(
         ConvertFromJavaCoreAccountInfo(env, core_account_info_java));
   }
 
-  DVLOG(1) << "AccountTrackerService.SeedAccountsInfo: "
+  DVLOG(1) << "AccountTrackerService.LegacySeedAccountsInfo: "
            << " number of accounts " << curr_core_account_infos.size();
 
   // Remove the accounts deleted from device
