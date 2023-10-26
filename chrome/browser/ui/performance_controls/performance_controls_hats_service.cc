@@ -17,9 +17,10 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 
-PerformanceControlsHatsService::PerformanceControlsHatsService(Profile* profile)
-    : profile_(profile) {
-  PrefService* local_state = g_browser_process->local_state();
+PerformanceControlsHatsService::PerformanceControlsHatsService(
+    PrefService* local_state,
+    Profile* profile)
+    : local_state_(local_state), profile_(profile) {
   if (local_state) {
     if (base::FeatureList::IsEnabled(
             performance_manager::features::
@@ -62,12 +63,11 @@ void PerformanceControlsHatsService::OnBatterySaverModeChange() {
   }
 
   // A survey for users who have turned off battery saver.
-  PrefService* prefs = g_browser_process->local_state();
-  if (prefs->GetInteger(
+  if (local_state_->GetInteger(
           performance_manager::user_tuning::prefs::kBatterySaverModeState) ==
       static_cast<int>(performance_manager::user_tuning::prefs::
                            BatterySaverModeState::kDisabled)) {
-    auto* pref = prefs->FindPreference(
+    auto* pref = local_state_->FindPreference(
         performance_manager::user_tuning::prefs::kBatterySaverModeState);
     if (!pref->IsManaged()) {
       hats_service->LaunchDelayedSurvey(
@@ -82,8 +82,7 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
     return;
   }
 
-  PrefService* prefs = g_browser_process->local_state();
-  const int battery_saver_mode = prefs->GetInteger(
+  const int battery_saver_mode = local_state_->GetInteger(
       performance_manager::user_tuning::prefs::kBatterySaverModeState);
 
   const bool high_efficiency_mode =

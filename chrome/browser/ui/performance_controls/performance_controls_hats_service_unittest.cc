@@ -49,7 +49,8 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
     environment_.SetUp(&local_state_);
 
     performance_controls_hats_service_ =
-        std::make_unique<PerformanceControlsHatsService>(profile);
+        std::make_unique<PerformanceControlsHatsService>(&local_state_,
+                                                         profile);
   }
 
   void TearDown() override {
@@ -64,7 +65,7 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
   void SetBatterySaverMode(
       const performance_manager::user_tuning::prefs::BatterySaverModeState
           battery_saver_mode) {
-    g_browser_process->local_state()->SetInteger(
+    local_state()->SetInteger(
         performance_manager::user_tuning::prefs::kBatterySaverModeState,
         static_cast<int>(battery_saver_mode));
   }
