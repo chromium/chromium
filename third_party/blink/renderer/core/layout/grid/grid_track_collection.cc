@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 
 #include "base/check.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {

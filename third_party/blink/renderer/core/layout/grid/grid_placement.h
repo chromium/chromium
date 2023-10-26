@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_PLACEMENT_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_PLACEMENT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_PLACEMENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_PLACEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_item.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_data.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_item.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/platform/wtf/doubly_linked_list.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -178,4 +178,4 @@ class CORE_EXPORT GridPlacement {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_PLACEMENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_PLACEMENT_H_

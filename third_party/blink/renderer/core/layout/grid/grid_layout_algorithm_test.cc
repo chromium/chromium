@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_item.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_placement.h"
 #include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 
 namespace blink {

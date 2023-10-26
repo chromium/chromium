@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {

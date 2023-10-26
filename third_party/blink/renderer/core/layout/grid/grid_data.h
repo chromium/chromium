@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_DATA_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_DATA_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_DATA_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_line_resolver.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_subtree.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_line_resolver.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_subtree.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -276,4 +276,4 @@ class GridLayoutSubtree
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::GridLayoutTree::GridTreeNode)
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_DATA_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_DATA_H_

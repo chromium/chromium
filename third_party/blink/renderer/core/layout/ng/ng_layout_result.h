@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/layout/flex/devtools_flex_info.h"
 #include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/margin_strut.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
+#include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_appeal.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
