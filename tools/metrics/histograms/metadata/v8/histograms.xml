@@ -1938,6 +1938,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmModuleCodeSizeKiB" units="KB"
+    expires_after="2024-02-04">
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    The amount of committed code space in KiB used by individual WebAssembly
+    modules. Recorded for each live module after each full GC.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmModuleCodeSizeMiB" units="MB"
     expires_after="2024-02-04">
   <owner>ecmziegler@chromium.org</owner>
