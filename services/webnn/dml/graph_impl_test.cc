@@ -945,6 +945,94 @@ struct SplitTester {
   }
 };
 
+template <typename T>
+struct SliceTester {
+  struct SliceAttributes {
+    std::vector<uint32_t> starts;
+    std::vector<uint32_t> sizes;
+  };
+
+  OperandInfo<T> input;
+  SliceAttributes attributes;
+  OperandInfo<T> output;
+
+  void Test() {
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildSlice(input_operand_id, output_operand_id,
+                       std::move(attributes.starts),
+                       std::move(attributes.sizes));
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs);
+
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
+        output.values);
+  }
+};
+
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSliceOperator) {
+  // DML_OPERATOR_SLICE support for dimensions other than 4 or 5 was
+  // introduced in DML_FEATURE_LEVEL_3_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_0));
+  {
+    // Test a simple 2-dimension slice
+    SliceTester<float>{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                 .dimensions = {2, 2},
+                                 // [[1, 2],
+                                 //  [3, 4]] with shape [2, 2]
+                                 .values = {1, 2, 3, 4}},
+                       .attributes = {.starts = {0, 0}, .sizes = {2, 2}},
+                       .output = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 2},
+                                  // [[1, 2],
+                                  //  [3, 4]] with shape [2, 2]
+                                  .values = {1, 2, 3, 4}}}
+        .Test();
+  }
+  {
+    // Test a complex 3-dimension slice
+    SliceTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {3, 4, 5},
+                  // [[[1 , 4 , 4 , -6, -3],
+                  //   [-1, 7 , 3 , 1 , -8],
+                  //   [1 , -1, -2, -3, 6 ],
+                  //   [7 , 6 , 1 , -5, -7]],
+                  //  [[1 , 1 , 5 , 3 , 3 ],
+                  //   [3 , -3, -8, 2 , -1],
+                  //   [8 , -1, -6, 1 , -7],
+                  //   [1 , 4 , 1 , -5, 1 ]],
+                  //  [[-8, 4 , 1 , -1, 9 ],
+                  //   [-4, 1 , -5, -4, -1],
+                  //   [4 , -1, -3, 7 , 1 ],
+                  //   [9 , -4, -9, -8, -9]]] with shape [3, 4, 5]
+                  .values = {1,  4,  4,  -6, -3, -1, 7,  3,  1,  -8, 1,  -1,
+                             -2, -3, 6,  7,  6,  1,  -5, -7, 1,  1,  5,  3,
+                             3,  3,  -3, -8, 2,  -1, 8,  -1, -6, 1,  -7, 1,
+                             4,  1,  -5, 1,  -8, 4,  1,  -1, 9,  -4, 1,  -5,
+                             -4, -1, 4,  -1, -3, 7,  1,  9,  -4, -9, -8, -9}},
+        .attributes = {.starts = {0, 0, 1}, .sizes = {2, 3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3, 4},
+                   // [[[4 , 4 , -6, -3],
+                   //   [7 , 3 , 1 , -8],
+                   //   [-1, -2, -3, 6 ]],
+                   //  [[1 , 5 , 3 , 3 ],
+                   //   [-3, -8, 2 , -1],
+                   //   [-1, -6, 1 , -7]]] with shape [2, 3, 4]
+                   .values = {4, 4, -6, -3, 7,  3,  1, -8, -1, -2, -3, 6,
+                              1, 5, 3,  3,  -3, -8, 2, -1, -1, -6, 1,  -7}}}
+        .Test();
+  }
+}
+
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSplit) {
   {
     SplitTester<float>{

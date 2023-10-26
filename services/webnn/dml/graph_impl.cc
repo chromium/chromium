@@ -806,6 +806,58 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPrelu(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSlice(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::SlicePtr& slice,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  base::expected<void, mojom::ErrorPtr> create_operator_result;
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, slice->input_operand_id);
+  const TensorDesc& input_tensor_desc = input->GetTensorDesc();
+  const auto& input_dimensions = input_tensor_desc.GetDimensions();
+
+  // Start and size attributes must be unpacked from the mojo interface.
+  std::vector<uint32_t> starts;
+  std::vector<uint32_t> sizes;
+  starts.reserve(slice->starts_and_sizes.size());
+  sizes.reserve(slice->starts_and_sizes.size());
+  for (size_t i = 0; i < slice->starts_and_sizes.size(); ++i) {
+    starts.push_back(slice->starts_and_sizes[i]->start);
+    sizes.push_back(slice->starts_and_sizes[i]->size);
+  }
+  CHECK_EQ(input_dimensions.size(), slice->starts_and_sizes.size());
+
+  const TensorDesc& output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, slice->output_operand_id);
+
+  // WebNN doesn't support the strides parameter, but DML expects one. Create
+  // an appropriately sized array of 1s to produce the expected operation.
+  std::vector<uint32_t> strides(input_dimensions.size(), 1u);
+
+  DML_SLICE_OPERATOR_DESC slice_operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .DimensionCount = static_cast<UINT>(input_dimensions.size()),
+      .Offsets = starts.data(),
+      .Sizes = sizes.data(),
+      .Strides = strides.data(),
+  };
+  std::array<const NodeOutput*, 1> input_node_output = {input};
+  const OperatorNode* slice_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_SLICE, &slice_operator_desc, input_node_output);
+  if (!slice_node) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError, "Failed to create slice operator."));
+  }
+
+  const auto* slice_output =
+      graph_builder.CreateNodeOutput(slice_node, std::move(output_tensor_desc));
+  id_to_node_output_map[slice->output_operand_id] = std::move(slice_output);
+
+  return base::ok();
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSplit(
     const IdToOperandMap& id_to_operand_map,
     const mojom::SplitPtr& split,
@@ -1616,6 +1668,12 @@ void GraphImpl::CreateAndBuild(
       case Operation::Tag::kReshape: {
         CreateNodeOutputForReshape(id_to_operand_map, operation->get_reshape(),
                                    graph_builder, id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kSlice: {
+        create_operator_result = CreateOperatorNodeForSlice(
+            id_to_operand_map, operation->get_slice(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case Operation::Tag::kSoftmax: {
