@@ -266,8 +266,16 @@ CookieControlsController::GetConfidenceLevel(
     return CookieControlsBreakageConfidenceLevel::kLow;
   }
 
-  // TODO(crbug.com/1446230): Check if FedCM was requested.
+  // Return `kMedium` confidence for incognito and Guest profile. We don't want
+  // to show high-confidence UI (animation, IPH) in these cases as we can't
+  // persist their usage cross-session. This puts us at high risk of
+  // over-triggering noisy UI and annoying users.
   auto* web_contents = GetWebContents();
+  if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
+    return CookieControlsBreakageConfidenceLevel::kMedium;
+  }
+
+  // TODO(crbug.com/1446230): Check if FedCM was requested.
   const GURL& url = web_contents->GetLastCommittedURL();
   if (cookie_settings_->HasAnyFrameRequestedStorageAccess(url)) {
     return CookieControlsBreakageConfidenceLevel::kMedium;
