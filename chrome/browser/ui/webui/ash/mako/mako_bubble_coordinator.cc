@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/orca_resources.h"
 #include "chrome/grit/orca_resources_map.h"
 #include "content/public/common/url_constants.h"
@@ -35,10 +36,6 @@ constexpr int kMakoCornerRadius = 20;
 // Tall UI is centered on the display screen containing the caret, while short
 // UI is anchored at the caret.
 constexpr int kMakoRewriteHeightThreshold = 400;
-
-// TODO(b/289969807): As a placeholder, use 3961 which is the emoji picker
-// identifier for task manager. We should create a proper one for mako.
-constexpr int kMakoTaskManagerStringID = 3961;
 
 std::string_view ToOrcaModeParamValue(MakoEditorMode mode) {
   return mode == MakoEditorMode::kWrite ? kOrcaWriteMode : kOrcaRewriteMode;
@@ -147,7 +144,7 @@ MakoBubbleCoordinator::~MakoBubbleCoordinator() {
 
 void MakoBubbleCoordinator::LoadConsentUI(Profile* profile) {
   contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<MakoUntrustedUI>>(
-      GURL(kChromeUIMakoPrivacyURL), profile, kMakoTaskManagerStringID);
+      GURL(kChromeUIMakoPrivacyURL), profile, IDS_ACCNAME_ORCA);
   contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoConsentView>(contents_wrapper_.get(),
@@ -172,7 +169,7 @@ void MakoBubbleCoordinator::LoadEditorUI(
                                            freeform_text);
 
   contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<MakoUntrustedUI>>(
-      url, profile, kMakoTaskManagerStringID);
+      url, profile, IDS_ACCNAME_ORCA);
   contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoRewriteView>(contents_wrapper_.get(),
