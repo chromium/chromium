@@ -505,6 +505,12 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     return this.feedbackContext?.categoryTag !== 'Login';
   }
 
+  /** @protected */
+  getAttachFilesLabel_() {
+    return this.isUserLoggedIn_() ? this.i18n('attachFilesLabelLoggedIn') :
+                                    this.i18n('attachFilesLabelLoggedOut');
+  }
+
   /** @private */
   setPrivacyNote_() {
     if (this.isUserLoggedIn_()) {

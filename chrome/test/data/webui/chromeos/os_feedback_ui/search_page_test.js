@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeEmptySearchResponse, fakeFeedbackContext, fakeInternalUserFeedbackContext, fakeLoginFeedbackContext, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
+import {fakeEmptySearchResponse, fakeFeedbackContext, fakeInternalUserFeedbackContext, fakeLoginFlowFeedbackContext, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {SearchResponse} from 'chrome://os-feedback/feedback_types.js';
@@ -191,7 +191,7 @@ export function searchPageTestSuite() {
     /** {?Element} */
     let textAreaElement = null;
     await initializePage();
-    page.feedbackContext = fakeLoginFeedbackContext;
+    page.feedbackContext = fakeLoginFlowFeedbackContext;
     textAreaElement = getElement('#descriptionText');
     const initCallCounts = provider.getHelpContentsCallCount();
 
@@ -473,7 +473,7 @@ export function searchPageTestSuite() {
   test('HideHelpContentSection_oobe_or_login_screen', async () => {
     await initializePage();
     assertTrue(isVisible(getElement('iframe')));
-    page.feedbackContext = fakeLoginFeedbackContext;
+    page.feedbackContext = fakeLoginFlowFeedbackContext;
     assertEquals('Login', page.feedbackContext.categoryTag);
 
     assertFalse(isVisible(getElement('iframe')));

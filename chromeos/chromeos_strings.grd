@@ -3941,6 +3941,9 @@
         <message name="IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL" desc="Label for adding a screenshot and/or a filename.">
           Attach files
         </message>
+        <message name="IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL_LOGGED_OUT" desc="Label for adding a screenshot. Shown to loggout users.">
+          Add screenshot
+        </message>
         <message name="IDS_FEEDBACK_TOOL_REPLACE_FILE_LABEL" desc="Label of the replace file button">
           Replace file
         </message>

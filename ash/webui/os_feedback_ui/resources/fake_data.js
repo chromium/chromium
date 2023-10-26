@@ -106,8 +106,11 @@ export const fakeEmptyFeedbackContext = {
   hasLinkedCrossDevicePhone: false,
 };
 
-/** @type {!FeedbackContext} */
-export const fakeLoginFeedbackContext = {
+/**
+ * Feedback context for login flow, i.e., on oobe or login screen.
+ * @type {!FeedbackContext}
+ */
+export const fakeLoginFlowFeedbackContext = {
   email: '',
   pageUrl: {url: ''},
   isInternalAccount: false,

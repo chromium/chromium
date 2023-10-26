@@ -224,10 +224,11 @@
     <!-- Attach files -->
     <div id="attachFiles">
       <div id="attachFilesLabelContainer">
-        <h2 id="attachFilesLabel">[[i18n('attachFilesLabel')]]</h2>
+        <h2 id="attachFilesLabel">[[getAttachFilesLabel_(feedbackContext)]]</h2>
         <iron-icon icon="os-feedback:info" id="attachFilesIcon"
             class="focusable" tabindex="0"
-            aria-labelledby="attachFilesTooltipContent">
+            aria-labelledby="attachFilesTooltipContent"
+            hidden$="[[!isUserLoggedIn_(feedbackContext)]]">
         </iron-icon>
         <paper-tooltip for="attachFilesIcon" position="top" offset="0" fit-to-visible-bounds>
           <div id="attachFilesTooltipContent">
