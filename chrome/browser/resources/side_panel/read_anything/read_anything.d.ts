@@ -68,6 +68,9 @@ declare namespace chrome {
     // The language code that should be used for speech synthesis voices.
     let speechSynthesisLanguageCode: string;
 
+    // Returns the stored user voice preference for the given language.
+    function getStoredVoice(lang: string): string;
+
     // Returns a list of AXNodeIDs corresponding to the unignored children of
     // the AXNode for the provided AXNodeID. If there is a selection contained
     // in this node, only returns children which are partially or entirely
@@ -138,6 +141,9 @@ declare namespace chrome {
 
     // Called when the speech rate is changed via the webui toolbar.
     function onSpeechRateChange(rate: number): void;
+
+    // Called when the voice used for speech is changed via the webui toolbar.
+    function onVoiceChange(voice: string, lang: string): void;
 
     // Called when the highlight granularity is changed via the webui toolbar.
     function turnedHighlightOn(): void;

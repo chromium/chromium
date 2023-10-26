@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
 
 #include "base/containers/contains.h"
+#include "base/values.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -64,6 +65,7 @@ class ReadAnythingAppModel {
   const SkColor& foreground_color() const { return foreground_color_; }
   const SkColor& background_color() const { return background_color_; }
   float speech_rate() const { return speech_rate_; }
+  const base::Value::Dict& voices() const { return voices_; }
 
   // Selection.
   bool has_selection() const { return has_selection_; }
@@ -122,6 +124,7 @@ class ReadAnythingAppModel {
       double font_size,
       read_anything::mojom::Colors color,
       double speech_rate,
+      base::Value::Dict* voices,
       read_anything::mojom::HighlightGranularity granularity);
   void OnScroll(bool on_selection, bool from_reading_mode) const;
 
@@ -276,6 +279,7 @@ class ReadAnythingAppModel {
   SkColor foreground_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
   int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
   float speech_rate_ = kReadAnythingDefaultSpeechRate;
+  base::Value::Dict voices_ = base::Value::Dict();
   int highlight_granularity_ =
       (int)read_anything::mojom::HighlightGranularity::kDefaultValue;
 

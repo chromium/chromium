@@ -484,23 +484,28 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       const voices = this.contentPage.getVoices();
       const selectedVoice = this.contentPage.getSpeechSynthesisVoice();
 
+      // TODO(crbug.com/1474951): Use the full language code instead of
+      // splitting it once we start using page language instead of browser
+      // language.
       this.voiceSelectionOptions_ = Object.entries(voices).reduce(
           (aggregateVoiceList: Array<MenuStateItem<VoiceDropdown>>,
            [_, voiceListForLang]) =>
               ([
                 ...aggregateVoiceList,
-                ...(voiceListForLang).map(speechSynthesisVoice => ({
-                                            title: speechSynthesisVoice.name,
-                                            icon: '',
-                                            data: {
-                                              voice: speechSynthesisVoice,
-                                              selected: this.voicesAreEqual_(
-                                                  selectedVoice,
-                                                  speechSynthesisVoice),
-                                              previewPlaying: false,
-                                            },
-                                            callback: () => {},
-                                          })),
+                ...(voiceListForLang)
+                    .map(speechSynthesisVoice => ({
+                           title: speechSynthesisVoice.name,
+                           icon: '',
+                           data: {
+                             voice: speechSynthesisVoice,
+                             selected: this.voicesAreEqual_(
+                                 selectedVoice, speechSynthesisVoice),
+                             previewPlaying: false,
+                           },
+                           callback: () => chrome.readingMode.onVoiceChange(
+                               speechSynthesisVoice.name,
+                               speechSynthesisVoice.lang.split('-')[0]),
+                         })),
               ]),
           []);
 
@@ -598,7 +603,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
   private onVoiceSelectClick_(
       event: DomRepeatEvent<MenuStateItem<VoiceDropdown>>) {
-    // TODO(crbug.com/1474951): Save voice to prefs.
+    event.model.item.callback();
     if (this.contentPage) {
       const selectedVoice = event.model.item.data.voice;
       this.contentPage.setSpeechSynthesisVoice(selectedVoice);

@@ -103,6 +103,8 @@ class ReadAnythingUntrustedPageHandler
   void OnFontSizeChange(double font_size) override;
   void OnColorChange(read_anything::mojom::Colors color) override;
   void OnSpeechRateChange(double rate) override;
+  void OnVoiceChange(const std::string& voice,
+                     const std::string& lang) override;
   void OnHighlightGranularityChanged(
       read_anything::mojom::HighlightGranularity granularity) override;
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,

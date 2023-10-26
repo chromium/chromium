@@ -599,9 +599,10 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     double font_size,
     read_anything::mojom::Colors color,
     double speech_rate,
+    base::Value::Dict voices,
     read_anything::mojom::HighlightGranularity granularity) {
   model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
-                                     font_size, color, speech_rate,
+                                     font_size, color, speech_rate, &voices,
                                      granularity);
   ExecuteJavaScript("chrome.readingMode.restoreSettingsFromPrefs();");
 }
@@ -694,6 +695,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onFontChange", &ReadAnythingAppController::OnFontChange)
       .SetMethod("onSpeechRateChange",
                  &ReadAnythingAppController::OnSpeechRateChange)
+      .SetMethod("getStoredVoice", &ReadAnythingAppController::GetStoredVoice)
+      .SetMethod("onVoiceChange", &ReadAnythingAppController::OnVoiceChange)
       .SetMethod("turnedHighlightOn",
                  &ReadAnythingAppController::TurnedHighlightOn)
       .SetMethod("turnedHighlightOff",
@@ -770,6 +773,15 @@ int ReadAnythingAppController::ColorTheme() const {
 
 float ReadAnythingAppController::SpeechRate() const {
   return model_.speech_rate();
+}
+
+std::string ReadAnythingAppController::GetStoredVoice(
+    const std::string& lang) const {
+  if (model_.voices().contains(lang)) {
+    return *model_.voices().FindString(lang);
+  }
+
+  return string_constants::kReadAnythingPlaceholderVoiceName;
 }
 
 int ReadAnythingAppController::HighlightGranularity() const {
@@ -1062,6 +1074,11 @@ void ReadAnythingAppController::OnFontChange(const std::string& font) {
 
 void ReadAnythingAppController::OnSpeechRateChange(double rate) {
   page_handler_->OnSpeechRateChange(rate);
+}
+
+void ReadAnythingAppController::OnVoiceChange(const std::string& voice,
+                                              const std::string& lang) {
+  page_handler_->OnVoiceChange(voice, lang);
 }
 
 void ReadAnythingAppController::TurnedHighlightOn() {

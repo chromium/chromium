@@ -64,6 +64,10 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void, OnFontSizeChange, (double font_size), (override));
   MOCK_METHOD(void, OnSpeechRateChange, (double rate), (override));
   MOCK_METHOD(void,
+              OnVoiceChange,
+              (const std::string& voice, const std::string& lang),
+              (override));
+  MOCK_METHOD(void,
               OnColorChange,
               (read_anything::mojom::Colors color),
               (override));

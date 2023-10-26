@@ -11,6 +11,7 @@ import "ui/accessibility/mojom/ax_event.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/values.mojom";
 
 // Used to represent the current user choices for the Read Anything visual
 // presentation/theme. This includes font name, size, spacing, and colors.
@@ -112,6 +113,10 @@ interface UntrustedPageHandler {
   // https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/rate
   OnSpeechRateChange(double rate);
 
+  // Informs the browser controller that the user updated the voice used for
+  // speech via the webui toolbar. lang is the language code that voice is for.
+  OnVoiceChange(string voice, string lang);
+
   // Informs the browser controller that the user updated the granularity of
   // the highlight that follows along with speech via the webui toolbar.
   OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);
@@ -182,13 +187,15 @@ interface UntrustedPage {
   // Send an updated default language code to the WebUI.
   SetDefaultLanguageCode(string code);
 
-  // Send the theme values stored in prefs to the WebUI.
+  // Send the settings values stored in prefs to the WebUI. voices maps
+  // language to voice name
   OnSettingsRestoredFromPrefs(read_anything.mojom.LineSpacing line_spacing,
                            read_anything.mojom.LetterSpacing letter_spacing,
                            string font,
                            double font_size,
                            read_anything.mojom.Colors color,
                            double speech_rate,
+                           mojo_base.mojom.DictionaryValue voices,
                            read_anything.mojom.HighlightGranularity granularity);
 
   // Notifies the WebUI that the ScreenAI service is ready on this device.

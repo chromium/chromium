@@ -51,6 +51,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     double font_size,
     read_anything::mojom::Colors color,
     double speech_rate,
+    base::Value::Dict* voices,
     read_anything::mojom::HighlightGranularity granularity) {
   line_spacing_ = GetLineSpacingValue(line_spacing);
   letter_spacing_ = GetLetterSpacingValue(letter_spacing);
@@ -58,6 +59,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   font_size_ = font_size;
   color_theme_ = static_cast<size_t>(color);
   speech_rate_ = speech_rate;
+  voices_ = voices->Clone();
   highlight_granularity_ = static_cast<size_t>(granularity);
 }
 

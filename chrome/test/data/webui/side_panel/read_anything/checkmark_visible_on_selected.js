@@ -51,6 +51,7 @@
   assertCheckMarksForDropdown(toolbar.getElementById('lineSpacingMenu'));
   assertCheckMarksForDropdown(toolbar.getElementById('letterSpacingMenu'));
   assertCheckMarksForDropdown(toolbar.getElementById('colorMenu'));
+  assertCheckMarksForDropdown(toolbar.getElementById('voiceSelectionMenu'));
 
   return result;
 })();
