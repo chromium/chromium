@@ -275,6 +275,7 @@ mask
 maskClip
 maskComposite
 maskImage
+maskMode
 maskOrigin
 maskPosition
 maskRepeat

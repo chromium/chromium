@@ -86,7 +86,8 @@ class CORE_EXPORT FillLayer {
   EFillBox Clip() const { return static_cast<EFillBox>(clip_); }
   EFillBox Origin() const { return static_cast<EFillBox>(origin_); }
   const FillRepeat& Repeat() const { return repeat_; }
-  enum CompositingOperator CompositingOperator() const {
+  EFillMode Mode() const { return EFillMode::kAlpha; }
+  CompositingOperator CompositingOperator() const {
     return static_cast<enum CompositingOperator>(compositing_operator_);
   }
   CompositeOperator Composite() const;
@@ -112,7 +113,11 @@ class CORE_EXPORT FillLayer {
   bool IsClipSet() const { return clip_set_; }
   bool IsOriginSet() const { return origin_set_; }
   bool IsRepeatSet() const { return repeat_set_; }
+
+  // TODO(crbug.com/1490704) Implement to support mask mode
+  bool IsModeSet() const { return false; }
   bool IsCompositingOperatorSet() const { return compositing_operator_set_; }
+
   bool IsBlendModeSet() const { return blend_mode_set_; }
   bool IsSizeSet() const {
     return size_type_ != static_cast<unsigned>(EFillSizeType::kSizeNone);
@@ -161,6 +166,9 @@ class CORE_EXPORT FillLayer {
     repeat_ = r;
     repeat_set_ = true;
   }
+  void SetMode(const EFillMode& m) {
+    // TODO(crbug.com/1490704) Implement to support mask mode
+  }
   void SetCompositingOperator(enum CompositingOperator c) {
     compositing_operator_ = static_cast<unsigned>(c);
     compositing_operator_set_ = true;
@@ -193,6 +201,8 @@ class CORE_EXPORT FillLayer {
   void ClearClip() { clip_set_ = false; }
   void ClearOrigin() { origin_set_ = false; }
   void ClearRepeat() { repeat_set_ = false; }
+  // TODO(crbug.com/1490704) Implement to support mask mode
+  void ClearMode() {}
   void ClearCompositingOperator() { compositing_operator_set_ = false; }
   void ClearBlendMode() { blend_mode_set_ = false; }
   void ClearSize() {
@@ -265,6 +275,10 @@ class CORE_EXPORT FillLayer {
   }
   static FillRepeat InitialFillRepeat(EFillLayerType) {
     return {EFillRepeat::kRepeatFill, EFillRepeat::kRepeatFill};
+  }
+  static EFillMode InitialFillMode(EFillLayerType) {
+    // TODO(crbug.com/1490704) Implement to support mask mode
+    return EFillMode::kAlpha;
   }
   static enum CompositingOperator InitialFillCompositingOperator(
       EFillLayerType) {

@@ -248,6 +248,7 @@ All changes to this list should go through Blink's feature review process: http:
     mask-clip
     mask-composite
     mask-image
+    mask-mode
     mask-origin
     mask-repeat
     mask-size

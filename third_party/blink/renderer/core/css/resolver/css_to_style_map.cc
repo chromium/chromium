@@ -186,6 +186,12 @@ void CSSToStyleMap::MapFillRepeat(StyleResolverState&,
   }
 }
 
+void CSSToStyleMap::MapFillMode(StyleResolverState&,
+                                FillLayer* layer,
+                                const CSSValue& value) {
+  // TODO(crbug.com/1490704) Implement to support mask mode
+}
+
 void CSSToStyleMap::MapFillSize(StyleResolverState& state,
                                 FillLayer* layer,
                                 const CSSValue& value) {

@@ -1188,6 +1188,11 @@
     "alpha",
     "luminance",
 
+    // mask-mode
+    // alpha
+    // luminance
+    "match-source",
+
     // color-interpolation / color-interpolation-filters
     // auto
     "srgb",

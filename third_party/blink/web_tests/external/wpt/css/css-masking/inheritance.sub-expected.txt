@@ -35,10 +35,9 @@ This is a testharness.js-based test.
 [PASS] Property mask-composite does not inherit
 [PASS] Property mask-image has initial value none
 [PASS] Property mask-image does not inherit
-[FAIL] Property mask-mode has initial value match-source
-  assert_true: mask-mode doesn't seem to be supported in the computed style expected true got false
+[PASS] Property mask-mode has initial value match-source
 [FAIL] Property mask-mode does not inherit
-  assert_true: expected true got false
+  assert_equals: expected "luminance" but got "match-source"
 [PASS] Property mask-origin has initial value border-box
 [PASS] Property mask-origin does not inherit
 [PASS] Property mask-position has initial value 0% 0%

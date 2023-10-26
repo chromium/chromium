@@ -9395,6 +9395,25 @@ const CSSValue* MaskOrigin::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+const CSSValue* MaskMode::ParseSingleValue(CSSParserTokenRange& range,
+                                           const CSSParserContext&,
+                                           const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeIdent<
+          CSSValueID::kAlpha, CSSValueID::kLuminance, CSSValueID::kMatchSource>,
+      range);
+}
+
+const CSSValue* MaskMode::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  // TODO(crbug.com/1490704) Implement to support mask mode
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kMatchSource));
+  return list;
+}
+
 const CSSValue* WebkitMaskOrigin::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,

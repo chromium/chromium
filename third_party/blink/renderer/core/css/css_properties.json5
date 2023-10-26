@@ -5822,6 +5822,15 @@
       runtime_flag: "CSSMaskingInterop",
     },
     {
+      name: "mask-mode",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      style_builder_template: "mask_layer",
+      style_builder_template_args: {
+        fill_type: "Mode",
+      },
+      runtime_flag: "CSSMaskingInterop",
+    },
+    {
       name: "-webkit-alternative-mask-clip",
       alternative_of: "-webkit-mask-clip",
       alias_for: "mask-clip",

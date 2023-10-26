@@ -233,6 +233,7 @@ marker-start: none
 mask-clip: border-box
 mask-composite: add
 mask-image: none
+mask-mode: match-source
 mask-origin: border-box
 mask-position: 0% 0%
 mask-repeat: repeat

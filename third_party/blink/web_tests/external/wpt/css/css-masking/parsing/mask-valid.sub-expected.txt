@@ -49,7 +49,7 @@ Found 55 tests; 25 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: mask-composite should be canonical expected "add" but got "initial"
 [PASS] e.style['mask'] = "none" should set mask-image
 [FAIL] e.style['mask'] = "none" should set mask-mode
-  assert_equals: mask-mode should be canonical expected (string) "match-source" but got (undefined) undefined
+  assert_equals: mask-mode should be canonical expected "match-source" but got ""
 [FAIL] e.style['mask'] = "none" should set mask-origin
   assert_equals: mask-origin should be canonical expected "border-box" but got "initial"
 [FAIL] e.style['mask'] = "none" should set mask-position
@@ -75,7 +75,7 @@ Found 55 tests; 25 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: mask-composite should be canonical expected "add, add" but got "initial, initial"
 [PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-image
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-mode
-  assert_equals: mask-mode should be canonical expected (string) "match-source, match-source" but got (undefined) undefined
+  assert_equals: mask-mode should be canonical expected "match-source, match-source" but got ""
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-origin
   assert_equals: mask-origin should be canonical expected "border-box, padding-box" but got "initial, padding-box"
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-position

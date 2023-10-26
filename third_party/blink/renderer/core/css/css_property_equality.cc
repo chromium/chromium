@@ -99,6 +99,11 @@ bool FillLayersEqual(const FillLayer& a_layers, const FillLayer& b_layers) {
           return false;
         }
         break;
+      case CSSPropertyID::kMaskMode:
+        if (a_layer->Mode() != b_layer->Mode()) {
+          return false;
+        }
+        break;
       case CSSPropertyID::kBackgroundPositionX:
       case CSSPropertyID::kWebkitMaskPositionX:
         if (a_layer->PositionX() != b_layer->PositionX()) {
@@ -802,6 +807,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kMaskOrigin:
       return FillLayersEqual<CSSPropertyID::kMaskOrigin>(a.MaskLayers(),
                                                          b.MaskLayers());
+    case CSSPropertyID::kMaskMode:
+      return FillLayersEqual<CSSPropertyID::kMaskMode>(a.MaskLayers(),
+                                                       b.MaskLayers());
     case CSSPropertyID::kWebkitMaskOrigin:
       return FillLayersEqual<CSSPropertyID::kWebkitMaskOrigin>(a.MaskLayers(),
                                                                b.MaskLayers());

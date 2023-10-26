@@ -1181,4 +1181,30 @@ TEST(CSSPropertyParserTest, MaskPositionBottomLeft) {
   TestMaskPositionParsing("bottom 10% left -13px", "left -13px bottom 10%");
 }
 
+void TestMaskModeParsing(const String& testValue,
+                         const String& expectedCssText) {
+  const CSSValue* value = CSSParser::ParseSingleValue(
+      CSSPropertyID::kMaskMode, testValue,
+      StrictCSSParserContext(SecureContextMode::kSecureContext));
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(expectedCssText, value->CssText());
+}
+
+TEST(CSSPropertyParserTest, MaskModeAlpha) {
+  TestMaskModeParsing("alpha", "alpha");
+}
+
+TEST(CSSPropertyParserTest, MaskModeLuminance) {
+  TestMaskModeParsing("luminance", "luminance");
+}
+
+TEST(CSSPropertyParserTest, MaskModeMatchSource) {
+  TestMaskModeParsing("match-source", "match-source");
+}
+
+TEST(CSSPropertyParserTest, MaskModeMultipleValues) {
+  TestMaskModeParsing("alpha, luminance, match-source",
+                      "alpha, luminance, match-source");
+}
+
 }  // namespace blink

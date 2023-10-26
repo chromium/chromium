@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 333 tests; 332 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 334 tests; 332 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] accent-color
 [PASS] align-content
 [PASS] align-items
@@ -190,6 +190,8 @@ Found 333 tests; 332 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] mask-clip
 [PASS] mask-composite
 [PASS] mask-image
+[FAIL] mask-mode
+  assert_not_equals: Should get a different computed value. got disallowed value "match-source"
 [PASS] mask-origin
 [PASS] mask-repeat
 [PASS] mask-size

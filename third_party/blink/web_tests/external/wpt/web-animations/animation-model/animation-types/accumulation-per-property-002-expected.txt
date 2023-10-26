@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 323 tests; 312 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 326 tests; 313 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] Setup
 [PASS] isolation (type: discrete) has testAccumulation function
 [PASS] isolation: "isolate" onto "auto"
@@ -58,6 +58,11 @@ Found 323 tests; 312 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] mask-image (type: discrete) has testAccumulation function
 [PASS] mask-image: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
 [PASS] mask-image: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
+[PASS] mask-mode (type: discrete) has testAccumulation function
+[FAIL] mask-mode: "luminance" onto "alpha"
+  assert_equals: The value should be luminance at 0ms expected "luminance" but got "match-source"
+[FAIL] mask-mode: "alpha" onto "luminance"
+  assert_equals: The value should be alpha at 0ms expected "alpha" but got "match-source"
 [PASS] mask-origin (type: discrete) has testAccumulation function
 [PASS] mask-origin: "border-box" onto "content-box"
 [PASS] mask-origin: "content-box" onto "border-box"
