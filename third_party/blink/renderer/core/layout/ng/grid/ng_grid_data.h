@@ -14,27 +14,27 @@
 
 namespace blink {
 
-struct CORE_EXPORT NGGridPlacementData {
-  USING_FAST_MALLOC(NGGridPlacementData);
+struct CORE_EXPORT GridPlacementData {
+  USING_FAST_MALLOC(GridPlacementData);
 
  public:
-  NGGridPlacementData(NGGridPlacementData&&) = default;
-  NGGridPlacementData& operator=(NGGridPlacementData&&) = default;
+  GridPlacementData(GridPlacementData&&) = default;
+  GridPlacementData& operator=(GridPlacementData&&) = default;
 
-  explicit NGGridPlacementData(const ComputedStyle& grid_style,
-                               wtf_size_t column_auto_repetitions,
-                               wtf_size_t row_auto_repetitions)
+  explicit GridPlacementData(const ComputedStyle& grid_style,
+                             wtf_size_t column_auto_repetitions,
+                             wtf_size_t row_auto_repetitions)
       : line_resolver(grid_style,
                       column_auto_repetitions,
                       row_auto_repetitions) {}
 
   // Subgrids need to map named lines from every parent grid. This constructor
   // should be used exclusively by subgrids to differentiate such scenario.
-  NGGridPlacementData(const ComputedStyle& grid_style,
-                      const NGGridLineResolver& parent_line_resolver,
-                      GridArea subgrid_area,
-                      wtf_size_t column_auto_repetitions,
-                      wtf_size_t row_auto_repetitions)
+  GridPlacementData(const ComputedStyle& grid_style,
+                    const GridLineResolver& parent_line_resolver,
+                    GridArea subgrid_area,
+                    wtf_size_t column_auto_repetitions,
+                    wtf_size_t row_auto_repetitions)
       : line_resolver(grid_style,
                       parent_line_resolver,
                       subgrid_area,
@@ -42,23 +42,23 @@ struct CORE_EXPORT NGGridPlacementData {
                       row_auto_repetitions) {}
 
   // This constructor only copies inputs to the auto-placement algorithm.
-  NGGridPlacementData(const NGGridPlacementData& other)
+  GridPlacementData(const GridPlacementData& other)
       : line_resolver(other.line_resolver) {}
 
   // This method compares the fields computed by the auto-placement algorithm in
-  // |NGGridPlacement| and it's only intended to validate the cached data.
-  bool operator==(const NGGridPlacementData& other) const {
+  // |GridPlacement| and it's only intended to validate the cached data.
+  bool operator==(const GridPlacementData& other) const {
     return grid_item_positions == other.grid_item_positions &&
            column_start_offset == other.column_start_offset &&
            row_start_offset == other.row_start_offset &&
            line_resolver == other.line_resolver;
   }
 
-  bool operator!=(const NGGridPlacementData& other) const {
+  bool operator!=(const GridPlacementData& other) const {
     return !(*this == other);
   }
 
-  // TODO(kschmi): Remove placement data from `NGGridPlacement` as well as
+  // TODO(kschmi): Remove placement data from `GridPlacement` as well as
   // these helpers.
   bool HasStandaloneAxis(GridTrackSizingDirection track_direction) const {
     return line_resolver.HasStandaloneAxis(track_direction);
@@ -87,9 +87,9 @@ struct CORE_EXPORT NGGridPlacementData {
                                             : row_start_offset;
   }
 
-  NGGridLineResolver line_resolver;
+  GridLineResolver line_resolver;
 
-  // These fields are computed in |NGGridPlacement::RunAutoPlacementAlgorithm|,
+  // These fields are computed in |GridPlacement::RunAutoPlacementAlgorithm|,
   // so they're not considered inputs to the grid placement step.
   Vector<GridArea> grid_item_positions;
   wtf_size_t column_start_offset{0};
@@ -98,43 +98,43 @@ struct CORE_EXPORT NGGridPlacementData {
 
 namespace {
 
-bool AreEqual(const std::unique_ptr<NGGridLayoutTrackCollection>& lhs,
-              const std::unique_ptr<NGGridLayoutTrackCollection>& rhs) {
+bool AreEqual(const std::unique_ptr<GridLayoutTrackCollection>& lhs,
+              const std::unique_ptr<GridLayoutTrackCollection>& rhs) {
   return (lhs && rhs) ? *lhs == *rhs : !lhs && !rhs;
 }
 
 }  // namespace
 
 // This struct contains the column and row data necessary to layout grid items.
-// For grid sizing, it will store |NGGridSizingTrackCollection| pointers, which
+// For grid sizing, it will store |GridSizingTrackCollection| pointers, which
 // are able to modify the geometry of its sets. However, after sizing is done,
-// it should only copy |NGGridLayoutTrackCollection| immutable data.
-class CORE_EXPORT NGGridLayoutData {
-  USING_FAST_MALLOC(NGGridLayoutData);
+// it should only copy |GridLayoutTrackCollection| immutable data.
+class CORE_EXPORT GridLayoutData {
+  USING_FAST_MALLOC(GridLayoutData);
 
  public:
-  NGGridLayoutData() = default;
-  NGGridLayoutData(NGGridLayoutData&&) = default;
-  NGGridLayoutData& operator=(NGGridLayoutData&&) = default;
+  GridLayoutData() = default;
+  GridLayoutData(GridLayoutData&&) = default;
+  GridLayoutData& operator=(GridLayoutData&&) = default;
 
-  NGGridLayoutData(const NGGridLayoutData& other) {
+  GridLayoutData(const GridLayoutData& other) {
     if (other.columns_) {
-      columns_ = std::make_unique<NGGridLayoutTrackCollection>(other.Columns());
+      columns_ = std::make_unique<GridLayoutTrackCollection>(other.Columns());
     }
     if (other.rows_) {
-      rows_ = std::make_unique<NGGridLayoutTrackCollection>(other.Rows());
+      rows_ = std::make_unique<GridLayoutTrackCollection>(other.Rows());
     }
   }
 
-  NGGridLayoutData& operator=(const NGGridLayoutData& other) {
-    return *this = NGGridLayoutData(other);
+  GridLayoutData& operator=(const GridLayoutData& other) {
+    return *this = GridLayoutData(other);
   }
 
-  bool operator==(const NGGridLayoutData& other) const {
+  bool operator==(const GridLayoutData& other) const {
     return AreEqual(columns_, other.columns_) && AreEqual(rows_, other.rows_);
   }
 
-  bool operator!=(const NGGridLayoutData& other) const {
+  bool operator!=(const GridLayoutData& other) const {
     return !(*this == other);
   }
 
@@ -144,26 +144,26 @@ class CORE_EXPORT NGGridLayoutData {
                : !(rows_ && rows_->IsForSizing());
   }
 
-  NGGridLayoutTrackCollection& Columns() const {
+  GridLayoutTrackCollection& Columns() const {
     DCHECK(columns_ && columns_->Direction() == kForColumns);
     return *columns_;
   }
 
-  NGGridLayoutTrackCollection& Rows() const {
+  GridLayoutTrackCollection& Rows() const {
     DCHECK(rows_ && rows_->Direction() == kForRows);
     return *rows_;
   }
 
-  NGGridSizingTrackCollection& SizingCollection(
+  GridSizingTrackCollection& SizingCollection(
       GridTrackSizingDirection track_direction) const {
     DCHECK(!HasSubgriddedAxis(track_direction));
 
-    return To<NGGridSizingTrackCollection>(
+    return To<GridSizingTrackCollection>(
         (track_direction == kForColumns) ? Columns() : Rows());
   }
 
   void SetTrackCollection(
-      std::unique_ptr<NGGridLayoutTrackCollection> track_collection) {
+      std::unique_ptr<GridLayoutTrackCollection> track_collection) {
     DCHECK(track_collection);
 
     if (track_collection->Direction() == kForColumns) {
@@ -174,8 +174,8 @@ class CORE_EXPORT NGGridLayoutData {
   }
 
  private:
-  std::unique_ptr<NGGridLayoutTrackCollection> columns_;
-  std::unique_ptr<NGGridLayoutTrackCollection> rows_;
+  std::unique_ptr<GridLayoutTrackCollection> columns_;
+  std::unique_ptr<GridLayoutTrackCollection> rows_;
 };
 
 // Subgrid layout relies on the root grid to perform the track sizing algorithm
@@ -187,24 +187,24 @@ class CORE_EXPORT NGGridLayoutData {
 // important because when we store this tree within a constraint space we want
 // to be able to invalidate the cached layout result of a subgrid based on
 // whether the provided subtree's track were sized exactly the same.
-class NGGridLayoutTree : public RefCounted<NGGridLayoutTree> {
+class GridLayoutTree : public RefCounted<GridLayoutTree> {
  public:
   struct GridTreeNode {
-    NGGridLayoutData layout_data;
+    GridLayoutData layout_data;
     wtf_size_t subtree_size;
   };
 
-  explicit NGGridLayoutTree(wtf_size_t initial_capacity) {
+  explicit GridLayoutTree(wtf_size_t initial_capacity) {
     tree_data_.ReserveInitialCapacity(initial_capacity);
   }
 
-  void Append(const NGGridLayoutData& layout_data, wtf_size_t subtree_size) {
+  void Append(const GridLayoutData& layout_data, wtf_size_t subtree_size) {
     GridTreeNode grid_node_data{layout_data, subtree_size};
     tree_data_.emplace_back(std::move(grid_node_data));
   }
 
   bool AreSubtreesEqual(wtf_size_t subtree_root,
-                        const NGGridLayoutTree& other,
+                        const GridLayoutTree& other,
                         wtf_size_t other_subtree_root) const {
     const wtf_size_t subtree_size = SubtreeSize(subtree_root);
 
@@ -221,7 +221,7 @@ class NGGridLayoutTree : public RefCounted<NGGridLayoutTree> {
     return true;
   }
 
-  const NGGridLayoutData& LayoutData(wtf_size_t index) const {
+  const GridLayoutData& LayoutData(wtf_size_t index) const {
     DCHECK_LT(index, tree_data_.size());
     return tree_data_[index].layout_data;
   }
@@ -237,36 +237,35 @@ class NGGridLayoutTree : public RefCounted<NGGridLayoutTree> {
   Vector<GridTreeNode, 16> tree_data_;
 };
 
-// This class represents a subtree in a `NGGridLayoutTree` and mostly serves two
+// This class represents a subtree in a `GridLayoutTree` and mostly serves two
 // purposes: provide seamless iteration over the tree structure and compare
 // input subtrees to invalidate a subgrid's cached layout result.
-class NGGridLayoutSubtree
-    : public NGGridSubtree<NGGridLayoutSubtree,
-                           scoped_refptr<const NGGridLayoutTree>> {
+class GridLayoutSubtree
+    : public GridSubtree<GridLayoutSubtree,
+                         scoped_refptr<const GridLayoutTree>> {
   DISALLOW_NEW();
 
  public:
-  NGGridLayoutSubtree() = default;
+  GridLayoutSubtree() = default;
 
-  explicit NGGridLayoutSubtree(
-      scoped_refptr<const NGGridLayoutTree>&& layout_tree)
-      : NGGridSubtree(std::move(layout_tree)) {}
+  explicit GridLayoutSubtree(scoped_refptr<const GridLayoutTree>&& layout_tree)
+      : GridSubtree(std::move(layout_tree)) {}
 
-  NGGridLayoutSubtree(const scoped_refptr<const NGGridLayoutTree>& layout_tree,
-                      wtf_size_t parent_end_index,
-                      wtf_size_t subtree_root)
-      : NGGridSubtree(layout_tree, parent_end_index, subtree_root) {}
+  GridLayoutSubtree(const scoped_refptr<const GridLayoutTree>& layout_tree,
+                    wtf_size_t parent_end_index,
+                    wtf_size_t subtree_root)
+      : GridSubtree(layout_tree, parent_end_index, subtree_root) {}
 
   // This method is meant to be used for layout invalidation, so we only care
   // about comparing the layout data of both subtrees.
-  bool operator==(const NGGridLayoutSubtree& other) const {
+  bool operator==(const GridLayoutSubtree& other) const {
     return (grid_tree_ && other.grid_tree_)
                ? grid_tree_->AreSubtreesEqual(subtree_root_, *other.grid_tree_,
                                               other.subtree_root_)
                : !grid_tree_ && !other.grid_tree_;
   }
 
-  const NGGridLayoutData& LayoutData() const {
+  const GridLayoutData& LayoutData() const {
     DCHECK(grid_tree_);
     return grid_tree_->LayoutData(subtree_root_);
   }
@@ -275,6 +274,6 @@ class NGGridLayoutSubtree
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGGridLayoutTree::GridTreeNode)
+    blink::GridLayoutTree::GridTreeNode)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_DATA_H_

@@ -486,17 +486,16 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
            !node_style.GridRowEnd().IsAuto();
   };
 
-  auto GridAreaContainingBlockInfo = [&](const LayoutGrid& containing_grid,
-                                         const NGGridLayoutData& layout_data,
-                                         const BoxStrut& borders,
-                                         const LogicalSize& size)
+  auto GridAreaContainingBlockInfo =
+      [&](const LayoutGrid& containing_grid, const GridLayoutData& layout_data,
+          const BoxStrut& borders, const LogicalSize& size)
       -> NGOutOfFlowLayoutPart::ContainingBlockInfo {
     const auto& grid_style = containing_grid.StyleRef();
     GridItemData grid_item(candidate.Node(), grid_style,
                            grid_style.GetFontBaseline());
 
     return {grid_style.GetWritingDirection(),
-            NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
+            GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
                 containing_grid.CachedPlacementData(), layout_data, grid_style,
                 borders, size, &grid_item)};
   };
@@ -541,7 +540,7 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
       if (is_placed_within_grid_area) {
         return GridAreaContainingBlockInfo(
             *To<LayoutGrid>(containing_block),
-            *To<LayoutGrid>(containing_block)->GridLayoutData(), border, size);
+            *To<LayoutGrid>(containing_block)->LayoutData(), border, size);
       }
 
       LogicalSize content_size = ShrinkLogicalSize(size, border);
@@ -562,8 +561,8 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
 
   if (IsPlacedWithinGridArea(container_object)) {
     return GridAreaContainingBlockInfo(
-        *To<LayoutGrid>(container_object), container_builder_->GridLayoutData(),
-        container_builder_->Borders(),
+        *To<LayoutGrid>(container_object),
+        container_builder_->GetGridLayoutData(), container_builder_->Borders(),
         {container_builder_->InlineSize(),
          container_builder_->FragmentBlockSize()});
   }

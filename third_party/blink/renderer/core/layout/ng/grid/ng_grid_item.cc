@@ -216,7 +216,7 @@ GridItemData::GridItemData(
   //   sizing purposes in the subgridded dimension.
   //
   // Mark any subgridded axis as not considered for sizing, effectively ignoring
-  // its contribution in `NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes`.
+  // its contribution in `GridLayoutAlgorithm::ResolveIntrinsicTrackSizes`.
   if (parent_must_consider_grid_items_for_column_sizing) {
     must_consider_grid_items_for_column_sizing = has_subgridded_columns;
     is_considered_for_column_sizing = !has_subgridded_columns;
@@ -296,7 +296,7 @@ void GridItemData::SetAlignmentFallback(
 }
 
 void GridItemData::ComputeSetIndices(
-    const NGGridLayoutTrackCollection& track_collection) {
+    const GridLayoutTrackCollection& track_collection) {
   DCHECK(!IsOutOfFlow());
 
   const auto track_direction = track_collection.Direction();
@@ -337,8 +337,8 @@ void GridItemData::ComputeSetIndices(
 }
 
 void GridItemData::ComputeOutOfFlowItemPlacement(
-    const NGGridLayoutTrackCollection& track_collection,
-    const NGGridPlacementData& placement_data,
+    const GridLayoutTrackCollection& track_collection,
+    const GridPlacementData& placement_data,
     const ComputedStyle& grid_style) {
   DCHECK(IsOutOfFlow());
 
@@ -349,9 +349,9 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
   auto& end_offset = is_for_columns ? column_placement.offset_in_range.end
                                     : row_placement.offset_in_range.end;
 
-  NGGridPlacement::ResolveOutOfFlowItemGridLines(
-      track_collection, placement_data, grid_style, node.Style(), &start_offset,
-      &end_offset);
+  GridPlacement::ResolveOutOfFlowItemGridLines(track_collection, placement_data,
+                                               grid_style, node.Style(),
+                                               &start_offset, &end_offset);
 
 #if DCHECK_IS_ON()
   if (start_offset != kNotFound && end_offset != kNotFound) {

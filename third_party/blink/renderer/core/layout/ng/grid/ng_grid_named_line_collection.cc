@@ -11,7 +11,7 @@
 
 namespace blink {
 
-NGGridNamedLineCollection::NGGridNamedLineCollection(
+GridNamedLineCollection::GridNamedLineCollection(
     const String& named_line,
     GridTrackSizingDirection track_direction,
     const NamedGridLinesMap& implicit_grid_line_names,
@@ -69,11 +69,11 @@ NGGridNamedLineCollection::NGGridNamedLineCollection(
   }
 }
 
-bool NGGridNamedLineCollection::HasExplicitNamedLines() const {
+bool GridNamedLineCollection::HasExplicitNamedLines() const {
   return named_lines_indexes_ || auto_repeat_named_lines_indexes_;
 }
 
-bool NGGridNamedLineCollection::HasCollapsedAutoRepeat() const {
+bool GridNamedLineCollection::HasCollapsedAutoRepeat() const {
   // Collapsed repeaters are only possible for subgrids, as standalone grids
   // guarantee a minimum of one repeat for auto repeaters.
   if (is_standalone_grid_) {
@@ -85,11 +85,11 @@ bool NGGridNamedLineCollection::HasCollapsedAutoRepeat() const {
   return auto_repeat_track_list_length_ && !auto_repeat_total_tracks_;
 }
 
-bool NGGridNamedLineCollection::HasNamedLines() const {
+bool GridNamedLineCollection::HasNamedLines() const {
   return HasExplicitNamedLines() || implicit_named_lines_indexes_;
 }
 
-bool NGGridNamedLineCollection::Contains(wtf_size_t line) const {
+bool GridNamedLineCollection::Contains(wtf_size_t line) const {
   CHECK(HasNamedLines());
 
   if (line > last_line_)
@@ -101,8 +101,8 @@ bool NGGridNamedLineCollection::Contains(wtf_size_t line) const {
   // Collapsed auto repeaters are only possible for subgrids, as standalone
   // grids guarantee a minimum of one repeat. The following methods expect each
   // line name to consume at least one track:
-  //    `NGGridLineResolver::LookAheadForNamedGridLine`
-  //    `NGGridLineResolver::LookBackForNamedGridLine`
+  //    `GridLineResolver::LookAheadForNamedGridLine`
+  //    `GridLineResolver::LookBackForNamedGridLine`
   const bool has_collapsed_auto_repeat = HasCollapsedAutoRepeat();
   if (has_collapsed_auto_repeat && line >= insertion_point_) {
     DCHECK(!is_standalone_grid_);
@@ -167,7 +167,7 @@ bool NGGridNamedLineCollection::Contains(wtf_size_t line) const {
               auto_repeat_index_in_first_repetition);
 }
 
-wtf_size_t NGGridNamedLineCollection::FirstExplicitPosition() const {
+wtf_size_t GridNamedLineCollection::FirstExplicitPosition() const {
   DCHECK(HasExplicitNamedLines());
 
   wtf_size_t first_line = 0;
@@ -193,7 +193,7 @@ wtf_size_t NGGridNamedLineCollection::FirstExplicitPosition() const {
   return named_lines_indexes_->at(first_line) + auto_repeat_counted_tracks;
 }
 
-wtf_size_t NGGridNamedLineCollection::FirstPosition() const {
+wtf_size_t GridNamedLineCollection::FirstPosition() const {
   CHECK(HasNamedLines());
 
   if (!implicit_named_lines_indexes_)

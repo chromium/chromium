@@ -6,8 +6,8 @@
 
 namespace blink {
 
-NGGridSizingTree NGGridSizingTree::CopyForFragmentation() const {
-  NGGridSizingTree tree_copy;
+GridSizingTree GridSizingTree::CopyForFragmentation() const {
+  GridSizingTree tree_copy;
   tree_copy.tree_data_.ReserveInitialCapacity(tree_data_.size());
 
   for (const auto& sizing_data : tree_data_) {
@@ -18,8 +18,8 @@ NGGridSizingTree NGGridSizingTree::CopyForFragmentation() const {
   return tree_copy;
 }
 
-scoped_refptr<const NGGridLayoutTree> NGGridSizingTree::FinalizeTree() const {
-  auto layout_tree = base::MakeRefCounted<NGGridLayoutTree>(tree_data_.size());
+scoped_refptr<const GridLayoutTree> GridSizingTree::FinalizeTree() const {
+  auto layout_tree = base::MakeRefCounted<GridLayoutTree>(tree_data_.size());
 
   for (const auto& grid_tree_node : tree_data_) {
     layout_tree->Append(grid_tree_node->layout_data,
@@ -28,8 +28,8 @@ scoped_refptr<const NGGridLayoutTree> NGGridSizingTree::FinalizeTree() const {
   return layout_tree;
 }
 
-NGGridSizingTree::GridTreeNode& NGGridSizingTree::CreateSizingData(
-    const NGSubgriddedItemData& subgrid_data) {
+GridSizingTree::GridTreeNode& GridSizingTree::CreateSizingData(
+    const SubgriddedItemData& subgrid_data) {
   if (subgrid_data) {
     const auto* subgrid_layout_box = subgrid_data->node.GetLayoutBox();
 
@@ -39,8 +39,8 @@ NGGridSizingTree::GridTreeNode& NGGridSizingTree::CreateSizingData(
   return *tree_data_.emplace_back(std::make_unique<GridTreeNode>());
 }
 
-void NGGridSizingTree::AddSubgriddedItemLookupData(
-    NGSubgriddedItemData&& subgridded_item_data) {
+void GridSizingTree::AddSubgriddedItemLookupData(
+    SubgriddedItemData&& subgridded_item_data) {
   const auto* item_layout_box = subgridded_item_data->node.GetLayoutBox();
 
   DCHECK(!subgridded_item_data_lookup_map_.Contains(item_layout_box));
@@ -48,7 +48,7 @@ void NGGridSizingTree::AddSubgriddedItemLookupData(
                                           std::move(subgridded_item_data));
 }
 
-NGSubgriddedItemData NGGridSizingTree::LookupSubgriddedItemData(
+SubgriddedItemData GridSizingTree::LookupSubgriddedItemData(
     const GridItemData& grid_item) const {
   const auto* item_layout_box = grid_item.node.GetLayoutBox();
 
@@ -56,7 +56,7 @@ NGSubgriddedItemData NGGridSizingTree::LookupSubgriddedItemData(
   return subgridded_item_data_lookup_map_.at(item_layout_box);
 }
 
-wtf_size_t NGGridSizingTree::LookupSubgridIndex(
+wtf_size_t GridSizingTree::LookupSubgridIndex(
     const GridItemData& subgrid_data) const {
   const auto* subgrid_layout_box = subgrid_data.node.GetLayoutBox();
 

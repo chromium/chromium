@@ -562,7 +562,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   }
 
   void TransferGridLayoutData(
-      std::unique_ptr<NGGridLayoutData> grid_layout_data) {
+      std::unique_ptr<GridLayoutData> grid_layout_data) {
     grid_layout_data_ = std::move(grid_layout_data);
   }
   void TransferFlexLayoutData(
@@ -573,7 +573,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     frame_set_layout_data_ = std::move(data);
   }
 
-  const NGGridLayoutData& GridLayoutData() const {
+  const GridLayoutData& GetGridLayoutData() const {
     DCHECK(grid_layout_data_);
     return *grid_layout_data_.get();
   }
@@ -702,7 +702,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   NGBlockBreakTokenData* break_token_data_ = nullptr;
 
   // Grid specific types.
-  std::unique_ptr<NGGridLayoutData> grid_layout_data_;
+  std::unique_ptr<GridLayoutData> grid_layout_data_;
 
   std::unique_ptr<DevtoolsFlexInfo> flex_layout_data_;
   std::unique_ptr<FrameSetLayoutData> frame_set_layout_data_;

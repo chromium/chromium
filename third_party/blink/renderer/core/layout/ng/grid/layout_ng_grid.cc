@@ -96,24 +96,24 @@ bool LayoutGrid::HasCachedPlacementData() const {
   return cached_placement_data_ && !IsGridPlacementDirty();
 }
 
-const NGGridPlacementData& LayoutGrid::CachedPlacementData() const {
+const GridPlacementData& LayoutGrid::CachedPlacementData() const {
   DCHECK(HasCachedPlacementData());
   return *cached_placement_data_;
 }
 
-void LayoutGrid::SetCachedPlacementData(NGGridPlacementData&& placement_data) {
+void LayoutGrid::SetCachedPlacementData(GridPlacementData&& placement_data) {
   cached_placement_data_ =
-      std::make_unique<NGGridPlacementData>(std::move(placement_data));
+      std::make_unique<GridPlacementData>(std::move(placement_data));
   SetGridPlacementDirty(false);
 }
 
-const NGGridLayoutData* LayoutGrid::GridLayoutData() const {
+const GridLayoutData* LayoutGrid::LayoutData() const {
   // Retrieve the layout data from the last fragment as it has the most
   // up-to-date grid geometry.
   const wtf_size_t fragment_count = PhysicalFragmentCount();
   if (fragment_count == 0)
     return nullptr;
-  return GetLayoutResult(fragment_count - 1)->GridLayoutData();
+  return GetLayoutResult(fragment_count - 1)->GetGridLayoutData();
 }
 
 wtf_size_t LayoutGrid::AutoRepeatCountForDirection(
@@ -149,7 +149,7 @@ wtf_size_t LayoutGrid::ExplicitGridEndForDirection(
 LayoutUnit LayoutGrid::GridGap(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  const auto* grid_layout_data = GridLayoutData();
+  const auto* grid_layout_data = LayoutData();
   if (!grid_layout_data)
     return LayoutUnit();
 
@@ -169,7 +169,7 @@ Vector<LayoutUnit, 1> LayoutGrid::TrackSizesForComputedStyle(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   Vector<LayoutUnit, 1> track_sizes;
-  const auto* grid_layout_data = GridLayoutData();
+  const auto* grid_layout_data = LayoutData();
   if (!grid_layout_data)
     return track_sizes;
 
@@ -211,7 +211,7 @@ Vector<LayoutUnit> LayoutGrid::ColumnPositions() const {
 }
 
 Vector<LayoutUnit> LayoutGrid::ComputeTrackSizeRepeaterForRange(
-    const NGGridLayoutTrackCollection& track_collection,
+    const GridLayoutTrackCollection& track_collection,
     wtf_size_t range_index) const {
   const wtf_size_t range_set_count =
       track_collection.RangeSetCount(range_index);
@@ -249,7 +249,7 @@ Vector<LayoutUnit> LayoutGrid::ComputeTrackSizeRepeaterForRange(
 Vector<LayoutUnit> LayoutGrid::ComputeExpandedPositions(
     const GridTrackSizingDirection track_direction) const {
   Vector<LayoutUnit> expanded_positions;
-  const auto* grid_layout_data = GridLayoutData();
+  const auto* grid_layout_data = LayoutData();
   if (!grid_layout_data)
     return expanded_positions;
 

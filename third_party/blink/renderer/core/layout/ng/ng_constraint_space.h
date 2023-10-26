@@ -753,8 +753,8 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() ? rare_data_->LinesUntilClamp() : absl::nullopt;
   }
 
-  const NGGridLayoutSubtree* GridLayoutSubtree() const {
-    return HasRareData() ? rare_data_->GridLayoutSubtree() : nullptr;
+  const GridLayoutSubtree* GetGridLayoutSubtree() const {
+    return HasRareData() ? rare_data_->GetGridLayoutSubtree() : nullptr;
   }
 
   // Return true if the two constraint spaces are similar enough that it *may*
@@ -1283,13 +1283,13 @@ class CORE_EXPORT NGConstraintSpace final {
           target_stretch_block_sizes;
     }
 
-    const NGGridLayoutSubtree* GridLayoutSubtree() const {
+    const GridLayoutSubtree* GetGridLayoutSubtree() const {
       return GetDataUnionType() == DataUnionType::kSubgridData
                  ? &subgrid_data_.layout_subtree
                  : nullptr;
     }
 
-    void SetGridLayoutSubtree(NGGridLayoutSubtree&& grid_layout_subtree) {
+    void SetGridLayoutSubtree(GridLayoutSubtree&& grid_layout_subtree) {
       EnsureSubgridData()->layout_subtree = std::move(grid_layout_subtree);
     }
 
@@ -1437,7 +1437,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
       bool IsInitialForMaySkipLayout() const { return !layout_subtree; }
 
-      NGGridLayoutSubtree layout_subtree;
+      GridLayoutSubtree layout_subtree;
     };
 
     BlockData* EnsureBlockData() {

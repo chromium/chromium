@@ -35,8 +35,8 @@ AutoPlacementType AutoPlacement(const GridArea& position,
 
 }  // namespace
 
-NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
-                                 const NGGridPlacementData& placement_data)
+GridPlacement::GridPlacement(const ComputedStyle& grid_style,
+                             const GridPlacementData& placement_data)
     : placement_data_(placement_data),
       packing_behavior_(grid_style.IsGridAutoFlowAlgorithmSparse()
                             ? PackingBehavior::kSparse
@@ -53,7 +53,7 @@ NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
 }
 
 // https://drafts.csswg.org/css-grid/#auto-placement-algo
-NGGridPlacementData NGGridPlacement::RunAutoPlacementAlgorithm(
+GridPlacementData GridPlacement::RunAutoPlacementAlgorithm(
     const GridItems& grid_items) {
 #if DCHECK_IS_ON()
   DCHECK(!auto_placement_algorithm_called_)
@@ -61,7 +61,7 @@ NGGridPlacementData NGGridPlacement::RunAutoPlacementAlgorithm(
   auto_placement_algorithm_called_ = true;
 #endif
 
-  auto FinalizeResolvedPositions = [&]() -> NGGridPlacementData {
+  auto FinalizeResolvedPositions = [&]() -> GridPlacementData {
     ClampGridItemsToFitSubgridArea(kForColumns);
     ClampGridItemsToFitSubgridArea(kForRows);
     return std::move(placement_data_);
@@ -119,7 +119,7 @@ NGGridPlacementData NGGridPlacement::RunAutoPlacementAlgorithm(
   return FinalizeResolvedPositions();
 }
 
-bool NGGridPlacement::PlaceNonAutoGridItems(
+bool GridPlacement::PlaceNonAutoGridItems(
     const GridItems& grid_items,
     PlacedGridItemsList* placed_items,
     PositionVector* positions_locked_to_major_axis,
@@ -221,7 +221,7 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
          !positions_locked_to_major_axis->empty();
 }
 
-void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
+void GridPlacement::PlaceGridItemsLockedToMajorAxis(
     const PositionVector& positions_locked_to_major_axis,
     PlacedGridItemsList* placed_items) {
   DCHECK(placed_items);
@@ -270,7 +270,7 @@ void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
   }
 }
 
-void NGGridPlacement::PlaceAutoMajorAxisGridItem(
+void GridPlacement::PlaceAutoMajorAxisGridItem(
     GridArea* position,
     PlacedGridItemsList* placed_items,
     AutoPlacementCursor* placement_cursor) const {
@@ -292,7 +292,7 @@ void NGGridPlacement::PlaceAutoMajorAxisGridItem(
   PlaceGridItemAtCursor(*position, placed_items, placement_cursor);
 }
 
-void NGGridPlacement::PlaceAutoBothAxisGridItem(
+void GridPlacement::PlaceAutoBothAxisGridItem(
     GridArea* position,
     PlacedGridItemsList* placed_items,
     AutoPlacementCursor* placement_cursor) const {
@@ -321,7 +321,7 @@ void NGGridPlacement::PlaceAutoBothAxisGridItem(
   PlaceGridItemAtCursor(*position, placed_items, placement_cursor);
 }
 
-void NGGridPlacement::PlaceGridItemAtCursor(
+void GridPlacement::PlaceGridItemAtCursor(
     const GridArea& position,
     PlacedGridItemsList* placed_items,
     AutoPlacementCursor* placement_cursor) const {
@@ -340,7 +340,7 @@ void NGGridPlacement::PlaceGridItemAtCursor(
   placed_items->item_vector.emplace_back(std::move(new_placed_item));
 }
 
-void NGGridPlacement::ClampGridItemsToFitSubgridArea(
+void GridPlacement::ClampGridItemsToFitSubgridArea(
     GridTrackSizingDirection track_direction) {
   const wtf_size_t subgrid_span_size =
       placement_data_.SubgridSpanSize(track_direction);
@@ -384,7 +384,7 @@ void NGGridPlacement::ClampGridItemsToFitSubgridArea(
     placement_data_.row_start_offset = 0;
 }
 
-void NGGridPlacement::ClampMinorMaxToSubgridArea() {
+void GridPlacement::ClampMinorMaxToSubgridArea() {
   DCHECK(!placement_data_.HasStandaloneAxis(minor_direction_));
   wtf_size_t subgrid_max_size = IntrinsicEndLine(minor_direction_);
 
@@ -396,11 +396,11 @@ void NGGridPlacement::ClampMinorMaxToSubgridArea() {
   }
 }
 
-bool NGGridPlacement::HasSparsePacking() const {
+bool GridPlacement::HasSparsePacking() const {
   return packing_behavior_ == PackingBehavior::kSparse;
 }
 
-wtf_size_t NGGridPlacement::IntrinsicEndLine(
+wtf_size_t GridPlacement::IntrinsicEndLine(
     GridTrackSizingDirection track_direction) const {
   return (track_direction == kForColumns)
              ? placement_data_.column_start_offset +
@@ -413,17 +413,16 @@ wtf_size_t NGGridPlacement::IntrinsicEndLine(
 // axis and another from the minor axis. Following the auto-placement algorithm
 // convention, a position with lesser major axis line comes first; in case of
 // ties, a position with lesser minor axis line comes first.
-bool NGGridPlacement::GridPosition::operator<=(
-    const GridPosition& other) const {
+bool GridPlacement::GridPosition::operator<=(const GridPosition& other) const {
   return (major_line == other.major_line) ? minor_line <= other.minor_line
                                           : major_line < other.major_line;
 }
-bool NGGridPlacement::GridPosition::operator<(const GridPosition& other) const {
+bool GridPlacement::GridPosition::operator<(const GridPosition& other) const {
   return (major_line != other.major_line) ? major_line < other.major_line
                                           : minor_line < other.minor_line;
 }
 
-NGGridPlacement::PlacedGridItem::PlacedGridItem(
+GridPlacement::PlacedGridItem::PlacedGridItem(
     const GridArea& position,
     GridTrackSizingDirection major_direction,
     GridTrackSizingDirection minor_direction)
@@ -432,13 +431,13 @@ NGGridPlacement::PlacedGridItem::PlacedGridItem(
       end_{position.EndLine(major_direction),
            position.EndLine(minor_direction)} {}
 
-NGGridPlacement::GridPosition
-NGGridPlacement::PlacedGridItem::EndOnPreviousMajorLine() const {
+GridPlacement::GridPosition
+GridPlacement::PlacedGridItem::EndOnPreviousMajorLine() const {
   DCHECK_GT(end_.major_line, 0u);
   return {end_.major_line - 1, end_.minor_line};
 }
 
-void NGGridPlacement::AutoPlacementCursor::MoveCursorToFitGridSpan(
+void GridPlacement::AutoPlacementCursor::MoveCursorToFitGridSpan(
     const wtf_size_t major_span_size,
     const wtf_size_t minor_span_size,
     const wtf_size_t minor_max_end_line,
@@ -533,7 +532,7 @@ void NGGridPlacement::AutoPlacementCursor::MoveCursorToFitGridSpan(
   }
 }
 
-void NGGridPlacement::AutoPlacementCursor::UpdateItemsOverlappingMajorLine() {
+void GridPlacement::AutoPlacementCursor::UpdateItemsOverlappingMajorLine() {
   DCHECK(std::is_heap(items_overlapping_major_line_.begin(),
                       items_overlapping_major_line_.end(),
                       ComparePlacedGridItemsByEnd));
@@ -582,13 +581,13 @@ void NGGridPlacement::AutoPlacementCursor::UpdateItemsOverlappingMajorLine() {
   }
 }
 
-void NGGridPlacement::AutoPlacementCursor::MoveToMajorLine(
+void GridPlacement::AutoPlacementCursor::MoveToMajorLine(
     const wtf_size_t major_line) {
   DCHECK_LE(current_position_.major_line, major_line);
   current_position_.major_line = major_line;
 }
 
-void NGGridPlacement::AutoPlacementCursor::MoveToMinorLine(
+void GridPlacement::AutoPlacementCursor::MoveToMinorLine(
     const wtf_size_t minor_line) {
   // Since the auto-placement cursor only moves forward to the next minor line,
   // if the cursor is located at a position after the minor line we want to
@@ -598,7 +597,7 @@ void NGGridPlacement::AutoPlacementCursor::MoveToMinorLine(
   current_position_.minor_line = minor_line;
 }
 
-void NGGridPlacement::AutoPlacementCursor::MoveToNextMajorLine(
+void GridPlacement::AutoPlacementCursor::MoveToNextMajorLine(
     bool allow_minor_line_movement) {
   ++current_position_.major_line;
 
@@ -615,7 +614,7 @@ void NGGridPlacement::AutoPlacementCursor::MoveToNextMajorLine(
   should_move_to_next_item_major_end_line_ = true;
 }
 
-void NGGridPlacement::AutoPlacementCursor::InsertPlacedItemAtCurrentPosition(
+void GridPlacement::AutoPlacementCursor::InsertPlacedItemAtCurrentPosition(
     const PlacedGridItem* new_placed_item) {
   // This update must happen after the doubly linked list already updated its
   // element links to keep the necessary order for the cursor's logic.
@@ -632,7 +631,7 @@ void NGGridPlacement::AutoPlacementCursor::InsertPlacedItemAtCurrentPosition(
   UpdateItemsOverlappingMajorLine();
 }
 
-void NGGridPlacement::PlacedGridItemsList::AppendCurrentItemsToOrderedList() {
+void GridPlacement::PlacedGridItemsList::AppendCurrentItemsToOrderedList() {
   DCHECK(ordered_list.empty());
 
   auto ComparePlacedGridItemPointers =
@@ -651,9 +650,9 @@ void NGGridPlacement::PlacedGridItemsList::AppendCurrentItemsToOrderedList() {
 }
 
 // static
-void NGGridPlacement::ResolveOutOfFlowItemGridLines(
-    const NGGridLayoutTrackCollection& track_collection,
-    const NGGridPlacementData& placement_data,
+void GridPlacement::ResolveOutOfFlowItemGridLines(
+    const GridLayoutTrackCollection& track_collection,
+    const GridPlacementData& placement_data,
     const ComputedStyle& grid_style,
     const ComputedStyle& item_style,
     wtf_size_t* start_line,

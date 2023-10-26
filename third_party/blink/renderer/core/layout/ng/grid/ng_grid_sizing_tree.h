@@ -17,16 +17,16 @@ namespace blink {
 // For a given subgridded item, this class encapsulates a pointer to its
 // |GridItemData| in the context of its parent grid (i.e., its properties are
 // relative to its parent's area and writing mode) and a pointer to the actual
-// |NGGridLayoutData| of the grid that directly contains the subgridded item.
-class NGSubgriddedItemData {
+// |GridLayoutData| of the grid that directly contains the subgridded item.
+class SubgriddedItemData {
   DISALLOW_NEW();
 
  public:
-  NGSubgriddedItemData() = default;
+  SubgriddedItemData() = default;
 
-  NGSubgriddedItemData(const GridItemData& item_data_in_parent,
-                       const NGGridLayoutData& parent_layout_data,
-                       WritingMode parent_writing_mode)
+  SubgriddedItemData(const GridItemData& item_data_in_parent,
+                     const GridLayoutData& parent_layout_data,
+                     WritingMode parent_writing_mode)
       : item_data_in_parent_(&item_data_in_parent),
         parent_layout_data_(&parent_layout_data),
         parent_writing_mode_(parent_writing_mode) {}
@@ -44,7 +44,7 @@ class NGSubgriddedItemData {
     return item_data_in_parent_ && item_data_in_parent_->IsSubgrid();
   }
 
-  const NGGridLayoutTrackCollection& Columns(
+  const GridLayoutTrackCollection& Columns(
       absl::optional<WritingMode> container_writing_mode =
           absl::nullopt) const {
     return (!container_writing_mode ||
@@ -54,7 +54,7 @@ class NGSubgriddedItemData {
                : parent_layout_data_->Rows();
   }
 
-  const NGGridLayoutTrackCollection& Rows(
+  const GridLayoutTrackCollection& Rows(
       absl::optional<WritingMode> container_writing_mode =
           absl::nullopt) const {
     return (!container_writing_mode ||
@@ -64,22 +64,22 @@ class NGSubgriddedItemData {
                : parent_layout_data_->Columns();
   }
 
-  const NGGridLayoutData& ParentLayoutData() const {
+  const GridLayoutData& ParentLayoutData() const {
     DCHECK(parent_layout_data_);
     return *parent_layout_data_;
   }
 
  private:
   const GridItemData* item_data_in_parent_{nullptr};
-  const NGGridLayoutData* parent_layout_data_{nullptr};
+  const GridLayoutData* parent_layout_data_{nullptr};
   WritingMode parent_writing_mode_{WritingMode::kHorizontalTb};
 };
 
-constexpr NGSubgriddedItemData kNoSubgriddedItemData;
+constexpr SubgriddedItemData kNoSubgriddedItemData;
 
 // This class represents a grid tree (see `ng_grid_subtree.h`) and contains the
 // necessary data to perform the track sizing algorithm of its nested subgrids.
-class CORE_EXPORT NGGridSizingTree {
+class CORE_EXPORT GridSizingTree {
   DISALLOW_NEW();
 
  public:
@@ -88,30 +88,30 @@ class CORE_EXPORT NGGridSizingTree {
 
    public:
     GridItems grid_items;
-    NGGridLayoutData layout_data;
+    GridLayoutData layout_data;
     wtf_size_t subtree_size{1};
   };
 
-  NGGridSizingTree() = default;
-  NGGridSizingTree(NGGridSizingTree&&) = default;
-  NGGridSizingTree(const NGGridSizingTree&) = delete;
-  NGGridSizingTree& operator=(NGGridSizingTree&&) = default;
-  NGGridSizingTree& operator=(const NGGridSizingTree&) = delete;
+  GridSizingTree() = default;
+  GridSizingTree(GridSizingTree&&) = default;
+  GridSizingTree(const GridSizingTree&) = delete;
+  GridSizingTree& operator=(GridSizingTree&&) = default;
+  GridSizingTree& operator=(const GridSizingTree&) = delete;
 
   GridTreeNode& CreateSizingData(
-      const NGSubgriddedItemData& subgrid_data = kNoSubgriddedItemData);
+      const SubgriddedItemData& subgrid_data = kNoSubgriddedItemData);
 
   GridTreeNode& At(wtf_size_t index) const {
     DCHECK_LT(index, tree_data_.size());
     return *tree_data_[index];
   }
 
-  NGGridSizingTree CopyForFragmentation() const;
+  GridSizingTree CopyForFragmentation() const;
 
   // Creates a copy of the current grid geometry for the entire tree in a new
-  // `NGGridLayoutTree` instance, which doesn't hold the grid items and its
+  // `GridLayoutTree` instance, which doesn't hold the grid items and its
   // stored in a `scoped_refptr` to be shared by multiple subtrees.
-  scoped_refptr<const NGGridLayoutTree> FinalizeTree() const;
+  scoped_refptr<const GridLayoutTree> FinalizeTree() const;
 
   wtf_size_t Size() const { return tree_data_.size(); }
   GridTreeNode& TreeRootData() const { return At(0); }
@@ -121,9 +121,9 @@ class CORE_EXPORT NGGridSizingTree {
     return tree_data_[index]->subtree_size;
   }
 
-  void AddSubgriddedItemLookupData(NGSubgriddedItemData&& subgridded_item_data);
+  void AddSubgriddedItemLookupData(SubgriddedItemData&& subgridded_item_data);
 
-  NGSubgriddedItemData LookupSubgriddedItemData(
+  SubgriddedItemData LookupSubgriddedItemData(
       const GridItemData& grid_item) const;
 
   wtf_size_t LookupSubgridIndex(const GridItemData& subgrid_data) const;
@@ -135,59 +135,59 @@ class CORE_EXPORT NGGridSizingTree {
 
  private:
   // Stores a subgrid's index in the grid sizing tree; this is useful when we
-  // want to create a `NGGridSizingSubtree` for an arbitrary subgrid.
+  // want to create a `GridSizingSubtree` for an arbitrary subgrid.
   HeapHashMap<Member<const LayoutBox>, wtf_size_t> subgrid_index_lookup_map_;
 
   // In order to correctly determine the available space of a subgridded item,
   // which might be measured by a different grid than its parent grid, this map
-  // stores the item's `NGSubgriddedItemData`, whose layout data should be used
+  // stores the item's `SubgriddedItemData`, whose layout data should be used
   // to compute its span size within its parent grid's tracks.
-  HeapHashMap<Member<const LayoutBox>, NGSubgriddedItemData>
+  HeapHashMap<Member<const LayoutBox>, SubgriddedItemData>
       subgridded_item_data_lookup_map_;
 
   Vector<std::unique_ptr<GridTreeNode>, 16> tree_data_;
 };
 
-// This class represents a subtree in a `NGGridSizingTree` and provides seamless
+// This class represents a subtree in a `GridSizingTree` and provides seamless
 // traversal over the tree and access to the sizing tree's lookup methods.
-class NGGridSizingSubtree
-    : public NGGridSubtree<NGGridSizingSubtree, const NGGridSizingTree*> {
+class GridSizingSubtree
+    : public GridSubtree<GridSizingSubtree, const GridSizingTree*> {
   STACK_ALLOCATED();
 
  public:
-  NGGridSizingSubtree() = default;
+  GridSizingSubtree() = default;
 
-  explicit NGGridSizingSubtree(const NGGridSizingTree& sizing_tree,
-                               wtf_size_t subtree_root = 0)
-      : NGGridSubtree(&sizing_tree, subtree_root) {}
+  explicit GridSizingSubtree(const GridSizingTree& sizing_tree,
+                             wtf_size_t subtree_root = 0)
+      : GridSubtree(&sizing_tree, subtree_root) {}
 
-  NGGridSizingSubtree(const NGGridSizingTree* sizing_tree,
-                      wtf_size_t parent_end_index,
-                      wtf_size_t subtree_root)
-      : NGGridSubtree(sizing_tree, parent_end_index, subtree_root) {}
+  GridSizingSubtree(const GridSizingTree* sizing_tree,
+                    wtf_size_t parent_end_index,
+                    wtf_size_t subtree_root)
+      : GridSubtree(sizing_tree, parent_end_index, subtree_root) {}
 
-  NGGridLayoutData& LayoutData() const {
+  GridLayoutData& LayoutData() const {
     DCHECK(grid_tree_);
     return grid_tree_->At(subtree_root_).layout_data;
   }
 
-  NGSubgriddedItemData LookupSubgriddedItemData(
+  SubgriddedItemData LookupSubgriddedItemData(
       const GridItemData& grid_item) const {
     DCHECK(grid_tree_);
     return grid_tree_->LookupSubgriddedItemData(grid_item);
   }
 
-  NGGridSizingSubtree SubgridSizingSubtree(
+  GridSizingSubtree SubgridSizingSubtree(
       const GridItemData& subgrid_data) const {
     DCHECK(grid_tree_);
     DCHECK(subgrid_data.IsSubgrid());
 
-    return NGGridSizingSubtree(
+    return GridSizingSubtree(
         *grid_tree_,
         /* subtree_root */ grid_tree_->LookupSubgridIndex(subgrid_data));
   }
 
-  NGGridSizingTree::GridTreeNode& SubtreeRootData() const {
+  GridSizingTree::GridTreeNode& SubtreeRootData() const {
     DCHECK(grid_tree_);
     return grid_tree_->At(subtree_root_);
   }

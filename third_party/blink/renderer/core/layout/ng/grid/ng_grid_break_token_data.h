@@ -28,10 +28,10 @@ struct GridItemPlacementData {
   bool has_descendant_that_depends_on_percentage_block_size;
 };
 
-struct NGGridBreakTokenData final : NGBlockBreakTokenData {
-  NGGridBreakTokenData(
+struct GridBreakTokenData final : NGBlockBreakTokenData {
+  GridBreakTokenData(
       const NGBlockBreakTokenData* break_token_data,
-      NGGridSizingTree&& grid_sizing_tree,
+      GridSizingTree&& grid_sizing_tree,
       LayoutUnit intrinsic_block_size,
       LayoutUnit consumed_grid_block_size,
       const Vector<GridItemPlacementData>& grid_items_placement_data,
@@ -53,7 +53,7 @@ struct NGGridBreakTokenData final : NGBlockBreakTokenData {
     NGBlockBreakTokenData::Trace(visitor);
   }
 
-  NGGridSizingTree grid_sizing_tree;
+  GridSizingTree grid_sizing_tree;
   LayoutUnit intrinsic_block_size;
 
   // This is similar to |NGBlockBreakTokenData::consumed_block_size|, however
@@ -68,7 +68,7 @@ struct NGGridBreakTokenData final : NGBlockBreakTokenData {
 };
 
 template <>
-struct DowncastTraits<NGGridBreakTokenData> {
+struct DowncastTraits<GridBreakTokenData> {
   static bool AllowFrom(const NGBlockBreakTokenData& token_data) {
     return token_data.IsGridType();
   }

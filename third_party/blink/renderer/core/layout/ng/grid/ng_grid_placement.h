@@ -16,21 +16,21 @@ namespace blink {
 
 // This class encapsulates the Grid Item Placement Algorithm described by
 // https://drafts.csswg.org/css-grid/#auto-placement-algo
-class CORE_EXPORT NGGridPlacement {
+class CORE_EXPORT GridPlacement {
   STACK_ALLOCATED();
 
  public:
   enum class PackingBehavior { kSparse, kDense };
 
-  NGGridPlacement(const ComputedStyle& grid_style,
-                  const NGGridPlacementData& placement_data);
+  GridPlacement(const ComputedStyle& grid_style,
+                const GridPlacementData& placement_data);
 
-  NGGridPlacementData RunAutoPlacementAlgorithm(const GridItems& grid_items);
+  GridPlacementData RunAutoPlacementAlgorithm(const GridItems& grid_items);
 
   // Helper function to resolve start and end lines of out of flow items.
   static void ResolveOutOfFlowItemGridLines(
-      const NGGridLayoutTrackCollection& track_collection,
-      const NGGridPlacementData& placement_data,
+      const GridLayoutTrackCollection& track_collection,
+      const GridPlacementData& placement_data,
       const ComputedStyle& grid_style,
       const ComputedStyle& item_style,
       wtf_size_t* start_line,
@@ -168,8 +168,8 @@ class CORE_EXPORT NGGridPlacement {
   bool auto_placement_algorithm_called_ : 1;
 #endif
 
-  // TODO(kschmi): Replace `NGGridPlacementData` with line resolver.
-  NGGridPlacementData placement_data_;
+  // TODO(kschmi): Replace `GridPlacementData` with line resolver.
+  GridPlacementData placement_data_;
   PackingBehavior packing_behavior_;
   GridTrackSizingDirection major_direction_;
   GridTrackSizingDirection minor_direction_;

@@ -43,7 +43,7 @@ namespace blink {
 // it's equal to its parent's next sibling (aka parent's end index), so we can
 // determine that such subtree doesn't have a next sibling.
 template <typename SubtreeType, typename GridTreePtr>
-class NGGridSubtree {
+class GridSubtree {
  public:
   explicit operator bool() const { return static_cast<bool>(grid_tree_); }
 
@@ -58,17 +58,17 @@ class NGGridSubtree {
   }
 
  protected:
-  NGGridSubtree() = default;
+  GridSubtree() = default;
 
-  explicit NGGridSubtree(GridTreePtr grid_tree, wtf_size_t subtree_root = 0)
+  explicit GridSubtree(GridTreePtr grid_tree, wtf_size_t subtree_root = 0)
       : grid_tree_(std::move(grid_tree)), subtree_root_(subtree_root) {
     DCHECK(grid_tree_);
     parent_end_index_ = NextSiblingIndex();
   }
 
-  NGGridSubtree(GridTreePtr grid_tree,
-                wtf_size_t parent_end_index,
-                wtf_size_t subtree_root) {
+  GridSubtree(GridTreePtr grid_tree,
+              wtf_size_t parent_end_index,
+              wtf_size_t subtree_root) {
     DCHECK_LE(subtree_root, parent_end_index);
 
     // If the subtree root is beyond the parent's end index, we will keep this

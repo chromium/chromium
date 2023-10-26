@@ -146,7 +146,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
 
   if (physical_fragment.IsGrid()) {
     container_builder_.TransferGridLayoutData(
-        std::make_unique<NGGridLayoutData>(*result.GridLayoutData()));
+        std::make_unique<GridLayoutData>(*result.GetGridLayoutData()));
   } else if (physical_fragment.IsFrameSet()) {
     container_builder_.TransferFrameSetLayoutData(
         std::make_unique<FrameSetLayoutData>(

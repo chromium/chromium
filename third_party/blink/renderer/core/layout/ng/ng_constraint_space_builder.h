@@ -515,7 +515,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
         target_stretch_block_sizes);
   }
 
-  void SetGridLayoutSubtree(NGGridLayoutSubtree&& grid_layout_subtree) {
+  void SetGridLayoutSubtree(GridLayoutSubtree&& grid_layout_subtree) {
 #if DCHECK_IS_ON()
     DCHECK(!is_grid_layout_subtree_set_);
     is_grid_layout_subtree_set_ = true;

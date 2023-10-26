@@ -23,8 +23,8 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   }
 
   bool HasCachedPlacementData() const;
-  const NGGridPlacementData& CachedPlacementData() const;
-  void SetCachedPlacementData(NGGridPlacementData&& placement_data);
+  const GridPlacementData& CachedPlacementData() const;
+  void SetCachedPlacementData(GridPlacementData&& placement_data);
 
   wtf_size_t AutoRepeatCountForDirection(
       const GridTrackSizingDirection track_direction) const;
@@ -41,7 +41,7 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   Vector<LayoutUnit> RowPositions() const;
   Vector<LayoutUnit> ColumnPositions() const;
 
-  const NGGridLayoutData* GridLayoutData() const;
+  const GridLayoutData* LayoutData() const;
 
  protected:
   bool IsOfType(LayoutObjectType type) const override {
@@ -51,7 +51,7 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
 
  private:
   Vector<LayoutUnit> ComputeTrackSizeRepeaterForRange(
-      const NGGridLayoutTrackCollection& track_collection,
+      const GridLayoutTrackCollection& track_collection,
       wtf_size_t range_index) const;
   Vector<LayoutUnit> ComputeExpandedPositions(
       const GridTrackSizingDirection track_direction) const;
@@ -62,7 +62,7 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style) override;
 
-  std::unique_ptr<NGGridPlacementData> cached_placement_data_;
+  std::unique_ptr<GridPlacementData> cached_placement_data_;
 };
 
 // wtf/casting.h helper.

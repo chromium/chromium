@@ -27,14 +27,14 @@ namespace {
 
 }  // namespace
 
-class NGGridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
-                                  private ScopedLayoutNGSubgridForTest {
+class GridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
+                                private ScopedLayoutNGSubgridForTest {
  protected:
-  NGGridLayoutAlgorithmTest() : ScopedLayoutNGSubgridForTest(true) {}
+  GridLayoutAlgorithmTest() : ScopedLayoutNGSubgridForTest(true) {}
 
   void SetUp() override { NGBaseLayoutAlgorithmTest::SetUp(); }
 
-  void BuildGridItemsAndTrackCollections(NGGridLayoutAlgorithm& algorithm) {
+  void BuildGridItemsAndTrackCollections(GridLayoutAlgorithm& algorithm) {
     LayoutUnit unused_intrinsic_block_size;
     auto grid_sizing_tree = algorithm.BuildGridSizingTree();
 
@@ -52,29 +52,29 @@ class NGGridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
     return cached_grid_items_.At(index);
   }
 
-  const NGGridSizingTrackCollection& TrackCollection(
+  const GridSizingTrackCollection& TrackCollection(
       GridTrackSizingDirection track_direction) {
     const auto& track_collection = (track_direction == kForColumns)
                                        ? layout_data_.Columns()
                                        : layout_data_.Rows();
-    return To<NGGridSizingTrackCollection>(track_collection);
+    return To<GridSizingTrackCollection>(track_collection);
   }
 
-  const NGGridRangeVector& Ranges(GridTrackSizingDirection track_direction) {
+  const GridRangeVector& Ranges(GridTrackSizingDirection track_direction) {
     return TrackCollection(track_direction).ranges_;
   }
 
-  LayoutUnit BaseRowSizeForChild(const NGGridLayoutAlgorithm& algorithm,
+  LayoutUnit BaseRowSizeForChild(const GridLayoutAlgorithm& algorithm,
                                  wtf_size_t index) {
     return algorithm.ComputeGridItemAvailableSize(GridItem(index),
                                                   layout_data_.Rows());
   }
 
-  // Helper methods to access private data on NGGridLayoutAlgorithm. This class
-  // is a friend of NGGridLayoutAlgorithm but the individual tests are not.
+  // Helper methods to access private data on GridLayoutAlgorithm. This class
+  // is a friend of GridLayoutAlgorithm but the individual tests are not.
   wtf_size_t GridItemCount() { return cached_grid_items_.Size(); }
 
-  Vector<GridArea> GridItemGridAreas(const NGGridLayoutAlgorithm& algorithm) {
+  Vector<GridArea> GridItemGridAreas(const GridLayoutAlgorithm& algorithm) {
     Vector<GridArea> results;
     for (const auto& grid_item : cached_grid_items_)
       results.push_back(grid_item.resolved_position);
@@ -82,7 +82,7 @@ class NGGridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
   }
 
   Vector<wtf_size_t> GridItemsWithColumnSpanProperty(
-      const NGGridLayoutAlgorithm& algorithm,
+      const GridLayoutAlgorithm& algorithm,
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
@@ -93,7 +93,7 @@ class NGGridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
   }
 
   Vector<wtf_size_t> GridItemsWithRowSpanProperty(
-      const NGGridLayoutAlgorithm& algorithm,
+      const GridLayoutAlgorithm& algorithm,
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
@@ -103,7 +103,7 @@ class NGGridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
     return results;
   }
 
-  Vector<LayoutUnit> BaseSizes(NGGridLayoutAlgorithm& algorithm,
+  Vector<LayoutUnit> BaseSizes(GridLayoutAlgorithm& algorithm,
                                GridTrackSizingDirection track_direction) {
     const auto& collection = TrackCollection(track_direction);
 
@@ -115,7 +115,7 @@ class NGGridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
     return base_sizes;
   }
 
-  Vector<LayoutUnit> GrowthLimits(NGGridLayoutAlgorithm& algorithm,
+  Vector<LayoutUnit> GrowthLimits(GridLayoutAlgorithm& algorithm,
                                   GridTrackSizingDirection track_direction) {
     const auto& collection = TrackCollection(track_direction);
 
@@ -150,10 +150,10 @@ class NGGridLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest,
   }
 
   GridItems cached_grid_items_;
-  NGGridLayoutData layout_data_;
+  GridLayoutData layout_data_;
 };
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmBaseSetSizes) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid1 {
@@ -183,7 +183,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 0), LayoutUnit(0));
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 1), LayoutUnit(110));
@@ -192,7 +192,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 4), LayoutUnit(110));
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRanges) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRanges) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid1 {
@@ -220,7 +220,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRanges) {
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
@@ -239,7 +239,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRanges) {
   EXPECT_RANGE(4u, 4u, column_ranges[4]);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRangesWithAutoRepeater) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid1 {
@@ -267,7 +267,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
@@ -290,7 +290,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
   EXPECT_RANGE(6u, 1u, column_ranges[6]);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicit) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRangesImplicit) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid1 {
@@ -336,7 +336,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicit) {
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
@@ -353,8 +353,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicit) {
   EXPECT_RANGE(1u, 1u, row_ranges[1]);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest,
-       NGGridLayoutAlgorithmRangesImplicitAutoColumns) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRangesImplicitAutoColumns) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid1 {
@@ -396,7 +395,7 @@ TEST_F(NGGridLayoutAlgorithmTest,
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
@@ -412,7 +411,7 @@ TEST_F(NGGridLayoutAlgorithmTest,
   EXPECT_RANGE(1u, 1u, row_ranges[1]);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitAutoRows) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRangesImplicitAutoRows) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid1 {
@@ -454,7 +453,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitAutoRows) {
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
@@ -471,7 +470,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitAutoRows) {
   EXPECT_RANGE(1u, 1u, row_ranges[1]);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitMixed) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRangesImplicitMixed) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid1 {
@@ -502,7 +501,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitMixed) {
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(), 5U);
@@ -519,7 +518,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitMixed) {
   EXPECT_RANGE(2u, 1u, row_ranges[2]);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoGridPositions) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmAutoGridPositions) {
   SetBodyInnerHTML(R"HTML(
   <style>
       body {
@@ -579,7 +578,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoGridPositions) {
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
@@ -593,7 +592,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoGridPositions) {
   EXPECT_GRID_AREA(grid_positions[3], 0U, 1U, 0U, 1U);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoDense) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmAutoDense) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #grid {
@@ -705,7 +704,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoDense) {
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(), 16U);
@@ -749,7 +748,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoDense) {
   EXPECT_GRID_AREA(grid_positions[15], 0U, 1U, 2U, 3U);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmGridPositions) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGridPositions) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #grid {
@@ -787,7 +786,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmGridPositions) {
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   EXPECT_EQ(GridItemCount(), 0U);
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(), 3U);
@@ -806,7 +805,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmGridPositions) {
   EXPECT_RANGE(5u, 1u, row_ranges[4]);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmResolveFixedTrackSizes) {
+TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmResolveFixedTrackSizes) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid {
@@ -829,7 +828,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmResolveFixedTrackSizes) {
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   BuildGridItemsAndTrackCollections(algorithm);
 
   Vector<LayoutUnit> expected_column_base_sizes = {
@@ -863,8 +862,8 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmResolveFixedTrackSizes) {
     EXPECT_EQ(expected_row_growth_limits[i], growth_limits[i]);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest,
-       NGGridLayoutAlgorithmDetermineGridItemsSpanningIntrinsicOrFlexTracks) {
+TEST_F(GridLayoutAlgorithmTest,
+       GridLayoutAlgorithmDetermineGridItemsSpanningIntrinsicOrFlexTracks) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid {
@@ -906,7 +905,7 @@ TEST_F(NGGridLayoutAlgorithmTest,
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
-  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
   BuildGridItemsAndTrackCollections(algorithm);
 
   // Test grid items spanning intrinsic/flexible columns.
@@ -946,7 +945,7 @@ TEST_F(NGGridLayoutAlgorithmTest,
     EXPECT_EQ(expected_grid_items_spanning_flex_track[i], actual_items[i]);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioning) {
+TEST_F(GridLayoutAlgorithmTest, FixedSizePositioning) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -995,7 +994,7 @@ TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioning) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioningAutoRows) {
+TEST_F(GridLayoutAlgorithmTest, FixedSizePositioningAutoRows) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1052,7 +1051,7 @@ TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioningAutoRows) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, SpecifiedPositionsOutOfOrder) {
+TEST_F(GridLayoutAlgorithmTest, SpecifiedPositionsOutOfOrder) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1126,7 +1125,7 @@ TEST_F(NGGridLayoutAlgorithmTest, SpecifiedPositionsOutOfOrder) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, GridWithGap) {
+TEST_F(GridLayoutAlgorithmTest, GridWithGap) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1176,7 +1175,7 @@ TEST_F(NGGridLayoutAlgorithmTest, GridWithGap) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, GridWithPercentGap) {
+TEST_F(GridLayoutAlgorithmTest, GridWithPercentGap) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1230,7 +1229,7 @@ TEST_F(NGGridLayoutAlgorithmTest, GridWithPercentGap) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithGap) {
+TEST_F(GridLayoutAlgorithmTest, AutoSizedGridWithGap) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1284,7 +1283,7 @@ TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithGap) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithPercentageGap) {
+TEST_F(GridLayoutAlgorithmTest, AutoSizedGridWithPercentageGap) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #grid {
@@ -1329,7 +1328,7 @@ TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithPercentageGap) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, ItemsSizeWithGap) {
+TEST_F(GridLayoutAlgorithmTest, ItemsSizeWithGap) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1390,7 +1389,7 @@ TEST_F(NGGridLayoutAlgorithmTest, ItemsSizeWithGap) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
+TEST_F(GridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #grid {
@@ -1530,7 +1529,7 @@ TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridAxisType) {
+TEST_F(GridLayoutAlgorithmTest, NGGridAxisType) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #grid {
@@ -1563,7 +1562,7 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridAxisType) {
             GridAxisType::kSubgriddedAxis);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, SubgridLineNameList) {
+TEST_F(GridLayoutAlgorithmTest, SubgridLineNameList) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #grid {
@@ -1608,7 +1607,7 @@ TEST_F(NGGridLayoutAlgorithmTest, SubgridLineNameList) {
   }
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, SubgridLineNameListWithRepeaters) {
+TEST_F(GridLayoutAlgorithmTest, SubgridLineNameListWithRepeaters) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #grid {

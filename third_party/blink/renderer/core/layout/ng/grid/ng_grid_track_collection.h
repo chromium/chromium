@@ -12,14 +12,14 @@
 
 namespace blink {
 
-struct NGGridPlacementData;
+struct GridPlacementData;
 
-// |NGGridTrackCollectionBase| provides an implementation for some shared
+// |GridTrackCollectionBase| provides an implementation for some shared
 // functionality on grid collections, specifically binary search on the
 // collection to get the range that contains a specific grid line.
-class CORE_EXPORT NGGridTrackCollectionBase {
+class CORE_EXPORT GridTrackCollectionBase {
  public:
-  virtual ~NGGridTrackCollectionBase() = default;
+  virtual ~GridTrackCollectionBase() = default;
 
   // Returns the number of track ranges in the collection.
   virtual wtf_size_t RangeCount() const = 0;
@@ -62,7 +62,7 @@ class CORE_EXPORT TrackSpanProperties {
   wtf_size_t bitmask_{kNoPropertyId};
 };
 
-struct CORE_EXPORT NGGridRange {
+struct CORE_EXPORT GridRange {
   bool IsCollapsed() const;
   bool IsImplicit() const;
 
@@ -79,17 +79,17 @@ struct CORE_EXPORT NGGridRange {
   TrackSpanProperties properties;
 };
 
-using NGGridRangeVector = Vector<NGGridRange, 16>;
+using GridRangeVector = Vector<GridRange, 16>;
 
-class CORE_EXPORT NGGridRangeBuilder {
+class CORE_EXPORT GridRangeBuilder {
   STACK_ALLOCATED();
 
  public:
-  NGGridRangeBuilder() = delete;
+  GridRangeBuilder() = delete;
 
-  NGGridRangeBuilder(const ComputedStyle& grid_style,
-                     const NGGridPlacementData& placement_data,
-                     GridTrackSizingDirection track_direction);
+  GridRangeBuilder(const ComputedStyle& grid_style,
+                   const GridPlacementData& placement_data,
+                   GridTrackSizingDirection track_direction);
 
   // Ensures that after FinalizeRanges is called, a range will start at the
   // |start_line|, a range will end at |start_line| + |span_length|.
@@ -102,10 +102,10 @@ class CORE_EXPORT NGGridRangeBuilder {
 
   // Build the collection of ranges based on information provided through the
   // specified tracks and |EnsureTrackCoverage|.
-  NGGridRangeVector FinalizeRanges();
+  GridRangeVector FinalizeRanges();
 
  private:
-  friend class NGGridTrackCollectionTest;
+  friend class GridTrackCollectionTest;
 
   // This structure represents the grid line boundaries of a repeater or item
   // placed on the implicit grid. For the latter, a pointer to its respective
@@ -122,9 +122,9 @@ class CORE_EXPORT NGGridRangeBuilder {
   };
 
   // This constructor is used exclusively in testing.
-  NGGridRangeBuilder(const NGGridTrackList& explicit_tracks,
-                     const NGGridTrackList& implicit_tracks,
-                     wtf_size_t auto_repetitions);
+  GridRangeBuilder(const NGGridTrackList& explicit_tracks,
+                   const NGGridTrackList& implicit_tracks,
+                   wtf_size_t auto_repetitions);
 
   wtf_size_t auto_repetitions_;
   wtf_size_t start_offset_;
@@ -142,9 +142,8 @@ class CORE_EXPORT NGGridRangeBuilder {
   Vector<TrackBoundaryToRangePair, 16> end_lines_;
 };
 
-class CORE_EXPORT NGGridLayoutTrackCollection
-    : public NGGridTrackCollectionBase {
-  USING_FAST_MALLOC(NGGridLayoutTrackCollection);
+class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
+  USING_FAST_MALLOC(GridLayoutTrackCollection);
 
  public:
   struct SetGeometry {
@@ -155,14 +154,14 @@ class CORE_EXPORT NGGridLayoutTrackCollection
     wtf_size_t track_count;
   };
 
-  NGGridLayoutTrackCollection() = delete;
+  GridLayoutTrackCollection() = delete;
 
   // Don't allow this class to be used for grid sizing.
   virtual bool IsForSizing() const { return false; }
 
-  bool operator==(const NGGridLayoutTrackCollection& other) const;
+  bool operator==(const GridLayoutTrackCollection& other) const;
 
-  // NGGridTrackCollectionBase overrides.
+  // GridTrackCollectionBase overrides.
   wtf_size_t RangeCount() const override { return ranges_.size(); }
   wtf_size_t RangeStartLine(wtf_size_t range_index) const override;
   wtf_size_t RangeTrackCount(wtf_size_t range_index) const override;
@@ -207,7 +206,7 @@ class CORE_EXPORT NGGridLayoutTrackCollection
 
   // Creates a track collection containing every |Range| with index in the range
   // [begin, end], including their respective |SetGeometry| and baselines.
-  NGGridLayoutTrackCollection CreateSubgridTrackCollection(
+  GridLayoutTrackCollection CreateSubgridTrackCollection(
       wtf_size_t begin_range_index,
       wtf_size_t end_range_index,
       LayoutUnit subgrid_gutter_size,
@@ -230,11 +229,11 @@ class CORE_EXPORT NGGridLayoutTrackCollection
     Vector<LayoutUnit, 16> minor;
   };
 
-  explicit NGGridLayoutTrackCollection(GridTrackSizingDirection track_direction)
+  explicit GridLayoutTrackCollection(GridTrackSizingDirection track_direction)
       : track_direction_(track_direction) {}
 
   LayoutUnit gutter_size_;
-  NGGridRangeVector ranges_;
+  GridRangeVector ranges_;
   TrackSpanProperties properties_;
   Vector<SetGeometry, 16> sets_geometry_;
   GridTrackSizingDirection track_direction_;
@@ -271,7 +270,7 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   LayoutUnit accumulated_end_extra_margin_;
 };
 
-// |NGGridRangeBuilder::EnsureTrackCoverage| may introduce a range start and/or
+// |GridRangeBuilder::EnsureTrackCoverage| may introduce a range start and/or
 // end at the middle of any repeater from the block collection. This will affect
 // how some repeated tracks within the same repeater group resolve their track
 // sizes; e.g. consider the track list 'repeat(10, auto)' with a grid item
@@ -284,8 +283,8 @@ class CORE_EXPORT NGGridLayoutTrackCollection
 // relatively small track counts, we introduce the concept of a "set".
 //
 // A "set" is a collection of distinct track definitions that compose a range in
-// |NGGridSizingTrackCollection|; each set element stores the number of tracks
-// within the range that share its definition. The |NGGridSet| class represents
+// |GridSizingTrackCollection|; each set element stores the number of tracks
+// within the range that share its definition. The |GridSet| class represents
 // a single element from a set.
 //
 // As an example, consider the following grid definition:
@@ -304,20 +303,20 @@ class CORE_EXPORT NGGridLayoutTrackCollection
 //   Range 4:  [6-8], Set 4: {  1fr (2) , 5px (1) }
 //   Range 5: [9-13], Set 5: { auto (5) }
 //
-// Note that, since |NGGridRangeBuilder|'s ranges are assured to span a single
+// Note that, since |GridRangeBuilder|'s ranges are assured to span a single
 // repeater and to not cross any grid item's boundary in the respective
 // dimension, tracks within a set are "commutative" and can be sized evenly.
-struct CORE_EXPORT NGGridSet {
-  explicit NGGridSet(wtf_size_t track_count)
+struct CORE_EXPORT GridSet {
+  explicit GridSet(wtf_size_t track_count)
       : track_count(track_count), track_size(Length::Auto(), Length::Auto()) {}
 
   // |is_available_size_indefinite| is used to normalize percentage track
   // sizing functions; from https://drafts.csswg.org/css-grid-2/#track-sizes:
   //   "If the size of the grid container depends on the size of its tracks,
   //   then the <percentage> must be treated as 'auto'".
-  NGGridSet(wtf_size_t track_count,
-            const GridTrackSize& track_definition,
-            bool is_available_size_indefinite);
+  GridSet(wtf_size_t track_count,
+          const GridTrackSize& track_definition,
+          bool is_available_size_indefinite);
 
   double FlexFactor() const;
   LayoutUnit BaseSize() const;
@@ -343,9 +342,9 @@ struct CORE_EXPORT NGGridSet {
   bool is_infinitely_growable : 1;
 };
 
-class CORE_EXPORT NGGridSizingTrackCollection final
-    : public NGGridLayoutTrackCollection {
-  USING_FAST_MALLOC(NGGridSizingTrackCollection);
+class CORE_EXPORT GridSizingTrackCollection final
+    : public GridLayoutTrackCollection {
+  USING_FAST_MALLOC(GridSizingTrackCollection);
 
  public:
   template <bool is_const>
@@ -353,10 +352,10 @@ class CORE_EXPORT NGGridSizingTrackCollection final
    public:
     using TrackCollectionPtr =
         typename std::conditional<is_const,
-                                  const NGGridSizingTrackCollection*,
-                                  NGGridSizingTrackCollection*>::type;
-    using NGGridSetRef =
-        typename std::conditional<is_const, const NGGridSet&, NGGridSet&>::type;
+                                  const GridSizingTrackCollection*,
+                                  GridSizingTrackCollection*>::type;
+    using GridSetRef =
+        typename std::conditional<is_const, const GridSet&, GridSet&>::type;
 
     SetIteratorBase(TrackCollectionPtr track_collection,
                     wtf_size_t begin_set_index,
@@ -379,7 +378,7 @@ class CORE_EXPORT NGGridSizingTrackCollection final
       return current_set_index_ < end_set_index_;
     }
 
-    NGGridSetRef CurrentSet() const {
+    GridSetRef CurrentSet() const {
       DCHECK_LT(current_set_index_, end_set_index_);
       return track_collection_->GetSetAt(current_set_index_);
     }
@@ -393,13 +392,13 @@ class CORE_EXPORT NGGridSizingTrackCollection final
   typedef SetIteratorBase<false> SetIterator;
   typedef SetIteratorBase<true> ConstSetIterator;
 
-  NGGridSizingTrackCollection() = delete;
-  NGGridSizingTrackCollection(const NGGridSizingTrackCollection&) = delete;
-  NGGridSizingTrackCollection& operator=(const NGGridSizingTrackCollection&) =
+  GridSizingTrackCollection() = delete;
+  GridSizingTrackCollection(const GridSizingTrackCollection&) = delete;
+  GridSizingTrackCollection& operator=(const GridSizingTrackCollection&) =
       delete;
 
-  explicit NGGridSizingTrackCollection(
-      NGGridRangeVector&& ranges,
+  explicit GridSizingTrackCollection(
+      GridRangeVector&& ranges,
       bool must_create_baselines = false,
       GridTrackSizingDirection track_direction = kForColumns);
 
@@ -407,8 +406,8 @@ class CORE_EXPORT NGGridSizingTrackCollection final
   bool IsForSizing() const override { return true; }
 
   // Returns a reference to the set located at position |set_index|.
-  NGGridSet& GetSetAt(wtf_size_t set_index);
-  const NGGridSet& GetSetAt(wtf_size_t set_index) const;
+  GridSet& GetSetAt(wtf_size_t set_index);
+  const GridSet& GetSetAt(wtf_size_t set_index) const;
   // Returns an iterator for all the sets contained in this collection.
   SetIterator GetSetIterator();
   ConstSetIterator GetConstSetIterator() const;
@@ -443,8 +442,8 @@ class CORE_EXPORT NGGridSizingTrackCollection final
   void SetMinorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
 
  private:
-  friend class NGGridLayoutAlgorithmTest;
-  friend class NGGridTrackCollectionTest;
+  friend class GridLayoutAlgorithmTest;
+  friend class GridTrackCollectionTest;
 
   // These methods are internal implementations also used in testing.
   void BuildSets(const NGGridTrackList& explicit_track_list,
@@ -457,20 +456,20 @@ class CORE_EXPORT NGGridSizingTrackCollection final
   // A vector of every set element that compose the entire collection's ranges;
   // track definitions from the same set are stored in consecutive positions,
   // preserving the order in which the definitions appear in their range.
-  Vector<NGGridSet, 16> sets_;
+  Vector<GridSet, 16> sets_;
 };
 
 template <>
-struct DowncastTraits<NGGridSizingTrackCollection> {
-  static bool AllowFrom(const NGGridLayoutTrackCollection& layout_collection) {
+struct DowncastTraits<GridSizingTrackCollection> {
+  static bool AllowFrom(const GridLayoutTrackCollection& layout_collection) {
     return layout_collection.IsForSizing();
   }
 };
 
 }  // namespace blink
 
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGGridRange)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::GridRange)
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::NGGridLayoutTrackCollection::SetGeometry)
+    blink::GridLayoutTrackCollection::SetGeometry)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_TRACK_COLLECTION_H_

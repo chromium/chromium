@@ -391,7 +391,7 @@ class CORE_EXPORT NGLayoutResult final
     return data ? data->table_column_count : 0;
   }
 
-  const NGGridLayoutData* GridLayoutData() const {
+  const GridLayoutData* GetGridLayoutData() const {
     if (!rare_data_) {
       return nullptr;
     }
@@ -659,10 +659,10 @@ class CORE_EXPORT NGLayoutResult final
       GridData() = default;
       GridData(const GridData& other) {
         grid_layout_data =
-            std::make_unique<NGGridLayoutData>(*other.grid_layout_data);
+            std::make_unique<GridLayoutData>(*other.grid_layout_data);
       }
 
-      std::unique_ptr<const NGGridLayoutData> grid_layout_data;
+      std::unique_ptr<const GridLayoutData> grid_layout_data;
     };
 
     struct LineData {

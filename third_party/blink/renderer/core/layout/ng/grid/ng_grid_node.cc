@@ -8,13 +8,13 @@
 
 namespace blink {
 
-const NGGridPlacementData& NGGridNode::CachedPlacementData() const {
+const GridPlacementData& GridNode::CachedPlacementData() const {
   auto* layout_grid = To<LayoutGrid>(box_.Get());
   return layout_grid->CachedPlacementData();
 }
 
-GridItems NGGridNode::ConstructGridItems(
-    const NGGridPlacementData& placement_data,
+GridItems GridNode::ConstructGridItems(
+    const GridPlacementData& placement_data,
     HeapVector<Member<LayoutBox>>* oof_children,
     bool* has_nested_subgrid) const {
   return ConstructGridItems(placement_data, /* root_grid_style */ Style(),
@@ -24,8 +24,8 @@ GridItems NGGridNode::ConstructGridItems(
                             oof_children, has_nested_subgrid);
 }
 
-GridItems NGGridNode::ConstructGridItems(
-    const NGGridPlacementData& placement_data,
+GridItems GridNode::ConstructGridItems(
+    const GridPlacementData& placement_data,
     const ComputedStyle& root_grid_style,
     const ComputedStyle& parent_grid_style,
     bool must_consider_grid_items_for_column_sizing,
@@ -37,7 +37,7 @@ GridItems NGGridNode::ConstructGridItems(
 
   GridItems grid_items;
   auto* layout_grid = To<LayoutGrid>(box_.Get());
-  const NGGridPlacementData* cached_placement_data = nullptr;
+  const GridPlacementData* cached_placement_data = nullptr;
 
   if (layout_grid->HasCachedPlacementData()) {
     cached_placement_data = &layout_grid->CachedPlacementData();
@@ -88,14 +88,14 @@ GridItems NGGridNode::ConstructGridItems(
 
 #if DCHECK_IS_ON()
   if (cached_placement_data) {
-    NGGridPlacement grid_placement(Style(), placement_data);
+    GridPlacement grid_placement(Style(), placement_data);
     DCHECK(*cached_placement_data ==
            grid_placement.RunAutoPlacementAlgorithm(grid_items));
   }
 #endif
 
   if (!cached_placement_data) {
-    NGGridPlacement grid_placement(Style(), placement_data);
+    GridPlacement grid_placement(Style(), placement_data);
     layout_grid->SetCachedPlacementData(
         grid_placement.RunAutoPlacementAlgorithm(grid_items));
     cached_placement_data = &layout_grid->CachedPlacementData();
@@ -109,7 +109,7 @@ GridItems NGGridNode::ConstructGridItems(
   return grid_items;
 }
 
-void NGGridNode::AppendSubgriddedItems(GridItems* grid_items) const {
+void GridNode::AppendSubgriddedItems(GridItems* grid_items) const {
   DCHECK(grid_items);
 
   const auto& root_grid_style = Style();
@@ -121,7 +121,7 @@ void NGGridNode::AppendSubgriddedItems(GridItems* grid_items) const {
       continue;
     }
 
-    const auto subgrid = To<NGGridNode>(current_item.node);
+    const auto subgrid = To<GridNode>(current_item.node);
 
     auto subgridded_items = subgrid.ConstructGridItems(
         subgrid.CachedPlacementData(), root_grid_style, subgrid.Style(),

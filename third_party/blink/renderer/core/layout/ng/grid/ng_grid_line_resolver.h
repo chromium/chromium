@@ -18,33 +18,33 @@ namespace blink {
 
 struct GridSpan;
 class ComputedStyle;
+class GridNamedLineCollection;
 class GridPosition;
-class NGGridNamedLineCollection;
 
 // This is a utility class with all the code related to grid items positions
 // resolution.
-class NGGridLineResolver {
+class GridLineResolver {
   DISALLOW_NEW();
 
  public:
-  NGGridLineResolver() = default;
+  GridLineResolver() = default;
 
-  explicit NGGridLineResolver(const ComputedStyle& grid_style,
-                              wtf_size_t column_auto_repetitions,
-                              wtf_size_t row_auto_repetitions)
+  explicit GridLineResolver(const ComputedStyle& grid_style,
+                            wtf_size_t column_auto_repetitions,
+                            wtf_size_t row_auto_repetitions)
       : style_(&grid_style),
         column_auto_repetitions_(column_auto_repetitions),
         row_auto_repetitions_(row_auto_repetitions) {}
 
   // Subgrids need to map named lines from every parent grid. This constructor
   // should be used exclusively by subgrids to differentiate such scenario.
-  explicit NGGridLineResolver(const ComputedStyle& grid_style,
-                              const NGGridLineResolver& parent_line_resolver,
-                              GridArea subgrid_area,
-                              wtf_size_t column_auto_repetitions,
-                              wtf_size_t row_auto_repetitions);
+  explicit GridLineResolver(const ComputedStyle& grid_style,
+                            const GridLineResolver& parent_line_resolver,
+                            GridArea subgrid_area,
+                            wtf_size_t column_auto_repetitions,
+                            wtf_size_t row_auto_repetitions);
 
-  bool operator==(const NGGridLineResolver& other) const;
+  bool operator==(const GridLineResolver& other) const;
 
   wtf_size_t ExplicitGridColumnCount() const;
 
@@ -102,13 +102,12 @@ class NGGridLineResolver {
       int start,
       wtf_size_t number_of_lines,
       wtf_size_t grid_last_line,
-      NGGridNamedLineCollection& lines_collection) const;
+      GridNamedLineCollection& lines_collection) const;
 
-  int LookBackForNamedGridLine(
-      int end,
-      wtf_size_t number_of_lines,
-      int grid_last_line,
-      NGGridNamedLineCollection& lines_collection) const;
+  int LookBackForNamedGridLine(int end,
+                               wtf_size_t number_of_lines,
+                               int grid_last_line,
+                               GridNamedLineCollection& lines_collection) const;
 
   wtf_size_t SpanSizeFromPositions(const GridPosition& initial_position,
                                    const GridPosition& final_position) const;
@@ -127,7 +126,7 @@ class NGGridLineResolver {
       const GridPosition& position,
       GridPositionSide side,
       int last_line,
-      NGGridNamedLineCollection& lines_collection) const;
+      GridNamedLineCollection& lines_collection) const;
 
   bool IsSubgridded(GridTrackSizingDirection track_direction) const;
 

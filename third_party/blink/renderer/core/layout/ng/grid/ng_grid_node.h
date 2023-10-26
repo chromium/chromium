@@ -13,17 +13,17 @@
 namespace blink {
 
 // Grid specific extensions to NGBlockNode.
-class CORE_EXPORT NGGridNode final : public NGBlockNode {
+class CORE_EXPORT GridNode final : public NGBlockNode {
  public:
-  explicit NGGridNode(LayoutBox* box) : NGBlockNode(box) {
+  explicit GridNode(LayoutBox* box) : NGBlockNode(box) {
     DCHECK(box);
     DCHECK(box->IsLayoutGrid());
   }
 
-  const NGGridPlacementData& CachedPlacementData() const;
+  const GridPlacementData& CachedPlacementData() const;
 
   // If |oof_children| is provided, aggregate any out of flow children.
-  GridItems ConstructGridItems(const NGGridPlacementData& placement_data,
+  GridItems ConstructGridItems(const GridPlacementData& placement_data,
                                HeapVector<Member<LayoutBox>>* oof_children,
                                bool* has_nested_subgrid = nullptr) const;
 
@@ -31,7 +31,7 @@ class CORE_EXPORT NGGridNode final : public NGBlockNode {
 
  private:
   GridItems ConstructGridItems(
-      const NGGridPlacementData& placement_data,
+      const GridPlacementData& placement_data,
       const ComputedStyle& root_grid_style,
       const ComputedStyle& parent_grid_style,
       bool must_consider_grid_items_for_column_sizing,
@@ -41,7 +41,7 @@ class CORE_EXPORT NGGridNode final : public NGBlockNode {
 };
 
 template <>
-struct DowncastTraits<NGGridNode> {
+struct DowncastTraits<GridNode> {
   static bool AllowFrom(const NGLayoutInputNode& node) { return node.IsGrid(); }
 };
 
