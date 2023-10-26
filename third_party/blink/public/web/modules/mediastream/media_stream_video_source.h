@@ -185,7 +185,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   //
   // The callback reports success/failure.
   virtual void ApplySubCaptureTarget(
-      mojom::SubCaptureTargetType type,
+      media::mojom::SubCaptureTargetType type,
       const base::Token& sub_capture_target,
       uint32_t sub_capture_target_version,
       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>

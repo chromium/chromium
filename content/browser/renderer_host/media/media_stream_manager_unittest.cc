@@ -41,6 +41,7 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/media_switches.h"
 #include "media/capture/content/screen_enumerator.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -287,7 +288,7 @@ class TestMediaStreamDispatcherHost
 #if !BUILDFLAG(IS_ANDROID)
   void FocusCapturedSurface(const std::string& label, bool focus) override {}
   void ApplySubCaptureTarget(const base::UnguessableToken& device_id,
-                             blink::mojom::SubCaptureTargetType type,
+                             media::mojom::SubCaptureTargetType type,
                              const base::Token& target,
                              uint32_t sub_capture_target_version,
                              ApplySubCaptureTargetCallback callback) override {}

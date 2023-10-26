@@ -198,7 +198,7 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
 
 #if !BUILDFLAG(IS_ANDROID)
 void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
-    mojom::blink::SubCaptureTargetType type,
+    media::mojom::blink::SubCaptureTargetType type,
     const base::Token& sub_capture_target,
     uint32_t sub_capture_target_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>

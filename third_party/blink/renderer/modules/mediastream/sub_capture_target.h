@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_SUB_CAPTURE_TARGET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_SUB_CAPTURE_TARGET_H_
 
-#include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
+#include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -19,7 +19,7 @@ class ScriptState;
 // which use the same minting logic under the hood.
 class MODULES_EXPORT SubCaptureTarget : public ScriptWrappable {
  public:
-  using Type = mojom::blink::SubCaptureTargetType;
+  using Type = media::mojom::blink::SubCaptureTargetType;
 
   Type GetType() const { return type_; }
 

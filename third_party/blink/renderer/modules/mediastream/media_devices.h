@@ -62,7 +62,7 @@ class MODULES_EXPORT MediaDevices final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using SubCaptureTargetType = mojom::blink::SubCaptureTargetType;
+  using SubCaptureTargetType = media::mojom::blink::SubCaptureTargetType;
 
   static const char kSupplementName[];
   static MediaDevices* mediaDevices(Navigator&);

@@ -18,6 +18,7 @@
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/common/content_export.h"
 #include "media/base/scoped_async_trace.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
@@ -74,7 +75,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
 #if !BUILDFLAG(IS_ANDROID)
   void CloseFocusWindowOfOpportunity(const std::string& label) override;
   void ProduceSubCaptureTargetId(
-      blink::mojom::SubCaptureTargetType type,
+      media::mojom::SubCaptureTargetType type,
       ProduceSubCaptureTargetIdCallback callback) override;
 #endif
 

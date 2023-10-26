@@ -26,6 +26,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -97,7 +98,7 @@ WebContents* GetMainFrameWebContents(const GlobalRoutingID& global_routing_id) {
 // to the target indicated by |target|.
 bool MayApplySubCaptureTarget(const GlobalRoutingID& capturing_id,
                               const GlobalRoutingID& captured_id,
-                              blink::mojom::SubCaptureTargetType type,
+                              media::mojom::SubCaptureTargetType type,
                               const base::Token& target) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -662,7 +663,7 @@ void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
 
 void MediaStreamDispatcherHost::ApplySubCaptureTarget(
     const base::UnguessableToken& device_id,
-    blink::mojom::SubCaptureTargetType type,
+    media::mojom::SubCaptureTargetType type,
     const base::Token& sub_capture_target,
     uint32_t sub_capture_target_version,
     ApplySubCaptureTargetCallback callback) {
@@ -694,7 +695,7 @@ void MediaStreamDispatcherHost::ApplySubCaptureTarget(
 
 void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(
     const base::UnguessableToken& device_id,
-    blink::mojom::SubCaptureTargetType type,
+    media::mojom::SubCaptureTargetType type,
     const base::Token& target,
     uint32_t sub_capture_target_version,
     ApplySubCaptureTargetCallback callback,
@@ -708,11 +709,11 @@ void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(
   }
 
   switch (type) {
-    case blink::mojom::SubCaptureTargetType::kCropTarget:
+    case media::mojom::SubCaptureTargetType::kCropTarget:
       media_stream_manager_->video_capture_manager()->Crop(
           device_id, target, sub_capture_target_version, std::move(callback));
       break;
-    case blink::mojom::SubCaptureTargetType::kRestrictionTarget:
+    case media::mojom::SubCaptureTargetType::kRestrictionTarget:
       // TODO(crbug.com/1418194): Implement.
       NOTIMPLEMENTED();
       break;

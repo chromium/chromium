@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
+#include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
@@ -55,7 +56,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/display/screen_info.h"
 
-using blink::mojom::SubCaptureTargetType;
+using media::mojom::SubCaptureTargetType;
 using ::testing::_;
 using ::testing::Mock;
 

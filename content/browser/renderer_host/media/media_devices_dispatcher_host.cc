@@ -29,11 +29,11 @@
 #include "media/audio/audio_system.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -321,7 +321,7 @@ void MediaDevicesDispatcherHost::CloseFocusWindowOfOpportunity(
 }
 
 void MediaDevicesDispatcherHost::ProduceSubCaptureTargetId(
-    blink::mojom::SubCaptureTargetType type,
+    media::mojom::SubCaptureTargetType type,
     ProduceSubCaptureTargetIdCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -329,7 +329,7 @@ void MediaDevicesDispatcherHost::ProduceSubCaptureTargetId(
       FROM_HERE,
       base::BindOnce(
           [](int render_process_id, int render_frame_id,
-             blink::mojom::SubCaptureTargetType type) {
+             media::mojom::SubCaptureTargetType type) {
             RenderFrameHostImpl* const rfh =
                 RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
             if (!rfh || !rfh->IsActive()) {

@@ -19,6 +19,7 @@
 #include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -132,14 +133,14 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
 #if !BUILDFLAG(IS_ANDROID)
   void FocusCapturedSurface(const std::string& label, bool focus) override;
   void ApplySubCaptureTarget(const base::UnguessableToken& device_id,
-                             blink::mojom::SubCaptureTargetType type,
+                             media::mojom::SubCaptureTargetType type,
                              const base::Token& sub_capture_target,
                              uint32_t sub_capture_target_version,
                              ApplySubCaptureTargetCallback callback) override;
 
   void OnSubCaptureTargetValidationComplete(
       const base::UnguessableToken& device_id,
-      blink::mojom::SubCaptureTargetType type,
+      media::mojom::SubCaptureTargetType type,
       const base::Token& target,
       uint32_t sub_capture_target_version,
       ApplySubCaptureTargetCallback callback,
