@@ -4333,39 +4333,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithReduceCookieIPCsAndIncreasedCacheV2",
-                    "enable_features": [
-                        "CookieAccessDetailsNotificationDeDuping",
-                        "IncreaseCoookieAccesCacheSize",
-                        "ReduceCookieIPCs"
-                    ]
-                },
-                {
-                    "name": "EnabledWithoutReduceCookieIPCsAndIncreasedCacheV2",
-                    "enable_features": [
-                        "CookieAccessDetailsNotificationDeDuping"
-                    ],
-                    "disable_features": [
-                        "IncreaseCoookieAccesCacheSize",
-                        "ReduceCookieIPCs"
-                    ]
-                },
-                {
-                    "name": "DisabledWithReduceCookieIPCsAndIncreasedCacheV2",
-                    "enable_features": [
-                        "IncreaseCoookieAccesCacheSize",
-                        "ReduceCookieIPCs"
-                    ],
+                    "name": "Disabled",
                     "disable_features": [
                         "CookieAccessDetailsNotificationDeDuping"
-                    ]
-                },
-                {
-                    "name": "DisabledWithoutReduceCookieIPCsAndIncreasedCacheV2",
-                    "disable_features": [
-                        "CookieAccessDetailsNotificationDeDuping",
-                        "IncreaseCoookieAccesCacheSize",
-                        "ReduceCookieIPCs"
                     ]
                 }
             ]
@@ -9088,6 +9058,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IncognitoReauthenticationForAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IncreaseCoookieAccesCacheSize": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IncreaseCoookieAccesCacheSize"
                     ]
                 }
             ]
