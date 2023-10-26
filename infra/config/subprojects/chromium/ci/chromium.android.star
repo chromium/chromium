@@ -1035,7 +1035,7 @@ ci.thin_tester(
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
-        short_name = "s",
+        short_name = "12",
     ),
     notifies = ["cronet"],
 )
@@ -1069,7 +1069,7 @@ ci.thin_tester(
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
-        short_name = "t",
+        short_name = "13",
     ),
     notifies = ["cronet"],
 )
