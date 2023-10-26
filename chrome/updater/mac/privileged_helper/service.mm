@@ -193,8 +193,8 @@ bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
   base::apple::ScopedCFTypeRef<SecStaticCodeRef> code;
   base::apple::ScopedCFTypeRef<CFErrorRef> errors;
   if (SecStaticCodeCreateWithPath(
-          base::apple::FilePathToCFURL(updater_app_bundle), kSecCSDefaultFlags,
-          code.InitializeInto()) != errSecSuccess) {
+          base::apple::FilePathToCFURL(updater_app_bundle).get(),
+          kSecCSDefaultFlags, code.InitializeInto()) != errSecSuccess) {
     return false;
   }
   if (SecRequirementCreateWithString(
@@ -208,8 +208,8 @@ bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
     return false;
   }
   if (SecStaticCodeCheckValidityWithErrors(
-          code, kSecCSCheckAllArchitectures | kSecCSCheckNestedCode,
-          requirement, errors.InitializeInto()) != errSecSuccess) {
+          code.get(), kSecCSCheckAllArchitectures | kSecCSCheckNestedCode,
+          requirement.get(), errors.InitializeInto()) != errSecSuccess) {
     return false;
   }
   return true;

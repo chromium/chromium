@@ -63,15 +63,15 @@ bool IsSuitableRemovableStorageDevice(io_object_t disk_obj,
   // Do not allow Core Storage volumes, even though they are marked as "whole
   // media", as they are entirely contained on a different volume.
   CFBooleanRef cf_corestorage =
-      base::apple::GetValueFromDictionary<CFBooleanRef>(dict,
+      base::apple::GetValueFromDictionary<CFBooleanRef>(dict.get(),
                                                         CFSTR("CoreStorage"));
   if (cf_corestorage && CFBooleanGetValue(cf_corestorage))
     return false;
 
   // Do not allow APFS containers, even though they are marked as "whole
   // media", as they are entirely contained on a different volume.
-  CFStringRef cf_content =
-      base::apple::GetValueFromDictionary<CFStringRef>(dict, CFSTR("Content"));
+  CFStringRef cf_content = base::apple::GetValueFromDictionary<CFStringRef>(
+      dict.get(), CFSTR("Content"));
   if (cf_content &&
       CFStringCompare(cf_content, CFSTR("EF57347C-0000-11AA-AA11-00306543ECAC"),
                       0) == kCFCompareEqualTo) {
@@ -79,7 +79,7 @@ bool IsSuitableRemovableStorageDevice(io_object_t disk_obj,
   }
 
   CFBooleanRef cf_removable = base::apple::GetValueFromDictionary<CFBooleanRef>(
-      dict, CFSTR(kIOMediaRemovableKey));
+      dict.get(), CFSTR(kIOMediaRemovableKey));
   bool removable = CFBooleanGetValue(cf_removable);
   bool is_usb = IsUsbDevice(disk_obj);
 
@@ -89,7 +89,7 @@ bool IsSuitableRemovableStorageDevice(io_object_t disk_obj,
   if (out_size_in_bytes) {
     CFNumberRef cf_media_size =
         base::apple::GetValueFromDictionary<CFNumberRef>(
-            dict, CFSTR(kIOMediaSizeKey));
+            dict.get(), CFSTR(kIOMediaSizeKey));
     if (cf_media_size)
       CFNumberGetValue(cf_media_size, kCFNumberLongLongType, out_size_in_bytes);
     else
@@ -98,7 +98,7 @@ bool IsSuitableRemovableStorageDevice(io_object_t disk_obj,
 
   if (out_bsd_name) {
     CFStringRef cf_bsd_name = base::apple::GetValueFromDictionary<CFStringRef>(
-        dict, CFSTR(kIOBSDNameKey));
+        dict.get(), CFSTR(kIOBSDNameKey));
     if (out_bsd_name)
       *out_bsd_name = base::SysCFStringRefToUTF8(cf_bsd_name);
     else

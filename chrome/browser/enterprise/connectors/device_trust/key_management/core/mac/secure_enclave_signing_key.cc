@@ -63,7 +63,7 @@ std::vector<uint8_t> SecureEnclaveSigningKey::GetSubjectPublicKeyInfo() const {
   std::vector<uint8_t> pubkey;
 
   OSStatus error;
-  if (!client_->ExportPublicKey(key_, pubkey, &error)) {
+  if (!client_->ExportPublicKey(key_.get(), pubkey, &error)) {
     RecordKeyOperationStatus(KeychainOperation::kExportPublicKey, key_type_,
                              error);
   }
@@ -84,7 +84,7 @@ absl::optional<std::vector<uint8_t>> SecureEnclaveSigningKey::SignSlowly(
     base::span<const uint8_t> data) {
   std::vector<uint8_t> signature;
   OSStatus error;
-  if (!client_->SignDataWithKey(key_, data, signature, &error)) {
+  if (!client_->SignDataWithKey(key_.get(), data, signature, &error)) {
     RecordKeyOperationStatus(KeychainOperation::kSignPayload, key_type_, error);
     return absl::nullopt;
   }
