@@ -287,8 +287,10 @@
     </div>
     <template is="dom-if" if="[[wallpaperSearchEnabled_]]">
       <div class="tile" tabindex="0" id="wallpaperSearchTile"
-          role="button" on-click="onWallpaperSearchClick_">
-        <customize-chrome-check-mark-wrapper>
+          role="button" on-click="onWallpaperSearchClick_"
+          aria-current$="[[boolToString_(isWallpaperSearchSelected_)]]">
+        <customize-chrome-check-mark-wrapper
+            checked="[[isWallpaperSearchSelected_]]">
           <div class="image-container">
             <div id="wallpaperSearchIcon" class="cr-icon"></div>
           </div>

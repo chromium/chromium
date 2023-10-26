@@ -29,6 +29,7 @@ export enum CategoryType {
   LOCAL,
   COLOR,
   COLLECTION,
+  WALLPAPER_SEARCH,
 }
 
 export const CHROME_THEME_COLLECTION_ELEMENT_ID =
@@ -82,6 +83,10 @@ export class CategoriesElement extends CategoriesElementBase {
       isLocalImageSelected_: {
         type: Boolean,
         computed: 'computeIsLocalImageSelected_(selectedCategory_)',
+      },
+      isWallpaperSearchSelected_: {
+        type: Boolean,
+        computed: 'computeIsWallpaperSearchSelected_(selectedCategory_)',
       },
       isChromeColorsSelected_: {
         type: Boolean,
@@ -171,7 +176,9 @@ export class CategoriesElement extends CategoriesElementBase {
       return {type: CategoryType.COLOR};
     }
     if (this.theme_.backgroundImage.isUploadedImage) {
-      return {type: CategoryType.LOCAL};
+      return this.theme_.backgroundImage.localBackgroundId ?
+          {type: CategoryType.WALLPAPER_SEARCH} :
+          {type: CategoryType.LOCAL};
     }
     if (this.theme_.backgroundImage.collectionId) {
       return {
@@ -188,6 +195,10 @@ export class CategoriesElement extends CategoriesElementBase {
 
   private computeIsLocalImageSelected_() {
     return this.selectedCategory_.type === CategoryType.LOCAL;
+  }
+
+  private computeIsWallpaperSearchSelected_() {
+    return this.selectedCategory_.type === CategoryType.WALLPAPER_SEARCH;
   }
 
   private computeIsChromeColorsSelected_() {
