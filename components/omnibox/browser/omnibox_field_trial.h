@@ -570,6 +570,9 @@ extern const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring;
 extern const base::FeatureParam<omnibox::CompanyEntityIconAdjustmentGroup>
     kCompanyEntityIconAdjustmentGroup;
 
+extern const base::FeatureParam<bool>
+    kCompanyEntityIconAdjustmentCounterfactual;
+
 // ---------------------------------------------------------
 // ML Relevance Scoring ->
 

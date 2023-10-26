@@ -971,6 +971,11 @@ const base::FeatureParam<omnibox::CompanyEntityIconAdjustmentGroup>
         omnibox::CompanyEntityIconAdjustmentGroup::kLeastAggressive,
         &kCompanyEntityIconAdjustmentGroupOptions};
 
+const base::FeatureParam<bool> kCompanyEntityIconAdjustmentCounterfactual(
+    &omnibox::kCompanyEntityIconAdjustment,
+    "CompanyEntityIconAdjustmentCounterfactual",
+    false);
+
 // ---------------------------------------------------------
 // ML Relevance Scoring ->
 
