@@ -53,9 +53,15 @@ TEST_F(ArcWmMetricsTest, TestWindowMaximizeDelayMetrics) {
   widget->Maximize();
   histogram_tester.ExpectTotalCount(histogram_name, 1);
 
+  // If the old window state type is not `kNormal`, the data should not be
+  // recorded in histogram.
+  widget->Minimize();
+  widget->Maximize();
+  histogram_tester.ExpectTotalCount(histogram_name, 1);
+
   // The histogram should not record data when maximizing in tablet mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  widget->Minimize();
+  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
   widget->Maximize();
   histogram_tester.ExpectTotalCount(histogram_name, 1);
 }

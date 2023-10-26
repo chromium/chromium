@@ -275,8 +275,13 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
-  if (new_window_show_state == ui::WindowShowState::SHOW_STATE_MAXIMIZED ||
-      new_window_show_state == ui::WindowShowState::SHOW_STATE_MINIMIZED) {
+  const bool from_normal_to_maximized =
+      IsNormalWindowStateType(
+          chromeos::ToWindowStateType(old_window_show_state)) &&
+      new_window_show_state == ui::WindowShowState::SHOW_STATE_MAXIMIZED;
+  const bool from_any_to_minimized =
+      new_window_show_state == ui::WindowShowState::SHOW_STATE_MINIMIZED;
+  if (from_normal_to_maximized || from_any_to_minimized) {
     state_change_observing_windows_.emplace(
         window, std::make_unique<WindowStateChangeObserver>(
                     window, old_window_show_state,
