@@ -188,6 +188,11 @@
   return self.mediator.presenter;
 }
 
+- (void)toggleOmniboxDebuggerView {
+  CHECK(experimental_flags::IsOmniboxDebuggingEnabled());
+  [self.popupViewController toggleOmniboxDebuggerView];
+}
+
 #pragma mark - Property accessor
 
 - (BOOL)hasResults {

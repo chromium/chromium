@@ -202,6 +202,14 @@ BOOL ShouldDismissKeyboardOnScroll() {
   }
 }
 
+- (void)toggleOmniboxDebuggerView {
+  if (self.debugInfoViewController.viewIfLoaded.window) {
+    [self dismissViewControllerAnimated:YES completion:nil];
+  } else {
+    [self showDebugUI];
+  }
+}
+
 #pragma mark - Getter/Setter
 
 - (void)setHighlightedIndexPath:(NSIndexPath*)highlightedIndexPath {

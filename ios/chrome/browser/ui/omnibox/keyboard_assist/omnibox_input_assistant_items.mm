@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_input_assistant_items.h"
 
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
@@ -70,6 +72,20 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
       [items addObject:pasteButtonItem];
     }
 #endif  // defined(__IPHONE_16_0)
+  }
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+        configurationWithPointSize:kOmniboxAssistiveKeyboardSymbolPointSize
+                            weight:UIImageSymbolWeightSemibold
+                             scale:UIImageSymbolScaleMedium];
+    UIImage* debuggerIcon =
+        DefaultSymbolWithConfiguration(kSettingsSymbol, configuration);
+    UIBarButtonItem* debuggerItem = [[UIBarButtonItem alloc]
+        initWithImage:debuggerIcon
+                style:UIBarButtonItemStylePlain
+               target:delegate
+               action:@selector(keyboardAccessoryDebuggerTapped)];
+    [items addObject:debuggerItem];
   }
 
   UIBarButtonItemGroup* group =

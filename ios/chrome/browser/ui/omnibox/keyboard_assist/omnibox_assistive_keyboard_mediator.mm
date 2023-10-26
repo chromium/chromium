@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
+#import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_mediator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
@@ -19,15 +20,10 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 
-@implementation OmniboxAssistiveKeyboardDelegateImpl
+@implementation OmniboxAssistiveKeyboardMediator
 
-@synthesize applicationCommandsHandler = _applicationCommandsHandler;
-@synthesize browserCoordinatorCommandsHandler =
-    _browserCoordinatorCommandsHandler;
 @synthesize layoutGuideCenter = _layoutGuideCenter;
 @synthesize lensButton = _lensButton;
-@synthesize qrScannerCommandsHandler = _qrScannerCommandsHandler;
-@synthesize omniboxTextField = _omniboxTextField;
 
 #pragma mark - Public
 
@@ -66,6 +62,11 @@
   [self.lensCommandsHandler openLensInputSelection:command];
 }
 
+- (void)keyboardAccessoryDebuggerTapped {
+  CHECK(experimental_flags::IsOmniboxDebuggingEnabled());
+  [self.delegate omniboxAssistiveKeyboardDidTapDebuggerButton];
+}
+
 - (void)keyPressed:(NSString*)title {
   NSString* text = [self updateTextForDotCom:title];
   [self.omniboxTextField insertTextWhileEditing:text];
@@ -73,7 +74,7 @@
 
 #pragma mark - Private
 
-// Insert 'com' without the period if cursor is directly after a period.
+/// Inserts 'com' without the period if cursor is directly after a period.
 - (NSString*)updateTextForDotCom:(NSString*)text {
   if ([text isEqualToString:kDotComTLD]) {
     UITextRange* textRange = [self.omniboxTextField selectedTextRange];
@@ -81,8 +82,9 @@
         offsetFromPosition:[self.omniboxTextField beginningOfDocument]
                 toPosition:textRange.start];
     if (pos > 0 &&
-        [[self.omniboxTextField text] characterAtIndex:pos - 1] == '.')
+        [[self.omniboxTextField text] characterAtIndex:pos - 1] == '.') {
       return [kDotComTLD substringFromIndex:1];
+    }
   }
   return text;
 }

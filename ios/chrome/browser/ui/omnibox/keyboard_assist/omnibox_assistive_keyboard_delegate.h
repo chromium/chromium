@@ -7,12 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol ApplicationCommands;
-@protocol BrowserCoordinatorCommands;
 @class LayoutGuideCenter;
-@protocol LensCommands;
-@class OmniboxTextFieldIOS;
-@protocol QRScannerCommands;
 
 // Delegate protocol for the KeyboardAccessoryView.
 @protocol OmniboxAssistiveKeyboardDelegate
@@ -32,22 +27,11 @@
 // Notifies the delegate that the Lens button was tapped.
 - (void)keyboardAccessoryLensTapped;
 
+// Notifies the delegate that the Debugger button was tapped.
+- (void)keyboardAccessoryDebuggerTapped;
+
 // Notifies the delegate that a key with the title `title` was pressed.
 - (void)keyPressed:(NSString*)title;
-
-@end
-
-// TODO(crbug.com/784819): Move this code to omnibox.
-// Implementation of the OmniboxAssistiveKeyboardDelegate.
-@interface OmniboxAssistiveKeyboardDelegateImpl
-    : NSObject <OmniboxAssistiveKeyboardDelegate>
-
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
-@property(nonatomic, weak) id<BrowserCoordinatorCommands>
-    browserCoordinatorCommandsHandler;
-@property(nonatomic, weak) id<LensCommands> lensCommandsHandler;
-@property(nonatomic, weak) id<QRScannerCommands> qrScannerCommandsHandler;
-@property(nonatomic, weak) OmniboxTextFieldIOS* omniboxTextField;
 
 @end
 
