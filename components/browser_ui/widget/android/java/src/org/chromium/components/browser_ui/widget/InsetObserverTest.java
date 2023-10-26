@@ -11,9 +11,9 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
+import android.view.WindowInsets;
 import android.widget.LinearLayout;
 
 import androidx.annotation.RequiresApi;
@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -51,14 +50,14 @@ public class InsetObserverTest {
     @Mock private InsetObserver.WindowInsetObserver mObserver;
 
     @Mock private WindowInsetsCompat mInsets;
+    @Mock private WindowInsetsCompat mModifiedInsets;
+    @Mock private WindowInsets mNonCompatInsets;
+    @Mock private WindowInsets mModifiedNonCompatInsets;
     @Mock private WindowInsetsConsumer mInsetsConsumer;
     @Mock private WindowInsetsAnimationListener mInsetsAnimationListener;
+    @Mock private LinearLayout mContentView;
 
-    private Activity mActivity;
-
-    private InsetObserver mView;
-
-    private LinearLayout mContentView;
+    private InsetObserver mInsetObserver;
 
     private void setCutout(boolean hasCutout) {
         DisplayCutoutCompat cutout = hasCutout ? new DisplayCutoutCompat(new Rect(1, 1, 1, 1), null) : null;
@@ -68,13 +67,13 @@ public class InsetObserverTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        doReturn(mNonCompatInsets).when(mInsets).toWindowInsets();
+        doReturn(mModifiedNonCompatInsets).when(mModifiedInsets).toWindowInsets();
+        doReturn(WindowInsetsCompat.CONSUMED.toWindowInsets()).when(mContentView).onApplyWindowInsets(mNonCompatInsets);
+        doReturn(WindowInsetsCompat.CONSUMED.toWindowInsets()).when(mContentView).onApplyWindowInsets(mModifiedNonCompatInsets);
 
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mContentView = new LinearLayout(mActivity);
-        mActivity.setContentView(mContentView);
-
-        mView = new InsetObserver(mContentView);
-        mView.addObserver(mObserver);
+        mInsetObserver = new InsetObserver(mContentView);
+        mInsetObserver.addObserver(mObserver);
     }
 
     /** Test that applying new insets notifies observers. */
@@ -85,56 +84,49 @@ public class InsetObserverTest {
         doReturn(1).when(mInsets).getSystemWindowInsetTop();
         doReturn(1).when(mInsets).getSystemWindowInsetRight();
         doReturn(1).when(mInsets).getSystemWindowInsetBottom();
-        mView.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, times(1)).onInsetChanged(1, 1, 1, 1);
 
         // Apply the insets a second time; the observer should not be notified.
-        mView.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, times(1)).onInsetChanged(1, 1, 1, 1);
 
         doReturn(2).when(mInsets).getSystemWindowInsetBottom();
-        mView.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver).onInsetChanged(1, 1, 1, 2);
     }
 
     @Test
     @SmallTest
     public void applyInsets_withInsetConsumer() {
-        mView.addInsetsConsumer(mInsetsConsumer);
+        mInsetObserver.addInsetsConsumer(mInsetsConsumer);
 
-        WindowInsetsCompat windowInsets =
-                new WindowInsetsCompat.Builder()
-                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 84))
-                        .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(42, 0, 0, 0))
-                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 300))
-                        .build();
-
-        WindowInsetsCompat modifiedInsets =
-                new WindowInsetsCompat.Builder()
-                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 84))
-                        .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(42, 0, 0, 0))
-                        .build();
-        doReturn(modifiedInsets)
+        doReturn(mModifiedInsets)
                 .when(mInsetsConsumer)
-                .onApplyWindowInsets(mContentView, windowInsets);
+                .onApplyWindowInsets(mContentView, mInsets);
+        doReturn(14).when(mModifiedInsets).getSystemWindowInsetLeft();
+        doReturn(17).when(mModifiedInsets).getSystemWindowInsetTop();
+        doReturn(31).when(mModifiedInsets).getSystemWindowInsetRight();
+        doReturn(43).when(mModifiedInsets).getSystemWindowInsetBottom();
 
-        mView.onApplyWindowInsets(mContentView, windowInsets);
+
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mInsetsConsumer)
-                .onApplyWindowInsets(mContentView, windowInsets);
+                .onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, times(1))
                 .onInsetChanged(
-                        modifiedInsets.getSystemWindowInsetLeft(),
-                        modifiedInsets.getSystemWindowInsetTop(),
-                        modifiedInsets.getSystemWindowInsetRight(),
-                        modifiedInsets.getSystemWindowInsetBottom());
+                    mModifiedInsets.getSystemWindowInsetLeft(),
+                    mModifiedInsets.getSystemWindowInsetTop(),
+                    mModifiedInsets.getSystemWindowInsetRight(),
+                    mModifiedInsets.getSystemWindowInsetBottom());
     }
 
     @Test
     @SmallTest
     public void insetAnimation() {
-        mView.addWindowInsetsAnimationListener(mInsetsAnimationListener);
+        mInsetObserver.addWindowInsetsAnimationListener(mInsetsAnimationListener);
         WindowInsetsAnimationCompat.Callback callback =
-                mView.getInsetAnimationProxyCallbackForTesting();
+                mInsetObserver.getInsetAnimationProxyCallbackForTesting();
         WindowInsetsAnimationCompat animationCompat = new WindowInsetsAnimationCompat(8, null, 50);
         callback.onPrepare(animationCompat);
         verify(mInsetsAnimationListener).onPrepare(animationCompat);
@@ -159,7 +151,7 @@ public class InsetObserverTest {
     @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets() {
         setCutout(false);
-        mView.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, never()).onSafeAreaChanged(any());
     }
 
@@ -169,7 +161,7 @@ public class InsetObserverTest {
     @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_WithCutout() {
         setCutout(true);
-        mView.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver).onSafeAreaChanged(DISPLAY_CUTOUT_RECT);
     }
 
@@ -179,12 +171,12 @@ public class InsetObserverTest {
     @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_WithCutout_WithoutCutout() {
         setCutout(true);
-        mView.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver).onSafeAreaChanged(DISPLAY_CUTOUT_RECT);
 
         reset(mObserver);
         setCutout(false);
-        mView.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver).onSafeAreaChanged(NO_CUTOUT_RECT);
     }
 
@@ -194,8 +186,8 @@ public class InsetObserverTest {
     @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_WithCutout_NoListener() {
         setCutout(true);
-        mView.removeObserver(mObserver);
-        mView.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.removeObserver(mObserver);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
     }
 
     /** Test that applying new insets with no observer is a no-op. */
@@ -204,7 +196,7 @@ public class InsetObserverTest {
     @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_NoListener() {
         setCutout(false);
-        mView.removeObserver(mObserver);
-        mView.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.removeObserver(mObserver);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
     }
 }

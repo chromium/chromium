@@ -213,6 +213,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         updateKeyboardInset();
         onInsetChanged(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(),
             insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
+        insets = WindowInsetsCompat.toWindowInsetsCompat(
+            view.onApplyWindowInsets(insets.toWindowInsets()));
         return insets;
     }
 
