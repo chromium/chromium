@@ -18623,6 +18623,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MediaContextMenu_SaveVideoFrameAs">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <description>
+    User clicked on the contextual menu of a video player to save video frame as
+    a file.
+  </description>
+</action>
+
 <action name="MediaIndicatorButton_Dragged">
   <obsolete>Replaced with &quot;AlertIndicatorButton_Dragged&quot;.</obsolete>
   <owner>miu@chromium.org</owner>

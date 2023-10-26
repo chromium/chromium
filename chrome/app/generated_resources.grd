@@ -700,6 +700,9 @@ are declared in tools/grit/grit_rule.gni.
             Rotate c&amp;ounterclockwise
           </message>
 
+          <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS" desc="The name of the Save Video Frame As command in the content area context menu">
+            Sa&amp;ve video frame as...
+          </message>
           <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOAS" desc="The name of the Save Video As command in the content area context menu">
             Sa&amp;ve video as...
           </message>
@@ -969,6 +972,9 @@ are declared in tools/grit/grit_rule.gni.
             Rotate C&amp;ounterclockwise
           </message>
 
+          <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS" desc="In Title Case: The name of the Save Video Frame As command in the content area context menu">
+           Sa&amp;ve Video Frame As...
+          </message>
           <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOAS" desc="In Title Case: The name of the Save Video As command in the content area context menu">
            Sa&amp;ve Video As...
           </message>

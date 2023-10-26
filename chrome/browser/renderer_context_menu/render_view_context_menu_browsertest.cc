@@ -203,6 +203,11 @@ class AllowPreCommitInputFlagMixin : public InProcessBrowserTestMixin {
 
 class ContextMenuBrowserTest : public MixinBasedInProcessBrowserTest {
  protected:
+  ContextMenuBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnything, media::kContextMenuSaveVideoFrameAs}, {});
+  }
+
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenuMediaTypeNone(
       const GURL& unfiltered_url,
       const GURL& url) {
@@ -416,7 +421,7 @@ class ContextMenuBrowserTest : public MixinBasedInProcessBrowserTest {
 
  private:
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
-  base::test::ScopedFeatureList scoped_feature_list_{features::kReadAnything};
+  base::test::ScopedFeatureList scoped_feature_list_;
   AllowPreCommitInputFlagMixin allow_pre_commit_input_flag_mixin_{mixin_host_};
 };
 
@@ -2976,6 +2981,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
   auto menu = CreateContextMenuFromParams(params);
 
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
 }
 
@@ -2986,6 +2994,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
   auto menu = CreateContextMenuFromParams(params);
 
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
 }

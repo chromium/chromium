@@ -8,6 +8,7 @@ module blink.mojom;
 enum MediaPlayerActionType {
   kLoop,
   kControls,
+  kSaveVideoFrameAs,
   kCopyVideoFrame,
   kPictureInPicture,
   kDefaultActionType = kPictureInPicture

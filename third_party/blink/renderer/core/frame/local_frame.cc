@@ -193,6 +193,7 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
@@ -200,6 +201,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -3292,27 +3294,48 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
     case mojom::blink::MediaPlayerActionType::kControls:
       media_element->SetUserWantsControlsVisible(enable);
       break;
+    case mojom::blink::MediaPlayerActionType::kSaveVideoFrameAs:
+      if (auto* video = DynamicTo<HTMLVideoElement>(media_element); video) {
+        auto image = video->CreateStaticBitmapImage();
+        if (!image) {
+          return;
+        }
+        auto data_buffer = ImageDataBuffer::Create(image);
+        if (!data_buffer) {
+          return;
+        }
+
+        ImageEncodingMimeType encoding_mime_type =
+            ImageEncoderUtils::ToEncodingMimeType(
+                "image/png", ImageEncoderUtils::kEncodeReasonToDataURL);
+        String data_url =
+            data_buffer->ToDataURL(encoding_mime_type, /*quality=*/0);
+
+        auto params = mojom::blink::DownloadURLParams::New();
+        params->is_context_menu_save = true;
+        params->suggested_name = media_element->title();
+        params->data_url_blob = DataURLToBlob(data_url);
+        GetLocalFrameHostRemote().DownloadURL(std::move(params));
+      }
+      break;
     case mojom::blink::MediaPlayerActionType::kCopyVideoFrame:
-      DCHECK(IsA<HTMLVideoElement>(media_element));
-      {
-        auto* video_element = To<HTMLVideoElement>(media_element);
-        auto image = video_element->CreateStaticBitmapImage();
+      if (auto* video = DynamicTo<HTMLVideoElement>(media_element); video) {
+        auto image = video->CreateStaticBitmapImage();
         if (image) {
           GetEditor().CopyImage(result, image);
         }
       }
       break;
     case mojom::blink::MediaPlayerActionType::kPictureInPicture:
-      DCHECK(IsA<HTMLVideoElement>(media_element));
-      if (enable) {
-        PictureInPictureController::From(node->GetDocument())
-            .EnterPictureInPicture(To<HTMLVideoElement>(media_element),
-                                   /*promise=*/nullptr);
-      } else {
-        PictureInPictureController::From(node->GetDocument())
-            .ExitPictureInPicture(To<HTMLVideoElement>(media_element), nullptr);
+      if (auto* video = DynamicTo<HTMLVideoElement>(media_element); video) {
+        if (enable) {
+          PictureInPictureController::From(node->GetDocument())
+              .EnterPictureInPicture(video, /*promise=*/nullptr);
+        } else {
+          PictureInPictureController::From(node->GetDocument())
+              .ExitPictureInPicture(video, nullptr);
+        }
       }
-
       break;
   }
 }
