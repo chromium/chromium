@@ -438,8 +438,9 @@ Refer to README.md for content description and update process.
  <item id="customize_chrome_page_handler" added_in_milestone="120" content_hash_code="003c50db" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.cc" />
  <item id="almanac_icon_cache" added_in_milestone="120" content_hash_code="04ca8028" os_list="chromeos" file_path="chrome/browser/apps/almanac_api_client/almanac_icon_cache.cc" />
  <item id="remoting_provision_corp_machine" added_in_milestone="120" content_hash_code="043ecef7" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_service_client.cc" />
- <item id="blink_fetch_later_manager" added_in_milestone="120" content_hash_code="04eb549b" os_list="linux,windows,android" file_path="third_party/blink/renderer/core/fetch/fetch_manager.cc" />
+ <item id="blink_fetch_later_manager" added_in_milestone="120" content_hash_code="00cb800a" os_list="linux,windows,android,chromeos" file_path="third_party/blink/renderer/core/fetch/fetch_manager.cc" />
  <item id="carrier_lock_manager_fetch_configuration" added_in_milestone="120" content_hash_code="05a883cb" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/provisioning_config_fetcher_impl.cc" />
  <item id="carrier_lock_manager_check_membership" added_in_milestone="120" content_hash_code="0471f29c" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/psm_claim_verifier_impl.cc" />
  <item id="carrier_lock_manager_fcm_topic" added_in_milestone="120" content_hash_code="00c05900" os_list="chromeos" file_path="chromeos/ash/components/carrier_lock/topic_subscription_request.cc" />
+ <item id="almanac_app_install" added_in_milestone="120" content_hash_code="048af8ba" os_list="chromeos" file_path="chrome/browser/apps/app_service/app_install/app_install_almanac_connector.cc" />
 </annotations>
