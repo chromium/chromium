@@ -96,6 +96,14 @@ void AutomationTestUtils::SetFocusOnNode(const std::string& name,
       name.c_str(), role.c_str()));
 }
 
+bool AutomationTestUtils::NodeExistsNoWait(const std::string& name,
+                                           const std::string& role) {
+  std::string script_result = ExecuteScriptInExtensionPage(base::StringPrintf(
+      R"JS(globalThis.automationTestSupport.nodeExistsNoWait(`%s`, `%s`))JS",
+      name.c_str(), role.c_str()));
+  return script_result == "true";
+}
+
 void AutomationTestUtils::WaitForTextSelectionChangedEvent() {
   std::string script = R"(
     globalThis.automationTestSupport.waitForTextSelectionChangedEvent();
@@ -106,6 +114,13 @@ void AutomationTestUtils::WaitForTextSelectionChangedEvent() {
 void AutomationTestUtils::WaitForValueChangedEvent() {
   std::string script = R"(
     globalThis.automationTestSupport.waitForValueChangedEvent();
+  )";
+  ExecuteScriptInExtensionPage(script);
+}
+
+void AutomationTestUtils::WaitForChildrenChangedEvent() {
+  std::string script = R"(
+    globalThis.automationTestSupport.waitForChildrenChangedEvent();
   )";
   ExecuteScriptInExtensionPage(script);
 }

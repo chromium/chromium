@@ -55,9 +55,7 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.MoveByCharacterPhoneticSpeechAndHints*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfIconFocusForward*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.FocusShelf*
--SelectToSpeakTest.WorksWithTouchSelectionOnNonPrimaryMonitor
 -SelectToSpeakTest.ContinuesReadingDuringResize
--SelectToSpeakTest.ReadsSelectedTextFromContextMenuClick
 # These tests do not run with the browser and do not need to run with Lacros.
 -MagnificationManagerTest*
 -FullscreenMagnifierControllerTest.MovesContinuouslyWithMouse

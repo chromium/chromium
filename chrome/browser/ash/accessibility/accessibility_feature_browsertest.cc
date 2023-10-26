@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/ui_test_utils.h"
 
 namespace ash {
@@ -39,7 +40,8 @@ void AccessibilityFeatureBrowserTest::NavigateToUrl(const GURL& url) {
         crosapi::mojom::OpenUrlParams::WindowOpenDisposition::
             kNewForegroundTab);
   } else {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        BrowserList::GetInstance()->GetLastActive(), url));
   }
 }
 

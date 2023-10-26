@@ -45,6 +45,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
 
@@ -320,12 +321,9 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
   screen->SetDisplayForNewWindows(display2);
 
-  // TODO(b/301475127): Determine how to create a Lacros browser window on the
-  // secondary display.
-  Browser* browser_on_secondary_display =
-      CreateBrowser(AccessibilityManager::Get()->profile());
+  // Ctrl+N to open a new browser window. This will load on the new display.
+  generator_->PressAndReleaseKey(ui::VKEY_N, ui::EF_CONTROL_DOWN);
 
-  // Create a window on the non-primary display.
   std::string url = "data:text/html;charset=utf-8,<p>This is some text</p>";
   NavigateToUrl(GURL(url));
 
@@ -350,8 +348,6 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 
   sm_.ExpectSpeechPattern("This is some text*");
   sm_.Replay();
-
-  CloseBrowserSynchronously(browser_on_secondary_display);
 }
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SelectToSpeakTrayNotSpoken) {
@@ -722,17 +718,39 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 
   SelectNodeWithText(text);
 
-  const gfx::Rect text_bounds =
+  gfx::Rect text_bounds =
       automation_test_utils_->GetNodeBoundsInRoot(text, "staticText");
-  generator_->MoveMouseTo(text_bounds.CenterPoint());
-  generator_->PressRightButton();
+  text_bounds.Inset(2.0f);
+  generator_->MoveMouseTo(text_bounds.right_center());
+
   const std::string name = "Listen to selected text";
 
+  // If the EmbeddedA11yHelper in Lacros hasn't completed loading the helper
+  // extension, the context menu option won't be present. Keep trying until it
+  // is present. For users, it gets installed so quickly in Lacros that they
+  // won't see this type of behavior.
+  while (true) {
+    // Right-click the selected region.
+    generator_->PressRightButton();
+    generator_->ReleaseRightButton();
+
+    // Wait for the copy context menu item to be shown,
+    // this means the menu is displayed.
+    automation_test_utils_->GetNodeBoundsInRoot("Copy Ctrl+C", "menuItem");
+    if (automation_test_utils_->NodeExistsNoWait(name, "menuItem")) {
+      break;
+    }
+    // Close the menu and wait for the close to propagate.
+    generator_->PressAndReleaseKey(ui::VKEY_ESCAPE, /*flags=*/0);
+    automation_test_utils_->WaitForChildrenChangedEvent();
+  }
+
+  // Click the Select to Speak menu item.
   gfx::Rect menu_item_bounds =
       automation_test_utils_->GetNodeBoundsInRoot(name, "menuItem");
-
   generator_->MoveMouseTo(menu_item_bounds.CenterPoint());
-  generator_->ReleaseRightButton();
+  generator_->PressLeftButton();
+  generator_->ReleaseLeftButton();
 
   sm_.ExpectSpeechPattern(text);
   sm_.Replay();

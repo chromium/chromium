@@ -85,6 +85,22 @@ class AutomationTestSupport {
   }
 
   /**
+   * Checks if an automation node with the given `name` and
+   * `role` exists in the desktop tree, without waiting.
+   * @param {string} name
+   * @param {string} role
+   */
+  nodeExistsNoWait(name, role) {
+    const findParams = {role, attributes: {name}};
+    const node = this.desktop_.find(findParams);
+    if (node) {
+      this.notifyCcTests_('true');
+    } else {
+      this.notifyCcTests_('false');
+    }
+  }
+
+  /**
    * @param {chrome.automation.FindParams} findParams
    * @private
    */
@@ -144,6 +160,15 @@ class AutomationTestSupport {
    */
   async waitForValueChangedEvent() {
     await this.waitForEventHelper_(chrome.automation.EventType.VALUE_CHANGED);
+  }
+
+  /**
+   * Waits for a chrome.automation.EventType.CHILDREN_CHANGED event to be fired
+   * on the desktop node.
+   */
+  async waitForChildrenChangedEvent() {
+    await this.waitForEventHelper_(
+        chrome.automation.EventType.CHILDREN_CHANGED);
   }
 
   /**
