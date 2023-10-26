@@ -16,15 +16,7 @@
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-namespace {
-
-// The length of time after sending an EnterAutoPictureInPicture action that
-// we'll assume any new picture-in-picture windows will be from that action.
-constexpr base::TimeDelta kAutoPictureInPictureActivationThreshold =
-    base::Seconds(5);
-
-}  // namespace
+#include "third_party/blink/public/common/frame/user_activation_state.h"
 
 AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
     content::WebContents* web_contents)
@@ -154,7 +146,7 @@ void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
     return;
   }
   auto_picture_in_picture_activation_time_ =
-      base::TimeTicks::Now() + kAutoPictureInPictureActivationThreshold;
+      base::TimeTicks::Now() + blink::kActivationLifespan;
   content::MediaSession::Get(web_contents())->EnterAutoPictureInPicture();
 }
 

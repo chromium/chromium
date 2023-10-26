@@ -528,15 +528,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_TRUE(original_web_contents->HasPictureInPictureDocument());
 }
 
-// TODO(crbug.com/1485641): Re-enable after resolving flakiness.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_ShowsMostRecentlyHiddenTab \
-  DISABLED_ShowsMostRecentlyHiddenTab
-#else
-#define MAYBE_ShowsMostRecentlyHiddenTab ShowsMostRecentlyHiddenTab
-#endif
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
-                       MAYBE_ShowsMostRecentlyHiddenTab) {
+                       ShowsMostRecentlyHiddenTab) {
   // Load a page that registers for autopip.
   LoadCameraMicrophonePage(browser());
   auto* original_web_contents =
