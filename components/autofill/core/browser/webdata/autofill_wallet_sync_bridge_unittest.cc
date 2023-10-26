@@ -223,7 +223,7 @@ MATCHER_P(EqualsSpecifics, expected, "") {
 }
 
 MATCHER_P(RemoveChange, key, "") {
-  if (arg.type() != GenericAutofillChange<std::string>::REMOVE) {
+  if (arg.type() != decltype(arg.type())::REMOVE) {
     *result_listener << "type " << arg.type() << " is not REMOVE";
     return false;
   }
@@ -235,8 +235,7 @@ MATCHER_P(RemoveChange, key, "") {
 }
 
 MATCHER_P2(AddChange, key, data, "") {
-  if (arg.type() != GenericAutofillChange<std::string>::ADD) {
-    *result_listener << "type " << arg.type() << " is not ADD";
+  if (arg.type() != decltype(arg.type())::ADD) {
     return false;
   }
   if (arg.key() != key) {

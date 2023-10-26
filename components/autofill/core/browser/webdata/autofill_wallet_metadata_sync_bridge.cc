@@ -714,10 +714,7 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
       CreateMetadataChangeList();
 
   switch (change.type()) {
-    case AutofillProfileChange::EXPIRE:
-      NOTREACHED() << "EXPIRE change is not allowed for wallet entities";
-      return;
-    case AutofillProfileChange::REMOVE:
+    case AutofillDataModelChange<DataType>::REMOVE:
       if (RemoveServerMetadata(GetAutofillTable(), type, metadata_id)) {
         cache_.erase(storage_key);
         // Send up deletion only if we had this entry in the DB. It is not there
@@ -725,8 +722,8 @@ void AutofillWalletMetadataSyncBridge::LocalMetadataChanged(
         change_processor()->Delete(storage_key, metadata_change_list.get());
       }
       return;
-    case AutofillProfileChange::ADD:
-    case AutofillProfileChange::UPDATE:
+    case AutofillDataModelChange<DataType>::ADD:
+    case AutofillDataModelChange<DataType>::UPDATE:
       AutofillMetadata new_entry = change.data_model().GetMetadata();
       auto it = cache_.find(storage_key);
       absl::optional<AutofillMetadata> existing_entry = absl::nullopt;

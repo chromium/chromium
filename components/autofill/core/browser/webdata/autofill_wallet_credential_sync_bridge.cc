@@ -265,8 +265,6 @@ void AutofillWalletCredentialSyncBridge::ActOnLocalChange(
     case ServerCvcChange::REMOVE:
       change_processor()->Delete(change.key(), metadata_change_list.get());
       break;
-    case ServerCvcChange::EXPIRE:
-      NOTREACHED_NORETURN();
   }
 }
 

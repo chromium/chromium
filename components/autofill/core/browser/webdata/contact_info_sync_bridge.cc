@@ -201,10 +201,6 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
     case AutofillProfileChange::REMOVE:
       change_processor()->Delete(change.key(), metadata_change_list.get());
       break;
-    case AutofillProfileChange::EXPIRE:
-      // EXPIRE changes are not issued for profiles.
-      NOTREACHED();
-      break;
   }
 
   // Local changes (written by the processor via the metadata change list) don't

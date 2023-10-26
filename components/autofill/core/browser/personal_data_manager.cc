@@ -2457,8 +2457,6 @@ void PersonalDataManager::OnAutofillProfileChanged(
         profiles.erase(FindElementByGUID(profiles, guid));
       }
       break;
-    default:
-      NOTREACHED();
   }
 
   OnProfileChangeDone(guid);
@@ -2603,8 +2601,6 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
       webdata_service->UpdateAutofillProfile(updated_profile);
       break;
     }
-    case AutofillProfileChange::EXPIRE:
-      NOTREACHED_NORETURN();
   }
   is_ongoing = true;
 }

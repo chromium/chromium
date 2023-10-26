@@ -226,10 +226,6 @@ void AutofillProfileSyncBridge::ActOnLocalChange(
     case AutofillProfileChange::REMOVE:
       change_processor()->Delete(change.key(), metadata_change_list.get());
       break;
-    case AutofillProfileChange::EXPIRE:
-      // EXPIRE changes are not being issued for profiles.
-      NOTREACHED();
-      break;
   }
 
   // We do not need to commit any local changes (written by the processor via
