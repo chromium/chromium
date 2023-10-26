@@ -31,6 +31,7 @@ class SwitchAccessHandler : public ::settings::SettingsPageUIHandler,
   void OnKeyEvent(ui::KeyEvent* event) override;
 
  private:
+  void AddPreTargetHandler();
   void HandleRefreshAssignmentsFromPrefs(const base::Value::List& args);
   void HandleNotifySwitchAccessActionAssignmentPaneActive(
       const base::Value::List& args);

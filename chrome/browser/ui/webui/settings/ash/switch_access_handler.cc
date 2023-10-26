@@ -104,13 +104,19 @@ void SwitchAccessHandler::RegisterMessages() {
           base::Unretained(this)));
 }
 
+void SwitchAccessHandler::AddPreTargetHandler() {
+  CHECK(IsJavascriptAllowed());
+
+  gfx::NativeView native_view = web_ui()->GetWebContents()->GetNativeView();
+
+  // Ensure we don't add the handler twice.
+  native_view->RemovePreTargetHandler(this);
+  native_view->AddPreTargetHandler(this);
+}
+
 void SwitchAccessHandler::OnJavascriptAllowed() {
   if (action_assignment_pane_active_) {
-    gfx::NativeView native_view = web_ui()->GetWebContents()->GetNativeView();
-
-    // Ensure we don't add the handler twice.
-    native_view->RemovePreTargetHandler(this);
-    native_view->AddPreTargetHandler(this);
+    AddPreTargetHandler();
   }
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -172,7 +178,11 @@ void SwitchAccessHandler::HandleRefreshAssignmentsFromPrefs(
 void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneActive(
     const base::Value::List& args) {
   action_assignment_pane_active_ = true;
-  AllowJavascript();
+  if (!IsJavascriptAllowed()) {
+    AllowJavascript();
+  } else {
+    AddPreTargetHandler();
+  }
   OnSwitchAccessAssignmentsUpdated();
   AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(true);
 }
