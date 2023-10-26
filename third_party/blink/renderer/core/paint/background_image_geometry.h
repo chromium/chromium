@@ -43,12 +43,23 @@ class BackgroundImageGeometry {
 
   explicit BackgroundImageGeometry(const NGPhysicalBoxFragment&);
 
+  // Compute the initial position area based on the geometry for the object
+  // this BackgroundImageGeometry was created for.
+  PhysicalRect ComputePositioningArea(const PaintInfo& paint_info,
+                                      const FillLayer& fill_layer,
+                                      const PhysicalRect& paint_rect) const;
+
   // Calculates data members. This must be called before any of the following
   // getters is called. The document lifecycle phase must be at least
   // PrePaintClean.
   void Calculate(const PaintInfo& paint_info,
                  const FillLayer&,
                  const PhysicalRect& paint_rect);
+
+  // Replacement for `Calculate()` when a layer is referencing an SVG <mask>
+  // element.
+  void SetGeometryForSVGMask(const gfx::RectF& mask_area,
+                             const PhysicalOffset& box_offset);
 
   // Destination rects define the area into which the image will paint.
   // For cases where no explicit background size is requested, the destination
@@ -62,10 +73,6 @@ class BackgroundImageGeometry {
   // size is given.
   const PhysicalRect& UnsnappedDestRect() const { return unsnapped_dest_rect_; }
   const PhysicalRect& SnappedDestRect() const { return snapped_dest_rect_; }
-
-  // Reference box for the box/fragment/part that the image will be drawn
-  // for. Used for <mask> reference painting.
-  const gfx::RectF& ReferenceBox() const { return reference_box_; }
 
   // Compute the phase of the image accounting for the size and spacing of the
   // image.
@@ -133,10 +140,6 @@ class BackgroundImageGeometry {
   PhysicalRect FixedAttachmentPositioningArea(const PaintInfo&) const;
   void UseFixedAttachment(const PhysicalOffset& attachment_point);
 
-  PhysicalRect ComputePositioningArea(const PaintInfo& paint_info,
-                                      const FillLayer& fill_layer,
-                                      const PhysicalRect& paint_rect) const;
-
   // Compute adjustments for the destination rects. Adjustments
   // both optimize painting when the background is obscured by a
   // border, and snap the dest rect to the border. They also
@@ -201,7 +204,6 @@ class BackgroundImageGeometry {
 
   PhysicalRect unsnapped_dest_rect_;
   PhysicalRect snapped_dest_rect_;
-  gfx::RectF reference_box_;
   PhysicalOffset phase_;
   PhysicalSize tile_size_;
   PhysicalSize repeat_spacing_;

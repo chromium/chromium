@@ -251,8 +251,7 @@ scoped_refptr<Image> StyleFetchedImage::GetImage(
     const ImageResourceObserver&,
     const Document& document,
     const ComputedStyle& style,
-    const gfx::SizeF& target_size,
-    const gfx::RectF& reference_box) const {
+    const gfx::SizeF& target_size) const {
   Image* image = image_->GetImage();
   if (image->IsPlaceholderImage()) {
     static_cast<PlaceholderImage*>(image)->SetIconAndTextScaleFactor(

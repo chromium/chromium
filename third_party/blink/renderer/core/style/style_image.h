@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace gfx {
-class RectF;
 class SizeF;
 }  // namespace gfx
 
@@ -137,17 +136,12 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   //
   // Note that the `target_size` is in the effective zoom level of the
   // computed style, i.e if the style has an effective zoom level of 1.0 the
-  // `target_size` is not zoomed. Ditto for `reference_box`.
+  // `target_size` is not zoomed.
   virtual scoped_refptr<Image> GetImage(
       const ImageResourceObserver&,
       const Document&,
       const ComputedStyle&,
-      const gfx::SizeF& target_size,
-      const gfx::RectF& reference_box) const = 0;
-  scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
-                                const ComputedStyle&,
-                                const gfx::SizeF& target_size) const;
+      const gfx::SizeF& target_size) const = 0;
 
   // Opaque handle representing the underlying value of this <image>.
   virtual WrappedImagePtr Data() const = 0;

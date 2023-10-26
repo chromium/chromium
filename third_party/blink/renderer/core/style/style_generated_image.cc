@@ -103,8 +103,7 @@ scoped_refptr<Image> StyleGeneratedImage::GetImage(
     const ImageResourceObserver& observer,
     const Document& document,
     const ComputedStyle& style,
-    const gfx::SizeF& target_size,
-    const gfx::RectF& reference_box) const {
+    const gfx::SizeF& target_size) const {
   return image_generator_value_->GetImage(observer, document, style,
                                           container_sizes_, target_size);
 }

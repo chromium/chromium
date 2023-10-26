@@ -72,12 +72,10 @@ class CORE_EXPORT StylePendingImage final : public StyleImage {
   bool HasIntrinsicSize() const override { return true; }
   void AddClient(ImageResourceObserver*) override {}
   void RemoveClient(ImageResourceObserver*) override {}
-  scoped_refptr<Image> GetImage(
-      const ImageResourceObserver&,
-      const Document&,
-      const ComputedStyle&,
-      const gfx::SizeF& target_size,
-      const gfx::RectF& reference_box) const override {
+  scoped_refptr<Image> GetImage(const ImageResourceObserver&,
+                                const Document&,
+                                const ComputedStyle&,
+                                const gfx::SizeF& target_size) const override {
     NOTREACHED();
     return nullptr;
   }

@@ -5,12 +5,9 @@
 #include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
 
 #include "third_party/blink/renderer/core/css/css_image_value.h"
-#include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/svg/proxy_svg_resource_client.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
-#include "third_party/blink/renderer/core/svg/svg_resource_client.h"
-#include "third_party/blink/renderer/platform/graphics/paint_generated_image.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
 
 namespace blink {
 
@@ -54,6 +51,10 @@ bool StyleSVGMaskReferenceImage::HasIntrinsicSize() const {
   return false;
 }
 
+SVGResource* StyleSVGMaskReferenceImage::GetSVGResource() const {
+  return resource_.Get();
+}
+
 ProxySVGResourceClient& StyleSVGMaskReferenceImage::GetSVGResourceClient()
     const {
   return *resource_css_value_->GetSVGResourceClient();
@@ -83,14 +84,8 @@ scoped_refptr<Image> StyleSVGMaskReferenceImage::GetImage(
     const ImageResourceObserver& observer,
     const Document& document,
     const ComputedStyle& style,
-    const gfx::SizeF& target_size,
-    const gfx::RectF& reference_box) const {
-  if (!resource_) {
-    return Image::NullImage();
-  }
-  PaintRecord record = SVGMaskPainter::PaintResource(
-      resource_, GetSVGResourceClient(), reference_box, style.EffectiveZoom());
-  return PaintGeneratedImage::Create(std::move(record), target_size);
+    const gfx::SizeF& target_size) const {
+  return Image::NullImage();
 }
 
 WrappedImagePtr StyleSVGMaskReferenceImage::Data() const {
@@ -101,16 +96,6 @@ bool StyleSVGMaskReferenceImage::KnownToBeOpaque(
     const Document& document,
     const ComputedStyle& style) const {
   return false;
-}
-
-gfx::RectF StyleSVGMaskReferenceImage::GetMaskArea(
-    const gfx::RectF& reference_box,
-    float zoom) const {
-  if (!resource_) {
-    return gfx::RectF();
-  }
-  return SVGMaskPainter::ResourceBounds(resource_, GetSVGResourceClient(),
-                                        reference_box, zoom);
 }
 
 bool StyleSVGMaskReferenceImage::IsEqual(const StyleImage& other) const {

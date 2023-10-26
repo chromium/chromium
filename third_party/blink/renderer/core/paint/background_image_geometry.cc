@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
-#include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -804,6 +803,15 @@ void BackgroundImageGeometry::CalculateFillTileSize(
   return;
 }
 
+void BackgroundImageGeometry::SetGeometryForSVGMask(
+    const gfx::RectF& mask_area,
+    const PhysicalOffset& box_offset) {
+  unsnapped_dest_rect_ = PhysicalRect::EnclosingRect(mask_area);
+  unsnapped_dest_rect_.Move(box_offset);
+  snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(unsnapped_dest_rect_));
+  tile_size_ = unsnapped_dest_rect_.size;
+}
+
 void BackgroundImageGeometry::Calculate(const PaintInfo& paint_info,
                                         const FillLayer& fill_layer,
                                         const PhysicalRect& paint_rect) {
@@ -815,24 +823,6 @@ void BackgroundImageGeometry::Calculate(const PaintInfo& paint_info,
   // as phase and position.
   PhysicalRect unsnapped_positioning_area =
       ComputePositioningArea(paint_info, fill_layer, paint_rect);
-
-  // If the "image" referenced by the FillLayer is an SVG <mask> reference (and
-  // this is a layer for a mask), then repeat, position, clip, origin and size
-  // should have no effect.
-  if (fill_layer.GetType() == EFillLayerType::kMask &&
-      fill_layer.GetImage()->IsSVGMaskReference()) {
-    const auto& svg_reference =
-        To<StyleSVGMaskReferenceImage>(*fill_layer.GetImage());
-    reference_box_ = gfx::RectF(gfx::SizeF(unsnapped_positioning_area.size));
-    // TODO(fs): Use ImageStyle() instead of `box_`s style.
-    const gfx::RectF mask_area = svg_reference.GetMaskArea(
-        reference_box_, box_->StyleRef().EffectiveZoom());
-    unsnapped_dest_rect_ = PhysicalRect::EnclosingRect(mask_area);
-    unsnapped_dest_rect_.Move(unsnapped_positioning_area.offset);
-    snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(unsnapped_dest_rect_));
-    tile_size_ = unsnapped_dest_rect_.size;
-    return;
-  }
 
   // Snapped positioning area is used for sizing images based on the
   // background area (like cover and contain), and for setting the repeat

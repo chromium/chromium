@@ -175,8 +175,7 @@ scoped_refptr<Image> StyleCrossfadeImage::GetImage(
     const ImageResourceObserver& observer,
     const Document& document,
     const ComputedStyle& style,
-    const gfx::SizeF& target_size,
-    const gfx::RectF& reference_box) const {
+    const gfx::SizeF& target_size) const {
   if (target_size.IsEmpty()) {
     return nullptr;
   }

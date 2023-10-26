@@ -7,13 +7,13 @@
 
 #include "third_party/blink/renderer/core/style/style_image.h"
 
+#include "third_party/blink/renderer/core/svg/proxy_svg_resource_client.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class CSSImageValue;
-class ProxySVGResourceClient;
 class SVGResource;
 
 class StyleSVGMaskReferenceImage : public StyleImage {
@@ -44,21 +44,19 @@ class StyleSVGMaskReferenceImage : public StyleImage {
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
-                                const gfx::SizeF& target_size,
-                                const gfx::RectF& reference_box) const override;
+                                const gfx::SizeF& target_size) const override;
 
   WrappedImagePtr Data() const override;
 
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
 
-  gfx::RectF GetMaskArea(const gfx::RectF& reference_box, float zoom) const;
+  SVGResource* GetSVGResource() const;
+  ProxySVGResourceClient& GetSVGResourceClient() const;
 
   void Trace(Visitor* visitor) const override;
 
  private:
   bool IsEqual(const StyleImage&) const override;
-
-  ProxySVGResourceClient& GetSVGResourceClient() const;
 
   Member<SVGResource> resource_;
   Member<CSSImageValue> resource_css_value_;

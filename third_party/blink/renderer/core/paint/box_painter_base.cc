@@ -21,17 +21,20 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/rounded_inner_rect_clipper.h"
+#include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
+#include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
+#include "third_party/blink/renderer/platform/graphics/paint_generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_image_rendering_settings.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -1077,6 +1080,41 @@ bool ShouldApplyBlendOperation(const BoxPainterBase::FillLayerInfo& info,
   return !info.is_bottom_layer || layer.GetType() != EFillLayerType::kMask;
 }
 
+scoped_refptr<Image> UpdateGeometryAndGetImageForLayer(
+    const PaintInfo& paint_info,
+    const ComputedStyle& style,
+    const FillLayer& layer,
+    StyleImage* image,
+    const PhysicalRect& paint_rect,
+    BackgroundImageGeometry& geometry) {
+  const ComputedStyle& image_style = geometry.ImageStyle(style);
+
+  // If the "image" referenced by the FillLayer is an SVG <mask> reference (and
+  // this is a layer for a mask), then repeat, position, clip, origin and size
+  // should have no effect.
+  if (layer.GetType() == EFillLayerType::kMask && image->IsSVGMaskReference()) {
+    const auto& svg_reference = To<StyleSVGMaskReferenceImage>(*image);
+
+    const PhysicalRect positioning_area =
+        geometry.ComputePositioningArea(paint_info, layer, paint_rect);
+    const gfx::RectF reference_box(gfx::SizeF(positioning_area.size));
+    const float zoom = image_style.EffectiveZoom();
+
+    const gfx::RectF mask_area = SVGMaskPainter::ResourceBounds(
+        svg_reference.GetSVGResource(), svg_reference.GetSVGResourceClient(),
+        reference_box, zoom);
+    geometry.SetGeometryForSVGMask(mask_area, positioning_area.offset);
+
+    PaintRecord record = SVGMaskPainter::PaintResource(
+        svg_reference.GetSVGResource(), svg_reference.GetSVGResourceClient(),
+        reference_box, zoom);
+    return PaintGeneratedImage::Create(std::move(record), mask_area.size());
+  }
+  geometry.Calculate(paint_info, layer, paint_rect);
+  return image->GetImage(geometry.ImageClient(), geometry.ImageDocument(),
+                         image_style, gfx::SizeF(geometry.TileSize()));
+}
+
 }  // anonymous namespace
 
 PhysicalBoxStrut BoxPainterBase::ComputeSnappedBorders() const {
@@ -1121,11 +1159,9 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   SkBlendMode composite_op = SkBlendMode::kSrcOver;
   absl::optional<ScopedImageRenderingSettings> image_rendering_settings_context;
   if (fill_layer_info.should_paint_image) {
-    geometry.Calculate(paint_info, bg_layer, scrolled_paint_rect);
-    image = fill_layer_info.image->GetImage(
-        geometry.ImageClient(), geometry.ImageDocument(),
-        geometry.ImageStyle(style_), gfx::SizeF(geometry.TileSize()),
-        geometry.ReferenceBox());
+    image = UpdateGeometryAndGetImageForLayer(paint_info, style_, bg_layer,
+                                              fill_layer_info.image,
+                                              scrolled_paint_rect, geometry);
     image_rendering_settings_context.emplace(
         context, geometry.ImageInterpolationQuality(),
         geometry.DynamicRangeLimit());
