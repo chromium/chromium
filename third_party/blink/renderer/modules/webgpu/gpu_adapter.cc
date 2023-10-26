@@ -116,11 +116,19 @@ GPUAdapter::GPUAdapter(
   description_ = properties.name;
   driver_ = properties.driverDescription;
 
+  features_ = MakeFeatureNameSet(GetProcs(), handle_);
+
   WGPUSupportedLimits limits = {};
+  // Chain to get experimental subgroup limits, if support experimental
+  // subgroups feature.
+  WGPUDawnExperimentalSubgroupLimits subgroupLimits = {};
+  subgroupLimits.chain.sType = WGPUSType_DawnExperimentalSubgroupLimits;
+  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {
+    limits.nextInChain = &subgroupLimits.chain;
+  }
+
   GetProcs().adapterGetLimits(handle_, &limits);
   limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
-
-  features_ = MakeFeatureNameSet(GetProcs(), handle_);
 }
 
 void GPUAdapter::AddConsoleWarning(ExecutionContext* execution_context,

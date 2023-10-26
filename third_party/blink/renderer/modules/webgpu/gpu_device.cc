@@ -151,6 +151,14 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
   DCHECK(dawn_device);
 
   WGPUSupportedLimits limits = {};
+  // Chain to get experimental subgroup limits, if device has experimental
+  // subgroups feature.
+  WGPUDawnExperimentalSubgroupLimits subgroupLimits = {};
+  subgroupLimits.chain.sType = WGPUSType_DawnExperimentalSubgroupLimits;
+  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {
+    limits.nextInChain = &subgroupLimits.chain;
+  }
+
   GetProcs().deviceGetLimits(GetHandle(), &limits);
   limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
 

@@ -39,4 +39,6 @@
     readonly attribute unsigned long maxComputeWorkgroupSizeY;
     readonly attribute unsigned long maxComputeWorkgroupSizeZ;
     readonly attribute unsigned long maxComputeWorkgroupsPerDimension;
+    [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute unsigned long minSubgroupSize;
+    [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute unsigned long maxSubgroupSize;
 };
