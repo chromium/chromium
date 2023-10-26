@@ -181,15 +181,14 @@ bool MacSignatureEvaluator::Initialize() {
   if (!code_url)
     return false;
 
-  if (SecStaticCodeCreateWithPath(code_url.get(), kSecCSDefaultFlags,
+  if (SecStaticCodeCreateWithPath(code_url, kSecCSDefaultFlags,
                                   code_.InitializeInto()) != errSecSuccess) {
     return false;
   }
 
   if (has_requirement_) {
     if (SecRequirementCreateWithString(
-            base::SysUTF8ToCFStringRef(requirement_str_).get(),
-            kSecCSDefaultFlags,
+            base::SysUTF8ToCFStringRef(requirement_str_), kSecCSDefaultFlags,
             requirement_.InitializeInto()) != errSecSuccess) {
       return false;
     }
@@ -202,7 +201,7 @@ bool MacSignatureEvaluator::PerformEvaluation(
   DCHECK(incident->contained_file_size() == 0);
   base::apple::ScopedCFTypeRef<CFErrorRef> errors;
   OSStatus err = SecStaticCodeCheckValidityWithErrors(
-      code_.get(), kSecCSCheckAllArchitectures, requirement_.get(),
+      code_, kSecCSCheckAllArchitectures, requirement_,
       errors.InitializeInto());
   if (err == errSecSuccess)
     return true;
@@ -213,11 +212,11 @@ bool MacSignatureEvaluator::PerformEvaluation(
   // the main executable is different from the path_.
   base::apple::ScopedCFTypeRef<CFDictionaryRef> info_dict;
   base::FilePath exec_path;
-  if (SecCodeCopySigningInformation(code_.get(), kSecCSDefaultFlags,
+  if (SecCodeCopySigningInformation(code_, kSecCSDefaultFlags,
                                     info_dict.InitializeInto()) ==
       errSecSuccess) {
     CFURLRef exec_url = base::apple::CFCastStrict<CFURLRef>(
-        CFDictionaryGetValue(info_dict.get(), kSecCodeInfoMainExecutable));
+        CFDictionaryGetValue(info_dict, kSecCodeInfoMainExecutable));
     if (!exec_url)
       return false;
 
@@ -234,12 +233,12 @@ bool MacSignatureEvaluator::PerformEvaluation(
 
   if (errors) {
     base::apple::ScopedCFTypeRef<CFDictionaryRef> info(
-        CFErrorCopyUserInfo(errors.get()));
+        CFErrorCopyUserInfo(errors));
     static const CFStringRef keys[] = {
         kSecCFErrorResourceAltered, kSecCFErrorResourceMissing,
     };
     for (CFStringRef key : keys) {
-      if (CFTypeRef detail = CFDictionaryGetValue(info.get(), key)) {
+      if (CFTypeRef detail = CFDictionaryGetValue(info, key)) {
         ReportAlteredFiles(detail, path_, incident);
       }
     }

@@ -36,8 +36,8 @@ OSStatus CreateTargetAccess(CFStringRef service_name,
     return status;
   }
 
-  for (CFIndex i = 0; i < CFArrayGetCount(acl_list.get()); ++i) {
-    SecACLRef acl = (SecACLRef)CFArrayGetValueAtIndex(acl_list.get(), i);
+  for (CFIndex i = 0; i < CFArrayGetCount(acl_list); ++i) {
+    SecACLRef acl = (SecACLRef)CFArrayGetValueAtIndex(acl_list, i);
 
     base::apple::ScopedCFTypeRef<CFArrayRef> app_list;
     base::apple::ScopedCFTypeRef<CFStringRef> description;
@@ -50,9 +50,9 @@ OSStatus CreateTargetAccess(CFStringRef service_name,
     }
 
     // Replace explicit non-empty app list with void to allow any application
-    if (app_list && CFArrayGetCount(app_list.get())) {
-      status = SecACLSetContents(acl, /*applicationList=*/nullptr,
-                                 description.get(), dummy_prompt_selector);
+    if (app_list && CFArrayGetCount(app_list)) {
+      status = SecACLSetContents(acl, /*applicationList=*/nullptr, description,
+                                 dummy_prompt_selector);
       if (status != noErr) {
         return status;
       }
@@ -94,9 +94,8 @@ OSStatus WriteKeychainItem(const std::string& service_name,
   SecKeychainAttributeList attribute_list = {std::size(attributes), attributes};
 
   base::apple::ScopedCFTypeRef<SecAccessRef> access_ref;
-  OSStatus status =
-      CreateTargetAccess(base::SysUTF8ToCFStringRef(service_name).get(),
-                         access_ref.InitializeInto());
+  OSStatus status = CreateTargetAccess(base::SysUTF8ToCFStringRef(service_name),
+                                       access_ref.InitializeInto());
   if (status != noErr) {
     return status;
   }
@@ -115,7 +114,7 @@ OSStatus VerifyKeychainForItemUnlocked(SecKeychainItemRef item_ref,
     return status;
   }
 
-  return VerifyKeychainUnlocked(keychain.get(), unlocked);
+  return VerifyKeychainUnlocked(keychain, unlocked);
 }
 
 OSStatus VerifyDefaultKeychainUnlocked(bool* unlocked) {
@@ -125,7 +124,7 @@ OSStatus VerifyDefaultKeychainUnlocked(bool* unlocked) {
     return status;
   }
 
-  return VerifyKeychainUnlocked(keychain.get(), unlocked);
+  return VerifyKeychainUnlocked(keychain, unlocked);
 }
 
 #pragma clang diagnostic pop

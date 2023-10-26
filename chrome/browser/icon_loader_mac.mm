@@ -66,10 +66,10 @@ IconLoader::IconGroup IconLoader::GroupForFilepath(
           base::SysUTF8ToCFStringRef(extension_string);
       base::apple::ScopedCFTypeRef<CFStringRef> cftype(
           UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
-                                                extension_cf.get(),
+                                                extension_cf,
                                                 /*inConformingToUTI=*/nullptr));
       if (cftype) {
-        return base::SysCFStringRefToUTF8(cftype.get());
+        return base::SysCFStringRefToUTF8(cftype);
       }
     }
 

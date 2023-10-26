@@ -1840,7 +1840,7 @@ TEST_F(AppShimManagerTest,
           framework_req_string));
   ASSERT_TRUE(got_req);
   base::apple::ScopedCFTypeRef<CFStringRef> got_req_string;
-  ASSERT_EQ(SecRequirementCopyString(got_req.get(), kSecCSDefaultFlags,
+  ASSERT_EQ(SecRequirementCopyString(got_req, kSecCSDefaultFlags,
                                      got_req_string.InitializeInto()),
             errSecSuccess);
   CFStringRef want_req_string = CFSTR(
@@ -1848,7 +1848,7 @@ TEST_F(AppShimManagerTest,
       "apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* "
       "exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] "
       "/* exists */ and certificate leaf[subject.OU] = EQHXZ8M8AV");
-  EXPECT_EQ(base::SysCFStringRefToUTF8(got_req_string.get()),
+  EXPECT_EQ(base::SysCFStringRefToUTF8(got_req_string),
             base::SysCFStringRefToUTF8(want_req_string));
 }
 

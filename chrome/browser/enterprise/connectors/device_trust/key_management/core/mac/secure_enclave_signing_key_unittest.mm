@@ -47,22 +47,21 @@ class SecureEnclaveSigningKeyTest : public testing::Test {
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(test_attributes.get(), kSecAttrLabel,
-                         CFSTR("fake-label"));
-    CFDictionarySetValue(test_attributes.get(), kSecAttrKeyType,
+    CFDictionarySetValue(test_attributes, kSecAttrLabel, CFSTR("fake-label"));
+    CFDictionarySetValue(test_attributes, kSecAttrKeyType,
                          kSecAttrKeyTypeECSECPrimeRandom);
-    CFDictionarySetValue(test_attributes.get(), kSecAttrKeySizeInBits,
+    CFDictionarySetValue(test_attributes, kSecAttrKeySizeInBits,
                          base::apple::NSToCFPtrCast(@256));
     base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(private_key_params.get(), kSecAttrIsPermanent,
+    CFDictionarySetValue(private_key_params, kSecAttrIsPermanent,
                          kCFBooleanFalse);
-    CFDictionarySetValue(test_attributes.get(), kSecPrivateKeyAttrs,
-                         private_key_params.get());
+    CFDictionarySetValue(test_attributes, kSecPrivateKeyAttrs,
+                         private_key_params);
     test_key_ = base::apple::ScopedCFTypeRef<SecKeyRef>(
-        SecKeyCreateRandomKey(test_attributes.get(), nullptr));
+        SecKeyCreateRandomKey(test_attributes, nullptr));
   }
 
   // Sets the unexportable key using the test key.
