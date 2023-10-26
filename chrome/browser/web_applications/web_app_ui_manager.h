@@ -173,11 +173,12 @@ class WebAppUiManager {
   // windows if configured by the launch handlers, etc. See
   // `web_app::LaunchWebApp` and `WebAppLaunchProcess` for more info.
   // If the app_id is invalid, an empty browser window is opened.
-  virtual base::Value LaunchWebApp(apps::AppLaunchParams params,
-                                   LaunchWebAppWindowSetting launch_setting,
-                                   Profile& profile,
-                                   LaunchWebAppCallback callback,
-                                   AppLock& lock) = 0;
+  virtual void WaitForFirstRunAndLaunchWebApp(
+      apps::AppLaunchParams params,
+      LaunchWebAppWindowSetting launch_setting,
+      Profile& profile,
+      LaunchWebAppCallback callback,
+      AppLock& lock) = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Migrates launcher state, such as parent folder id, position in App Launcher

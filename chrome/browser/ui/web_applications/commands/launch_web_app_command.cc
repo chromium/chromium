@@ -13,8 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -25,7 +23,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -81,15 +78,16 @@ base::Value::Dict ToDebugDict(const apps::AppLaunchParams& params) {
 base::Value LaunchWebApp(apps::AppLaunchParams params,
                          LaunchWebAppWindowSetting launch_setting,
                          Profile& profile,
-                         LaunchWebAppCallback callback,
-                         AppLock& app_lock) {
+                         WebAppRegistrar& registrar,
+                         OsIntegrationManager& os_integration_manager,
+                         LaunchWebAppCallback callback) {
   base::Value::Dict debug_value;
   debug_value.Set("launch_params", ToDebugDict(params));
   debug_value.Set("launch_window_setting", static_cast<int>(launch_setting));
 
   if (launch_setting == LaunchWebAppWindowSetting::kOverrideWithWebAppConfig) {
     DisplayMode display_mode =
-        app_lock.registrar().GetAppEffectiveDisplayMode(params.app_id);
+        registrar.GetAppEffectiveDisplayMode(params.app_id);
     switch (display_mode) {
       case DisplayMode::kUndefined:
       case DisplayMode::kFullscreen:
@@ -114,7 +112,7 @@ base::Value LaunchWebApp(apps::AppLaunchParams params,
   // open in a browser tab and all non-shortcut web apps open in a standalone
   // window.
   if (base::FeatureList::IsEnabled(features::kCrosShortstand)) {
-    bool is_shortcut_app = app_lock.registrar().IsShortcutApp(params.app_id);
+    bool is_shortcut_app = registrar.IsShortcutApp(params.app_id);
     if (is_shortcut_app) {
       params.container = apps::LaunchContainer::kLaunchContainerTab;
       params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -135,7 +133,7 @@ base::Value LaunchWebApp(apps::AppLaunchParams params,
   // Do not launch anything if the profile is being deleted.
   if (Browser::GetCreationStatusForProfile(&profile) ==
       Browser::CreationStatus::kOk) {
-    if (app_lock.registrar().IsInstalled(params.app_id)) {
+    if (registrar.IsInstalled(params.app_id)) {
       container = params.container;
       if (WebAppLaunchProcess::GetOpenApplicationCallbackForTesting()) {
         web_contents =
@@ -143,8 +141,7 @@ base::Value LaunchWebApp(apps::AppLaunchParams params,
                 std::move(params));
       } else {
         web_contents = WebAppLaunchProcess::CreateAndRun(
-            profile, app_lock.registrar(), app_lock.os_integration_manager(),
-            params);
+            profile, registrar, os_integration_manager, params);
       }
       if (web_contents)
         browser = chrome::FindBrowserWithTab(web_contents);

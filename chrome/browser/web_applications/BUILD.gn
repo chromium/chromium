@@ -908,6 +908,7 @@ source_set("web_applications_browser_tests") {
   if (is_chromeos) {
     sources += [
       "commands/install_preloaded_verified_app_command_browsertest.cc",
+      "web_app_run_on_os_login_manager_browsertest.cc",
 
       # TODO(crbug.com/1458725): Support automatic IWA updates on other
       # platforms.
@@ -922,10 +923,7 @@ source_set("web_applications_browser_tests") {
   }
 
   if (is_chromeos_ash) {
-    sources += [
-      "isolated_web_apps/policy/isolated_web_app_policy_manager_ash_browsertest.cc",
-      "web_app_run_on_os_login_manager_browsertest.cc",
-    ]
+    sources += [ "isolated_web_apps/policy/isolated_web_app_policy_manager_ash_browsertest.cc" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

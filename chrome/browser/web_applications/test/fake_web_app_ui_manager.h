@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_UI_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_UI_MANAGER_H_
 
-#include <map>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -77,11 +76,11 @@ class FakeWebAppUiManager : public WebAppUiManager {
       AppIdentityDialogCallback callback) override;
   void ShowWebAppSettings(const webapps::AppId& app_id) override {}
 
-  base::Value LaunchWebApp(apps::AppLaunchParams params,
-                           LaunchWebAppWindowSetting launch_setting,
-                           Profile& profile,
-                           LaunchWebAppCallback callback,
-                           AppLock& lock) override;
+  void WaitForFirstRunAndLaunchWebApp(apps::AppLaunchParams params,
+                                      LaunchWebAppWindowSetting launch_setting,
+                                      Profile& profile,
+                                      LaunchWebAppCallback callback,
+                                      AppLock& lock) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void MigrateLauncherState(const webapps::AppId& from_app_id,
                             const webapps::AppId& to_app_id,

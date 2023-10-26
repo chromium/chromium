@@ -910,7 +910,7 @@ void WebAppCommandScheduler::LaunchAppWithKeepAlives(
   webapps::AppId app_id = params.app_id;
   ScheduleCallbackWithLock(
       "LaunchApp", std::make_unique<AppLockDescription>(app_id),
-      base::BindOnce(&WebAppUiManager::LaunchWebApp,
+      base::BindOnce(&WebAppUiManager::WaitForFirstRunAndLaunchWebApp,
                      base::Unretained(&provider_->ui_manager()),
                      std::move(params), launch_setting, std::ref(*profile_),
                      std::move(callback)),

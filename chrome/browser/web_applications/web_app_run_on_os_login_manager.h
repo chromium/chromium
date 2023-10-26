@@ -37,8 +37,6 @@ class WebAppRunOnOsLoginManager {
  private:
   void RunAppsOnOsLogin(AllAppsLock& lock);
 
-  void ShowAppLaunchedNotification(const std::vector<std::string>& app_names);
-
   raw_ptr<WebAppProvider> provider_ = nullptr;
   const raw_ptr<Profile> profile_;
 

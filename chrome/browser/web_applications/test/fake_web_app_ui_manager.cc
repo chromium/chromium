@@ -130,7 +130,7 @@ void FakeWebAppUiManager::ShowWebAppIdentityUpdateDialog(
   std::move(callback).Run(identity_update_dialog_action_for_testing.value());
 }
 
-base::Value FakeWebAppUiManager::LaunchWebApp(
+void FakeWebAppUiManager::WaitForFirstRunAndLaunchWebApp(
     apps::AppLaunchParams params,
     LaunchWebAppWindowSetting launch_setting,
     Profile& profile,
@@ -147,7 +147,6 @@ base::Value FakeWebAppUiManager::LaunchWebApp(
     on_launch_web_app_callback_.Run(std::move(params),
                                     std::move(launch_setting));
   }
-  return base::Value("FakeWebAppUiManager::LaunchWebApp");
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
