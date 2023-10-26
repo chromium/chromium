@@ -16,6 +16,7 @@ component("network") {
     "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/feature_usage",
