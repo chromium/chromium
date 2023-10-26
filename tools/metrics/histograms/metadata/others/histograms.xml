@@ -13201,7 +13201,13 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Toolbar.ChromeLabs.{State}LabAction"
-    enum="ChromeLabsSelectedLab" expires_after="M122">
+    enum="ChromeLabsSelectedLab" expires_after="never">
+<!-- expires-never: Chrome Labs is a feature that allows teams to add their
+experiemntal features for users to try out and give feedback on before it is
+fully rolled out. We want teams that add their features to Chrome Labs to
+continue to have access to metrics on how many users enable (or disable) their
+features through Chrome Labs. -->
+
   <owner>elainechien@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
