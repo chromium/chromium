@@ -14,9 +14,8 @@
 #  limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
-                          execute_command, send_JSON_command, subscribe,
-                          wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, execute_command,
+                          send_JSON_command, subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -254,90 +253,6 @@ async def test_add_intercept_type_pattern_port_empty_invalid(websocket):
                     }],
                 },
             })
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("url_patterns", [
-    [
-        {
-            "type": "string",
-            "pattern": "https://www.example.com/",
-        },
-    ],
-    [
-        {
-            "type": "pattern",
-            "protocol": "https",
-            "hostname": "www.example.com",
-            "pathname": "/",
-        },
-    ],
-    [
-        {
-            "type": "string",
-            "pattern": "https://www.example.com/",
-        },
-        {
-            "type": "pattern",
-            "protocol": "https",
-            "hostname": "www.example.com",
-            "pathname": "/",
-        },
-    ],
-],
-                         ids=[
-                             "string",
-                             "pattern",
-                             "string and pattern",
-                         ])
-async def test_add_intercept_blocks_use_cdp_events(websocket, context_id,
-                                                   url_patterns):
-    # TODO: make offline
-    example_url = "https://www.example.com/"
-    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
-
-    result = await execute_command(
-        websocket, {
-            "method": "network.addIntercept",
-            "params": {
-                "phases": ["beforeRequestSent"],
-                "urlPatterns": url_patterns,
-            },
-        })
-
-    assert result == {
-        "intercept": ANY_UUID,
-    }
-
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": example_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
-
-    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
-    assert event_response == {
-        "method": "cdp.Fetch.requestPaused",
-        "params": {
-            "event": "Fetch.requestPaused",
-            "params": {
-                "frameId": context_id,
-                "networkId": ANY_STR,
-                "request": AnyExtending({
-                    "headers": ANY_DICT,
-                    "url": example_url,
-                }),
-                "requestId": ANY_STR,
-                "resourceType": "Document",
-            },
-            "session": ANY_STR,
-        },
-        "type": "event",
-    }
 
 
 @pytest.mark.asyncio

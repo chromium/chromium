@@ -159,62 +159,6 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_continue_request_completes_use_cdp_events(
-        websocket, context_id, example_url):
-    await subscribe(websocket, ["cdp.Fetch.requestPaused"])
-
-    await execute_command(
-        websocket, {
-            "method": "network.addIntercept",
-            "params": {
-                "phases": ["beforeRequestSent"],
-                "urlPatterns": [{
-                    "type": "string",
-                    "pattern": example_url,
-                }, ],
-            },
-        })
-    await send_JSON_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": example_url,
-                "context": context_id,
-                "wait": "complete",
-            }
-        })
-    event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
-    network_id = event_response["params"]["params"]["networkId"]
-
-    await subscribe(websocket, ["network.responseCompleted"])
-
-    await execute_command(
-        websocket, {
-            "method": "network.continueRequest",
-            "params": {
-                "request": network_id,
-                "url": example_url,
-            },
-        })
-
-    event_response = await wait_for_event(websocket,
-                                          "network.responseCompleted")
-    assert event_response == {
-        "method": "network.responseCompleted",
-        "params": {
-            "context": context_id,
-            "isBlocked": False,
-            "navigation": ANY_STR,
-            "redirectCount": 0,
-            "request": ANY_DICT,
-            "response": ANY_DICT,
-            "timestamp": ANY_TIMESTAMP,
-        },
-        "type": "event",
-    }
-
-
-@pytest.mark.asyncio
 async def test_continue_request_completes_use_bidi_events(
         websocket, context_id, example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
