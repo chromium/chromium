@@ -465,16 +465,7 @@ void SetCurrentThreadPriority(ThreadType thread_type,
 }
 
 void SetCurrentThreadQualityOfService(ThreadType thread_type) {
-  // QoS and power throttling were introduced in Win10 1709
-  if (win::GetVersion() < win::Version::WIN10_RS3) {
-    return;
-  }
-
-  static const auto set_thread_information_fn =
-      reinterpret_cast<decltype(&::SetThreadInformation)>(::GetProcAddress(
-          ::GetModuleHandle(L"kernel32.dll"), "SetThreadInformation"));
-  DCHECK(set_thread_information_fn);
-
+  // QoS and power throttling were introduced in Win10 1709.
   bool desire_ecoqos = false;
   switch (thread_type) {
     case ThreadType::kBackground:
@@ -497,10 +488,11 @@ void SetCurrentThreadQualityOfService(ThreadType thread_type) {
       .StateMask =
           desire_ecoqos ? THREAD_POWER_THROTTLING_EXECUTION_SPEED : 0ul,
   };
-  [[maybe_unused]] const BOOL success = set_thread_information_fn(
+  [[maybe_unused]] const BOOL success = ::SetThreadInformation(
       ::GetCurrentThread(), ::ThreadPowerThrottling,
       &thread_power_throttling_state, sizeof(thread_power_throttling_state));
-  DPLOG_IF(ERROR, !success)
+  // Failure is expected on versions of Windows prior to RS3.
+  DPLOG_IF(ERROR, !success && win::GetVersion() >= win::Version::WIN10_RS3)
       << "Failed to set EcoQoS to " << std::boolalpha << desire_ecoqos;
 }
 
