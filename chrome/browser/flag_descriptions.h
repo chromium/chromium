@@ -3707,6 +3707,9 @@ extern const char kGlanceablesV2Description[];
 extern const char kHelpAppAutoTriggerInstallDialogName[];
 extern const char kHelpAppAutoTriggerInstallDialogDescription[];
 
+extern const char kHelpAppHomePageAppArticlesName[];
+extern const char kHelpAppHomePageAppArticlesDescription[];
+
 extern const char kHelpAppLauncherSearchName[];
 extern const char kHelpAppLauncherSearchDescription[];
 

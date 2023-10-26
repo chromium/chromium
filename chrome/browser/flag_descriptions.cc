@@ -6433,6 +6433,12 @@ const char kHelpAppAutoTriggerInstallDialogDescription[] =
     "Enables the logic that auto triggers the install dialog during the web "
     "app install flow initiated from the Help App.";
 
+const char kHelpAppHomePageAppArticlesName[] =
+    "Help App home page app articles";
+const char kHelpAppHomePageAppArticlesDescription[] =
+    "If enabled, the home page of the Help App will show a section containing"
+    "articles about apps.";
+
 const char kHelpAppLauncherSearchName[] = "Help App launcher search";
 const char kHelpAppLauncherSearchDescription[] =
     "Enables showing search results from the help app in the launcher.";

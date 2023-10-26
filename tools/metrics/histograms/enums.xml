@@ -63049,6 +63049,7 @@ from previous Chrome versions.
       label="ImageServiceOptimizationGuideSalientImages:disabled"/>
   <int value="-1308389775" label="PermissionChipGestureSensitive:enabled"/>
   <int value="-1308184869" label="MediaFeedsBackgroundFetching:enabled"/>
+  <int value="-1307702398" label="HelpAppHomePageAppArticles:enabled"/>
   <int value="-1306581260" label="AutofillParsingPatternProvider:enabled"/>
   <int value="-1305690805" label="PrecompileInlineScripts:enabled"/>
   <int value="-1304957199" label="OfflinePagesShowAlternateDinoPage:enabled"/>
@@ -64869,6 +64870,7 @@ from previous Chrome versions.
   <int value="-418717972"
       label="ClipboardWellFormedHtmlSanitizationWrite:enabled"/>
   <int value="-418676305" label="ScanningUI:enabled"/>
+  <int value="-418041538" label="HelpAppHomePageAppArticles:disabled"/>
   <int value="-417633330" label="MessagesForAndroidInfrastructure:enabled"/>
   <int value="-416660617" label="EnforceTLS13Downgrade:disabled"/>
   <int value="-415186532" label="AndroidSiteSettingsUIRefresh:enabled"/>

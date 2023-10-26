@@ -4490,6 +4490,11 @@
     "expiry_milestone": 117
   },
   {
+    "name": "help-app-home-page-app-articles",
+    "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "help-app-launcher-search",
     "owners": [ "//ash/webui/help_app_ui/OWNERS", "//chrome/browser/ash/app_list/search/OWNERS" ],
     "expiry_milestone": 119

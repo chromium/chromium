@@ -1360,6 +1360,12 @@ BASE_FEATURE(kHelpAppDiscoverTabNotificationAllChannels,
              "HelpAppDiscoverTabNotificationAllChannels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the home page of the Help App will show a section containing
+// articles about apps.
+BASE_FEATURE(kHelpAppHomePageAppArticles,
+             "HelpAppHomePageAppArticles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable showing search results from the help app in the launcher.
 BASE_FEATURE(kHelpAppLauncherSearch,
              "HelpAppLauncherSearch",
