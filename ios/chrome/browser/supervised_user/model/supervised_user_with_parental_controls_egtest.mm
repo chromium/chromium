@@ -5,6 +5,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/supervised_user/core/common/features.h"
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -196,6 +197,9 @@ static const char* kInterstitialFirstTimeBanner =
 
   // Check the previously used tabs are maintained.
   [ChromeEarlGrey waitForMainTabCount:3];
+  // Set up histogram tracking before changing the filtering behaviour.
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
   // Change the filtering setting to block the previously used urls. This
   // results in a new filtering of the existing tabs.
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
@@ -211,6 +215,15 @@ static const char* kInterstitialFirstTimeBanner =
                       countSupervisedUserIntersitialsForExistingWebStates],
                   @"A single interstitial must exist.");
   [ChromeEarlGrey waitForMainTabCount:3];
+
+  // Out of the 3 tabs, only the active one should have recorded metrics for
+  // filtering.
+  auto* error =
+      [MetricsAppInterface expectTotalCount:1
+                               forHistogram:@"ManagedUsers.FilteringResult"];
+  if (error) {
+    GREYFail([error description]);
+  }
 }
 
 // Tests that the user is correctly signed out after signin is disabled via
