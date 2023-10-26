@@ -15,6 +15,7 @@ sync_integration_tests_sources = [
   "../browser/sync/test/integration/single_client_incoming_password_sharing_invitation_test.cc",
   "../browser/sync/test/integration/single_client_offer_sync_test.cc",
   "../browser/sync/test/integration/single_client_outgoing_password_sharing_invitation_test.cc",
+  "../browser/sync/test/integration/single_client_password_sharing_policy_test.cc",
   "../browser/sync/test/integration/single_client_reading_list_sync_test.cc",
   "../browser/sync/test/integration/single_client_standalone_transport_sync_test.cc",
   "../browser/sync/test/integration/single_client_sync_invalidations_test.cc",
