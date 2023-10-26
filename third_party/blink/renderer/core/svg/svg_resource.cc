@@ -40,7 +40,7 @@ void SVGResource::AddClient(SVGResourceClient& client) {
 
 void SVGResource::RemoveClient(SVGResourceClient& client) {
   auto it = clients_.find(&client);
-  DCHECK(it != clients_.end());
+  CHECK_NE(it, clients_.end());
   it->value.count--;
   if (it->value.count)
     return;

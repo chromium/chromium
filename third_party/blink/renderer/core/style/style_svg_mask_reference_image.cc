@@ -120,7 +120,8 @@ bool StyleSVGMaskReferenceImage::IsEqual(const StyleImage& other) const {
     return base::ValuesEquivalent(CssValue(), other.CssValue());
   }
   const auto* other_mask_ref = DynamicTo<StyleSVGMaskReferenceImage>(other);
-  return other_mask_ref && resource_.Get() == other_mask_ref->resource_.Get();
+  return other_mask_ref &&
+         resource_css_value_ == other_mask_ref->resource_css_value_;
 }
 
 void StyleSVGMaskReferenceImage::Trace(Visitor* visitor) const {
