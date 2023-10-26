@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "chrome/browser/browser_process.h"
@@ -61,6 +62,7 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/blink/blink_features.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -72,6 +74,8 @@ using page_load_metrics::PageVisitFinalStatus;
 namespace {
 
 const char kOfflinePreviewsMimeType[] = "multipart/related";
+
+static constexpr uint64_t kInstantPageLoadEventsTraceTrackId = 14878427190820;
 
 template <size_t N>
 uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
@@ -936,17 +940,24 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
         ukm::GetExponentialBucketMinForUserTiming(
             first_scroll_timestamp.InMilliseconds()));
   }
+
   if (timing.user_timing_mark_fully_loaded) {
     builder.SetPageTiming_UserTimingMarkFullyLoaded(
         timing.user_timing_mark_fully_loaded.value().InMilliseconds());
+    EmitUserTimingEvent(timing.user_timing_mark_fully_loaded.value(),
+                        "PageLoadMetrics.UserTimingMarkFullyLoaded");
   }
   if (timing.user_timing_mark_fully_visible) {
     builder.SetPageTiming_UserTimingMarkFullyVisible(
         timing.user_timing_mark_fully_visible.value().InMilliseconds());
+    EmitUserTimingEvent(timing.user_timing_mark_fully_visible.value(),
+                        "PageLoadMetrics.UserTimingMarkFullyVisible");
   }
   if (timing.user_timing_mark_interactive) {
     builder.SetPageTiming_UserTimingMarkInteractive(
         timing.user_timing_mark_interactive.value().InMilliseconds());
+    EmitUserTimingEvent(timing.user_timing_mark_interactive.value(),
+                        "PageLoadMetrics.UserTimingMarkInteractive");
   }
   builder.SetCpuTime(total_foreground_cpu_time_.InMilliseconds());
 
@@ -1755,4 +1766,19 @@ void UkmPageLoadMetricsObserver::RecordGeneratedNavigationUKM(
   builder.SetFirstURLIsHomePage(start_url_is_home_page_);
   builder.SetFirstURLIsDefaultSearchEngine(start_url_is_default_search_);
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::EmitUserTimingEvent(base::TimeDelta duration,
+                                                     const char event_name[]) {
+  const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+  const perfetto::Track track(kInstantPageLoadEventsTraceTrackId,
+                              perfetto::ProcessTrack::Current());
+  TRACE_EVENT_INSTANT(
+      "loading,interactions", perfetto::StaticString{event_name}, track,
+      navigation_start + duration, [&](perfetto::EventContext ctx) {
+        auto* page_load_proto =
+            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_page_load();
+        page_load_proto->set_navigation_id(GetDelegate().GetNavigationId());
+      });
 }

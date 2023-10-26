@@ -218,11 +218,11 @@ class UmaPageLoadMetricsObserver
   void RecordV8MemoryHistograms();
   void RecordNormalizedResponsivenessMetrics();
 
-  void EmitFCPTraceEvent(base::TimeTicks navigation_start,
-                         base::TimeDelta first_contentful_paint_timing);
+  void EmitFCPTraceEvent(base::TimeDelta first_contentful_paint_timing);
 
-  void EmitLCPTraceEvent(base::TimeTicks navigation_start,
-                         base::TimeDelta largest_contentful_paint_timing);
+  void EmitLCPTraceEvent(base::TimeDelta largest_contentful_paint_timing);
+
+  void EmitInstantTraceEvent(base::TimeDelta duration, const char event_name[]);
 
   content::NavigationHandleTiming navigation_handle_timing_;
 

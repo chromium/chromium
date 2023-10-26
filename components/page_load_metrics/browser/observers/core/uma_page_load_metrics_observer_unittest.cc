@@ -1534,4 +1534,78 @@ TEST_F(UmaPageLoadMetricsObserverTest, TestTracingLargestContentfulPaint) {
                                      std::vector<std::string>{
                                          base::NumberToString(navigation_id)}));
 }
+
+TEST_F(UmaPageLoadMetricsObserverTest, TestTracingLoadEventStart) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("interactions");
+
+  base::TimeDelta load = base::Milliseconds(100);
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.document_timing->load_event_start = load;
+  PopulateRequiredTimingFields(&timing);
+
+  GURL url(kDefaultTestUrl);
+  NavigateAndCommit(url);
+  tester()->SimulateTimingUpdate(timing);
+  int64_t navigation_id = last_navigation_id_;
+  // Navigate again to force histogram recording. This also increments the
+  // navigation id.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  std::string query = R"(
+    SELECT
+      EXTRACT_ARG(arg_set_id, 'page_load.navigation_id')
+        AS navigation_id
+    FROM slice
+    WHERE name = 'PageLoadMetrics.NavigationToMainFrameOnLoad'
+  )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"navigation_id"},
+                                     std::vector<std::string>{
+                                         base::NumberToString(navigation_id)}));
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest, TestTracingDomContentLoadedEventStart) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("interactions");
+
+  base::TimeDelta dom_content = base::Milliseconds(40);
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.document_timing->dom_content_loaded_event_start = dom_content;
+  PopulateRequiredTimingFields(&timing);
+
+  GURL url(kDefaultTestUrl);
+  NavigateAndCommit(url);
+  tester()->SimulateTimingUpdate(timing);
+  int64_t navigation_id = last_navigation_id_;
+  // Navigate again to force histogram recording. This also increments the
+  // navigation id.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  std::string query = R"(
+    SELECT
+      EXTRACT_ARG(arg_set_id, 'page_load.navigation_id')
+        AS navigation_id
+    FROM slice
+    WHERE name = 'PageLoadMetrics.NavigationToDOMContentLoadedEventFired'
+  )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"navigation_id"},
+                                     std::vector<std::string>{
+                                         base::NumberToString(navigation_id)}));
+}
 #endif

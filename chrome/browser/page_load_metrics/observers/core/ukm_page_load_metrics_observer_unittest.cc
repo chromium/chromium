@@ -10,6 +10,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_trace_processor.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
@@ -49,6 +50,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "net/base/ip_endpoint.h"
@@ -2963,5 +2965,103 @@ TEST_F(UkmPageLoadMetricsObserverTest, TestRefreshRateThrottled) {
       entry, PageLoad::kRefreshRateThrottledName, 1);
 
   uptm_environment.TearDown();
+}
+#endif
+
+// The following tests are ensure that Page Load metrics are recorded in a
+// trace. Currently enabled only for platforms where USE_PERFETTO_CLIENT_LIBRARY
+// is true (Android, Linux) as test infra (TestTraceProcessor) requires it.
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+class TracingWebContentsObserver : public content::WebContentsObserver {
+ public:
+  explicit TracingWebContentsObserver(content::WebContents* contents)
+      : content::WebContentsObserver(contents) {
+    WebContentsObserver::Observe(contents);
+  }
+
+  TracingWebContentsObserver(const TracingWebContentsObserver&) = delete;
+  TracingWebContentsObserver& operator=(const TracingWebContentsObserver&) =
+      delete;
+
+  ~TracingWebContentsObserver() override = default;
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    navigation_id_ = navigation_handle->GetNavigationId();
+  }
+
+  int64_t NavigationId() { return navigation_id_; }
+
+ private:
+  int64_t navigation_id_ = -1;
+};
+
+TEST_F(UkmPageLoadMetricsObserverTest, TestTracingUserTimingMetrics) {
+  ::base::test::TracingEnvironment tracing_environment_;
+  TracingWebContentsObserver observer(web_contents());
+
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("interactions");
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.user_timing_mark_fully_loaded = base::Milliseconds(200);
+  timing.user_timing_mark_fully_visible = base::Milliseconds(250);
+  timing.user_timing_mark_interactive = base::Milliseconds(300);
+  PopulateRequiredTimingFields(&timing);
+
+  GURL url(kTestUrl1);
+  NavigateAndCommit(url);
+  tester()->SimulateTimingUpdate(timing);
+  int64_t navigation_id = observer.NavigationId();
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query = R"(
+    SELECT
+      EXTRACT_ARG(arg_set_id, 'page_load.navigation_id')
+        AS navigation_id
+    FROM slice
+    WHERE name = 'PageLoadMetrics.UserTimingMarkFullyLoaded'
+  )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"navigation_id"},
+                                     std::vector<std::string>{
+                                         base::NumberToString(navigation_id)}));
+
+  std::string query_2 = R"(
+    SELECT
+      EXTRACT_ARG(arg_set_id, 'page_load.navigation_id')
+        AS navigation_id
+    FROM slice
+    WHERE name = 'PageLoadMetrics.UserTimingMarkFullyVisible'
+  )";
+  auto result_2 = ttp.RunQuery(query_2);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result_2.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"navigation_id"},
+                                     std::vector<std::string>{
+                                         base::NumberToString(navigation_id)}));
+
+  std::string query_3 = R"(
+    SELECT
+      EXTRACT_ARG(arg_set_id, 'page_load.navigation_id')
+        AS navigation_id
+    FROM slice
+    WHERE name = 'PageLoadMetrics.UserTimingMarkInteractive'
+  )";
+  auto result_3 = ttp.RunQuery(query_3);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result_3.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"navigation_id"},
+                                     std::vector<std::string>{
+                                         base::NumberToString(navigation_id)}));
 }
 #endif
