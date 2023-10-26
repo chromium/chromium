@@ -185,7 +185,6 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 
   provider->scheduler().FetchManifestAndInstall(
       install_source, web_contents->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false,
       base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
                      PwaInProductHelpState::kNotShown,
                      std::move(install_tracker)),
@@ -194,7 +193,6 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 }
 
 bool CreateWebAppFromManifest(content::WebContents* web_contents,
-                              bool bypass_service_worker_check,
                               webapps::WebappInstallSource install_source,
                               WebAppInstalledCallback installed_callback,
                               PwaInProductHelpState iph_state) {
@@ -220,7 +218,7 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
   bool use_fallback =
       install_source == webapps::WebappInstallSource::ML_PROMOTION;
   provider->scheduler().FetchManifestAndInstall(
-      install_source, web_contents->GetWeakPtr(), bypass_service_worker_check,
+      install_source, web_contents->GetWeakPtr(),
       base::BindOnce(OnWebAppInstallShowInstallDialog,
                      WebAppInstallFlow::kInstallSite, install_source, iph_state,
                      std::move(install_tracker)),

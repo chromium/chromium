@@ -38,8 +38,6 @@ ExternalInstallOptions ConvertParamsToExternalInstallOptions(
   install_options.add_to_management = install_params.add_to_management;
   install_options.is_disabled = install_params.is_disabled;
 
-  install_options.bypass_service_worker_check =
-      install_params.bypass_service_worker_check;
   install_options.require_manifest = install_params.require_manifest;
 
   install_options.additional_search_terms =
@@ -95,7 +93,6 @@ TEST(WebAppExternalInstallOptions,
   install_options.add_to_management = false;
   install_options.is_disabled = true;
 
-  install_options.bypass_service_worker_check = true;
   install_options.require_manifest = true;
 
   install_options.additional_search_terms = {"str1", "str2"};

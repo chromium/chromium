@@ -230,7 +230,6 @@ void ExternalAppResolutionCommand::OnGetWebAppInstallInfoInCommand(
   }
 
   // Write values from install_params_ to web_app_info.
-  bypass_service_worker_check_ = install_params_->bypass_service_worker_check;
   // Set start_url to fallback_start_url as web_contents may have been
   // redirected. Will be overridden by manifest values if present.
   CHECK(install_params_->fallback_start_url.is_valid());
@@ -245,7 +244,7 @@ void ExternalAppResolutionCommand::OnGetWebAppInstallInfoInCommand(
   ApplyParamsToWebAppInstallInfo(*install_params_, *web_app_info_);
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      web_contents_.get(), bypass_service_worker_check_,
+      web_contents_.get(),
       base::BindOnce(
           &ExternalAppResolutionCommand::OnDidPerformInstallableCheck,
           weak_ptr_factory_.GetWeakPtr()));

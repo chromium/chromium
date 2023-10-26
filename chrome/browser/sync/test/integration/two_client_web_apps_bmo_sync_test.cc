@@ -125,7 +125,6 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
     provider->scheduler().FetchManifestAndInstall(
         source,
         browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-        /*bypass_service_worker_check=*/false,
         base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting([&](const webapps::AppId& new_app_id,
                                        webapps::InstallResultCode code) {

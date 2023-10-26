@@ -177,8 +177,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
         install_future;
     provider()->scheduler().FetchManifestAndInstall(
         install_surface, web_contents()->GetWeakPtr(),
-        /*bypass_service_worker_check=*/false, std::move(dialog_callback),
-        install_future.GetCallback(), use_fallback);
+        std::move(dialog_callback), install_future.GetCallback(), use_fallback);
     EXPECT_TRUE(install_future.Wait());
     return install_future.Get<webapps::InstallResultCode>();
   }
@@ -290,8 +289,7 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
 
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, std::move(dialog_callback),
+      web_contents()->GetWeakPtr(), std::move(dialog_callback),
       base::BindLambdaForTesting(
           [&](const webapps::AppId& id, webapps::InstallResultCode code) {
             result_populated = true;
@@ -314,8 +312,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsDestroyed) {
       install_future;
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      web_contents()->GetWeakPtr(), CreateDialogCallback(),
       install_future.GetCallback(), /*use_fallback=*/false);
 
   DeleteContents();
@@ -338,8 +335,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
 
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      web_contents()->GetWeakPtr(), CreateDialogCallback(),
       install_future.GetCallback(),
       /*use_fallback=*/false);
 
@@ -370,8 +366,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
 
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      web_contents()->GetWeakPtr(), CreateDialogCallback(),
       install_future.GetCallback(), /*use_fallback=*/false);
 
   // Wait till we reach an async process, then trigger navigation to another url
@@ -680,8 +675,8 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false,
-      CreateDialogCallback(/*accept=*/true, mojom::UserDisplayMode::kStandalone),
+      CreateDialogCallback(/*accept=*/true,
+                           mojom::UserDisplayMode::kStandalone),
       install_future.GetCallback(), /*use_fallback=*/false);
   // The command is always started asynchronously, so this immediate
   // navigation should test that it correctly handles navigation before

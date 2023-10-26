@@ -366,8 +366,7 @@ void OnWebAppInstallabilityChecked(
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
                              blink::mojom::WindowFeatures());
       web_app::CreateWebAppFromManifest(
-          containing_contents, /*bypass_service_worker_check=*/true,
-          webapps::WebappInstallSource::MANAGEMENT_API,
+          containing_contents, webapps::WebappInstallSource::MANAGEMENT_API,
           base::BindOnce(&OnWebAppInstallCompleted, std::move(callback)));
       return;
   }

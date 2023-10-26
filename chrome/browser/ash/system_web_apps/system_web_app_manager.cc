@@ -185,7 +185,6 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
   install_options.add_to_search = delegate.ShouldShowInSearch();
   install_options.add_to_management = false;
   install_options.is_disabled = is_disabled;
-  install_options.bypass_service_worker_check = true;
   install_options.force_reinstall = force_update;
   install_options.uninstall_and_replace =
       delegate.GetAppIdsToUninstallAndReplace();

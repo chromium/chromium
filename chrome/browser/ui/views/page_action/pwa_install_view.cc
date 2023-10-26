@@ -194,7 +194,6 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
 
   web_app::CreateWebAppFromManifest(
       GetWebContents(),
-      /*bypass_service_worker_check=*/false,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, base::DoNothing(),
       iph_state);
 }

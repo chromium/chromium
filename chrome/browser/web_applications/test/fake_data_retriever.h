@@ -35,7 +35,6 @@ class FakeDataRetriever : public WebAppDataRetriever {
                             GetWebAppInstallInfoCallback callback) override;
   void CheckInstallabilityAndRetrieveManifest(
       content::WebContents* web_contents,
-      bool bypass_service_worker_check,
       CheckInstallabilityCallback callback,
       absl::optional<webapps::InstallableParams> params) override;
   void GetIcons(content::WebContents* web_contents,

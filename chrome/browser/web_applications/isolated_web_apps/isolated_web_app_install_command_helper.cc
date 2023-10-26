@@ -378,7 +378,6 @@ void IsolatedWebAppInstallCommandHelper::CheckInstallabilityAndRetrieveManifest(
         callback) {
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       &web_contents,
-      /*bypass_service_worker_check=*/true,
       base::BindOnce(&IsolatedWebAppInstallCommandHelper::
                          OnCheckInstallabilityAndRetrieveManifest,
                      weak_factory_.GetWeakPtr(), std::move(callback)));

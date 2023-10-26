@@ -86,7 +86,6 @@ struct WebAppInstallParams {
   bool is_disabled = false;
   bool handles_file_open_intents = true;
 
-  bool bypass_service_worker_check = false;
   bool require_manifest = false;
 
   // Used only by ExternallyManagedInstallCommand.

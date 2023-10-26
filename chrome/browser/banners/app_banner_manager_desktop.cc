@@ -316,9 +316,8 @@ void AppBannerManagerDesktop::CreateWebApp(
   content::WebContents* contents = web_contents();
   DCHECK(contents);
 
-  web_app::CreateWebAppFromManifest(
-      contents, /*bypass_service_worker_check=*/true, install_source,
-      std::move(install_callback));
+  web_app::CreateWebAppFromManifest(contents, install_source,
+                                    std::move(install_callback));
 }
 
 void AppBannerManagerDesktop::DidFinishCreatingWebApp(

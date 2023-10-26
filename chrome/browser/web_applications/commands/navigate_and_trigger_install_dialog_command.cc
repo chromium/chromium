@@ -118,7 +118,7 @@ void NavigateAndTriggerInstallDialogCommand::OnUrlLoaded(
     return;
   }
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      web_contents_.get(), /*bypass_service_worker_check=*/true,
+      web_contents_.get(),
       base::BindOnce(
           &NavigateAndTriggerInstallDialogCommand::OnInstallabilityChecked,
           weak_factory_.GetWeakPtr()));

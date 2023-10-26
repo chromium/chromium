@@ -207,7 +207,7 @@ void InstallFromSyncCommand::OnGetWebAppInstallInfo(
   fallback_install_info_->mobile_capable = install_info_->mobile_capable;
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      &lock_->shared_web_contents(), /*bypass_service_worker_check=*/true,
+      &lock_->shared_web_contents(),
       base::BindOnce(&InstallFromSyncCommand::OnDidPerformInstallableCheck,
                      weak_ptr_factory_.GetWeakPtr()));
 }

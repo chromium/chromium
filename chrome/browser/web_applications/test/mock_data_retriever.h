@@ -33,7 +33,6 @@ class MockDataRetriever : public WebAppDataRetriever {
   MOCK_METHOD(void,
               CheckInstallabilityAndRetrieveManifest,
               (content::WebContents * web_contents,
-               bool bypass_service_worker_check,
                CheckInstallabilityCallback callback,
                absl::optional<webapps::InstallableParams> params),
               (override));

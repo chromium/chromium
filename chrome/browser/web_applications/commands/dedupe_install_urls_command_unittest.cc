@@ -79,7 +79,6 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
                                    mojom::UserDisplayMode::kStandalone,
                                    ExternalInstallSource::kExternalDefault);
     options.user_type_allowlist = {"unmanaged"};
-    options.bypass_service_worker_check = true;
     scope.apps.push_back(std::move(options));
 
     base::test::TestFuture<std::map<GURL /*install_url*/,

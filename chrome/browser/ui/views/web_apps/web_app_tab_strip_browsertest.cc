@@ -207,7 +207,6 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
     provider->scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-        /*bypass_service_worker_check=*/false,
         base::BindLambdaForTesting(
             [](content::WebContents*,
                std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,

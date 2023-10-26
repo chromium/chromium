@@ -840,7 +840,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     info->title = u"New app";
 
     WebAppInstallParams install_params;
-    install_params.bypass_service_worker_check = true;
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode,
                            bool /*did_uninstall_and_replace*/>
         future;

@@ -251,7 +251,6 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
 
   void CheckInstallabilityAndRetrieveManifest(
       content::WebContents* web_contents,
-      bool bypass_service_worker_check,
       CheckInstallabilityCallback callback,
       absl::optional<webapps::InstallableParams> params) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -278,15 +277,6 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
       std::move(page.on_manifest_fetch).Run();
     }
 
-    if (!bypass_service_worker_check && !page.has_service_worker) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              std::move(callback), page.opt_manifest.Clone(), page.manifest_url,
-              false,
-              webapps::InstallableStatusCode::NO_MATCHING_SERVICE_WORKER));
-      return;
-    }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), page.opt_manifest.Clone(),

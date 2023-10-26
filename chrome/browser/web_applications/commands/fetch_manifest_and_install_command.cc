@@ -141,7 +141,6 @@ mojo::Remote<crosapi::mojom::Arc>* GetArcRemoteWithMinVersion(
 FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     webapps::WebappInstallSource install_surface,
     base::WeakPtr<content::WebContents> contents,
-    bool bypass_service_worker_check,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback,
     bool use_fallback,
@@ -151,7 +150,6 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
       noop_lock_description_(std::make_unique<NoopLockDescription>()),
       install_surface_(install_surface),
       web_contents_(contents),
-      bypass_service_worker_check_(bypass_service_worker_check),
       dialog_callback_(std::move(dialog_callback)),
       install_callback_(std::move(callback)),
       use_fallback_(use_fallback),
@@ -324,7 +322,7 @@ void FetchManifestAndInstallCommand::FetchManifest() {
   }
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      web_contents_.get(), bypass_service_worker_check_,
+      web_contents_.get(),
       base::BindOnce(
           &FetchManifestAndInstallCommand::OnDidPerformInstallableCheck,
           weak_ptr_factory_.GetWeakPtr()));

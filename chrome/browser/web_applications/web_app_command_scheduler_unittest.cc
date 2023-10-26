@@ -51,9 +51,8 @@ TEST_F(WebAppCommandSchedulerTest, FetchManifestAndInstall) {
   EXPECT_FALSE(provider()->is_registry_ready());
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/true, base::DoNothing(),
-      base::DoNothing(), /*use_fallback=*/true);
+      web_contents()->GetWeakPtr(), base::DoNothing(), base::DoNothing(),
+      /*use_fallback=*/true);
 
   provider()->StartWithSubsystems();
   EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);

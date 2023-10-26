@@ -50,7 +50,6 @@ web_app::ExternalInstallOptions GetInstallOptionsForUrl(const GURL& url) {
       url, web_app::mojom::UserDisplayMode::kStandalone,
       web_app::ExternalInstallSource::kInternalDefault);
   options.override_previous_user_uninstall = true;
-  options.bypass_service_worker_check = true;
   options.require_manifest = true;
   return options;
 }

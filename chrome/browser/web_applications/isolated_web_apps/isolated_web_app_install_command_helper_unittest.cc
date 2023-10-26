@@ -125,7 +125,7 @@ auto ReturnManifest(const blink::mojom::ManifestPtr& manifest,
                     const GURL& manifest_url,
                     webapps::InstallableStatusCode error_code =
                         webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
-  constexpr int kCallbackArgumentIndex = 2;
+  constexpr int kCallbackArgumentIndex = 1;
 
   return DoAll(
       WithArg<kCallbackArgumentIndex>(
@@ -458,8 +458,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(url_info.origin().GetURL());
   EXPECT_CALL(*fake_data_retriever,
-              CheckInstallabilityAndRetrieveManifest(
-                  _, /*bypass_service_worker_check=*/IsTrue(), _, _))
+              CheckInstallabilityAndRetrieveManifest(_, _, _))
       .WillOnce(
           ReturnManifest(CreateDefaultManifest(url_info.origin().GetURL()),
                          CreateDefaultManifestURL(url_info.origin().GetURL())));

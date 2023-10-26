@@ -97,7 +97,6 @@ void WebAppCommandScheduler::Shutdown() {
 void WebAppCommandScheduler::FetchManifestAndInstall(
     webapps::WebappInstallSource install_surface,
     base::WeakPtr<content::WebContents> contents,
-    bool bypass_service_worker_check,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback,
     bool use_fallback,
@@ -112,8 +111,8 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
-          install_surface, std::move(contents), bypass_service_worker_check,
-          std::move(dialog_callback), std::move(callback), use_fallback,
+          install_surface, std::move(contents), std::move(dialog_callback),
+          std::move(callback), use_fallback,
           provider_->ui_manager().GetWeakPtr(),
           provider_->web_contents_manager().CreateDataRetriever()),
       location);

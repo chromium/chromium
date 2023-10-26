@@ -489,7 +489,6 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
     GetProvider().scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-        /*bypass_service_worker_check=*/false,
         base::BindOnce(test::TestAcceptDialogCallback),
         install_future.GetCallback(),
         /*use_fallback=*/true);
@@ -507,7 +506,6 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
     GetProvider().scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-        /*bypass_service_worker_check=*/false,
         base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting([&](const webapps::AppId& new_app_id,
                                        webapps::InstallResultCode code) {
@@ -530,7 +528,6 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
     GetProvider().scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::PRELOADED_OEM,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-        /*bypass_service_worker_check=*/false,
         base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting([&](const webapps::AppId& new_app_id,
                                        webapps::InstallResultCode code) {

@@ -51,7 +51,6 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
   FetchManifestAndInstallCommand(
       webapps::WebappInstallSource install_surface,
       base::WeakPtr<content::WebContents> contents,
-      bool bypass_service_worker_check,
       WebAppInstallDialogCallback dialog_callback,
       OnceInstallCallback callback,
       bool use_fallback,
@@ -135,7 +134,6 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
 
   webapps::WebappInstallSource install_surface_;
   base::WeakPtr<content::WebContents> web_contents_;
-  bool bypass_service_worker_check_;
   WebAppInstallDialogCallback dialog_callback_;
   OnceInstallCallback install_callback_;
   // Whether using fallback installation data from the document.
