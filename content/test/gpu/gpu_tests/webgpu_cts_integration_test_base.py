@@ -342,7 +342,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         self.skipTest('WebGPU CTS JavaScript reported test skip with logs ' +
                       log_str)
       elif status == 'fail':
-        self.fail(log_str)
+        self.fail(self._query + ' failed\n' + log_str)
     except wss.ClientClosedConnectionError as e:
       raise RuntimeError(
           'Detected closed websocket - likely caused by renderer crash') from e
