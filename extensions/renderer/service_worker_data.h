@@ -76,6 +76,16 @@ class ServiceWorkerData
   // mojom::ServiceWorker overrides:
   void UpdatePermissions(PermissionSet active_permissions,
                          PermissionSet withheld_permissions) override;
+  void DispatchOnConnect(
+      const PortId& port_id,
+      extensions::mojom::ChannelType channel_type,
+      const std::string& channel_name,
+      extensions::mojom::TabConnectionInfoPtr tab_info,
+      extensions::mojom::ExternalConnectionInfoPtr external_connection_info,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePortHost>
+          port_host,
+      DispatchOnConnectCallback callback) override;
 
   // mojom::EventDispatcher overrides:
   void DispatchEvent(mojom::DispatchEventParamsPtr params,

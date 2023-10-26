@@ -123,6 +123,26 @@ void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
       context()->GetExtensionID(), service_worker_version_id(),
       worker_thread_id, params->event_id));
 }
+
+void ServiceWorkerData::DispatchOnConnect(
+    const PortId& port_id,
+    extensions::mojom::ChannelType channel_type,
+    const std::string& channel_name,
+    extensions::mojom::TabConnectionInfoPtr tab_info,
+    extensions::mojom::ExternalConnectionInfoPtr external_connection_info,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePortHost> port_host,
+    DispatchOnConnectCallback callback) {
+  WorkerThreadDispatcher::GetBindingsSystem()
+      ->messaging_service()
+      ->DispatchOnConnect(Dispatcher::GetWorkerScriptContextSet(), port_id,
+                          channel_type, channel_name, *tab_info,
+                          *external_connection_info, std::move(port),
+                          std::move(port_host),
+                          // Render frames do not matter.
+                          nullptr, std::move(callback));
+}
+
 #endif
 
 }  // namespace extensions

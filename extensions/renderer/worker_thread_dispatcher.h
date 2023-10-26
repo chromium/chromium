@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/public/renderer/worker_thread.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
@@ -24,6 +25,7 @@
 #include "ipc/ipc_sync_message_filter.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
 
 namespace base {
@@ -106,10 +108,10 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 
   void RequestWorker(mojom::RequestParamsPtr params);
   void SendResponseAck(const base::Uuid& request_uuid);
-#endif
 
   // content::RenderThreadObserver:
   bool OnControlMessageReceived(const IPC::Message& message) override;
+#endif
 
   // Updates bindings of all Service Workers for |extension_id|, after extension
   // permission update.
@@ -185,20 +187,20 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   ScriptContextSetIterable* GetScriptContextSet() override;
 
  private:
-  static bool HandlesMessageOnWorkerThread(const IPC::Message& message);
-  static void ForwardIPC(int worker_thread_id, const IPC::Message& message);
   static void UpdateBindingsOnWorkerThread(const ExtensionId& extension_id);
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  static bool HandlesMessageOnWorkerThread(const IPC::Message& message);
+  static void ForwardIPC(int worker_thread_id, const IPC::Message& message);
   static void DispatchEventOnWorkerThread(mojom::DispatchEventParamsPtr params,
                                           base::Value::List event_args);
-#endif
-
   void OnMessageReceivedOnWorkerThread(int worker_thread_id,
                                        const IPC::Message& message);
+#endif
 
   bool PostTaskToWorkerThread(int worker_thread_id, base::OnceClosure task);
   void PostTaskToIOThread(base::OnceClosure task);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   // IPC handlers.
   void OnValidateMessagePort(int worker_thread_id, const PortId& id);
   void OnDispatchOnConnect(int worker_thread_id,
@@ -209,8 +211,6 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   void OnDispatchOnDisconnect(int worker_thread_id,
                               const PortId& port_id,
                               const std::string& error_message);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   void DispatchEventHelper(mojom::DispatchEventParamsPtr params,
                            base::Value::List event_args);
 

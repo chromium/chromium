@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/values.h"
@@ -43,6 +44,7 @@
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/message_service_api.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
@@ -251,8 +253,79 @@ MessageService::~MessageService() {
   channels_.clear();
 }
 
-static base::LazyInstance<
-    BrowserContextKeyedAPIFactory<MessageService>>::DestructorAtExit g_factory =
+class MessageServiceFactory
+    : public BrowserContextKeyedAPIFactory<MessageService>,
+      public MessageServiceApi {
+ public:
+  MessageServiceFactory() { MessageServiceApi::SetMessageService(this); }
+
+  void OpenChannelToExtension(
+      content::BrowserContext* context,
+      Source source,
+      const PortId& source_port_id,
+      const ExternalConnectionInfo& info,
+      mojom::ChannelType channel_type,
+      const std::string& channel_name,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+          port_host) override {
+    MessageService::Get(context)->OpenChannelToExtension(
+        GetEndpoint(context, source), source_port_id, info, channel_type,
+        channel_name, std::move(port), std::move(port_host));
+  }
+
+  void OpenChannelToNativeApp(
+      content::BrowserContext* context,
+      Source source,
+      const PortId& source_port_id,
+      const std::string& native_app_name,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+          port_host) override {
+    MessageService::Get(context)->OpenChannelToNativeApp(
+        GetEndpoint(context, source), source_port_id, native_app_name,
+        std::move(port), std::move(port_host));
+  }
+
+  void OpenChannelToTab(
+      content::BrowserContext* context,
+      Source source,
+      const PortId& source_port_id,
+      int tab_id,
+      int frame_id,
+      const std::string& document_id,
+      mojom::ChannelType channel_type,
+      const std::string& channel_name,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+          port_host) override {
+    MessageService::Get(context)->OpenChannelToTab(
+        GetEndpoint(context, source), source_port_id, tab_id, frame_id,
+        document_id, channel_type, channel_name, std::move(port),
+        std::move(port_host));
+  }
+
+ private:
+  ChannelEndpoint GetEndpoint(content::BrowserContext* context,
+                              const Source& source) {
+    return absl::visit(
+        base::Overloaded{
+            [&](const WorkerId& worker) {
+              return ChannelEndpoint(
+                  context, worker.render_process_id,
+                  PortContext::ForWorker(worker.thread_id, worker.version_id,
+                                         worker.extension_id));
+            },
+            [&](const content::RenderFrameHost* render_frame_host) {
+              return ChannelEndpoint(
+                  context, render_frame_host->GetProcess()->GetID(),
+                  PortContext::ForFrame(render_frame_host->GetRoutingID()));
+            }},
+        source);
+  }
+};
+
+static base::LazyInstance<MessageServiceFactory>::DestructorAtExit g_factory =
     LAZY_INSTANCE_INITIALIZER;
 
 // static
@@ -295,17 +368,7 @@ void MessageService::OpenChannelToExtension(
 
   MaybeDisableBackForwardCacheForMessaging(source_render_frame_host);
 
-  if (!opener_port) {
-    DCHECK(source_endpoint.type == MessagingEndpoint::Type::kContentScript ||
-           source_endpoint.type == MessagingEndpoint::Type::kUserScript ||
-           source_endpoint.type == MessagingEndpoint::Type::kWebPage ||
-           source_endpoint.type == MessagingEndpoint::Type::kExtension);
-    opener_port = ExtensionMessagePort::CreateForEndpoint(
-        weak_factory_.GetWeakPtr(), source_port_id,
-        source_endpoint.extension_id ? *source_endpoint.extension_id
-                                     : ExtensionId(),
-        source);
-  }
+  CHECK(opener_port);
   if (!opener_port->IsValidPort())
     return;
 
@@ -456,7 +519,10 @@ void MessageService::OpenChannelToExtension(
 void MessageService::OpenChannelToNativeAppImpl(
     const ChannelEndpoint& source,
     const PortId& source_port_id,
-    const std::string& native_app_name) {
+    const std::string& native_app_name,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+        port_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(source_port_id.is_opener);
 
@@ -469,7 +535,8 @@ void MessageService::OpenChannelToNativeAppImpl(
 
   std::unique_ptr<ExtensionMessagePort> opener_port =
       ExtensionMessagePort::CreateForEndpoint(
-          weak_factory_.GetWeakPtr(), source_port_id, extension->id(), source);
+          weak_factory_.GetWeakPtr(), source_port_id, extension->id(), source,
+          std::move(port), std::move(port_host));
   if (!opener_port->IsValidPort())
     return;
 
@@ -537,14 +604,18 @@ void MessageService::OpenChannelToNativeAppImpl(
         // BUILDFLAG(IS_CHROMEOS))
 }
 
-void MessageService::OpenChannelToTabImpl(const ChannelEndpoint& source,
-                                          const PortId& source_port_id,
-                                          int tab_id,
-                                          int frame_id,
-                                          const std::string& document_id,
-                                          const std::string& extension_id,
-                                          mojom::ChannelType channel_type,
-                                          const std::string& channel_name) {
+void MessageService::OpenChannelToTabImpl(
+    const ChannelEndpoint& source,
+    const PortId& source_port_id,
+    int tab_id,
+    int frame_id,
+    const std::string& document_id,
+    const std::string& extension_id,
+    mojom::ChannelType channel_type,
+    const std::string& channel_name,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+        port_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_GE(frame_id, -1);
   DCHECK(source_port_id.is_opener);
@@ -555,7 +626,8 @@ void MessageService::OpenChannelToTabImpl(const ChannelEndpoint& source,
 
   std::unique_ptr<ExtensionMessagePort> opener_port =
       ExtensionMessagePort::CreateForEndpoint(
-          weak_factory_.GetWeakPtr(), source_port_id, extension_id, source);
+          weak_factory_.GetWeakPtr(), source_port_id, extension_id, source,
+          std::move(port), std::move(port_host));
   if (!opener_port->IsValidPort())
     return;
 
@@ -783,6 +855,18 @@ void MessageService::CloseChannel(const PortId& port_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ClosePortImpl(port_id, content::ChildProcessHost::kInvalidUniqueID,
                 MSG_ROUTING_NONE, kMainThreadId, true, error_message);
+}
+
+void MessageService::ClosePort(const PortId& port_id,
+                               int process_id,
+                               const PortContext& port_context,
+                               bool force_close) {
+  int routing_id =
+      port_context.frame ? port_context.frame->routing_id : MSG_ROUTING_NONE;
+  int worker_thread_id =
+      port_context.worker ? port_context.worker->thread_id : kMainThreadId;
+  ClosePortImpl(port_id, process_id, routing_id, worker_thread_id, force_close,
+                std::string());
 }
 
 void MessageService::ClosePortImpl(const PortId& port_id,

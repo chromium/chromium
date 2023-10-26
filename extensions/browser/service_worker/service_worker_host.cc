@@ -4,6 +4,8 @@
 
 #include "extensions/browser/service_worker/service_worker_host.h"
 
+#include "base/containers/unique_ptr_adapters.h"
+#include "base/trace_event/typed_macros.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
@@ -14,25 +16,57 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/message_service_api.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker_task_queue.h"
+#include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/trace_util.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace extensions {
 
+using perfetto::protos::pbzero::ChromeTrackEvent;
+
 namespace {
 const void* const kUserDataKey = &kUserDataKey;
+
+class ServiceWorkerHostList : public base::SupportsUserData::Data {
+ public:
+  std::vector<std::unique_ptr<ServiceWorkerHost>> list;
+
+  static ServiceWorkerHostList* Get(
+      content::RenderProcessHost* render_process_host,
+      bool create_if_not_exists) {
+    auto* service_worker_host_list = static_cast<ServiceWorkerHostList*>(
+        render_process_host->GetUserData(kUserDataKey));
+    if (!service_worker_host_list && !create_if_not_exists) {
+      return nullptr;
+    }
+    if (!service_worker_host_list) {
+      auto new_host_list = std::make_unique<ServiceWorkerHostList>();
+      service_worker_host_list = new_host_list.get();
+      render_process_host->SetUserData(kUserDataKey, std::move(new_host_list));
+    }
+    return service_worker_host_list;
+  }
+};
+
 }  // namespace
 
 ServiceWorkerHost::ServiceWorkerHost(
-    content::RenderProcessHost* render_process_host)
+    content::RenderProcessHost* render_process_host,
+    mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver)
     : render_process_host_(render_process_host) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dispatcher_ =
       std::make_unique<ExtensionFunctionDispatcher>(GetBrowserContext());
+  receiver_.Bind(std::move(receiver));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &ServiceWorkerHost::RemoteDisconnected, base::Unretained(this)));
 }
 
 ServiceWorkerHost::~ServiceWorkerHost() = default;
@@ -47,26 +81,45 @@ void ServiceWorkerHost::BindReceiver(
   if (!render_process_host) {
     return;
   }
+  auto* service_worker_host_list = ServiceWorkerHostList::Get(
+      render_process_host, /*create_if_not_exists=*/true);
+  service_worker_host_list->list.push_back(std::make_unique<ServiceWorkerHost>(
+      render_process_host, std::move(receiver)));
+}
 
-  auto* service_worker_host = static_cast<ServiceWorkerHost*>(
-      render_process_host->GetUserData(kUserDataKey));
-  if (!service_worker_host) {
-    auto new_host = std::make_unique<ServiceWorkerHost>(render_process_host);
-    service_worker_host = new_host.get();
-    render_process_host->SetUserData(kUserDataKey, std::move(new_host));
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+// static
+ServiceWorkerHost* ServiceWorkerHost::GetWorkerFor(const WorkerId& worker_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto* render_process_host =
+      content::RenderProcessHost::FromID(worker_id.render_process_id);
+  if (!render_process_host) {
+    return nullptr;
   }
 
-  service_worker_host->receiver_.Bind(std::move(receiver));
-  service_worker_host->receiver_.set_disconnect_handler(
-      base::BindOnce(&ServiceWorkerHost::RemoteDisconnected,
-                     base::Unretained(service_worker_host)));
+  auto* service_worker_host_list = ServiceWorkerHostList::Get(
+      render_process_host, /*create_if_not_exists=*/false);
+  if (!service_worker_host_list) {
+    return nullptr;
+  }
+  for (auto& worker : service_worker_host_list->list) {
+    if (worker->worker_id_ == worker_id) {
+      return worker.get();
+    }
+  }
+  return nullptr;
 }
+#endif
 
 void ServiceWorkerHost::RemoteDisconnected() {
   receiver_.reset();
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   permissions_observer_.Reset();
 #endif
+  if (auto* service_worker_host_list = ServiceWorkerHostList::Get(
+          render_process_host_, /*create_if_not_exists=*/false)) {
+    base::EraseIf(service_worker_host_list->list, base::MatchesUniquePtr(this));
+  }
 }
 
 void ServiceWorkerHost::DidInitializeServiceWorkerContext(
@@ -98,8 +151,10 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
     return;
   }
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  service_worker_version_id_ = service_worker_version_id;
-  extension_id_ = extension_id;
+  worker_id_.extension_id = extension_id;
+  worker_id_.version_id = service_worker_version_id;
+  worker_id_.render_process_id = render_process_id;
+  worker_id_.thread_id = worker_thread_id;
   permissions_observer_.Observe(PermissionsManager::Get(browser_context));
 #endif
 
@@ -200,10 +255,10 @@ content::BrowserContext* ServiceWorkerHost::GetBrowserContext() {
 mojom::ServiceWorker* ServiceWorkerHost::GetServiceWorker() {
   if (!remote_.is_bound()) {
     content::ServiceWorkerContext* context =
-        util::GetServiceWorkerContextForExtensionId(extension_id_,
+        util::GetServiceWorkerContextForExtensionId(worker_id_.extension_id,
                                                     GetBrowserContext());
     CHECK(context);
-    context->GetRemoteAssociatedInterfaces(service_worker_version_id_)
+    context->GetRemoteAssociatedInterfaces(worker_id_.version_id)
         .GetInterface(&remote_);
   }
   return remote_.get();
@@ -213,14 +268,14 @@ void ServiceWorkerHost::OnExtensionPermissionsUpdated(
     const Extension& extension,
     const PermissionSet& permissions,
     PermissionsManager::UpdateReason reason) {
-  if (extension.id() != extension_id_) {
+  if (extension.id() != worker_id_.extension_id) {
     return;
   }
   content::ServiceWorkerContext* context =
-      util::GetServiceWorkerContextForExtensionId(extension_id_,
+      util::GetServiceWorkerContextForExtensionId(worker_id_.extension_id,
                                                   GetBrowserContext());
   CHECK(context);
-  if (!context->IsLiveRunningServiceWorker(service_worker_version_id_)) {
+  if (!context->IsLiveRunningServiceWorker(worker_id_.version_id)) {
     return;
   }
 
@@ -230,5 +285,66 @@ void ServiceWorkerHost::OnExtensionPermissionsUpdated(
       std::move(*permissions_data->withheld_permissions().Clone()));
 }
 #endif
+
+void ServiceWorkerHost::OpenChannelToExtension(
+    extensions::mojom::ExternalConnectionInfoPtr info,
+    extensions::mojom::ChannelType channel_type,
+    const std::string& channel_name,
+    const PortId& port_id,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+        port_host) {
+  TRACE_EVENT("extensions", "ServiceWorkerHost::OpenChannelToExtension",
+              ChromeTrackEvent::kRenderProcessHost, *render_process_host_);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  bad_message::ReceivedBadMessage(render_process_host_,
+                                  bad_message::LEGACY_IPC_MISMATCH);
+#else
+  MessageServiceApi::GetMessageService()->OpenChannelToExtension(
+      GetBrowserContext(), worker_id_, port_id, *info, channel_type,
+      channel_name, std::move(port), std::move(port_host));
+#endif
+}
+
+void ServiceWorkerHost::OpenChannelToNativeApp(
+    const std::string& native_app_name,
+    const PortId& port_id,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+        port_host) {
+  TRACE_EVENT("extensions", "ServiceWorkerHost::OnOpenChannelToNativeApp",
+              ChromeTrackEvent::kRenderProcessHost, *render_process_host_);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  bad_message::ReceivedBadMessage(render_process_host_,
+                                  bad_message::LEGACY_IPC_MISMATCH);
+#else
+  MessageServiceApi::GetMessageService()->OpenChannelToNativeApp(
+      GetBrowserContext(), worker_id_, port_id, native_app_name,
+      std::move(port), std::move(port_host));
+#endif
+}
+
+void ServiceWorkerHost::OpenChannelToTab(
+    int32_t tab_id,
+    int32_t frame_id,
+    const absl::optional<std::string>& document_id,
+    extensions::mojom::ChannelType channel_type,
+    const std::string& channel_name,
+    const PortId& port_id,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+        port_host) {
+  TRACE_EVENT("extensions", "ServiceWorkerHost::OpenChannelToTab",
+              ChromeTrackEvent::kRenderProcessHost, *render_process_host_);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  bad_message::ReceivedBadMessage(render_process_host_,
+                                  bad_message::LEGACY_IPC_MISMATCH);
+#else
+  MessageServiceApi::GetMessageService()->OpenChannelToTab(
+      GetBrowserContext(), worker_id_, port_id, tab_id, frame_id,
+      document_id ? *document_id : std::string(), channel_type, channel_name,
+      std::move(port), std::move(port_host));
+#endif
+}
 
 }  // namespace extensions

@@ -17,11 +17,14 @@
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/trace_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 
 using content::BrowserThread;
 using content::RenderProcessHost;
@@ -155,7 +158,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToExtension(
                                   source_context);
   MessageService::Get(browser_context_)
       ->OpenChannelToExtension(source_endpoint, port_id, info, channel_type,
-                               channel_name);
+                               channel_name, {}, {});
 }
 
 void MessagingAPIMessageFilter::OnOpenChannelToNativeApp(
@@ -177,7 +180,8 @@ void MessagingAPIMessageFilter::OnOpenChannelToNativeApp(
   ChannelEndpoint source_endpoint(browser_context_, process->GetID(),
                                   source_context);
   MessageService::Get(browser_context_)
-      ->OpenChannelToNativeApp(source_endpoint, port_id, native_app_name);
+      ->OpenChannelToNativeApp(source_endpoint, port_id, native_app_name, {},
+                               {});
 }
 
 void MessagingAPIMessageFilter::OnOpenChannelToTab(
@@ -201,7 +205,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToTab(
                                   source_context);
   MessageService::Get(browser_context_)
       ->OpenChannelToTab(source_endpoint, port_id, info.tab_id, info.frame_id,
-                         info.document_id, channel_type, channel_name);
+                         info.document_id, channel_type, channel_name, {}, {});
 }
 
 void MessagingAPIMessageFilter::OnOpenMessagePort(const PortContext& source,
@@ -262,3 +266,5 @@ void MessagingAPIMessageFilter::EnsureAssociatedFactoryBuilt() {
 }
 
 }  // namespace extensions
+
+#endif

@@ -72,8 +72,11 @@ class ScriptContext;
 class ScriptContextSetIterable;
 class ScriptInjectionManager;
 class WorkerScriptContextSet;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 struct Message;
 struct PortId;
+#endif
 
 // Dispatches extension control messages sent to the renderer and stores
 // renderer extension related state.
@@ -223,7 +226,9 @@ class Dispatcher : public content::RenderThreadObserver,
                            CannotScriptWebstore);
 
   // RenderThreadObserver implementation:
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   bool OnControlMessageReceived(const IPC::Message& message) override;
+#endif
   void RegisterMojoInterfaces(
       blink::AssociatedInterfaceRegistry* associated_interfaces) override;
   void UnregisterMojoInterfaces(
@@ -278,6 +283,7 @@ class Dispatcher : public content::RenderThreadObserver,
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
   void OnEventDispatcherRequest(
       mojo::PendingAssociatedReceiver<mojom::EventDispatcher> receiver);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   void OnDeliverMessage(int worker_thread_id,
                         const PortId& target_port_id,
                         const Message& message);
@@ -286,6 +292,7 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnDispatchOnDisconnect(int worker_thread_id,
                               const PortId& port_id,
                               const std::string& error_message);
+#endif
 
   // mojom::EventDispatcher implementation.
   void DispatchEvent(mojom::DispatchEventParamsPtr params,

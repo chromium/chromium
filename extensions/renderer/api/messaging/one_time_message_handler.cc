@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/supports_user_data.h"
 #include "content/public/renderer/render_frame.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -26,6 +27,7 @@
 #include "extensions/renderer/bindings/api_request_handler.h"
 #include "extensions/renderer/bindings/get_per_context_data.h"
 #include "extensions/renderer/gc_callback.h"
+#include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
@@ -159,7 +161,11 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
     mojom::ChannelType channel_type,
     const Message& message,
     binding::AsyncResponseType async_type,
-    v8::Local<v8::Function> response_callback) {
+    v8::Local<v8::Function> response_callback,
+    mojom::MessagePortHost* message_port_host,
+    mojo::PendingAssociatedRemote<mojom::MessagePort> message_port,
+    mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
+        message_port_host_receiver) {
   v8::Isolate* isolate = script_context->isolate();
   v8::EscapableHandleScope handle_scope(isolate);
 
@@ -210,9 +216,14 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
       NOTREACHED_NORETURN();
   }
 
-  ipc_sender->SendOpenMessageChannel(script_context, new_port_id, target,
-                                     channel_type, channel_name);
+  ipc_sender->SendOpenMessageChannel(
+      script_context, new_port_id, target, channel_type, channel_name,
+      std::move(message_port), std::move(message_port_host_receiver));
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   ipc_sender->SendPostMessageToPort(new_port_id, message);
+#else
+  message_port_host->PostMessage(message);
+#endif
 
   // If the sender doesn't provide a response callback, we can immediately
   // close the channel. Note: we only do this for extension messages, not
@@ -221,8 +232,12 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
   // where closing the channel after sending the message causes things to be
   // destroyed in the wrong order. That would be nice to fix.
   if (!wants_response && target.type != MessageTarget::NATIVE_APP) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
     bool close_channel = true;
     ipc_sender->SendCloseMessagePort(routing_id, new_port_id, close_channel);
+#else
+    message_port_host->ClosePort(/*close_channel=*/true);
+#endif
   }
 
   return handle_scope.Escape(promise);
@@ -247,6 +262,22 @@ void OneTimeMessageHandler::AddReceiver(ScriptContext* script_context,
   receiver.sender.Reset(isolate, sender);
   receiver.routing_id = RoutingIdForScriptContext(script_context);
   receiver.event_name = event_name;
+}
+
+void OneTimeMessageHandler::AddReceiverForTesting(
+    ScriptContext* script_context,
+    const PortId& target_port_id,
+    v8::Local<v8::Object> sender,
+    const std::string& event_name,
+    mojo::PendingAssociatedRemote<mojom::MessagePort>& message_port_remote,
+    mojo::PendingAssociatedReceiver<mojom::MessagePortHost>&
+        message_port_host_receiver) {
+  AddReceiver(script_context, target_port_id, sender, event_name);
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  bindings_system_->messaging_service()->BindPortForTesting(  // IN-TEST
+      script_context, target_port_id, message_port_remote,
+      message_port_host_receiver);
+#endif
 }
 
 bool OneTimeMessageHandler::DeliverMessage(ScriptContext* script_context,
@@ -395,9 +426,14 @@ bool OneTimeMessageHandler::DeliverReplyToOpener(ScriptContext* script_context,
   bindings_system_->api_system()->request_handler()->CompleteRequest(
       port.request_id, args, std::string());
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   bool close_channel = true;
   bindings_system_->GetIPCMessageSender()->SendCloseMessagePort(
       port.routing_id, target_port_id, close_channel);
+#else
+  bindings_system_->messaging_service()->CloseMessagePort(
+      script_context, target_port_id, /*close_channel=*/true);
+#endif
 
   // Note: The context could be invalidated at this point!
 
@@ -499,7 +535,9 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
   if (iter == data->receivers.end())
     return;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   int routing_id = iter->second.routing_id;
+#endif
   data->receivers.erase(iter);
 
   v8::Local<v8::Value> value;
@@ -517,10 +555,20 @@ void OneTimeMessageHandler::OnOneTimeMessageResponse(
     arguments->ThrowTypeError(error);
     return;
   }
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
   ipc_sender->SendPostMessageToPort(port_id, *message);
   bool close_channel = true;
   ipc_sender->SendCloseMessagePort(routing_id, port_id, close_channel);
+#else
+  ScriptContext* script_context = GetScriptContextFromV8Context(context);
+  mojom::MessagePortHost* message_port_host =
+      bindings_system_->messaging_service()->GetMessagePortHost(script_context,
+                                                                port_id);
+  message_port_host->PostMessage(*message);
+  bindings_system_->messaging_service()->CloseMessagePort(
+      script_context, port_id, /*close_channel=*/true);
+#endif
 }
 
 void OneTimeMessageHandler::OnResponseCallbackCollected(
@@ -545,7 +593,9 @@ void OneTimeMessageHandler::OnResponseCallbackCollected(
   if (iter == data->receivers.end())
     return;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   int routing_id = iter->second.routing_id;
+#endif
   data->receivers.erase(iter);
 
   // Since there is no way to call the callback anymore, we can remove it from
@@ -558,9 +608,16 @@ void OneTimeMessageHandler::OnResponseCallbackCollected(
 
   // Close the message port. There's no way to send a reply anymore. Don't
   // close the channel because another listener may reply.
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
   bool close_channel = false;
   ipc_sender->SendCloseMessagePort(routing_id, port_id, close_channel);
+#else
+  NativeRendererMessagingService* messaging_service =
+      bindings_system_->messaging_service();
+  messaging_service->CloseMessagePort(script_context, port_id,
+                                      /*close_channel=*/false);
+#endif
 }
 
 void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
@@ -573,19 +630,29 @@ void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
                                                    kDontCreateIfMissing);
   if (!data)
     return;
-
   auto iter = data->receivers.find(port_id);
   // The channel may already be closed (if the listener replied).
   if (iter == data->receivers.end())
     return;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   int routing_id = iter->second.routing_id;
   IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
+#else
+  NativeRendererMessagingService* messaging_service =
+      bindings_system_->messaging_service();
+#endif
 
   if (WillListenerReplyAsync(std::move(result))) {
     // Inform the browser that one of the listeners said they would be replying
     // later and leave the channel open.
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
     ipc_sender->SendMessageResponsePending(routing_id, port_id);
+#else
+    ScriptContext* script_context = GetScriptContextFromV8Context(context);
+    messaging_service->GetMessagePortHost(script_context, port_id)
+        ->ResponsePending();
+#endif
     return;
   }
 
@@ -594,8 +661,14 @@ void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
   // The listener did not reply and did not return `true` from any of its
   // listeners. Close the message port. Don't close the channel because another
   // listener (in a separate context) may reply.
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   bool close_channel = false;
   ipc_sender->SendCloseMessagePort(routing_id, port_id, close_channel);
+#else
+  ScriptContext* script_context = GetScriptContextFromV8Context(context);
+  messaging_service->CloseMessagePort(script_context, port_id,
+                                      /*close_channel=*/false);
+#endif
 }
 
 }  // namespace extensions

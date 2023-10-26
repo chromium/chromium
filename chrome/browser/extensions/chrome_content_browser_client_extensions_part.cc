@@ -66,6 +66,7 @@
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
@@ -741,7 +742,9 @@ void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
   host->AddFilter(new ExtensionMessageFilter(id, profile));
   host->AddFilter(new ExtensionServiceWorkerMessageFilter(
       id, profile, host->GetStoragePartition()->GetServiceWorkerContext()));
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   host->AddFilter(new MessagingAPIMessageFilter(id, profile));
+#endif
 }
 
 void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcess(

@@ -98,6 +98,7 @@ source_set("api_keyed_service_factories") {
     "//build:chromeos_buildflags",
     "//extensions/browser/api",
     "//extensions/browser/api:api_implementations",
+    "//extensions/buildflags:buildflags",
   ]
 }
 

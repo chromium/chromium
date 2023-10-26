@@ -43,6 +43,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/url_loader_factory_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/event_router.mojom.h"
@@ -115,8 +116,10 @@ void ShellContentBrowserClient::RenderProcessWillLaunch(
   BrowserContext* browser_context = browser_main_parts_->browser_context();
   host->AddFilter(
       new ExtensionMessageFilter(render_process_id, browser_context));
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   host->AddFilter(
       new MessagingAPIMessageFilter(render_process_id, browser_context));
+#endif
   // PluginInfoMessageFilter is not required because app_shell does not have
   // the concept of disabled plugins.
 #if BUILDFLAG(ENABLE_NACL)

@@ -179,6 +179,27 @@ mojom("mojom") {
       traits_sources =
           [ "//extensions/common/mojom/stack_frame_mojom_traits.cc" ]
     },
+    {
+      types = [
+        {
+          mojom = "extensions.mojom.Message"
+          cpp = "::extensions::Message"
+          move_only = true
+        },
+        {
+          mojom = "extensions.mojom.PortId"
+          cpp = "::extensions::PortId"
+        },
+        {
+          mojom = "extensions.mojom.MessagingEndpoint"
+          cpp = "::extensions::MessagingEndpoint"
+        },
+      ]
+      traits_headers =
+          [ "//extensions/common/mojom/message_port_mojom_traits.h" ]
+      traits_sources =
+          [ "//extensions/common/mojom/message_port_mojom_traits.cc" ]
+    },
   ]
   overridden_deps = [ "//content/public/common:interfaces" ]
 
@@ -602,6 +623,7 @@ source_set("unit_tests") {
     "manifest_handlers/shared_module_manifest_unittest.cc",
     "manifest_unittest.cc",
     "message_bundle_unittest.cc",
+    "mojom/message_port_mojom_traits_unittest.cc",
     "mojom/permission_set_mojom_traits_unittest.cc",
     "mojom/url_pattern_set_mojom_traits_unittest.cc",
     "permissions/api_permission_set_unittest.cc",

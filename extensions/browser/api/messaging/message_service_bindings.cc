@@ -12,6 +12,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
+#include "extensions/browser/api/messaging/extension_message_port.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_util.h"
@@ -373,11 +374,15 @@ absl::optional<ExtensionId> ValidateSourceContextAndExtractExtensionId(
 
 }  // namespace
 
-void MessageService::OpenChannelToExtension(const ChannelEndpoint& source,
-                                            const PortId& source_port_id,
-                                            const ExternalConnectionInfo& info,
-                                            mojom::ChannelType channel_type,
-                                            const std::string& channel_name) {
+void MessageService::OpenChannelToExtension(
+    const ChannelEndpoint& source,
+    const PortId& source_port_id,
+    const ExternalConnectionInfo& info,
+    mojom::ChannelType channel_type,
+    const std::string& channel_name,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+        port_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* process =
       content::RenderProcessHost::FromID(source.render_process_id());
@@ -396,15 +401,25 @@ void MessageService::OpenChannelToExtension(const ChannelEndpoint& source,
     return;
   }
 
+  std::unique_ptr<MessagePort> opener_port =
+      ExtensionMessagePort::CreateForEndpoint(
+          weak_factory_.GetWeakPtr(), source_port_id,
+          info.source_endpoint.extension_id ? *info.source_endpoint.extension_id
+                                            : ExtensionId(),
+          source, std::move(port), std::move(port_host));
+
   OpenChannelToExtension(source, source_port_id, info.source_endpoint,
-                         nullptr /* opener_port */, info.target_id,
+                         std::move(opener_port), info.target_id,
                          info.source_url, channel_type, channel_name);
 }
 
 void MessageService::OpenChannelToNativeApp(
     const ChannelEndpoint& source,
     const PortId& source_port_id,
-    const std::string& native_app_name) {
+    const std::string& native_app_name,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+        port_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* process =
       content::RenderProcessHost::FromID(source.render_process_id());
@@ -419,16 +434,21 @@ void MessageService::OpenChannelToNativeApp(
     return;
   }
 
-  OpenChannelToNativeAppImpl(source, source_port_id, native_app_name);
+  OpenChannelToNativeAppImpl(source, source_port_id, native_app_name,
+                             std::move(port), std::move(port_host));
 }
 
-void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
-                                      const PortId& source_port_id,
-                                      int tab_id,
-                                      int frame_id,
-                                      const std::string& document_id,
-                                      mojom::ChannelType channel_type,
-                                      const std::string& channel_name) {
+void MessageService::OpenChannelToTab(
+    const ChannelEndpoint& source,
+    const PortId& source_port_id,
+    int tab_id,
+    int frame_id,
+    const std::string& document_id,
+    mojom::ChannelType channel_type,
+    const std::string& channel_name,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+        port_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* process =
       content::RenderProcessHost::FromID(source.render_process_id());
@@ -445,7 +465,8 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
   }
 
   OpenChannelToTabImpl(source, source_port_id, tab_id, frame_id, document_id,
-                       *extension_id, channel_type, channel_name);
+                       *extension_id, channel_type, channel_name,
+                       std::move(port), std::move(port_host));
 }
 
 void MessageService::OpenPort(RenderProcessHost* process,

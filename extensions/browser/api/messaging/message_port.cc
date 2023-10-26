@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/messaging/message_port.h"
 
+#include "extensions/common/api/messaging/port_context.h"
+
 namespace extensions {
 
 MessagePort::MessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
@@ -45,5 +47,38 @@ void MessagePort::IncrementLazyKeepaliveCount(Activity::Type activity_type) {}
 void MessagePort::DecrementLazyKeepaliveCount(Activity::Type activity_type) {}
 
 void MessagePort::NotifyResponsePending() {}
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+void MessagePort::ClosePort(bool close_channel) {
+  if (!weak_channel_delegate_) {
+    return;
+  }
+  auto& context = receivers_.current_context();
+  weak_channel_delegate_->ClosePort(port_id_, context.first, context.second,
+                                    close_channel);
+}
+
+void MessagePort::PostMessage(Message message) {
+  if (!weak_channel_delegate_) {
+    return;
+  }
+  weak_channel_delegate_->PostMessage(port_id_, message);
+}
+
+void MessagePort::ResponsePending() {
+  if (!weak_channel_delegate_) {
+    return;
+  }
+  weak_channel_delegate_->NotifyResponsePending(port_id_);
+}
+
+void MessagePort::AddReceiver(
+    mojo::PendingAssociatedReceiver<mojom::MessagePortHost> receiver,
+    int render_process_id,
+    const PortContext& port_context) {
+  receivers_.Add(this, std::move(receiver),
+                 std::make_pair(render_process_id, port_context));
+}
+#endif
 
 }  // namespace extensions

@@ -416,6 +416,7 @@ void ExtensionFrameHelper::WillReleaseScriptContext(
       render_frame()->GetWebFrame(), context, world_id);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 bool ExtensionFrameHelper::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(ExtensionFrameHelper, message)
@@ -447,11 +448,12 @@ void ExtensionFrameHelper::OnExtensionDispatchOnConnect(
   DCHECK_EQ(kMainThreadId, worker_thread_id);
   extension_dispatcher_->bindings_system()
       ->messaging_service()
-      ->DispatchOnConnect(
-          extension_dispatcher_->script_context_set_iterator(),
-          connect_data.target_port_id, connect_data.channel_type,
-          connect_data.channel_name, connect_data.tab_source,
-          connect_data.external_connection_info, render_frame());
+      ->DispatchOnConnect(extension_dispatcher_->script_context_set_iterator(),
+                          connect_data.target_port_id,
+                          connect_data.channel_type, connect_data.channel_name,
+                          connect_data.tab_source,
+                          connect_data.external_connection_info, {}, {},
+                          render_frame(), base::DoNothing());
 }
 
 void ExtensionFrameHelper::OnExtensionDeliverMessage(int worker_thread_id,
@@ -474,6 +476,7 @@ void ExtensionFrameHelper::OnExtensionDispatchOnDisconnect(
           extension_dispatcher_->script_context_set_iterator(), id,
           error_message, render_frame());
 }
+#endif
 
 void ExtensionFrameHelper::SetTabId(int32_t tab_id) {
   CHECK_EQ(tab_id_, -1);
@@ -573,6 +576,28 @@ void ExtensionFrameHelper::ExecuteDeclarativeScript(
 
 void ExtensionFrameHelper::UpdateBrowserWindowId(int32_t window_id) {
   browser_window_id_ = window_id;
+}
+
+void ExtensionFrameHelper::DispatchOnConnect(
+    const PortId& port_id,
+    extensions::mojom::ChannelType channel_type,
+    const std::string& channel_name,
+    extensions::mojom::TabConnectionInfoPtr tab_info,
+    extensions::mojom::ExternalConnectionInfoPtr external_connection_info,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePortHost> port_host,
+    DispatchOnConnectCallback callback) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  CHECK(false);
+#else
+  extension_dispatcher_->bindings_system()
+      ->messaging_service()
+      ->DispatchOnConnect(extension_dispatcher_->script_context_set_iterator(),
+                          port_id, channel_type, channel_name, *tab_info,
+                          *external_connection_info, std::move(port),
+                          std::move(port_host), render_frame(),
+                          std::move(callback));
+#endif
 }
 
 void ExtensionFrameHelper::NotifyDidCreateScriptContext(int32_t world_id) {

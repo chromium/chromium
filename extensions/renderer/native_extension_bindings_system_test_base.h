@@ -85,13 +85,16 @@ class TestIPCMessageSender : public IPCMessageSender {
       SendBindAutomationIPC,
       void(ScriptContext* context,
            mojo::PendingAssociatedRemote<ax::mojom::Automation> remote));
-
-  MOCK_METHOD5(SendOpenMessageChannel,
-               void(ScriptContext* script_context,
-                    const PortId& port_id,
-                    const MessageTarget& target,
-                    mojom::ChannelType channel_type,
-                    const std::string& channel_name));
+  MOCK_METHOD7(
+      SendOpenMessageChannel,
+      void(ScriptContext* script_context,
+           const PortId& port_id,
+           const MessageTarget& target,
+           mojom::ChannelType channel_type,
+           const std::string& channel_name,
+           mojo::PendingAssociatedRemote<mojom::MessagePort> port,
+           mojo::PendingAssociatedReceiver<mojom::MessagePortHost> port_host));
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   MOCK_METHOD2(SendOpenMessagePort,
                void(int routing_id, const PortId& port_id));
   MOCK_METHOD3(SendCloseMessagePort,
@@ -100,13 +103,13 @@ class TestIPCMessageSender : public IPCMessageSender {
                void(const PortId& port_id, const Message& message));
   MOCK_METHOD2(SendMessageResponsePending,
                void(int routing_id, const PortId& port_id));
+#endif
   MOCK_METHOD5(SendActivityLogIPC,
                void(const ExtensionId& extension_id,
                     IPCMessageSender::ActivityLogCallType call_type,
                     const std::string& call_name,
                     base::Value::List args,
                     const std::string& extra));
-
   const mojom::RequestParams* last_params() const { return last_params_.get(); }
 
  private:

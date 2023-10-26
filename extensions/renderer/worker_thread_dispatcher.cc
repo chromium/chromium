@@ -154,7 +154,9 @@ void WorkerThreadDispatcher::Init(content::RenderThread* render_thread) {
   DCHECK(!message_filter_);
   message_filter_ = render_thread->GetSyncMessageFilter();
   io_task_runner_ = render_thread->GetIOTaskRunner();
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   main_thread_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
+#endif
   render_thread->AddObserver(this);
 }
 
@@ -178,6 +180,7 @@ ServiceWorkerData* WorkerThreadDispatcher::GetServiceWorkerData() {
   return service_worker_data;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 // static
 bool WorkerThreadDispatcher::HandlesMessageOnWorkerThread(
     const IPC::Message& message) {
@@ -193,6 +196,7 @@ void WorkerThreadDispatcher::ForwardIPC(int worker_thread_id,
   WorkerThreadDispatcher::Get()->OnMessageReceivedOnWorkerThread(
       worker_thread_id, message);
 }
+#endif
 
 // static
 void WorkerThreadDispatcher::UpdateBindingsOnWorkerThread(
@@ -217,7 +221,6 @@ void WorkerThreadDispatcher::DispatchEventOnWorkerThread(
   auto* dispatcher = WorkerThreadDispatcher::Get();
   dispatcher->DispatchEventHelper(std::move(params), std::move(event_args));
 }
-#endif
 
 bool WorkerThreadDispatcher::OnControlMessageReceived(
     const IPC::Message& message) {
@@ -244,6 +247,7 @@ bool WorkerThreadDispatcher::OnControlMessageReceived(
   }
   return true;
 }
+#endif
 
 bool WorkerThreadDispatcher::UpdateBindingsForWorkers(
     const ExtensionId& extension_id) {
@@ -334,7 +338,6 @@ void WorkerThreadDispatcher::SendRemoveEventFilteredListener(
 void WorkerThreadDispatcher::PostTaskToMainThread(base::OnceClosure task) {
   main_thread_task_runner_->PostTask(FROM_HERE, std::move(task));
 }
-#endif
 
 void WorkerThreadDispatcher::OnMessageReceivedOnWorkerThread(
     int worker_thread_id,
@@ -375,6 +378,7 @@ void WorkerThreadDispatcher::PostTaskToIOThread(base::OnceClosure task) {
   bool task_posted = io_task_runner_->PostTask(FROM_HERE, std::move(task));
   DCHECK(task_posted) << "Could not PostTask IPC to IO thread.";
 }
+#endif
 
 bool WorkerThreadDispatcher::Send(IPC::Message* message) {
   return message_filter_->Send(message);
@@ -461,7 +465,6 @@ void WorkerThreadDispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
       base::BindOnce(&WorkerThreadDispatcher::DispatchEventOnWorkerThread,
                      std::move(params), std::move(event_args)));
 }
-#endif
 
 void WorkerThreadDispatcher::OnDispatchOnConnect(
     int worker_thread_id,
@@ -469,12 +472,13 @@ void WorkerThreadDispatcher::OnDispatchOnConnect(
   DCHECK_EQ(worker_thread_id, content::WorkerThread::GetCurrentId());
   WorkerThreadDispatcher::GetBindingsSystem()
       ->messaging_service()
-      ->DispatchOnConnect(
-          Dispatcher::GetWorkerScriptContextSet(), connect_data.target_port_id,
-          connect_data.channel_type, connect_data.channel_name,
-          connect_data.tab_source, connect_data.external_connection_info,
-          // Render frames do not matter.
-          nullptr);
+      ->DispatchOnConnect(Dispatcher::GetWorkerScriptContextSet(),
+                          connect_data.target_port_id,
+                          connect_data.channel_type, connect_data.channel_name,
+                          connect_data.tab_source,
+                          connect_data.external_connection_info, {}, {},
+                          // Render frames do not matter.
+                          nullptr, base::DoNothing());
 }
 
 void WorkerThreadDispatcher::OnValidateMessagePort(int worker_thread_id,
@@ -509,6 +513,7 @@ void WorkerThreadDispatcher::OnDispatchOnDisconnect(
                              // Render frames do not matter.
                              nullptr);
 }
+#endif
 
 void WorkerThreadDispatcher::AddWorkerData(
     blink::WebServiceWorkerContextProxy* proxy,

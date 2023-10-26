@@ -19,6 +19,7 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension_id.h"
@@ -83,7 +84,12 @@ class MessageService : public BrowserContextKeyedAPI,
   // MessagePort::ChannelDelegate implementation.
   void CloseChannel(const PortId& port_id,
                     const std::string& error_message) override;
+  void ClosePort(const PortId& port_id,
+                 int process_id,
+                 const PortContext& port_context,
+                 bool force_close) override;
   void PostMessage(const PortId& port_id, const Message& message) override;
+  void NotifyResponsePending(const PortId& port_id) override;
 
   // Convenience method to get the MessageService for a browser context.
   static MessageService* Get(content::BrowserContext* context);
@@ -101,22 +107,38 @@ class MessageService : public BrowserContextKeyedAPI,
                               mojom::ChannelType channel_type,
                               const std::string& channel_name);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   using ExternalConnectionInfo = ExtensionMsg_ExternalConnectionInfo;
-  void OpenChannelToExtension(const ChannelEndpoint& source,
-                              const PortId& source_port_id,
-                              const ExternalConnectionInfo& info,
-                              mojom::ChannelType channel_type,
-                              const std::string& channel_name);
-  void OpenChannelToNativeApp(const ChannelEndpoint& source,
-                              const PortId& source_port_id,
-                              const std::string& native_app_name);
-  void OpenChannelToTab(const ChannelEndpoint& source,
-                        const PortId& source_port_id,
-                        int tab_id,
-                        int frame_id,
-                        const std::string& document_id,
-                        mojom::ChannelType channel_type,
-                        const std::string& channel_name);
+#else
+  using ExternalConnectionInfo = mojom::ExternalConnectionInfo;
+#endif
+  void OpenChannelToExtension(
+      const ChannelEndpoint& source,
+      const PortId& source_port_id,
+      const ExternalConnectionInfo& info,
+      mojom::ChannelType channel_type,
+      const std::string& channel_name,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+          port_host);
+  void OpenChannelToNativeApp(
+      const ChannelEndpoint& source,
+      const PortId& source_port_id,
+      const std::string& native_app_name,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+          port_host);
+  void OpenChannelToTab(
+      const ChannelEndpoint& source,
+      const PortId& source_port_id,
+      int tab_id,
+      int frame_id,
+      const std::string& document_id,
+      mojom::ChannelType channel_type,
+      const std::string& channel_name,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+          port_host);
 
   // Marks the given port as opened by |port_context| in the render process
   // with id |process_id|.
@@ -152,24 +174,28 @@ class MessageService : public BrowserContextKeyedAPI,
   // Same as `OpenChannelToExtension`, but opens a channel to the tab with the
   // given ID.  Messages are restricted to that tab, so if there are multiple
   // tabs in that process, only the targeted tab will receive messages.
-  void OpenChannelToTabImpl(const ChannelEndpoint& source,
-                            const PortId& source_port_id,
-                            int tab_id,
-                            int frame_id,
-                            const std::string& document_id,
-                            const std::string& extension_id,
-                            mojom::ChannelType channel_type,
-                            const std::string& channel_name);
-  void OpenChannelToNativeAppImpl(const ChannelEndpoint& source,
-                                  const PortId& source_port_id,
-                                  const std::string& native_app_name);
+  void OpenChannelToTabImpl(
+      const ChannelEndpoint& source,
+      const PortId& source_port_id,
+      int tab_id,
+      int frame_id,
+      const std::string& document_id,
+      const std::string& extension_id,
+      mojom::ChannelType channel_type,
+      const std::string& channel_name,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+          port_host);
+  void OpenChannelToNativeAppImpl(
+      const ChannelEndpoint& source,
+      const PortId& source_port_id,
+      const std::string& native_app_name,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+          port_host);
   void OpenPortImpl(const PortId& port_id,
                     int process_id,
                     const PortContext& port_context);
-
-  // Notifies the port that one of the receivers of a message indicated that
-  // they plan to respond to the message later.
-  void NotifyResponsePending(const PortId& port_id);
 
   // A map of channel ID to its channel object.
   using MessageChannelMap =

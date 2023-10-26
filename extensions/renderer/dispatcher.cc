@@ -1008,6 +1008,7 @@ void Dispatcher::RegisterNativeHandlers(
                                 content::WorkerThread::GetCurrentId()));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   if (WorkerThreadDispatcher::Get()->OnControlMessageReceived(message))
     return true;
@@ -1022,6 +1023,7 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
 
   return handled;
 }
+#endif
 
 void Dispatcher::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
@@ -1332,6 +1334,7 @@ void Dispatcher::WatchPages(const std::vector<std::string>& css_selectors) {
   content_watcher_->OnWatchPages(css_selectors);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void Dispatcher::OnDeliverMessage(int worker_thread_id,
                                   const PortId& target_port_id,
                                   const Message& message) {
@@ -1350,8 +1353,8 @@ void Dispatcher::OnDispatchOnConnect(
   bindings_system_->messaging_service()->DispatchOnConnect(
       script_context_set_.get(), connect_data.target_port_id,
       connect_data.channel_type, connect_data.channel_name,
-      connect_data.tab_source, connect_data.external_connection_info,
-      nullptr);  // All render frames.
+      connect_data.tab_source, connect_data.external_connection_info, {}, {},
+      nullptr, base::DoNothing());  // All render frames.
 }
 
 void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
@@ -1362,6 +1365,7 @@ void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
       script_context_set_.get(), port_id, error_message,
       nullptr);  // All render frames.
 }
+#endif
 
 void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
                                base::Value::List event_args) {

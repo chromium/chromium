@@ -10,6 +10,7 @@ import "extensions/common/mojom/event_dispatcher.mojom";
 import "extensions/common/mojom/extra_response_data.mojom";
 import "extensions/common/mojom/frame.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "extensions/common/mojom/message_port.mojom";
 import "url/mojom/url.mojom";
 
 // An interface for an extension service worker context. Implemented in the
@@ -73,4 +74,29 @@ interface ServiceWorkerHost {
   // function has been processed.
   // The `request_uuid` is the UUID of the extension function.
   WorkerResponseAck(mojo_base.mojom.Uuid request_uuid);
+
+  // Open a channel to all listening contexts owned by the extension with
+  // the given ID.
+  OpenChannelToExtension(
+    extensions.mojom.ExternalConnectionInfo info,
+    extensions.mojom.ChannelType channel_type,
+    string channel_name, extensions.mojom.PortId port_id,
+    pending_associated_remote<extensions.mojom.MessagePort> port,
+    pending_associated_receiver<extensions.mojom.MessagePortHost> port_host);
+
+  // Get a port handle to the native application.  The handle can be used for
+  // sending messages to the extension.
+  OpenChannelToNativeApp(
+    string native_app_name, extensions.mojom.PortId port_id,
+    pending_associated_remote<extensions.mojom.MessagePort> port,
+    pending_associated_receiver<extensions.mojom.MessagePortHost> port_host);
+
+  // Get a port handle to the given tab.  The handle can be used for sending
+  // messages to the extension.
+  OpenChannelToTab(
+    int32 tab_id, int32 frame_id, string? document_id,
+    extensions.mojom.ChannelType channel_type,
+    string channel_name, extensions.mojom.PortId port_id,
+    pending_associated_remote<extensions.mojom.MessagePort> port,
+    pending_associated_receiver<extensions.mojom.MessagePortHost> port_host);
 };

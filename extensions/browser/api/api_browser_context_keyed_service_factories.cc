@@ -47,6 +47,7 @@
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_proxying_url_loader_factory.h"
 #include "extensions/browser/api/web_request/web_request_proxying_websocket.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "extensions/browser/api/clipboard/clipboard_api.h"
@@ -102,7 +103,9 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   MediaPerceptionAPIManager::GetFactoryInstance();
 #endif
   MessageService::GetFactoryInstance();
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   MessagingAPIMessageFilter::EnsureAssociatedFactoryBuilt();
+#endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC)
   NetworkingPrivateEventRouterFactory::GetInstance();
