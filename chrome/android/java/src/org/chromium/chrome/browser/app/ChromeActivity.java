@@ -1664,6 +1664,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     protected Drawable getBackgroundDrawable() {
+        // Set the window background to black on R cars to better blend in with the keyboard
+        // background and minimize flickering - More context on b/302039878.
+        if (BuildInfo.getInstance().isAutomotive
+                && Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
+            return new ColorDrawable(getColor(R.color.baseline_neutral_0));
+        }
         return new ColorDrawable(getColor(R.color.window_background_color));
     }
 
