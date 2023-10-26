@@ -36,6 +36,8 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -841,6 +843,12 @@ bool PasswordsPrivateDelegateImpl::UnmuteInsecureCredential(
 void PasswordsPrivateDelegateImpl::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   password_check_delegate_.StartPasswordCheck(std::move(callback));
+  auto* sentiment_service =
+      TrustSafetySentimentServiceFactory::GetForProfile(profile_);
+  if (!sentiment_service) {
+    return;
+  }
+  sentiment_service->RanPasswordCheck();
 }
 
 api::passwords_private::PasswordCheckStatus
