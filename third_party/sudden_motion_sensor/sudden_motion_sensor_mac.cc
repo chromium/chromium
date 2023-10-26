@@ -374,7 +374,7 @@ bool SuddenMotionSensor::Init() {
       }
 
       if (strcmp(kSupportedSensors[i].board_id,
-                 (const char*)CFDataGetBytePtr(board_id_data)) != 0) {
+                 (const char*)CFDataGetBytePtr(board_id_data.get())) != 0) {
         continue;
       }
     }
