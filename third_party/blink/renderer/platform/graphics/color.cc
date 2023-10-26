@@ -700,10 +700,10 @@ SkColor4f Color::toSkColor4f() const {
   // See: https://github.com/w3c/csswg-drafts/issues/8794
   if (IsLightnessFirstComponent(color_space_) && !param0_is_none_) {
     if (param0_ >= 100.0) {
-      return SkColors::kWhite;
+      return SkColor4f{1.f, 1.f, 1.f, alpha_};
     }
     if (param0_ <= 0.0) {
-      return SkColors::kBlack;
+      return SkColor4f{0.f, 0.f, 0.f, alpha_};
     }
   }
   switch (color_space_) {
