@@ -1181,6 +1181,7 @@ policies:
   1180: ParcelTrackingEnabled
   1181: NativeHostsExecutablesLaunchDirectly
   1182: FeedbackSurveysEnabled
+  1183: DeskAPIDeskSaveAndShareEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

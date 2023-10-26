@@ -1,6 +1,6 @@
-caption: Enable Desk API for a list of third-party domains
+caption: Enable <ph name="DESK_API_NAME">Desk API</ph> for a list of third-party domains
 desc: Specifies the list of third-party web application domains that are allowed to
-  use Desk API to control ChromeOS desks. These URL patterns should follow the format
+  use <ph name="DESK_API_NAME">Desk API</ph> to control <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> desks. These URL patterns should follow the format
   defined for "matches" property in https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference
 example_value:
 - https://*.chromium.org/*

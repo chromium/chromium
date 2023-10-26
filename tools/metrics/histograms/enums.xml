@@ -34300,6 +34300,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1180" label="ParcelTrackingEnabled"/>
   <int value="1181" label="NativeHostsExecutablesLaunchDirectly"/>
   <int value="1182" label="FeedbackSurveysEnabled"/>
+  <int value="1183" label="DeskAPIDeskSaveAndShareEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

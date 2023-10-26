@@ -1835,6 +1835,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   policy::PolicyCertService::RegisterProfilePrefs(registry);
   quickoffice::RegisterProfilePrefs(registry);
   registry->RegisterBooleanPref(prefs::kDeskAPIThirdPartyAccessEnabled, false);
+  registry->RegisterBooleanPref(prefs::kDeskAPIDeskSaveAndShareEnabled, false);
   registry->RegisterListPref(prefs::kDeskAPIThirdPartyAllowlist);
   registry->RegisterBooleanPref(prefs::kInsightsExtensionEnabled, false);
   // By default showing Sync Consent is set to true. It can changed by policy.

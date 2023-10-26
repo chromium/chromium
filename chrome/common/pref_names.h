@@ -440,6 +440,9 @@ inline constexpr char kAttestationExtensionAllowlist[] =
 inline constexpr char kDeskAPIThirdPartyAccessEnabled[] =
     "desk_api.third_party_access_enabled";
 
+inline constexpr char kDeskAPIDeskSaveAndShareEnabled[] =
+    "desk_api.desk_save_and_share_enabled";
+
 // A list of third party web application domains allowed to use the Desk API.
 inline constexpr char kDeskAPIThirdPartyAllowlist[] =
     "desk_api.third_party_allowlist";
