@@ -9,8 +9,50 @@
 
 #include "base/feature_list.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
+
+namespace {
+// Passes the autofill `text` back into the `field` the dialog was opened on.
+// Called upon insertion.
+void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
+                          autofill::FieldGlobalId field,
+                          const std::u16string& text) {
+  if (manager) {
+    manager->driver().ApplyFieldAction(
+        autofill::mojom::ActionPersistence::kFill, field, text);
+  }
+}
+
+void GetBrowserFormHandler(autofill::FieldGlobalId field_id,
+                           autofill::AutofillDriver* driver,
+                           const std::optional<autofill::FormData>& form_data) {
+  if (!form_data) {
+    // TODO(b/305798770): replace with assert once form_data is always
+    // populated.
+    return;
+  }
+  const autofill::FormFieldData* form_field_data =
+      form_data->FindFieldByGlobalId(field_id);
+  if (!form_field_data) {
+    // TODO(b/305798770): replace with assert once form_data is always
+    // populated.
+    return;
+  }
+  autofill::AutofillManager& manager = driver->GetAutofillManager();
+  auto compose_callback =
+      base::BindOnce(&FillTextWithAutofill, manager.GetWeakPtr(),
+                     form_field_data->global_id());
+
+  autofill::AutofillComposeDelegate* delegate =
+      manager.client().GetComposeDelegate();
+  delegate->OpenCompose(
+      compose::ComposeManagerImpl::UiEntryPoint::kContextMenu, *form_field_data,
+      manager.client().GetPopupScreenLocation(), std::move(compose_callback));
+}
+
+}  // namespace
 
 namespace compose {
 
@@ -44,16 +86,15 @@ bool ComposeManagerImpl::IsEnabled() const {
 }
 
 void ComposeManagerImpl::OpenComposeFromContextMenu(
-    const autofill::LocalFrameToken frame_token,
-    const autofill::FieldRendererId field_renderer_id,
-    const gfx::Point anchor) {
-  // TODO(b/301609035): Either pass a weak pointer or make sure that
-  // the dialog never outlives the tab. (Should be a given once the
-  // bubble destroys itself prior to WebContents destruction.)
-  RequestFormFieldData(
-      frame_token, field_renderer_id, anchor,
-      base::BindOnce(&ComposeManagerImpl::OpenComposeFromContextMenuCallback,
-                     base::Unretained(this)));
+    autofill::AutofillDriver* driver,
+    const autofill::FormRendererId form_renderer_id,
+    const autofill::FieldRendererId field_renderer_id) {
+  const autofill::LocalFrameToken frame_token = driver->GetFrameToken();
+  autofill::FormGlobalId form_global_id = {frame_token, form_renderer_id};
+  autofill::FieldGlobalId field_global_id = {frame_token, field_renderer_id};
+
+  driver->ExtractForm(form_global_id,
+                      base::BindOnce(&GetBrowserFormHandler, field_global_id));
 }
 
 void ComposeManagerImpl::OpenCompose(
@@ -64,26 +105,6 @@ void ComposeManagerImpl::OpenCompose(
   CHECK(IsEnabled());
   client_->ShowComposeDialog(ui_entry_point, trigger_field,
                              popup_screen_location, std::move(callback));
-}
-
-void ComposeManagerImpl::OpenComposeFromContextMenuCallback(
-    const autofill::FormFieldData form_field_data) {
-  compose::ComposeManagerImpl::ComposeCallback compose_callback =
-      base::BindOnce([](const std::u16string& text) {});
-  OpenCompose(UiEntryPoint::kContextMenu, form_field_data, std::nullopt,
-              std::move(compose_callback));
-}
-
-void ComposeManagerImpl::RequestFormFieldData(
-    const autofill::LocalFrameToken frame_token,
-    const autofill::FieldRendererId field_renderer_id,
-    const gfx::Point anchor,
-    base::OnceCallback<void(autofill::FormFieldData)> callback) {
-  autofill::FormFieldData form_field_data;
-  form_field_data.host_frame = frame_token;
-  form_field_data.unique_renderer_id = field_renderer_id;
-  form_field_data.bounds = gfx::RectF(anchor.x(), anchor.y(), 50, 50);
-  std::move(callback).Run(form_field_data);
 }
 
 }  // namespace compose

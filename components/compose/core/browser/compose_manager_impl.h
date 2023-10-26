@@ -6,6 +6,7 @@
 #define COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_MANAGER_IMPL_H_
 
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/autofill_driver.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
 
@@ -32,22 +33,12 @@ class ComposeManagerImpl : public ComposeManager {
                    std::optional<PopupScreenLocation> popup_screen_location,
                    ComposeCallback callback) override;
   void OpenComposeFromContextMenu(
-      const autofill::LocalFrameToken frame_token,
-      const autofill::FieldRendererId field_renderer_id,
-      const gfx::Point anchor) override;
+      autofill::AutofillDriver* driver,
+      const autofill::FormRendererId form_renderer_id,
+      const autofill::FieldRendererId field_renderer_id) override;
 
  private:
   bool IsEnabled() const;
-  // TODO(b/305798770): Remove the following two methods once hooked up to the
-  // mojo call. They are currently used to provide a reduced FormFieldData to
-  // Compose.
-  void OpenComposeFromContextMenuCallback(
-      const autofill::FormFieldData form_field_data);
-  void RequestFormFieldData(
-      const autofill::LocalFrameToken frame_token,
-      const autofill::FieldRendererId field_renderer_id,
-      const gfx::Point anchor,
-      base::OnceCallback<void(autofill::FormFieldData)> callback);
 
   // A raw reference to the client, which owns `this` and therefore outlives it.
   const raw_ref<ComposeClient> client_;

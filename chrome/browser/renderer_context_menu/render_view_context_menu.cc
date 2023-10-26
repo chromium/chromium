@@ -3288,13 +3288,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
           client ? &client->GetManager() : nullptr;
       RenderFrameHost* render_frame_host = GetRenderFrameHost();
       if (compose_manager && render_frame_host) {
-        const autofill::LocalFrameToken frame_token = autofill::LocalFrameToken(
-            render_frame_host->GetFrameToken().value());
-        // TODO(b/305798770): Use appropriate parameters once the Autofill Form
-        // Extraction API is available.
         compose_manager->OpenComposeFromContextMenu(
-            frame_token, autofill::FieldRendererId(params_.field_renderer_id),
-            gfx::Point(params_.x, params_.y));
+            autofill::ContentAutofillDriver::GetForRenderFrameHost(
+                render_frame_host),
+            autofill::FormRendererId(params_.form_renderer_id),
+            autofill::FieldRendererId(params_.field_renderer_id));
       }
       break;
     }

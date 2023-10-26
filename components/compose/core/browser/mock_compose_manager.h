@@ -37,9 +37,9 @@ class MockComposeManager : public ComposeManager {
   MOCK_METHOD(bool, ShouldOfferComposeContextMenu, (), (override));
   MOCK_METHOD(void,
               OpenComposeFromContextMenu,
-              (const autofill::LocalFrameToken,
-               const autofill::FieldRendererId,
-               const gfx::Point anchor),
+              (autofill::AutofillDriver*,
+               const autofill::FormRendererId,
+               const autofill::FieldRendererId),
               (override));
 };
 
