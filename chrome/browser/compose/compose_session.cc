@@ -139,14 +139,16 @@ void ComposeSession::SaveWebUIState(const std::string& webui_state) {
   current_state_->webui_state = webui_state;
 }
 
-void ComposeSession::AcceptComposeResult() {
-  CHECK(current_state_->response->status == compose::mojom::ComposeStatus::kOk);
-  if (!callback_.is_null()) {
+void ComposeSession::AcceptComposeResult(
+    AcceptComposeResultCallback success_callback) {
+  if (callback_.is_null() || !current_state_->response ||
+      current_state_->response->status != compose::mojom::ComposeStatus::kOk) {
     // Guard against invoking twice before the UI is able to disconnect.
-    std::move(callback_).Run(
-        base::UTF8ToUTF16(current_state_->response->result));
+    std::move(success_callback).Run(false);
+    return;
   }
-  // TODO(b/301370241): Make sure the WebUI or browser calls CloseUI.
+  std::move(callback_).Run(base::UTF8ToUTF16(current_state_->response->result));
+  std::move(success_callback).Run(true);
 }
 
 void ComposeSession::Undo(UndoCallback callback) {

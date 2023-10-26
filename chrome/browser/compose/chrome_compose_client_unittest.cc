@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -34,6 +35,7 @@
 using ::base::EqualsProto;
 using base::test::RunOnceCallback;
 using testing::_;
+using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;
 
 namespace {
 
@@ -108,11 +110,13 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     client_->SetOptimizationGuideForTest(&opt_guide_);
   }
 
-  void ShowDialogAndBindMojo() {
+  void ShowDialogAndBindMojo() { ShowDialogAndBindMojo(base::NullCallback()); }
+
+  void ShowDialogAndBindMojo(ComposeCallback callback) {
     // Show the dialog.
     client().ShowComposeDialog(
         autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-        field_data_, std::nullopt, base::NullCallback());
+        field_data_, std::nullopt, std::move(callback));
 
     BindMojo();
   }
@@ -854,6 +858,36 @@ TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
   base::test::TestFuture<compose::mojom::ComposeStatePtr> undo2_future;
   page_handler()->Undo(undo2_future.GetCallback());
   EXPECT_EQ("first state", undo2_future.Take()->webui_state);
+}
+
+// Tests that the callback is run when AcceptComposeResponse is called.
+TEST_F(ChromeComposeClientTest, TestAcceptComposeResultCallback) {
+  base::test::TestFuture<const std::u16string&> accept_callback;
+  ShowDialogAndBindMojo(accept_callback.GetCallback());
+
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+      .WillOnce(testing::WithArg<2>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")));
+          })));
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_));
+
+  // Before Compose is called AcceptComposeResult will return false.
+  base::test::TestFuture<bool> accept_future_1;
+  page_handler()->AcceptComposeResult(accept_future_1.GetCallback());
+  EXPECT_EQ(false, accept_future_1.Take());
+
+  auto style_modifiers = compose::mojom::StyleModifiers::New();
+  page_handler()->Compose(std::move(style_modifiers), "a user typed this");
+
+  base::test::TestFuture<bool> accept_future_2;
+  page_handler()->AcceptComposeResult(accept_future_2.GetCallback());
+  EXPECT_EQ(true, accept_future_2.Take());
+
+  // Check that the original callback from Autofill was called correctly.
+  EXPECT_EQ(u"Cucumbers", accept_callback.Take());
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)

@@ -112,6 +112,7 @@ bool ChromeComposeClient::HasSession(
 void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   switch (reason) {
     case compose::mojom::CloseReason::kCloseButton:
+    case compose::mojom::CloseReason::kInsertButton:
       RemoveActiveSession();
       break;
   }

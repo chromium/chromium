@@ -25,7 +25,18 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   remote = this.router_.$.bindNewPipeAndPassRemote();
 
   constructor() {
-    super(['closeUi', 'compose', 'requestInitialState', 'saveWebuiState']);
+    super([
+      'acceptComposeResult',
+      'closeUi',
+      'compose',
+      'requestInitialState',
+      'saveWebuiState',
+    ]);
+  }
+
+  acceptComposeResult(): Promise<boolean> {
+    this.methodCalled('acceptComposeResult');
+    return Promise.resolve(true);
   }
 
   closeUi(reason: CloseReason) {
@@ -65,8 +76,6 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
         },
         state);
   }
-
-  acceptComposeResult() {}
 }
 
 suite('ComposeApp', () => {
@@ -97,7 +106,7 @@ suite('ComposeApp', () => {
     return testProxy.remote.$.flushForTesting();
   }
 
-  test('SubmitsInput', async () => {
+  test('SubmitsAndAcceptsInput', async () => {
     // Starts off with submit disabled since input is empty.
     assertTrue(isVisible(app.$.submitButton));
     assertTrue(app.$.submitButton.disabled);
@@ -127,6 +136,10 @@ suite('ComposeApp', () => {
     assertFalse(isVisible(app.$.submitButton));
     assertTrue(app.$.textarea.readonly);
     assertTrue(isVisible(app.$.insertButton));
+
+    // Clicking on Insert calls acceptComposeResult.
+    app.$.insertButton.click();
+    await testProxy.whenCalled('acceptComposeResult');
   });
 
   test('RefreshesResult', async () => {

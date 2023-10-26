@@ -92,6 +92,8 @@ struct OpenMetadata {
 enum CloseReason {
   // The X button on the upper-right of the dialog.
   kCloseButton,
+  // The Insert button of the dialog.
+  kInsertButton,
 };
 
 // Interface for calls from Compose dialog JS into the Browser process.
@@ -110,7 +112,8 @@ interface ComposeDialogPageHandler {
 
   // Inform the Browser that the response has been accepted by the user.
   // Should only be called if the ComposeResponse received is valid.
-  AcceptComposeResult();
+  // Boolean success indicates if the result was accepted successfully.
+  AcceptComposeResult() => (bool success);
 
   // Asks the native handler for state information needed for opening the
   // compose dialog for the last field the user selected compose on.

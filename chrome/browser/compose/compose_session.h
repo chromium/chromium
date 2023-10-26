@@ -72,7 +72,9 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
   void Undo(UndoCallback callback) override;
 
   // Indicates that the compose result should be accepted by Autofill.
-  void AcceptComposeResult() override;
+  // Callback<bool> indicates if the accept was successful.
+  void AcceptComposeResult(
+      AcceptComposeResultCallback success_callback) override;
 
   // Non-ComposeDialogPageHandler Methods
 

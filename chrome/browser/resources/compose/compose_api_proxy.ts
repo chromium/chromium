@@ -6,7 +6,7 @@ import {CloseReason, ComposeDialogCallbackRouter, ComposeDialogClosePageHandlerR
 
 /** @interface */
 export interface ComposeApiProxy {
-  acceptComposeResult(): void;
+  acceptComposeResult(): Promise<boolean>;
   closeUi(reason: CloseReason): void;
   compose(style: StyleModifiers, input: string): void;
   getRouter(): ComposeDialogCallbackRouter;
@@ -39,11 +39,12 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
     ComposeApiProxyImpl.instance = newInstance;
   }
 
-  acceptComposeResult() {
-    this.composeDialogPageHandler.acceptComposeResult();
+  acceptComposeResult(): Promise<boolean> {
+    return this.composeDialogPageHandler.acceptComposeResult().then(
+        res => res.success);
   }
 
-  closeUi(reason: CloseReason) {
+  closeUi(reason: CloseReason): void {
     this.composeDialogClosePageHandler.closeUI(reason);
   }
 
@@ -60,7 +61,7 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
         res => res.initialState);
   }
 
-  saveWebuiState(state: string) {
+  saveWebuiState(state: string): void {
     this.composeDialogPageHandler.saveWebUIState(state);
   }
 

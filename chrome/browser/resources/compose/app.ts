@@ -175,7 +175,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onAccept_() {
-    this.apiProxy_.acceptComposeResult();
+    this.apiProxy_.acceptComposeResult().then((success: boolean) => {
+      if (success) {
+        this.apiProxy_.closeUi(CloseReason.kInsertButton);
+      }
+    });
   }
 
   private onInputChanged_() {
