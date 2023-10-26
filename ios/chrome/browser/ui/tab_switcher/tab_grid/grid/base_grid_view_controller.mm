@@ -684,6 +684,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   if (IsShowInactiveTabsCountEnabled()) {
     [header configureWithCount:self.inactiveTabsCount];
   }
+  header.hidden = [self isInactiveGridEmpty];
 }
 
 // Configures the Inactive Tabs Preamble header according to the current state.
@@ -1368,18 +1369,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 - (void)didUndoCloseAll {
   self.isClosingAllOrUndoRunning = NO;
-
-  // Reload the button and ensure it is not hidden, as this is the only flow
-  // where the button can dynamically reappear when the app is running and the
-  // reappearance is not managed by default.
-  [self reloadInactiveTabsButtonHeader];
-  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
-                                               inSection:kOpenTabsSectionIndex];
-  InactiveTabsButtonHeader* header =
-      ObjCCast<InactiveTabsButtonHeader>([self.collectionView
-          supplementaryViewForElementKind:UICollectionElementKindSectionHeader
-                              atIndexPath:indexPath]);
-  header.hidden = NO;
 }
 
 #pragma mark - InactiveTabsInfoConsumer
@@ -1966,7 +1955,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
         [self.collectionView.collectionViewLayout invalidateLayout];
       }
       completion:^(BOOL finished) {
-        header.hidden = YES;
         self.inactiveTabsHeaderHideAnimationInProgress = NO;
         // Update the header to make it entirely disappear once the animation is
         // done. This is done after a delay because the completion can be called
