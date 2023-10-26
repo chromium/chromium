@@ -36199,6 +36199,7 @@ Called by update_extension_histograms.py.-->
       label="ACCESSIBILITY_SERVICE_PRIVATE_CLIPBOARD_COPY_IN_ACTIVE_GOOGLE_DOC"/>
   <int value="548"
       label="INPUT_METHOD_PRIVATE_ON_LANGUAGE_PACK_STATUS_CHANGED"/>
+  <int value="549" label="OS_DIAGNOSTICS_ON_VOLUME_BUTTON_ROUTINE_FINISHED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -38131,6 +38132,9 @@ Called by update_extension_histograms.py.-->
   <int value="1833" label="OS_DIAGNOSTICS_RUNFANROUTINE"/>
   <int value="1834" label="AUTOTESTPRIVATE_ISFIELDTRIALACTIVE"/>
   <int value="1835" label="AUTOTESTPRIVATE_GETARCWAKEFULNESSMODE"/>
+  <int value="1836" label="OS_DIAGNOSTICS_CREATEVOLUMEBUTTONROUTINE"/>
+  <int value="1837"
+      label="OS_DIAGNOSTICS_ISVOLUMEBUTTONROUTINEARGUMENTSUPPORTED"/>
 </enum>
 
 <enum name="ExtensionIconState">

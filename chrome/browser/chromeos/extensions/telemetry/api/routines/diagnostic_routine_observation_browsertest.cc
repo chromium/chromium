@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/common/extension_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -258,6 +259,85 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
           });
 
           chrome.test.succeed();
+        });
+      }
+    ]);
+  )",
+                         uuid_.AsLowercaseString().c_str()));
+
+  auto info = WaitForFinishedReport();
+  EXPECT_EQ(info.extension_id, extension_id());
+  EXPECT_EQ(info.uuid, uuid_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+    CannotObserveOnVolumeButtonRoutineFinishedWithoutFeatureFlag) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function cannotObserveOnVolumeButtonRoutineFinished() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.onVolumeButtonRoutineFinished.addListener(
+            (event) => {
+              // unreachable
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+class PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest
+    : public TelemetryExtensionDiagnosticRoutineObserverBrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PendingApprovalTelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+    CanObserveOnVolumeButtonRoutineFinished) {
+  RegisterEventObserver(
+      api::os_diagnostics::OnVolumeButtonRoutineFinished::kEventName,
+      base::BindLambdaForTesting([this] {
+        auto volume_button_detail =
+            crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New();
+
+        auto finished_detail =
+            crosapi::TelemetryDiagnosticRoutineDetail::NewVolumeButton(
+                std::move(volume_button_detail));
+
+        auto finished_state = crosapi::TelemetryDiagnosticRoutineState::New();
+        finished_state->state_union =
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
+                crosapi::TelemetryDiagnosticRoutineStateFinished::New(
+                    /*has_passed=*/true, std::move(finished_detail)));
+        finished_state->percentage = 100;
+
+        remote_->OnRoutineStateChange(std::move(finished_state));
+      }));
+
+  CreateExtensionAndRunServiceWorker(
+      base::StringPrintf(R"(
+    chrome.test.runTests([
+      async function canObserveOnVolumeButtonRoutineFinished() {
+        chrome.os.diagnostics.onVolumeButtonRoutineFinished.addListener(
+          (event) => {
+            chrome.test.assertEq(event, {
+              "has_passed": true,
+              "uuid":"%s"
+            });
+
+            chrome.test.succeed();
         });
       }
     ]);

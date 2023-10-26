@@ -266,4 +266,22 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
             crosapi::DiagnosticsNvmeSelfTestTypeEnum::kUnknown);
 }
 
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertVolumeButtonRoutineButtonType) {
+  EXPECT_EQ(
+      ConvertVolumeButtonRoutineButtonType(cx_diag::VolumeButtonType::kNone),
+      crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType::
+          kUnmappedEnumField);
+
+  EXPECT_EQ(ConvertVolumeButtonRoutineButtonType(
+                cx_diag::VolumeButtonType::kVolumeUp),
+            crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+                ButtonType::kVolumeUp);
+
+  EXPECT_EQ(ConvertVolumeButtonRoutineButtonType(
+                cx_diag::VolumeButtonType::kVolumeDown),
+            crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+                ButtonType::kVolumeDown);
+}
+
 }  // namespace chromeos::converters::diagnostics

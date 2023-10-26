@@ -42,6 +42,15 @@ std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
           cx_diag::OnMemoryRoutineFinished::kEventName,
           base::Value::List().Append(finished_info.ToValue()), browser_context);
     }
+    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kVolumeButton: {
+      auto finished_info = converters::routines::ConvertPtr(
+          std::move(finished->detail->get_volume_button()), uuid,
+          finished->has_passed);
+      return std::make_unique<extensions::Event>(
+          extensions::events::OS_DIAGNOSTICS_ON_VOLUME_BUTTON_ROUTINE_FINISHED,
+          cx_diag::OnVolumeButtonRoutineFinished::kEventName,
+          base::Value::List().Append(finished_info.ToValue()), browser_context);
+    }
   }
   NOTREACHED_NORETURN();
 }

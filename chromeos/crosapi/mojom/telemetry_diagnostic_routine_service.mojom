@@ -22,12 +22,12 @@
 // - Disk read routine
 // - Cpu cache routine
 // - Prime search routine
-// - Volume button routine
 // - Led lit up routine
 
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/telemetry_extension_exception.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // This routine checks whether there is any memory problem by
 // reading/writing different patterns.
@@ -40,9 +40,30 @@ struct TelemetryDiagnosticMemoryRoutineArgument {
   uint32? max_testing_mem_kib@0;
 };
 
+// This routine checks the functionality of the volume button. The routine
+// passes if the specified volume button event is received before the timeout.
+// Otherwise, the routine fails.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryDiagnosticVolumeButtonRoutineArgument {
+  [Stable, Extensible]
+  enum ButtonType {
+    // The default value is for backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    kVolumeUp = 1,    // Test for the volume up button.
+    kVolumeDown = 2,  // Test for the volume down button.
+  };
+  // The type of volume button to test.
+  ButtonType type@0;
+  // Length of time to listen to the volume button events. The timeout should be
+  // positive and less or equal to 600 seconds.
+  mojo_base.mojom.TimeDelta timeout@1;
+};
+
 // Argument types for the possible routines the routine control API can create.
 //
-// NextMinVersion: 1, NextIndex: 1
+// NextMinVersion: 3, NextIndex: 3
 [Stable, Extensible]
 union TelemetryDiagnosticRoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
@@ -50,6 +71,8 @@ union TelemetryDiagnosticRoutineArgument {
   [Default] bool unrecognizedArgument @0;
   // Arguments to create a memory routine.
   [MinVersion=1] TelemetryDiagnosticMemoryRoutineArgument memory@1;
+  // Arguments to create a volume button routine.
+  [MinVersion=2] TelemetryDiagnosticVolumeButtonRoutineArgument volume_button@2;
 };
 
 // Routine has been initialized but not yet started.
@@ -165,16 +188,24 @@ struct TelemetryDiagnosticMemoryRoutineDetail {
   TelemetryDiagnosticMemtesterResult result@1;
 };
 
+// Details regarding volume button routine.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct TelemetryDiagnosticVolumeButtonRoutineDetail {};
+
 // Details about a finished routine.
 //
-// NextMinVersion: 2, NextIndex: 2
-[Stable]
+// NextMinVersion: 3, NextIndex: 3
+[Stable, Extensible]
 union TelemetryDiagnosticRoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
   [Default] bool unrecognizedArgument@0;
   // Details of a completed memory routine.
   [MinVersion=1] TelemetryDiagnosticMemoryRoutineDetail memory@1;
+  // Details of a completed volume button routine.
+  [MinVersion=2] TelemetryDiagnosticVolumeButtonRoutineDetail volume_button@2;
 };
 
 // Information about a finished routine.

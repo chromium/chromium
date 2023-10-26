@@ -295,6 +295,26 @@ namespace os.diagnostics {
     long? maxTestingMemKib;
   };
 
+  enum VolumeButtonType {
+    // The volume up button.
+    volume_up,
+    // The volume down button.
+    volume_down
+  };
+
+  dictionary VolumeButtonRoutineFinishedInfo {
+    DOMString? uuid;
+    boolean? has_passed;
+  };
+
+  dictionary RunVolumeButtonRoutineArguments {
+    // The volume button to be tested.
+    VolumeButtonType button_type;
+    // Length of time to listen to the volume button events. The value should be
+    // positive and less or equal to 600 seconds.
+    long timeout_seconds;
+  };
+
   dictionary CreateRoutineResponse {
     DOMString? uuid;
   };
@@ -416,6 +436,13 @@ namespace os.diagnostics {
     // Checks whether a certain `RunMemoryRoutineArguments` is supported on the platform.
     [supportsPromises] static void isMemoryRoutineArgumentSupported(RunMemoryRoutineArguments args,
                                                           RoutineSupportStatusInfoCallback callback);
+
+    [supportsPromises] static void createVolumeButtonRoutine(RunVolumeButtonRoutineArguments args,
+                                                             CreateRoutineCallback callback);
+
+    // Checks whether a certain `RunVolumeButtonRoutineArguments` is supported on the platform.
+    [supportsPromises] static void isVolumeButtonRoutineArgumentSupported(RunVolumeButtonRoutineArguments args,
+                                                                          RoutineSupportStatusInfoCallback callback);
   };
 
   interface Events {
@@ -436,6 +463,9 @@ namespace os.diagnostics {
 
     // Informs the extension that a memory routine finished.
     static void onMemoryRoutineFinished(MemoryRoutineFinishedInfo finishedInfo);
+
+    // Informs the extension that a volume button routine finished.
+    static void onVolumeButtonRoutineFinished(VolumeButtonRoutineFinishedInfo finishedInfo);
 
     // Informs the extension that an exception occured. The error passed in
     // `ExceptionInfo` is non-recoverable.

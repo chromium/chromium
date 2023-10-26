@@ -57,6 +57,23 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertVolumeButtonRoutineArgumentPtr) {
+  constexpr auto kTimeout = base::Seconds(10);
+
+  auto input = crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::New();
+  input->type = crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+      ButtonType::kVolumeUp;
+  input->timeout = kTimeout;
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->type,
+            healthd::VolumeButtonRoutineArgument::ButtonType::kVolumeUp);
+  EXPECT_EQ(result->timeout, kTimeout);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertTelemetryDiagnosticRoutineStateInitializedPtr) {
   EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineStateInitialized::New()),
             crosapi::TelemetryDiagnosticRoutineStateInitialized::New());
@@ -207,6 +224,11 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
                 healthd::MemoryRoutineDetail::New())),
             crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
                 crosapi::TelemetryDiagnosticMemoryRoutineDetail::New()));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewVolumeButton(
+                healthd::VolumeButtonRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewVolumeButton(
+                crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New()));
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,

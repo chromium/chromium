@@ -33,6 +33,11 @@ crosapi::TelemetryDiagnosticMemoryRoutineDetailPtr UncheckedConvertPtr(
       input->bytes_tested, ConvertRoutinePtr(std::move(input->result)));
 }
 
+crosapi::TelemetryDiagnosticVolumeButtonRoutineDetailPtr UncheckedConvertPtr(
+    healthd::VolumeButtonRoutineDetailPtr input) {
+  return crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New();
+}
+
 crosapi::TelemetryDiagnosticRoutineStateInitializedPtr UncheckedConvertPtr(
     healthd::RoutineStateInitializedPtr input) {
   return crosapi::TelemetryDiagnosticRoutineStateInitialized::New();
@@ -58,6 +63,9 @@ crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
     case healthd::RoutineDetail::Tag::kMemory:
       return crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
           ConvertRoutinePtr(std::move(input->get_memory())));
+    case healthd::RoutineDetail::Tag::kVolumeButton:
+      return crosapi::TelemetryDiagnosticRoutineDetail::NewVolumeButton(
+          ConvertRoutinePtr(std::move(input->get_volume_button())));
   }
   NOTREACHED_NORETURN();
 }
@@ -106,6 +114,9 @@ healthd::RoutineArgumentPtr UncheckedConvertPtr(
     case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory:
       return healthd::RoutineArgument::NewMemory(
           ConvertRoutinePtr(std::move(input->get_memory())));
+    case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton:
+      return healthd::RoutineArgument::NewVolumeButton(
+          ConvertRoutinePtr(std::move(input->get_volume_button())));
   }
 }
 
@@ -113,6 +124,28 @@ healthd::MemoryRoutineArgumentPtr UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticMemoryRoutineArgumentPtr input) {
   return healthd::MemoryRoutineArgument::New(
       std::move(input->max_testing_mem_kib));
+}
+
+healthd::VolumeButtonRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticVolumeButtonRoutineArgumentPtr input) {
+  auto arg = healthd::VolumeButtonRoutineArgument::New();
+  switch (input->type) {
+    case crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType::
+        kUnmappedEnumField:
+      arg->type =
+          healthd::VolumeButtonRoutineArgument::ButtonType::kUnmappedEnumField;
+      break;
+    case crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType::
+        kVolumeUp:
+      arg->type = healthd::VolumeButtonRoutineArgument::ButtonType::kVolumeUp;
+      break;
+    case crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType::
+        kVolumeDown:
+      arg->type = healthd::VolumeButtonRoutineArgument::ButtonType::kVolumeDown;
+      break;
+  }
+  arg->timeout = input->timeout;
+  return arg;
 }
 
 }  // namespace unchecked

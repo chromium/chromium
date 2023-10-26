@@ -107,6 +107,22 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
                            cx_diag::MemtesterTestItemEnum::kCompareSub));
 }
 
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     VolumeButtonRoutineFinishedInfo) {
+  constexpr bool kHasPassed = true;
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
+
+  auto input = crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New();
+
+  auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
+
+  ASSERT_TRUE(result.uuid.has_value());
+  EXPECT_EQ(*result.uuid, kUuid.AsLowercaseString());
+
+  ASSERT_TRUE(result.has_passed.has_value());
+  EXPECT_EQ(*result.has_passed, kHasPassed);
+}
+
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterResult) {
   auto input = crosapi::TelemetryDiagnosticMemtesterResult::New();
   input->passed_items = {
