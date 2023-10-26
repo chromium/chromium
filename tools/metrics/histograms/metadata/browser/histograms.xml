@@ -684,6 +684,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.SupportTool.SupportToolWebUIAction"
+    enum="SupportToolWebUIActionType" expires_after="2024-10-25">
+  <owner>iremuguz@google.com</owner>
+  <owner>chromeos-commercial-supportability@google.com</owner>
+  <summary>
+    Reports the actions that the user takes when they use chrome://support-tool
+    WebUI. These actions include the page navigation and data collection
+    details. This metric is used to measure the usage rate of Support Tool
+    features.
+  </summary>
+</histogram>
+
 <histogram name="Browser.TabDragging.DragAmongTabsPresentationTime" units="ms"
     expires_after="2024-02-05">
   <owner>robliao@chromium.org</owner>

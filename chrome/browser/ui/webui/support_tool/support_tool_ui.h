@@ -8,6 +8,30 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui_controller.h"
 
+// This enum is emitted to UMA
+// `Browser.SupportTool.SupportToolWebUIAction` and can't be
+// renumerated. Please update `SupportToolWebUIActionType` values
+// in tools/metrics/histograms/enums.xml when you add a new value here.
+enum class SupportToolWebUIActionType {
+  // When the user opens Support Tool page.
+  kOpenSupportToolPage = 0,
+  // When the user opens URL generator page.
+  kOpenURLGeneratorPage = 1,
+  // When the support packet is created and added to the selected file path.
+  kCreateSupportPacket = 2,
+  // When user cancels data collection and starts from the beginning.
+  kCancelDataCollection = 3,
+  // When user generates URL on chrome://support-tool/url-generator.
+  kGenerateURL = 4,
+  // When user generates support token on chrome://support-tool/url-generator.
+  kGenerateToken = 5,
+  kMaxValue = kGenerateToken,
+};
+
+// The histogram name for the UMA metrics we use for recording the WebUI
+// actions.
+extern const char kSupportToolWebUIActionHistogram[];
+
 // The C++ back-end for the chrome://support-tool webui page.
 class SupportToolUI : public content::WebUIController {
  public:

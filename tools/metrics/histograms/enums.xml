@@ -104733,6 +104733,18 @@ would be helpful to identify which type is being sent.
   <int value="6" label="USAGE_TIME_LIMIT_WARNING"/>
 </enum>
 
+<enum name="SupportToolWebUIActionType">
+  <summary>
+    Actions that the user can take on Support Tool WebUI (chrome://support-tool)
+  </summary>
+  <int value="0" label="kOpenSupportToolPage"/>
+  <int value="1" label="kOpenURLGeneratorPage"/>
+  <int value="2" label="kCreateSupportPacket"/>
+  <int value="3" label="kCancelDataCollection"/>
+  <int value="4" label="kGenerateURL"/>
+  <int value="5" label="kGenerateToken"/>
+</enum>
+
 <enum name="SurveyDownloadResponseCodes">
   <obsolete>
     Removed as of 05/2021.
