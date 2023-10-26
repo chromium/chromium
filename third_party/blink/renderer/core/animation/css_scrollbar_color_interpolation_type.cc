@@ -18,6 +18,32 @@
 
 namespace blink {
 
+namespace {
+
+absl::optional<StyleColor> ColorFromKeyword(CSSValueID css_value_id) {
+  // TODO(kevers): handle currentcolor etc.
+  if (!StyleColor::IsColorKeyword(css_value_id)) {
+    return absl::nullopt;
+  }
+
+  Color color = StyleColor::ColorFromKeyword(css_value_id,
+                                             mojom::blink::ColorScheme::kLight);
+  return (StyleColor(color));
+}
+
+absl::optional<StyleColor> MaybeResolveColor(const CSSValue& value) {
+  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
+    return StyleColor(color_value->Value());
+  } else if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    return ColorFromKeyword(identifier_value->GetValueID());
+  }
+  // TODO(kevers): Handle unsupported color representations, i.e.
+  // CSSColorMixValue.
+  return absl::nullopt;
+}
+
+}  // namespace
+
 class CSSScrollbarColorNonInterpolableValue final
     : public NonInterpolableValue {
  public:
@@ -119,30 +145,26 @@ InterpolationValue CSSScrollbarColorInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState* state,
     ConversionCheckers& conversion_checkers) const {
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  if (identifier_value && identifier_value->GetValueID() == CSSValueID::kAuto) {
-    return InterpolationValue(
-        CreateScrollbarColorValue(absl::nullopt),
-        CSSScrollbarColorNonInterpolableValue::Create(absl::nullopt));
+  // https://drafts.csswg.org/css-scrollbars/#scrollbar-color
+  // scrollbar-color: auto | <color>{2}
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    if (identifier_value->GetValueID() == CSSValueID::kAuto) {
+      // Fallback to discrete interpolation. The thumb and track colors depend
+      // on the native theme.
+      return nullptr;
+    }
   }
 
   const CSSValueList& list = To<CSSValueList>(value);
-  DCHECK_GE(list.length(), 1u);
-  DCHECK_LE(list.length(), 2u);
-  StyleColor thumb_color;
-  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(list.First())) {
-    thumb_color = StyleColor(color_value->Value());
-  } else {
-    thumb_color = StyleColor(identifier_value->GetValueID());
-  }
-  StyleColor track_color;
-  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(list.Last())) {
-    track_color = StyleColor(color_value->Value());
-  } else {
-    track_color = StyleColor(identifier_value->GetValueID());
+  DCHECK_EQ(list.length(), 2u);
+  absl::optional<StyleColor> thumb_color = MaybeResolveColor(list.First());
+  absl::optional<StyleColor> track_color = MaybeResolveColor(list.Last());
+  if (!thumb_color || !track_color) {
+    // Fallback to discrete if unable to resolve the thumb or track color.
+    return nullptr;
   }
 
-  StyleScrollbarColor scrollbar_color(thumb_color, track_color);
+  StyleScrollbarColor scrollbar_color(thumb_color.value(), track_color.value());
 
   return InterpolationValue(InterpolableScrollbarColor::Create(scrollbar_color),
                             CSSScrollbarColorNonInterpolableValue::Create(
