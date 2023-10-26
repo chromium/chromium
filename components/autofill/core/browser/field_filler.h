@@ -31,7 +31,7 @@ class FieldFiller {
   static std::u16string GetValueForProfile(const AutofillProfile& profile,
                                            const std::string& app_locale,
                                            const AutofillType& field_type,
-                                           FormFieldData* field_data,
+                                           const FormFieldData* field_data,
                                            std::string* failure_to_fill);
 
   // Based on |field.Type()|, returns value that is supposed to be filled in the
@@ -40,7 +40,7 @@ class FieldFiller {
       const AutofillField& field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      FormFieldData* field_data,
+      const FormFieldData* field_data,
       const std::u16string& cvc,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
