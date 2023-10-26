@@ -537,6 +537,14 @@ void Page::SetVisibilityState(
     bool is_initial_state) {
   if (lifecycle_state_->visibility == visibility_state)
     return;
+
+  // Are we entering / leaving a state that would map to the "visible" state, in
+  // the `document.visibilityState` sense?
+  const bool was_visible = lifecycle_state_->visibility ==
+                           mojom::blink::PageVisibilityState::kVisible;
+  const bool is_visible =
+      visibility_state == mojom::blink::PageVisibilityState::kVisible;
+
   lifecycle_state_->visibility = visibility_state;
 
   if (is_initial_state)
@@ -548,9 +556,24 @@ void Page::SetVisibilityState(
 
   if (main_frame_) {
     if (lifecycle_state_->visibility ==
-        mojom::blink::PageVisibilityState::kVisible)
+        mojom::blink::PageVisibilityState::kVisible) {
       RestoreSVGImageAnimations();
-    main_frame_->DidChangeVisibilityState();
+    }
+    // If we're eliding visibility transitions between the two `kHidden*`
+    // states, then we never get here unless one state was `kVisible` and the
+    // other was not.  However, if we aren't eliding those transitions, then we
+    // need to do so now; from the Frame's point of view, nothing is changing if
+    // this is a change between the two `kHidden*` states.  Both map to "hidden"
+    // in the sense of `document.visibilityState`, and dispatching an event when
+    // the web-exposed state hasn't changed is confusing.
+    //
+    // This check could be enabled for both cases, and the result in the
+    // "eliding" case shouldn't change.  It's not, just to be safe, since this
+    // is intended as a fall-back to previous behavior.
+    if (!RuntimeEnabledFeatures::DispatchHiddenVisibilityTransitionsEnabled() ||
+        was_visible || is_visible) {
+      main_frame_->DidChangeVisibilityState();
+    }
   }
 }
 

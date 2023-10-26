@@ -225,6 +225,32 @@ class AutoResizeWebViewClient : public WebViewClient {
 
 class WebViewTest : public testing::Test {
  public:
+  // Observer that remembers the most recent visibility callback, if any.
+  class MockWebViewObserver : public WebViewObserver {
+   public:
+    explicit MockWebViewObserver(WebView* web_view)
+        : WebViewObserver(web_view) {}
+    ~MockWebViewObserver() override = default;
+
+    blink::mojom::PageVisibilityState page_visibility_and_clear() {
+      auto t = *page_visibility_;
+      page_visibility_.reset();
+      return t;
+    }
+
+    // WebViewObserver
+    void OnPageVisibilityChanged(
+        blink::mojom::PageVisibilityState page_visibility) override {
+      page_visibility_ = page_visibility;
+    }
+
+    // We live on the stack, so do nothing here.
+    void OnDestruct() override {}
+
+   private:
+    absl::optional<blink::mojom::PageVisibilityState> page_visibility_;
+  };
+
   explicit WebViewTest(frame_test_helpers::CreateTestWebFrameWidgetCallback
                            create_web_frame_callback = base::NullCallback())
       : web_view_helper_(std::move(create_web_frame_callback)) {}
@@ -6315,6 +6341,137 @@ TEST_F(WebViewTest, EmulatingPopupRect) {
 
     static_cast<WebPagePopupImpl*>(popup)->ClosePopup();
   }
+}
+
+TEST_F(WebViewTest, HiddenButPaintingIsSentToObservers) {
+  // kHiddenButPainting should be sent to observers from both the visible and
+  // hidden states.
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  MockWebViewObserver observer(web_view);
+
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ(observer.page_visibility_and_clear(),
+            mojom::blink::PageVisibilityState::kHidden);
+
+  web_view->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHiddenButPainting,
+      /*is_initial_state=*/false);
+  EXPECT_EQ(observer.page_visibility_and_clear(),
+            mojom::blink::PageVisibilityState::kHiddenButPainting);
+
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ(observer.page_visibility_and_clear(),
+            mojom::blink::PageVisibilityState::kVisible);
+
+  web_view->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHiddenButPainting,
+      /*is_initial_state=*/false);
+  EXPECT_EQ(observer.page_visibility_and_clear(),
+            mojom::blink::PageVisibilityState::kHiddenButPainting);
+
+  web_view->RemoveObserver(&observer);
+}
+
+TEST_F(WebViewTest, HiddenButPaintingPageIsntThrottled) {
+  // The PageScheduler should consider `kHiddenButPainting` to be visible so
+  // that the page is not throttled.
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  auto* const page = web_view->GetPage();
+  auto* const scheduler = page->GetPageScheduler();
+
+  // `kHidden` should mark the page as hidden for the scheduler.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  EXPECT_FALSE(scheduler->IsPageVisible());
+
+  // `kVisible` should mark the page as visible for the scheduler.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+  EXPECT_TRUE(scheduler->IsPageVisible());
+
+  // `kHiddenButPainting` should also mark the page scheduler as visible.
+  web_view->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHiddenButPainting,
+      /*is_initial_state=*/false);
+  EXPECT_TRUE(scheduler->IsPageVisible());
+}
+
+TEST_F(WebViewTest, HiddenVisibilityTransitionsDontDispatchEvents) {
+  // When switching between `kHidden` and `kHiddenButPainting`, there should not
+  // be events sent about it.  See https://crbug.com/1493618 .
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+
+  // Switch in the 'kVisible' state, before we start checking.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<input id=input></input>"
+      "<div id=log></div>"
+      "<script>"
+      "  var count = 0;"
+      "  document.onvisibilitychange = function() {"
+      "    ++count;"
+      "    document.getElementById('log').textContent ="
+      "      document.visibilityState + ' ' + count;"
+      "  }"
+      "</script>",
+      base_url);
+
+  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+  WebElement log_element = frame->GetDocument().GetElementById("log");
+
+  // kVisible => kHidden should fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 1", log_element.TextContent());
+
+  // kHidden => kHidden should not fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 1", log_element.TextContent());
+
+  // kHidden => kHiddenButPainting should not fire an event.
+  web_view->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHiddenButPainting,
+      /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 1", log_element.TextContent());
+
+  // kHiddenButPainting => kHiddenButPainting should not fire an event.
+  web_view->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHiddenButPainting,
+      /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 1", log_element.TextContent());
+
+  // kHiddenButPainting => kHidden should not fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 1", log_element.TextContent());
+
+  // kHidden => kVisible should fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("visible 2", log_element.TextContent());
+
+  // kVisible => kHiddenButPainting should fire an event.
+  web_view->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHiddenButPainting,
+      /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 3", log_element.TextContent());
+
+  // kHiddenButPainting => kVisible should fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("visible 4", log_element.TextContent());
+
+  // kVisible => kVisible should not fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("visible 4", log_element.TextContent());
 }
 
 }  // namespace blink

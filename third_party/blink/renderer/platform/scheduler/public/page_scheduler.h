@@ -44,6 +44,15 @@ class PLATFORM_EXPORT PageScheduler {
   virtual void OnTitleOrFaviconUpdated() = 0;
   // The scheduler may throttle tasks associated with background pages.
   virtual void SetPageVisible(bool) = 0;
+  // Return whether the page is visible or not.  Note that learning
+  // `!IsPageVisible()` does not tell you if the page should continue to paint
+  // or not.  There are two hidden states, `kHidden` and `kHiddenButPainting`
+  // which both correspond to a page that's not visible to the user.  The latter
+  // indicates that the page's content is still meaningful in some other way,
+  // such as if it's being captured.
+  // TODO(https://crbug.com/1495854): add `IsPagePainting()` to make it easy to
+  // tell the difference.
+  virtual bool IsPageVisible() const = 0;
   // The scheduler transitions app to and from FROZEN state in background.
   virtual void SetPageFrozen(bool) = 0;
   // Handles operations required for storing the page in the back-forward cache.

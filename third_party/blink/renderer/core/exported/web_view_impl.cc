@@ -2417,9 +2417,22 @@ void WebViewImpl::SetPageLifecycleStateInternal(
                             !old_state->is_in_back_forward_cache;
   bool restoring_from_bfcache = !new_state->is_in_back_forward_cache &&
                                 old_state->is_in_back_forward_cache;
+  // `hiding_page` indicates that the page is switching visibility states in a
+  // way that we should treat as a change.  There are two definitions of this
+  // (see below), but both require that the new state is not `kVisible`.
   bool hiding_page =
-      (new_state->visibility != mojom::blink::PageVisibilityState::kVisible) &&
-      (old_state->visibility == mojom::blink::PageVisibilityState::kVisible);
+      new_state->visibility != mojom::blink::PageVisibilityState::kVisible;
+  if (RuntimeEnabledFeatures::DispatchHiddenVisibilityTransitionsEnabled()) {
+    // Dispatch a visibility change from `kVisible` to either hidden state, and
+    // also between the two hidden states.
+    hiding_page &= (old_state->visibility != new_state->visibility);
+  } else {
+    // Dispatch a visibility change only when entering or leaving `kVisible` to
+    // one of the two hidden states, but not when switching between `kHidden`
+    // and `kHiddenButPainting` in either direction.
+    hiding_page &=
+        (old_state->visibility == mojom::blink::PageVisibilityState::kVisible);
+  }
   bool showing_page =
       (new_state->visibility == mojom::blink::PageVisibilityState::kVisible) &&
       (old_state->visibility != mojom::blink::PageVisibilityState::kVisible);
@@ -3895,8 +3908,16 @@ void WebViewImpl::SetVisibilityState(
     bool is_initial_state) {
   DCHECK(GetPage());
   GetPage()->SetVisibilityState(visibility_state, is_initial_state);
-  GetPage()->GetPageScheduler()->SetPageVisible(
-      visibility_state == mojom::blink::PageVisibilityState::kVisible);
+  // Do not throttle if the page should be painting.
+  bool is_visible =
+      visibility_state == mojom::blink::PageVisibilityState::kVisible;
+  if (RuntimeEnabledFeatures::DispatchHiddenVisibilityTransitionsEnabled()) {
+    // Treat `kHiddenButPainting` as visible for page scheduling; we don't want
+    // to throttle timers, etc.
+    is_visible |= visibility_state ==
+                  mojom::blink::PageVisibilityState::kHiddenButPainting;
+  }
+  GetPage()->GetPageScheduler()->SetPageVisible(is_visible);
   // Notify observers of the change.
   if (!is_initial_state) {
     for (auto& observer : observers_)

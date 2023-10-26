@@ -1444,6 +1444,26 @@
       browser_process_read_write_access: true,
     },
     {
+      // `kHidden` and `kHiddenButPainting` visibility states are treated as
+      // hidden in the sense of `document.visibilityState`.  However, they are
+      // handled differently internally.  For example, video playback should
+      // continue in `kHiddenButPainting`, such as when the page is being
+      // background captured.  When enabled, this feature causes blink to
+      // notify internal observers about visibility changes between the two
+      // hidden states, in addition to transitions to/from `kVisible`.
+      //
+      // Since the two hidden states are exposed to the web identically, there
+      // is no `visibilitychanged` event fired when switching between them.
+      //
+      // When this feature is disabled, blink reverts to its original behavior
+      // of eliding transitions between the two hidden states, including to
+      // internal observers.  This behavior causes problems with capture and
+      // picture-in-picture, but is preserved as a safe fallback.
+      name: "DispatchHiddenVisibilityTransitions",
+      status: "stable",
+      base_feature: "DispatchHiddenVisibilityTransitions",
+    },
+    {
       name: "DisplayCutoutAPI",
       base_feature: "none",
       public: true,

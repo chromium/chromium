@@ -58,6 +58,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // PageScheduler implementation:
   void OnTitleOrFaviconUpdated() override;
   void SetPageVisible(bool page_visible) override;
+  bool IsPageVisible() const override;
   void SetPageFrozen(bool) override;
   void SetPageBackForwardCached(bool) override;
   bool IsMainFrameLocal() const override;
@@ -84,7 +85,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // Virtual for testing.
   virtual void ReportIntervention(const String& message);
 
-  bool IsPageVisible() const;
   bool IsFrozen() const;
   bool OptedOutFromAggressiveThrottling() const;
   // Returns whether CPU time is throttled for the page. Note: This is
