@@ -155,11 +155,13 @@ void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
     return;
   }
   AddPinnedActionButtonFor(id);
+  GetSidePanelCoordinator()->UpdateHeaderPinButtonState();
 }
 
 void PinnedToolbarActionsContainer::OnActionRemoved(
     const actions::ActionId& id) {
   RemovePinnedActionButtonFor(id);
+  GetSidePanelCoordinator()->UpdateHeaderPinButtonState();
 }
 
 void PinnedToolbarActionsContainer::OnActionMoved(const actions::ActionId& id,
@@ -208,4 +210,9 @@ PinnedToolbarActionsContainer::GetPinnedButtonFor(const actions::ActionId& id) {
   const auto iter = base::ranges::find(
       pinned_buttons_, id, [](auto* button) { return button->GetActionId(); });
   return iter == pinned_buttons_.end() ? nullptr : *iter;
+}
+
+SidePanelCoordinator* PinnedToolbarActionsContainer::GetSidePanelCoordinator() {
+  return SidePanelUtil::GetSidePanelCoordinatorForBrowser(
+      browser_view_->browser());
 }
