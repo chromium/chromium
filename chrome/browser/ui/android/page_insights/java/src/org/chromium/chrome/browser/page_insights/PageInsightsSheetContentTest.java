@@ -12,9 +12,11 @@ import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -575,6 +577,49 @@ public class PageInsightsSheetContentTest {
                                     .onInterceptTouchEvent(
                                             MotionEvent.obtain(
                                                     0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0)));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void getVerticalScrollOffset_noRecyclerView_returns1() {
+        assertEquals(1, mSheetContent.getVerticalScrollOffset());
+    }
+
+    @Test
+    @MediumTest
+    public void getVerticalScrollOffset_recyclerViewInFeedPage_returnsItsOffset() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FrameLayout feedPage = new FrameLayout(sTestRule.getActivity());
+                    FrameLayout recyclerViewContainer = new FrameLayout(sTestRule.getActivity());
+                    RecyclerView recyclerview = new RecyclerView(sTestRule.getActivity());
+                    feedPage.addView(recyclerViewContainer);
+                    recyclerViewContainer.addView(recyclerview);
+                    mSheetContent.initContent(feedPage, /* isPrivacyNoticeRequired= */ true);
+                    mSheetContent.showFeedPage();
+
+                    assertEquals(0, mSheetContent.getVerticalScrollOffset());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void getVerticalScrollOffset_recyclerViewInChildPage_returnsItsOffset() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FrameLayout feedPage = new FrameLayout(sTestRule.getActivity());
+                    mSheetContent.initContent(feedPage, /* isPrivacyNoticeRequired= */ true);
+                    mSheetContent.showFeedPage();
+
+                    FrameLayout childPage = new FrameLayout(sTestRule.getActivity());
+                    FrameLayout recyclerViewContainer = new FrameLayout(sTestRule.getActivity());
+                    RecyclerView recyclerview = new RecyclerView(sTestRule.getActivity());
+                    childPage.addView(recyclerViewContainer);
+                    recyclerViewContainer.addView(recyclerview);
+                    mSheetContent.showChildPage(childPage, "bladybla");
+
+                    assertEquals(0, mSheetContent.getVerticalScrollOffset());
                 });
     }
 

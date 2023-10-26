@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -50,6 +51,13 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
 
     @VisibleForTesting static final float PEEK_HEIGHT_RATIO_WITH_PRIVACY_NOTICE = 0.263f;
 
+    private static final SharedPreferencesManager sSharedPreferencesManager =
+            ChromeSharedPreferences.getInstance();
+    private static final long INVALID_TIMESTAMP = -1;
+
+    private final OnBackPressHandler mOnBackPressHandler;
+    private final ObservableSupplierImpl<Boolean> mWillHandleBackPressSupplier;
+
     private Context mContext;
     private View mLayoutView;
     private ViewGroup mToolbarView;
@@ -57,11 +65,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     private boolean mShouldPrivacyNoticeBeShown;
     private int mFullScreenHeight;
     private Callback<View> mOnPrivacyNoticeLinkClickCallback;
-    private final OnBackPressHandler mOnBackPressHandler;
-    private final ObservableSupplierImpl<Boolean> mWillHandleBackPressSupplier;
-    private static final SharedPreferencesManager sSharedPreferencesManager =
-            ChromeSharedPreferences.getInstance();
-    private static final long INVALID_TIMESTAMP = -1;
+    @Nullable private RecyclerView mCurrentRecyclerView;
 
     /**
      * Constructor.
@@ -134,16 +138,18 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
 
     @Override
     public int getVerticalScrollOffset() {
-        // Hardcode 1 to ensure that scrolling up is never interpreted as trying to drag the bottom
-        // sheet down.
-        // TODO(b/305194266): Provide actual scroll position so we can benefit from the bottom sheet
-        // dragging behaviour when feed is actually scrolled to the the top.
-        return 1;
+        if (mCurrentRecyclerView == null) {
+            // If we don't have the RecyclerView, hardcode 1 to ensure that scrolling up is never
+            // interpreted as trying to drag the bottom sheet down.
+            return 1;
+        }
+        return mCurrentRecyclerView.computeVerticalScrollOffset();
     }
 
     @Override
     public void destroy() {
         mLayoutView.removeOnLayoutChangeListener(this);
+        mCurrentRecyclerView = null;
     }
 
     @Override
@@ -254,6 +260,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         } else {
             setVisibilityById(mSheetContentView, R.id.page_insights_privacy_notice, View.GONE);
         }
+        updateCurrentRecyclerView(mSheetContentView.findViewById(R.id.page_insights_feed_content));
     }
 
     void initContent(View feedPageView, boolean isPrivacyNoticeRequired) {
@@ -294,6 +301,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         setVisibilityById(mToolbarView, R.id.page_insights_child_title, View.VISIBLE);
         setVisibilityById(mSheetContentView, R.id.page_insights_feed_content, View.GONE);
         setVisibilityById(mSheetContentView, R.id.page_insights_child_content, View.VISIBLE);
+        updateCurrentRecyclerView(childPageView);
     }
 
     void setPrivacyCardColor(int color) {
@@ -421,5 +429,38 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
                                         mContext,
                                         R.color.default_bg_color_blue,
                                         mOnPrivacyNoticeLinkClickCallback))));
+    }
+
+    private void updateCurrentRecyclerView(View currentPageView) {
+        mCurrentRecyclerView = findRecyclerView(currentPageView);
+        final ViewTreeObserver observer = currentPageView.getViewTreeObserver();
+        observer.addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        currentPageView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        mCurrentRecyclerView = findRecyclerView(currentPageView);
+                        return true;
+                    }
+                });
+    }
+
+    @Nullable
+    private static RecyclerView findRecyclerView(View view) {
+        // The  content view is implemented internally, and we do not currently have an API exposed
+        // to us to obtain the scroll position inside it. So instead we search the view for the
+        // outermost RecyclerView within it (only going at most 10 levels deep, and only looking at
+        // first children).
+        // TODO(b/305194266): Expose scroll position API, and remove this rather horrible hack.
+        for (int i = 0; i < 10; i++) {
+            if (view instanceof RecyclerView recyclerview) {
+                return recyclerview;
+            } else if (view instanceof ViewGroup viewGroup) {
+                view = viewGroup.getChildAt(0);
+            } else {
+                return null;
+            }
+        }
+        return null;
     }
 }
