@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_NOTIFICATION_CENTER_STACKED_NOTIFICATION_BAR_H_
 #define ASH_SYSTEM_NOTIFICATION_CENTER_STACKED_NOTIFICATION_BAR_H_
 
-#include "ash/system/notification_center/notification_center_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/message_center_observer.h"
@@ -17,10 +16,13 @@ class Notification;
 
 namespace views {
 class BoxLayout;
+class Button;
 class Label;
 }  // namespace views
 
 namespace ash {
+
+class NotificationCenterView;
 
 // The header shown above the notification list displaying the number of hidden
 // notifications. Has a dynamic list of icons which hide/show as notifications

@@ -3537,7 +3537,6 @@ test("ash_unittests") {
     "system/message_center/notification_swipe_control_view_unittest.cc",
     "system/message_center/notifier_settings_view_unittest.cc",
     "system/message_center/session_state_notification_blocker_unittest.cc",
-    "system/message_center/unified_message_center_bubble_unittest.cc",
     "system/nearby_share/nearby_share_feature_pod_controller_unittest.cc",
     "system/network/active_network_icon_unittest.cc",
     "system/network/auto_connect_notifier_unittest.cc",

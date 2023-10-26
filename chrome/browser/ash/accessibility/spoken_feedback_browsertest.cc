@@ -381,17 +381,10 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
   sm_.Replay();
 }
 
-class NotificationCenterSpokenFeedbackTest
-    : public LoggedInSpokenFeedbackTest,
-      public ::testing::WithParamInterface<bool> {
+class NotificationCenterSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  protected:
-  NotificationCenterSpokenFeedbackTest() {
-    feature_list_.InitWithFeatureState(features::kQsRevamp,
-                                       IsQsRevampEnabled());
-  }
+  NotificationCenterSpokenFeedbackTest() = default;
   ~NotificationCenterSpokenFeedbackTest() override = default;
-
-  bool IsQsRevampEnabled() const { return GetParam(); }
 
   NotificationCenterTestApi* test_api() {
     if (!test_api_) {
@@ -403,65 +396,33 @@ class NotificationCenterSpokenFeedbackTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevampEnabled,
-                         NotificationCenterSpokenFeedbackTest,
-                         ::testing::Bool());
-
 // Tests the spoken feedback text when using the notification center accelerator
 // to navigate to the notification center.
-IN_PROC_BROWSER_TEST_P(NotificationCenterSpokenFeedbackTest,
+IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest,
                        NavigateNotificationCenter) {
   EnableChromeVox();
 
-  if (IsQsRevampEnabled()) {
-    // Add a notification so that the notification center tray is visible.
-    test_api()->AddNotification();
-    ASSERT_TRUE(test_api()->IsTrayShown());
+  // Add a notification so that the notification center tray is visible.
+  test_api()->AddNotification();
+  ASSERT_TRUE(test_api()->IsTrayShown());
 
-    // Press the accelerator that toggles the notification center.
-    sm_.Call([this]() {
-      EXPECT_TRUE(PerformAcceleratorAction(
-          AcceleratorAction::kToggleMessageCenterBubble));
-    });
-
-    // Verify the spoken feedback text.
-    sm_.ExpectSpeech("Notification Center");
-    sm_.Replay();
-    return;
-  }
-
+  // Press the accelerator that toggles the notification center.
   sm_.Call([this]() {
     EXPECT_TRUE(PerformAcceleratorAction(
         AcceleratorAction::kToggleMessageCenterBubble));
   });
-  sm_.ExpectSpeech(
-      "Quick Settings, Press search plus left to access the notification "
-      "center.");
 
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
-
-  // If you are hitting this in the course of changing the UI, please fix. This
-  // item needs a label.
-  sm_.ExpectSpeech("List item");
-
-  // Furthermore, navigation is generally broken using Search+Left.
-
+  // Verify the spoken feedback text.
+  sm_.ExpectSpeech("Notification Center");
   sm_.Replay();
 }
 
 // Tests that clicking the notification center tray does not crash when spoken
 // feedback is enabled.
-IN_PROC_BROWSER_TEST_P(NotificationCenterSpokenFeedbackTest, OpenBubble) {
-  // This test only makes sense in the context of the QS revamp.
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
+IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest, OpenBubble) {
   // Enable spoken feedback and add a notification to ensure the tray is
   // visible.
   EnableChromeVox();

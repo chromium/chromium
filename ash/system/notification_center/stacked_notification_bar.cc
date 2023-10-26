@@ -10,6 +10,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/message_center/message_center_constants.h"
+#include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -32,8 +33,8 @@ namespace ash {
 
 namespace {
 
-// The label button in the stacked notification bar, can be either a "Clear all"
-// or "See all notifications" button.
+// The label button in the stacked notification bar, used for the "Clear All"
+// button.
 class StackingBarLabelButton : public PillButton {
  public:
   METADATA_HEADER(StackingBarLabelButton);
@@ -45,8 +46,7 @@ class StackingBarLabelButton : public PillButton {
                    text,
                    PillButton::Type::kFloatingWithoutIcon,
                    /*icon=*/nullptr,
-                   kNotificationPillButtonHorizontalSpacing),
-        notification_center_view_(notification_center_view) {
+                   kNotificationPillButtonHorizontalSpacing) {
     StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/true);
@@ -56,15 +56,6 @@ class StackingBarLabelButton : public PillButton {
   StackingBarLabelButton& operator=(const StackingBarLabelButton&) = delete;
 
   ~StackingBarLabelButton() override = default;
-
-  // PillButton:
-  void AboutToRequestFocusFromTabTraversal(bool reverse) override {
-    if (notification_center_view_->collapsed() && HasFocus())
-      notification_center_view_->FocusOut(reverse);
-  }
-
- private:
-  raw_ptr<NotificationCenterView, ExperimentalAsh> notification_center_view_;
 };
 
 BEGIN_METADATA(StackingBarLabelButton, PillButton)

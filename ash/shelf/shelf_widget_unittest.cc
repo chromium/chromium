@@ -4,8 +4,6 @@
 
 #include "ash/shelf/shelf_widget.h"
 
-#include "ash/bubble/bubble_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
@@ -547,67 +545,6 @@ TEST_F(ShelfWidgetTest, HiddenShelfHitTestTouch) {
                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     EXPECT_EQ(shelf_widget->GetNativeWindow(),
               targeter->FindTargetForEvent(root, &touch));
-  }
-}
-
-class LtrRtlShelfWidgetTest
-    : public ShelfWidgetTest,
-      public testing::WithParamInterface</*IsRtl()=*/bool> {
- public:
-  LtrRtlShelfWidgetTest() : scoped_locale_(IsRtl() ? "he" : "") {}
-  LtrRtlShelfWidgetTest(const LtrRtlShelfWidgetTest&) = delete;
-  LtrRtlShelfWidgetTest& operator=(const LtrRtlShelfWidgetTest&) = delete;
-  ~LtrRtlShelfWidgetTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    ShelfWidgetTest::SetUp();
-  }
-
- protected:
-  bool IsRtl() { return GetParam(); }
-
- private:
-  // Restores locale to the default when destructor is called.
-  base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(IsRtl, LtrRtlShelfWidgetTest, testing::Bool());
-
-TEST_P(LtrRtlShelfWidgetTest, MessageCenterBounds) {
-  // Add a notification to force the message center bubble to show with the
-  // UnifiedSystemTrayBubble.
-  message_center::MessageCenter::Get()->AddNotification(
-      std::make_unique<message_center::Notification>(
-          message_center::NOTIFICATION_TYPE_SIMPLE, base::NumberToString(0),
-          u"test title", u"test message", ui::ImageModel(), std::u16string(),
-          GURL(), message_center::NotifierId(),
-          message_center::RichNotificationData(),
-          new message_center::NotificationDelegate()));
-
-  auto shelf_alignments = {ShelfAlignment::kBottom, ShelfAlignment::kLeft,
-                           ShelfAlignment::kRight};
-
-  for (const auto& alignment : shelf_alignments) {
-    GetPrimaryShelf()->SetAlignment(alignment);
-    // Show UnifiedSystemTrayBubble, which shows a message center bubble as well
-    // in a separate widget.
-    GetPrimaryUnifiedSystemTray()->ShowBubble();
-    gfx::Rect message_center_bubble_bounds_in_screen =
-        GetPrimaryUnifiedSystemTray()
-            ->message_center_bubble()
-            ->GetBoundsInScreen();
-    gfx::Rect unified_system_tray_bubble_bounds_in_screen =
-        GetPrimaryUnifiedSystemTray()->bubble()->GetBoundsInScreen();
-
-    // The MessageCenterBubble and UnifiedSystemTrayBubble should be flush
-    // despite the shelf alignment.
-    EXPECT_EQ(message_center_bubble_bounds_in_screen.x(),
-              unified_system_tray_bubble_bounds_in_screen.x());
-    EXPECT_EQ(message_center_bubble_bounds_in_screen.width(),
-              unified_system_tray_bubble_bounds_in_screen.width());
-    GetPrimaryUnifiedSystemTray()->CloseBubble();
   }
 }
 
