@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_LAYOUT_ALGORITHM_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items_builder.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 
 namespace blink {
 

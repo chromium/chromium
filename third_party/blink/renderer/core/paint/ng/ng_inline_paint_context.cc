@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 
 #include "base/containers/adapters.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 
 namespace blink {
 

@@ -7,7 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_decorating_box.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
