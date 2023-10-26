@@ -95,8 +95,8 @@ Please tag deprecation-devtool-issues@chromium.org for review.
 
 ## (8) Wait for automatic roll dependencies from `devtools/devtools-frontend` to `chromium/src`
 
-This will be done by the [AutoRoller](https://autoroll.skia.org/r/devtools-frontend-chromium)
-within a few hours.
+This will be done automatically within a few hours, you should see your changes from (7) in
+`chromium/src/third_party/devtools-frontend`.
 
 ## (9) Build Chrome from tip-of-trunk
 
