@@ -82,8 +82,6 @@ void DeleteComInterfaces(UpdaterScope scope, bool uninstall_all) {
                          : std::vector<std::pair<IID, std::wstring>>())) {
     {
       const std::wstring reg_path = GetComIidRegistryPath(iid);
-      VLOG(1) << "Deleting reg_path: " << reg_path
-              << ": from scope: " << UpdaterScopeToString(scope);
       for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
         installer::DeleteRegistryKey(UpdaterScopeToHKeyRoot(scope), reg_path,
                                      key_flag);
@@ -91,8 +89,6 @@ void DeleteComInterfaces(UpdaterScope scope, bool uninstall_all) {
     }
     {
       const std::wstring reg_path = GetComTypeLibRegistryPath(iid);
-      VLOG(1) << "Deleting reg_path: " << reg_path
-              << ": from scope: " << UpdaterScopeToString(scope);
       installer::DeleteRegistryKey(UpdaterScopeToHKeyRoot(scope), reg_path,
                                    WorkItem::kWow64Default);
     }
