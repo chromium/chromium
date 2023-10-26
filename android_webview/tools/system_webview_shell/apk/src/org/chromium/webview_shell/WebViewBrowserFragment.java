@@ -43,6 +43,7 @@ import android.window.OnBackInvokedDispatcher;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.webkit.WebViewClientCompat;
@@ -63,6 +64,9 @@ import java.util.regex.Pattern;
 public class WebViewBrowserFragment extends Fragment {
     private static final String TAG = "WebViewShell";
 
+    public static final String ARG_PROFILE =
+            "org.chromium.webview_shell.WebViewBrowserFragment.Profile";
+
     // Our imaginary Android permission to associate with the WebKit geo permission.
     private static final String RESOURCE_GEO = "RESOURCE_GEO";
     // Our imaginary WebKit permission to request when loading a file:// URL.
@@ -78,8 +82,6 @@ public class WebViewBrowserFragment extends Fragment {
     private static final String SAVE_RESTORE_STATE_KEY = "WEBVIEW_CHROMIUM_STATE";
     // Maximal size of this state.
     private static final int MAX_STATE_LENGTH = 300 * 1024;
-
-    private static final boolean USE_CUSTOM_WEBVIEW_PROFILE = false;
 
     // Map from WebKit permissions to Android permissions
     private static final HashMap<String, String> sPermissions;
@@ -120,6 +122,8 @@ public class WebViewBrowserFragment extends Fragment {
     private ValueCallback<Uri[]> mFilePathCallback;
     private final MultiFileSelector mMultiFileSelector = new MultiFileSelector();
     private ActivityResultLauncher<Void> mFileContents;
+
+    private @Nullable String mProfileName;
 
     public void setFilePathCallback(ValueCallback<Uri[]> inCallback) {
         mFilePathCallback = inCallback;
@@ -292,14 +296,19 @@ public class WebViewBrowserFragment extends Fragment {
     }
 
     private void createAndInitializeWebView() {
+        final Bundle args = getArguments();
+        if (args != null) {
+            mProfileName = args.getString(ARG_PROFILE);
+        }
+
         final Context context = requireContext();
         WebView webview =
                 new WebView(context) {
                     @Override
                     public Object getTag(int key) {
-                        if (USE_CUSTOM_WEBVIEW_PROFILE) {
+                        if (mProfileName != null) {
                             if (key == R.id.multi_profile_name_tag_key) {
-                                return "WebViewShellCustomProfile";
+                                return mProfileName;
                             }
                         }
                         return super.getTag(key);

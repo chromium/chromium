@@ -12,6 +12,7 @@
     <string name="title_activity_browser">WebView Browser Tester</string>
     <string name="title_activity_browser_second_process">Second Process Browser Tester</string>
     <string name="title_activity_layout_test">WebView Layout Test</string>
+    <string name="title_activity_multi_profile">WebView Multi-Profile Tester</string>
     <string name="title_activity_thread_test">WebView Thread Test</string>
     <string name="title_activity_page_cycler">WebView Page Cycler Test</string>
     <string name="title_activity_create_destroy">WebView Create Destroy</string>
@@ -25,6 +26,7 @@
     <string name="menu_force_dark_on">Force Dark On</string>
     <string name="menu_algorithmic_darkening_on">Algorithmic Darkening ON</string>
     <string name="menu_night_mode_on">Night Mode ON</string>
+    <string name="menu_multi_profile_activity">Multi-Profile test</string>
     <string name="menu_start_animation_activity">Animation test</string>
     <string name="menu_print">Print</string>
     <string name="menu_about">About WebView</string>
