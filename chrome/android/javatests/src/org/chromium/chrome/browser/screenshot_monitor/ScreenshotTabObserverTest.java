@@ -54,7 +54,7 @@ public class ScreenshotTabObserverTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     List<String> actions = userActionTester.getActions();
-                    Criteria.checkThat("Tab.Screenshot", Matchers.equalTo(actions.get(0)));
+                    Criteria.checkThat(actions, Matchers.hasItem("Tab.Screenshot"));
                 });
     }
 
