@@ -437,6 +437,8 @@ void AppListBubbleAppsPage::AnimateHidePage() {
     return;
   }
 
+  scrollable_apps_grid_view_->CancelDragWithNoDropAnimation();
+
   // Update view visibility when the animation is done.
   auto set_visible_false = base::BindRepeating(
       [](base::WeakPtr<AppListBubbleAppsPage> self) {

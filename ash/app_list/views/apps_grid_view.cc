@@ -474,6 +474,9 @@ void AppsGridView::CancelDragWithNoDropAnimation() {
   EndDrag(/*cancel=*/true);
   drag_view_hider_.reset();
   folder_icon_item_hider_.reset();
+  if (!folder_to_open_after_drag_icon_animation_.empty()) {
+    open_folder_info_.reset();
+  }
   folder_to_open_after_drag_icon_animation_.clear();
   drag_icon_proxy_.reset();
   drag_image_layer_.reset();
@@ -557,6 +560,9 @@ bool AppsGridView::InitiateDrag(AppListItemView* view,
   // Finalize previous drag icon animation if it's still in progress.
   drag_view_hider_.reset();
   folder_icon_item_hider_.reset();
+  if (!folder_to_open_after_drag_icon_animation_.empty()) {
+    open_folder_info_.reset();
+  }
   folder_to_open_after_drag_icon_animation_.clear();
   drag_icon_proxy_.reset();
 
