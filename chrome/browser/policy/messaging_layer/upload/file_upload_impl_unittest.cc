@@ -4,8 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_impl.h"
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <memory>
 #include <set>
 #include <string>

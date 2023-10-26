@@ -7,14 +7,13 @@
 
 #include "components/reporting/resources/resource_managed_buffer.h"
 
-#include <base/memory/scoped_refptr.h>
-#include <base/task/thread_pool.h>
-#include <base/test/task_environment.h>
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
+#include "base/memory/scoped_refptr.h"
+#include "base/task/thread_pool.h"
+#include "base/test/task_environment.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::AllOf;
 using ::testing::Eq;

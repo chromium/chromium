@@ -4,7 +4,7 @@
 
 #include "components/reporting/client/report_queue_configuration.h"
 
-#include <stdio.h>
+#include <cstddef>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

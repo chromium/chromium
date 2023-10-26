@@ -4,8 +4,7 @@
 
 #include "components/reporting/client/report_queue_impl.h"
 
-#include <stdio.h>
-
+#include <cstddef>
 #include <utility>
 
 #include "base/containers/queue.h"
