@@ -500,22 +500,27 @@ crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-002.svg [ Fail
 
 crbug.com/1418401 external/wpt/css/css-masking/mask-shorthand-subproperties-reset.html [ Failure ]
 
-# Unprefixed 'mask' ('mask-image', 'mask-border') support not yet implemented.
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-remote-mask.html [ Failure ]
+# Need to support remote SVG mask references.
+crbug.com/1496470 external/wpt/css/css-masking/mask-image/mask-image-url-remote-mask.html [ Failure ]
+crbug.com/1496470 external/wpt/css/css-masking/mask-image/mask-image-1c.html [ Failure ]
+
+# Need to support mask-clip and mask-origin on SVG.
+crbug.com/1494136 external/wpt/css/css-masking/mask-image/mask-clip-2.html [ Failure ]
+crbug.com/1494136 external/wpt/css/css-masking/mask-image/mask-origin-3.html [ Failure ]
+
+# Need to support multiple mask images in SVG.
+crbug.com/1496473 external/wpt/css/css-masking/mask-image/mask-image-3i.html [ Failure ]
+
+# See: https://bugzilla.mozilla.org/show_bug.cgi?id=1834644
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-003.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-004.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-clip-2.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-1c.html [ Failure ]
+
+# Need to support mask-mode.
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-a.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-b.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-c.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-d.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-to-mask-type.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-origin-3.html [ Failure ]
-
-# New failures exposed by supporting unprefixed mask-image.
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3d.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3i.html [ Failure ]
 
 # CSS clip-path: shape() not implemented
 crbug.com/1308431 [ Win11 ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Failure ]
