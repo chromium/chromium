@@ -775,8 +775,6 @@ crbug.com/1473838 [ android android-pixel-2 passthrough ] conformance/extensions
 # Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1289303 [ android-pixel-4 android-r ] conformance/textures/misc/texture-video-transparent.html [ Failure ] # finder:disable-narrowing
 
-# Observed flaky on Pixel 4 with validating command decoder.
-crbug.com/1493157 [ android-pixel-4 android-r angle-disabled ] deqp/functional/gles3/texturefiltering/3d_formats_00.html [ RetryOnFailure ]
 
 crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 
