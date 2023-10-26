@@ -5,34 +5,49 @@
 import './scanning_mojom_imports.js';
 import 'chrome://scanning/resolution_select.js';
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ResolutionSelectElement} from 'chrome://scanning/resolution_select.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {changeSelect} from './scanning_app_test_utils.js';
 
 suite('resolutionSelectTest', function() {
-  /** @type {?ResolutionSelectElement} */
-  let resolutionSelect = null;
+  let resolutionSelect: ResolutionSelectElement|null = null;
 
   setup(() => {
-    resolutionSelect = /** @type {!ResolutionSelectElement} */ (
-        document.createElement('resolution-select'));
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    resolutionSelect = document.createElement('resolution-select');
     assertTrue(!!resolutionSelect);
     document.body.appendChild(resolutionSelect);
   });
 
   teardown(() => {
-    resolutionSelect.remove();
+    resolutionSelect?.remove();
     resolutionSelect = null;
   });
 
+  function getSelect(): HTMLSelectElement {
+    assert(resolutionSelect);
+    const select =
+        strictQuery('select', resolutionSelect.shadowRoot, HTMLSelectElement);
+    assert(select);
+    return select;
+  }
+
+  function getOption(index: number): HTMLOptionElement {
+    const options = Array.from(getSelect().querySelectorAll('option'));
+    assert(index < options.length);
+    return options[index]!;
+  }
+
   // Verify that adding resolutions results in the dropdown displaying the
   // correct options.
-  test('initializeResolutionSelect', () => {
+  test('initializeResolutionSelect', async () => {
+    assert(resolutionSelect);
     // Before options are added, the dropdown should be enabled and empty.
-    const select =
-        /** @type {!HTMLSelectElement} */ (
-            resolutionSelect.shadowRoot.querySelector('select'));
+    const select = getSelect();
     assertTrue(!!select);
     assertFalse(select.disabled);
     assertEquals(0, select.length);
@@ -44,36 +59,34 @@ suite('resolutionSelectTest', function() {
 
     assertEquals(2, select.length);
     assertEquals(
-        secondResolution.toString() + ' dpi',
-        select.options[0].textContent.trim());
+        secondResolution.toString() + ' dpi', getOption(0).textContent!.trim());
     assertEquals(
-        firstResolution.toString() + ' dpi',
-        select.options[1].textContent.trim());
+        firstResolution.toString() + ' dpi', getOption(1).textContent!.trim());
     assertEquals(secondResolution.toString(), select.value);
 
     // Selecting a different option should update the selected value.
-    return changeSelect(
-               select, secondResolution.toString(), /* selectedIndex */ null)
-        .then(() => {
-          assertEquals(
-              secondResolution.toString(), resolutionSelect.selectedOption);
-        });
+    await changeSelect(
+        select, secondResolution.toString(), /* selectedIndex */ null);
+    assertEquals(secondResolution.toString(), resolutionSelect.selectedOption);
   });
 
   // Verify the resolutions are sorted correctly.
   test('resolutionsSortedCorrectly', () => {
+    assert(resolutionSelect);
     resolutionSelect.options = [150, 300, 75, 600, 1200, 200];
     flush();
 
     // Verify the resolutions are sorted in descending order and that 300 is
     // selected by default.
     for (let i = 0; i < resolutionSelect.options.length - 1; i++) {
-      assertTrue(resolutionSelect.options[i] > resolutionSelect.options[i + 1]);
+      assertTrue(
+          resolutionSelect.options[i]! > resolutionSelect.options[i + 1]!);
     }
     assertEquals('300', resolutionSelect.selectedOption);
   });
 
   test('firstResolutionUsedWhenDefaultNotAvailable', () => {
+    assert(resolutionSelect);
     resolutionSelect.options = [150, 75, 600, 1200, 200];
     flush();
 
@@ -84,21 +97,18 @@ suite('resolutionSelectTest', function() {
 
   // Verify the correct default option is selected when a scanner is selected
   // and the options change.
-  test('selectDefaultWhenOptionsChange', () => {
-    const select =
-        /** @type {!HTMLSelectElement} */ (
-            resolutionSelect.shadowRoot.querySelector('select'));
+  test('selectDefaultWhenOptionsChange', async () => {
+    assert(resolutionSelect);
+    const select = getSelect();
     resolutionSelect.options = [600, 300, 150];
     flush();
-    return changeSelect(select, /* value */ null, /* selectedIndex */ 0)
-        .then(() => {
-          assertEquals('600', resolutionSelect.selectedOption);
-          assertEquals('600', select.options[select.selectedIndex].value);
+    await changeSelect(select, /* value */ null, /* selectedIndex */ 0);
+    assertEquals('600', resolutionSelect.selectedOption);
+    assertEquals('600', getOption(select.selectedIndex).value);
 
-          resolutionSelect.options = [300, 150];
-          flush();
-          assertEquals('300', resolutionSelect.selectedOption);
-          assertEquals('300', select.options[select.selectedIndex].value);
-        });
+    resolutionSelect.options = [300, 150];
+    flush();
+    assertEquals('300', resolutionSelect.selectedOption);
+    assertEquals('300', getOption(select.selectedIndex).value);
   });
 });

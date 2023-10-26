@@ -22,7 +22,7 @@ build_webui_tests("build_webui_tests") {
     "multi_page_checkbox_test.ts",
     "multi_page_scan_test.ts",
     "page_size_select_test.ts",
-    "resolution_select_test.js",
+    "resolution_select_test.ts",
     "scan_done_section_test.js",
     "scanner_select_test.js",
     "scanning_app_test.js",
