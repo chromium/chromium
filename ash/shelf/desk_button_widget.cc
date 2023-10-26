@@ -199,7 +199,7 @@ bool DeskButtonWidget::ShouldBeVisible() const {
       shell->session_controller()->GetLastActiveUserPrefService();
 
   return layout_manager->is_active_session_state() &&
-         !overview_controller->InOverviewSession() &&
+         !overview_controller->InOverviewSession() && prefs &&
          !shell->IsInTabletMode() && GetDeskButtonVisibility(prefs);
 }
 
