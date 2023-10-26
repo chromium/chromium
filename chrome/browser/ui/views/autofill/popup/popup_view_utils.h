@@ -167,9 +167,7 @@ bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
 // either to the main or the footer section.
 bool IsFooterPopupItemId(PopupItemId popup_item_id);
 
-// Returns whether the suggestion with this `popup_item_id` is a group filling
-// suggestion. Those have a different style from regular suggestions.
-bool IsGroupFillingPopupItemId(PopupItemId popup_item_id);
+int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id);
 
 // Return whether the suggestion with this `popup_item_id` can have child
 // suggestions.

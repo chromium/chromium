@@ -283,11 +283,10 @@ void PopupSuggestionStrategy::AddContentLabelsAndCallbacks(
   // Add the actual views.
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
-  const int kTextStyle = IsGroupFillingPopupItemId(kSuggestion.popup_item_id)
-                             ? views::style::TextStyle::STYLE_SECONDARY
-                             : views::style::TextStyle::STYLE_PRIMARY;
   std::unique_ptr<views::Label> main_text_label =
-      popup_cell_utils::CreateMainTextLabel(kSuggestion.main_text, kTextStyle);
+      popup_cell_utils::CreateMainTextLabel(
+          kSuggestion.main_text,
+          GetMainTextStyleForPopupItemId(kSuggestion.popup_item_id));
   popup_cell_utils::FormatLabel(*main_text_label, kSuggestion.main_text,
                                 GetController());
   popup_cell_utils::AddSuggestionContentToView(

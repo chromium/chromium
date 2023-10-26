@@ -533,11 +533,11 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
   return arrow;
 }
 
-bool IsGroupFillingPopupItemId(PopupItemId popup_item_id) {
+int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id) {
   switch (popup_item_id) {
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
-      return true;
+      return views::style::TextStyle::STYLE_SECONDARY;
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAddressEntry:
@@ -575,7 +575,7 @@ bool IsGroupFillingPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
-      return false;
+      return views::style::TextStyle::STYLE_PRIMARY;
   }
 }
 
