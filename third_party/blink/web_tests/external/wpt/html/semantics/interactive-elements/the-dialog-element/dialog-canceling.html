@@ -8,6 +8,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/top-layer.js"></script>
 <script src="/close-watcher/resources/helpers.js"></script>
 
 <!--
@@ -66,13 +67,16 @@ promise_test(async () => {
   });
 
   bottomDialog.showModal();
-  await dialogResilientBless(bottomDialog, () => { topDialog.showModal(); });
+  await blessTopLayer(bottomDialog);
+  topDialog.showModal();
 
-  await dialogResilientBless(topDialog, () => sendEscKey());
+  await blessTopLayer(topDialog);
+  await sendEscKey();
   assert_true(topDialog.open, 'Top dialog event listener should prevent closing.');
   assert_true(bottomDialog.open, 'Top dialog event listener should prevent closing.');
 
-  await dialogResilientBless(topDialog, () => sendEscKey());
+  await blessTopLayer(topDialog);
+  await sendEscKey();
   assert_false(topDialog.open, 'Top dialog should close.');
   assert_true(bottomDialog.open, 'Top dialog should close.');
 
