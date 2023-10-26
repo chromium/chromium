@@ -7,7 +7,7 @@ BiDi protocol can be used. Examples are based on
 ## Installation
 
 The examples are written using Python, in order to align with E2E tests.
-Python 3.6+ and some dependencies are required:
+Python 3.10+ and some dependencies are required:
 
 ```sh
 python -m pip install --user -r requirements.txt

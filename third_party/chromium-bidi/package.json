@@ -6,7 +6,6 @@
     "bidi-types": "wireit",
     "build": "wireit",
     "clean": "rimraf lib .eslintcache .wireit",
-    "local-http-server": "python3 tools/run_local_http_server.py",
     "e2e-headful": "wireit",
     "e2e-headless": "wireit",
     "e2e": "npm run e2e-headless --",
@@ -46,7 +45,7 @@
       ]
     },
     "e2e-headful": {
-      "command": "python3 -m pytest --ignore=tests/input",
+      "command": "pipenv run python -m pytest --ignore=tests/input",
       "dependencies": [
         "server-headful"
       ],
@@ -56,7 +55,7 @@
       ]
     },
     "e2e-headless": {
-      "command": "python3 -m pytest",
+      "command": "pipenv run python -m pytest",
       "dependencies": [
         "server-headless"
       ],

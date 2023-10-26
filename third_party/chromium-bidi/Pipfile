@@ -1,0 +1,30 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+anys = "==0.3.0"
+mypy = "==1.6.0"
+pillow = "==10.1.0"
+pytest = "==7.4.2"
+pytest-asyncio = "==0.21.1"
+pytest-httpserver = "==1.0.8"
+pytest-icdiff = "==0.8"
+pytest-timeout = "==2.2.0"
+syrupy = "==4.5.0"
+websockets = "==11.0.3"
+
+[dev-packages]
+pytest-flakefinder = "*"
+pytest-flakes = "*"
+pytest-instafail = "*"
+pytest-randomly = "*"
+pytest-rerunfailures = "*"
+pytest-xdist = "*"
+
+[requires]
+python_version = "3.11"
+
+[scripts]
+local_http_server = "python tools/run_local_http_server.py"

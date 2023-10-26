@@ -247,10 +247,11 @@ this in web-platform-tests.
 
 #### Installation
 
-Python 3.6+ and some dependencies are required:
+Python 3.10+ and some dependencies are required:
 
 ```sh
-python3 -m pip install --user -r tests/requirements.txt
+python -m pip install --user pipenv
+pipenv install
 ```
 
 #### Running
@@ -279,13 +280,13 @@ sometimes it is useful to run the http server outside the test
 case, for example for manual debugging. This can be done by running:
 
 ```sh
-python3 tools/run_local_http_server.py
+pipenv run local_http_server
 ```
 
-or use npm:
+...or directly:
 
 ```sh
-npm run local-http-server
+python tests/tools/local_http_server.py
 ```
 
 ### Examples

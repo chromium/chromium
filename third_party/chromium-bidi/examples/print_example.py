@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # Copyright 2023 Google LLC.
 # Copyright (c) Microsoft Corporation.

@@ -30,9 +30,11 @@ jobs:
         uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
         with:
           python-version: '3.11'
-          cache: pip
-      - name: Install Python dependencies
-        run: pip install -r tests/requirements.txt
+          cache: pipenv
+      - name: Install pipenv
+        run: pip install pipenv
+      - name: Install python dependencies
+        run: pipenv install
       - name: Test
         run: npm run unit
       - name: Publish
