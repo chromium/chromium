@@ -1461,7 +1461,8 @@ const ComputedStyle* HTMLSelectElement::OptionStyle() const {
 // Show the option list for this select element.
 // https://github.com/whatwg/html/pull/9754
 void HTMLSelectElement::showPicker(ExceptionState& exception_state) {
-  LocalFrame* frame = GetDocument().GetFrame();
+  Document& document = GetDocument();
+  LocalFrame* frame = document.GetFrame();
   // In cross-origin iframes it should throw a "SecurityError" DOMException
   if (frame) {
     if (!frame->IsSameOrigin()) {
@@ -1484,9 +1485,7 @@ void HTMLSelectElement::showPicker(ExceptionState& exception_state) {
     return;
   }
 
-  if (UsesMenuList()) {
-    ShowPopup();
-  }
+  select_type_->ShowPicker();
 }
 
 }  // namespace blink
