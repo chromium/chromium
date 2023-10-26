@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -61,6 +62,13 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
   layer_->SetHdrMetadata(hdr_metadata);
 
   dawn_control_client_->GetProcs().deviceReference(device_);
+
+  WGPUSupportedLimits limits = {};
+  auto get_limits_succeeded =
+      dawn_control_client_->GetProcs().deviceGetLimits(device_, &limits);
+  CHECK(get_limits_succeeded);
+
+  max_texture_size_ = limits.limits.maxTextureDimension2D;
 }
 
 WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
@@ -226,6 +234,12 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
     return nullptr;
   }
 
+  if (size.width() > max_texture_size_ || size.height() > max_texture_size_) {
+    LOG(ERROR) << "GetNewTexture(): invalid size " << size.width() << "x"
+               << size.height();
+    return nullptr;
+  }
+
   // Create a new swap buffer.
   current_swap_buffer_ = NewOrRecycledSwapBuffer(
       context_provider->ContextProvider()->SharedImageInterface(),
@@ -317,7 +331,7 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
     const gfx::ColorSpace& dst_color_space,
     WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback) {
   DCHECK(!neutered_);
-  if (neutered_ || !GetContextProviderWeakPtr()) {
+  if (!current_swap_buffer_ || neutered_ || !GetContextProviderWeakPtr()) {
     return false;
   }
 
