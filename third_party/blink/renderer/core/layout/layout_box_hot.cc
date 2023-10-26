@@ -128,7 +128,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         return nullptr;
       }
       cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
-   }
+    }
 
     if (!physical_fragment.HasItems()) {
       return nullptr;
