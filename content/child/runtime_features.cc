@@ -404,7 +404,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      raw_ref(features::kEnableBluetoothSerialPortProfileInSerialApi)},
     {"MediaStreamTrackTransfer", raw_ref(features::kMediaStreamTrackTransfer)},
     {"PrivateNetworkAccessPermissionPrompt",
-     raw_ref(network::features::kPrivateNetworkAccessPermissionPrompt)},
+     raw_ref(network::features::kPrivateNetworkAccessPermissionPrompt),
+     kSetOnlyIfOverridden},
     {"PermissionElement", raw_ref(permissions::features::kPermissionElement)} };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
