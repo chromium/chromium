@@ -346,21 +346,21 @@ void FilterAccountsWithLoginHint(
                                 num_matching);
 }
 
-void FilterAccountsWithHostedDomain(
-    const std::string& hosted_domain,
+void FilterAccountsWithDomainHint(
+    const std::string& domain_hint,
     IdpNetworkRequestManager::AccountList& accounts) {
-  if (hosted_domain.empty()) {
+  if (domain_hint.empty()) {
     return;
   }
 
-  if (hosted_domain == FederatedAuthRequestImpl::kWildcardHostedDomain) {
+  if (domain_hint == FederatedAuthRequestImpl::kWildcardDomainHint) {
     auto filter = [](const IdentityRequestAccount& account) {
-      return account.hosted_domains.empty();
+      return account.domain_hints.empty();
     };
     base::EraseIf(accounts, filter);
   } else {
-    auto filter = [&hosted_domain](const IdentityRequestAccount& account) {
-      return !base::Contains(account.hosted_domains, hosted_domain);
+    auto filter = [&domain_hint](const IdentityRequestAccount& account) {
+      return !base::Contains(account.domain_hints, domain_hint);
     };
     base::EraseIf(accounts, filter);
   }
@@ -1646,9 +1646,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
-      if (IsFedCmHostedDomainEnabled()) {
-        FilterAccountsWithHostedDomain(idp_info->provider->hosted_domain,
-                                       accounts);
+      if (IsFedCmDomainHintEnabled()) {
+        FilterAccountsWithDomainHint(idp_info->provider->domain_hint, accounts);
       }
       if (accounts.empty()) {
         render_frame_host().AddMessageToConsole(

@@ -920,8 +920,8 @@ extern const char kFedCmAutoSelectedFlagDescription[];
 extern const char kFedCmErrorName[];
 extern const char kFedCmErrorDescription[];
 
-extern const char kFedCmHostedDomainName[];
-extern const char kFedCmHostedDomainDescription[];
+extern const char kFedCmDomainHintName[];
+extern const char kFedCmDomainHintDescription[];
 
 extern const char kFedCmIdPRegistrationName[];
 extern const char kFedCmIdPRegistrationDescription[];

@@ -13,7 +13,7 @@ dictionary IdentityProviderConfig {
 dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   USVString nonce;
   DOMString loginHint;
-  [RuntimeEnabled=FedCmHostedDomain] DOMString hostedDomain;
+  [RuntimeEnabled=FedCmDomainHint] DOMString domainHint;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> scope;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> responseType;
   [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;

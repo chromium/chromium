@@ -76,7 +76,7 @@ static const std::vector<IdentityRequestAccount> kAccounts{{
     "Ken",                       // given_name
     GURL(),                      // picture
     std::vector<std::string>(),  // login_hints
-    std::vector<std::string>()   // hosted_domains
+    std::vector<std::string>()   // domain_hints
 }};
 
 // IdpNetworkRequestManager which returns valid data from IdP.

@@ -9050,9 +9050,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmErrorDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmError)},
 
-    {"fedcm-hosted-domain", flag_descriptions::kFedCmHostedDomainName,
-     flag_descriptions::kFedCmHostedDomainDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmHostedDomain)},
+    {"fedcm-domain-hint", flag_descriptions::kFedCmDomainHintName,
+     flag_descriptions::kFedCmDomainHintDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmDomainHint)},
 
     {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,

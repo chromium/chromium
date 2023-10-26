@@ -128,10 +128,10 @@ struct IdentityProviderRequestOptions {
   // This field is not sent to the provider, but rather used by the user agent.
   string login_hint;
 
-  // The hosted domain for this identity provider. Used by the relying party to
-  // specify the hosted domain they require an account to belong to. The field
+  // The domain hint for this identity provider. Used by the relying party to
+  // specify the domain hint they require an account to belong to. The field
   // is not sent to the provider, but rather used by the user agent.
-  string hosted_domain;
+  string domain_hint;
 
   // The scope of the federated identity request: name/email/photo or
   // custom ones (e.g. "access to calendar", "access to social graph", etc).

@@ -60,8 +60,8 @@ bool IsFedCmAutoSelectedFlagEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmAutoSelectedFlag);
 }
 
-bool IsFedCmHostedDomainEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmHostedDomain);
+bool IsFedCmDomainHintEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmDomainHint);
 }
 
 bool IsFedCmErrorEnabled() {

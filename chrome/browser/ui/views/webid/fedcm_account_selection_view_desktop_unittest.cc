@@ -224,7 +224,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     for (const auto& account_info : account_infos) {
       accounts.emplace_back(account_info.first, "", "", "", GURL::EmptyGURL(),
                             /*login_hints=*/std::vector<std::string>(),
-                            /*hosted_domains=*/std::vector<std::string>(),
+                            /*domain_hints=*/std::vector<std::string>(),
                             account_info.second);
     }
     return IdentityProviderDisplayData(u"", content::IdentityProviderMetadata(),

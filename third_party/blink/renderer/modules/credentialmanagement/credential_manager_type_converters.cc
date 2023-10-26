@@ -854,9 +854,9 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
 
   mojo_options->nonce = options.getNonceOr("");
   mojo_options->login_hint = options.getLoginHintOr("");
-  mojo_options->hosted_domain =
-      blink::RuntimeEnabledFeatures::FedCmHostedDomainEnabled()
-          ? options.getHostedDomainOr("")
+  mojo_options->domain_hint =
+      blink::RuntimeEnabledFeatures::FedCmDomainHintEnabled()
+          ? options.getDomainHintOr("")
           : "";
 
   if (blink::RuntimeEnabledFeatures::FedCmAuthzEnabled()) {

@@ -152,9 +152,9 @@ export function request_options_with_login_hint(manifest_filename, login_hint) {
   return options;
 }
 
-export function request_options_with_hosted_domain(manifest_filename, hosted_domain) {
+export function request_options_with_domain_hint(manifest_filename, domain_hint) {
   let options = request_options_with_mediation_required(manifest_filename);
-  options.identity.providers[0].hostedDomain = hosted_domain;
+  options.identity.providers[0].domainHint = domain_hint;
 
   return options;
 }

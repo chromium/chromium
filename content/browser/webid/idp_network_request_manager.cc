@@ -90,7 +90,7 @@ constexpr char kAccountGivenNameKey[] = "given_name";
 constexpr char kAccountPictureKey[] = "picture";
 constexpr char kAccountApprovedClientsKey[] = "approved_clients";
 constexpr char kHintsKey[] = "login_hints";
-constexpr char kHostedDomainsKey[] = "hosted_domains";
+constexpr char kDomainHintsKey[] = "domain_hints";
 
 // Keys in 'branding' 'icons' dictionary in accounts endpoint.
 constexpr char kIdpBrandingIconUrl[] = "url";
@@ -195,13 +195,13 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
       }
     }
   }
-  std::vector<std::string> hosted_domains;
-  if (IsFedCmHostedDomainEnabled()) {
-    auto* hosted_domains_list = account.FindList(kHostedDomainsKey);
-    if (hosted_domains_list) {
-      for (const base::Value& entry : *hosted_domains_list) {
+  std::vector<std::string> domain_hints;
+  if (IsFedCmDomainHintEnabled()) {
+    auto* domain_hints_list = account.FindList(kDomainHintsKey);
+    if (domain_hints_list) {
+      for (const base::Value& entry : *domain_hints_list) {
         if (entry.is_string()) {
-          hosted_domains.emplace_back(entry.GetString());
+          domain_hints.emplace_back(entry.GetString());
         }
       }
     }
@@ -233,7 +233,7 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
   return content::IdentityRequestAccount(
       *id, *email, *name, given_name ? *given_name : "",
       picture ? GURL(*picture) : GURL(), std::move(account_hints),
-      std::move(hosted_domains), approved_value);
+      std::move(domain_hints), approved_value);
 }
 
 // Parses accounts from given Value. Returns true if parse is successful and

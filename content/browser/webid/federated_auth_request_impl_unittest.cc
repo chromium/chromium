@@ -98,8 +98,8 @@ constexpr char kAccountIdNicolas[] = "nico_id";
 constexpr char kAccountIdPeter[] = "peter_id";
 constexpr char kAccountIdZach[] = "zach_id";
 constexpr char kEmail[] = "ken@idp.example";
-constexpr char kHostedDomain[] = "domain@corp.com";
-constexpr char kOtherHostedDomain[] = "other_domain@corp.com";
+constexpr char kDomainHint[] = "domain@corp.com";
+constexpr char kOtherDomainHint[] = "other_domain@corp.com";
 
 // Values will be added here as token introspection is implemented.
 constexpr char kToken[] = "[not a real token]";
@@ -115,7 +115,7 @@ static const std::vector<IdentityRequestAccount> kSingleAccount{{
     "Ken",                       // given_name
     GURL(),                      // picture
     std::vector<std::string>(),  // login_hints
-    std::vector<std::string>()   // hosted_domains
+    std::vector<std::string>()   // domain_hints
 }};
 
 static const std::vector<IdentityRequestAccount> kSingleAccountWithHint{{
@@ -125,19 +125,18 @@ static const std::vector<IdentityRequestAccount> kSingleAccountWithHint{{
     "Ken",                      // given_name
     GURL(),                     // picture
     {kAccountId, kEmail},       // login_hints
-    std::vector<std::string>()  // hosted_domains
+    std::vector<std::string>()  // domain_hints
 }};
 
-static const std::vector<IdentityRequestAccount> kSingleAccountWithHostedDomain{
-    {
-        kAccountId,                  // id
-        kEmail,                      // email
-        "Ken R. Example",            // name
-        "Ken",                       // given_name
-        GURL(),                      // picture
-        std::vector<std::string>(),  // login_hints
-        {kHostedDomain}              // hosted_domains
-    }};
+static const std::vector<IdentityRequestAccount> kSingleAccountWithDomainHint{{
+    kAccountId,                  // id
+    kEmail,                      // email
+    "Ken R. Example",            // name
+    "Ken",                       // given_name
+    GURL(),                      // picture
+    std::vector<std::string>(),  // login_hints
+    {kDomainHint}                // domain_hints
+}};
 
 static const std::vector<IdentityRequestAccount> kMultipleAccounts{
     {
@@ -147,7 +146,7 @@ static const std::vector<IdentityRequestAccount> kMultipleAccounts{
         "Nicolas",                   // given_name
         GURL(),                      // picture
         std::vector<std::string>(),  // login_hints
-        std::vector<std::string>(),  // hosted_domains
+        std::vector<std::string>(),  // domain_hints
         LoginState::kSignUp          // login_state
     },
     {
@@ -157,7 +156,7 @@ static const std::vector<IdentityRequestAccount> kMultipleAccounts{
         "Peter",                     // given_name
         GURL(),                      // picture
         std::vector<std::string>(),  // login_hints
-        std::vector<std::string>(),  // hosted_domains
+        std::vector<std::string>(),  // domain_hints
         LoginState::kSignIn          // login_state
     },
     {
@@ -167,7 +166,7 @@ static const std::vector<IdentityRequestAccount> kMultipleAccounts{
         "Zach",                      // given_name
         GURL(),                      // picture
         std::vector<std::string>(),  // login_hints
-        std::vector<std::string>(),  // hosted_domains
+        std::vector<std::string>(),  // domain_hints
         LoginState::kSignUp          // login_state
     }};
 
@@ -180,7 +179,7 @@ static const std::vector<IdentityRequestAccount>
             "Nicolas",                                  // given_name
             GURL(),                                     // picture
             {kAccountIdNicolas, kAccountEmailNicolas},  // login_hints
-            {kHostedDomain},                            // hosted_domains
+            {kDomainHint},                              // domain_hints
             LoginState::kSignUp                         // login_state
         },
         {
@@ -190,7 +189,7 @@ static const std::vector<IdentityRequestAccount>
             "Peter",                                // given_name
             GURL(),                                 // picture
             {kAccountIdPeter, kAccountEmailPeter},  // login_hints
-            std::vector<std::string>(),             // hosted_domains
+            std::vector<std::string>(),             // domain_hints
             LoginState::kSignIn                     // login_state
         },
         {
@@ -200,7 +199,7 @@ static const std::vector<IdentityRequestAccount>
             "Zach",                               // given_name
             GURL(),                               // picture
             {kAccountIdZach, kAccountEmailZach},  // login_hints
-            {kHostedDomain, kOtherHostedDomain},  // hosted_domains
+            {kDomainHint, kOtherDomainHint},      // domain_hints
             LoginState::kSignUp                   // login_state
         }};
 
@@ -211,7 +210,7 @@ struct IdentityProviderParameters {
   const char* client_id;
   const char* nonce;
   const char* login_hint;
-  const char* hosted_domain;
+  const char* domain_hint;
   std::vector<std::string> scope;
 };
 
@@ -304,7 +303,7 @@ static const MockClientIdConfiguration kDefaultClientMetadata{
 
 static const IdentityProviderParameters kDefaultIdentityProviderRequestOptions{
     kProviderUrlFull, kClientId, kNonce, /*login_hint=*/"",
-    /*hosted_domain=*/""};
+    /*domain_hint=*/""};
 
 static const RequestParameters kDefaultRequestParameters{
     std::vector<IdentityProviderParameters>{
@@ -361,9 +360,9 @@ static const RequestExpectations kExpectationSuccess{
 static const RequestParameters kDefaultMultiIdpRequestParameters{
     std::vector<IdentityProviderParameters>{
         {kProviderUrlFull, kClientId, kNonce, /*login_hint=*/"",
-         /*hosted_domain=*/""},
+         /*domain_hint=*/""},
         {kProviderTwoUrlFull, kClientId, kNonce, /*login_hint=*/"",
-         /*hosted_domain=*/""}},
+         /*domain_hint=*/""}},
     /*rp_context=*/blink::mojom::RpContext::kSignIn,
     /*rp_mode=*/blink::mojom::RpMode::kWidget};
 
@@ -906,7 +905,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       options->config->client_id = identity_provider.client_id;
       options->nonce = identity_provider.nonce;
       options->login_hint = identity_provider.login_hint;
-      options->hosted_domain = identity_provider.hosted_domain;
+      options->domain_hint = identity_provider.domain_hint;
       options->scope = std::move(identity_provider.scope);
       blink::mojom::IdentityProviderPtr idp_ptr =
           blink::mojom::IdentityProvider::NewFederated(std::move(options));
@@ -1517,7 +1516,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginUrlDifferentOriginIdp) {
 TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
   IdentityProviderParameters identity_provider{
       "http://idp.example/fedcm.json", kClientId, kNonce, /*login_hint=*/"",
-      /*hosted_domain=*/""};
+      /*domain_hint=*/""};
   RequestParameters request{
       std::vector<IdentityProviderParameters>{identity_provider},
       /*rp_context=*/blink::mojom::RpContext::kSignIn};
@@ -4238,62 +4237,62 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatch) {
       FedCmMetrics::NumAccounts::kZero, 1);
 }
 
-TEST_F(FederatedAuthRequestImplTest, HostedDomainDisabled) {
+TEST_F(FederatedAuthRequestImplTest, DomainHintDisabled) {
   base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmHostedDomain);
+  list.InitAndDisableFeature(features::kFedCmDomainHint);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].hosted_domain = "incorrect_hosted_domain";
+  parameters.identity_providers[0].domain_hint = "incorrect_domain_hint";
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts =
-      kSingleAccountWithHostedDomain;
+      kSingleAccountWithDomainHint;
 
   RunAuthTest(parameters, kExpectationSuccess, configuration);
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].id, kAccountId);
 }
 
-TEST_F(FederatedAuthRequestImplTest, HostedDomainSingleAccountMatch) {
+TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountMatch) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmHostedDomain);
+  list.InitAndEnableFeature(features::kFedCmDomainHint);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].hosted_domain = kHostedDomain;
+  parameters.identity_providers[0].domain_hint = kDomainHint;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts =
-      kSingleAccountWithHostedDomain;
+      kSingleAccountWithDomainHint;
 
   RunAuthTest(parameters, kExpectationSuccess, configuration);
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].id, kAccountId);
 }
 
-TEST_F(FederatedAuthRequestImplTest, HostedDomainSingleAccountStarMatch) {
+TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarMatch) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmHostedDomain);
+  list.InitAndEnableFeature(features::kFedCmDomainHint);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].hosted_domain =
-      FederatedAuthRequestImpl::kWildcardHostedDomain;
+  parameters.identity_providers[0].domain_hint =
+      FederatedAuthRequestImpl::kWildcardDomainHint;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts =
-      kSingleAccountWithHostedDomain;
+      kSingleAccountWithDomainHint;
 
   RunAuthTest(parameters, kExpectationSuccess, configuration);
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].id, kAccountId);
 }
 
-TEST_F(FederatedAuthRequestImplTest, HostedDomainSingleAccountStarNoMatch) {
+TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarNoMatch) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmHostedDomain);
+  list.InitAndEnableFeature(features::kFedCmDomainHint);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].hosted_domain =
-      FederatedAuthRequestImpl::kWildcardHostedDomain;
+  parameters.identity_providers[0].domain_hint =
+      FederatedAuthRequestImpl::kWildcardDomainHint;
 
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -4308,12 +4307,12 @@ TEST_F(FederatedAuthRequestImplTest, HostedDomainSingleAccountStarNoMatch) {
   EXPECT_FALSE(did_show_accounts_dialog());
 }
 
-TEST_F(FederatedAuthRequestImplTest, HostedDomainSingleAccountNoMatch) {
+TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountNoMatch) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmHostedDomain);
+  list.InitAndEnableFeature(features::kFedCmDomainHint);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].hosted_domain = "incorrect_hosted_domain";
+  parameters.identity_providers[0].domain_hint = "incorrect_domain_hint";
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
@@ -4322,19 +4321,19 @@ TEST_F(FederatedAuthRequestImplTest, HostedDomainSingleAccountNoMatch) {
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts =
-      kSingleAccountWithHostedDomain;
+      kSingleAccountWithDomainHint;
 
   RunAuthTest(parameters, expectations, configuration);
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
   EXPECT_FALSE(did_show_accounts_dialog());
 }
 
-TEST_F(FederatedAuthRequestImplTest, NoHostedDomainNoMatch) {
+TEST_F(FederatedAuthRequestImplTest, NoDomainHintNoMatch) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmHostedDomain);
+  list.InitAndEnableFeature(features::kFedCmDomainHint);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].hosted_domain = kHostedDomain;
+  parameters.identity_providers[0].domain_hint = kDomainHint;
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
@@ -4348,12 +4347,12 @@ TEST_F(FederatedAuthRequestImplTest, NoHostedDomainNoMatch) {
   EXPECT_FALSE(did_show_accounts_dialog());
 }
 
-TEST_F(FederatedAuthRequestImplTest, HostedDomainMultipleAccountsSingleMatch) {
+TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsSingleMatch) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmHostedDomain);
+  list.InitAndEnableFeature(features::kFedCmDomainHint);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].hosted_domain = kOtherHostedDomain;
+  parameters.identity_providers[0].domain_hint = kOtherDomainHint;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts =
@@ -4365,12 +4364,12 @@ TEST_F(FederatedAuthRequestImplTest, HostedDomainMultipleAccountsSingleMatch) {
 }
 
 TEST_F(FederatedAuthRequestImplTest,
-       HostedDomainMultipleAccountsMultipleMatches) {
+       DomainHintMultipleAccountsMultipleMatches) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmHostedDomain);
+  list.InitAndEnableFeature(features::kFedCmDomainHint);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].hosted_domain = kHostedDomain;
+  parameters.identity_providers[0].domain_hint = kDomainHint;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts =
@@ -4382,13 +4381,13 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_EQ(displayed_accounts()[1].id, kAccountIdZach);
 }
 
-TEST_F(FederatedAuthRequestImplTest, HostedDomainMultipleAccountsStar) {
+TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsStar) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmHostedDomain);
+  list.InitAndEnableFeature(features::kFedCmDomainHint);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].hosted_domain =
-      FederatedAuthRequestImpl::kWildcardHostedDomain;
+  parameters.identity_providers[0].domain_hint =
+      FederatedAuthRequestImpl::kWildcardDomainHint;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts =
@@ -4400,12 +4399,12 @@ TEST_F(FederatedAuthRequestImplTest, HostedDomainMultipleAccountsStar) {
   EXPECT_EQ(displayed_accounts()[1].id, kAccountIdZach);
 }
 
-TEST_F(FederatedAuthRequestImplTest, HostedDomainMultipleAccountsNoMatch) {
+TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsNoMatch) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmHostedDomain);
+  list.InitAndEnableFeature(features::kFedCmDomainHint);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].hosted_domain = "incorrect_hosted_domain";
+  parameters.identity_providers[0].domain_hint = "incorrect_domain_hint";
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,

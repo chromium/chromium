@@ -44,8 +44,8 @@ bool IsWebIdentityDigitalCredentialsEnabled();
 // Whether the AutoSelected feature is enabled.
 bool IsFedCmAutoSelectedFlagEnabled();
 
-// Whether the HostedDomain feature is enabled.
-bool IsFedCmHostedDomainEnabled();
+// Whether the DomainHint feature is enabled.
+bool IsFedCmDomainHintEnabled();
 
 // Whether the Error API is enabled.
 bool IsFedCmErrorEnabled();

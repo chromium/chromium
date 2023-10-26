@@ -227,7 +227,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      kSetOnlyIfOverridden},
     {wf::EnableFedCmAuthz, raw_ref(features::kFedCmAuthz), kDefault},
     {wf::EnableFedCmError, raw_ref(features::kFedCmError), kDefault},
-    {wf::EnableFedCmHostedDomain, raw_ref(features::kFedCmHostedDomain),
+    {wf::EnableFedCmDomainHint, raw_ref(features::kFedCmDomainHint),
      kSetOnlyIfOverridden},
     {wf::EnableFedCmIdPRegistration, raw_ref(features::kFedCmIdPRegistration),
      kDefault},

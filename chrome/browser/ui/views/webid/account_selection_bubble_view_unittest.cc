@@ -71,7 +71,7 @@ content::IdentityRequestAccount CreateTestIdentityRequestAccount(
       std::string(kNameBase) + account_suffix,
       std::string(kGivenNameBase) + account_suffix, GURL::EmptyGURL(),
       /*login_hints=*/std::vector<std::string>(),
-      /*hosted_domains=*/std::vector<std::string>(), login_state);
+      /*domain_hints=*/std::vector<std::string>(), login_state);
 }
 
 std::vector<content::IdentityRequestAccount> CreateTestIdentityRequestAccounts(

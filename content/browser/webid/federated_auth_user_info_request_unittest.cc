@@ -170,7 +170,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
           account_config.id, GenerateEmailForUserId(account_config.id),
           kAccountName, kAccountGivenName, GURL(kAccountPicture),
           /*login_hints=*/std::vector<std::string>(),
-          /*hosted_domains=*/std::vector<std::string>(),
+          /*domain_hints=*/std::vector<std::string>(),
           account_config.login_state);
     }
 

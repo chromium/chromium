@@ -1616,10 +1616,10 @@ const char kFedCmErrorName[] = "FedCmError";
 const char kFedCmErrorDescription[] =
     "Enables IDPs to show information about an error.";
 
-const char kFedCmHostedDomainName[] = "FedCmHostedDomain";
-const char kFedCmHostedDomainDescription[] =
+const char kFedCmDomainHintName[] = "FedCmDomainHint";
+const char kFedCmDomainHintDescription[] =
     "Enables RPs to request only FedCM invocations to only show accounts "
-    "matching a given hosted domain.";
+    "matching a given domain.";
 
 const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
 const char kFedCmIdPRegistrationDescription[] =
