@@ -79,13 +79,6 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   static get properties() {
     return {
-      enablePasswordsImportM2_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enablePasswordsImportM2');
-        },
-      },
-
       dialogState_: Number,
 
       dialogStateEnum_: {
@@ -143,7 +136,6 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   isAccountStoreUser: boolean;
   accountEmail: string;
 
-  private enablePasswordsImportM2_: boolean;
   private dialogState_: DialogState = DialogState.NO_DIALOG;
   // Refers both to syncing users with sync enabled for passwords and account
   // store users who choose to import passwords to their account.
@@ -468,22 +460,9 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     return !this.isAccountStoreUser && !this.isState_(DialogState.IN_PROGRESS);
   }
 
-  private shouldHideTipBox_(): boolean {
-    // Tip box is only shown in "success" state if all passwords were imported.
-    // Only shown in Passwords Import M1.
-    if (this.enablePasswordsImportM2_) {
-      return true;
-    }
-    assert(this.results_);
-    return !!this.results_.displayedEntries.length;
-  }
-
   private shouldHideDeleteFileOption_(): boolean {
     // "Delete file" checkbox is only shown in "success" state if all passwords
     // were imported.
-    if (!this.enablePasswordsImportM2_) {
-      return true;
-    }
     assert(this.results_);
     return !!this.results_.displayedEntries.length;
   }

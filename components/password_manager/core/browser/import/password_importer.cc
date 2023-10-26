@@ -585,9 +585,7 @@ void PasswordImporter::ConsumePasswords(
   base::UmaHistogramCounts1M("PasswordManager.Import.PerFile.Duplicates",
                              duplicates_count);
 
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordsImportM2) ||
-      conflicts.empty()) {
+  if (conflicts.empty()) {
     for (const std::vector<PasswordForm>& forms : conflicts) {
       results.displayed_entries.push_back(CreateFailedImportEntry(
           CredentialUIEntry(forms), GetConflictType(to_store)));
@@ -639,9 +637,7 @@ void PasswordImporter::ImportFinished(ImportResultsCallback results_callback,
                                       size_t conflicts_count) {
   ReportImportResultsMetrics(results, start_time, conflicts_count);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordsImportM2) &&
-      results.displayed_entries.empty()) {
+  if (results.displayed_entries.empty()) {
     // After successful import with no errors, the user has an option to delete
     // the imported file.
     state_ = kFinished;

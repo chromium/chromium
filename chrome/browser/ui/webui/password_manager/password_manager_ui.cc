@@ -427,10 +427,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain));
 #endif
 
-  source->AddBoolean("enablePasswordsImportM2",
-                     base::FeatureList::IsEnabled(
-                         password_manager::features::kPasswordsImportM2));
-
   source->AddBoolean(
       "enableSendPasswords",
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
