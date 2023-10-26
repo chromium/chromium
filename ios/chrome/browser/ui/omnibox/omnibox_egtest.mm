@@ -821,9 +821,7 @@ void FocusFakebox() {
   [ChromeEarlGrey copyTextToPasteboard:@"hello"];
 
   // Tap on Omnibox on pre edit state.
-  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+  [self tapOnPreEditTextInOmnibox];
 
   // Wait for callout copy button to be displayed.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -853,9 +851,7 @@ void FocusFakebox() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on Omnibox on pre edit state.
-  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+  [self tapOnPreEditTextInOmnibox];
 
   // Wait for callout cut button to be displayed.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -887,9 +883,7 @@ void FocusFakebox() {
   [ChromeEarlGrey copyTextToPasteboard:@"hello"];
 
   // Tap on Omnibox on pre edit state.
-  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+  [self tapOnPreEditTextInOmnibox];
 
   // Wait for callout paste button to be displayed.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -903,6 +897,19 @@ void FocusFakebox() {
   // Omnibox now should be empty.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText("hello")];
+}
+
+// Taps the pre edit text in the omnibox.
+- (void)tapOnPreEditTextInOmnibox {
+  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
+  // Y offset to tap on the middle of the text.
+  const CGFloat kOmniboxTextFieldMidY = 18;
+  // X offset to tap on the beginning of the text, tapping on the left edge
+  // inserts a carret instead of showing the menu.
+  const CGFloat kOmniboxTextFieldOffsetX = 30;
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_tapAtPoint(CGPointMake(kOmniboxTextFieldOffsetX,
+                                                kOmniboxTextFieldMidY))];
 }
 
 @end
@@ -945,7 +952,7 @@ void FocusFakebox() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_tap()];
+      performAction:grey_longPress()];
 
   // Pressing should not allow copying when omnibox is empty.
   // Wait for Copy button to appear or timeout after 2 seconds.
@@ -985,9 +992,9 @@ void FocusFakebox() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(@"this is a test")];
 
-  // Click on the omnibox.
+  // Long press on the omnibox.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_tap()];
+      performAction:grey_longPress()];
 
   // SelectAll the omnibox field.
   GREYCondition* SelectAllButtonIsDisplayed = [GREYCondition
@@ -1056,7 +1063,7 @@ void FocusFakebox() {
       performAction:grey_replaceText(@"this is a test")];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_tap()];
+      performAction:grey_longPress()];
 
   // Pressing should allow select and selectAll.
   // Wait for UIMenuController to appear or timeout after 2 seconds.
