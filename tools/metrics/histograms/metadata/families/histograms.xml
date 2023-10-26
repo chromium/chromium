@@ -553,6 +553,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FamilyUser.ManagedSiteList.SubdomainConflictType"
+    enum="FamilyLinkFilteringSubdomainConflictType" expires_after="2024-02-11">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the type of the conflict during url filtering when a match exists in
+    both the allowlist and the blocklist.
+  </summary>
+</histogram>
+
 <histogram name="FamilyUser.ManagedSiteListCount.Approved"
     units="Number of approved sites" expires_after="2024-02-11">
   <owner>agawronska@chromium.org</owner>

@@ -5,6 +5,8 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -13,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
@@ -46,28 +49,6 @@ GetBehaviorFromSafeSearchClassification(
 bool IsSameDomain(const GURL& url1, const GURL& url2) {
   return net::registry_controlled_domains::SameDomainOrHost(
       url1, url2, EXCLUDE_PRIVATE_REGISTRIES);
-}
-
-bool SetFilteringBehaviorResult(
-    SupervisedUserURLFilter::FilteringBehavior behavior,
-    SupervisedUserURLFilter::FilteringBehavior* result) {
-  if (*result == behavior) {
-    return false;
-  }
-
-  // First time to find a match in allow/block list
-  if (*result == SupervisedUserURLFilter::FilteringBehavior::INVALID) {
-    *result = behavior;
-    return false;
-  }
-
-  // Another match is found and doesn't have the same behavior. Block is
-  // the preferred behvior, override the result only if the match is block.
-  if (behavior == SupervisedUserURLFilter::FilteringBehavior::BLOCK) {
-    *result = behavior;
-  }
-
-  return true;
 }
 
 bool IsNonStandardUrlScheme(const GURL& effective_url) {
@@ -126,6 +107,13 @@ namespace {
 const char kManagedSiteListConflictHistogramName[] =
     "FamilyUser.ManagedSiteList.Conflict";
 
+// UMA histogram FamilyUser.ManagedSiteList.SubdomainConflictType
+// Reports a conflict when the user tries to access a url that has a match in
+// both of the allow list and the block list and the two conflicting entries
+// differs only in the "www" subdomain.
+const char kManagedSiteListSubdomainConflictTypeHistogramName[] =
+    "FamilyUser.ManagedSiteList.SubdomainConflictType";
+
 // UMA histogram FamilyUser.WebFilterType
 // Reports WebFilterType which indicates web filter behaviour are used for
 // current Family Link user.
@@ -145,6 +133,92 @@ constexpr char kApprovedSitesCountHistogramName[] =
 // Reports the number of blocked urls and domains for current Family Link user.
 constexpr char kBlockedSitesCountHistogramName[] =
     "FamilyUser.ManagedSiteListCount.Blocked";
+
+constexpr std::string_view kHttpProtocol = "http://";
+constexpr std::string_view kHttpsProtocol = "https://";
+constexpr std::string_view kWwwSubdomain = "www.";
+
+// Trims the given `pattern` if it starts with 'https://' or 'http://'.
+std::string TrimHttpOrHttpsProtocol(const std::string& pattern) {
+  std::string trimmed_pattern = pattern;
+  if (base::StartsWith(pattern, kHttpsProtocol, base::CompareCase::SENSITIVE)) {
+    trimmed_pattern = pattern.substr(kHttpsProtocol.size());
+  } else if (base::StartsWith(pattern, kHttpProtocol,
+                              base::CompareCase::SENSITIVE)) {
+    trimmed_pattern = pattern.substr(kHttpProtocol.size());
+  }
+  return trimmed_pattern;
+}
+
+// Trims 'www' subdomain if it is present on the given pattern.
+std::string TrimWwwSubdomain(const std::string& pattern) {
+  std::string trimmed_pattern = pattern;
+  if (base::StartsWith(pattern, kWwwSubdomain)) {
+    trimmed_pattern = pattern.substr(kWwwSubdomain.size());
+  }
+  return trimmed_pattern;
+}
+
+// For a given host `pattern` and, checks if there is another pattern in
+// the given `host_list` which differs only in the trivial
+// "www"-subdomain.
+// Note: This method applies transformations to the given pattern
+// opposite to those from `SupervisedUserURLFilter::HostMatchesPattern`
+// (e.g. protocol/subdomain stripping). The pattern manipulations should
+// be kept in sync between the two methods.
+bool HostHasTrivialSubdomainConflict(const std::string& pattern,
+                                     const std::set<std::string> host_list) {
+  if (base::StartsWith(pattern, "*.")) {
+    return false;
+  }
+
+  std::string removed_protocol_pattern = TrimHttpOrHttpsProtocol(pattern);
+  std::string removed_subdomain_pattern =
+      TrimWwwSubdomain(removed_protocol_pattern);
+
+  bool has_www_subdomain =
+      removed_protocol_pattern != removed_subdomain_pattern;
+  std::string subdomain_replacement =
+      has_www_subdomain ? std::string() : kWwwSubdomain.data();
+
+  return base::Contains(host_list,
+                        subdomain_replacement + removed_subdomain_pattern) ||
+         base::Contains(host_list, kHttpProtocol.data() +
+                                       subdomain_replacement +
+                                       removed_subdomain_pattern) ||
+         base::Contains(host_list, kHttpsProtocol.data() +
+                                       subdomain_replacement +
+                                       removed_subdomain_pattern);
+}
+
+using FilteringSubdomainConflictType =
+    SupervisedUserURLFilter::FilteringSubdomainConflictType;
+
+std::optional<FilteringSubdomainConflictType> AddConflict(
+    std::optional<FilteringSubdomainConflictType> current_conflict,
+    bool is_trivial_subdomain_conflict) {
+  if (!current_conflict.has_value()) {
+    return is_trivial_subdomain_conflict
+               ? FilteringSubdomainConflictType::kTrivialSubdomainConflictOnly
+               : FilteringSubdomainConflictType::kOtherConflictOnly;
+  }
+  switch (current_conflict.value()) {
+    case FilteringSubdomainConflictType::kTrivialSubdomainConflictOnly:
+      return is_trivial_subdomain_conflict
+                 ? FilteringSubdomainConflictType::kTrivialSubdomainConflictOnly
+                 : FilteringSubdomainConflictType::
+                       kTrivialSubdomainConflictAndOtherConflict;
+    case FilteringSubdomainConflictType::kOtherConflictOnly:
+      return is_trivial_subdomain_conflict
+                 ? FilteringSubdomainConflictType::
+                       kTrivialSubdomainConflictAndOtherConflict
+                 : FilteringSubdomainConflictType::kOtherConflictOnly;
+    case FilteringSubdomainConflictType::
+        kTrivialSubdomainConflictAndOtherConflict:
+      return FilteringSubdomainConflictType::
+          kTrivialSubdomainConflictAndOtherConflict;
+  }
+}
 
 }  // namespace
 
@@ -191,6 +265,12 @@ SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest() {
 }
 
 // static
+const char*
+SupervisedUserURLFilter::GetManagedSiteListConflictTypeHistogramNameForTest() {
+  return kManagedSiteListSubdomainConflictTypeHistogramName;
+}
+
+// static
 SupervisedUserURLFilter::FilteringBehavior
 SupervisedUserURLFilter::BehaviorFromInt(int behavior_value) {
   DCHECK(behavior_value == ALLOW || behavior_value == BLOCK)
@@ -199,32 +279,27 @@ SupervisedUserURLFilter::BehaviorFromInt(int behavior_value) {
 }
 
 // static
+// Note: The transformations applied to pattern (e.g. protocol/subdomain
+// stripping) should be kept in sync with those in the method
+// `HostHasSubdomainConflict`.
 bool SupervisedUserURLFilter::HostMatchesPattern(
     const std::string& canonical_host,
     const std::string& pattern) {
-  std::string trimmed_pattern = pattern;
   std::string trimmed_host = canonical_host;
+  std::string trimmed_pattern = TrimHttpOrHttpsProtocol(pattern);
 
-  // If pattern starts with https:// or http:// trim it.
-  if (base::StartsWith(pattern, "https://", base::CompareCase::SENSITIVE)) {
-    trimmed_pattern = trimmed_pattern.substr(8);
-  } else if (base::StartsWith(pattern, "http://",
-                              base::CompareCase::SENSITIVE)) {
-    trimmed_pattern = trimmed_pattern.substr(7);
-  }
-
-  bool host_starts_with_www =
-      base::StartsWith(canonical_host, "www.", base::CompareCase::SENSITIVE);
-  bool pattern_starts_with_www =
-      base::StartsWith(trimmed_pattern, "www.", base::CompareCase::SENSITIVE);
+  bool host_starts_with_www = base::StartsWith(canonical_host, kWwwSubdomain,
+                                               base::CompareCase::SENSITIVE);
+  bool pattern_starts_with_www = base::StartsWith(
+      trimmed_pattern, kWwwSubdomain, base::CompareCase::SENSITIVE);
 
   // Trim the initial "www." if it appears on either the host or the pattern,
   // but not if it appears on both.
   if (host_starts_with_www != pattern_starts_with_www) {
     if (host_starts_with_www) {
-      trimmed_host = trimmed_host.substr(4);
+      trimmed_host = TrimWwwSubdomain(trimmed_host);
     } else if (pattern_starts_with_www) {
-      trimmed_pattern = trimmed_pattern.substr(4);
+      trimmed_pattern = TrimWwwSubdomain(trimmed_pattern);
     }
   }
 
@@ -422,43 +497,79 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
 }
 
 // There may be conflicting patterns, say, "allow *.google.com" and "block
-// www.google.*". To break the tie, we prefer denylists over allowlists, by
-// returning early if there is a BLOCK and evaluating all manual overrides
-// before returning an ALLOW. If there are no applicable manual overrides,
-// return INVALID.
+// www.google.*". To break the tie, we prefer blocklists over allowlists.
+// If there are no applicable manual overrides, we return INVALID.
 SupervisedUserURLFilter::FilteringBehavior
 SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(const GURL& url) {
   FilteringBehavior result = INVALID;
-  bool conflict = false;
+  std::optional<FilteringSubdomainConflictType> conflict_type = std::nullopt;
+
+  // Records the conflict metrics when the current scope exits.
+  base::ScopedClosureRunner histogram_recorder(base::BindOnce(
+      [](const FilteringBehavior& result,
+         const std::optional<FilteringSubdomainConflictType>& conflict_type) {
+        if (result != INVALID) {
+          // Record the potential conflict and its type.
+          bool conflict = conflict_type.has_value();
+          UMA_HISTOGRAM_BOOLEAN(kManagedSiteListConflictHistogramName,
+                                conflict);
+          if (conflict) {
+            base::UmaHistogramEnumeration(
+                kManagedSiteListSubdomainConflictTypeHistogramName,
+                conflict_type.value());
+          }
+        }
+      },
+      std::cref(result), std::cref(conflict_type)));
 
   // Check manual overrides for the exact URL.
   auto url_it = url_map_.find(url_matcher::util::Normalize(url));
   if (url_it != url_map_.end()) {
-    conflict =
-        SetFilteringBehaviorResult(url_it->second ? ALLOW : BLOCK, &result);
+    result = url_it->second ? ALLOW : BLOCK;
   }
 
-  // Check manual overrides for the hostname.
   const std::string host = url.host();
-  auto host_it = host_map_.find(host);
-  if (host_it != host_map_.end()) {
-    conflict |=
-        SetFilteringBehaviorResult(host_it->second ? ALLOW : BLOCK, &result);
-  }
-
-  // Look for patterns matching the hostname, with a value that is different
-  // from the default (a value of true in the map meaning allowed).
-  for (const auto& host_entry : host_map_) {
-    if (HostMatchesPattern(host, host_entry.first)) {
-      conflict |= SetFilteringBehaviorResult(host_entry.second ? ALLOW : BLOCK,
-                                             &result);
+  if (result != BLOCK) {
+    // If there is a match with Block behaviour, set the result to Block.
+    auto it = base::ranges::find_if(
+        blocked_host_list_, [&host](const std::string& host_entry) {
+          return HostMatchesPattern(host, host_entry);
+        });
+    if (it != blocked_host_list_.end()) {
+      result = BLOCK;
     }
   }
 
-  if (result != INVALID) {
-    UMA_HISTOGRAM_BOOLEAN(kManagedSiteListConflictHistogramName, conflict);
+  if (result == ALLOW) {
+    // Return if there are no BLOCK matches and the resut is ALLOW from the
+    // exact url search.
+    return result;
   }
 
+  // If there the result is not set to Block, look for matching allowed entries.
+  // If the result is Block, detect potential conflicts.
+  for (const auto& host_entry : allowed_host_list_) {
+    if (!HostMatchesPattern(host, host_entry)) {
+      continue;
+    }
+    if (result == INVALID) {
+      // If the result is still unset, there are no conflicts from the
+      // blocklist. Set the result and exit the loop early.
+      result = ALLOW;
+      break;
+    } else if (result == BLOCK) {
+      // The current matching allowed entry is a conflict.
+      conflict_type = AddConflict(
+          conflict_type,
+          HostHasTrivialSubdomainConflict(host_entry, blocked_host_list_));
+      // If we have already detected all the possible conflict kinds, exit
+      // the loop early.
+      if (conflict_type == FilteringSubdomainConflictType::
+                               kTrivialSubdomainConflictAndOtherConflict) {
+        break;
+      }
+    }
+  }
   return result;
 }
 
@@ -542,8 +653,18 @@ SupervisedUserURLFilter::GetDefaultFilteringBehavior() const {
 
 void SupervisedUserURLFilter::SetManualHosts(
     std::map<std::string, bool> host_map) {
+  // TODO(b/305229682): Update this method to received the two
+  // parental lists.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_map_ = std::move(host_map);
+  blocked_host_list_.clear();
+  allowed_host_list_.clear();
+  for (const auto& host_entry : host_map) {
+    if (host_entry.second) {
+      allowed_host_list_.emplace(host_entry.first);
+    } else {
+      blocked_host_list_.emplace(host_entry.first);
+    }
+  }
 }
 
 void SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
@@ -574,7 +695,8 @@ bool SupervisedUserURLFilter::HasAsyncURLChecker() const {
 void SupervisedUserURLFilter::Clear() {
   default_behavior_ = ALLOW;
   url_map_.clear();
-  host_map_.clear();
+  allowed_host_list_.clear();
+  blocked_host_list_.clear();
   async_url_checker_.reset();
 }
 
@@ -618,7 +740,8 @@ void SupervisedUserURLFilter::ReportManagedSiteListMetrics() const {
     return;
   }
 
-  if (url_map_.empty() && host_map_.empty()) {
+  if (url_map_.empty() && allowed_host_list_.empty() &&
+      blocked_host_list_.empty()) {
     base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
                                   ManagedSiteList::kEmpty);
     base::UmaHistogramCounts1000(kApprovedSitesCountHistogramName, 0);
@@ -637,13 +760,8 @@ void SupervisedUserURLFilter::ReportManagedSiteListMetrics() const {
     }
   }
 
-  for (const auto& it : host_map_) {
-    if (it.second) {
-      approved_count++;
-    } else {
-      blocked_count++;
-    }
-  }
+  approved_count += allowed_host_list_.size();
+  blocked_count += blocked_host_list_.size();
 
   if (approved_count > 0 && blocked_count > 0) {
     managed_site_list = ManagedSiteList::kBoth;

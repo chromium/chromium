@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -496,4 +497,177 @@ TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
   EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about"));
 }
 
+class SupervisedUserURLFilteringWithConflictsTest
+    : public testing::TestWithParam<std::tuple<
+          std::map<std::string, bool>,
+          std::optional<
+              SupervisedUserURLFilter::FilteringSubdomainConflictType>>> {
+ public:
+  SupervisedUserURLFilteringWithConflictsTest() {
+    filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+  }
+
+ protected:
+  bool IsURLAllowlisted(const std::string& url) {
+    GURL gurl = GURL(url);
+    CHECK(gurl.is_valid());
+    return filter_.GetFilteringBehaviorForURL(gurl) ==
+           SupervisedUserURLFilter::ALLOW;
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
+      base::BindRepeating([](const GURL& url) { return false; }),
+      std::make_unique<FakeURLFilterDelegate>());
+};
+
+// Tests that the new histogram that records www-subdomain conflicts
+// increases only when the corresponding conflict types occurs.
+TEST_P(SupervisedUserURLFilteringWithConflictsTest,
+       PatternsWithSubdomainConflicts) {
+  base::HistogramTester histogram_tester;
+
+  auto host_map = std::get<0>(GetParam());
+  auto conflict_type = std::get<1>(GetParam());
+  filter_.SetManualHosts(std::move(host_map));
+
+  EXPECT_FALSE(IsURLAllowlisted("https://www.google.com"));
+
+  if (conflict_type.has_value()) {
+    histogram_tester.ExpectBucketCount(
+        SupervisedUserURLFilter::
+            GetManagedSiteListConflictTypeHistogramNameForTest(),
+        /*sample=*/conflict_type.value(), /*expected_count=*/1);
+  } else {
+    // When there is no conflict, no entries are recorded.
+    histogram_tester.ExpectTotalCount(
+        SupervisedUserURLFilter::
+            GetManagedSiteListConflictTypeHistogramNameForTest(),
+        /*expected_count=*/0);
+  }
+}
+
+// Tests that conflict tracking histogram records a result for no conflicts
+// even for paths that determine a result and exit early.
+TEST_F(SupervisedUserURLFilteringWithConflictsTest,
+       PatterWithoutConflictOnEarlyExit) {
+  base::HistogramTester histogram_tester;
+  // The host map is empty but the url map contains an exact match.
+  std::map<std::string, bool> host_map;
+  std::map<GURL, bool> url_map =
+      std::map<GURL, bool>({{GURL("https://www.google.com"), true}});
+  filter_.SetManualHosts(std::move(host_map));
+  filter_.SetManualURLs(std::move(url_map));
+
+  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com"));
+
+  // When there is no conflict, no entries as recorded in the conflict type
+  // histogram. A non-conflict entry is recorded on the conflict tracking histogram.
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserURLFilter::
+          GetManagedSiteListConflictTypeHistogramNameForTest(),
+      /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SubdomainConflicts,
+    SupervisedUserURLFilteringWithConflictsTest,
+    testing::Values(
+        /* Only trivial subdomain conflicts: */
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"www.google.com", true}, {"https://google.com", false}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"www.google.com", false}, {"https://google.com", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://www.google.*", false}, {"google.*", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        std::make_tuple(
+            // The collision happens because of the trivial subdomain collision
+            // between google.com and other entries.
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://www.google.com", false},
+                 {"google.com", true},
+                 {"www.google.com", false},
+                 {"http://www.google.com", false}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        std::make_tuple(
+            // The collision happens because of the trivial subdomain collision
+            // between https://google.com and www.google.com.
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://google.com", false},
+                 {"www.google.com", true},
+                 {"*.google.*", false}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        std::make_tuple(
+            // The collision happens because of the trivial subdomain collision
+            // between https://google.com and www.google.com.
+            std::map<std::string, bool>({{"https://www.google.com", false},
+                                         {"www.google.*", false},
+                                         {"google.com", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        /* Only other conflicts: */
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://www.google.com", false}, {"*.google.*", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kOtherConflictOnly),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"*.google.com", false}, {"www.google.com", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kOtherConflictOnly),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://www.google.com", false}, {"www.google.*", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kOtherConflictOnly),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://google.com", false},
+                 {"https://google.com", true},
+                 {"*.google.com", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kOtherConflictOnly),
+        /* No conflicts: */
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://google.com", false}, {"www.google.com", false}}),
+            std::nullopt),
+        /* Mix of www-subdomain conflicts and other conflicts */
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://google.com", false},
+                 {"www.google.com", true},
+                 {"*.google.com", true}}),  // Other conflict entry
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictAndOtherConflict),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://google.com", true},
+                 {"www.google.com", false},
+                 {"*.google.*", true}}),  // Other conflict entry
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictAndOtherConflict),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://www.google.com", true},
+                 {"google.com", false},
+                 {"google.*", true},  // Other conflict entry
+                 {"*.google.*", false}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictAndOtherConflict)));
 }  // namespace supervised_user

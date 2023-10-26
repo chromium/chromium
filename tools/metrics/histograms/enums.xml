@@ -39011,6 +39011,29 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Service error"/>
 </enum>
 
+<enum name="FamilyLinkFilteringSubdomainConflictType">
+  <int value="0" label="Only trivial subdomain conflict">
+    Recorded when, for an input host, the matching conflicting entries from the
+    blocklist and the allowlist differ only in the the trivial www subdomain.
+    This result indicates that if trivial subdomain conflicts were not allowed
+    there would be no conflicts for the filtered input host.
+  </int>
+  <int value="1" label="Only other conflict">
+    Recorded when, for an input host, the matching conflicting entries from the
+    blocklist and the allowlist differ in a part other than the trivial www
+    subdomain. This result indicates that if trivial subdomain conflicts were
+    not allowed there would be still the same conflicts for the filtered input
+    host.
+  </int>
+  <int value="2" label="Both trivial subdomain and other conflict">
+    Recorded, when for input host, there are matching conflicting entries from
+    the blocklist and the allowlist that have both trival subdomain conflicts
+    and other conflicts. This result indicates that if trivial subdomain
+    conflicts were not allowed there would be still some conflicts for the
+    filtered input host.
+  </int>
+</enum>
+
 <enum name="FamilyLinkManagedSiteList">
   <int value="0" label="Empty"/>
   <int value="1" label="Approved List Only"/>
