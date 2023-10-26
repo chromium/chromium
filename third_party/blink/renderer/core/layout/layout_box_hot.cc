@@ -118,42 +118,51 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   bool child_needs_layout =
       !is_blocked_by_display_lock && ChildNeedsFullLayout();
 
-  if (child_needs_layout) {
-    // If we have inline children - we can potentially reuse some of the lines.
+  if (SelfNeedsFullLayout() || child_needs_layout ||
+      NeedsSimplifiedLayout()) {
     if (!ChildrenInline()) {
       // Check if we only need "simplified" layout. We don't abort yet, as we
       // need to check if other things (like floats) will require us to perform
       // a full layout.
-      if (!NeedsSimplifiedLayout()) {
+      if (!NeedsSimplifiedLayoutOnly())
         return nullptr;
-      }
+
       cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
-   }
+    } else if (!NeedsSimplifiedLayoutOnly() ||
+               NeedsSimplifiedLayout()) {
+      // We don't regenerate any lineboxes during our "simplified" layout pass.
+      // If something needs "simplified" layout within a linebox, (e.g. an
+      // atomic-inline) we miss the cache.
 
-    if (!physical_fragment.HasItems()) {
-      return nullptr;
+      // Check if some of line boxes are reusable.
+
+      // Only for the layout cache slot. Measure has several special
+      // optimizations that makes reusing lines complicated.
+      if (!use_layout_cache_slot)
+        return nullptr;
+
+      if (SelfNeedsFullLayout())
+        return nullptr;
+
+      if (!physical_fragment.HasItems())
+        return nullptr;
+
+      // Propagating OOF needs re-layout.
+      if (physical_fragment.NeedsOOFPositionedInfoPropagation())
+        return nullptr;
+
+      // Any floats might need to move, causing lines to wrap differently,
+      // needing re-layout, either in cached result or in new constraint space.
+      if (!cached_layout_result->GetExclusionSpace().IsEmpty() ||
+          new_space.HasFloats())
+        return nullptr;
+
+      cache_status = NGLayoutCacheStatus::kCanReuseLines;
+    } else {
+      cache_status = NGLayoutCacheStatus::kNeedsSimplifiedLayout;
     }
-
-    // Only for the layout cache slot. Measure has several special
-    // optimizations that makes reusing lines complicated.
-    if (!use_layout_cache_slot) {
-      return nullptr;
-    }
-
-    // Propagating OOF needs re-layout.
-    if (physical_fragment.NeedsOOFPositionedInfoPropagation()) {
-      return nullptr;
-    }
-
-    // Any floats might need to move, causing lines to wrap differently,
-    // needing re-layout, either in cached result or in new constraint space.
-    if (!cached_layout_result->GetExclusionSpace().IsEmpty() ||
-        new_space.HasFloats()) {
-      return nullptr;
-    }
-
-    cache_status = NGLayoutCacheStatus::kCanReuseLines;
   }
+
 
   NGBlockNode node(this);
   NGLayoutCacheStatus size_cache_status = CalculateSizeBasedLayoutCacheStatus(
