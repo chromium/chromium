@@ -302,7 +302,7 @@ struct OverflowMenuDestinationView: View {
     switch layoutParameters {
     case .vertical:
       textSpacing = Dimensions.verticalLayoutTextPadding
-      maximumLines = nil
+      maximumLines = 2
     case .horizontal:
       textSpacing = 0
       maximumLines = 1
