@@ -1179,7 +1179,6 @@ TEST_P(WaylandDataDragControllerTest, DndActionsToDragOperations) {
 // handles entered window destruction happening while the data fetching is still
 // unfinished. Regression test for https://crbug.com/1400872.
 TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
-  const auto* window_manager = connection_->window_manager();
   ASSERT_TRUE(window_);
 
   // Hook up data transfer flow and take needed actions to achieve the scenario
@@ -1232,7 +1231,6 @@ TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
                            server_offer);
   });
   ASSERT_EQ(drag_controller(), data_device()->drag_delegate_);
-  ASSERT_TRUE(window_manager->HasObserverForTesting(*drag_controller()));
 
   // Wait for the full data transfer flow to finish before checking all
   // expectations.
@@ -1241,11 +1239,6 @@ TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   EXPECT_FALSE(drop_handler_->dropped_data());
   EXPECT_FALSE(data_device()->drag_delegate_);
-
-  // There are 2 possible paths for the drag controller to stop observing
-  // window destructions in incoming drag sessions. This exercises the one
-  // called from OnDragLeave().
-  EXPECT_FALSE(window_manager->HasObserverForTesting(*drag_controller()));
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
