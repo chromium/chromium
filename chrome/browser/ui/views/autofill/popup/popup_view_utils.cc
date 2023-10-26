@@ -550,6 +550,8 @@ int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kCreditCardEntry:
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kDevtoolsTestAddressEntry:
+    case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kFieldByFieldFilling:
     case PopupItemId::kFillEverythingFromAddressProfile:
@@ -603,6 +605,8 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kCreditCardEntry:
     case PopupItemId::kDatalistEntry:
+    case PopupItemId::kDevtoolsTestAddressEntry:
+    case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kFieldByFieldFilling:
     case PopupItemId::kFillExistingPlusAddress:
     case PopupItemId::kFillFullAddress:
@@ -628,6 +632,7 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
 bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
   switch (popup_item_id) {
     case PopupItemId::kAddressEntry:
+    case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
     case PopupItemId::kFillFullEmail:
@@ -644,6 +649,7 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kCreditCardEntry:
     case PopupItemId::kDatalistEntry:
+    case PopupItemId::kDevtoolsTestAddressEntry:
     case PopupItemId::kDeleteAddressProfile:
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kFillEverythingFromAddressProfile:

@@ -71,6 +71,7 @@ bool IsFirstLayerFormFillingSuggestionId(PopupItemId item_id) {
     case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kFillFullEmail:
     case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kDevtoolsTestAddresses:
       // Virtual cards can appear on their own when filling the CVC for a card
       // that a merchant has saved. This indicates there could be Autofill
       // suggestions related to standalone CVC fields.
@@ -86,6 +87,7 @@ bool IsFirstLayerFormFillingSuggestionId(PopupItemId item_id) {
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kDatalistEntry:
     case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kDevtoolsTestAddressEntry:
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kFillExistingPlusAddress:

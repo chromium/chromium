@@ -2243,9 +2243,38 @@ TEST_F(AutofillSuggestionGeneratorTest,
             PopupItemId::kMerchantPromoCodeEntry);
 }
 
-// This class helps test the credit card contents that are displayed in Autofill
-// suggestions. It covers suggestions on Desktop/Android dropdown, and on
-// Android keyboard accessory.
+TEST_F(AutofillSuggestionGeneratorTest, TestAddressSuggestion) {
+  AutofillProfile profile = test::GetFullProfile();
+  personal_data()->set_test_addresses({profile});
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, /*field_types=*/{NAME_FIRST},
+          /*last_targeted_fields=*/kAllServerFieldTypes, NAME_FIRST,
+          /*trigger_field_max_length=*/0);
+
+  // Therere should be test address suggestion and one regular profile
+  // suggestion.
+  ASSERT_EQ(suggestions.size(), 2u);
+  EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kDevtoolsTestAddresses);
+  EXPECT_EQ(suggestions[1].popup_item_id, PopupItemId::kAddressEntry);
+
+  EXPECT_EQ(suggestions[0].main_text.value, u"Devtools");
+  EXPECT_EQ(suggestions[0].labels.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0],
+            Suggestion::Text(u"Address test data"));
+  EXPECT_EQ(suggestions[0].icon, "codeIcon");
+  EXPECT_EQ(suggestions[0].children.size(), 1u);
+
+  const Suggestion& child = suggestions[0].children.back();
+  EXPECT_EQ(child.main_text.value, u"United States");
+  EXPECT_EQ(child.GetPayload<Suggestion::BackendId>().value(), profile.guid());
+  EXPECT_EQ(child.popup_item_id, PopupItemId::kDevtoolsTestAddressEntry);
+}
+
+// This class helps test the credit card contents that are displayed in
+// Autofill suggestions. It covers suggestions on Desktop/Android dropdown,
+// and on Android keyboard accessory.
 class AutofillCreditCardSuggestionContentTest
     : public AutofillSuggestionGeneratorTest {
  public:

@@ -109,9 +109,19 @@
     , '''
   </message>
 
+  <!-- TODO(crbug.com/1451267): Make translatable once strings are finalized. -->
+  <message name="IDS_AUTOFILL_ADDRESS_TEST_DATA" desc="The text displayed as a secondary label in the test addresses devtools suggestion." translateable="false">
+    Address test data
+  </message>
+
+  <message name="IDS_AUTOFILL_TEST_ADDRESS_SELECTED_A11Y_HINT" desc="Voice over text that is read out when a test address is accepted from the subpopup." translateable="false">
+    Test address from <ph name="ENTRY_VOICEOVER">$1<ex>United states</ex></ph> selected.
+  </message>
+
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM" desc="Screen reader announcement indicating that current form was autofilled.">
     The form was filled in
   </message>
+
   <!--TODO(crbug.com/1459990): Align with writers about related strings and remove translateable=false-->
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that edit autofill profile option was selected." translateable="false">
     The edit address option was selected

@@ -653,6 +653,31 @@ std::u16string NormalizeForComparisonForType(const std::u16string& text,
   return AutofillProfileComparator::NormalizeForComparison(text);
 }
 
+absl::optional<Suggestion> GetSuggestionForTestAddresses(
+    base::span<const AutofillProfile> test_addresses,
+    const std::string& locale) {
+  if (test_addresses.empty()) {
+    return absl::nullopt;
+  }
+
+  Suggestion suggestion(u"Devtools", PopupItemId::kDevtoolsTestAddresses);
+  suggestion.labels = {{Suggestion::Text(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_TEST_DATA))}};
+  suggestion.icon = "codeIcon";
+  for (const AutofillProfile& test_address : test_addresses) {
+    const std::u16string test_address_country =
+        test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale);
+    suggestion.children.emplace_back(test_address_country,
+                                     PopupItemId::kDevtoolsTestAddressEntry);
+    suggestion.children.back().payload =
+        Suggestion::BackendId(test_address.guid());
+    suggestion.children.back().acceptance_a11y_announcement =
+        l10n_util::GetStringFUTF16(IDS_AUTOFILL_TEST_ADDRESS_SELECTED_A11Y_HINT,
+                                   test_address_country);
+  }
+  return suggestion;
+}
+
 }  // namespace
 
 AutofillSuggestionGenerator::AutofillSuggestionGenerator(
@@ -798,6 +823,20 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
       GetProfileSuggestionLabels(profiles, field_types, trigger_field_type,
                                  last_targeted_fields, app_locale),
       app_locale);
+
+  // Add devtools test addresses suggestion if it exists. A suggestion will
+  // exist if devtools is open and therefore test addresses were set.
+  if (absl::optional<Suggestion> test_addresses_suggestion =
+          GetSuggestionForTestAddresses(personal_data_->test_addresses(),
+                                        app_locale)) {
+    std::vector<Suggestion> suggestions_with_test_address;
+    suggestions_with_test_address.push_back(
+        std::move(*test_addresses_suggestion));
+    suggestions_with_test_address.insert(suggestions_with_test_address.end(),
+                                         suggestions.begin(),
+                                         suggestions.end());
+    return suggestions_with_test_address;
+  }
 
   return suggestions;
 }

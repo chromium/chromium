@@ -86,7 +86,14 @@ enum class PopupItemId : int {
   kClearForm,
   kMixedFormMessage,
 
-  kMaxValue = kMixedFormMessage
+  // Top level suggestion rendered when test addresses are available. Shown only
+  // when DevTools is open.
+  kDevtoolsTestAddresses,
+  // Test address option that specifies a full address for a country
+  // so that users can test their form with it.
+  kDevtoolsTestAddressEntry,
+
+  kMaxValue = kDevtoolsTestAddressEntry
 };
 
 // Set of `PopupItemId`s that trigger filling a value into an input element
