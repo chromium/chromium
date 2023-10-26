@@ -1127,6 +1127,7 @@
 <translation id="1858585891038687145">소프트웨어 제작자를 식별하기 위해 이 인증서 신뢰</translation>
 <translation id="1859294693760125695">더 이상 관심 없음</translation>
 <translation id="1859339856433307593">이 계정의 비밀번호가 <ph name="BRAND" />(<ph name="USER_EMAIL" />)에 이미 저장되어 있습니다.</translation>
+<translation id="1859517534163232041">브라우저에 입력한 URL 암호화하기</translation>
 <translation id="1861262398884155592">폴더가 비어 있습니다.</translation>
 <translation id="1862311223300693744">특별히 설치한 VPN, 프록시, 방화벽 또는 NAS 소프트웨어가
     있나요?</translation>
@@ -1265,7 +1266,7 @@
 </translation>
 <translation id="1967970931040389207">핫스팟 사용 설정</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />(USB)</translation>
-<translation id="1969550816138571473">준비하기</translation>
+<translation id="1969550816138571473">준비 중</translation>
 <translation id="1969654639948595766">WebRTC 텍스트 로그(<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970895205072379091"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 비정상 종료되는지, 어떤 기능을 사용하는지, 일반적으로 메모리를 얼마나 많이 사용하는지 등의 정보가 포함됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 앱 동기화도 사용 설정되어 있으면 Android 및 웹 앱을 포함한 다른 앱 진단 및 사용 데이터가 수집됩니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 ChromeOS 기기 설정에서 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
@@ -2262,7 +2263,6 @@
 <translation id="2719936478972253983">다음 쿠키가 차단됨</translation>
 <translation id="2721037002783622288"><ph name="SEARCH_ENGINE" />에서 이미지 검색(&amp;S)</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
-<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />"에 허용하는 권한은 이 앱에서도 허용됩니다.}other{"<ph name="APP_NAME" />"에 허용하는 권한은 이러한 앱에서도 허용됩니다.}}</translation>
 <translation id="2721695630904737430">관리자가 관리 대상 사용자를 사용 중지했습니다.</translation>
 <translation id="2722540561488096675"><ph name="TIME_LEFT" /> 후 기기가 종료됩니다. 기기 전원을 다시 켜기 전에 USB를 제거하세요. 그런 다음 <ph name="DEVICE_OS" /> 사용을 시작할 수 있습니다</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
@@ -2454,6 +2454,7 @@
 <translation id="2852385257476173980">웹을 탐색하면 여기에 방문한 사이트 목록이 표시될 수 있습니다.</translation>
 <translation id="285241945869362924">오디오 및 동영상 자막을 자동으로 생성합니다. 오디오와 자막은 기기 외부로 유출되지 않습니다.</translation>
 <translation id="2856776373509145513">새 컨테이너 만들기</translation>
+<translation id="2856907950922663165">URL 암호화를 사용 중지하시겠습니까?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />로 비밀번호 가져오기</translation>
 <translation id="2861301611394761800">시스템 업데이트가 완료되었습니다. 시스템을 다시 시작하세요.</translation>
 <translation id="2861402191395139055">Passpoint 구독</translation>
@@ -4729,6 +4730,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4687718960473379118">사이트 추천 광고</translation>
 <translation id="4688036121858134881">로컬 로그 ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /></translation>
 <translation id="4688176403504673761"><ph name="MANAGER" />에서 기기를 이전 버전으로 롤백 중(<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="4689090588388540535">보안 도메인 이름 서버(DNS)를 사용하여 내 인터넷 트래픽에 대한 액세스 권한이 있는 사람이 내가 방문하는 웹페이지를 보지 못하게 합니다.</translation>
 <translation id="4689235506267737042">데모 환경설정 선택</translation>
 <translation id="4689421377817139245">이 북마크를 내 iPhone에 동기화</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi 펌웨어에서 csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon 의 4개 파일을 생성하였습니다. 처음 3개 파일은 레지스터 덤프를 포함하는 바이너리 파일로 Intel에서 개인정보나 기기 식별 정보를 포함하지 않도록 선언되었습니다. 4번째 파일은 Intel 펌웨어의 실행 기록으로 모든 개인정보나 기기 식별 정보가 삭제되었지만 너무 커서 여기에 표시할 수 없습니다. 이러한 4개 파일은 최근에 발생한 기기의 Wi-Fi 문제로 인해 생성되었으며 관련 문제를 해결하기 위해 Intel과 공유됩니다.&gt;</translation>
@@ -7021,6 +7023,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6573915150656780875">더 이상 Chromebook에 보안 및 소프트웨어 업데이트가 적용되지 않습니다. 새로운 Chromebook으로 최적의 환경을 누려보세요.</translation>
 <translation id="657402800789773160">페이지 새로고침(&amp;R)</translation>
 <translation id="6577284282025554716">다운로드 취소됨: <ph name="FILE_NAME" /></translation>
+<translation id="6577777689940373106">앱 1개, 대기 중</translation>
 <translation id="657866106756413002">네트워크 상태 스냅샷</translation>
 <translation id="6579369886355986318">모든 제어 기능 표시(&amp;C)</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 데스크톱 콘텐츠 공유됨</translation>
@@ -8581,6 +8584,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="780446144738273886">PDF를 스캔하여 스크린 리더에서 사용할 수 있도록 텍스트를 추출합니다. Chrome 브라우저에서만 지원됩니다.</translation>
 <translation id="7805768142964895445">상태</translation>
 <translation id="7805906048382884326">도움말 닫기</translation>
+<translation id="7806722269368320106">앱 1개, 설치 중</translation>
 <translation id="7807067443225230855">검색 및 어시스턴트</translation>
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" />님이 다른 기기에서 이미 Google 어시스턴트를 설정한 것 같습니다. <ph name="SUPERVISED_USER_NAME" />님은 이 기기에서 화면 컨텍스트를 사용 설정하여 어시스턴트를 더 유용하게 활용할 수 있습니다.</translation>
 <translation id="7807711621188256451"><ph name="HOST" />에서 카메라에 액세스하도록 항상 허용</translation>
@@ -9458,7 +9462,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8496717697661868878">이 플러그인 실행</translation>
 <translation id="8497219075884839166">Windows 유틸리티</translation>
 <translation id="8498214519255567734">어두운 곳에서 화면을 보거나 읽기 편하도록 설정합니다.</translation>
-<translation id="8498395510292172881">Chrome에서 계속 읽기</translation>
 <translation id="8499083585497694743">마이크 음소거 해제</translation>
 <translation id="8499951261760185742">방문하는 사이트가 제대로 작동하지 않는 경우 해당 사이트에 대한 서드 파티 쿠키를 일시적으로 허용해 보세요. 보안은 취약해지지만, 사이트 기능이 제대로 작동할 가능성은 높아집니다.</translation>
 <translation id="8502536196501630039">Google Play의 앱을 사용하려면 먼저 앱을 복원해야 합니다. 일부 데이터가 삭제되었을 수 있습니다.</translation>
@@ -9899,6 +9902,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8849001918648564819">숨김</translation>
 <translation id="8849219423513870962">이름이 <ph name="PROFILE_NAME" />인 eSIM 프로필 삭제 취소</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" />/<ph name="CHECKING" /></translation>
+<translation id="8849541329228110748">내 인터넷 트래픽에 대한 액세스 권한이 있는 사람이 내가 방문하는 웹사이트를 볼 수 있습니다.</translation>
 <translation id="8850251000316748990">더보기...</translation>
 <translation id="885246833287407341">API 함수 인수</translation>
 <translation id="8853586775156634952">이 카드는 이 기기에만 저장됩니다.</translation>
@@ -9995,7 +9999,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="892706138619340876">일부 설정이 재설정됨</translation>
 <translation id="8927438609932588163">사이트에서 기기에 데이터를 저장하도록 허용</translation>
 <translation id="8929696694736010839">현재 시크릿 세션에만</translation>
-<translation id="8930351635855238750">새 쿠키 설정은 페이지를 새로고침한 다음에 적용됩니다</translation>
 <translation id="8930622219860340959">무선</translation>
 <translation id="8931076093143205651">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 설정은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="8931475688782629595">동기화 관리</translation>

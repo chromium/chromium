@@ -503,6 +503,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3105917916468784889">Izdelava posnetka zaslona</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Označevanje prejšnjega elementa na polici</translation>
+<translation id="311799651966070385">Zapiranje dregljaja</translation>
 <translation id="3120421559657122717">Želite zaustaviti napravo?</translation>
 <translation id="3122464029669770682">CPE</translation>
 <translation id="3125690294288312932">Vrsta šolskega dela</translation>
@@ -886,6 +887,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4585337515783392668">Ustavi predvajanje v neznanem sprejemniku</translation>
 <translation id="4596144739579517758">Temna tema je izklopljena</translation>
 <translation id="4611292653554630842">Prijava</translation>
+<translation id="462160925400706389">Naprava <ph name="NAME" /> je povezana</translation>
 <translation id="4623167406982293031">Preveri račun</translation>
 <translation id="4628757576491864469">Naprave</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ocena z zvezdicami (<ph name="RATING_SCORE" />)</translation>
@@ -1187,6 +1189,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="5774295353725270860">Odpiranje aplikacije Datoteke</translation>
 <translation id="5777841717266010279">Želite ustaviti skupno rabo zaslona?</translation>
 <translation id="5779721926447984944">Pripete datoteke</translation>
+<translation id="5785221443435874078">Odstrani ta predlog</translation>
 <translation id="5788127256798019331">Datoteke iz Googla Play</translation>
 <translation id="5788535737706478207">Vnovično odpiranje nazadnje zaprtega zavihka ali okna</translation>
 <translation id="5790085346892983794">Uspešno</translation>
@@ -1266,7 +1269,6 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="6095008505822982596">Hitrost govora</translation>
 <translation id="6095425951508823973">Dodajanje povezavo s ponudnikom <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Urejeno v preteklem mesecu</translation>
-<translation id="6099793635444444289">Nareka ni mogoče začeti, ker je mikrofon izklopljen</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so bile prenesene</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
@@ -1312,6 +1314,7 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="6284232397434400372">Ločljivost je bila spremenjena</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> lahko dodate pozneje z dovoljenjem starša.</translation>
 <translation id="6291221004442998378">Se ne polni</translation>
+<translation id="6298183524022479114">Prilagodite to napravo v aplikaciji</translation>
 <translation id="6309219492973062892">Klik ali dotik ikone polic od 1 do 8</translation>
 <translation id="6315170314923504164">Glasovne nastavitve</translation>
 <translation id="6324916366299863871">Urejanje bližnjice</translation>

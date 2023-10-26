@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">Подключение к сайту не защищено</translation>
 <translation id="6181444274883918285">Добавить исключение</translation>
 <translation id="6192792657125177640">Исключения</translation>
+<translation id="6195163219142236913">Использование сторонних файлов cookie ограничено</translation>
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
 <translation id="6205314730813004066">Конфиденциальность в рекламе</translation>
 <translation id="6207207788774442484">Удалить данные и сбросить разрешения</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6320088164292336938">Вибросигнал</translation>
+<translation id="6344622098450209924">Блокировка отслеживания</translation>
 <translation id="6367753977865761591">Блокировать вход через сторонние сервисы для определенного сайта.</translation>
 <translation id="6398765197997659313">Обычный режим</translation>
 <translation id="640163077447496506">Срок действия истекает сегодня</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Функция NFC на этом устройстве отключена. Включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Запретить сайтам получать доступ к информации и изменять ее через NFC</translation>
+<translation id="8944485226638699751">Ограничены</translation>
 <translation id="8958424370300090006">Блокировать файлы cookie для определенного сайта.</translation>
 <translation id="8959122750345127698">Страница не найдена: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Удалить</translation>

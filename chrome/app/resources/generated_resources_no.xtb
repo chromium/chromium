@@ -1127,6 +1127,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1859517534163232041">Krypter nettadressene som skrives inn i nettleseren</translation>
 <translation id="1861262398884155592">Denne mappen er tom</translation>
 <translation id="1862311223300693744">Har du noen spesialprogramvare for VPN, proxy-tjener, brannmur eller NAS installert?</translation>
+<translation id="1863047423483329595">Sporingsbeskyttelse er midlertidig utilgjengelig. Mens Chrome oppdaterer denne funksjonen, kan nettsteder midlertidig bruke informasjonskapsler fra tredjeparter med mindre du blokkerer dem. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Fant ingen serielle porter</translation>
 <translation id="1863207472175483351">installerer …</translation>
 <translation id="1864111464094315414">Pålogging</translation>
@@ -1381,6 +1382,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2050339315714019657">Portrett</translation>
 <translation id="2051266530792296582">Google Passordlagring har opprettet et sterkt passord for dette nettstedet</translation>
 <translation id="2051555741181591333">Deaktiver wifi-sone automatisk</translation>
+<translation id="2051669996101374349">Bruk HTTPS når det er mulig, og bli advart før innlasting av nettsteder som ikke støtter dette. Du kan ikke endre denne innstillingen siden Avansert beskyttelse er slått på.</translation>
 <translation id="2052572566310583903">Installert på de andre enhetene dine</translation>
 <translation id="2053105195397337973">Vi utforsker hvordan vi kan begrense sporing samtidig som vi gjør nettsteder i stand til å stanse søppelannonser og svindel.</translation>
 <translation id="2053312383184521053">Data om hviletilstand</translation>
@@ -1806,6 +1808,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="236117173274098341">Optimaliser</translation>
 <translation id="2361340419970998028">Sender tilbakemeldingen …</translation>
 <translation id="236141728043665931">Blokkér alltid bruk av mikrofonen</translation>
+<translation id="2363475280045770326">Feil ved lagring av konfigurasjonen</translation>
 <translation id="2363744066037724557">&amp;Gjenopprett vindu</translation>
 <translation id="2364498172489649528">Bestått</translation>
 <translation id="2365507699358342471">Dette nettstedet kan se tekst og bilder som er kopiert til utklippstavlen.</translation>
@@ -2258,7 +2261,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2719936478972253983">Følgende informasjonskapsler er blokkert</translation>
 <translation id="2721037002783622288">&amp;Søk etter bilder i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
-<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{Tillatelser du gir «<ph name="APP_NAME" />», blir også gitt til denne appen.}other{Tillatelser du gir «<ph name="APP_NAME" />», blir også gitt til disse appene.}}</translation>
 <translation id="2721695630904737430">Administratoren din har slått av administrerte brukere.</translation>
 <translation id="2722540561488096675">Enheten slår seg av om <ph name="TIME_LEFT" />. Fjern USB-enheten før du slår enheten på igjen. Deretter kan du begynne å bruke <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
@@ -3526,6 +3528,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3740396996321407665">Få kontekstuell hjelp fra noen funksjoner</translation>
 <translation id="3740945083753997630">Senk visnings- og tekststørrelsen</translation>
 <translation id="3741056951918180319">Du kan alltid klikke på utvidelsen for å bruke den på hvilke som helst nettsteder</translation>
+<translation id="3741510433331996336">Start enheten på nytt for å fullføre oppdateringen</translation>
 <translation id="3742235229730461951">Oppsett for koreansk tastatur</translation>
 <translation id="3742666961763734085">Finner ikke noen organisasjonsenhet med det navnet. Prøv på nytt.</translation>
 <translation id="3743842571276656710">Oppgi PIN-koden for å koble til <ph name="DEVICE_NAME" /></translation>
@@ -5913,6 +5916,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5667293444945855280">Skadelig programvare</translation>
 <translation id="5667546120811588575">Konfigurerer Google Play …</translation>
 <translation id="5668351004957198136">Ikke bestått</translation>
+<translation id="5669863904928111203">ChromeOS er utdatert</translation>
 <translation id="56702779821643359">Del filer med personer rundt deg. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">Bilder er blokkert</translation>
 <translation id="5671658447180261823">Fjerner forslaget <ph name="SUGGESTION_NAME" /></translation>
@@ -8242,6 +8246,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7549250950481368089">Lagrede passord vises her. <ph name="BEGIN_LINK" /> Importer passord<ph name="END_LINK" /> til <ph name="BRAND" />.</translation>
 <translation id="7549434883223124329">Vil du bytte enhetsspråk?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
+<translation id="7550885994112799211">Lagring, strøm og språk</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ble ikke lastet ned</translation>
 <translation id="7551643184018910560">Fest til hyllen</translation>
 <translation id="7552846755917812628">Prøv følgende tips:</translation>
@@ -8965,6 +8970,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
     <ph name="BEGIN_PARAGRAPH3" />Appdata kan være alle slags data apper har lagret (basert på utviklerinnstillingene), blant annet kontakter, meldinger og bilder.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Sikkerhetskopierte data regnes ikke med i Disk-lagringskvoten din.<ph name="END_PARAGRAPH4" />
     <ph name="BEGIN_PARAGRAPH5" />Du kan slå av denne tjenesten i Innstillinger.<ph name="END_PARAGRAPH5" /></translation>
+<translation id="8095439028686936591">ChromeOS er oppdatert</translation>
 <translation id="8096740438774030488">Hvilemodus ved batteridrift</translation>
 <translation id="80974698889265265">PIN-kodene samsvarer ikke</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> bruker proxy-tjenerinnstillinger fra en utvidelse</translation>
@@ -9279,6 +9285,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8345848587667658367">Nå kan du se telefonens nylige bilder, medier, varsler og apper</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="834785183489258869">Når du er i Inkognitomodus, kan ikke nettsteder bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser. Det kan hende at funksjoner på noen nettsteder ikke fungerer.</translation>
+<translation id="8348430946834215779">Bruk HTTPS når det er mulig, og bli advart før innlasting av nettsteder som ikke støtter dette</translation>
 <translation id="8349325309815489209">Utvidelser er tillatt på dette nettstedet</translation>
 <translation id="8349826889576450703">appoversikt</translation>
 <translation id="8350789879725387295">Pekepennverktøy i Dock</translation>
@@ -9471,7 +9478,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8496717697661868878">Kjør dette programtillegget</translation>
 <translation id="8497219075884839166">Windows Verktøy</translation>
 <translation id="8498214519255567734">Gjør det lettere å se på skjermen og lese i svakt lys</translation>
-<translation id="8498395510292172881">Forsett å lese i Chrome</translation>
 <translation id="8499083585497694743">Slå på mikrofonen</translation>
 <translation id="8499951261760185742">Hvis et nettsted du besøker, ikke fungerer som forventet, kan du prøve å tillate informasjonskapsler fra tredjeparter midlertidig for det aktuelle nettstedet. Dette innebærer mindre beskyttelse, men øker sannsynligheten for at nettstedsfunksjoner virker som forventet.</translation>
 <translation id="8502536196501630039">For å bruke apper fra Google Play må du først gjenopprette appene dine. Noe data kan ha gått tapt.</translation>
@@ -9713,6 +9719,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8690129572193755009">Nettsteder kan be om å få behandle protokoller</translation>
 <translation id="869144235543261764">Denne fanen spiller av en video i bilde-i-bilde-modus</translation>
 <translation id="8692107307702113268">Passordet er lengre enn 1000 tegn</translation>
+<translation id="8693639060656817812">Finn ut mer om tilgjengeligheten av Sporingsbeskyttelse</translation>
 <translation id="8694596275649352090">Lås når enheten er i hvilemodus eller lokket lukkes</translation>
 <translation id="8695139659682234808">Slå på foreldrekontroll etter konfigureringen</translation>
 <translation id="8695825812785969222">Åpne p&amp;lassering ...</translation>
@@ -10010,7 +10017,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8927438609932588163">La nettsteder lagre data på enheten din</translation>
 <translation id="8929696694736010839">Bare denne inkognitoøkten</translation>
 <translation id="8929738682246584251">Forstørrer på/av</translation>
-<translation id="8930351635855238750">Nye innstillinger for informasjonskapsler trer i kraft når du laster inn siden på nytt</translation>
 <translation id="8930622219860340959">Trådløs</translation>
 <translation id="8931076093143205651">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen din bedre ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne innstillingen håndheves av eieren. Eieren kan velge å sende diagnostikk- og bruksdata for denne enheten til Google. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din.</translation>
 <translation id="8931475688782629595">Administrer hva du synkroniserer</translation>

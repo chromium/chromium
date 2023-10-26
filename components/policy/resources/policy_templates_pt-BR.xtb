@@ -2366,13 +2366,6 @@ comportamento das teclas de função, e essa configuração não poderá ser mod
       Se a política não for definida, todos os downloads em que o tipo de arquivo estiver em <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> serão abertos automaticamente.
 
       Um padrão de URL precisa ser formatado de acordo com https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
-<translation id="2999597974578784672">Permite definir uma lista com padrões de URL que especificam quais sites podem definir cookies.
-
-          Se esta política não for definida, o valor padrão global será usado para todos os sites da política <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> caso ela esteja definida, ou da configuração pessoal do usuário.
-
-          Consulte também as políticas <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Observe que não pode haver padrões de URL conflitantes entre essas três políticas, já que não foi especificado qual delas tem prioridade.
-
-          Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="3000238720665173643">Uma sinalização booleana indicando se o teclado na tela pode oferecer correção automática.</translation>
 <translation id="3001285126226650303">Permite que o <ph name="PRODUCT_NAME" /> carregue políticas experimentais.
 
@@ -5759,11 +5752,6 @@ Se a política for desativada, a proteção de extensões pelo recurso <ph name=
 <translation id="5831286647961890695">Ativar o modelo de carregamento adaptável no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Políticas suspensas</translation>
 <translation id="5834583755928064072">Impedir que os usuários mudem o canal de lançamento</translation>
-<translation id="5835253272509953988">Se a política for definida como "Ativada", os usuários poderão permitir que o <ph name="PRODUCT_NAME" /> verifique se os nomes de usuário e as senhas usados foram comprometidos em um vazamento.
-
-      Se a política for definida, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se ela não for definida, a verificação de vazamento de credenciais será permitida, mas os usuários poderão desativá-la. 
-
-      Esse comportamento não será acionado se o Navegação segura estiver desativado, seja por uma política ou pelo usuário. Para forçar o uso do Navegação segura, use a política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> ou a <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5835312413892670446">Configurações de captura de tela</translation>
 <translation id="5835674781974810379">Limpar cookies e outros dados do site</translation>
 <translation id="5836064773277134605">Restringir o intervalo de portas UDP usado pelo host de acesso remoto</translation>

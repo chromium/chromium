@@ -292,6 +292,7 @@
 <translation id="6177128806592000436">إن اتصالك بهذا الموقع غير آمن</translation>
 <translation id="6181444274883918285">إضافة موقع إلكتروني إلى قائمة الاستثناءات</translation>
 <translation id="6192792657125177640">الاستثناءات</translation>
+<translation id="6195163219142236913">ملفات تعريف الارتباط التابعة لجهات خارجية محدودة</translation>
 <translation id="6196640612572343990">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="6205314730813004066">الخصوصية في عرض الإعلانات</translation>
 <translation id="6207207788774442484">حذف البيانات وإعادة ضبط الأذونات</translation>
@@ -302,6 +303,7 @@
 <translation id="6270391203985052864">السماح للمواقع الإلكترونية بطلب إرسال إشعارات</translation>
 <translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
 <translation id="6320088164292336938">اهتزاز</translation>
+<translation id="6344622098450209924">الحماية من التتبُّع</translation>
 <translation id="6367753977865761591">يمكنك حظر تسجيل الدخول في الخدمات التابعة لجهات خارجية في موقع إلكتروني محدَّد.</translation>
 <translation id="6398765197997659313">إنهاء وضع ملء الشاشة</translation>
 <translation id="640163077447496506">تنتهي الصلاحية اليوم</translation>
@@ -454,6 +456,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">‏تقنية NFC غير مفعّلة على هذا الجهاز. فعّلها في<ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">‏يتيح لك هذا الإعداد منع المواقع الإلكترونية من الاطّلاع على المعلومات وتعديلها على الأجهزة المزوَّدة بتقنية NFC.</translation>
+<translation id="8944485226638699751">محدودة</translation>
 <translation id="8958424370300090006">حظر ملفات تعريف الارتباط لموقع إلكتروني مُحدَّد.</translation>
 <translation id="8959122750345127698">التنقل غير قابل للوصول: <ph name="URL" /></translation>
 <translation id="8986362086234534611">حذف</translation>

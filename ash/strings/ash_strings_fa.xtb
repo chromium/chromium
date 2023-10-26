@@ -503,6 +503,7 @@
 <translation id="3105917916468784889">گرفتن نماگرفت</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
 <translation id="3113492864356515707">برجسته کردن مورد قبلی در قفسه</translation>
+<translation id="311799651966070385">بستن یادآوری خودکار</translation>
 <translation id="3120421559657122717">دستگاه خاموش شود؟</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">نوع کار کلاسی</translation>
@@ -886,6 +887,7 @@
 <translation id="4585337515783392668">توقف پخش محتوا به گیرنده ناشناس</translation>
 <translation id="4596144739579517758">زمینه تیره خاموش است</translation>
 <translation id="4611292653554630842">ورود به سیستم</translation>
+<translation id="462160925400706389"><ph name="NAME" /> متصل شد</translation>
 <translation id="4623167406982293031">به‌تأیید رساندن حساب</translation>
 <translation id="4628757576491864469">دستگاه‌ها</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />، رده‌بندی با ستاره <ph name="RATING_SCORE" /></translation>
@@ -1187,6 +1189,7 @@
 <translation id="5774295353725270860">‏باز کردن برنامه Files</translation>
 <translation id="5777841717266010279">هم‌رسانی صفحه‌نمایش متوقف شود؟</translation>
 <translation id="5779721926447984944">فایل‌های پین‌شده</translation>
+<translation id="5785221443435874078">برداشتن این پیشنهاد</translation>
 <translation id="5788127256798019331">‏فایل‌های Play</translation>
 <translation id="5788535737706478207">باز کردن مجدد آخرین برگه یا پنجره بسته‌شده</translation>
 <translation id="5790085346892983794">موفق شدید</translation>
@@ -1266,7 +1269,6 @@
 <translation id="6095008505822982596">سرعت گفتار</translation>
 <translation id="6095425951508823973">افزودن اتصال با <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">ماه گذشته ویرایش شده است</translation>
-<translation id="6099793635444444289">نمی‌توان دیکته را شروع کرد زیرا میکروفون بی‌صدا است</translation>
 <translation id="6103838137565245112">سیستم</translation>
 <translation id="6114505516289286752">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری شد</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1312,6 +1314,7 @@
 <translation id="6284232397434400372">وضوح تغییر کرد</translation>
 <translation id="6288235558961782912">بعداً می‌توانید <ph name="USER_EMAIL_ADDRESS" /> را با اجازه ولی دوباره اضافه کنید.</translation>
 <translation id="6291221004442998378">شارژ نمی‌شود</translation>
+<translation id="6298183524022479114">این دستگاه را در برنامه سفارشی‌سازی کنید</translation>
 <translation id="6309219492973062892">کلیک کردن یا ضربه زدن روی نماد قفسه‌های ۱ تا ۸</translation>
 <translation id="6315170314923504164">صدا</translation>
 <translation id="6324916366299863871">ویرایش میان‌بر</translation>

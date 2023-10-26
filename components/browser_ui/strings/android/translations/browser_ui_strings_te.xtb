@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">ఈ సైట్‌తో మీకున్న కనెక్షన్ సురక్షితంగా లేదు</translation>
 <translation id="6181444274883918285">సైట్ మినహాయింపును జోడించండి</translation>
 <translation id="6192792657125177640">మినహాయింపులు</translation>
+<translation id="6195163219142236913">థర్డ్-పార్టీ కుక్కీలు పరిమితం చేయబడ్డాయి</translation>
 <translation id="6196640612572343990">థర్డ్ పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="6205314730813004066">యాడ్‌ల విషయంలో గోప్యత</translation>
 <translation id="6207207788774442484">డేటాను తొలగించండి, అనుమతులను రీసెట్ చేయండి</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>
 <translation id="6295158916970320988">అన్ని సైట్‌లు</translation>
 <translation id="6320088164292336938">వైబ్రేట్ చేయి</translation>
+<translation id="6344622098450209924">ట్రాకింగ్ రక్షణ</translation>
 <translation id="6367753977865761591">నిర్దిష్ట సైట్ కోసం థర్డ్-పార్టీ సైన్-ఇన్‌ను బ్లాక్ చేస్తుంది.</translation>
 <translation id="6398765197997659313">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించండి</translation>
 <translation id="640163077447496506">ఈ రోజు గడువు ముగుస్తుంది</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">ఈ పరికరంలో NFC ఆఫ్ చేయబడింది. <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో దాన్ని ఆన్ చేయండి.</translation>
 <translation id="8928445016601307354">NFC పరికరాలలో సమాచారాన్ని చూడకుండా, మార్చకుండా ఉండేలా సైట్‌లను బ్లాక్ చేయండి</translation>
+<translation id="8944485226638699751">పరిమితం</translation>
 <translation id="8958424370300090006">ఏదైనా ఒక నిర్దిష్ట సైట్‌లో కుక్కీలను బ్లాక్ చేయండి.</translation>
 <translation id="8959122750345127698">దీనికి నావిగేట్ చేయడం సాధ్యపడదు: <ph name="URL" /></translation>
 <translation id="8986362086234534611">మరిచిపోయారా</translation>

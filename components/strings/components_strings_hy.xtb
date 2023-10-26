@@ -517,6 +517,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{ու ևս 1 հավելված}one{ու ևս # հավելված}other{ու ևս # հավելված}}</translation>
 <translation id="2003709556000175978">Վերակայեք գաղտնաբառը</translation>
 <translation id="2003775180883135320">Չորս անցք վերևում</translation>
+<translation id="2004697686368036666">Որոշ կայքերում գործառույթները կարող են չաշխատել</translation>
 <translation id="2009942480257059311">«Ստեղծել միջոցառում» կոճակ․ ակտիվացրեք՝ Google Օրացույցում միջոցառում արագ ստեղծելու համար</translation>
 <translation id="201174227998721785">Կառավարեք թույլտվությունները և կայքերում պահված տվյալները Chrome-ի կարգավորումներում</translation>
 <translation id="2012276282211112603">Այս պահին թեմաներ չկան</translation>
@@ -1200,6 +1201,7 @@
 <translation id="3441653493275994384">Էկրան</translation>
 <translation id="3443504041532578451">Օպտիկական սկավառակ (ատլաս)</translation>
 <translation id="344449859752187052">Երրորդ կողմի քուքիներն արգելափակված են</translation>
+<translation id="3447644283769633681">Բոլոր կողմնակի քուքիների արգելափակում</translation>
 <translation id="3447661539832366887">Սարքի սեփականատերն անջատել է Dinosaur խաղը:</translation>
 <translation id="3447884698081792621">Ցուցադրել հավաստագիրը (թողարկող՝ <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Քաշելու ժամանակամիջոցը`</translation>
@@ -1222,6 +1224,7 @@
 <translation id="3493660662684070951">Բեռնատարներ, ֆուրգոններ և ամենագնացներ</translation>
 <translation id="3495081129428749620">Որոնում
     <ph name="PAGE_TITLE" /> էջում</translation>
+<translation id="3497627066518778351">Դիտել սարքում կայքերի տվյալների ցանկը նոր պատուհանում</translation>
 <translation id="3498215018399854026">Մեզ չհաջողվեց կապ հաստատել ձեր ծնողի հետ: Նորից փորձեք:</translation>
 <translation id="350069200438440499">Ֆայլի անունը՝</translation>
 <translation id="3501300228850242680">Մետալ (երաժշտություն)</translation>
@@ -1310,6 +1313,7 @@
 <translation id="365641980390710834">Ամենօրյա հագուստ</translation>
 <translation id="3658742229777143148">Տարբերակ</translation>
 <translation id="3664782872746246217">Հիմնաբառեր՝</translation>
+<translation id="3665100783276035932">Կայքերի մեծ մասը պետք է պատշաճ կերպով աշխատի</translation>
 <translation id="3667704023705708645">Վենչուրային կապիտալ</translation>
 <translation id="3671117652518853176">Երբ անջատված է, անվտանգության նկատառումներով ձեզնից երբեմն կարող է պահանջվել, որ հաստատեք</translation>
 <translation id="3671540257457995106">Թույլատրե՞լ չափի փոփոխումը</translation>
@@ -2302,6 +2306,7 @@
 <translation id="568292603005599551">Պատկերի դիրքը X առանցքով</translation>
 <translation id="5684277895745049190">Ցուցակ</translation>
 <translation id="5684874026226664614">Չհաջողվեց թարգմանել այս էջը:</translation>
+<translation id="5687340364605915800">Որոշ կայքեր կարող են չարձագանքել այս հարցմանը</translation>
 <translation id="5688137257686092846">Կոսմետոլոգիայի և գեղեցկության ոլորտի մասնագետներ</translation>
 <translation id="5689199277474810259">Արտահանել JSON ձևաչափով</translation>
 <translation id="5689516760719285838">Տեղորոշում</translation>
@@ -2380,6 +2385,7 @@
 <translation id="5866898949289125849">Դուք դիտում եք ծրագրավորողի գործիքների էջը</translation>
 <translation id="5869405914158311789">Կայքն անհասանելի է</translation>
 <translation id="5869522115854928033">Պահված գաղտնաբառեր</translation>
+<translation id="5872318519182427835">Կարգավորումները տարածվում են ստորև թվարկված կայքերի և դրանց ենթատիրույթների վրա։ Օրինակ՝ եթե ավելացնեք «google.com», երրորդ կողմի քուքիները կթույլատրվեն նաև mail.google.com-ի համար, քանի որ այն պատկանում է google.com տիրույթին։</translation>
 <translation id="5872692522325383488">IBAN-ը պահվել է</translation>
 <translation id="5873297634595728366">Դիզելային ավտոմեքենաներ</translation>
 <translation id="5877831137320480913">Գեղեցկություն և ֆիթնես</translation>
@@ -2531,6 +2537,7 @@
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">Կրկնության միջակայք</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome-ն ավտոմատ սահմանափակում է երրորդ կողմի քուքիները</translation>
 <translation id="61877208875190028">Կանացի հագուստ</translation>
 <translation id="6194209731893739467">Տեսեք բոլոր ապրանքները, որոնք հետագծում եք, այստեղ</translation>
 <translation id="6195163219142236913">Երրորդ կողմի քուքիները սահմանափակված են</translation>
@@ -2640,6 +2647,7 @@
 <translation id="6394852772105848029">Այս կայքին անհրաժեշտ է բացել <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="6398765197997659313">Ելնել լիաէկրան ռեժիմից</translation>
 <translation id="6401136357288658127">Այս կանոնը հնացել է: Փոխարենն օգտագործեք <ph name="NEW_POLICY" /> կանոնը։</translation>
+<translation id="640163077447496506">Գործողության ժամկետը սպառվում է այսօր</translation>
 <translation id="6402537308870515461">Նախքան տեղափոխելը ստուգեք ֆայլերը</translation>
 <translation id="6403167778944553">Ննջասենյակ և լոգարան</translation>
 <translation id="6404511346730675251">Փոփոխել էջանիշը</translation>
@@ -2862,6 +2870,7 @@
 <translation id="6874604403660855544">&amp;Վերարկել հավելումը</translation>
 <translation id="6880941331070119097">Բարձր գնով տարբերակ</translation>
 <translation id="6881240511396774766">Արագ ստեղծեք նոր Google փաստաթուղթ</translation>
+<translation id="6882210908253838664">Եթե կայքը չի աշխատում, փորձեք ժամանակավորապես թույլատրել դրան օգտագործել երրորդ կողմի քուքիները։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Պաշտպանված վճարումների մուտքային տվյալների նույնականացման էկրանը փակված է</translation>
 <translation id="6884662655240309489">Չափ 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3271,6 +3280,7 @@
 <translation id="7631444403134069754">Թեթև աթլետիկայի վազքային ձևեր</translation>
 <translation id="7631527008834753063">Խաղային հեռուստահաղորդումներ</translation>
 <translation id="7633909222644580952">Աշխատանքի և խափանումների մասին հաշվետվություններ</translation>
+<translation id="7636346903338549690">Կայքեր, որոնց թույլատրվում է օգտագործել երրորդ կողմի քուքիներ</translation>
 <translation id="7637571805876720304">Հեռացնե՞լ վարկային քարտը Chromium-ից:</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Ոչ մի}=1{1 գաղտնաբառ ձեր հաշվում (տիրույթ՝ <ph name="DOMAIN_LIST" />)}one{# գաղտնաբառ ձեր հաշվում (տիրույթ՝ <ph name="DOMAIN_LIST" />)}other{# գաղտնաբառ ձեր հաշվում (տիրույթ՝ <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Հաջորդական միացքներ</translation>

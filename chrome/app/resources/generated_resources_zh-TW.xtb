@@ -2247,7 +2247,6 @@
 <translation id="2719936478972253983">系統已封鎖下列 Cookie</translation>
 <translation id="2721037002783622288">透過 <ph name="SEARCH_ENGINE" /> 搜尋圖片(&amp;S)</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
-<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{如果你將權限授予「<ph name="APP_NAME" />」，這個應用程式也會取得同樣的權限。}other{如果你將權限授予「<ph name="APP_NAME" />」，這些應用程式也會取得同樣的權限。}}</translation>
 <translation id="2721695630904737430">你的管理員停用了受監管的使用者。</translation>
 <translation id="2722540561488096675">裝置將於 <ph name="TIME_LEFT" />內關機。請先拔除 USB 再重新開啟裝置的電源，即可開始使用 <ph name="DEVICE_OS" />。</translation>
 <translation id="2722547199758472013">ID：<ph name="EXTENSION_ID" /></translation>
@@ -3602,7 +3601,7 @@
 <translation id="3800828618615365228">Google Chrome 和 ChromeOS 的《附加條款》</translation>
 <translation id="3802486193901166966">這個擴充功能不需要特殊權限，且沒有其他的網站存取權</translation>
 <translation id="380329542618494757">姓名</translation>
-<translation id="3803345858388753269">視訊品質</translation>
+<translation id="3803345858388753269">視訊畫質</translation>
 <translation id="3803367742635802571">你造訪的網站可能無法正常運作</translation>
 <translation id="380408572480438692">啟用成效資料收集功能可協助 Google 持續改善系統。除非你提交意見回饋報告 (Alt-Shift-I) 並在其中包含成效資料，否則 Google 不會收到任何相關資料。你可以隨時回到這個畫面停用收集功能。</translation>
 <translation id="3805079316250491151">新按鈕名稱</translation>
@@ -9454,7 +9453,6 @@
 <translation id="8496717697661868878">執行這個外掛程式</translation>
 <translation id="8497219075884839166">Windows 公用程式</translation>
 <translation id="8498214519255567734">讓你在光線昏暗的環境下更容易看清畫面內容或閱讀文字</translation>
-<translation id="8498395510292172881">在 Chrome 中繼續閱讀</translation>
 <translation id="8499083585497694743">將麥克風取消靜音</translation>
 <translation id="8499951261760185742">如果你造訪的網站無法正常運作，請嘗試暫時允許該網站使用第三方 Cookie。這代表保護程度較低，但網站功能很可能會正常運作。</translation>
 <translation id="8502536196501630039">如要使用透過 Google Play 安裝的應用程式，請先還原你的應用程式。這可能導致部分資料遺失。</translation>
@@ -9992,7 +9990,6 @@
 <translation id="8927438609932588163">允許網站在裝置上儲存資料</translation>
 <translation id="8929696694736010839">僅套用至目前的無痕模式工作階段</translation>
 <translation id="8929738682246584251">開啟/關閉放大鏡</translation>
-<translation id="8930351635855238750">新的 Cookie 設定會在重新載入網頁後生效</translation>
 <translation id="8930622219860340959">無線</translation>
 <translation id="8931076093143205651">傳送使用狀況與診斷資料。讓系統自動將診斷資料、裝置和應用程式的使用資料傳送給 Google，協助改善你的 Android 使用體驗。這些資料將有助於改善系統和應用程式的穩定性與其他功能。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。這項設定是由裝置擁有者強制執行。擁有者可選擇將這部裝置的診斷資料與使用資料傳送給 Google。如果你將「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在你的 Google 帳戶中。</translation>
 <translation id="8931475688782629595">管理同步處理的項目</translation>

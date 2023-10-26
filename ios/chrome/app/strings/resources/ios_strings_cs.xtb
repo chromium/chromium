@@ -701,6 +701,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="47677902929517676">Pokud hesla chcete uložit do svého účtu, musíte nejdříve v zařízení nastavit přístupový kód.</translation>
 <translation id="4775879719735953715">Výchozí prohlížeč</translation>
 <translation id="4778644898150334464">Použít jiné heslo</translation>
+<translation id="4779732376610430319">Přejít do Nastavení…</translation>
 <translation id="478808905805139173">Otevřít v anonymním okně?</translation>
 <translation id="4803185665210547709">Spravováno vaší organizací.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -1177,7 +1178,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7154343200458623869">Dokončete úkol.</translation>
 <translation id="7161230316646448869">Vaše hesla, historie a další údaje na všech zařízeních</translation>
 <translation id="7162168282402939716">Odemknout anonymní karty pomocí <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7168959436351276050">Skrytím této karty odstraníte všechna data sledování zásilek</translation>
 <translation id="7172852049901402487">Chraňte svá hesla před bezpečnostními problémy</translation>
 <translation id="7173114856073700355">Otevřít nastavení</translation>
 <translation id="7189598951263744875">Sdílet...</translation>
@@ -1538,6 +1538,7 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="9079935439869366234">Označit vše jako nepřečtené</translation>
 <translation id="9081058212938299310">Aktualizovat heslo uživatele <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Chcete-li synchronizovat a přizpůsobit různá zařízení, zapněte synchronizaci.</translation>
+<translation id="9087339162317338348">Používejte HTTPS, kdykoli je to možné, a nechte se upozornit, než načtete web, který tento protokol nepodporuje.</translation>
 <translation id="9093271241977565440">V horní části obrazovky klepněte na ikonu Vyhledávání</translation>
 <translation id="9094033019050270033">Aktualizovat heslo</translation>
 <translation id="9097506547406246598">Sledování nelze zrušit. Něco se pokazilo.</translation>

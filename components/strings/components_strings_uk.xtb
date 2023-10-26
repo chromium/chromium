@@ -513,6 +513,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{і ще 1}one{і ще #}few{і ще #}many{і ще #}other{і ще #}}</translation>
 <translation id="2003709556000175978">Скиньте пароль</translation>
 <translation id="2003775180883135320">Пробити чотири отвори вгорі</translation>
+<translation id="2004697686368036666">Функції на деяких сайтах можуть не працювати</translation>
 <translation id="2009942480257059311">Кнопка "Створити подію"; активуйте, щоб швидко створити нову подію в Google Календарі</translation>
 <translation id="201174227998721785">Керуйте в налаштуваннях Chrome дозволами й даними, що зберігаються на сайтах</translation>
 <translation id="2012276282211112603">Зараз немає тем для показу</translation>
@@ -1194,6 +1195,7 @@
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3443504041532578451">Оптичний диск (сатиновий)</translation>
 <translation id="344449859752187052">Сторонні файли cookie заблоковано</translation>
+<translation id="3447644283769633681">Заблокувати всі файли cookie третіх сторін</translation>
 <translation id="3447661539832366887">Власник цього пристрою вимкнув гру з динозавром.</translation>
 <translation id="3447884698081792621">Показати сертифікат (видавець: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Інтервал отримання:</translation>
@@ -1216,6 +1218,7 @@
 <translation id="3493660662684070951">Вантажівки, автофургони й позашляховики</translation>
 <translation id="3495081129428749620">Знайти на сторінці
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3497627066518778351">Перегляньте список даних сайтів на пристрої в новому вікні</translation>
 <translation id="3498215018399854026">Не вдалося зв’язатися з одним із ваших батьків. Повторіть спробу.</translation>
 <translation id="350069200438440499">Ім'я файлу:</translation>
 <translation id="3501300228850242680">Метал (музика)</translation>
@@ -1304,6 +1307,7 @@
 <translation id="365641980390710834">Повсякденний одяг</translation>
 <translation id="3658742229777143148">Редакція</translation>
 <translation id="3664782872746246217">Ключові слова:</translation>
+<translation id="3665100783276035932">Більшість сайтів мають працювати належним чином</translation>
 <translation id="3667704023705708645">Венчурний капітал</translation>
 <translation id="3671117652518853176">Якщо вимкнути це налаштування, з міркувань безпеки ми інколи проситимемо вас підтвердити особу</translation>
 <translation id="3671540257457995106">Дозволити змінити розмір?</translation>
@@ -2291,6 +2295,7 @@
 <translation id="568292603005599551">Горизонтальне положення зображення</translation>
 <translation id="5684277895745049190">Список</translation>
 <translation id="5684874026226664614">На жаль, цю сторінку неможливо перекласти.</translation>
+<translation id="5687340364605915800">Сайти відповідають на цей запит на власний розсуд</translation>
 <translation id="5688137257686092846">Фахівці з косметичних послуг</translation>
 <translation id="5689199277474810259">Експортувати у формат JSON</translation>
 <translation id="5689516760719285838">Місцезнаходження</translation>
@@ -2369,6 +2374,7 @@
 <translation id="5866898949289125849">Ви переглядаєте сторінку Інструментів розробника</translation>
 <translation id="5869405914158311789">Немає зв’язку із сайтом</translation>
 <translation id="5869522115854928033">Збережені паролі</translation>
+<translation id="5872318519182427835">Впливає на перераховані сайти і їхні субдомени. Наприклад, якщо додати сайт google.com, сторонні файли cookie також буде ввімкнено для сторінки mail.google.com, оскільки вона є частиною домену google.com.</translation>
 <translation id="5872692522325383488">Номер IBAN збережено</translation>
 <translation id="5873297634595728366">Дизельні автомобілі</translation>
 <translation id="5877831137320480913">Краса й фітнес</translation>
@@ -2520,6 +2526,7 @@
 <translation id="6177531123306197852">Конверт C2</translation>
 <translation id="6180316780098470077">Інтервал між повторними спробами</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome автоматично обмежує сторонні файли cookie</translation>
 <translation id="61877208875190028">Жіночий одяг</translation>
 <translation id="6194209731893739467">Тут можна переглянути всі відстежувані товари</translation>
 <translation id="6195163219142236913">Сторонні файли cookie обмежено</translation>
@@ -2629,6 +2636,7 @@
 <translation id="6394852772105848029">Сайт хоче відкрити додаток <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
 <translation id="6401136357288658127">Це правило не підтримується. Натомість потрібно застосувати правило <ph name="NEW_POLICY" />.</translation>
+<translation id="640163077447496506">Строк дії закінчується сьогодні</translation>
 <translation id="6402537308870515461">Перевірте файли, перш ніж переміщувати їх</translation>
 <translation id="6403167778944553">Спальні й ванні кімнати</translation>
 <translation id="6404511346730675251">Редагувати закладку</translation>
@@ -2851,6 +2859,7 @@
 <translation id="6874604403660855544">&amp;Повторити додавання</translation>
 <translation id="6880941331070119097">Варіант із високою ціною</translation>
 <translation id="6881240511396774766">Швидко створити новий документ Google</translation>
+<translation id="6882210908253838664">Якщо сайт не працює, спробуйте надати йому тимчасовий дозвіл на використання сторонніх файлів cookie. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Екран автентифікації облікових даних для безпечних платежів закрито</translation>
 <translation id="6884662655240309489">Розмір 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3260,6 +3269,7 @@
 <translation id="7631444403134069754">Легка атлетика</translation>
 <translation id="7631527008834753063">Телевізійні ігрові шоу</translation>
 <translation id="7633909222644580952">Дані про ефективність і звіти про збої</translation>
+<translation id="7636346903338549690">Сайти можуть використовувати сторонні файли cookie</translation>
 <translation id="7637571805876720304">Видалити дані кредитної картки з Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Немає}=1{У вашому обліковому записі збережено 1 пароль (для <ph name="DOMAIN_LIST" />)}one{У вашому обліковому записі збережено # пароль (для <ph name="DOMAIN_LIST" />)}few{У вашому обліковому записі збережено # паролі (для <ph name="DOMAIN_LIST" />)}many{У вашому обліковому записі збережено # паролів (для <ph name="DOMAIN_LIST" />)}other{У вашому обліковому записі збережено # пароля (для <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Послідовні порти</translation>

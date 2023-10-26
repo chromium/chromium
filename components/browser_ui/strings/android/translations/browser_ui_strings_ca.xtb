@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">La connexió amb aquest lloc web no és segura</translation>
 <translation id="6181444274883918285">Afegeix excepció per a un lloc web</translation>
 <translation id="6192792657125177640">Excepcions</translation>
+<translation id="6195163219142236913">Galetes de tercers limitades</translation>
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6205314730813004066">Privadesa d'anuncis</translation>
 <translation id="6207207788774442484">Suprimeix les dades i restableix els permisos</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">Els llocs web poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
 <translation id="6320088164292336938">Vibració</translation>
+<translation id="6344622098450209924">Protecció antiseguiment</translation>
 <translation id="6367753977865761591">Bloqueja l'inici de sessió de tercers en un lloc web concret.</translation>
 <translation id="6398765197997659313">Surt del mode de pantalla completa</translation>
 <translation id="640163077447496506">Caduca avui</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">L'NFC està desactivada en aquest dispositiu. Activa-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Bloqueja els llocs web perquè no vegin ni canviïn la informació que hi ha als dispositius amb NFC</translation>
+<translation id="8944485226638699751">Amb limitacions</translation>
 <translation id="8958424370300090006">Bloqueja les galetes d'un lloc web concret.</translation>
 <translation id="8959122750345127698">No es pot accedir a la navegació: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Oblida</translation>

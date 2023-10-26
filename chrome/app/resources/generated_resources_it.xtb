@@ -1120,6 +1120,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1859339856433307593">Una password per questo account è già salvata nel tuo <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Questa cartella è vuota</translation>
 <translation id="1862311223300693744">Hai installato VPN, proxy, firewall o software NAS particolari?</translation>
+<translation id="1863047423483329595">La Protezione antitracciamento non è al momento disponibile. Durante l'aggiornamento di questa funzionalità in Chrome, i siti possono usare temporaneamente i cookie di terze parti, a meno che tu non li blocchi. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Nessuna porta seriale trovata</translation>
 <translation id="1863207472175483351">Installazione in corso…</translation>
 <translation id="1864111464094315414">Accesso</translation>
@@ -1374,6 +1375,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2050339315714019657">Ritratto</translation>
 <translation id="2051266530792296582">Gestore delle password di Google ha creato una password efficace per questo sito web</translation>
 <translation id="2051555741181591333">Disabilita automaticamente l'hotspot</translation>
+<translation id="2051669996101374349">Se possibile, utilizza HTTPS e ricevi un avviso prima di caricare i siti che non lo supportano. Non puoi modificare questa impostazione perché hai attivato la protezione avanzata.</translation>
 <translation id="2052572566310583903">Installata su altri dispositivi</translation>
 <translation id="2053105195397337973">Stiamo esaminando dei metodi per limitare il monitoraggio e consentire ai siti di contrastare spam negli annunci e attività fraudolente.</translation>
 <translation id="2053312383184521053">Dati sullo stato di inattività</translation>
@@ -1795,6 +1797,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="236117173274098341">Ottimizza</translation>
 <translation id="2361340419970998028">Invio del feedback in corso…</translation>
 <translation id="236141728043665931">Impedisci sempre l'accesso al microfono</translation>
+<translation id="2363475280045770326">Errore durante il salvataggio della configurazione</translation>
 <translation id="2363744066037724557">&amp;Ripristina finestra</translation>
 <translation id="2364498172489649528">Superato</translation>
 <translation id="2365507699358342471">Questo sito può leggere testo e immagini copiati negli appunti</translation>
@@ -2247,7 +2250,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2719936478972253983">Sono stati bloccati i seguenti cookie</translation>
 <translation id="2721037002783622288">&amp;Cerca l'immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
-<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{Anche le autorizzazioni che hai consentito per "<ph name="APP_NAME" />" saranno consentite per questa app.}other{Anche le autorizzazioni che hai consentito per "<ph name="APP_NAME" />" saranno consentite per queste app.}}</translation>
 <translation id="2721695630904737430">Gli utenti supervisionati sono stati disattivati dall'amministratore.</translation>
 <translation id="2722540561488096675">Il dispositivo si arresterà tra <ph name="TIME_LEFT" />. Rimuovi l'USB prima di riaccendere il dispositivo. Dopodiché potrai iniziare a usare <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
@@ -3514,6 +3516,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3740396996321407665">Ricevi una guida contestuale da alcune funzionalità</translation>
 <translation id="3740945083753997630">Riduci dimensioni di visualizzazione e testo</translation>
 <translation id="3741056951918180319">Puoi sempre fare clic sull'estensione per usarla su qualsiasi sito</translation>
+<translation id="3741510433331996336">Riavvia il dispositivo per completare l'aggiornamento</translation>
 <translation id="3742235229730461951">Layout tastiera coreana</translation>
 <translation id="3742666961763734085">Impossibile trovare un'unità organizzativa con il nome indicato. Riprova.</translation>
 <translation id="3743842571276656710">Inserisci il PIN per eseguire l'accoppiamento con <ph name="DEVICE_NAME" /></translation>
@@ -5901,6 +5904,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5667293444945855280">Malware</translation>
 <translation id="5667546120811588575">Configurazione di Google Play...</translation>
 <translation id="5668351004957198136">Controllo non superato</translation>
+<translation id="5669863904928111203">ChromeOS non è aggiornato</translation>
 <translation id="56702779821643359">Condividi file con persone nelle vicinanze. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="5671641761787789573">Immagini bloccate</translation>
 <translation id="5671658447180261823">Rimuovi il suggerimento <ph name="SUGGESTION_NAME" /></translation>
@@ -8228,6 +8232,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7549250950481368089">Le password salvate verranno visualizzate qui. <ph name="BEGIN_LINK" /> Importa password<ph name="END_LINK" /> in <ph name="BRAND" />.</translation>
 <translation id="7549434883223124329">Vuoi cambiare la lingua del dispositivo?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
+<translation id="7550885994112799211">Spazio di archiviazione, alimentazione, lingua</translation>
 <translation id="7551059576287086432">Download di <ph name="FILE_NAME" /> non riuscito</translation>
 <translation id="7551643184018910560">Blocca sulla barra delle app</translation>
 <translation id="7552846755917812628">Prova i seguenti suggerimenti:</translation>
@@ -8950,6 +8955,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
     <ph name="BEGIN_PARAGRAPH3" />Per dati delle app si intende qualsiasi dato salvato nell'app (in base alle impostazioni sviluppatore), inclusi dati come contatti, messaggi e foto.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />I dati di backup non vengono considerati per la quota di spazio di archiviazione di Drive.<ph name="END_PARAGRAPH4" />
     <ph name="BEGIN_PARAGRAPH5" />Puoi disattivare questo servizio nelle Impostazioni.<ph name="END_PARAGRAPH5" /></translation>
+<translation id="8095439028686936591">ChromeOS è aggiornato</translation>
 <translation id="8096740438774030488">Modalità di sospensione durante l'utilizzo della batteria</translation>
 <translation id="80974698889265265">I PIN non corrispondono</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> usa le impostazioni proxy di un'estensione</translation>
@@ -9264,6 +9270,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8345848587667658367">Ora puoi visualizzare le foto recenti, i contenuti multimediali, le notifiche e le app del tuo telefono</translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="834785183489258869">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
+<translation id="8348430946834215779">Utilizza HTTPS quando possibile e ricevi un avviso prima di caricare i siti che non lo supportano</translation>
 <translation id="8349325309815489209">Estensioni consentite su questo sito</translation>
 <translation id="8349826889576450703">Avvio applicazioni</translation>
 <translation id="8350789879725387295">Strumenti stilo nel dock</translation>
@@ -9456,7 +9463,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8496717697661868878">Esegui questo plug-in</translation>
 <translation id="8497219075884839166">Utilità Windows</translation>
 <translation id="8498214519255567734">Potrai guardare lo schermo senza sforzare la vista o leggere in condizioni di luce attenuata</translation>
-<translation id="8498395510292172881">Continua a leggere in Chrome</translation>
 <translation id="8499083585497694743">Riattiva microfono</translation>
 <translation id="8499951261760185742">Se un sito che visiti non funziona come previsto, prova a consentire temporaneamente i cookie di terze parti. Ciò significa meno protezione, ma è più probabile che le funzionalità del sito abbiano il comportamento previsto.</translation>
 <translation id="8502536196501630039">Per utilizzare le app di Google Play, è prima necessario ripristinare le app. Alcuni dati potrebbero essere andati persi.</translation>
@@ -9698,6 +9704,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8690129572193755009">I siti possono chiedere di gestire protocolli</translation>
 <translation id="869144235543261764">Questa scheda sta riproducendo un video in modalità Picture in picture</translation>
 <translation id="8692107307702113268">La password contiene più di 1000 caratteri</translation>
+<translation id="8693639060656817812">Scopri di più sulla disponibilità della Protezione antitracciamento</translation>
 <translation id="8694596275649352090">Blocca quando sospeso o alla chiusura del coperchio</translation>
 <translation id="8695139659682234808">Aggiungi la funzionalità Controllo genitori dopo la configurazione</translation>
 <translation id="8695825812785969222">Apri &amp;percorso...</translation>
@@ -9994,7 +10001,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8927438609932588163">Consenti ai siti di salvare dati sul dispositivo</translation>
 <translation id="8929696694736010839">Solo per la sessione in incognito corrente</translation>
 <translation id="8929738682246584251">Lente d'ingrandimento on/off</translation>
-<translation id="8930351635855238750">Le nuove impostazioni dei cookie verranno applicate dopo aver ricaricato la pagina</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8931076093143205651">Invia dati diagnostici e sull'utilizzo. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Questa impostazione è applicata dal proprietario. Il proprietario potrebbe decidere di inviare a Google dati di diagnostica e utilizzo relativi a questo dispositivo. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
 <translation id="8931475688782629595">Gestisci i dati da sincronizzare</translation>

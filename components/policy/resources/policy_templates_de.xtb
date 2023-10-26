@@ -2305,13 +2305,6 @@ Wenn diese Richtlinie aktiviert ist, kann das Verhalten von Funktionstasten mit 
       Ist sie nicht konfiguriert, werden alle Downloads, für die der Dateityp in <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> aufgelistet ist, automatisch geöffnet.
 
       Ein URL-Muster muss dem unter https://support.google.com/chrome/a?p=url_blocklist_filter_format beschriebenen Format entsprechen.</translation>
-<translation id="2999597974578784672">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, welche Websites Cookies setzen dürfen.
-
-          Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet, entweder aus der Richtlinie <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" />, sofern diese konfiguriert ist, oder aus der persönlichen Konfiguration des Nutzers.
-
-          Weitere Informationen findest du unter <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> und <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Es darf keine widersprüchlichen URL-Muster zwischen diesen drei Richtlinien geben. Es ist nicht festgelegt, welche Richtlinie Vorrang hat.
-
-          Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="3000238720665173643">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die Autokorrektur aktiviert ist.</translation>
 <translation id="3001285126226650303">Gestattet <ph name="PRODUCT_NAME" /> das Laden experimenteller Richtlinien.
 
@@ -5571,11 +5564,6 @@ Wenn die Richtlinie deaktiviert ist, ist auch der <ph name="SAFE_BROWSING_NAME" 
 <translation id="5831286647961890695">Adaptives Lademodell unter <ph name="PRODUCT_OS_NAME" /> aktivieren</translation>
 <translation id="5832274826894536455">Veraltete Richtlinien</translation>
 <translation id="5834583755928064072">Nutzer daran hindern, die Release-Version zu ändern</translation>
-<translation id="5835253272509953988">Wenn die Richtlinie aktiviert ist, können Nutzer von <ph name="PRODUCT_NAME" /> prüfen lassen, ob die eingegebenen Nutzernamen und Passwörter Teil eines Datenlecks sind.
-
-      Ist die Richtlinie festgelegt, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern. Sollte sie nicht festgelegt sein, ist die Datenleckprüfung zulässig, kann jedoch vom Nutzer deaktiviert werden. 
-
-      Dieses Verhalten wird nicht ausgelöst, wenn Safe Browsing durch eine Richtlinie oder den Nutzer deaktiviert wurde. Wenn du die Aktivierung von Safe Browsing erzwingen möchtest, verwende die Richtlinie „<ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />“ oder „<ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />“.</translation>
 <translation id="5835312413892670446">Einstellungen für die Bildschirmaufnahme</translation>
 <translation id="5835674781974810379">Cookies und andere Websitedaten löschen</translation>
 <translation id="5836064773277134605">Vom Host für den Remotezugriff verwendeten UDP-Portbereich einschränken</translation>

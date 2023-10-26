@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">سیگنال ضعیف</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">درحال به‌روزرسانی (<ph name="PERCENTAGE_VALUE" />٪ تکمیل شد)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="1310380015393971138">هیچ شبکه‌ <ph name="NETWORK_NAME" /> دردسترس نیست</translation>
 <translation id="131421566576084655">تاریخ آخرین بازنشانی داده دردسترس نیست</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">پیوست کردن فایل</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
 <translation id="8246209727385807362">شرکت مخابراتی ناشناس</translation>
+<translation id="8262870577632766028">۱ ساعت</translation>
 <translation id="827422111966801947">نیلی سیر</translation>
 <translation id="8286154143153872371">لطفاً برای مشاهده کاغذدیواری، به شبکه متصل شوید و صفحه را بار کردن مجدد کنید.</translation>
 <translation id="8291967909914612644">کشور ارائه‌دهنده اصلی</translation>

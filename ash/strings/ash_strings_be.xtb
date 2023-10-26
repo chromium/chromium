@@ -503,6 +503,7 @@
 <translation id="3105917916468784889">Зрабіць здымак экрана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Вылучыць папярэдні элемент на панэлі доступу</translation>
+<translation id="311799651966070385">Закрыць напамін</translation>
 <translation id="3120421559657122717">Завяршыць працу прылады?</translation>
 <translation id="3122464029669770682">Працэсар</translation>
 <translation id="3125690294288312932">Тып задання</translation>
@@ -886,6 +887,7 @@
 <translation id="4585337515783392668">Спыніць трансляцыю невядомаму атрымальніку</translation>
 <translation id="4596144739579517758">Цёмная тэма выключана</translation>
 <translation id="4611292653554630842">Увайсці</translation>
+<translation id="462160925400706389"><ph name="NAME" />: падключана</translation>
 <translation id="4623167406982293031">Пацвердзіць уліковы запіс</translation>
 <translation id="4628757576491864469">Прылады</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ацэнка: <ph name="RATING_SCORE" /></translation>
@@ -1187,6 +1189,7 @@
 <translation id="5774295353725270860">Адкрыць праграму "Файлы"</translation>
 <translation id="5777841717266010279">Спыніць абагульванне экрана?</translation>
 <translation id="5779721926447984944">Замацаваныя файлы</translation>
+<translation id="5785221443435874078">Выдаліць гэту прапанову</translation>
 <translation id="5788127256798019331">Файлы Play</translation>
 <translation id="5788535737706478207">Адкрыць апошнюю закрытую ўкладку або акно</translation>
 <translation id="5790085346892983794">Выканана</translation>
@@ -1266,7 +1269,6 @@
 <translation id="6095008505822982596">Хуткасць маўлення</translation>
 <translation id="6095425951508823973">Дадаць падключэнне праз <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Зменена ў мінулым месяцы</translation>
-<translation id="6099793635444444289">Не ўдалося пачаць галасавы ўвод, бо мікрафон выключаны</translation>
 <translation id="6103838137565245112">сістэма</translation>
 <translation id="6114505516289286752">Спампаваны файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1312,6 +1314,7 @@
 <translation id="6284232397434400372">Раздзяляльнасць зменена</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> можна дадаць пазней з дазволу бацькоў.</translation>
 <translation id="6291221004442998378">Не зараджаецца</translation>
+<translation id="6298183524022479114">Наладзьце гэту прыладу ў праграме</translation>
 <translation id="6309219492973062892">Націснуць на значкі 1-8 на панэлі доступу</translation>
 <translation id="6315170314923504164">Галасавы ўвод</translation>
 <translation id="6324916366299863871">Рэдагаваць ярлык</translation>

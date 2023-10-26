@@ -2266,7 +2266,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2719936478972253983">Các cookie sau đã bị chặn</translation>
 <translation id="2721037002783622288">&amp;Tìm kiếm hình ảnh trên <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
-<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{Các quyền bạn cấp cho "<ph name="APP_NAME" />" cũng sẽ được cấp cho ứng dụng này.}other{Các quyền bạn cấp cho "<ph name="APP_NAME" />" cũng sẽ được cấp cho những ứng dụng này.}}</translation>
 <translation id="2721695630904737430">Quản trị viên của bạn đã vô hiệu hóa người dùng được giám sát.</translation>
 <translation id="2722540561488096675">Thiết bị của bạn sẽ tắt trong <ph name="TIME_LEFT" />. Hãy tháo USB trước khi bật lại thiết bị của bạn. Sau đó, bạn có thể bắt đầu dùng <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">Mã nhận dạng: <ph name="EXTENSION_ID" /></translation>
@@ -9488,7 +9487,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8496717697661868878">Chạy Plugin này</translation>
 <translation id="8497219075884839166">Tiện ích Windows</translation>
 <translation id="8498214519255567734">Giúp bạn nhìn màn hình hoặc đọc dưới ánh sáng mờ dễ dàng hơn</translation>
-<translation id="8498395510292172881">Tiếp tục đọc trong Chrome</translation>
 <translation id="8499083585497694743">Bật micrô</translation>
 <translation id="8499951261760185742">Nếu một trang web mà bạn truy cập không hoạt động như dự kiến, hãy thử tạm thời cho phép trang web đó sử dụng cookie của bên thứ ba. Chế độ cài đặt này làm giảm khả năng bảo vệ nhưng các tính năng của trang web sẽ có khả năng hoạt động như dự kiến.</translation>
 <translation id="8502536196501630039">Để dùng ứng dụng từ Google Play, trước tiên bạn phải khôi phục ứng dụng của mình. Một số dữ liệu có thể đã bị mất.</translation>
@@ -10028,7 +10026,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8927438609932588163">Cho phép các trang web lưu dữ liệu trên thiết bị của bạn</translation>
 <translation id="8929696694736010839">Chỉ phiên truy cập Ẩn danh hiện tại</translation>
 <translation id="8929738682246584251">Bật/tắt kính lúp</translation>
-<translation id="8930351635855238750">Cài đặt cookie mới sẽ có hiệu lực sau khi tải lại trang</translation>
 <translation id="8930622219860340959">Không dây</translation>
 <translation id="8931076093143205651">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Giúp cải thiện trải nghiệm Android của bạn bằng cách tự động gửi dữ liệu chẩn đoán, dữ liệu về mức sử dụng ứng dụng và thiết bị cho Google. Những thông tin này sẽ giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Tùy chọn cài đặt này do chủ sở hữu thực thi. Chủ sở hữu có thể chọn gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng của thiết bị này cho Google. Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung, thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn.</translation>
 <translation id="8931475688782629595">Quản lý dữ liệu đồng bộ hóa</translation>

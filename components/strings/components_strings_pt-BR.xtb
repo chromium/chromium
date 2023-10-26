@@ -514,6 +514,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2001146170449793414">{COUNT,plural, =1{e mais um}one{e mais #}other{e mais #}}</translation>
 <translation id="2003709556000175978">Redefinir sua senha agora</translation>
 <translation id="2003775180883135320">Perfuração quádrupla na parte superior</translation>
+<translation id="2004697686368036666">Os recursos de alguns sites podem não funcionar</translation>
 <translation id="2009942480257059311">Botão "Criar evento". Ative para criar rapidamente um novo evento no Google Agenda</translation>
 <translation id="201174227998721785">Gerencie as permissões e os dados armazenados em sites nas configurações do Chrome</translation>
 <translation id="2012276282211112603">Não há temas para mostrar no momento</translation>
@@ -1195,6 +1196,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3441653493275994384">Tela</translation>
 <translation id="3443504041532578451">Disco óptico (acetinado)</translation>
 <translation id="344449859752187052">Cookies de terceiros bloqueados</translation>
+<translation id="3447644283769633681">Bloquear todos os cookies de terceiros</translation>
 <translation id="3447661539832366887">O proprietário deste dispositivo desativou o jogo do dinossauro.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Buscar intervalo:</translation>
@@ -1306,6 +1308,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="365641980390710834">Roupas casuais</translation>
 <translation id="3658742229777143148">Revisão</translation>
 <translation id="3664782872746246217">Palavras-chave:</translation>
+<translation id="3665100783276035932">A maioria dos sites vai funcionar conforme o esperado</translation>
 <translation id="3667704023705708645">Capital de risco</translation>
 <translation id="3671117652518853176">Quando essa opção estiver desativada, a confirmação poderá ser solicitada ocasionalmente para fins de segurança</translation>
 <translation id="3671540257457995106">Permitir o redimensionamento?</translation>
@@ -2293,6 +2296,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="568292603005599551">Posição X da imagem</translation>
 <translation id="5684277895745049190">Lista</translation>
 <translation id="5684874026226664614">Não foi possível traduzir esta página.</translation>
+<translation id="5687340364605915800">Os sites usam os próprios critérios ao responder a esse pedido</translation>
 <translation id="5688137257686092846">Profissionais de beleza e cosmética</translation>
 <translation id="5689199277474810259">Exportar para JSON</translation>
 <translation id="5689516760719285838">Local</translation>
@@ -2371,6 +2375,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5866898949289125849">Você está vendo uma página de ferramentas para desenvolvedores</translation>
 <translation id="5869405914158311789">Não é possível acessar esse site</translation>
 <translation id="5869522115854928033">Senhas salvas</translation>
+<translation id="5872318519182427835">Afeta os sites listados aqui e os subdomínios deles. Por exemplo, a adição de "google.com" significa que os cookies de terceiros também podem estar ativos para mail.google.com, que faz parte do google.com.</translation>
 <translation id="5872692522325383488">IBAN salvo</translation>
 <translation id="5873297634595728366">Veículos a diesel</translation>
 <translation id="5877831137320480913">Beleza e fitness</translation>
@@ -2522,6 +2527,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">Intervalo entre novas tentativas</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">O Chrome limita automaticamente os cookies de terceiros</translation>
 <translation id="61877208875190028">Roupas femininas</translation>
 <translation id="6194209731893739467">Veja todos os seus produtos monitorados aqui</translation>
 <translation id="6195163219142236913">Cookies de terceiros limitados</translation>
@@ -2631,6 +2637,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6394852772105848029">Este site quer abrir o app <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Sair do modo tela cheia</translation>
 <translation id="6401136357288658127">Essa política está obsoleta. Use a política <ph name="NEW_POLICY" />.</translation>
+<translation id="640163077447496506">Expira hoje</translation>
 <translation id="6402537308870515461">Revise antes de mover os arquivos</translation>
 <translation id="6403167778944553">Cama, mesa e banho</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
@@ -2853,6 +2860,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6874604403660855544">&amp;Refazer adicionar</translation>
 <translation id="6880941331070119097">Opção com preço alto</translation>
 <translation id="6881240511396774766">Criar um novo arquivo do Documentos Google rapidamente</translation>
+<translation id="6882210908253838664">Se um site não estiver funcionando, tente conceder uma permissão temporária para usar cookies de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">A página de autenticação de credenciais para pagamento seguro está fechada</translation>
 <translation id="6884662655240309489">Tamanho 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3262,6 +3270,7 @@ Mais detalhes:
 <translation id="7631444403134069754">Atletismo</translation>
 <translation id="7631527008834753063">Programas de jogos na TV</translation>
 <translation id="7633909222644580952">Dados de desempenho e relatórios de erros</translation>
+<translation id="7636346903338549690">Sites em que o uso de cookies de terceiros foi permitido</translation>
 <translation id="7637571805876720304">Remover cartão de crédito do Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Nenhuma}=1{1 senha na sua conta (para <ph name="DOMAIN_LIST" />)}one{# senha na sua conta (para <ph name="DOMAIN_LIST" />)}other{# senhas na sua conta (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Portas seriais</translation>

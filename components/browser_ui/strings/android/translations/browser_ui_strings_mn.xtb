@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">Энэ сайтын холболт аюултай байна</translation>
 <translation id="6181444274883918285">Сайтын онцгой тохиолдол нэмэх</translation>
 <translation id="6192792657125177640">Гажих нөхцлүүд</translation>
+<translation id="6195163219142236913">Гуравдагч талын күүкинүүдийг хязгаарласан</translation>
 <translation id="6196640612572343990">Гуравдагч талын күүкиг блоклох</translation>
 <translation id="6205314730813004066">Зарын нууцлал</translation>
 <translation id="6207207788774442484">Өгөгдлийг устгаж, зөвшөөрлүүдийг шинэчлэх</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">Сайтууд нь танд мэдэгдэл илгээх зөвшөөрөл асуух боломжтой</translation>
 <translation id="6295158916970320988">Бүх сайт</translation>
 <translation id="6320088164292336938">Чичиргэх</translation>
+<translation id="6344622098450209924">Хяналтын хамгаалалт</translation>
 <translation id="6367753977865761591">Тодорхой сайтын гуравдагч талын нэвтрэлтийг блоклоно уу.</translation>
 <translation id="6398765197997659313">Дэлгэц дүүрэн харах горимоос гарах</translation>
 <translation id="640163077447496506">Өнөөдөр хугацаа нь дуусна</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Энэ төхөөрөмж дээр NFC унтраалттай байна. Үүнийг <ph name="BEGIN_LINK" />Android-н тохиргоо<ph name="END_LINK" /> хэсэгт асаана уу.</translation>
 <translation id="8928445016601307354">Сайтуудыг NFC төхөөрөмжүүд дээрх мэдээллийг харах болон өөрчлөхийг блоклох</translation>
+<translation id="8944485226638699751">Хязгаарлагдсан</translation>
 <translation id="8958424370300090006">Күүкиг тодорхой сайтад хориглоно уу.</translation>
 <translation id="8959122750345127698">Навигацтай холбогдох боломжгүй байна: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Мартах</translation>

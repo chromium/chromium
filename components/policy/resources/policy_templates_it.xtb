@@ -2313,13 +2313,6 @@ comportamento dei tasti funzione e questa impostazione non sarà modificabile da
       Se il criterio non viene configurato, tutti i file scaricati con tipo di file indicato nel criterio <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> verranno aperti automaticamente.
 
       Un pattern URL deve essere nel formato indicato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
-<translation id="2999597974578784672">Consente di impostare un elenco di pattern URL che specificano i siti nei quali è consentito impostare i cookie.
-
-          Se questo criterio non viene impostato, per tutti i siti viene usato il valore predefinito globale del criterio <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" />, se impostato o, se il criterio non è impostato, il valore della configurazione personale dell'utente.
-
-          Vedi anche i criteri <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Tieni presente che non ci deve essere conflitto di pattern URL tra questi tre criteri. Non viene specificato quale criterio debba avere la precedenza.
-
-          Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="3000238720665173643">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di correzione automatica.</translation>
 <translation id="3001285126226650303">Consente a <ph name="PRODUCT_NAME" /> di caricare criteri sperimentali.
 
@@ -5616,11 +5609,6 @@ Se questo criterio viene disattivato, la protezione delle estensioni di <ph name
 <translation id="5831286647961890695">Attiva il modello di ricarica adattiva su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Norme obsolete</translation>
 <translation id="5834583755928064072">Impedisci agli utenti di modificare il canale di rilascio</translation>
-<translation id="5835253272509953988">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> controlla se nomi utente e password inseriti dagli utenti sono stati resi noti.
-
-      Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, è consentito il controllo della divulgazione delle credenziali, ma l'utente può disattivarlo. 
-
-      Questo comportamento non viene attivato se Navigazione sicura viene disattivata (tramite il criterio o dall'utente). Per l'attivazione forzata di Navigazione sicura, utilizza il criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5835312413892670446">Impostazioni Cattura schermo</translation>
 <translation id="5835674781974810379">Cancella cookie e altri dati dei siti</translation>
 <translation id="5836064773277134605">Limita l'intervallo di porte UDP utilizzate dall'host di accesso remoto</translation>

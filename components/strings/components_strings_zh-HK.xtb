@@ -514,6 +514,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{和另外 1 個應用程式}other{和另外 # 個應用程式}}</translation>
 <translation id="2003709556000175978">立即重設您的密碼</translation>
 <translation id="2003775180883135320">四孔 (頂端)</translation>
+<translation id="2004697686368036666">部分網站的功能可能會無法正常運作</translation>
 <translation id="2009942480257059311">建立活動按鈕，啟動之後就可以喺 Google 日曆度快速建立新活動</translation>
 <translation id="201174227998721785">在 Chrome 設定中管理所有網站的權限和儲存的資料</translation>
 <translation id="2012276282211112603">目前沒有可顯示的主題</translation>
@@ -1195,6 +1196,7 @@
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3443504041532578451">光碟 (光滑)</translation>
 <translation id="344449859752187052">已封鎖第三方 Cookie</translation>
+<translation id="3447644283769633681">封鎖所有第三方 Cookie</translation>
 <translation id="3447661539832366887">此裝置的擁有者已停用恐龍遊戲。</translation>
 <translation id="3447884698081792621">顯示憑證 (核發者：<ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">擷取間隔：</translation>
@@ -1305,6 +1307,7 @@
 <translation id="365641980390710834">休閒服裝</translation>
 <translation id="3658742229777143148">修訂</translation>
 <translation id="3664782872746246217">關鍵字：</translation>
+<translation id="3665100783276035932">大部份網站應該都能正常運作</translation>
 <translation id="3667704023705708645">創業資金</translation>
 <translation id="3671117652518853176">在關閉狀態下，系統基於安全考慮，可能會間中要求您進行驗證</translation>
 <translation id="3671540257457995106">要允許調整大小嗎？</translation>
@@ -2292,6 +2295,7 @@
 <translation id="568292603005599551">圖片 X 軸位置</translation>
 <translation id="5684277895745049190">清單</translation>
 <translation id="5684874026226664614">糟糕！系統無法翻譯這個網頁的內容。</translation>
+<translation id="5687340364605915800">網站會自行判斷是否回應此要求</translation>
 <translation id="5688137257686092846">美容技術和相關專業服務</translation>
 <translation id="5689199277474810259">匯出為 JSON 格式</translation>
 <translation id="5689516760719285838">位置</translation>
@@ -2370,6 +2374,7 @@
 <translation id="5866898949289125849">您正在查看 Developer Tools 頁面</translation>
 <translation id="5869405914158311789">無法連線至此網站</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
+<translation id="5872318519182427835">影響範圍包括這裡列出的網站及其子網域。例如，如果新增「google.com」，mail.google.com 亦可使用第三方 Cookie，因為該網域屬於 google.com。</translation>
 <translation id="5872692522325383488">已儲存 IBAN</translation>
 <translation id="5873297634595728366">柴油車</translation>
 <translation id="5877831137320480913">美容和健身</translation>
@@ -2521,6 +2526,7 @@
 <translation id="6177531123306197852">C2 信封</translation>
 <translation id="6180316780098470077">重試間隔</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome 會自動限制第三方 Cookie</translation>
 <translation id="61877208875190028">女裝</translation>
 <translation id="6194209731893739467">在此查看您追蹤的所有產品</translation>
 <translation id="6195163219142236913">已限制第三方 Cookie</translation>
@@ -2630,6 +2636,7 @@
 <translation id="6394852772105848029">此網站要求開啟 <ph name="APP_NAME" /> 應用程式</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="6401136357288658127">此政策已被淘汰，請改用 <ph name="NEW_POLICY" /> 政策。</translation>
+<translation id="640163077447496506">今天到期</translation>
 <translation id="6402537308870515461">移動檔案前請務必確認</translation>
 <translation id="6403167778944553">床上及浴室用品</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
@@ -2852,6 +2859,7 @@
 <translation id="6874604403660855544">重做新增(&amp;R)</translation>
 <translation id="6880941331070119097">高價選項</translation>
 <translation id="6881240511396774766">快速建立新的 Google 文件</translation>
+<translation id="6882210908253838664">如果網站無法運作，你可暫時允許該網站使用第三方 Cookie。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">閂咗安全付款憑證驗證工作表</translation>
 <translation id="6884662655240309489">粗幼：1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3261,6 +3269,7 @@
 <translation id="7631444403134069754">田徑</translation>
 <translation id="7631527008834753063">電視遊戲節目</translation>
 <translation id="7633909222644580952">效能資料和當機報告</translation>
+<translation id="7636346903338549690">已允許使用第三方 Cookie 的網站</translation>
 <translation id="7637571805876720304">要從 Chromium 移除信用卡嗎？</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{無}=1{帳戶中有 1 個密碼 (適用於 <ph name="DOMAIN_LIST" />)}other{帳戶中有 # 個密碼 (適用於 <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">序列連接埠</translation>

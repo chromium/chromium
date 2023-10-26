@@ -227,6 +227,7 @@
 <translation id="1413809658975081374">Құпиялық қатесі</translation>
 <translation id="1414134146594747368">Балабақша</translation>
 <translation id="141826476809826269">Шығарып алынған мәтін соңы</translation>
+<translation id="1418611192881166179">Chrome бұл функцияны жаңартқан кезде, үшінші тарап cookie файлдарын параметрлерде блоктамасаңыз, сайттар оларды уақытша қолдана алады.</translation>
 <translation id="1419305130220238697">"Chrome браузерінде жүктеп алынған файлдарды басқару" түймесі, Chrome браузерінде жүктеп алған файлдарды басқару үшін белсендіріңіз</translation>
 <translation id="1422930527989633628">Маңайдағы Bluetooth құрылғыларын анықтауды сұрай алады</translation>
 <translation id="1426410128494586442">Иә</translation>
@@ -513,6 +514,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{және тағы 1}other{және тағы #}}</translation>
 <translation id="2003709556000175978">Құпия сөзді қайта орнату</translation>
 <translation id="2003775180883135320">Жоғарғы жағын төрт рет тесу</translation>
+<translation id="2004697686368036666">Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
 <translation id="2009942480257059311">"Іс-шара жасау" түймесі, Google Calendar-да жылдам жаңа іс-шара жасау үшін белсендіріңіз</translation>
 <translation id="201174227998721785">Chrome параметрлері арқылы сайттарға қатысты сақталған рұқсаттар мен деректерді басқару</translation>
 <translation id="2012276282211112603">Дәл қазір көрсететін тақырып жоқ.</translation>
@@ -1194,6 +1196,7 @@
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3443504041532578451">Оптикалық диск (сәтен)</translation>
 <translation id="344449859752187052">Үшінші тарап cookie файлдары блокталған</translation>
+<translation id="3447644283769633681">Барлық үшінші тарап cookie файлын бөгеу</translation>
 <translation id="3447661539832366887">Бұл құрылғының иесі динозаврлар ойынын өшірді.</translation>
 <translation id="3447884698081792621">Сертификатты көрсету (шығарушы: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Аралықты алу:</translation>
@@ -1216,6 +1219,7 @@
 <translation id="3493660662684070951">Жүк көліктері, фургондар және жол талғамайтын көліктер</translation>
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" />
 бетінен табу</translation>
+<translation id="3497627066518778351">Жаңа терезеде құрылғыдағы сайт деректерінің тізімін тексеру</translation>
 <translation id="3498215018399854026">Қазір ата-анаңызбен байланысу мүмкін емес. Әрекетті қайталаңыз.</translation>
 <translation id="350069200438440499">Файл атауы:</translation>
 <translation id="3501300228850242680">Металл (музыка)</translation>
@@ -1304,6 +1308,7 @@
 <translation id="365641980390710834">Күнделікті киім</translation>
 <translation id="3658742229777143148">Қарап шығу</translation>
 <translation id="3664782872746246217">Кілтсөздер:</translation>
+<translation id="3665100783276035932">Көп сайт ойдағыдай жұмыс істеуі керек.</translation>
 <translation id="3667704023705708645">Еншілес капитал</translation>
 <translation id="3671117652518853176">Өшірілген кезде, қауіпсіздік мақсатында сізден кейде растау сұралуы мүмкін.</translation>
 <translation id="3671540257457995106">Өлшемін өзгертуге рұқсат берілсін бе?</translation>
@@ -2292,6 +2297,7 @@
 <translation id="568292603005599551">Кескіннің Х осі бойынша орны</translation>
 <translation id="5684277895745049190">Тізім</translation>
 <translation id="5684874026226664614">Бұл бетті аудару мүмкін емес.</translation>
+<translation id="5687340364605915800">Сайттар бұл сұрауға жауап бермеуді таңдауы мүмкін.</translation>
 <translation id="5688137257686092846">Косметология және сұлулық мамандары</translation>
 <translation id="5689199277474810259">JSON форматында экспорттау</translation>
 <translation id="5689516760719285838">Локация</translation>
@@ -2370,6 +2376,7 @@
 <translation id="5866898949289125849">Әзірлеуші құралдары беті ашылды.</translation>
 <translation id="5869405914158311789">Бұл сайтқа кіру мүмкін емес</translation>
 <translation id="5869522115854928033">Сақталған құпия сөздер</translation>
+<translation id="5872318519182427835">Осы жерде берілген сайттарға және олардың ішкі домендеріне әсер етеді. Мысалы, "google.com" қосылса, үшінші тарап cookie файлдары mail.google.com ішінде де іске қосыла алады, себебі ол — google.com доменінің бір бөлігі.</translation>
 <translation id="5872692522325383488">IBAN сақталды</translation>
 <translation id="5873297634595728366">Дизельді көліктер</translation>
 <translation id="5877831137320480913">Сұлулық және фитнес</translation>
@@ -2521,6 +2528,7 @@
 <translation id="6177531123306197852">C2 хатқалтасы</translation>
 <translation id="6180316780098470077">Қайталау аралығы</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome үшінші тарап cookie файлдарына автоматты түрде шектеу қояды.</translation>
 <translation id="61877208875190028">Әйелдер киімі</translation>
 <translation id="6194209731893739467">Бақылайтын барлық өнімді осы жерден көре аласыз.</translation>
 <translation id="6195163219142236913">Үшінші тарап cookie файлдарына шектеу қойылды.</translation>
@@ -2630,6 +2638,7 @@
 <translation id="6394852772105848029">Бұл сайт <ph name="APP_NAME" /> қолданбасын ашқысы келіп тұр.</translation>
 <translation id="6398765197997659313">Толық экраннан шығу</translation>
 <translation id="6401136357288658127">Бұл саясат ескірді. Орнына <ph name="NEW_POLICY" /> саясатын пайдаланғаныңыз жөн.</translation>
+<translation id="640163077447496506">Мерзімі бүгін бітеді</translation>
 <translation id="6402537308870515461">Жылжыту алдында қарап шығу қажет</translation>
 <translation id="6403167778944553">Төсек және ванна</translation>
 <translation id="6404511346730675251">Бетбелгіні өзгерту</translation>
@@ -2852,6 +2861,7 @@
 <translation id="6874604403660855544">&amp;Қайта қосу</translation>
 <translation id="6880941331070119097">Бағасы жоғары опция</translation>
 <translation id="6881240511396774766">Жаңа Google құжатын жылдам жасаңыз.</translation>
+<translation id="6882210908253838664">Сайт жұмыс істемесе, оған үшінші тарап cookie файлдарын пайдалануға уақытша рұқсат беріп көрсеңіз болады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Қауіпсіз төлем деректерін аутентификациялау парағы жабылды.</translation>
 <translation id="6884662655240309489">Өлшемі: 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3262,6 +3272,7 @@
 <translation id="7631444403134069754">Жеңіл атлетика</translation>
 <translation id="7631527008834753063">Ойын телешоулары</translation>
 <translation id="7633909222644580952">Жұмыс өнімділігі туралы дерек және жаңылыс туралы есеп</translation>
+<translation id="7636346903338549690">Үшінші тарап cookie файлдарын пайдалануға рұқсаты бар сайттар</translation>
 <translation id="7637571805876720304">Несие картасын Chromium жүйесінен алып тастау керек пе?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Жоқ}=1{Аккаунтыңыздағы 1 құпия сөз (<ph name="DOMAIN_LIST" /> үшін)}other{Аккаунтыңыздағы # құпия сөз (<ph name="DOMAIN_LIST" /> үшін)}}</translation>
 <translation id="7638605456503525968">Сериялық порттар</translation>
@@ -3525,6 +3536,7 @@
 <translation id="8183800802493617952">Отбасына арналған ойындар мен жаттығулар</translation>
 <translation id="8184538546369750125">Ғаламдық әдепкі параметрді пайдалану (рұқсат беру)</translation>
 <translation id="8186706823560132848">Бағдарламалық жасақтама</translation>
+<translation id="8189557652711717875">Сіз таңдайтын іздеу жүйесі мекенжай жолағынан және веб-беттердегі кескіндерден іздеу сияқты функциялар үшін қолданылады.</translation>
 <translation id="8190193880870196235">Кеңейтім арқылы басқарылады.</translation>
 <translation id="8194412401381329820">Бұл басқарылмайтын құрылғыда басқарылатын аккаунттан осы бетті пайдалану мүмкін емес. Бұл бетті пайдалансаңыз, осы құрылғымен бірдей ұйым басқаратын аккаунттан басқа барлық басқарылатын аккаунт құлыпталады (үлестес аккаунттар).</translation>
 <translation id="8194797478851900357">&amp;Жылжуды болдырмау</translation>
@@ -3544,6 +3556,7 @@
 <translation id="8217240300496046857">Сайттар сізді интернетте қадағалайтын cookie файлдарын пайдалана алмайды. Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
 <translation id="8217748145574471584">Кадрлар бөлімі</translation>
 <translation id="8218327578424803826">Тағайындалған орын:</translation>
+<translation id="8220833680085771143">Бақылаудан қорғау функциясы уақытша қолжетімді емес</translation>
 <translation id="8228419419708659934">Екі бетті көру</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> желіңіздегі құрылғыны пайдаланғысы келеді:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>

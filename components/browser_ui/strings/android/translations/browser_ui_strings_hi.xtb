@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">इस साइट से आपका कनेक्‍शन सुरक्षित नहीं है</translation>
 <translation id="6181444274883918285">अपवाद वाली साइट जोड़ें</translation>
 <translation id="6192792657125177640">अपवाद</translation>
+<translation id="6195163219142236913">तीसरे पक्ष की कुकी सीमित हैं</translation>
 <translation id="6196640612572343990">तीसरे पक्ष की कुकी ब्लॉक करें</translation>
 <translation id="6205314730813004066">विज्ञापन से जुड़ी निजता सेटिंग</translation>
 <translation id="6207207788774442484">डेटा मिटाएं और अनुमतियां रीसेट करें</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">साइटें, सूचनाएं भेजने के लिए आपकी अनुमति मांग सकती हैं</translation>
 <translation id="6295158916970320988">सभी साइटें</translation>
 <translation id="6320088164292336938">कंपन</translation>
+<translation id="6344622098450209924">ट्रैकिंग सुरक्षा</translation>
 <translation id="6367753977865761591">किसी साइट पर, तीसरे पक्ष के खाते से साइन इन को ब्लॉक करें.</translation>
 <translation id="6398765197997659313">फ़ुल स्क्रीन से बाहर निकलें</translation>
 <translation id="640163077447496506">समयसीमा आज खत्म हो जाएगी</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">इस डिवाइस पर NFC बंद है. <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में इसे चालू करें.</translation>
 <translation id="8928445016601307354">साइटों को एनएफ़सी की सुविधा वाले डिवाइसों पर जानकारी देखने और उसमें बदलाव करने से रोकें</translation>
+<translation id="8944485226638699751">सीमित</translation>
 <translation id="8958424370300090006">किसी खास साइट के लिए कुकी ब्लॉक करें.</translation>
 <translation id="8959122750345127698">मार्गदर्शक तक नहीं पहुंचा जा सकता: <ph name="URL" /></translation>
 <translation id="8986362086234534611">भूल जाएं</translation>

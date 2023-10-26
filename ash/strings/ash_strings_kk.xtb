@@ -503,6 +503,7 @@
 <translation id="3105917916468784889">Скриншот түсіру</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Сөредегі алдыңғы элементті ерекшелеу</translation>
+<translation id="311799651966070385">Еске салғышты жабу</translation>
 <translation id="3120421559657122717">Құрылғы өшірілсін бе?</translation>
 <translation id="3122464029669770682">Орталық процессор</translation>
 <translation id="3125690294288312932">Сынып жұмысының түрі</translation>
@@ -886,6 +887,7 @@
 <translation id="4585337515783392668">Белгісіз қабылдағышқа трансляциялауды тоқтату</translation>
 <translation id="4596144739579517758">Қараңғы режим өшірулі.</translation>
 <translation id="4611292653554630842">Жүйеге кіру</translation>
+<translation id="462160925400706389"><ph name="NAME" /> жалғанды</translation>
 <translation id="4623167406982293031">Аккаунтты растау</translation>
 <translation id="4628757576491864469">Құрылғылар</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, рейтингісі: <ph name="RATING_SCORE" /></translation>
@@ -1187,6 +1189,7 @@
 <translation id="5774295353725270860">Файлдар қолданбасын ашу</translation>
 <translation id="5777841717266010279">Экран бөлісуді тоқтату қажет пе?</translation>
 <translation id="5779721926447984944">Бекітілген файлдар</translation>
+<translation id="5785221443435874078">Осы ұсынысты өшіру</translation>
 <translation id="5788127256798019331">Play файлдары</translation>
 <translation id="5788535737706478207">Соңғы жабылған қойындыны немесе терезені қайта ашу</translation>
 <translation id="5790085346892983794">Орындалды</translation>
@@ -1266,7 +1269,6 @@
 <translation id="6095008505822982596">Дыбыстау жылдамдығы</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> көмегімен байланыс қосу</translation>
 <translation id="6099678161144790572">Өткен айда өзгертілді.</translation>
-<translation id="6099793635444444289">Мәтінді дауыспен енгізуді бастау мүмкін емес, себебі микрофон дыбысы өшірілген</translation>
 <translation id="6103838137565245112">жүйе</translation>
 <translation id="6114505516289286752">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1312,6 +1314,7 @@
 <translation id="6284232397434400372">Ажыратымдылық өзгертілді</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> аккаунты ата-ананың рұқсатымен кейінірек қайта енгізіледі.</translation>
 <translation id="6291221004442998378">Зарядталып жатқан жоқ.</translation>
+<translation id="6298183524022479114">Қолданбада осы құрылғыны бейімдеу</translation>
 <translation id="6309219492973062892">1–8 сөре белгішелерін басу немесе түрту</translation>
 <translation id="6315170314923504164">Микрофон</translation>
 <translation id="6324916366299863871">Таңбашаны өзгерту</translation>

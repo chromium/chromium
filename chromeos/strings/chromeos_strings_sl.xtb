@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Šibek signal</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Posodabljanje (<ph name="PERCENTAGE_VALUE" /> % končano)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
 <translation id="1310380015393971138">Na voljo ni nobenega omrežja <ph name="NETWORK_NAME" />.</translation>
 <translation id="131421566576084655">Datum zadnje ponastavitve prenesene količine podatkov ni na voljo.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">Prilaganje datoteke</translation>
 <translation id="8230672074305416752">Ni mogoče preveriti privzetega prehoda omrežja</translation>
 <translation id="8246209727385807362">Neznani operater</translation>
+<translation id="8262870577632766028">1 ura</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Povežite se z omrežjem in znova naložite stran, če si želite ogledati zaslonsko ozadje.</translation>
 <translation id="8291967909914612644">Država domačega ponudnika</translation>

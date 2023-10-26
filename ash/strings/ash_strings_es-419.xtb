@@ -1188,6 +1188,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5774295353725270860">Abrir Archivos</translation>
 <translation id="5777841717266010279">¿Dejar de compartir la pantalla?</translation>
 <translation id="5779721926447984944">Archivos fijados</translation>
+<translation id="5785221443435874078">Quitar esta sugerencia</translation>
 <translation id="5788127256798019331">Archivos de Play</translation>
 <translation id="5788535737706478207">Volver a abrir la última pestaña o ventana que cerraste</translation>
 <translation id="5790085346892983794">Completado correctamente</translation>
@@ -1267,7 +1268,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6095008505822982596">Velocidad de voz</translation>
 <translation id="6095425951508823973">Agregar conexión con <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Se editó el mes pasado</translation>
-<translation id="6099793635444444289">No se puede iniciar el dictado porque el micrófono está silenciado</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Se descargaron los archivos de voz en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>

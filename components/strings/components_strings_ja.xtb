@@ -514,6 +514,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{他 1 個}other{他 # 個}}</translation>
 <translation id="2003709556000175978">今すぐパスワードを再設定してください</translation>
 <translation id="2003775180883135320">4 穴パンチ（上）</translation>
+<translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="2009942480257059311">[予定を作成] ボタンです。実行すると、Google カレンダーで新しい予定をすばやく作成できます</translation>
 <translation id="201174227998721785">Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
 <translation id="2012276282211112603">現在、表示できるトピックはありません</translation>
@@ -1195,6 +1196,7 @@
 <translation id="3441653493275994384">画面</translation>
 <translation id="3443504041532578451">光ディスク（サテン）</translation>
 <translation id="344449859752187052">サードパーティ Cookie がブロックされています</translation>
+<translation id="3447644283769633681">すべてのサードパーティの Cookie をブロック</translation>
 <translation id="3447661539832366887">このデバイスの所有者が恐竜ゲームを無効にしています。</translation>
 <translation id="3447884698081792621">証明書（発行元: <ph name="ISSUER" />）を表示</translation>
 <translation id="3452404311384756672">取得間隔:</translation>
@@ -1306,6 +1308,7 @@
 <translation id="365641980390710834">カジュアル衣料</translation>
 <translation id="3658742229777143148">変更履歴</translation>
 <translation id="3664782872746246217">キーワード:</translation>
+<translation id="3665100783276035932">ほとんどのサイトは適切に機能します</translation>
 <translation id="3667704023705708645">ベンチャー キャピタル</translation>
 <translation id="3671117652518853176">オフにした場合、セキュリティを確保するため、時々確認が求められることがあります</translation>
 <translation id="3671540257457995106">サイズ変更を許可しますか？</translation>
@@ -2293,6 +2296,7 @@
 <translation id="568292603005599551">画像の X 座標</translation>
 <translation id="5684277895745049190">リスト</translation>
 <translation id="5684874026226664614">このページを翻訳できませんでした。</translation>
+<translation id="5687340364605915800">このリクエストへの対応はサイトが自らの裁量で決定します</translation>
 <translation id="5688137257686092846">理容、美容の職業訓練</translation>
 <translation id="5689199277474810259">JSON にエクスポート</translation>
 <translation id="5689516760719285838">位置情報</translation>
@@ -2371,6 +2375,7 @@
 <translation id="5866898949289125849">デベロッパー ツール ページを表示しています</translation>
 <translation id="5869405914158311789">このサイトにアクセスできません</translation>
 <translation id="5869522115854928033">保存したパスワード</translation>
+<translation id="5872318519182427835">ここに表示されるサイトとそのサブドメインに影響します。たとえば、「google.com」を追加すると、google.com の一部である mail.google.com でもサードパーティ Cookie が有効になります。</translation>
 <translation id="5872692522325383488">IBAN を保存しました</translation>
 <translation id="5873297634595728366">ディーゼル車</translation>
 <translation id="5877831137320480913">美容、フィットネス</translation>
@@ -2522,6 +2527,7 @@
 <translation id="6177531123306197852">C2 封筒</translation>
 <translation id="6180316780098470077">再試行の間隔</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome でサードパーティ Cookie を自動的に制限します</translation>
 <translation id="61877208875190028">婦人服</translation>
 <translation id="6194209731893739467">トラッキングしている商品がすべてここに表示されます</translation>
 <translation id="6195163219142236913">サードパーティ Cookie が制限されています</translation>
@@ -2631,6 +2637,7 @@
 <translation id="6394852772105848029">このサイトは <ph name="APP_NAME" /> アプリを開くよう要求しています</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="6401136357288658127">このポリシーはサポートが終了したため、代わりに <ph name="NEW_POLICY" /> ポリシーを使用してください。</translation>
+<translation id="640163077447496506">今日で期限切れ</translation>
 <translation id="6402537308870515461">移動する前に確認が必要です</translation>
 <translation id="6403167778944553">寝室、風呂用品</translation>
 <translation id="6404511346730675251">ブックマークを編集</translation>
@@ -2853,6 +2860,7 @@
 <translation id="6874604403660855544">追加のやり直し（&amp;R）</translation>
 <translation id="6880941331070119097">高価格のオプション</translation>
 <translation id="6881240511396774766">新しい Google ドキュメントをすばやく作成します</translation>
+<translation id="6882210908253838664">サイトが機能しない場合は、サードパーティ Cookie の使用を一時的に許可してみてください。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">保護されたお支払い認証情報の認証シートは閉じています</translation>
 <translation id="6884662655240309489">サイズ 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3263,6 +3271,7 @@
 <translation id="7631444403134069754">陸上競技</translation>
 <translation id="7631527008834753063">クイズ番組</translation>
 <translation id="7633909222644580952">パフォーマンス データと障害レポート</translation>
+<translation id="7636346903338549690">サードパーティ Cookie の使用が許可されているサイト</translation>
 <translation id="7637571805876720304">Chromium からクレジット カードを削除してもよろしいですか？</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{なし}=1{アカウントに保存されているパスワード 1 件（<ph name="DOMAIN_LIST" />）}other{アカウントに保存されているパスワード # 件（<ph name="DOMAIN_LIST" />）}}</translation>
 <translation id="7638605456503525968">シリアルポート</translation>

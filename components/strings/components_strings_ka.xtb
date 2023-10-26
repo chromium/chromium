@@ -514,6 +514,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{და 1 სხვა}other{და # სხვა}}</translation>
 <translation id="2003709556000175978">გადააყენეთ პაროლი ახლავე</translation>
 <translation id="2003775180883135320">ოთხმაგად გახვრეტა ზემოთ</translation>
+<translation id="2004697686368036666">ფუნქციებმა, შესაძლოა, არ იმუშაოს ზოგიერთ საიტზე</translation>
 <translation id="2009942480257059311">მოვლენის შექმნის ღილაკი, Google Calendar-ში ახალი მოვლენის სწრაფად შესაქმნელად გაააქტიურეთ ის</translation>
 <translation id="201174227998721785">ნებართვებისა და სხვადასხვა საიტზე შენახული მონაცემების მართვა Chrome-ის პარამეტრებიდან</translation>
 <translation id="2012276282211112603">ამჟამად საჩვენებელი თემები არ არის</translation>
@@ -1196,6 +1197,7 @@
 <translation id="3441653493275994384">ეკრანი</translation>
 <translation id="3443504041532578451">ოპტიკური დისკი (სატინის)</translation>
 <translation id="344449859752187052">მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია</translation>
+<translation id="3447644283769633681">დაბლოკეთ მესამე მხარის ყველა ქუქი-ჩანაწერი</translation>
 <translation id="3447661539832366887">ამ მოწყობილობის მფლობელმა გამორთო დინოზავრის თამაში.</translation>
 <translation id="3447884698081792621">სერტიფიკატის ჩვენება (გამომცემელი: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">შერჩევის ინტერვალი:</translation>
@@ -1307,6 +1309,7 @@
 <translation id="365641980390710834">ყოველდღიური ტანსაცმელი</translation>
 <translation id="3658742229777143148">რედაქცია</translation>
 <translation id="3664782872746246217">საკვანძო სიტყვები:</translation>
+<translation id="3665100783276035932">საიტების უმეტესობამ მოლოდინისამებრ უნდა იმუშაოს</translation>
 <translation id="3667704023705708645">სარისკო კაპიტალდაბანდება</translation>
 <translation id="3671117652518853176">როცა ის გამორთულია, შესაძლოა, ზოგჯერ მოგეთხოვოთ დადასტურება უსაფრთხოების მიზნებით</translation>
 <translation id="3671540257457995106">გსურთ ზომის შეცვლის დაშვება?</translation>
@@ -2295,6 +2298,7 @@
 <translation id="568292603005599551">სურათის პოზიცია X ღერძზე</translation>
 <translation id="5684277895745049190">სია</translation>
 <translation id="5684874026226664614">ამ გვერდის გადათარგმნა ვერ მოხერხდა.</translation>
+<translation id="5687340364605915800">საიტები თავიანთი შეხედულებისამებრ იღებენ გადაწყვეტილებას ამ მოთხოვნაზე რეაგირებისას</translation>
 <translation id="5688137257686092846">კოსმეტოლოგები და სილამაზის სპეციალისტები</translation>
 <translation id="5689199277474810259">JSON-ში ექსპორტი</translation>
 <translation id="5689516760719285838">მდებარეობა</translation>
@@ -2373,6 +2377,7 @@
 <translation id="5866898949289125849">თქვენ ათვალიერებთ დეველოპერთა ხელსაწყოების გვერდს</translation>
 <translation id="5869405914158311789">ეს საიტი მიუწვდომელია</translation>
 <translation id="5869522115854928033">შენახული პაროლები</translation>
+<translation id="5872318519182427835">შეეხება აქ ჩამოთვლილ საიტებსა და მათ სუბდომენებს. მაგალითად, „google.com“-ის დამატება ნიშნავს, რომ მესამე მხარის ქუქი-ჩანაწერები შეიძლება გააქტიურდეს mail.google.com-ისთვისაც, რადგან ის google.com-ის ნაწილია.</translation>
 <translation id="5872692522325383488">IBAN შენახულია</translation>
 <translation id="5873297634595728366">სატრანსპორტო საშუალებები დიზელის ძრავით</translation>
 <translation id="5877831137320480913">სილამაზე და ფიტნესი</translation>
@@ -2524,6 +2529,7 @@
 <translation id="6177531123306197852">კონვერტი C2</translation>
 <translation id="6180316780098470077">ხელახლა მცდელობის ინტერვალი</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome ავტომატურად ზღუდავს მესამე მხარის ქუქი-ჩანაწერებს</translation>
 <translation id="61877208875190028">ქალის ტანსაცმელი</translation>
 <translation id="6194209731893739467">აქ შეგიძლიათ იხილოთ თქვენი ყველა თვალმიდევნებული პროდუქტი</translation>
 <translation id="6195163219142236913">მესამე მხარის ქუქი-ჩანაწერები შეზღუდულია</translation>
@@ -2633,6 +2639,7 @@
 <translation id="6394852772105848029">ამ საიტს სურს, გახსნას <ph name="APP_NAME" /> აპი</translation>
 <translation id="6398765197997659313">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
 <translation id="6401136357288658127">ეს წესები მოძველდა. სანაცვლოდ უნდა გამოიყენოთ <ph name="NEW_POLICY" />.</translation>
+<translation id="640163077447496506">მოქმედების ვადა იწურება დღეს</translation>
 <translation id="6402537308870515461">გადაადგილებამდე საჭიროა შემოწმება</translation>
 <translation id="6403167778944553">საწოლი და აბაზანა</translation>
 <translation id="6404511346730675251">სანიშნის რედაქტირება</translation>
@@ -2855,6 +2862,7 @@
 <translation id="6874604403660855544">დამატების &amp;გამეორება</translation>
 <translation id="6880941331070119097">მაღალფასიანი ვარიანტი</translation>
 <translation id="6881240511396774766">სწრაფად შექმენით ახალი Google Doc</translation>
+<translation id="6882210908253838664">თუ საიტი არ მუშაობს, შეგიძლიათ დროებით მიანიჭოთ მას მესამე მხარის ქუქი-ჩანაწერების გამოყენების ნებართვა. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">დაიხურა უსაფრთხო გადახდის ავტორიზაციის ფურცელი</translation>
 <translation id="6884662655240309489">ზომა 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3265,6 +3273,7 @@
 <translation id="7631444403134069754">მსუბუქი ათლეტიკა</translation>
 <translation id="7631527008834753063">ტელევიქტორინები</translation>
 <translation id="7633909222644580952">წარმადობის მონაცემები და ავარიულად გათიშვის ანგარიშები</translation>
+<translation id="7636346903338549690">საიტებისთვის დაშვებულია მესამე მხარის ქუქი-ჩანაწერების გამოყენება</translation>
 <translation id="7637571805876720304">ამოიშალოს საკრედიტო ბარათი Chromium-იდან?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{არცერთი}=1{თქვენს ანგარიშშია 1 პაროლი (შემდეგისთვის: <ph name="DOMAIN_LIST" />)}other{თქვენს ანგარიშშია # პაროლი (შემდეგისთვის: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">თანმიმდევრული პორტები</translation>

@@ -513,6 +513,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2001146170449793414">{COUNT,plural, =1{dhe 1 tjetër}other{dhe # të tjera}}</translation>
 <translation id="2003709556000175978">Rivendos fjalëkalimin tënd tani</translation>
 <translation id="2003775180883135320">Katër shpime lart</translation>
+<translation id="2004697686368036666">Veçoritë në disa sajte mund të mos funksionojnë</translation>
 <translation id="2009942480257059311">Butoni "Krijo ngjarje". Aktivizoje për të krijuar me shpejtësi një ngjarje të re te "Kalendari i Google"</translation>
 <translation id="201174227998721785">Menaxho lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
 <translation id="2012276282211112603">Nuk ka asnjë temë për të shfaqur për momentin</translation>
@@ -1194,6 +1195,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3441653493275994384">Ekrani</translation>
 <translation id="3443504041532578451">Disk optik (saten)</translation>
 <translation id="344449859752187052">Kukit e palëve të treta janë bllokuar</translation>
+<translation id="3447644283769633681">Blloko të gjitha kukit e palëve të treta</translation>
 <translation id="3447661539832366887">Zotëruesi i kësaj pajisjeje ka çaktivizuar lojën me dinozaurë.</translation>
 <translation id="3447884698081792621">Shfaq certifikatën (lëshuar nga <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervali i marrjes:</translation>
@@ -1216,6 +1218,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3493660662684070951">Kamionë, furgona dhe SUV</translation>
 <translation id="3495081129428749620">Gjej në faqen
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3497627066518778351">Rishiko një listë të të dhënave të sajtit në pajisje në një dritare të re</translation>
 <translation id="3498215018399854026">Nuk mund të kontaktonim me prindin tënd për momentin. Provo përsëri.</translation>
 <translation id="350069200438440499">Emri i dosjes:</translation>
 <translation id="3501300228850242680">Muzikë metal</translation>
@@ -1304,6 +1307,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="365641980390710834">Veshje të përditshme</translation>
 <translation id="3658742229777143148">Rishikim</translation>
 <translation id="3664782872746246217">Fjalët kyçe:</translation>
+<translation id="3665100783276035932">Shumica e sajteve do të punojnë siç pritet</translation>
 <translation id="3667704023705708645">Kapitali sipermarrës</translation>
 <translation id="3671117652518853176">Kur është i çaktivizuar, mund të të kërkohet herë pas here që ta verifikosh për qëllime sigurie</translation>
 <translation id="3671540257457995106">Të lejohet ndryshimi i përmasave?</translation>
@@ -2291,6 +2295,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="568292603005599551">Pozicioni i imazhit në boshtin X</translation>
 <translation id="5684277895745049190">Lista</translation>
 <translation id="5684874026226664614">Mos! Kjo faqe nuk mund të përkthehej.</translation>
+<translation id="5687340364605915800">Sajtet përdorin gjykimin e tyre kur i përgjigjen kësaj kërkese</translation>
 <translation id="5688137257686092846">Profesionistët e estetikës dhe kozmetologjisë</translation>
 <translation id="5689199277474810259">Eksporto në JSON</translation>
 <translation id="5689516760719285838">Vendndodhja</translation>
@@ -2369,6 +2374,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5866898949289125849">Po shikon një faqe të veglave të zhvilluesit</translation>
 <translation id="5869405914158311789">Ky sajt është i paarritshëm</translation>
 <translation id="5869522115854928033">Fjalëkalimet e ruajtura</translation>
+<translation id="5872318519182427835">Ka ndikim te sajtet e listuara këtu dhe nëndomenet e tyre. Për shembull, shtimi i “google.com” do të thotë që kukit e palëve të treta mund të jenë aktive edhe për mail.google.com, pasi ajo është pjesë e google.com.</translation>
 <translation id="5872692522325383488">Numri IBAN u ruajt</translation>
 <translation id="5873297634595728366">Automjete me naftë</translation>
 <translation id="5877831137320480913">Estetika dhe fitnesi</translation>
@@ -2519,6 +2525,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6177531123306197852">Zarf C2</translation>
 <translation id="6180316780098470077">Intervali i ripërpjekjes</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome i kufizon automatikisht kukit e palëve të treta</translation>
 <translation id="61877208875190028">Veshjet për gra</translation>
 <translation id="6194209731893739467">Shiko të gjitha produktet e tua të monitoruara këtu</translation>
 <translation id="6195163219142236913">Kukit e palëve të treta janë të kufizuara</translation>
@@ -2628,6 +2635,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6394852772105848029">Ky sajt dëshiron të hapë aplikacionin "<ph name="APP_NAME" />"</translation>
 <translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
 <translation id="6401136357288658127">Kjo politikë është e vjetruar. Duhet të përdorësh politikën <ph name="NEW_POLICY" /> më mirë.</translation>
+<translation id="640163077447496506">Skadon sot</translation>
 <translation id="6402537308870515461">Kërkohet rishikimi përpara zhvendosjes</translation>
 <translation id="6403167778944553">Dhoma e gjumit dhe banja</translation>
 <translation id="6404511346730675251">Redakto faqeshënuesin</translation>
@@ -2850,6 +2858,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6874604403660855544">&amp;Ribëje shtimin</translation>
 <translation id="6880941331070119097">Opsion me çmim të lartë</translation>
 <translation id="6881240511396774766">Krijo shpejt një "Dokument të Google"</translation>
+<translation id="6882210908253838664">Nëse një sajt nuk funksionon, mund të provosh t'i japësh një leje të përkohshme për të përdorur kukit e palëve të treta. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Fleta e vërtetimit të sigurt të kredencialeve të pagesës është e mbyllur</translation>
 <translation id="6884662655240309489">Madhësia 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3259,6 +3268,7 @@ Detaje shtesë:
 <translation id="7631444403134069754">Pista dhe fusha</translation>
 <translation id="7631527008834753063">Shfaqje televizive me lojëra</translation>
 <translation id="7633909222644580952">Raportet e të dhënave të cilësisë së funksionimit dhe të ndërprerjeve aksidentale</translation>
+<translation id="7636346903338549690">Sajtet që lejohen të përdorin kukit e palëve të treta</translation>
 <translation id="7637571805876720304">Të hiqet karta e kreditit nga Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Asnjë}=1{1 fjalëkalim në llogarinë tënde (për <ph name="DOMAIN_LIST" />)}other{# fjalëkalime në llogarinë tënde (për <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Portat seriale</translation>

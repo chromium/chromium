@@ -1187,6 +1187,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="5774295353725270860">Do aplikace Soubory</translation>
 <translation id="5777841717266010279">Ukončit sdílení obrazovky?</translation>
 <translation id="5779721926447984944">Připnuté soubory</translation>
+<translation id="5785221443435874078">Odebrat tento návrh</translation>
 <translation id="5788127256798019331">Soubory Play</translation>
 <translation id="5788535737706478207">Znovu otevřít naposledy zavřenou kartu nebo okno</translation>
 <translation id="5790085346892983794">Úspěšně provedeno</translation>
@@ -1266,7 +1267,6 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="6095008505822982596">Rychlost řeči</translation>
 <translation id="6095425951508823973">Přidat propojení s poskytovatelem <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Upraveno v uplynulém měsíci</translation>
-<translation id="6099793635444444289">Nelze spustit diktování, protože mikrofon je ztlumený</translation>
 <translation id="6103838137565245112">systém</translation>
 <translation id="6114505516289286752">Byly staženy řečové soubory pro jazyk <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

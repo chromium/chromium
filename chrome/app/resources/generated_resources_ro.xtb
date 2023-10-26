@@ -2246,7 +2246,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2719936478972253983">Următoarele cookie-uri au fost blocate</translation>
 <translation id="2721037002783622288">&amp;Caută imaginea cu <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
-<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{Permisiunile pe care le acorzi pentru „<ph name="APP_NAME" />” se vor acorda și pentru această aplicație.}few{Permisiunile pe care le acorzi pentru „<ph name="APP_NAME" />” se vor acorda și pentru aceste aplicații.}other{Permisiunile pe care le acorzi pentru „<ph name="APP_NAME" />” se vor acorda și pentru aceste aplicații.}}</translation>
 <translation id="2721695630904737430">Utilizatorii monitorizați au fost dezactivați de administrator.</translation>
 <translation id="2722540561488096675">Dispozitivul se va închide în <ph name="TIME_LEFT" />. Scoate unitatea USB înainte de a reporni dispozitivul. Apoi poți începe să folosești <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
@@ -9445,7 +9444,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8496717697661868878">Rulează acest plugin</translation>
 <translation id="8497219075884839166">Utilitare Windows</translation>
 <translation id="8498214519255567734">Mai multă comoditate când privești ecranul sau citești într-o lumină slabă</translation>
-<translation id="8498395510292172881">Continuă să citești în Chrome</translation>
 <translation id="8499083585497694743">Activează sunetul microfonului</translation>
 <translation id="8499951261760185742">Dacă un site pe care îl accesezi nu funcționează conform așteptărilor, permite temporar cookie-urile terță parte pentru site-ul respectiv. Aceasta va însemna mai puțină protecție, dar mai multe șanse ca funcțiile site-ului să ruleze conform așteptărilor.</translation>
 <translation id="8502536196501630039">Ca să folosești aplicații din Google Play, trebuie mai întâi să restabilești aplicațiile. Este posibil ca unele date să se fi pierdut.</translation>
@@ -9983,7 +9981,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="892706138619340876">Anumite setări au fost restabilite</translation>
 <translation id="8927438609932588163">Permite site-urilor să salveze date pe dispozitiv</translation>
 <translation id="8929696694736010839">Numai sesiunea incognito actuală</translation>
-<translation id="8930351635855238750">Noile setări pentru cookie-uri se vor aplica după reîncărcarea paginii</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8931076093143205651">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android trimițând automat la Google date privind diagnosticarea și utilizarea dispozitivelor și a aplicațiilor. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această setare este impusă de proprietar. Proprietarul poate alege să trimită date de diagnosticare și utilizare a dispozitivului la Google. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google.</translation>
 <translation id="8931475688782629595">Gestionează conținutul sincronizat</translation>

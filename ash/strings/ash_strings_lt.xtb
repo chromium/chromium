@@ -1187,6 +1187,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="5774295353725270860">Atidaryti failų programą</translation>
 <translation id="5777841717266010279">Nutraukti ekrano bendrinimą?</translation>
 <translation id="5779721926447984944">Prisegti failai</translation>
+<translation id="5785221443435874078">Pašalinti šį pasiūlymą</translation>
 <translation id="5788127256798019331">„Play“ failai</translation>
 <translation id="5788535737706478207">Iš naujo atidaryti paskutinį uždarytą skirtuką arba langą</translation>
 <translation id="5790085346892983794">Atlikta</translation>
@@ -1266,7 +1267,6 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="6095008505822982596">Kalbėjimo sparta</translation>
 <translation id="6095425951508823973">Pridėti „<ph name="PROVIDER" />“ ryšį</translation>
 <translation id="6099678161144790572">Redaguota per pastarąjį mėnesį</translation>
-<translation id="6099793635444444289">Negalima pradėti diktavimo, nes mikrofonas nutildytas</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> kalbos failai atsisiųsti</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

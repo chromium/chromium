@@ -453,6 +453,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1855370856221982654">Boxing</translation>
 <translation id="1856713167556118146">What Incognito doesn’t do</translation>
 <translation id="1862788842908766795">Executive and Management Jobs</translation>
+<translation id="1863047423483329595">Tracking Protection is temporarily unavailable. While Chrome is updating this feature, sites can temporarily use third-party cookies unless you block them. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1863257867908022953">Tray 12</translation>
 <translation id="1864927262126810325">From <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Cable and Satellite Providers</translation>
@@ -514,6 +515,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2001146170449793414">{COUNT,plural, =1{and 1 more}other{and # more}}</translation>
 <translation id="2003709556000175978">Reset your password now</translation>
 <translation id="2003775180883135320">Quad punch top</translation>
+<translation id="2004697686368036666">Features on some sites may not work</translation>
 <translation id="2009942480257059311">Create event button, activate to quickly create a new event in Google Calendar</translation>
 <translation id="201174227998721785">Manage permissions and data stored across sites in Chrome settings</translation>
 <translation id="2012276282211112603">No topics to show right now</translation>
@@ -1196,6 +1198,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3441653493275994384">Screen</translation>
 <translation id="3443504041532578451">Optical disc (satin)</translation>
 <translation id="344449859752187052">Third-party cookies blocked</translation>
+<translation id="3447644283769633681">Block all third-party cookies</translation>
 <translation id="3447661539832366887">The owner of this device turned off the dinosaur game.</translation>
 <translation id="3447884698081792621">Show certificate (issued by <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Fetch interval:</translation>
@@ -1307,6 +1310,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="365641980390710834">Casual Apparel</translation>
 <translation id="3658742229777143148">Revision</translation>
 <translation id="3664782872746246217">Keywords:</translation>
+<translation id="3665100783276035932">Most sites should work as expected</translation>
 <translation id="3667704023705708645">Venture capital</translation>
 <translation id="3671117652518853176">When turned off, you may be asked occasionally to verify for security purposes</translation>
 <translation id="3671540257457995106">Allow resizing?</translation>
@@ -2295,6 +2299,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="568292603005599551">Image X position</translation>
 <translation id="5684277895745049190">List</translation>
 <translation id="5684874026226664614">Oops. This page could not be translated.</translation>
+<translation id="5687340364605915800">Sites use their discretion when responding to this request</translation>
 <translation id="5688137257686092846">Cosmetology and Beauty Professionals</translation>
 <translation id="5689199277474810259">Export to JSON</translation>
 <translation id="5689516760719285838">Location</translation>
@@ -2373,6 +2378,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5866898949289125849">You're viewing a developer tools page</translation>
 <translation id="5869405914158311789">This site can’t be reached</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
+<translation id="5872318519182427835">Affects the sites listed here and their subdomains. For example, adding 'google.com' means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.</translation>
 <translation id="5872692522325383488">IBAN saved</translation>
 <translation id="5873297634595728366">Diesel Vehicles</translation>
 <translation id="5877831137320480913">Beauty and fitness</translation>
@@ -2524,6 +2530,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">Retry interval</translation>
 <translation id="6182972682129119950">A4 x 5</translation>
+<translation id="6184868291074982484">Chrome automatically limits third-party cookies</translation>
 <translation id="61877208875190028">Women's clothing</translation>
 <translation id="6194209731893739467">See all your tracked products here</translation>
 <translation id="6195163219142236913">Third-party cookies limited</translation>
@@ -2633,6 +2640,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6394852772105848029">This site wants to open the <ph name="APP_NAME" /> app</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="6401136357288658127">This policy is deprecated. You should use the <ph name="NEW_POLICY" /> policy instead.</translation>
+<translation id="640163077447496506">Expires today</translation>
 <translation id="6402537308870515461">Review is required before moving</translation>
 <translation id="6403167778944553">Bed and Bath</translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
@@ -2855,6 +2863,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6874604403660855544">&amp;Redo add</translation>
 <translation id="6880941331070119097">High-priced option</translation>
 <translation id="6881240511396774766">Create a new Google Doc quickly</translation>
+<translation id="6882210908253838664">If a site isn’t working, you can try giving it temporary permission to use third-party cookies. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Secure payment credential authentication sheet is closed</translation>
 <translation id="6884662655240309489">Size 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3265,6 +3274,7 @@ Additional details:
 <translation id="7631444403134069754">Track and field</translation>
 <translation id="7631527008834753063">TV Quiz Shows</translation>
 <translation id="7633909222644580952">Performance data and crash reports</translation>
+<translation id="7636346903338549690">Sites allowed to use third-party cookies</translation>
 <translation id="7637571805876720304">Remove credit card from Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{None}=1{1 password in your account (for <ph name="DOMAIN_LIST" />)}other{# passwords in your account (for <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serial ports</translation>

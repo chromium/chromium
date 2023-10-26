@@ -1187,6 +1187,7 @@
 <translation id="5774295353725270860">파일 앱 열기</translation>
 <translation id="5777841717266010279">화면 공유를 중단하시겠습니까?</translation>
 <translation id="5779721926447984944">고정된 파일</translation>
+<translation id="5785221443435874078">이 추천 삭제</translation>
 <translation id="5788127256798019331">Play 파일</translation>
 <translation id="5788535737706478207">마지막으로 닫았던 탭이나 창 다시 열기</translation>
 <translation id="5790085346892983794">완료</translation>
@@ -1266,7 +1267,6 @@
 <translation id="6095008505822982596">말하는 속도</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> 제공업체를 통해 연결 추가</translation>
 <translation id="6099678161144790572">지난달에 수정됨</translation>
-<translation id="6099793635444444289">마이크가 음소거되어 있어 음성기록을 시작할 수 없습니다.</translation>
 <translation id="6103838137565245112">시스템</translation>
 <translation id="6114505516289286752">음성 파일 <ph name="LANGUAGE" />개 다운로드됨</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />, <ph name="BATTERY_SAVER_STATE" /></translation>

@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">Կայքին կապակցումը պաշտպանված չէ</translation>
 <translation id="6181444274883918285">Ավելացնել բացառություն</translation>
 <translation id="6192792657125177640">Բացառություններ</translation>
+<translation id="6195163219142236913">Երրորդ կողմի քուքիները սահմանափակված են</translation>
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>
 <translation id="6205314730813004066">Գովազդի գաղտնիություն</translation>
 <translation id="6207207788774442484">Ջնջել տվյալները և զրոյացնել թույլտվությունները</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">Կայքերը կարող են խնդրել ծանուցումներ ուղարկել</translation>
 <translation id="6295158916970320988">Բոլոր կայքերը</translation>
 <translation id="6320088164292336938">Թրթռոց</translation>
+<translation id="6344622098450209924">Հետագծման արգելափակում</translation>
 <translation id="6367753977865761591">Նշեք այն կայքերը, որոնց համար երրորդ կողմի ծառայությունների միջոցով մուտքը պետք է արգելափակվի։</translation>
 <translation id="6398765197997659313">Ելնել լիաէկրան ռեժիմից</translation>
 <translation id="640163077447496506">Գործողության ժամկետը սպառվում է այսօր</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Սարքի NFC-ն անջատված է։ Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="8928445016601307354">Արգելել կայքերին տեսնել և փոփոխել տեղեկությունները NFC սարքերում</translation>
+<translation id="8944485226638699751">Սահմանափակված են</translation>
 <translation id="8958424370300090006">Արգելափակել քուքիները կոնկրետ կայքի համար:</translation>
 <translation id="8959122750345127698">Նավիգացիան անհասանելի է՝ <ph name="URL" /></translation>
 <translation id="8986362086234534611">Հեռացնել</translation>

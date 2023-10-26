@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">słaby sygnał</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Aktualizuję (ukończone <ph name="PERCENTAGE_VALUE" />%)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
 <translation id="1310380015393971138">Sieć <ph name="NETWORK_NAME" /> jest niedostępna</translation>
 <translation id="131421566576084655">Data ostatniego resetowania użycia danych jest niedostępna</translation>
 <translation id="1314565355471455267">VPN na Androida</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">Załącz plik</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
 <translation id="8246209727385807362">Nieznany operator</translation>
+<translation id="8262870577632766028">1 godzina</translation>
 <translation id="827422111966801947">Indygo</translation>
 <translation id="8286154143153872371">Aby wyświetlić tapetę, połącz się z siecią i załaduj ponownie stronę.</translation>
 <translation id="8291967909914612644">Kraj operatora macierzystego</translation>

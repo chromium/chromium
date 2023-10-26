@@ -2244,7 +2244,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2719936478972253983">Bloqueáronse as seguintes cookies</translation>
 <translation id="2721037002783622288">&amp;Buscar imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
-<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{Os permisos que lle concedas a <ph name="APP_NAME" /> tamén se concederán a esta aplicación.}other{Os permisos que lle concedas a <ph name="APP_NAME" /> tamén se concederán a estas aplicacións.}}</translation>
 <translation id="2721695630904737430">O administrador desactivou os usuarios supervisados.</translation>
 <translation id="2722540561488096675">O dispositivo apagarase en <ph name="TIME_LEFT" />. Antes de acendelo de novo, quita o dispositivo USB. Despois poderás comezar a usar <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">Código de identificación: <ph name="EXTENSION_ID" /></translation>
@@ -9439,7 +9438,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8496717697661868878">Executar este plugin</translation>
 <translation id="8497219075884839166">Utilidades de Windows</translation>
 <translation id="8498214519255567734">Fai que sexa máis fácil mirar a pantalla ou ler con pouca luz</translation>
-<translation id="8498395510292172881">Seguir lendo en Chrome</translation>
 <translation id="8499083585497694743">Activar son do micro</translation>
 <translation id="8499951261760185742">Se algún sitio que visites non funciona segundo o previsto, proba a permitir de maneira temporal as cookies de terceiros. Terás menos protección, pero é máis probable que as funcións do sitio funcionen como deben.</translation>
 <translation id="8502536196501630039">Para usar aplicacións de Google Play, primeiro debes restaurar as túas aplicacións. Pódense perder algúns datos.</translation>
@@ -9976,7 +9974,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="892706138619340876">Restablecéronse algunhas opcións de configuración</translation>
 <translation id="8927438609932588163">Permitir que os sitios garden datos no teu dispositivo</translation>
 <translation id="8929696694736010839">Só sesión do modo de incógnito actual</translation>
-<translation id="8930351635855238750">A nova configuración das cookies terá efecto tras volver cargar a páxina</translation>
 <translation id="8930622219860340959">Sen fíos</translation>
 <translation id="8931076093143205651">Enviar datos de uso e diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a túa experiencia en Android. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta opción de configuración contrólaa o propietario, o cal pode optar por enviarlle a Google datos de diagnóstico e uso deste dispositivo. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google.</translation>
 <translation id="8931475688782629595">Xestionar os datos que sincronizas</translation>

@@ -453,6 +453,7 @@
 <translation id="1855370856221982654">बक्सिङ</translation>
 <translation id="1856713167556118146">इन्कोग्निटो मोडले के गर्दैन</translation>
 <translation id="1862788842908766795">कार्यकारी तथा व्यवस्थापक पदका जागिरहरू</translation>
+<translation id="1863047423483329595">ट्र्याकिङबाट सुरक्षित राख्ने सुविधा हाल उपलब्ध छैन। तपाईंले तेस्रो पक्षीय कुकीहरू ब्लक गर्नुभएको छैन भने Chrome ले यो सुविधा अपडेट गरिरहेका बेला साइटहरूले केही समयका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न सक्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1863257867908022953">ट्रे १२</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> बाट प्राप्त जानकारी</translation>
 <translation id="186539747722034544">केबल तथा स्याटेलाइट प्रदायक</translation>
@@ -514,6 +515,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{र थप १}other{र थप #}}</translation>
 <translation id="2003709556000175978">अहिले आफ्नो पासवर्ड रिसेट गर्नुहोस्</translation>
 <translation id="2003775180883135320">सिरानमा चार प्वाल</translation>
+<translation id="2004697686368036666">केही साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="2009942480257059311">कार्यक्रम बनाउने बटन, Google पात्रो प्रयोग गरी तुरुन्तै नयाँ कार्यक्रम बनाउन यो बटन थिच्नुहोस्</translation>
 <translation id="201174227998721785">Chrome का सेटिङमा गई अनुमति तथा विभिन्न साइटहरूमा भण्डारण गरिएका डेटा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2012276282211112603">यस बखत देखाउनका लागि कुनै पनि विषय छैन</translation>
@@ -1192,6 +1194,7 @@
 <translation id="3441653493275994384">स्क्रिन</translation>
 <translation id="3443504041532578451">अप्टिकल डिस्क (स्याटिन)</translation>
 <translation id="344449859752187052">तेस्रो पक्षीय कुकीहरू ब्लक गरिएका छन्</translation>
+<translation id="3447644283769633681">तेस्रो पक्षीय सबै कुकीहरू ब्लक गर्नुहोस्</translation>
 <translation id="3447661539832366887">यस यन्त्रको मालिकले डायनासोर खेल बन्द गर्‍यो।</translation>
 <translation id="3447884698081792621">प्रमाणपत्र देखाउनुहोस् (<ph name="ISSUER" /> द्वारा जारी गरिएको)</translation>
 <translation id="3452404311384756672">अन्तराल तान्नुहोस्:</translation>
@@ -1303,6 +1306,7 @@
 <translation id="365641980390710834">क्याजुअल लुगा</translation>
 <translation id="3658742229777143148">संशोधन</translation>
 <translation id="3664782872746246217">किवर्डहरू:</translation>
+<translation id="3665100783276035932">अधिकांश साइटहरूले गर्नु पर्ने जसरी नै काम गर्छन्</translation>
 <translation id="3667704023705708645">उद्यम पुँजी</translation>
 <translation id="3671117652518853176">यो सेटिङ अफ गरिएका अवस्थामा सुरक्षासम्बन्धी प्रयोजनहरूका लागि तपाईंलाई बेला बेलामा पुष्टि गर्न लगाइन सक्छ</translation>
 <translation id="3671540257457995106">आकार बदल्न दिने हो?</translation>
@@ -2291,6 +2295,7 @@
 <translation id="568292603005599551">छविको X स्थान</translation>
 <translation id="5684277895745049190">सूची</translation>
 <translation id="5684874026226664614">ओहो। यो पृष्ठ अनुवादन गर्न सकिएन।</translation>
+<translation id="5687340364605915800">यो अनुरोध मान्ने वा नमान्ने कुरा साइटमा भर पर्छ</translation>
 <translation id="5688137257686092846">कस्मेटोलोजी र सौन्दर्यसम्बन्धी पेसेकर्मीहरू</translation>
 <translation id="5689199277474810259">JSON ढाँचामा निर्यात गर्नुहोस्</translation>
 <translation id="5689516760719285838">स्थान</translation>
@@ -2369,6 +2374,7 @@
 <translation id="5866898949289125849">तपाईं विकासकर्ताका उपकरणसम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
 <translation id="5869405914158311789">यो साइटमा पहुँच गर्न सकिँदैन</translation>
 <translation id="5869522115854928033">बचत गरिएका पासवर्डहरू</translation>
+<translation id="5872318519182427835">यसले यहाँ सूचीबद्ध साइट र तिनका सबडोमेनहरू प्रभावित हुन्छन्। उदाहरणका लागि, तपाईंले यो सूचीमा “google.com” हाल्नुभयो भने mail.google.com मा पनि तेस्रो पक्षीय कुकीहरू चल्न सक्छन्। उक्त सबडोमेन google.com अन्तर्गत नै पर्ने भएकाले यसो भएको हो।</translation>
 <translation id="5872692522325383488">IBAN सेभ गरिएको छ</translation>
 <translation id="5873297634595728366">डिजेलबाट चल्ने गाडी</translation>
 <translation id="5877831137320480913">सौन्दर्य तथा तन्दुरुस्ती</translation>
@@ -2520,6 +2526,7 @@
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">पुन: प्रयास गर्न पाइने अन्तराल</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome ले तेस्रो पक्षीय कुकीहरू स्वतः सीमित पार्छ</translation>
 <translation id="61877208875190028">महिलाको पोसाक</translation>
 <translation id="6194209731893739467">तपाईंले ट्र्याक गरेका सबै उत्पादन यहाँ देखिन्छन्</translation>
 <translation id="6195163219142236913">तेस्रो पक्षीय कुकीहरू सीमित गरिएका छन्</translation>
@@ -2629,6 +2636,7 @@
 <translation id="6394852772105848029">यो साइटले <ph name="APP_NAME" /> एप खोल्न चाहन्छ</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
 <translation id="6401136357288658127">यो नीति चल्तीबाट हटाइएको छ। तपाईंले यसको साटो <ph name="NEW_POLICY" /> नीति प्रयोग गर्नु पर्छ।</translation>
+<translation id="640163077447496506">आज म्याद सकिन्छ</translation>
 <translation id="6402537308870515461">सारेर अन्यत्र लैजानुअघि समीक्षा गर्नु पर्ने हुन्छ</translation>
 <translation id="6403167778944553">ओच्छ्यान र स्नान</translation>
 <translation id="6404511346730675251">बुकमार्क सम्पादन गर्नुहोस्</translation>
@@ -2851,6 +2859,7 @@
 <translation id="6874604403660855544">&amp;रिडु जोड</translation>
 <translation id="6880941331070119097">उच्च मूल्यको विकल्प</translation>
 <translation id="6881240511396774766">Google कागजात प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउनुहोस्</translation>
+<translation id="6882210908253838664">कुनै साइटले काम गरिरहेको छैन भने तपाईं त्यसलाई केही समयका लागि तेस्रो पक्षीय कुकी प्रयोग गर्ने अनुमति दिन सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">सुरक्षित तरिकाले भुक्तानी गर्नका निम्ति क्रिडेन्सियल पुष्टि गर्ने पाना बन्द छ</translation>
 <translation id="6884662655240309489">आकार १</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3260,6 +3269,7 @@
 <translation id="7631444403134069754">ट्र्याक एन्ड फिल्ड</translation>
 <translation id="7631527008834753063">टिभी गेम सो</translation>
 <translation id="7633909222644580952">कार्यसम्पादनसम्बन्धी डेटा र क्र्याससम्बन्धी रिपोर्टहरू</translation>
+<translation id="7636346903338549690">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="7637571805876720304">Chromium बाट क्रेडिट कार्ड हटाउने हो?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{कुनै पनि होइन}=1{तपाईंको खातामा सुरक्षित गरिएको १ पासवर्ड (<ph name="DOMAIN_LIST" /> को)}other{तपाईंको खातामा सुरक्षित गरिएका # पासवर्डहरू (<ph name="DOMAIN_LIST" /> का)}}</translation>
 <translation id="7638605456503525968">सिरियल पोर्टहरू</translation>

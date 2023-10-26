@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">ଏହି ସାଇଟ୍‌ରେ ଆପଣଙ୍କର ସଂଯୋଗ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="6181444274883918285">ସାଇଟ୍‍ ବ୍ୟତିକ୍ରମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6192792657125177640">ବ୍ୟତିକ୍ରମଣଗୁଡିକ</translation>
+<translation id="6195163219142236913">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ସୀମିତ କରାଯାଇଛି</translation>
 <translation id="6196640612572343990">ତୃତୀୟ ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="6205314730813004066">ବିଜ୍ଞାପନ ଗୋପନୀୟତା</translation>
 <translation id="6207207788774442484">ଡାଟାକୁ ଡିଲିଟ କରି ଅନୁମତିଗୁଡ଼ିକୁ ରିସେଟ କରନ୍ତୁ</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ପଠାଇବାକୁ ସାଇଟ୍‌ଗୁଡ଼ିକ ପଚାରିପାରିବେ</translation>
 <translation id="6295158916970320988">ସମସ୍ତ ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="6320088164292336938">କମ୍ପନ</translation>
+<translation id="6344622098450209924">ଟ୍ରାକିଂ ସୁରକ୍ଷା</translation>
 <translation id="6367753977865761591">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ ପାଇଁ ତୃତୀୟ ପକ୍ଷ ସାଇନ-ଇନକୁ ବ୍ଲକ କରନ୍ତୁ।</translation>
 <translation id="6398765197997659313">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
 <translation id="640163077447496506">ଆଜି ମିଆଦ ଶେଷ ହେବ</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">ଏହି ଡିଭାଇସ୍ ପାଇଁ NFC ବନ୍ଦ ଅଛି। ଏହାକୁ <ph name="BEGIN_LINK" />Android ସେଟିଂସ୍‌<ph name="END_LINK" />ରେ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="8928445016601307354">NFC ଡିଭାଇସଗୁଡ଼ିକରେ ସୂଚନା ଦେଖିବାରୁ ଏବଂ ପରିବର୍ତ୍ତନ କରିବାରୁ ସାଇଟଗୁଡ଼ିକୁ ବ୍ଲକ କରନ୍ତୁ</translation>
+<translation id="8944485226638699751">ସୀମିତ</translation>
 <translation id="8958424370300090006">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅବରୋଧ କରନ୍ତୁ।</translation>
 <translation id="8959122750345127698">ନାଭିଗେସନ୍‌ରେ ପହଞ୍ଚି ହେଉନାହିଁ: <ph name="URL" /></translation>
 <translation id="8986362086234534611">ଭୁଲିଗଲେ</translation>

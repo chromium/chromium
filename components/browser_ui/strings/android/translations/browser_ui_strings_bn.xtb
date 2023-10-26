@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">এই সাইটে আপনার সংযোগ নিরাপদ নয়</translation>
 <translation id="6181444274883918285">ব্যতিক্রমী সাইট যোগ করুন</translation>
 <translation id="6192792657125177640">ব্যতিক্রমগুলি</translation>
+<translation id="6195163219142236913">থার্ড-পার্টি কুকি সীমিত করা হয়েছে</translation>
 <translation id="6196640612572343990">তৃতীয় পক্ষের কুকিজ অবরুদ্ধ করুন</translation>
 <translation id="6205314730813004066">বিজ্ঞাপন সংক্রান্ত গোপনীয়তা</translation>
 <translation id="6207207788774442484">ডেটা মুছে দিয়ে অনুমতি রিসেট করুন</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">সাইট আপনাকে বিজ্ঞপ্তি পাঠানোর আগে অনুমতি চাইতে পারে</translation>
 <translation id="6295158916970320988">সমস্ত সাইট</translation>
 <translation id="6320088164292336938">কম্পন</translation>
+<translation id="6344622098450209924">ট্র্যাকিং সংক্রান্ত সুরক্ষা</translation>
 <translation id="6367753977865761591">কোনও নির্দিষ্ট সাইটের জন্য থার্ড-পার্টি সাইন-ইন ব্লক করুন।</translation>
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
 <translation id="640163077447496506">আজ মেয়াদ শেষ</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">এই ডিভাইসে NFC বন্ধ আছে। <ph name="BEGIN_LINK" />Android সেটিংস<ph name="END_LINK" /> থেকে এটি চালু করুন।</translation>
 <translation id="8928445016601307354">NFC ডিভাইসে তথ্য দেখা এবং পরিবর্তন করা থেকে সাইটগুলিকে ব্লক করুন</translation>
+<translation id="8944485226638699751">সীমিত</translation>
 <translation id="8958424370300090006">কোনও নির্দিষ্ট সাইটের জন্য কুকি ব্লক করুন।</translation>
 <translation id="8959122750345127698">নেভিগেশানে পৌছানো যাচ্ছে না: <ph name="URL" /></translation>
 <translation id="8986362086234534611">ভুলে যান</translation>

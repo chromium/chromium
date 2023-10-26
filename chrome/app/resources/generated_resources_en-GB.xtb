@@ -1133,6 +1133,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1862311223300693744">Do you have any special VPN, proxy, firewall or NAS software
     installed?</translation>
+<translation id="1863047423483329595">Tracking Protection is temporarily unavailable. While Chrome is updating this feature, sites can temporarily use third-party cookies unless you block them. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">No serial ports found</translation>
 <translation id="1863207472175483351">installing...</translation>
 <translation id="1864111464094315414">Login</translation>
@@ -1387,6 +1388,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2051266530792296582">Google Password Manager created a strong password for this website</translation>
 <translation id="2051555741181591333">Automatically disable hotspot</translation>
+<translation id="2051669996101374349">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it. You can't change this setting because you have Advanced Protection enabled.</translation>
 <translation id="2052572566310583903">Installed on your other devices</translation>
 <translation id="2053105195397337973">We’re exploring ways to restrict tracking while enabling sites to stop ad spam and fraud.</translation>
 <translation id="2053312383184521053">Idle State Data</translation>
@@ -2264,7 +2266,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2719936478972253983">The following cookies were blocked</translation>
 <translation id="2721037002783622288">&amp;Search <ph name="SEARCH_ENGINE" /> for image</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
-<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{Permissions that you allow for "<ph name="APP_NAME" />" will also be allowed for this app.}other{Permissions that you allow for "<ph name="APP_NAME" />" will also be allowed for these apps.}}</translation>
 <translation id="2721695630904737430">Supervised users have been disabled by your administrator.</translation>
 <translation id="2722540561488096675">Your device will shut down in <ph name="TIME_LEFT" />. Remove the USB before turning your device back on. Then you can start using <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
@@ -9293,6 +9294,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8345848587667658367">You can now view your phone's recent photos, media, notifications and apps</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="834785183489258869">While in Incognito, sites can't use your cookies to see your browsing activity across different sites; for example, to personalise ads. Features on some sites may not work.</translation>
+<translation id="8348430946834215779">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it</translation>
 <translation id="8349325309815489209">Extensions allowed on this site</translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8350789879725387295">Stylus tools in dock</translation>
@@ -9485,7 +9487,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8496717697661868878">Run This Plug-in</translation>
 <translation id="8497219075884839166">Windows Utilities</translation>
 <translation id="8498214519255567734">Make it easier to look at your screen or read in dim light</translation>
-<translation id="8498395510292172881">Continue reading in Chrome</translation>
 <translation id="8499083585497694743">Unmute microphone</translation>
 <translation id="8499951261760185742">If a site you visit isn't working as expected, try temporarily allowing third-party cookies for that site. That will mean less protection but site features are more likely to work as expected.</translation>
 <translation id="8502536196501630039">To use apps from Google Play, you must first restore your apps. Some data may have been lost.</translation>
@@ -9727,6 +9728,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8690129572193755009">Sites can ask to handle protocols</translation>
 <translation id="869144235543261764">This tab is playing a video in picture-in-picture mode</translation>
 <translation id="8692107307702113268">Password is more than 1,000 characters</translation>
+<translation id="8693639060656817812">Learn more about Tracking Protection availability</translation>
 <translation id="8694596275649352090">Lock when sleeping or lid is closed</translation>
 <translation id="8695139659682234808">Add parental controls after setup</translation>
 <translation id="8695825812785969222">Open &amp;Location...</translation>
@@ -10024,7 +10026,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8927438609932588163">Allow sites to save data on your device</translation>
 <translation id="8929696694736010839">Current Incognito session only</translation>
 <translation id="8929738682246584251">Magnifier on/off</translation>
-<translation id="8930351635855238750">New cookie settings will take effect after reloading the page</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8931076093143205651">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="8931475688782629595">Manage what you sync</translation>

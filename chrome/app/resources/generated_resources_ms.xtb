@@ -2266,7 +2266,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2719936478972253983">Kuki berikut telah disekat</translation>
 <translation id="2721037002783622288">&amp;Cari imej di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
-<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{Kebenaran yang anda berikan untuk "<ph name="APP_NAME" />" akan diberikan kepada apl ini juga.}other{Kebenaran yang anda berikan untuk "<ph name="APP_NAME" />" akan diberikan kepada apl ini juga.}}</translation>
 <translation id="2721695630904737430">Pengguna di bawah seliaan telah dilumpuhkan oleh pentadbir anda.</translation>
 <translation id="2722540561488096675">Peranti anda akan dimatikan dalam masa <ph name="TIME_LEFT" />. Alih keluar USB sebelum menghidupkan semula peranti anda. Kemudian anda boleh mula menggunakan <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
@@ -9489,7 +9488,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8496717697661868878">Jalankan Pemalam Ini</translation>
 <translation id="8497219075884839166">Windows Utilities</translation>
 <translation id="8498214519255567734">Memudahkan anda melihat skrin atau membaca dalam cahaya malap</translation>
-<translation id="8498395510292172881">Teruskan membaca dalam Chrome</translation>
 <translation id="8499083585497694743">Nyahredamkan mikrofon</translation>
 <translation id="8499951261760185742">Jika laman yang anda lawati tidak berfungsi seperti yang dijangkakan, cuba memberikan kebenaran kuki pihak ketiga untuk tapak tersebut buat sementara waktu. Perkara ini boleh mengurangkan perlindungan tetapi ciri laman lebih berkemungkinan untuk berfungsi seperti yang dijangkakan.</translation>
 <translation id="8502536196501630039">Untuk menggunakan apl daripada Google Play, anda mesti memulihkan apl anda dahulu. Sesetengah data mungkin hilang.</translation>
@@ -10029,7 +10027,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8927438609932588163">Benarkan laman menyimpan data pada peranti anda</translation>
 <translation id="8929696694736010839">Sesi Inkognito semasa sahaja</translation>
 <translation id="8929738682246584251">Hidupkan/matikan penggadang</translation>
-<translation id="8930351635855238750">Tetapan kuki baharu akan berkesan selepas memuatkan semula halaman</translation>
 <translation id="8930622219860340959">Wayarles</translation>
 <translation id="8931076093143205651">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Tetapan ini dikuatkuasakan oleh pemilik. Pemilik mungkin memilih untuk menghantar data diagnostik dan penggunaan peranti ini kepada Google. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Akaun Google anda.</translation>
 <translation id="8931475688782629595">Urus data yang disegerakkan</translation>

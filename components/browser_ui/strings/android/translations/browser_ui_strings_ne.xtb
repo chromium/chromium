@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">यस साइटमा तपाईँको जडान सुरक्षित छैन</translation>
 <translation id="6181444274883918285">साइटको अपवाद थप्नुुहोस्</translation>
 <translation id="6192792657125177640">अपवाद</translation>
+<translation id="6195163219142236913">तेस्रो पक्षीय कुकीहरू सीमित गरिएका छन्</translation>
 <translation id="6196640612572343990">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
 <translation id="6205314730813004066">विज्ञापनको गोपनीयता</translation>
 <translation id="6207207788774442484">जानकारी मेटाउनुहोस् र अनुमति रिसेट गर्नुहोस्</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">साइटहरूले सूचनाहरू पठाउनका निम्ति अनुमति माग्न सक्छन्।</translation>
 <translation id="6295158916970320988">सबै साइटहरू</translation>
 <translation id="6320088164292336938">कम्पन</translation>
+<translation id="6344622098450209924">सुरक्षाको जानकारी राखिँदै छ</translation>
 <translation id="6367753977865761591">निश्चित साइटमा तेस्रो पक्षको खातामार्फत साइन इन गर्न रोक लगाउनुहोस्।</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
 <translation id="640163077447496506">आज म्याद सकिन्छ</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">यो डिभाइसमा NFC निष्क्रिय पारिएको छ। <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
 <translation id="8928445016601307354">साइटहरूलाई NFC डिभाइसमा भएका जानकारी हेर्न र ती जानकारी परिवर्तन गर्नबाट ब्लक गरियोस्</translation>
+<translation id="8944485226638699751">सीमित</translation>
 <translation id="8958424370300090006">कुनै खास साइटमा कुकीहरूलाई रोक लगाउनुहोस्।</translation>
 <translation id="8959122750345127698">नेभिगेशन पहुँचयोग्य छैन: <ph name="URL" /></translation>
 <translation id="8986362086234534611">बिर्सनुहोस्</translation>

@@ -173,6 +173,7 @@
 <translation id="1876851015978093044">ఇది ఈ ఐటెమ్‌ను చూపిస్తుంది</translation>
 <translation id="1882901927376062252">{count,plural, =1{బుక్‌మార్క్ మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడింది}other{{count} బుక్‌మార్క్‌లు మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="1883255238294161206">లిస్ట్‌ను కుదించు</translation>
+<translation id="1889872080060107187">మీరు <ph name="URL" />‌కు సైన్ ఇన్ చేయబోతున్నారు</translation>
 <translation id="1890237935065108104">ఈ సెట్టింగ్ అందుబాటులో లేదు.</translation>
 <translation id="1894023287452300670">ధరను ఇక్కడ ట్రాక్ చేయండి</translation>
 <translation id="189531189292803889">మీ iPad ఇటీవల రీస్టోర్ అయింది, దాని వలన మీ ఆటోమేటిక్ బ్రౌజర్ మారి ఉండవచ్చు.</translation>
@@ -1178,7 +1179,6 @@
 <translation id="7154343200458623869">మీ టాస్క్‌ను పూర్తి చేయండి.</translation>
 <translation id="7161230316646448869">పరికరాలన్నింటిలో మీ బుక్‌మార్క్‌లను, హిస్టరీని, ఇంకా మరిన్నింటిని సింక్ చేయండి</translation>
 <translation id="7162168282402939716">అజ్ఞాత ట్యాబ్‌లను <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />తో అన్‌లాక్ చేయండి</translation>
-<translation id="7168959436351276050">ఈ కార్డ్‌ను దాచినట్లయితే, మీ ప్యాకేజీ ట్రాకింగ్ డేటా మొత్తం తీసివేయబడుతుంది</translation>
 <translation id="7172852049901402487">సెక్యూరిటీ సమస్యల నుండి మీ పాస్‌వర్డ్‌లను సురక్షితంగా ఉంచుకోండి</translation>
 <translation id="7173114856073700355">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="7189598951263744875">షేర్ చేయండి...</translation>

@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">Nid yw eich cysylltiad â'r wefan hon yn ddiogel</translation>
 <translation id="6181444274883918285">Ychwanegu eithriad gwefan</translation>
 <translation id="6192792657125177640">Eithriadau</translation>
+<translation id="6195163219142236913">Mae cwcis trydydd parti yn gyfyngedig</translation>
 <translation id="6196640612572343990">Rhwystro cwcis trydydd parti</translation>
 <translation id="6205314730813004066">Preifatrwydd hysbyseb</translation>
 <translation id="6207207788774442484">Dileu data ac ailosod caniatadau</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">Gall gwefannau ofyn am anfon hysbysiadau</translation>
 <translation id="6295158916970320988">Pob gwefan</translation>
 <translation id="6320088164292336938">Dirgrynu</translation>
+<translation id="6344622098450209924">Diogelwch Olrhain</translation>
 <translation id="6367753977865761591">Rhwystro mewngofnodi trydydd parti ar gyfer gwefan benodol.</translation>
 <translation id="6398765197997659313">Gadael y sgrîn lawn</translation>
 <translation id="640163077447496506">Yn darfod heddiw</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Mae NFC wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Rhwystro gwefannau rhag gweld a newid gwybodaeth ar ddyfeisiau NFC</translation>
+<translation id="8944485226638699751">Cyfyngedig</translation>
 <translation id="8958424370300090006">Rhwystro cwcis ar gyfer gwefan benodol.</translation>
 <translation id="8959122750345127698">Mae llywio yn anghyraeddadwy: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Anghofio</translation>

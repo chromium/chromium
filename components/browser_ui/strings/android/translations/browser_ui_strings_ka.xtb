@@ -292,6 +292,7 @@
 <translation id="6177128806592000436">თქვენი კავშირი ამ საიტთან დაცული არ არის</translation>
 <translation id="6181444274883918285">გამონაკლისი საიტის დამატება</translation>
 <translation id="6192792657125177640">გამონაკლისები</translation>
+<translation id="6195163219142236913">მესამე მხარის ქუქი-ჩანაწერები შეზღუდულია</translation>
 <translation id="6196640612572343990">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
 <translation id="6205314730813004066">სარეკლამო კონფიდენციალურობა</translation>
 <translation id="6207207788774442484">წაიშალოს მონაცემები და გადაყენდეს ნებართვები</translation>
@@ -302,6 +303,7 @@
 <translation id="6270391203985052864">საიტებს შეუძლიათ შეტყობინებების გამოგზავნის თხოვნა</translation>
 <translation id="6295158916970320988">ყველა საიტი</translation>
 <translation id="6320088164292336938">ვიბრაცია</translation>
+<translation id="6344622098450209924">თვალის დევნებისგან დაცვა</translation>
 <translation id="6367753977865761591">მესამე მხარის მეშვეობით სისტემაში შესვლის დაბლოკვა კონკრეტული საიტისთვის.</translation>
 <translation id="6398765197997659313">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
 <translation id="640163077447496506">მოქმედების ვადა იწურება დღეს</translation>
@@ -453,6 +455,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC გამორთულია ამ მოწყობილობისთვის. მისი ჩართვა შეგიძლიათ <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">აეკრძალოს საიტებს ინფორმაციაზე წვდომა და მისი შეცვლა NFC მოწყობილობებზე</translation>
+<translation id="8944485226638699751">შეზღუდული</translation>
 <translation id="8958424370300090006">ქუქი-ჩანაწერების დაბლოკვა კონკრეტული საიტისთვის.</translation>
 <translation id="8959122750345127698">ნავიგაცია მიუწვდომელია: <ph name="URL" /></translation>
 <translation id="8986362086234534611">დავიწყება</translation>

@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">اتصال شما به این سایت امن نیست</translation>
 <translation id="6181444274883918285">افزودن سایتی به استثناها</translation>
 <translation id="6192792657125177640">موارد استثنا</translation>
+<translation id="6195163219142236913">کوکی‌های شخص ثالث محدود شده است</translation>
 <translation id="6196640612572343990">مسدود کردن کوکی‌های شخص ثالث</translation>
 <translation id="6205314730813004066">حریم خصوصی آگهی</translation>
 <translation id="6207207788774442484">حذف داده‌ها و بازنشانی اجازه‌ها</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">سایت‌ها می‌توانند برای ارسال اعلان درخواست دهند</translation>
 <translation id="6295158916970320988">همه سایت‌ها</translation>
 <translation id="6320088164292336938">لرزش</translation>
+<translation id="6344622098450209924">محافظت دربرابر ردیابی</translation>
 <translation id="6367753977865761591">ورود به سیستم شخص ثالث برای سایت خاصی مسدود می‌شود.</translation>
 <translation id="6398765197997659313">خروج از حالت تمام صفحه</translation>
 <translation id="640163077447496506">امروز منقضی می‌شود</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">‏NFC برای این دستگاه خاموش است. در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> آن را روشن کنید.</translation>
 <translation id="8928445016601307354">‏سایت‌ها اجازه نداشته باشند اطلاعات دستگاه‌های NFC را ببینند و تغییر دهند</translation>
+<translation id="8944485226638699751">محدود</translation>
 <translation id="8958424370300090006">کوکی‌ها را برای سایت خاصی مسدود کنید.</translation>
 <translation id="8959122750345127698">پیمایش غیرقابل دسترسی است: <ph name="URL" /></translation>
 <translation id="8986362086234534611">فراموش شود</translation>

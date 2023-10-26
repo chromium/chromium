@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Seinale ahula</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Eguneratzen (% <ph name="PERCENTAGE_VALUE" /> osatu da)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minutu</translation>
 <translation id="1310380015393971138">Ez dago <ph name="NETWORK_NAME" /> sarerik erabilgarri</translation>
 <translation id="131421566576084655">Ez dago erabilgarri azken datu-berrezartzearen data</translation>
 <translation id="1314565355471455267">Android VPN sarea</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">Erantsi fitxategia</translation>
 <translation id="8230672074305416752">Ezin izan da egin ping sarerako atebide lehenetsian</translation>
 <translation id="8246209727385807362">Operadore ezezaguna</translation>
+<translation id="8262870577632766028">Ordubete</translation>
 <translation id="827422111966801947">Anila</translation>
 <translation id="8286154143153872371">Konektatu sare batera eta kargatu orria berriro horma-papera ikusteko.</translation>
 <translation id="8291967909914612644">Hasierako hornitzailearen herrialdea</translation>

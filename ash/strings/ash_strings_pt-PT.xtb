@@ -503,6 +503,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3105917916468784889">Fazer captura de ecrã</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Realçar o item anterior na prateleira</translation>
+<translation id="311799651966070385">Fechar chamada de atenção</translation>
 <translation id="3120421559657122717">Encerrar dispositivo?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo de trabalho da turma</translation>
@@ -886,6 +887,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4585337515783392668">Parar a transmissão para um recetor desconhecido</translation>
 <translation id="4596144739579517758">O tema escuro está desativado.</translation>
 <translation id="4611292653554630842">Iniciar sessão</translation>
+<translation id="462160925400706389">Dispositivo <ph name="NAME" /> ligado</translation>
 <translation id="4623167406982293031">Validar conta</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, número de estrelas: <ph name="RATING_SCORE" /></translation>
@@ -1187,6 +1189,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5774295353725270860">Aplicação Abrir Ficheiros</translation>
 <translation id="5777841717266010279">Parar partilha do ecrã?</translation>
 <translation id="5779721926447984944">Ficheiros fixados</translation>
+<translation id="5785221443435874078">Remover esta sugestão</translation>
 <translation id="5788127256798019331">Ficheiros do Google Play</translation>
 <translation id="5788535737706478207">Reabrir o último separador ou janela fechados</translation>
 <translation id="5790085346892983794">Sucesso</translation>
@@ -1266,7 +1269,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="6095008505822982596">Taxa de voz</translation>
 <translation id="6095425951508823973">Adicionar ligação a <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Editado no mês passado</translation>
-<translation id="6099793635444444289">Não é possível iniciar o ditado porque o microfone tem o som desativado</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Ficheiros de voz em <ph name="LANGUAGE" /> transferidos</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1312,6 +1314,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="6284232397434400372">Resolução alterada</translation>
 <translation id="6288235558961782912">É possível adicionar <ph name="USER_EMAIL_ADDRESS" /> novamente mais tarde com a autorização dos pais.</translation>
 <translation id="6291221004442998378">Não está a carregar.</translation>
+<translation id="6298183524022479114">Personalize este dispositivo na app</translation>
 <translation id="6309219492973062892">Clicar ou tocar nos ícones de 1 a 8 na prateleira</translation>
 <translation id="6315170314923504164">Voz</translation>
 <translation id="6324916366299863871">Editar atalho</translation>

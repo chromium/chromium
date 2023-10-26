@@ -703,6 +703,7 @@
 <translation id="47677902929517676">لحفظ كلمات المرور في حسابك، يجب أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="4775879719735953715">المتصفح التلقائي</translation>
 <translation id="4778644898150334464">استخدام كلمة مرور أخرى</translation>
+<translation id="4779732376610430319">جارٍ الانتقال إلى الإعدادات...</translation>
 <translation id="478808905805139173">هل تريد فتح الرابط في وضع "التصفُّح المتخفي"؟</translation>
 <translation id="4803185665210547709">تتم إدارة المتصفِّح من خلال مؤسستك.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -1179,7 +1180,6 @@
 <translation id="7154343200458623869">أكمِل مهمتك.</translation>
 <translation id="7161230316646448869">مزامنة الإشارات المرجعية والسجلّ وغير ذلك على جميع الأجهزة</translation>
 <translation id="7162168282402939716">فتح علامات التبويب في وضع التصفّح المتخفي باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7168959436351276050">إخفاء هذه البطاقة يؤدي إلى إزالة جميع بيانات تتبُّع الطرود</translation>
 <translation id="7172852049901402487">يمكنك حماية كلمات المرور والتحقق من مشاكل الأمان.</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>
 <translation id="7189598951263744875">مشاركة...</translation>

@@ -1187,6 +1187,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5774295353725270860">Öppna appen Filer</translation>
 <translation id="5777841717266010279">Vill du avbryta skärmdelningen?</translation>
 <translation id="5779721926447984944">Filer som har fästs</translation>
+<translation id="5785221443435874078">Ta bort förslaget</translation>
 <translation id="5788127256798019331">Play-filer</translation>
 <translation id="5788535737706478207">Öppna den senast stängda fliken eller det senast stängda fönstret igen</translation>
 <translation id="5790085346892983794">Klart</translation>
@@ -1266,7 +1267,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="6095008505822982596">Talhastighet</translation>
 <translation id="6095425951508823973">Lägg till anslutning med <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Redigerades under den senaste månaden</translation>
-<translation id="6099793635444444289">Det går inte att starta diktering eftersom mikrofonens ljud är av</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Filerna för taligenkänning på <ph name="LANGUAGE" /> har laddats ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

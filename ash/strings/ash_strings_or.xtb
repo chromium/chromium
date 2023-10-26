@@ -503,6 +503,7 @@
 <translation id="3105917916468784889">ସ୍କ୍ରିନ୍‍ସଟ୍ ନିଅନ୍ତୁ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ବ୍ଲୁଟୁଥ୍)</translation>
 <translation id="3113492864356515707">ସେଲ୍ଫରେ ପୂର୍ବବର୍ତ୍ତୀ ଆଇଟମକୁ ହାଇଲାଇଟ କରନ୍ତୁ</translation>
+<translation id="311799651966070385">ନଜକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3120421559657122717">ଡିଭାଇସକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">କ୍ଲାସୱାର୍କର ପ୍ରକାର</translation>
@@ -886,6 +887,7 @@
 <translation id="4585337515783392668">ଏକ ଅଜଣା ରିସିଭର୍‌ରେ କାଷ୍ଟିଂ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4596144739579517758">ଗାଢ଼ ଥିମ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="4611292653554630842">ଲଗ୍ ଇନ୍ କରନ୍ତୁ</translation>
+<translation id="462160925400706389"><ph name="NAME" /> କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="4623167406982293031">ଆକାଉଣ୍ଟ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4628757576491864469">ଡିଭାଇସ୍</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ତାରା ମୂଲ୍ୟାଙ୍କନ <ph name="RATING_SCORE" /></translation>
@@ -1187,6 +1189,7 @@
 <translation id="5774295353725270860">ଫାଇଲ୍ସ ଆପ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="5777841717266010279">ସ୍କ୍ରିନ୍ ସେୟାରିଂ ବନ୍ଦ କରିବେ?</translation>
 <translation id="5779721926447984944">ପିନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକ</translation>
+<translation id="5785221443435874078">ଏହି ପ୍ରସ୍ତାବ କାଢ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="5788127256798019331">Play ଫାଇଲ୍ସ</translation>
 <translation id="5788535737706478207">ବନ୍ଦ କରାଯାଇଥିବା ଗତ ଟାବ କିମ୍ବା ୱିଣ୍ଡୋକୁ ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="5790085346892983794">ସଫଳ ହୋଇଛି</translation>
@@ -1266,7 +1269,6 @@
 <translation id="6095008505822982596">ସ୍ପିଚ ରେଟ</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> ସହ କନେକ୍ସନ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6099678161144790572">ଗତ ମାସରେ ଏଡିଟ କରାଯାଇଛି</translation>
-<translation id="6099793635444444289">ମାଇକ୍ରୋଫୋନ ମ୍ୟୁଟ ଥିବା ଯୋଗୁଁ ଡିକ୍ଟେସନ ଆରମ୍ଭ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6103838137565245112">ସିଷ୍ଟମ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1312,6 +1314,7 @@
 <translation id="6284232397434400372">ରିଜୋଲ୍ୟୁସନ୍ ପରିବର୍ତ୍ତିତ ହୋଇଛି</translation>
 <translation id="6288235558961782912">ବାପାମା'ଙ୍କ ଅନୁମତି ସହିତ <ph name="USER_EMAIL_ADDRESS" /> ପୁଣି-ଯୋଗ କରିପାରିବେ।</translation>
 <translation id="6291221004442998378">ଚାର୍ଜ ହେଉନାହିଁ</translation>
+<translation id="6298183524022479114">ଆପରେ ଏହି ଡିଭାଇସକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="6309219492973062892">1-8 ସେଲ୍ପ ଆଇକନରେ କ୍ଲିକ କିମ୍ବା ଟାପ କରନ୍ତୁ</translation>
 <translation id="6315170314923504164">Voice</translation>
 <translation id="6324916366299863871">ସର୍ଟକଟ୍‌କୁ ଏଡିଟ୍ କରନ୍ତୁ</translation>

@@ -173,6 +173,7 @@
 <translation id="1876851015978093044">Элемент будет показываться</translation>
 <translation id="1882901927376062252">{count,plural, =1{Закладка сохранена в аккаунте Google ({email}).}one{{count} закладка сохранена в аккаунте Google ({email}).}few{{count} закладки сохранены в аккаунте Google ({email}).}many{{count} закладок сохранено в аккаунте Google ({email}).}other{{count} закладки сохранено в аккаунте Google ({email}).}}</translation>
 <translation id="1883255238294161206">Свернуть список</translation>
+<translation id="1889872080060107187">Будет выполнен вход на сайте <ph name="URL" />.</translation>
 <translation id="1890237935065108104">Этот параметр недоступен.</translation>
 <translation id="1894023287452300670">Отслеживайте цены здесь</translation>
 <translation id="189531189292803889">Устройство iPad было недавно восстановлено, поэтому браузер по умолчанию мог измениться.</translation>
@@ -1178,7 +1179,6 @@
 <translation id="7154343200458623869">Выполните задачу.</translation>
 <translation id="7161230316646448869">Синхронизируйте закладки, историю и другие данные на всех своих устройствах</translation>
 <translation id="7162168282402939716">Разблокировать вкладки инкогнито с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7168959436351276050">Если вы скроете эту карточку, все данные об отслеживании ваших заказов будут удалены</translation>
 <translation id="7172852049901402487">Убедитесь в надежности паролей</translation>
 <translation id="7173114856073700355">Открыть настройки</translation>
 <translation id="7189598951263744875">Поделиться…</translation>

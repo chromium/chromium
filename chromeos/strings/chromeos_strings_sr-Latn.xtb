@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Slab signal</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Ažurira se (završeno je <ph name="PERCENTAGE_VALUE" />%)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minuta</translation>
 <translation id="1310380015393971138">Nijedna <ph name="NETWORK_NAME" /> mreža nije dostupna</translation>
 <translation id="131421566576084655">Datum poslednjeg resetovanja je nedostupan</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">Priloži datoteku</translation>
 <translation id="8230672074305416752">Pingovanje podrazumevanog mrežnog prolaza nije uspelo</translation>
 <translation id="8246209727385807362">Nepoznat mobilni operater</translation>
+<translation id="8262870577632766028">1 sat</translation>
 <translation id="827422111966801947">Tamnoplava</translation>
 <translation id="8286154143153872371">Povežite se na mrežu i ponovo učitajte stranicu da biste videli pozadinu.</translation>
 <translation id="8291967909914612644">Zemlja dobavljača za Home</translation>

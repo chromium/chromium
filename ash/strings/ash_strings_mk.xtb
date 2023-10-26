@@ -1188,6 +1188,7 @@
 <translation id="5774295353725270860">Отвори ја апликацијата Датотеки</translation>
 <translation id="5777841717266010279">Запри споделување екран?</translation>
 <translation id="5779721926447984944">Закачени датотеки</translation>
+<translation id="5785221443435874078">Отстрани го предлогов</translation>
 <translation id="5788127256798019331">Датотеки на Play</translation>
 <translation id="5788535737706478207">Ја отвора повторно последната картичка или затворениот прозорец</translation>
 <translation id="5790085346892983794">Успешно</translation>
@@ -1267,7 +1268,6 @@
 <translation id="6095008505822982596">Брзина на говорот</translation>
 <translation id="6095425951508823973">Додајте врска со <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Изменето во изминатиот месец</translation>
-<translation id="6099793635444444289">„Диктирање“ не може да се стартува затоа што е исклучен звукот на микрофонот</translation>
 <translation id="6103838137565245112">систем</translation>
 <translation id="6114505516289286752">Датотеките за говор на <ph name="LANGUAGE" /> се преземени</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

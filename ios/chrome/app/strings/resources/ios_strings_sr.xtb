@@ -173,6 +173,7 @@
 <translation id="1876851015978093044">Приказује ову ставку</translation>
 <translation id="1882901927376062252">{count,plural, =1{Обележивач је сачуван на Google налогу, {email}}one{{count}обележивач је сачуван на Google налогу, {email}}few{{count}обележивача су сачувана на Google налогу, {email}}other{{count}обележивача је сачувано на Google налогу, {email}}}</translation>
 <translation id="1883255238294161206">Скупи листу</translation>
+<translation id="1889872080060107187">Пријавићете се на <ph name="URL" /></translation>
 <translation id="1890237935065108104">Ово подешавање није доступно.</translation>
 <translation id="1894023287452300670">Пратите цену овде</translation>
 <translation id="189531189292803889">Садржај iPad-а је недавно враћен, због чега је подразумевани прегледач можда промењен.</translation>
@@ -1178,7 +1179,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7154343200458623869">Довршите задатак.</translation>
 <translation id="7161230316646448869">Синхронизујте обележиваче, историју и други садржај на свим уређајима</translation>
 <translation id="7162168282402939716">Откључај картице без архивирања помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7168959436351276050">Скривањем ове картице уклонићете све податке о праћењу пакета</translation>
 <translation id="7172852049901402487">Заштитите лозинке од безбедносних проблема</translation>
 <translation id="7173114856073700355">Отвори Подешавања</translation>
 <translation id="7189598951263744875">Дели...</translation>

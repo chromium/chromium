@@ -513,6 +513,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{以及另外 1 个应用}other{以及另外 # 个应用}}</translation>
 <translation id="2003709556000175978">立即重置您的密码</translation>
 <translation id="2003775180883135320">四孔（顶部）</translation>
+<translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
 <translation id="2009942480257059311">“创建活动”按钮，激活它即可在 Google 日历中快速创建新活动</translation>
 <translation id="201174227998721785">在 Chrome 设置中管理各网站的权限及存储的数据</translation>
 <translation id="2012276282211112603">暂无可显示的主题</translation>
@@ -1185,6 +1186,7 @@
 <translation id="3432601291244612633">关闭页面</translation>
 <translation id="3433111389595862568">协作与会议软件</translation>
 <translation id="3433144818443565002">语音与视频聊天</translation>
+<translation id="343474037147570563">系统会将您上传或附加的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="3435557549311968410">连续纸（短边）</translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="3438829137925142401">使用您 Google 账号中保存的密码</translation>
@@ -1192,6 +1194,7 @@
 <translation id="3441653493275994384">屏幕</translation>
 <translation id="3443504041532578451">光盘（磨光）</translation>
 <translation id="344449859752187052">已阻止第三方 Cookie</translation>
+<translation id="3447644283769633681">拦截所有第三方 Cookie</translation>
 <translation id="3447661539832366887">此设备的所有者已关闭恐龙游戏。</translation>
 <translation id="3447884698081792621">显示证书（由<ph name="ISSUER" />签发）</translation>
 <translation id="3452404311384756672">抓取时间间隔：</translation>
@@ -1213,6 +1216,7 @@
 <translation id="3487845404393360112">纸匣 4</translation>
 <translation id="3493660662684070951">卡车、货车和 SUV</translation>
 <translation id="3495081129428749620">在网页“<ph name="PAGE_TITLE" />”中查找</translation>
+<translation id="3497627066518778351">在新窗口中查看设备端网站数据的列表</translation>
 <translation id="3498215018399854026">我们暂时无法与您父母取得联系，请重试。</translation>
 <translation id="350069200438440499">文件名：</translation>
 <translation id="3501300228850242680">金属音乐</translation>
@@ -1300,6 +1304,7 @@
 <translation id="365641980390710834">休闲服装</translation>
 <translation id="3658742229777143148">修订版本</translation>
 <translation id="3664782872746246217">关键字：</translation>
+<translation id="3665100783276035932">大多数网站应该都会按预期运行</translation>
 <translation id="3667704023705708645">风险投资</translation>
 <translation id="3671117652518853176">关闭此设置后，出于安全考虑，系统可能偶尔会要求您进行验证</translation>
 <translation id="3671540257457995106">允许调整大小？</translation>
@@ -1923,6 +1928,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键再按 Enter 键可进行搜索</translation>
 <translation id="4930153903256238152">大容量</translation>
+<translation id="4932035752129140860">系统会将您粘贴或附加的文字发送给 Google Cloud 或第三方以供分析。例如，这些文字可能会被扫描以确定其是否包含敏感数据，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="4934780484581617878">窗口管理</translation>
 <translation id="4936134414789135531">找不到插入的<ph name="VALUE_NAME" />。</translation>
 <translation id="4936675324097895694">金融</translation>
@@ -2287,6 +2293,7 @@
 <translation id="568292603005599551">图片 X 轴位置</translation>
 <translation id="5684277895745049190">列表</translation>
 <translation id="5684874026226664614">糟糕，此网页内容无法翻译。</translation>
+<translation id="5687340364605915800">网站可自行决定是否响应此请求</translation>
 <translation id="5688137257686092846">美容业与美容专家</translation>
 <translation id="5689199277474810259">导出为 JSON 格式</translation>
 <translation id="5689516760719285838">位置信息</translation>
@@ -2365,6 +2372,7 @@
 <translation id="5866898949289125849">您当前查看的是一个开发者工具页面</translation>
 <translation id="5869405914158311789">无法访问此网站</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
+<translation id="5872318519182427835">此设置会影响这里列出的网站及其子网域。例如，添加“google.com”意味着也可为 mail.google.com 启用第三方 Cookie，因为此网域是 google.com 的一部分。</translation>
 <translation id="5872692522325383488">已保存 IBAN</translation>
 <translation id="5873297634595728366">柴油车</translation>
 <translation id="5877831137320480913">美容与健身</translation>
@@ -2515,6 +2523,7 @@
 <translation id="6177531123306197852">C2 信封</translation>
 <translation id="6180316780098470077">重试间隔</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome 会自动限制第三方 Cookie</translation>
 <translation id="61877208875190028">女装</translation>
 <translation id="6194209731893739467">您跟踪的所有商品都会显示在此处</translation>
 <translation id="6195163219142236913">第三方 Cookie 受限</translation>
@@ -2624,6 +2633,7 @@
 <translation id="6394852772105848029">此网站想打开<ph name="APP_NAME" />应用</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="6401136357288658127">此政策已被弃用。您应改用 <ph name="NEW_POLICY" /> 政策。</translation>
+<translation id="640163077447496506">今天过期</translation>
 <translation id="6402537308870515461">移动前需要检查</translation>
 <translation id="6403167778944553">卧室与卫浴</translation>
 <translation id="6404511346730675251">修改书签</translation>
@@ -2846,6 +2856,7 @@
 <translation id="6874604403660855544">恢复添加(&amp;R)</translation>
 <translation id="6880941331070119097">高价选项</translation>
 <translation id="6881240511396774766">快速创建一个新的 Google 文档</translation>
+<translation id="6882210908253838664">如果某个网站无法正常运行，您可尝试向其授予对第三方 Cookie 的临时使用权限。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">安全付款凭据身份验证表单已关闭</translation>
 <translation id="6884662655240309489">大小：1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3055,6 +3066,7 @@
 <translation id="725866823122871198">您计算机的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="7260075294900977274">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等</translation>
 <translation id="7265608370113700582">地址只能保存在该设备上</translation>
+<translation id="7273111226200291353">系统会将您下载的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="7275334191706090484">受管理的书签</translation>
 <translation id="7277998515889183784">化妆品</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可更改您的 Google 账号密码</translation>
@@ -3255,6 +3267,7 @@
 <translation id="7631444403134069754">田径</translation>
 <translation id="7631527008834753063">娱乐竞赛类电视节目</translation>
 <translation id="7633909222644580952">性能数据和崩溃报告</translation>
+<translation id="7636346903338549690">经允许可使用第三方 Cookie 的网站</translation>
 <translation id="7637571805876720304">要从 Chromium 中移除信用卡吗？</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{无}=1{您的账号中保存了 1 个密码（关联的网域：<ph name="DOMAIN_LIST" />）}other{您的账号中保存了 # 个密码（关联的网域：<ph name="DOMAIN_LIST" />）}}</translation>
 <translation id="7638605456503525968">串行端口</translation>
@@ -3528,6 +3541,7 @@
 <translation id="8202370299023114387">冲突</translation>
 <translation id="8207625368992715508">赛车运动</translation>
 <translation id="8208363704094329105">300 x 400 毫米</translation>
+<translation id="8208629719488976364">系统会将您打印的页面内容和您的打印机相关信息发送到 Google Cloud 或第三方以供分析。例如，这些内容和信息可能会被扫描以确定其是否包含敏感数据，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="8210490490377416373">选择政策名称</translation>
 <translation id="8210604850413485128">网站托管</translation>
 <translation id="8211406090763984747">连接是安全的</translation>

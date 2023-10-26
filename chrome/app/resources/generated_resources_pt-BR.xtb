@@ -1130,6 +1130,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1858585891038687145">Confiar neste certificado para a identificação de criadores do software</translation>
 <translation id="1859294693760125695">Não tenho mais interesse</translation>
 <translation id="1859339856433307593">Uma senha para essa conta já foi salva no <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="1859517534163232041">Criptografar URLs inseridos no navegador</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1862311223300693744">Você tem alguma VPN especial ou algum proxy, firewall ou software NAS
     instalado?</translation>
@@ -2263,7 +2264,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2719936478972253983">Os seguintes cookies foram bloqueados</translation>
 <translation id="2721037002783622288">&amp;Procurar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
-<translation id="2721485246869859676">{NUM_SUB_APP_INSTALLS,plural, =1{As permissões dadas ao app <ph name="APP_NAME" /> também serão concedidas a esse app.}one{As permissões dadas ao app <ph name="APP_NAME" /> também serão concedidas a esse app.}other{As permissões dadas ao app <ph name="APP_NAME" /> também serão concedidas a esses apps.}}</translation>
 <translation id="2721695630904737430">Os usuários supervisionados foram desativados pelo administrador.</translation>
 <translation id="2722540561488096675">O dispositivo será desligado automaticamente em <ph name="TIME_LEFT" />. Remova o dispositivo USB antes de ligar novamente. Em seguida, use o <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
@@ -2454,6 +2454,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2852385257476173980">Uma lista de sites que você visita pode aparecer aqui conforme você navega na Web</translation>
 <translation id="285241945869362924">Cria legendas automaticamente para conteúdo de áudio e vídeo. O áudio e as legendas nunca deixam o dispositivo.</translation>
 <translation id="2856776373509145513">Criar um novo contêiner</translation>
+<translation id="2856907950922663165">Desativar a criptografia de URL?</translation>
 <translation id="2859741939921354763">Importar senhas para o <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">A atualização do sistema foi concluída. Reinicie o sistema.</translation>
 <translation id="2861402191395139055">Assinaturas de Passpoint</translation>
@@ -4736,6 +4737,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4687718960473379118">Anúncios sugeridos pelo site</translation>
 <translation id="4688036121858134881">Código do registro local: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> está revertendo este dispositivo para a versão anterior (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="4689090588388540535">Use servidores de nomes de domínio (DNS) seguros para evitar que aqueles com acesso ao seu tráfego da Internet saibam as páginas da Web que você visita</translation>
 <translation id="4689235506267737042">Escolher preferências de demonstração</translation>
 <translation id="4689421377817139245">Sincronizar esse favorito no seu iPhone</translation>
 <translation id="4690091457710545971">&lt;Quatro arquivos gerados pelo firmware de Wi-Fi da Intel: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Os três primeiros são arquivos binários que contêm despejos de registro e, segundo a Intel, não contêm possuem pessoais ou de identificação do dispositivo. O último arquivo é um rastreamento de execução do firmware da Intel. Todas as informações pessoais ou de identificação do dispositivo foram apagadas dele, mas ele é grande demais para ser exibido aqui. Esses arquivos foram gerados em resposta a problemas recentes de Wi-Fi no seu dispositivo e serão compartilhados com a Intel para ajudar a solucionar esses problemas.&gt;</translation>
@@ -7036,6 +7038,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6573915150656780875">Seu Chromebook deixou de receber atualizações de segurança e de software. Compre um novo para ter a melhor experiência.</translation>
 <translation id="657402800789773160">&amp;Recarregar esta página</translation>
 <translation id="6577284282025554716">Download cancelado: <ph name="FILE_NAME" /></translation>
+<translation id="6577777689940373106">Um app (aguardando)</translation>
 <translation id="657866106756413002">Resumo da integridade da rede</translation>
 <translation id="6579369886355986318">Mostrar todos os &amp;controles</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Conteúdo da área de trabalho compartilhado</translation>
@@ -8602,6 +8605,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="780446144738273886">Digitalize um PDF para extrair texto para o leitor de tela. Esse recurso só está disponível no navegador Chrome</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Fechar dica</translation>
+<translation id="7806722269368320106">Um app (instalando)</translation>
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>
 <translation id="7807117920154132308">Parece que <ph name="SUPERVISED_USER_NAME" /> já configurou o Google Assistente em outro dispositivo. A ativação do contexto da tela neste dispositivo permite que <ph name="SUPERVISED_USER_NAME" /> aproveite ainda mais o Google Assistente.</translation>
 <translation id="7807711621188256451">Sempre permitir que <ph name="HOST" /> acesse sua câmera</translation>
@@ -9479,7 +9483,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8496717697661868878">Executar este plug-in</translation>
 <translation id="8497219075884839166">Utilitários do Windows</translation>
 <translation id="8498214519255567734">Facilita olhar para a tela ou ler com pouca luz</translation>
-<translation id="8498395510292172881">Continuar lendo no Chrome</translation>
 <translation id="8499083585497694743">Ativar microfone</translation>
 <translation id="8499951261760185742">Se um site que você visita não está funcionando como esperado, tente permitir o uso de cookies de terceiros temporariamente. Isso reduzirá a proteção, mas os recursos do site provavelmente vão funcionar conforme o esperado.</translation>
 <translation id="8502536196501630039">Para usar apps do Google Play, primeiro você precisa restaurar seus apps. Alguns dados podem ter sido perdidos.</translation>
@@ -9921,6 +9924,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8849219423513870962">Cancelar a remoção do perfil <ph name="PROFILE_NAME" /> do eSIM</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> de <ph name="CHECKING" /></translation>
+<translation id="8849541329228110748">As pessoas com acesso ao seu tráfego da Internet podem saber os sites que você visita</translation>
 <translation id="8850251000316748990">Ver mais…</translation>
 <translation id="885246833287407341">Argumentos de função da API</translation>
 <translation id="8853586775156634952">O cartão será salvo apenas neste dispositivo</translation>
@@ -10018,7 +10022,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8927438609932588163">Permitir que sites salvem dados no dispositivo</translation>
 <translation id="8929696694736010839">Apenas a sessão de navegação anônima atual</translation>
 <translation id="8929738682246584251">Lupa ativada/desativada</translation>
-<translation id="8930351635855238750">Novas configurações de cookies entrarão em vigor depois que a página for atualizada</translation>
 <translation id="8930622219860340959">Rede sem fio</translation>
 <translation id="8931076093143205651">Envie dados de uso e diagnóstico. Ajude a melhorar sua experiência com o Android enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e nossos parceiros, como os desenvolvedores Android. Essa configuração é aplicada pelo proprietário, que pode optar por enviar dados de uso e diagnóstico deste dispositivo para o Google. Se a configuração "Atividade na Web e de apps adicional" estiver ativada, esses dados poderão ser salvos na sua Conta do Google.</translation>
 <translation id="8931475688782629595">Gerenciar o que é sincronizado</translation>

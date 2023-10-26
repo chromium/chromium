@@ -514,6 +514,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{और 1 ज़्यादा}one{और # ज़्यादा}other{और # ज़्यादा}}</translation>
 <translation id="2003709556000175978">अपना पासवर्ड अभी रीसेट करें</translation>
 <translation id="2003775180883135320">सबसे ऊपर क्वाड पंच</translation>
+<translation id="2004697686368036666">हो सकता है कि कुछ साइटों पर खास सुविधाएं काम न करें</translation>
 <translation id="2009942480257059311">'इवेंट बनाएं' बटन, Google Calendar में फटाफट कोई नया इवेंट बनाने के लिए इसे चालू करें</translation>
 <translation id="201174227998721785">Chrome की सेटिंग में अलग-अलग साइटों पर सेव डेटा और अनुमतियों को मैनेज करें</translation>
 <translation id="2012276282211112603">इस समय दिखाने के लिए कोई विषय नहीं है</translation>
@@ -1194,6 +1195,7 @@
 <translation id="3441653493275994384">स्क्रीन</translation>
 <translation id="3443504041532578451">ऑप्टिकल डिस्क (सैटिन)</translation>
 <translation id="344449859752187052">तीसरे पक्ष की कुकी ब्लॉक की गईं</translation>
+<translation id="3447644283769633681">सभी तृतीय पक्ष कुकी अवरोधित करें</translation>
 <translation id="3447661539832366887">इस डिवाइस के मालिक ने डायनासोर गेम को बंद कर दिया है.</translation>
 <translation id="3447884698081792621">प्रमाणपत्र (<ph name="ISSUER" /> की ओर से जारी किया गया) दिखाएं</translation>
 <translation id="3452404311384756672">दो रीफ़्रेश के बीच का अंतराल:</translation>
@@ -1304,6 +1306,7 @@
 <translation id="365641980390710834">कैज़ुअल कपड़े</translation>
 <translation id="3658742229777143148">पुनरीक्षण</translation>
 <translation id="3664782872746246217">कीवर्ड:</translation>
+<translation id="3665100783276035932">ज़्यादातर साइटों को उम्मीद के मुताबिक काम करना चाहिए</translation>
 <translation id="3667704023705708645">वेंचर कैपिटल</translation>
 <translation id="3671117652518853176">इस सुविधा के बंद होने पर, सुरक्षा से जुड़े कामों के लिए आपको कभी-कभी पुष्टि करने के लिए कहा जा सकता है</translation>
 <translation id="3671540257457995106">डिसप्ले का साइज़ बदलना चाहते हैं?</translation>
@@ -2291,6 +2294,7 @@
 <translation id="568292603005599551">इमेज X की स्थिति</translation>
 <translation id="5684277895745049190">सूची</translation>
 <translation id="5684874026226664614">ओह. इस पेज का अनुवाद नहीं किया जा सका.</translation>
+<translation id="5687340364605915800">यह साइटों पर निर्भर करता है कि वे इस अनुरोध को स्वीकार करती हैं या नहीं</translation>
 <translation id="5688137257686092846">सौंदर्य प्रसाधन विज्ञान और ब्यूटी प्रोफ़ेशनल</translation>
 <translation id="5689199277474810259">JSON में एक्सपोर्ट करें</translation>
 <translation id="5689516760719285838">जगह की जानकारी</translation>
@@ -2369,6 +2373,7 @@
 <translation id="5866898949289125849">आप डेवलपर के टूल वाला पेज देख रहे हैं</translation>
 <translation id="5869405914158311789">इस साइट तक नहीं पहुंचा जा सकता</translation>
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
+<translation id="5872318519182427835">यहां सूची में दी गई साइटों और उनके सबडोमेन पर असर पड़ता है. उदाहरण के लिए, “google.com” जोड़ने का मतलब है कि तीसरे पक्ष की कुकी, mail.google.com के लिए भी चालू हो सकती हैं, क्योंकि यह google.com का हिस्सा है.</translation>
 <translation id="5872692522325383488">IBAN सेव किया गया</translation>
 <translation id="5873297634595728366">डीज़ल वाहन</translation>
 <translation id="5877831137320480913">खूबसूरती और फ़िटनेस</translation>
@@ -2520,6 +2525,7 @@
 <translation id="6177531123306197852">C2 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="6180316780098470077">बार-बार कोशिश किए जाने के बीच का समय</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome, तीसरे पक्ष की कुकी को अपने-आप सीमित कर देता है</translation>
 <translation id="61877208875190028">महिलाओं के कपड़े</translation>
 <translation id="6194209731893739467">ट्रैक किए गए अपने सभी प्रॉडक्ट यहां देखें</translation>
 <translation id="6195163219142236913">तीसरे पक्ष की कुकी सीमित हैं</translation>
@@ -2629,6 +2635,7 @@
 <translation id="6394852772105848029">यह साइट, <ph name="APP_NAME" /> ऐप्लिकेशन को खोलना चाहती है</translation>
 <translation id="6398765197997659313">फ़ुल स्क्रीन से बाहर निकलें</translation>
 <translation id="6401136357288658127">यह नीति हटा दी गई है. आपको इसके बजाय, इस <ph name="NEW_POLICY" /> नीति का इस्तेमाल करना चाहिए.</translation>
+<translation id="640163077447496506">समयसीमा आज खत्म हो जाएगी</translation>
 <translation id="6402537308870515461">मूव करने से पहले, समीक्षा करना ज़रूरी है</translation>
 <translation id="6403167778944553">बेडरूम और बाथरूम</translation>
 <translation id="6404511346730675251">बुकमार्क में बदलाव करें</translation>
@@ -2851,6 +2858,7 @@
 <translation id="6874604403660855544">&amp;जोड़ना फिर से करें</translation>
 <translation id="6880941331070119097">ज़्यादा कीमत वाला विकल्प</translation>
 <translation id="6881240511396774766">जल्दी से नया Google दस्तावेज़ बनाएं</translation>
+<translation id="6882210908253838664">अगर कोई साइट काम नहीं कर रही है, तो उसे कुछ समय के लिए तीसरे पक्ष की कुकी का इस्तेमाल करने की अनुमति दी जा सकती है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">सुरक्षित पेमेंट करने के लिए, क्रेडेंशियल की पुष्टि करने की शीट बंद है</translation>
 <translation id="6884662655240309489">आकार 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3260,6 +3268,7 @@
 <translation id="7631444403134069754">ट्रैक एंड फ़ील्ड</translation>
 <translation id="7631527008834753063">टीवी गेम शो</translation>
 <translation id="7633909222644580952">परफ़ॉर्मेंस डेटा और क्रैश रिपोर्ट</translation>
+<translation id="7636346903338549690">साइटों को तीसरे पक्ष की कुकी इस्तेमाल करने की अनुमति दी गई</translation>
 <translation id="7637571805876720304">क्रोमियम से क्रेडिट कार्ड निकालें?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{कोई भी पासवर्ड नहीं है}=1{आपके खाते में 1 पासवर्ड है (<ph name="DOMAIN_LIST" /> के लिए)}one{आपके खाते में # पासवर्ड है (<ph name="DOMAIN_LIST" /> के लिए)}other{आपके खाते में # पासवर्ड हैं (<ph name="DOMAIN_LIST" /> के लिए)}}</translation>
 <translation id="7638605456503525968">सीरियल पोर्ट</translation>

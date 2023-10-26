@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Signal kuchsiz</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Yangilanmoqda (<ph name="PERCENTAGE_VALUE" />% yakunlandi)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> daqiqa</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> nomli tarmoq topilmadi</translation>
 <translation id="131421566576084655">Oxirgi asliga qaytarish kuni noaniq</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">Fayl biriktirish</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="8246209727385807362">Noma’lum provayder</translation>
+<translation id="8262870577632766028">1 soat</translation>
 <translation id="827422111966801947">Toʻq siyohrang</translation>
 <translation id="8286154143153872371">Fon rasmini koʻrish uchun tarmoqqa ulaning va sahifani yangilang.</translation>
 <translation id="8291967909914612644">Mahalliy ta’minotchi mamlakati</translation>

@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">이 사이트는 보안 연결(HTTPS)이 사용되지 않았습니다.</translation>
 <translation id="6181444274883918285">사이트 예외 추가</translation>
 <translation id="6192792657125177640">예외</translation>
+<translation id="6195163219142236913">서드 파티 쿠키 제한됨</translation>
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6207207788774442484">데이터 삭제 및 권한 재설정</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
 <translation id="6320088164292336938">진동</translation>
+<translation id="6344622098450209924">추적 보호</translation>
 <translation id="6367753977865761591">특정 사이트에 대해 서드 파티 로그인을 차단합니다.</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
 <translation id="640163077447496506">오늘 만료됨</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">기기에서 NFC가 사용 중지되어 있습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 NFC를 사용 설정하세요.</translation>
 <translation id="8928445016601307354">사이트에서 NFC 기기의 정보를 보고 변경할 수 없도록 차단</translation>
+<translation id="8944485226638699751">제한됨</translation>
 <translation id="8958424370300090006">특정 사이트의 쿠키를 차단합니다.</translation>
 <translation id="8959122750345127698">탐색할 수 없음: <ph name="URL" /></translation>
 <translation id="8986362086234534611">저장 안함</translation>

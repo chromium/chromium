@@ -292,6 +292,7 @@
 <translation id="6177128806592000436">Your connection to this site is not secure</translation>
 <translation id="6181444274883918285">Add site exception</translation>
 <translation id="6192792657125177640">Exceptions</translation>
+<translation id="6195163219142236913">Third-party cookies limited</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6205314730813004066">Ads privacy</translation>
 <translation id="6207207788774442484">Delete data and reset permissions</translation>
@@ -302,6 +303,7 @@
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6320088164292336938">Vibrate</translation>
+<translation id="6344622098450209924">Tracking protection</translation>
 <translation id="6367753977865761591">Block third-party sign-in for a specific site.</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="640163077447496506">Expires today</translation>
@@ -453,6 +455,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Block sites from seeing and changing information on NFC devices</translation>
+<translation id="8944485226638699751">Limited</translation>
 <translation id="8958424370300090006">Block cookies for a specific site.</translation>
 <translation id="8959122750345127698">Navigation is unreachable: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Forget</translation>

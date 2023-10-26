@@ -2316,13 +2316,6 @@ Si se habilita esta política, el menú de aplicaciones/la tecla de búsqueda po
       Si no se establece esta política, todos los archivos descargados de los tipos incluidos en <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> se abrirán automáticamente.
 
       Los patrones de URL deben tener el formato que se indica en https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
-<translation id="2999597974578784672">Permite definir una lista de patrones de URL donde se especifica qué sitios pueden establecer cookies.
-
-          Si no se establece esta política, se usará en todos los sitios el valor general predeterminado especificado en la política <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> (si se ha definido) o en la configuración personal del usuario (en caso contrario).
-
-          Consulta también las políticas <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Ten en cuenta que no puede haber patrones de URL en conflicto entre estas políticas, ya que no se especifica qué política prevalece.
-
-          Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="3000238720665173643">Un indicador booleano que especifica si el teclado en pantalla permite usar la función de autocorrección.</translation>
 <translation id="3001285126226650303">Permite a <ph name="PRODUCT_NAME" /> cargar políticas experimentales.
 
@@ -5042,6 +5035,7 @@ Si la política se inhabilita, el historial de navegación y el de descargas no 
 <translation id="5323200200131319468">Habilitar los mensajes de voz en la pantalla de inicio de sesión</translation>
 <translation id="5323271643727095577">No mostrar el cuadro de diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload. Mostrar el cuadro de diálogo de cancelación cuando beforeunload event.returnValue sea la cadena vacía del evento beforeunload.</translation>
 <translation id="5323355956693037267">Habilitar el teclado en pantalla en la pantalla de inicio de sesión</translation>
+<translation id="5324430722441910403">Configuración de búsquedas en el sitio</translation>
 <translation id="532848608876725157">Habilitar DNS-over-HTTPS con alternativa no segura</translation>
 <translation id="5328965694451556034">Informar de inicio o cierre de sesión</translation>
 <translation id="5329018127554115226">El modo Alta eficiencia se inhabilitará.</translation>
@@ -5627,11 +5621,6 @@ Si se inhabilita esta política, se inhabilitará la protección de extensiones 
 <translation id="5831286647961890695">Habilitar el modelo de Carga inteligente en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Políticas obsoletas</translation>
 <translation id="5834583755928064072">Impedir que los usuarios cambien el canal de lanzamiento</translation>
-<translation id="5835253272509953988">Si se habilita esta política, se permitirá que los usuarios hagan que <ph name="PRODUCT_NAME" /> compruebe si los nombres de usuario y las contraseñas que han escrito forman parte de alguna filtración de datos.
-
-      Si se asigna un valor a esta política, los usuarios no podrán modificar la comprobación de filtraciones en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, se permitirá la comprobación de filtraciones de credenciales, pero el usuario podrá desactivarla. 
-
-      Este comportamiento no se activará si Navegación segura está inhabilitada, ya sea por obra de una política o del propio usuario. Para activar Navegación segura de forma forzosa, se debe usar la política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o la política <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5835312413892670446">Ajustes de captura de pantalla</translation>
 <translation id="5835674781974810379">Borrar cookies y otros datos de sitios</translation>
 <translation id="5836064773277134605">Restringe el intervalo de puertos UDP utilizado por el host de acceso remoto</translation>
@@ -8332,6 +8321,17 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
 <translation id="802776363472387903">El hash SHA-256 de la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir a los usuarios modificar la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima permitida de la sesión para conexiones de acceso remoto</translation>
+<translation id="8030797562351896051">Esta política proporciona una lista de búsquedas en el sitio donde el usuario puede buscar en un sitio específico. Los usuarios pueden iniciar la búsqueda escribiendo el acceso directo o @acceso directo (por ejemplo, @trabajo) en la barra de direcciones.
+
+Los siguientes campos son obligatorios para cada entrada: nombre, atajo, URL. Los atajos de la lista deben ser únicos y no pueden contener espacios. Anteponer @ a un acceso directo es opcional: el acceso directo resultante se considera igual que el acceso directo sin @, por ejemplo, "trabajo" y "@trabajo" se consideran el mismo acceso directo.
+
+Para cada entrada, el campo URL especifica la URL del buscador utilizado durante una búsqueda con la palabra clave correspondiente. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que en la consulta se sustituirá por los términos de búsqueda del usuario. Las entradas no válidas y las que tengan accesos directos duplicados se ignoran.
+
+Las entradas de búsquedas en el sitio marcadas como destacadas se muestran en la barra de direcciones cuando el usuario escribe "@". Se pueden seleccionar hasta tres entradas como destacadas.
+
+Los usuarios no pueden editar ni inhabilitar las entradas de búsquedas en el sitio establecidas por una política, pero pueden añadir nuevos accesos directos para la misma URL. Además, los usuarios no podrán crear nuevas entradas de búsquedas en el sitio con un acceso directo creado anteriormente mediante una política.
+
+En caso de conflicto con un acceso directo creado por el usuario con anterioridad, se respetará la configuración del usuario. Sin embargo, los usuarios seguirán pudiendo activar la opción creada por la política escribiendo "@" en la barra de búsqueda. Por ejemplo, si el usuario ya ha definido "trabajo" como acceso directo a URL1 y la política define "trabajo" como acceso directo a URL2, al escribir "trabajo" en la barra de búsqueda se iniciará la búsqueda en URL1 y al escribir "@trabajo" la iniciará en URL2.</translation>
 <translation id="8035570672225663428">Habilitar el modelo de Carga inteligente para suspender el proceso de carga y prolongar la duración de la batería</translation>
 <translation id="8038007682032315784">Inhabilitar <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web</translation>
 <translation id="8044493735196713914">Notificar modo de inicio de dispositivo</translation>

@@ -2309,13 +2309,6 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
       Als dit beleid niet is ingesteld, worden alle downloads waarvan het bestandstype in <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> staat automatisch geopend.
 
       Een URL-patroon moet worden ingedeeld volgens https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
-<translation id="2999597974578784672">Hiermee kun je een lijst met URL-patronen opgeven van sites die cookies mogen instellen.
-
-          Als je dit beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor alle sites. Deze vind je in het beleid <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> (als dit is ingesteld) of in de persoonlijke configuratie van de gebruiker.
-
-          Bekijk ook het beleid <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> en <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Houd er rekening mee dat er geen conflicterende URL-patronen tussen deze drie beleidsregels mogen bestaan. Er is niet aangeven welk beleid voorrang krijgt.
-
-          Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="3000238720665173643">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor autocorrectie heeft.</translation>
 <translation id="3001285126226650303">Hiermee kan <ph name="PRODUCT_NAME" /> experimentele beleidsregels laden.
 
@@ -5007,6 +5000,7 @@ Als je dit beleid niet toepast, kunnen de browser- en downloadgeschiedenis niet 
 <translation id="5323200200131319468">Gesproken feedback op het inlogscherm aanzetten</translation>
 <translation id="5323271643727095577">Geen annuleringsdialoogvenster tonen als event.preventDefault() wordt aangeroepen voor beforeunload-gebeurtenis. Annuleringsdialoogvenster tonen als event.returnValue de lege tekenreeks voor de beforeunload-gebeurtenis is.</translation>
 <translation id="5323355956693037267">Schermtoetsenbord op het inlogscherm aanzetten</translation>
+<translation id="5324430722441910403">Instellingen voor Zoekopdrachten op site</translation>
 <translation id="532848608876725157">DNS-over-HTTPS met onbeveiligde fallback aanzetten</translation>
 <translation id="5328965694451556034">Inloggen/uitloggen rapporteren</translation>
 <translation id="5329018127554115226">De modus voor hoge efficiëntie wordt uitgezet.</translation>
@@ -5579,11 +5573,6 @@ Als je dit beleid niet toepast, wordt <ph name="SAFE_BROWSING_NAME" />-extensieb
 <translation id="5831286647961890695">Het model voor aangepast opladen aanzetten op <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Beëindigde beleidsregels</translation>
 <translation id="5834583755928064072">Voorkomen dat gebruikers het releasekanaal wijzigen</translation>
-<translation id="5835253272509953988">Als je het beleid toepast, kunnen gebruikers met <ph name="PRODUCT_NAME" /> checken of ingevoerde gebruikersnamen en wachtwoorden deel uitmaken van een datalek.
-
-      Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het niet instelt, is checken op gegevenslekken toegestaan, maar kan de gebruiker deze functie uitzetten. 
-
-Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid of door de gebruiker). Gebruik het beleid <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> of <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> om Safe Browsing verplicht aan te zetten.</translation>
 <translation id="5835312413892670446">Instellingen voor Screenshot</translation>
 <translation id="5835674781974810379">Cookies en andere sitegegevens wissen</translation>
 <translation id="5836064773277134605">Het UDP-poortbereik beperken dat voor de host voor externe toegang wordt gebruikt</translation>
@@ -8255,6 +8244,17 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="802776363472387903">De SHA-256-hash van de <ph name="PLUGIN_VM_NAME" />-afbeelding.</translation>
 <translation id="8028814157747157754">De standaard zoekprovider aanzetten en toestaan dat gebruikers de lijst met zoekproviders wijzigen</translation>
 <translation id="8029201909194194377">Maximale toegestane sessieduur voor verbindingen voor externe toegang</translation>
+<translation id="8030797562351896051">Dit beleid biedt een lijst met zoekopdrachten op sites waarbij de gebruiker op een specifieke site kan zoeken. Gebruikers kunnen de zoekopdracht starten door de snelkoppeling of de @-snelkoppeling (bijvoorbeeld @werk) in de adresbalk te typen.
+
+De volgende velden zijn vereist voor elke invoer: naam, snelkoppeling, URL. Snelkoppelingen in de lijst moeten uniek zijn en mogen geen spaties bevatten. Het toevoegen van @ aan een snelkoppeling is optioneel. De resulterende snelkoppeling wordt dus als gelijk aan de snelkoppeling zonder @ beschouwd. Voorbeeld: 'werk' en '@werk' worden als dezelfde snelkoppeling beschouwd.
+
+Voor elke invoer geeft het URL-veld de URL aan van de zoekmachine die tijdens een zoekopdracht met het bijbehorende zoekwoord wordt gebruikt. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt tijdens de zoekopdracht vervangen door de zoektermen van de gebruiker. Ongeldige invoer en vermeldingen met dubbele snelkoppelingen worden genegeerd.
+
+Items voor Zoekopdrachten op site die zijn ingesteld als aanbevolen, worden weergegeven in de adresbalk als de gebruiker '@' typt. Er kunnen maximaal 3 items als aanbevolen worden geselecteerd.
+
+Gebruikers kunnen items voor Zoekopdrachten op site die zijn ingesteld via het beleid, niet bewerken of uitzetten. Ze kunnen wel nieuwe snelkoppelingen voor dezelfde URL toevoegen. Daarnaast kunnen gebruikers geen nieuwe items voor Zoekopdrachten op site maken met een snelkoppeling die eerder via het beleid is gemaakt.
+
+Als er een conflict is met een snelkoppeling die de gebruiker eerder heeft gemaakt, wordt de gebruikersinstelling gerespecteerd. Gebruikers kunnen de optie die door het beleid is gemaakt nog wel activeren door '@' in de zoekbalk te typen. Als de gebruiker bijvoorbeeld 'werk' al heeft gedefinieerd als snelkoppeling naar URL1 en het beleid de optie 'werk' definieert als snelkoppeling naar URL2, wordt er een zoekopdracht naar URL1 gestart als de gebruiker 'werk' in de zoekbalk typt, maar wordt er naar URL2 gezocht als de gebruiker '@werk' in de zoekbalk typt.</translation>
 <translation id="8035570672225663428">Het model voor aangepast opladen aanzetten om het oplaadproces te onderbreken om de batterijduur te verlengen</translation>
 <translation id="8038007682032315784"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> uitzetten op alle webpagina's</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>

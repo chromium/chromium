@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">Веза са овим сајтом није безбедна</translation>
 <translation id="6181444274883918285">Додај изузетак за сајтове</translation>
 <translation id="6192792657125177640">Изузеци</translation>
+<translation id="6195163219142236913">Колачићи треће стране су ограничени</translation>
 <translation id="6196640612572343990">Блокирај колачиће треће стране</translation>
 <translation id="6205314730813004066">Приватност са огласима</translation>
 <translation id="6207207788774442484">Избриши податке и ресетуј дозволе</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">Сајтови могу да траже да шаљу обавештења</translation>
 <translation id="6295158916970320988">Сви сајтови</translation>
 <translation id="6320088164292336938">Вибрација</translation>
+<translation id="6344622098450209924">Заштита од праћења</translation>
 <translation id="6367753977865761591">Блокирајте пријављивање трећих страна за одређени сајт.</translation>
 <translation id="6398765197997659313">Изађи из режима целог екрана</translation>
 <translation id="640163077447496506">Истиче данас</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC је искључен за овај уређај. Укључите га у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Спречите сајтове да виде и мењају информације на NFC уређајима</translation>
+<translation id="8944485226638699751">Ограничено</translation>
 <translation id="8958424370300090006">Блокирајте колачиће за одређени сајт.</translation>
 <translation id="8959122750345127698">Навигација је недоступна: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Заборави</translation>

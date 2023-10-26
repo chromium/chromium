@@ -1189,6 +1189,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5774295353725270860">Open Files app</translation>
 <translation id="5777841717266010279">Stop screen sharing?</translation>
 <translation id="5779721926447984944">Pinned files</translation>
+<translation id="5785221443435874078">Remove this suggestion</translation>
 <translation id="5788127256798019331">Play files</translation>
 <translation id="5788535737706478207">Reopen the last tab or window closed</translation>
 <translation id="5790085346892983794">Success</translation>
@@ -1268,7 +1269,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="6095008505822982596">Speech rate</translation>
 <translation id="6095425951508823973">Add connection with <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Edited in the past month</translation>
-<translation id="6099793635444444289">Can't start dictation because the microphone is muted</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> speech files downloaded</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

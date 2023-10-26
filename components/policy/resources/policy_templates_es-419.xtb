@@ -2368,13 +2368,6 @@ comportamiento de las teclas de función, y los usuarios no podrán cambiar esta
       Si no configuras esta política, se abrirán automáticamente todas las descargas cuyo tipo de archivo se indique en <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />.
 
       El patrón de una URL debe presentar un formato conforme a lo especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
-<translation id="2999597974578784672">Te permite configurar una lista de patrones de URL donde se indiquen los sitios autorizados a configurar cookies.
-
-          Si no estableces esta política, se usará el valor predeterminado general para todos los sitios, ya sea de la política <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> si se establece o, en caso contrario, de la configuración personal del usuario.
-
-          Consulta también las políticas <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" />. Ten en cuenta que no debe haber patrones de URL en conflicto entre estas tres políticas. No se especifica qué política prevalece en esa situación.
-
-          Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="3000238720665173643">Función experimental booleana que indica si el teclado en pantalla puede proporcionar la corrección automática.</translation>
 <translation id="3001285126226650303">Permite que <ph name="PRODUCT_NAME" /> cargue las políticas experimentales.
 
@@ -2550,6 +2543,17 @@ Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="3118552207903834734">Permitir que el usuario configure el nombre de host de su dispositivo</translation>
 <translation id="3122082892722698079">Controla el uso de excepciones de contenido no seguro</translation>
 <translation id="3125472566440502628">Inhabilitar Seleccionar para pronunciar</translation>
+<translation id="312561239664885970">Esta política dejó de estar disponible y se dividió en <ph name="BROWSER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />, <ph name="USER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> y <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Habilita <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para ver una lista de URLs.
+
+Si estableces esta política, se especificará qué URLs ofrecerá <ph name="PRODUCT_NAME" /> para iniciar el flujo de certificación. Esto último permite que esos sitios web obtengan un conjunto certificado de señales contextuales del dispositivo.
+
+Si dejas vacía esta política o no la estableces, ningún sitio web podrá iniciar el flujo de certificación ni obtener señales del dispositivo.
+
+En <ph name="PRODUCT_OS_NAME" />, esta política está relacionada con la certificación remota donde automáticamente se genera un certificado y se sube al servidor. Para usar el flujo de certificación en la pantalla de acceso del dispositivo, usa la política <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="3126229421659523563">En el modo kiosko, esta política controla si se muestra el menú de accesibilidad flotante.
 
 Si habilitas la política, siempre se mostrará el menú de accesibilidad flotante.
@@ -4922,6 +4926,7 @@ Si no la estableces o la inhabilitas, las cookies y los datos se pueden usar par
 <translation id="5152393033264257734">Permite las revisiones de intercepción de DNS y las barras de información de "http://intranetsite/" para "quisiste decir".</translation>
 <translation id="5152787786897382519">Chromium y Google Chrome tienen algunos grupos de políticas que dependen unos de otros para controlar una función. Los siguientes grupos de políticas representan estos conjuntos. Como las políticas pueden tener diferentes fuentes, solo se aplicarán los valores que provengan de la fuente de mayor prioridad. Se ignorarán los valores que provengan de una fuente de menor prioridad perteneciente al mismo grupo. El orden de prioridad se define en <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ícono de experimentos del navegador de la barra de herramientas</translation>
+<translation id="5159674159887919923">No enviar datos de hardware adicionales en ChromeOS Flex</translation>
 <translation id="5163002264923337812">Habilitar la forma de acceso antigua basada en la Web</translation>
 <translation id="5163889437570441600">Permite que se transmita contenido al dispositivo que esté usando <ph name="PRODUCT_NAME" />.
 
@@ -5752,11 +5757,6 @@ Si inhabilitas esta política, se inhabilitará la protección para extensiones 
 <translation id="5831286647961890695">Habilitar el modelo de carga adaptable en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Políticas obsoletas</translation>
 <translation id="5834583755928064072">No permitir que los usuarios cambien el canal de versiones</translation>
-<translation id="5835253272509953988">Si habilitas la política, los usuarios podrán hacer que <ph name="PRODUCT_NAME" /> verifique si los nombres de usuario y contraseñas ingresados estuvieron en una filtración.
-
-      Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no la estableces, se habilitará la comprobación de filtración de credenciales, pero el usuario podrá desactivarla. 
-
-      No se activará este comportamiento si la Navegación segura está inhabilitada (ya sea por la política o el usuario). Si quieres forzar la Navegación segura, usa la política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5835312413892670446">Configuración de Captura de pantalla</translation>
 <translation id="5835674781974810379">Borrar cookies y otros datos de sitios</translation>
 <translation id="5836064773277134605">Restringir el intervalo de puertos UDP que utiliza el host de acceso remoto</translation>
@@ -8551,6 +8551,7 @@ también es seguro.</translation>
 <translation id="8059352177830050556">Habilitar los informes de la retroiluminación del dispositivo</translation>
 <translation id="8062375903420954294">Esta política permite restringir las direcciones IP y las interfaces que utiliza WebRTC al momento de intentar encontrar la mejor conexión disponible. Consulta el RFC 8828, sección 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Si no estableces la política, de forma predeterminada se utilizarán todas las interfaces disponibles.</translation>
 <translation id="8062485064082966327">Usa un servicio anónimo de Google para obtener descripciones automáticas de las imágenes sin etiquetar</translation>
+<translation id="8066428282805800713">Enviar datos de hardware adicionales en ChromeOS Flex</translation>
 <translation id="8071371098891664137">Si eliges <ph name="PRINTERS_BLOCKLIST" /> para <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, la configuración de <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> especificará las impresoras que no podrán utilizar los usuarios. El usuario podrá acceder a todas las impresoras, excepto aquellas con los ID mencionados en esta política. Los ID deben coincidir con los valores de los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> en el archivo que se especifica en <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8078297389450285582">Si habilitas la política o no la estableces, se activará el modelo de atenuación inteligente y podrá extenderse el tiempo indicado para la atenuación de la pantalla. Si se cambia el tiempo de espera, se modificarán el apagado de la pantalla, el bloqueo de pantalla y los tiempos de espera de inactividad a fin de mantener las mismas distancias con respecto al tiempo de espera para la atenuación de la pantalla según la configuración original.
 
@@ -9005,6 +9006,7 @@ Si no estableces la política o la estableces con el valor "0", la navegación a
 
       Si se establece la política, se borrarán las instantáneas anteriores según sea necesario para respetar el límite. Si se establece la política como "0", no se realizarán instantáneas.</translation>
 <translation id="8451988835943702790">Usar la página Nueva pestaña como página principal</translation>
+<translation id="8452787853105404870">Enviar datos de hardware a Google para admitir mejoras en ChromeOS Flex</translation>
 <translation id="8453218444172088993">Inhabilitar la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios para los usuarios</translation>
 <translation id="8455529558077979314">Configuración de la pantalla de privacidad</translation>
 <translation id="8461914792118322307">Proxy</translation>
@@ -9527,6 +9529,16 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       Los dispositivos nuevos tienen configurada la zona horaria "EE.UU./Pacífico". El formato del valor sigue los nombres de las zonas horarias de la "Base de datos de zona horaria de IANA" (https://en.wikipedia.org/wiki/Tz_database). Si ingresas un valor no válido, se establecerá la política con el formato GMT.
 
       Si no la estableces o ingresas una string vacía, el dispositivo utilizará la zona horaria que esté activa actualmente, pero los usuarios podrán cambiarla.</translation>
+<translation id="8880146422959594776">Permite que algunos servicios de <ph name="PRODUCT_OS_FLEX_NAME" /> envíen datos de hardware adicionales.
+
+Estos datos de hardware se usan para realizar mejoras generales en <ph name="PRODUCT_OS_FLEX_NAME" />.
+Por ejemplo, podemos analizar el impacto de una falla en función de la CPU
+o priorizar una corrección de errores según la cantidad de dispositivos que comparten un componente.
+
+Si habilitas la política o no la estableces, se enviarán detalles adicionales de hardware
+desde los dispositivos
+<ph name="PRODUCT_OS_FLEX_NAME" />.
+Si la inhabilitas, solo se enviarán datos de hardware estándar.</translation>
 <translation id="8880294585549584028">Permite el acceso de escritura a archivos y directorios en estos sitios</translation>
 <translation id="8882006618241293596">Bloquear el complemento <ph name="FLASH_PLUGIN_NAME" /> en estos sitios</translation>
 <translation id="8882255181490012651">No permitir el acceso de los usuarios que habilitaron Phone Hub a las fotos y los videos tomados recientemente del teléfono</translation>

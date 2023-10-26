@@ -701,6 +701,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="47677902929517676">Para guardar contraseñas en tu cuenta, primero debes configurar una contraseña en tu dispositivo.</translation>
 <translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4778644898150334464">Usar otra contraseña</translation>
+<translation id="4779732376610430319">Ir a Configuración…</translation>
 <translation id="478808905805139173">¿Quieres abrirlo en Incógnito?</translation>
 <translation id="4803185665210547709">Administrado por tu organización.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -1177,7 +1178,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7154343200458623869">Completa tu tarea.</translation>
 <translation id="7161230316646448869">Sincroniza tus favoritos, historial y más en todos los dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7168959436351276050">Si ocultas esta tarjeta, se quitarán todos los datos de seguimiento de paquetes</translation>
 <translation id="7172852049901402487">Mantén protegidas tus contraseñas ante problemas de seguridad</translation>
 <translation id="7173114856073700355">Abrir la configuración</translation>
 <translation id="7189598951263744875">Compartir...</translation>

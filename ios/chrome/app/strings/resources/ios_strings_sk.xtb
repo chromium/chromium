@@ -173,6 +173,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="1876851015978093044">Zobrazí túto položku</translation>
 <translation id="1882901927376062252">{count,plural, =1{Záložka bola uložená do vášho účtu Google {email}}few{{count} záložky boli uložené do vášho účtu Google {email}}many{{count} Bookmarks saved in your Google Account, {email}}other{{count} záložiek bolo uložených do vášho účtu Google {email}}}</translation>
 <translation id="1883255238294161206">Zbaliť zoznam</translation>
+<translation id="1889872080060107187">Prihlásite sa na <ph name="URL" /></translation>
 <translation id="1890237935065108104">Toto nastavenie nie je k dispozícii.</translation>
 <translation id="1894023287452300670">Tu sledujte cenu</translation>
 <translation id="189531189292803889">Váš iPad bol nedávno obnovený, v dôsledku čoho sa možno zmenil váš predvolený prehliadač.</translation>
@@ -701,6 +702,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="47677902929517676">Ak chcete ukladať heslá vo svojom účte, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="4775879719735953715">Predvolený prehliadač</translation>
 <translation id="4778644898150334464">Použiť iné heslo</translation>
+<translation id="4779732376610430319">Prejsť do Nastavení…</translation>
 <translation id="478808905805139173">Chcete otvoriť v režime inkognito?</translation>
 <translation id="4803185665210547709">Spravované vašou organizáciou.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -1177,7 +1179,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7154343200458623869">Dokončite svoju úlohu.</translation>
 <translation id="7161230316646448869">Synchronizujte svoje záložky, históriu a ďalšie údaje vo všetkých zariadeniach</translation>
 <translation id="7162168282402939716">Odomknúť karty inkognito funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="7168959436351276050">Skrytím tejto karty odstránite všetky svoje údaje sledovania zásielky</translation>
 <translation id="7172852049901402487">Ochráňte svoje heslá pred bezpečnostnými problémami</translation>
 <translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7189598951263744875">Zdieľať...</translation>

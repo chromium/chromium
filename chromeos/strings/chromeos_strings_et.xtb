@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Nõrk signaal</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Värskendamine (<ph name="PERCENTAGE_VALUE" />% lõpetatud)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minutit</translation>
 <translation id="1310380015393971138">Ühtegi <ph name="NETWORK_NAME" />-võrku pole saadaval</translation>
 <translation id="131421566576084655">Viimase andmekasutuse lähtestamise kuupäev ei ole saadaval</translation>
 <translation id="1314565355471455267">Androidi VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">Manusta fail</translation>
 <translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
 <translation id="8246209727385807362">Tundmatu operaator</translation>
+<translation id="8262870577632766028">1 tund</translation>
 <translation id="827422111966801947">Indigosinine</translation>
 <translation id="8286154143153872371">Taustapildi vaatamiseks looge ühendus võrguga ja laadige leht uuesti.</translation>
 <translation id="8291967909914612644">Koduteenuse pakkuja riik</translation>
@@ -1010,6 +1012,7 @@
 <translation id="8747900814994928677">Kinnita muudatus</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Teenuse Google Photos album</translation>
+<translation id="8775713578693478175">Modemi APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Otseteed kasutatakse käsu „<ph name="CONFLICT_ACCEL_NAME" />“ jaoks. Vajutage uut klahvikombinatsiooni. Algse otsetee asendamiseks vajutage seda klahvikombinatsiooni uuesti.</translation>
 <translation id="879568662008399081">See võrk võib sisaldada hõiveportaali</translation>

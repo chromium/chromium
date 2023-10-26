@@ -292,6 +292,7 @@
 <translation id="6177128806592000436">Бұл сайтпен байланысыңыз қауіпсіз емес</translation>
 <translation id="6181444274883918285">Сайтты ерекшеліктер тізіміне қосу</translation>
 <translation id="6192792657125177640">Ерекше жағдайлар</translation>
+<translation id="6195163219142236913">Үшінші тарап cookie файлдарына шектеу қойылды.</translation>
 <translation id="6196640612572343990">Үшінші тарап cookie файлдарын бөгеу</translation>
 <translation id="6205314730813004066">Жарнамадағы құпиялық</translation>
 <translation id="6207207788774442484">Деректерді жою және рұқсаттарды қайта орнату</translation>
@@ -302,6 +303,7 @@
 <translation id="6270391203985052864">Сайттар хабарландырулар жіберу рұқсатын сұрай алады</translation>
 <translation id="6295158916970320988">Барлық сайттар</translation>
 <translation id="6320088164292336938">Діріл</translation>
+<translation id="6344622098450209924">Бақылаудан қорғау</translation>
 <translation id="6367753977865761591">Белгілі бір сайт үшін бөгде қызметтер арқылы кіруді бөгеу.</translation>
 <translation id="6398765197997659313">Толық экраннан шығу</translation>
 <translation id="640163077447496506">Мерзімі бүгін бітеді</translation>
@@ -453,6 +455,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Бұл құрылғыда NFC функциясы өшірілген. Оны <ph name="BEGIN_LINK" />Android параметрлерінен<ph name="END_LINK" /> қосыңыз.</translation>
 <translation id="8928445016601307354">Сайттардың NFC құрылғылары туралы ақпаратты көруіне және өзгертуіне тыйым салу</translation>
+<translation id="8944485226638699751">Шектеу қойылған</translation>
 <translation id="8958424370300090006">Белгілі бір сайт үшін cookie файлдарына тыйым салыңыз.</translation>
 <translation id="8959122750345127698"><ph name="URL" /> мекенжайына өту мүмкін емес</translation>
 <translation id="8986362086234534611">Ұмыту</translation>

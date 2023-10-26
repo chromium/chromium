@@ -1188,6 +1188,7 @@
 <translation id="5774295353725270860">開啟「檔案」應用程式</translation>
 <translation id="5777841717266010279">停止共用畫面？</translation>
 <translation id="5779721926447984944">已固定的檔案</translation>
+<translation id="5785221443435874078">移除此建議</translation>
 <translation id="5788127256798019331">Play 檔案</translation>
 <translation id="5788535737706478207">重新開啟最後關閉的分頁或視窗</translation>
 <translation id="5790085346892983794">成功</translation>
@@ -1267,7 +1268,6 @@
 <translation id="6095008505822982596">語速</translation>
 <translation id="6095425951508823973">新增 <ph name="PROVIDER" /> 嘅連線</translation>
 <translation id="6099678161144790572">上個月編輯過</translation>
-<translation id="6099793635444444289">由於麥克風已設定為靜音，因此無法啟動語音聽寫功能</translation>
 <translation id="6103838137565245112">系統</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>

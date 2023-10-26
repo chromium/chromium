@@ -1185,6 +1185,7 @@
 <translation id="5774295353725270860">打开文件应用</translation>
 <translation id="5777841717266010279">要停止屏幕共享吗？</translation>
 <translation id="5779721926447984944">已固定的文件</translation>
+<translation id="5785221443435874078">移除此项推荐内容</translation>
 <translation id="5788127256798019331">Play 文件</translation>
 <translation id="5788535737706478207">重新打开上次关闭的标签页或窗口</translation>
 <translation id="5790085346892983794">成功</translation>
@@ -1264,7 +1265,6 @@
 <translation id="6095008505822982596">语速</translation>
 <translation id="6095425951508823973">添加与 <ph name="PROVIDER" /> 的关联</translation>
 <translation id="6099678161144790572">过去一个月内修改过</translation>
-<translation id="6099793635444444289">麦克风已静音，因此无法启动语音输入</translation>
 <translation id="6103838137565245112">系统</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />语音识别结果文件已下载完毕</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>

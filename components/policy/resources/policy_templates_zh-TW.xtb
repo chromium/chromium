@@ -2285,13 +2285,6 @@
       如果不設定這項政策，系統會根據 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 所列的檔案類型，自動開啟所有符合條件的下載內容。
 
       網址模式必須符合 https://support.google.com/chrome/a?p=url_blocklist_filter_format 中的規定。</translation>
-<translation id="2999597974578784672">你可以設定網址模式清單，用於指定可設定 Cookie 的網站。
-
-          如果不設定這項政策，系統會根據 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> 政策 (如有設定) 或使用者的個人設定，將全域預設值套用至所有網站。
-
-          另請參閲 <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="COOKIES_SESSIONS_ONLY_FOR_URLS" /> 政策。請注意，這三項政策的網址模式不可發生衝突，否則系統將無法判斷應優先採用哪項政策。
-
-          想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="3000238720665173643">布林值標記，表示螢幕小鍵盤是否能提供自動更正功能。</translation>
 <translation id="3001285126226650303">允許 <ph name="PRODUCT_NAME" /> 載入實驗性政策。
 
@@ -5511,9 +5504,6 @@
 <translation id="5831286647961890695">啟用 <ph name="PRODUCT_OS_NAME" /> 的自動調節充電模式</translation>
 <translation id="5832274826894536455">已淘汰的政策</translation>
 <translation id="5834583755928064072">禁止使用者變更發布版本</translation>
-<translation id="5835253272509953988">如果將這項政策設為啟用，使用者將可讓 <ph name="PRODUCT_NAME" /> 檢查已輸入的使用者名稱和密碼是否有外洩情況。這項政策一經設定，使用者就無法在 <ph name="PRODUCT_NAME" /> 中變更。如果不設定這項政策，系統可執行憑證外洩檢查，但使用者可停用該功能。
-
-      如果安全瀏覽功能的設定為停用 (無論是根據政策設定或使用者自行停用)，則一律不會觸發這個行為。如要強制啟用安全瀏覽功能，請使用 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 政策或 <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> 政策。</translation>
 <translation id="5835312413892670446">螢幕畫面擷取設定</translation>
 <translation id="5835674781974810379">清除 Cookie 和其他網站資料</translation>
 <translation id="5836064773277134605">限制遠端存取主機所使用的 UDP 連接埠範圍</translation>

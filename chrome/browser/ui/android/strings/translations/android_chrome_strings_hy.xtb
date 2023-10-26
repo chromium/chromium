@@ -135,6 +135,7 @@
 <translation id="1672586136351118594">Այլևս ցույց չտալ</translation>
 <translation id="1680919990519905526">Գնել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>
 <translation id="1687482373098770139">Շուտով «Բաժանորդագրություններ» բաժնում կցուցադրվի բովանդակություն <ph name="SITE_NAME" /> կայքից և դրա մասին։ Կայքերն ու որոնման հարցումները, որոնց հետևում եք, պահվում են ձեր Google հաշվում։ Դուք ցանկացած ժամանակ կարող եք կառավարել ձեր բաժանորդագրությունները կարգավորումներում։</translation>
+<translation id="1696555181932908973">Փորձեք մուտքի այլ եղանակներ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում ձեր աշխատանքը շարունակելու համար։</translation>
 <translation id="1702543251015153180">Փոխե՞լ մուգ թեմայի կարգավորումները</translation>
 <translation id="1702907158640575240">Կառավարվող դիտարկիչ</translation>
 <translation id="1710099199314114079">Անցնել մյուս ներդիր կամ փակել ներդիրները</translation>
@@ -151,6 +152,7 @@
 <translation id="1792959175193046959">Դուք ցանկացած ժամանակ կարող եք փոխել ներբեռնումների կանխադրված պանակը</translation>
 <translation id="1807246157184219062">Բաց</translation>
 <translation id="1810845389119482123">Համաժամացման սկզբնական կարգավորումը չի ավարտվել</translation>
+<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> կայքը չի կարող շարունակել<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ի օգտագործումը</translation>
 <translation id="1829244130665387512">Գտնել էջում</translation>
 <translation id="1832459821645506983">Այո, թույլատրել</translation>
 <translation id="185383612275551373">Կատարեք համաժամացում, որպեսզի առավել համապատասխան բովանդակություն ստանաք Google-ից</translation>
@@ -316,6 +318,7 @@
 <translation id="2718846868787000099">Ձեր նախընտրած լեզուներով բովանդակություն ցուցադրելու համար կայքերը, որոնք այցելում եք, կարող են տեսնել ձեր կարգավորումները</translation>
 <translation id="2722945394406572875">Privacy Sandbox հարցումը փակ է</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ն այս պահին հասանելի չէ։</translation>
 <translation id="2760805590727089264">ԱԱ/ՏՏ</translation>
 <translation id="2760989362628427051">Միացնել մուգ թեման, երբ սարքի մուգ թեման կամ մարտկոցի տնտեսման ռեժիմը միացված է</translation>
 <translation id="2762000892062317888">հենց նոր</translation>
@@ -474,6 +477,7 @@
 <translation id="3509330069915219067">Կապ չկա։ Chrome-ը չի կարող ստուգել թարմացումների առկայությունը։</translation>
 <translation id="3513704683820682405">Լրացված իրականություն</translation>
 <translation id="3518985090088779359">Ընդունել և շարունակել</translation>
+<translation id="3521388823983121502">Չհաջողվեց շարունակել <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ի օգնությամբ</translation>
 <translation id="3522247891732774234">Առկա է թարմացում: Լրացուցիչ ընտրանքներ</translation>
 <translation id="3524138585025253783">Մշակողի միջերես</translation>
 <translation id="3524334353996115845">Թույլ տվեք, որ <ph name="ORIGIN" /> կայքը ստուգի ձեր ինքնությունը</translation>
@@ -626,6 +630,7 @@
 <translation id="4355272626458588338">Էջանշեք կարևոր էջերը, որպեսզի կարողանաք վերադառնալ դրանց</translation>
 <translation id="4369735607080757018">Գովազդի արդյունավետությունը գնահատելու համար կայքերը փոխանակվում են որոշակի տվյալներով, օրինակ՝ տեղեկություններով, թե երբ է գովազդը ձեզ ցուցադրվել</translation>
 <translation id="4378154925671717803">Հեռախոս</translation>
+<translation id="4380055775103003110">Եթե խնդիրը չվերանա, փորձեք մուտքի այլ եղանակներ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում ձեր աշխատանքը շարունակելու համար։</translation>
 <translation id="438319986296050901">Կիսվել միայն քարտով</translation>
 <translation id="4384468725000734951">Օգտագործվում է Sogou որոնման համակարգը</translation>
 <translation id="4387647248986092471">Ստեղծել մեքենայի պրոֆիլի կողպում</translation>
@@ -884,8 +889,8 @@
 <translation id="569435661099256888">Դուք կարող եք տեսնել ձեր այցելած էջերը կամ ջնջել դրանք պատմությունից</translation>
 <translation id="569536719314091526">Թարգմանեք այս կայքը «Այլ ընտրանքներ» կոճակի միջոցով</translation>
 <translation id="5696597120588531049">Chrome-ը կարող է պաշտպանել տվյալների արտահոսքից, վտանգավոր կայքերից և այլ խնդիրներից</translation>
+<translation id="5698878456427040674">Ստուգեք՝ արդյոք ընտրված հաշիվն աջակցվում է։</translation>
 <translation id="570347048394355941">Անցնել ներդիր</translation>
-<translation id="5715150588940290235">Ջնջե՞լ անվտանգության պահված կոդերը</translation>
 <translation id="572328651809341494">Վերջերս բացված ներդիրներ</translation>
 <translation id="5726692708398506830">Էջում ամեն ինչ մեծացնել</translation>
 <translation id="5748802427693696783">Դուք անցում կատարեցիք սովորական ներդիրների ռեժիմին</translation>
@@ -963,6 +968,7 @@
 <translation id="6108923351542677676">Կարգավորումն ընթացքի մեջ է…</translation>
 <translation id="6112702117600201073">Էջի թարմացում</translation>
 <translation id="6122831415929794347">Անջատե՞լ ապահով դիտարկումը</translation>
+<translation id="6125864963080902918"><ph name="BEGIN_LINK" />Այլ մանրամասներ<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Տարրը հեռացվեց</translation>
 <translation id="6130303040046284160">Ծալել ներդիրը</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> հավելվածի լեզուն</translation>
@@ -1004,6 +1010,7 @@
 <translation id="6342069812937806050">Հենց նոր</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ու առաքման ևս <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> հասցե}}</translation>
 <translation id="6345878117466430440">Նշել որպես կարդացված</translation>
+<translation id="6356893102071098867">Համոզվեք, որ ընտրել եք ճիշտ հաշիվը</translation>
 <translation id="6357653805084533597">Դուք կարող եք օգտագործել այս հեռախոսը՝ հաշիվ մուտք գործելու սարքում, որում ցուցադրված է այս QR կոդը։</translation>
 <translation id="6363990818884053551">Համաժամացումը սկսելու համար հաստատեք ձեր ինքնությունը</translation>
 <translation id="6364438453358674297">Հեռացնե՞լ առաջարկը պատմությունից:</translation>
@@ -1136,6 +1143,7 @@
 <translation id="6908998565271542516">Կայքի այցելությունը հաստատելու կամ մերժելու ընտրանքը բացված է ամբողջ բարձրությամբ</translation>
 <translation id="6909589135458168665">Էջերի նախաբեռնում</translation>
 <translation id="6910211073230771657">Ջնջված</translation>
+<translation id="6918398787259831832">Եթե խնդիրը չվերանա, <ph name="BEGIN_LINK" />ստացեք լրացուցիչ տեղեկություններ<ph name="END_LINK" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ից։</translation>
 <translation id="6942665639005891494">Դուք ցանկացած ժամանակ կարող եք փոխել ներբեռնումների կանխադրված պանակը կարգավորումներում</translation>
 <translation id="694267552845942083">Այս պահին դուք համաժամացման կարգավորումների էջում եք։ Համաժամացումը միացնելու համար սեղմեք «Հաստատել» կոճակը էկրանի ներքևի հատվածում: Անցնել վերև</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
@@ -1172,6 +1180,7 @@
 <translation id="7138678301420049075">Այլ</translation>
 <translation id="7140829094791862589">Տեսակավորել ձեռքով</translation>
 <translation id="7146622961999026732">Այս կայքերը և հավելվածները կարող են կարևոր լինել ձեզ համար՝</translation>
+<translation id="7148400116894863598"><ph name="BEGIN_LINK" />Ստացեք լրացուցիչ տեղեկություններ<ph name="END_LINK" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ից։</translation>
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
 <translation id="7168323970702333693">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ Բացել կարգավորումները:</translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
@@ -1198,6 +1207,7 @@
 <translation id="7274013316676448362">Արգելափակված կայք</translation>
 <translation id="7276100255011548441">Chrome-ը ավտոմատ կերպով ջնջում է թեմաները, որոնք ավելացվել են առնվազն 4 շաբաթ առաջ։ Երբ դուք շարունակում եք դիտել վեբ էջեր, համապատասխան թեման կարող է նորից հայտնվել ցանկում։ Դուք կարող եք արգելափակել թեմաները, որոնք չեք ցանկանում, որ Chrome-ը կիսվի կայքերի հետ։ Իմացեք ավելին <ph name="BEGIN_LINK" />Chrome-ում գովազդի գաղտնիությունը կառավարելու<ph name="END_LINK" /> մասին։</translation>
 <translation id="7286703216224610554">Կիսվել միայն արձագանքով</translation>
+<translation id="7289303553784750393">Եթե առցանց ռեժիմում եք, սակայն խնդիրը չի վերանում, փորձեք մուտքի այլ եղանակներ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում ձեր աշխատանքը շարունակելու համար։</translation>
 <translation id="7290209999329137901">Հնարավոր չէ վերանվանել</translation>
 <translation id="7291910923717764901">Այս պատկերի համար ավելացված նկարագրությունները</translation>
 <translation id="7293429513719260019">Ընտրել լեզուն</translation>
@@ -1252,6 +1262,7 @@
 <translation id="750228856503700085">Թարմացումներն անհասանելի են</translation>
 <translation id="7507207699631365376">Տեսնել այս մատակարարի <ph name="BEGIN_LINK" />գաղտնիության քաղաքականությունը<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
+<translation id="7518079994230200553">Այս եղանակը ներկայումս հասանելի չէ։</translation>
 <translation id="751961395872307827">Չի հաջողվում միանալ կայքին</translation>
 <translation id="752220631458524187">Աշխատանքն ավարտեուց հետո անջատեք մալուխը</translation>
 <translation id="7523960634226602883">Որոնել տեսախցիկի միջոցով՝ օգտագործելով Google Տեսապակին</translation>

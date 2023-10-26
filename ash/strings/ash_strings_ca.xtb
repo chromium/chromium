@@ -503,6 +503,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3105917916468784889">Fes una captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Marca l'element anterior al prestatge</translation>
+<translation id="311799651966070385">Toc de tancament</translation>
 <translation id="3120421559657122717">Vols apagar el dispositiu?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipus de treball de classe</translation>
@@ -886,6 +887,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4585337515783392668">Deixa d'emetre en un receptor desconegut</translation>
 <translation id="4596144739579517758">El tema fosc està desactivat</translation>
 <translation id="4611292653554630842">Inicia la sessió</translation>
+<translation id="462160925400706389">S'ha connectat: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Verifica el compte</translation>
 <translation id="4628757576491864469">Dispositius</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />; puntuació en estrelles: <ph name="RATING_SCORE" /></translation>
@@ -1187,6 +1189,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="5774295353725270860">Obre l'aplicació Fitxers</translation>
 <translation id="5777841717266010279">Vols aturar la compartició de pantalla?</translation>
 <translation id="5779721926447984944">Fitxers fixats</translation>
+<translation id="5785221443435874078">Suprimeix aquest suggeriment</translation>
 <translation id="5788127256798019331">Fitxers de Play</translation>
 <translation id="5788535737706478207">Torna a obrir la darrera pestanya o finestra que s'ha tancat</translation>
 <translation id="5790085346892983794">Amb èxit</translation>
@@ -1266,7 +1269,6 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="6095008505822982596">Velocitat de parla</translation>
 <translation id="6095425951508823973">Afegeix una connexió amb <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Editat durant el darrer mes</translation>
-<translation id="6099793635444444289">No es pot iniciar el dictat perquè el micròfon està silenciat</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
@@ -1312,6 +1314,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="6284232397434400372">S'ha canviat la resolució</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> es pot tornar a afegir més endavant amb un permís dels pares.</translation>
 <translation id="6291221004442998378">No s'està carregant</translation>
+<translation id="6298183524022479114">Personalitza aquest dispositiu a l'aplicació</translation>
 <translation id="6309219492973062892">Toca les icones 1-8 del prestatge o fes-hi clic</translation>
 <translation id="6315170314923504164">Veu</translation>
 <translation id="6324916366299863871">Edita la drecera</translation>

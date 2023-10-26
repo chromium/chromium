@@ -227,6 +227,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1413809658975081374">Error de privacidad</translation>
 <translation id="1414134146594747368">Preescolar</translation>
 <translation id="141826476809826269">Fin del texto extraído</translation>
+<translation id="1418611192881166179">Mientras Chrome actualiza esta función, los sitios podrán usar cookies de terceros de forma temporal a menos que las bloquees en la configuración.</translation>
 <translation id="1419305130220238697">Botón Gestionar las descargas en Chrome: actívalo para gestionar los archivos que has descargado en Chrome</translation>
 <translation id="1422930527989633628">Puede pedir permiso para buscar dispositivos Bluetooth cercanos</translation>
 <translation id="1426410128494586442">Sí</translation>
@@ -513,6 +514,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2001146170449793414">{COUNT,plural, =1{y una más}other{y # más}}</translation>
 <translation id="2003709556000175978">Cambia tu contraseña ahora</translation>
 <translation id="2003775180883135320">Perforado cuádruple en la parte superior</translation>
+<translation id="2004697686368036666">Es posible que las funciones de algunos sitios no funcionen</translation>
 <translation id="2009942480257059311">Botón Crear evento: actívalo para crear un nuevo evento en Google Calendar rápidamente</translation>
 <translation id="201174227998721785">Gestiona permisos y datos almacenados en sitios en la configuración de Chrome</translation>
 <translation id="2012276282211112603">No hay temas que mostrar en este momento</translation>
@@ -1194,6 +1196,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3443504041532578451">Disco óptico (satinado)</translation>
 <translation id="344449859752187052">Cookies de terceros bloqueadas</translation>
+<translation id="3447644283769633681">Bloquear todas las cookies de terceros</translation>
 <translation id="3447661539832366887">El propietario de este dispositivo ha desactivado el juego del dinosaurio.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervalo de comprobación:</translation>
@@ -1305,6 +1308,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="365641980390710834">Ropa informal</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
+<translation id="3665100783276035932">La mayoría de los sitios deberían funcionar según lo previsto</translation>
 <translation id="3667704023705708645">Capital riesgo</translation>
 <translation id="3671117652518853176">Si desactivas esta opción, es posible que se te pida ocasionalmente que la verifiques por motivos de seguridad</translation>
 <translation id="3671540257457995106">¿Permitir cambio de tamaño?</translation>
@@ -2292,6 +2296,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="568292603005599551">Posición de la imagen en el eje X</translation>
 <translation id="5684277895745049190">Lista</translation>
 <translation id="5684874026226664614">¡Vaya! No se ha podido traducir esta página.</translation>
+<translation id="5687340364605915800">Los sitios pueden responder a esta solicitud según su propio criterio</translation>
 <translation id="5688137257686092846">Profesionales de la cosmética y la belleza</translation>
 <translation id="5689199277474810259">Exportar a JSON</translation>
 <translation id="5689516760719285838">Ubicación</translation>
@@ -2370,6 +2375,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5866898949289125849">Estás viendo una página de las herramientas para desarrolladores</translation>
 <translation id="5869405914158311789">No se puede acceder a este sitio web</translation>
 <translation id="5869522115854928033">Contraseñas guardadas</translation>
+<translation id="5872318519182427835">Afecta a los sitios que aparecen aquí y a sus subdominios. Por ejemplo, si añades "google.com", las cookies de terceros también podrán estar activas en mail.google.com, ya que forma parte de google.com.</translation>
 <translation id="5872692522325383488">IBAN guardado</translation>
 <translation id="5873297634595728366">Vehículos diésel</translation>
 <translation id="5877831137320480913">Belleza y salud</translation>
@@ -2521,6 +2527,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6177531123306197852">Sobre C2</translation>
 <translation id="6180316780098470077">Intervalo de reintentos</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome limita automáticamente las cookies de terceros</translation>
 <translation id="61877208875190028">Ropa de mujer</translation>
 <translation id="6194209731893739467">Consulta todos los productos que sigues aquí</translation>
 <translation id="6195163219142236913">Cookies de terceros limitadas</translation>
@@ -2630,6 +2637,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6394852772105848029">Este sitio quiere abrir la aplicación <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Salir del modo de pantalla completa</translation>
 <translation id="6401136357288658127">Esta política está obsoleta. Deberías usar la política <ph name="NEW_POLICY" /> en su lugar.</translation>
+<translation id="640163077447496506">Caduca hoy</translation>
 <translation id="6402537308870515461">Los archivos deben revisarse antes de moverse</translation>
 <translation id="6403167778944553">Dormitorio y baño</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
@@ -2852,6 +2860,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6874604403660855544">&amp;Rehacer acción de añadir</translation>
 <translation id="6880941331070119097">Opción de precio alto</translation>
 <translation id="6881240511396774766">Crea un documento de Google rápidamente</translation>
+<translation id="6882210908253838664">Si un sitio no funciona, puedes probar a darle permiso temporal para usar cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">La hoja de autenticación de credenciales de pago seguras está cerrada</translation>
 <translation id="6884662655240309489">Tamaño 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3261,6 +3270,7 @@ Más información:
 <translation id="7631444403134069754">Atletismo</translation>
 <translation id="7631527008834753063">Concursos televisivos</translation>
 <translation id="7633909222644580952">Datos de rendimiento e informes sobre fallos</translation>
+<translation id="7636346903338549690">Sitios que pueden usar cookies de terceros</translation>
 <translation id="7637571805876720304">¿Quitar tarjeta de crédito de Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Ninguna}=1{1 contraseña en tu cuenta (de <ph name="DOMAIN_LIST" />)}other{# contraseñas en tu cuenta (de <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Puertos serie</translation>
@@ -3524,6 +3534,7 @@ Más información:
 <translation id="8183800802493617952">Juegos y actividades para toda la familia</translation>
 <translation id="8184538546369750125">Utilizar valor predeterminado global (Permitir)</translation>
 <translation id="8186706823560132848">Software</translation>
+<translation id="8189557652711717875">El buscador que elijas se usará para funciones como buscar desde la barra de direcciones y desde imágenes en páginas web.</translation>
 <translation id="8190193880870196235">Gestionado por una extensión</translation>
 <translation id="8194412401381329820">No puedes usar esta página desde una cuenta gestionada en este dispositivo no gestionado. Si utilizas esta página, se bloquearán todas las cuentas gestionadas, excepto las gestionadas por la misma entidad que este dispositivo (cuentas afiliadas).</translation>
 <translation id="8194797478851900357">&amp;Deshacer movimiento</translation>
@@ -3542,6 +3553,7 @@ Más información:
 <translation id="8217240300496046857">Los sitios no pueden usar cookies para hacer un seguimiento de tu actividad en la Web. Es posible que las funciones de algunos sitios no funcionen correctamente.</translation>
 <translation id="8217748145574471584">Recursos Humanos</translation>
 <translation id="8218327578424803826">Ubicación asignada:</translation>
+<translation id="8220833680085771143">La Protección Antirastreo no está disponible temporalmente</translation>
 <translation id="8228419419708659934">Vista de dos páginas</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> quiere acceder a un dispositivo de tu red:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>

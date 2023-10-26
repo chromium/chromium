@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">Връзката ви с този сайт не е защитена</translation>
 <translation id="6181444274883918285">Добавяне на изключение за сайт</translation>
 <translation id="6192792657125177640">Изключения</translation>
+<translation id="6195163219142236913">„Бисквитките“ на трети страни са ограничени</translation>
 <translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
 <translation id="6205314730813004066">Поверителност при рекламите</translation>
 <translation id="6207207788774442484">Изтриване на данните и нулиране на разрешенията</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">Сайтовете могат да извеждат подкани за изпращане на известия</translation>
 <translation id="6295158916970320988">Всички сайтове</translation>
 <translation id="6320088164292336938">Вибриране</translation>
+<translation id="6344622098450209924">Защита от проследяване</translation>
 <translation id="6367753977865761591">Блокиране на влизането с профили от трети страни за конкретен сайт.</translation>
 <translation id="6398765197997659313">Изход от цял екран</translation>
 <translation id="640163077447496506">Изтича днес</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Функцията за NFC е изключена на това устройство. Включете я от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Блокиране на сайтовете, така че да не могат да четат и променят информация на устройства с NFC (препоръчително)</translation>
+<translation id="8944485226638699751">Ограничени</translation>
 <translation id="8958424370300090006">Блокиране на „бисквитките“ за конкретен сайт.</translation>
 <translation id="8959122750345127698">Навигирането не е възможно: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Забравяне</translation>

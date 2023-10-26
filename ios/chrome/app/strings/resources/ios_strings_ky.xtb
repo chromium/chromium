@@ -632,6 +632,7 @@
 <translation id="4371591986692297148">Жигерсиз</translation>
 <translation id="4375040482473363939">QR кодду издөө</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="4388983683160515185"><ph name="FULL_NAME" /> сиз менен <ph name="WEBSITE" /> үчүн сырсөздү бөлүштү</translation>
 <translation id="4389019817280890563">Тилди өзгөртүү үчүн таптап коюңуз.</translation>
 <translation id="4405320213589929829">Жергиликтүү маалыматты жана багыттарды веб беттердеги даректерден көрүңүз.</translation>
 <translation id="4420409367264901497">Кыстарманы түзөтүү</translation>
@@ -1178,7 +1179,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7154343200458623869">Жасалчу ишти бүтүрүңүз.</translation>
 <translation id="7161230316646448869">Бардык түзмөктөрдөгү кыстармаларды, таржымалды жана башкаларды шайкештириңиз</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен жашыруун өтмөктөрдүн кулпусун ачуу</translation>
-<translation id="7168959436351276050">Бул картаны жашырсаңыз, бардык көз салынган таңгактарыңыз тууралуу маалымат өчүрүлөт</translation>
 <translation id="7172852049901402487">Сырсөздөрүңүздү коопсуз сактаңыз</translation>
 <translation id="7173114856073700355">Параметрлерди ачуу</translation>
 <translation id="7189598951263744875">Бөлүшүү…</translation>
@@ -1371,6 +1371,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8197543752516192074">Баракты которуу</translation>
 <translation id="8205564605687841303">Жокко чыгаруу</translation>
 <translation id="8206354486702514201">Бул параметрди администраторуңуз күчүнө киргизген.</translation>
+<translation id="8211030355252954494"><ph name="WEBSITE" /> үчүн сырсөздөрдү алдыңыз</translation>
 <translation id="8214293972734702249"><ph name="TAB_TITLE" />, кадалды</translation>
 <translation id="8225985093977202398">Кештелген сүрөттөр жана файлдар</translation>
 <translation id="823133356836493038">Окуу тизмеси жашырылды</translation>
@@ -1547,6 +1548,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="9100610230175265781">Купуя сөз айкашы талап кылынат</translation>
 <translation id="9106655997975673326">Кайдан: "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Уурдалган сырсөздөрдү текшерет</translation>
+<translation id="9109699888944026290">{count,plural, =1{Бул сайт үчүн жаңы сырсөз}other{Бул сайт үчүн жаңы сырсөздөр}}</translation>
 <translation id="9120217828624527905">Толук баракты которууга өтүү</translation>
 <translation id="9124387962554796433">Издөө жана башка Google кызматтарын жекелештирүү үчүн Google таржымалыңызды колдонушу мүмкүн.</translation>
 <translation id="9137526406337347448">Google кызматтары</translation>

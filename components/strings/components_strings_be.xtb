@@ -227,6 +227,7 @@
 <translation id="1413809658975081374">Памылка прыватнасці</translation>
 <translation id="1414134146594747368">Дашкольнае навучанне</translation>
 <translation id="141826476809826269">Канец вынятага тэксту</translation>
+<translation id="1418611192881166179">Пакуль гэта функцыя ў Chrome абнаўляецца, сайтам часова дазваляецца выкарыстоўваць староннія файлы cookie, калі вы не забароніце іх выкарыстанне ў наладах.</translation>
 <translation id="1419305130220238697">Кнопка "Кіраваць спампоўкамі ў Chrome". Каб кіраваць файламі, якія вы спампавалі ў браўзеры Chrome, націсніце яе.</translation>
 <translation id="1422930527989633628">Сайт можа запытваць дазвол выяўляць прылады з Bluetooth паблізу</translation>
 <translation id="1426410128494586442">Так</translation>
@@ -513,6 +514,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{і яшчэ 1}one{і яшчэ #}few{і яшчэ #}many{і яшчэ #}other{і яшчэ #}}</translation>
 <translation id="2003709556000175978">Скіньце свой пароль</translation>
 <translation id="2003775180883135320">Чатыры дзіркі зверху</translation>
+<translation id="2004697686368036666">На некаторых сайтах можа не працаваць частка функцый</translation>
 <translation id="2009942480257059311">Кнопка "Стварыць падзею". Каб хутка стварыць новую падзею ў Google Календары, націсніце яе.</translation>
 <translation id="201174227998721785">Кіруйце дазволамі і данымі, якія захоўваюцца на сайтах, праз налады Chrome</translation>
 <translation id="2012276282211112603">Тэм пакуль няма</translation>
@@ -1194,6 +1196,7 @@
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3443504041532578451">Сацініраваны аптычны дыск</translation>
 <translation id="344449859752187052">Староннія файлы cookie заблакіраваны</translation>
+<translation id="3447644283769633681">Блакіроўка ўсіх старонніх файлаў cookie</translation>
 <translation id="3447661539832366887">Уладальнік прылады выключыў гульню з дыназаўрам.</translation>
 <translation id="3447884698081792621">Паказаць сертыфікат (выдавец: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Інтэрвал атрымання даных:</translation>
@@ -1215,6 +1218,7 @@
 <translation id="3487845404393360112">Латок 4</translation>
 <translation id="3493660662684070951">Грузавікі, фургоны і аўтамабілі павышанай праходнасці</translation>
 <translation id="3495081129428749620">Знайсці на старонцы "<ph name="PAGE_TITLE" />"</translation>
+<translation id="3497627066518778351">Праглядзець у новым акне спіс даных сайтаў на прыладзе</translation>
 <translation id="3498215018399854026">Не ўдалося звязацца з бацькамі. Паўтарыце спробу.</translation>
 <translation id="350069200438440499">Назва файла:</translation>
 <translation id="3501300228850242680">Метал (музыка)</translation>
@@ -1303,6 +1307,7 @@
 <translation id="365641980390710834">Паўсядзённае адзенне</translation>
 <translation id="3658742229777143148">Рэдакцыя</translation>
 <translation id="3664782872746246217">Ключавыя словы:</translation>
+<translation id="3665100783276035932">Большасць сайтаў павінны працаваць як належыць</translation>
 <translation id="3667704023705708645">Венчурны капітал</translation>
 <translation id="3671117652518853176">Калі гэта выключыць, вам час ад часу трэба будзе рабіць спраўджанне ў мэтах бяспекі</translation>
 <translation id="3671540257457995106">Дазволіць змяняць памер?</translation>
@@ -2290,6 +2295,7 @@
 <translation id="568292603005599551">Размяшчэнне відарыса па восі X</translation>
 <translation id="5684277895745049190">Спіс</translation>
 <translation id="5684874026226664614">Памылка. Не ўдалося перакласці гэту старонку.</translation>
+<translation id="5687340364605915800">Некаторыя сайты могуць не рэагаваць на гэты запыт</translation>
 <translation id="5688137257686092846">Спецыялісты па касметалогіі і прыгажосці</translation>
 <translation id="5689199277474810259">Экспарт у JSON</translation>
 <translation id="5689516760719285838">Месцазнаходжанне</translation>
@@ -2368,6 +2374,7 @@
 <translation id="5866898949289125849">Вы праглядаеце старонку інструментаў распрацоўшчыка</translation>
 <translation id="5869405914158311789">Гэты сайт недаступны</translation>
 <translation id="5869522115854928033">Захаваныя паролі</translation>
+<translation id="5872318519182427835">Налады распаўсюджваюцца на пералічаныя ніжэй сайты і іх субдамены. Напрыклад, калі вы дадасце "google.com", староннія файлы cookie будуць таксама дазволены для сайта mail.google.com, бо ён адносіцца да дамена google.com.</translation>
 <translation id="5872692522325383488">Нумар IBAN захаваны</translation>
 <translation id="5873297634595728366">Дызельныя аўтамабілі</translation>
 <translation id="5877831137320480913">Прыгажосць і фітнес</translation>
@@ -2519,6 +2526,7 @@
 <translation id="6177531123306197852">Канверт C2</translation>
 <translation id="6180316780098470077">Інтэрвал паміж спробамі</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome аўтаматычна абмяжоўвае выкарыстанне старонніх файлаў cookie</translation>
 <translation id="61877208875190028">Жаночае адзенне</translation>
 <translation id="6194209731893739467">Тут можна паглядзець усе прадукты, за якімі вы сочыце</translation>
 <translation id="6195163219142236913">Староннія файлы cookie абмежаваны</translation>
@@ -2628,6 +2636,7 @@
 <translation id="6394852772105848029">Гэты сайт спрабуе адкрыць праграму <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Выключыць поўнаэкранны рэжым</translation>
 <translation id="6401136357288658127">Гэта палітыка састарэла – выкарыстоўвайце замест яе "<ph name="NEW_POLICY" />".</translation>
+<translation id="640163077447496506">Тэрмін дзеяння заканчваецца сёння</translation>
 <translation id="6402537308870515461">Перш чым перамяшчаць файлы, іх неабходна праверыць</translation>
 <translation id="6403167778944553">Ложак і ванна</translation>
 <translation id="6404511346730675251">Змяніце закладку</translation>
@@ -2850,6 +2859,7 @@
 <translation id="6874604403660855544">&amp;Узнавіць дадаванне</translation>
 <translation id="6880941331070119097">Дарагі варыянт</translation>
 <translation id="6881240511396774766">Хутка стварыць новы дакумент Google</translation>
+<translation id="6882210908253838664">Калі сайт не працуе, можна паспрабаваць даць яму часовы дазвол выкарыстоўваць староннія файлы cookie. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Аркуш аўтэнтыфікацыі ўліковых даных для бяспечных плацяжоў закрыты</translation>
 <translation id="6884662655240309489">Памер 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3260,6 +3270,7 @@
 <translation id="7631444403134069754">Лёгкая атлетыка</translation>
 <translation id="7631527008834753063">Гульнявыя тэлешоу</translation>
 <translation id="7633909222644580952">Даныя аб прадукцыйнасці і справаздачы аб збоях</translation>
+<translation id="7636346903338549690">Сайты, якім дазволена выкарыстоўваць староннія файлы cookie</translation>
 <translation id="7637571805876720304">Выдаліць крэдытную картку з браўзера Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Няма}=1{1 пароль ва ўліковым запісе (для даменаў <ph name="DOMAIN_LIST" />)}one{# пароль ва ўліковым запісе (для даменаў <ph name="DOMAIN_LIST" />)}few{# паролі ва ўліковым запісе (для даменаў <ph name="DOMAIN_LIST" />)}many{# пароляў ва ўліковым запісе (для даменаў <ph name="DOMAIN_LIST" />)}other{# пароля ва ўліковым запісе (для даменаў <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Паслядоўныя парты</translation>
@@ -3523,6 +3534,7 @@
 <translation id="8183800802493617952">Сямейныя гульні і забавы</translation>
 <translation id="8184538546369750125">Выкарыстоўваць глабальныя стандартныя налады (дазволіць)</translation>
 <translation id="8186706823560132848">Праграмнае забеспячэнне</translation>
+<translation id="8189557652711717875">Выбраная вамі пошукавая сістэма будзе выкарыстоўвацца для такіх функцый, як пошук з адпраўкай запытаў з адраснага радка і па відарысах на вэб-сайтах.</translation>
 <translation id="8190193880870196235">Пад кіраваннем пашырэння</translation>
 <translation id="8194412401381329820">Вы не можаце выкарыстоўваць гэту старонку ва ўліковым запісе пад кіраваннем на прыладзе, якая не знаходзіцца пад кантролем. Калі вы выкарыстаеце гэту старонку, будуць заблакіраваны ўсе ўліковыя запісы пад кіраваннем, акрамя тых, якія кантралюе тая ж юрыдычная асоба, што і гэту прыладу (партнёрскія ўліковыя запісы).</translation>
 <translation id="8194797478851900357">&amp;Адрабіць перамяшчэнне</translation>
@@ -3541,6 +3553,7 @@
 <translation id="8217240300496046857">Сайты не могуць выкарыстоўваць файлы cookie для адсочвання вас у інтэрнэце. На некаторых сайтах можа перастаць працаваць частка функцый.</translation>
 <translation id="8217748145574471584">Кадры</translation>
 <translation id="8218327578424803826">Прызначанае месцазнаходжанне:</translation>
+<translation id="8220833680085771143">Абарона ад адсочвання часова недаступная</translation>
 <translation id="8228419419708659934">Двухстаронкавы выгляд</translation>
 <translation id="8228477714872026922">Карыстальнік <ph name="ORIGIN" /> хоча атрымаць доступ да прылады ў вашай сетцы:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>

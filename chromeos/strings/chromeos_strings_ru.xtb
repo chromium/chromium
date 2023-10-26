@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">слабый сигнал</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Обновление (выполнено <ph name="PERCENTAGE_VALUE" /> %)…</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> мин.</translation>
 <translation id="1310380015393971138">Сеть <ph name="NETWORK_NAME" /> недоступна.</translation>
 <translation id="131421566576084655">Сведения о дате последнего сброса недоступны</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">Прикрепить файл</translation>
 <translation id="8230672074305416752">Не удалось выполнить проверку ping сетевого шлюза, заданного по умолчанию.</translation>
 <translation id="8246209727385807362">Неизвестный оператор</translation>
+<translation id="8262870577632766028">1 час</translation>
 <translation id="827422111966801947">Индиго</translation>
 <translation id="8286154143153872371">Чтобы посмотреть обои, подключитесь к сети и обновите страницу.</translation>
 <translation id="8291967909914612644">Страна провайдера</translation>

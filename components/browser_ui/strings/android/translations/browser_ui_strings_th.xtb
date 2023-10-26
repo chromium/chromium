@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">ลดการซูม</translation>
 <translation id="1510341833810331442">ไม่อนุญาตให้เว็บไซต์บันทึกข้อมูลในอุปกรณ์ของคุณ</translation>
 <translation id="1547123415014299762">อนุญาตคุกกี้ของบุคคลที่สาม</translation>
+<translation id="1568470248891039841">เว็บไซต์ที่คุณเข้าชมสามารถฝังเนื้อหาจากเว็บไซต์อื่นๆ เช่น รูปภาพ โฆษณา และข้อความ เว็บไซต์อื่นๆ เหล่านี้สามารถขอสิทธิ์ใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณขณะที่เรียกดูเว็บไซต์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับเนื้อหาที่ฝัง<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">การดำเนินการใหม่ที่พร้อมใช้งานบริเวณด้านบนของหน้าจอ</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1633720957382884102">เว็บไซต์ที่เกี่ยวข้อง</translation>
@@ -291,6 +292,7 @@
 <translation id="6177128806592000436">การเชื่อมต่อกับเว็บไซต์นี้ไม่ปลอดภัย</translation>
 <translation id="6181444274883918285">เพิ่มข้อยกเว้นของเว็บไซต์</translation>
 <translation id="6192792657125177640">ข้อยกเว้น</translation>
+<translation id="6195163219142236913">จำกัดคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6196640612572343990">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6205314730813004066">ความเป็นส่วนตัวเกี่ยวกับโฆษณา</translation>
 <translation id="6207207788774442484">ลบข้อมูลและรีเซ็ตสิทธิ์</translation>
@@ -301,6 +303,7 @@
 <translation id="6270391203985052864">เว็บไซต์ขออนุญาตเพื่อส่งการแจ้งเตือนได้</translation>
 <translation id="6295158916970320988">เว็บไซต์ทั้งหมด</translation>
 <translation id="6320088164292336938">สั่น</translation>
+<translation id="6344622098450209924">การป้องกันการติดตาม</translation>
 <translation id="6367753977865761591">บล็อกการลงชื่อเข้าใช้ของบุคคลที่สามสำหรับบางเว็บไซต์</translation>
 <translation id="6398765197997659313">ออกจากการแสดงแบบเต็มหน้าจอ</translation>
 <translation id="640163077447496506">หมดอายุวันนี้</translation>
@@ -452,6 +455,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC ในอุปกรณ์นี้ปิดอยู่ เปิดได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="8928445016601307354">บล็อกเว็บไซต์ไม่ให้ดูและเปลี่ยนแปลงข้อมูลในอุปกรณ์ NFC</translation>
+<translation id="8944485226638699751">จำกัด</translation>
 <translation id="8958424370300090006">บล็อกคุกกี้ของเว็บไซต์ที่เจาะจง</translation>
 <translation id="8959122750345127698">ไม่สามารถเข้าถึงการนำทางได้: <ph name="URL" /></translation>
 <translation id="8986362086234534611">เลิกจำ</translation>

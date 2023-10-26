@@ -227,6 +227,7 @@
 <translation id="1413809658975081374">Ошибка нарушения конфиденциальности</translation>
 <translation id="1414134146594747368">Образование детей от 0 до 5 лет</translation>
 <translation id="141826476809826269">Извлечение текста завершено.</translation>
+<translation id="1418611192881166179">Пока эта функция в Chrome обновляется, сайтам временно разрешено использовать сторонние файлы cookie, если вы не отключили такую возможность в настройках.</translation>
 <translation id="1419305130220238697">Кнопка "Управлять скачанными файлами в Chrome". Нажмите ее, чтобы управлять файлами, скачанными в Chrome.</translation>
 <translation id="1422930527989633628">Разрешено отправлять запрос на поиск устройств Bluetooth поблизости</translation>
 <translation id="1426410128494586442">Да</translation>
@@ -513,6 +514,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{и ещё 1}one{и ещё #}few{и ещё #}many{и ещё #}other{и ещё #}}</translation>
 <translation id="2003709556000175978">Сброс пароля</translation>
 <translation id="2003775180883135320">Четыре отверстия сверху</translation>
+<translation id="2004697686368036666">Функции некоторых сайтов могут стать недоступными</translation>
 <translation id="2009942480257059311">Кнопка "Создать мероприятие". Нажмите ее, чтобы быстро создать мероприятие в Google Календаре.</translation>
 <translation id="201174227998721785">Задать разрешения для сайтов и указать, какие данные они могут хранить, в настройках Chrome</translation>
 <translation id="2012276282211112603">Пока тем нет.</translation>
@@ -1193,6 +1195,7 @@
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3443504041532578451">Оптический диск (сатин)</translation>
 <translation id="344449859752187052">Сторонние файлы cookie заблокированы</translation>
+<translation id="3447644283769633681">Заблокировать все сторонние файлы cookie</translation>
 <translation id="3447661539832366887">Владелец этого устройства отключил игру с динозавром.</translation>
 <translation id="3447884698081792621">Показать сертификат (издатель: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Выберите интервал:</translation>
@@ -1304,6 +1307,7 @@
 <translation id="365641980390710834">Повседневная одежда</translation>
 <translation id="3658742229777143148">Версия</translation>
 <translation id="3664782872746246217">Ключевые слова:</translation>
+<translation id="3665100783276035932">Большинство сайтов работают без изменений</translation>
 <translation id="3667704023705708645">Венчурный капитал</translation>
 <translation id="3671117652518853176">Если параметр отключен, данные могут периодически проверяться в целях безопасности</translation>
 <translation id="3671540257457995106">Разрешить изменение размера?</translation>
@@ -2291,6 +2295,7 @@
 <translation id="568292603005599551">Положение изображения по оси X</translation>
 <translation id="5684277895745049190">Список</translation>
 <translation id="5684874026226664614">Не удалось перевести страницу</translation>
+<translation id="5687340364605915800">Некоторые сайты могут не реагировать на этот запрос</translation>
 <translation id="5688137257686092846">Косметологи и имиджмейкеры</translation>
 <translation id="5689199277474810259">Экспортировать как JSON</translation>
 <translation id="5689516760719285838">Геоданные</translation>
@@ -2369,6 +2374,7 @@
 <translation id="5866898949289125849">Вы просматриваете страницу инструментов разработчика</translation>
 <translation id="5869405914158311789">Не удается получить доступ к сайту</translation>
 <translation id="5869522115854928033">Сайты с сохраненными паролями</translation>
+<translation id="5872318519182427835">Настройки распространяются на перечисленные ниже сайты и их субдомены. Например, если вы добавите "google.com", сторонние файлы cookie будут также разрешены для сайта mail.google.com, так как он относится к домену google.com.</translation>
 <translation id="5872692522325383488">Код IBAN сохранен</translation>
 <translation id="5873297634595728366">Дизельные автомобили</translation>
 <translation id="5877831137320480913">Красота и фитнес</translation>
@@ -2520,6 +2526,7 @@
 <translation id="6177531123306197852">Конверт C2</translation>
 <translation id="6180316780098470077">Интервал повтора</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome автоматически ограничивает использование сторонних файлов cookie</translation>
 <translation id="61877208875190028">Одежда для женщин</translation>
 <translation id="6194209731893739467">Здесь вы найдете все отслеживаемые товары</translation>
 <translation id="6195163219142236913">Использование сторонних файлов cookie ограничено</translation>
@@ -2629,6 +2636,7 @@
 <translation id="6394852772105848029">Этот сайт пытается открыть приложение "<ph name="APP_NAME" />".</translation>
 <translation id="6398765197997659313">Обычный режим</translation>
 <translation id="6401136357288658127">Правило устарело. Используйте <ph name="NEW_POLICY" />.</translation>
+<translation id="640163077447496506">Срок действия истекает сегодня</translation>
 <translation id="6402537308870515461">Проверьте файлы, перед тем как переносить их</translation>
 <translation id="6403167778944553">Спальня и ванная</translation>
 <translation id="6404511346730675251">Изменить закладку</translation>
@@ -2851,6 +2859,7 @@
 <translation id="6874604403660855544">&amp;Повторить добавление</translation>
 <translation id="6880941331070119097">Дорогой вариант</translation>
 <translation id="6881240511396774766">Быстро создать документ Google</translation>
+<translation id="6882210908253838664">Если сайт не работает, попробуйте временно разрешить ему использовать сторонние файлы cookie. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Экран проверки учетных данных для защищенных платежей закрыт</translation>
 <translation id="6884662655240309489">Размер: 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" />, <ph name="SHORT_URL" /></translation>
@@ -3260,6 +3269,7 @@
 <translation id="7631444403134069754">Легкая атлетика</translation>
 <translation id="7631527008834753063">Игровые телешоу</translation>
 <translation id="7633909222644580952">Данные о производительности и отчеты о сбоях</translation>
+<translation id="7636346903338549690">Сайты, которым разрешено использовать сторонние файлы cookie</translation>
 <translation id="7637571805876720304">Удалить кредитную карту из Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Нет}=1{1 пароль в вашем аккаунте (домены: <ph name="DOMAIN_LIST" />)}one{# пароль в вашем аккаунте (домены: <ph name="DOMAIN_LIST" />)}few{# пароля в вашем аккаунте (домены: <ph name="DOMAIN_LIST" />)}many{# паролей в вашем аккаунте (домены: <ph name="DOMAIN_LIST" />)}other{# пароля в вашем аккаунте (домены: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Последовательные порты</translation>
@@ -3523,6 +3533,7 @@
 <translation id="8183800802493617952">Семейные игры и развлечения</translation>
 <translation id="8184538546369750125">Использовать глобальный параметр по умолчанию (разрешать)</translation>
 <translation id="8186706823560132848">Программное обеспечение</translation>
+<translation id="8189557652711717875">Выбранная поисковая система будет задействована, когда вы воспользуетесь такими функциями, как поиск по изображению с веб-страницы или отправка запросов через адресную строку.</translation>
 <translation id="8190193880870196235">Управляется расширением</translation>
 <translation id="8194412401381329820">Эту страницу нельзя использовать с управляемого аккаунта на этом неадминистрируемом устройстве. Если вы используете эту страницу, будут заблокированы все управляемые аккаунты, кроме аффилированных, то есть управляемых той же организацией, что и это устройство.</translation>
 <translation id="8194797478851900357">&amp;Отменить перемещение</translation>
@@ -3541,6 +3552,7 @@
 <translation id="8217240300496046857">Сайтам запрещается использовать файлы cookie, которые отслеживают ваши действия в интернете. Из-за этого некоторые функции сайтов могут работать некорректно.</translation>
 <translation id="8217748145574471584">Управление персоналом</translation>
 <translation id="8218327578424803826">Назначенное местоположение:</translation>
+<translation id="8220833680085771143">Защита от слежения временно недоступна</translation>
 <translation id="8228419419708659934">Двухстраничный режим</translation>
 <translation id="8228477714872026922">Сайт <ph name="ORIGIN" /> запрашивает доступ к устройству в вашей сети:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>

@@ -630,6 +630,7 @@
 <translation id="4371591986692297148">已停用</translation>
 <translation id="4375040482473363939">QR 码搜索</translation>
 <translation id="4378154925671717803">电话</translation>
+<translation id="4388983683160515185"><ph name="FULL_NAME" />与您分享了一个用于登录 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="4389019817280890563">点按此行即可更改语言。</translation>
 <translation id="4405320213589929829">使用网页上的地址来获取本地信息和路线。</translation>
 <translation id="4420409367264901497">修改书签</translation>
@@ -699,6 +700,7 @@
 <translation id="47677902929517676">若要将密码保存到您的账号，您必须先在设备上设置屏幕解锁密码。</translation>
 <translation id="4775879719735953715">默认浏览器</translation>
 <translation id="4778644898150334464">使用其他密码</translation>
+<translation id="4779732376610430319">前往“设置”…</translation>
 <translation id="478808905805139173">在无痕模式下打开？</translation>
 <translation id="4803185665210547709">由贵单位管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -1173,7 +1175,6 @@
 <translation id="7154343200458623869">完成任务。</translation>
 <translation id="7161230316646448869">将您的书签、历史记录等信息同步到所有设备上</translation>
 <translation id="7162168282402939716">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁无痕式标签页</translation>
-<translation id="7168959436351276050">隐藏此卡片将移除您的所有包裹跟踪数据</translation>
 <translation id="7172852049901402487">保护您的密码免受安全威胁</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7189598951263744875">分享...</translation>
@@ -1366,6 +1367,7 @@
 <translation id="8197543752516192074">翻译网页</translation>
 <translation id="8205564605687841303">取消</translation>
 <translation id="8206354486702514201">此设置是由您的管理员执行的。</translation>
+<translation id="8211030355252954494">您收到了多个用于登录 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="8214293972734702249">已固定 <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">缓存的图片和文件</translation>
 <translation id="823133356836493038">已隐藏阅读清单</translation>
@@ -1540,6 +1542,7 @@
 <translation id="9100610230175265781">必须提供密码</translation>
 <translation id="9106655997975673326">来自“<ph name="SOURCE_DEVICE" />”</translation>
 <translation id="9107664647686727385">检查是否有已泄露的密码</translation>
+<translation id="9109699888944026290">{count,plural, =1{一个用于登录此网站的新密码}other{多个用于登录此网站的新密码}}</translation>
 <translation id="9120217828624527905">切换为整页翻译</translation>
 <translation id="9124387962554796433">Google 可能会使用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务。</translation>
 <translation id="9137526406337347448">Google 服务</translation>

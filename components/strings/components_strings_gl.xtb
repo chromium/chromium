@@ -513,6 +513,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2001146170449793414">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
 <translation id="2003709556000175978">Restablecer o teu contrasinal agora</translation>
 <translation id="2003775180883135320">Catro perforacións na parte superior</translation>
+<translation id="2004697686368036666">As funcións dalgúns sitios poden deixar de funcionar</translation>
 <translation id="2009942480257059311">Botón para crear un evento. Actívao para crear rapidamente un evento en Google Calendar</translation>
 <translation id="201174227998721785">Xestionar na configuración de Chrome os permisos e os datos almacenados dos sitios</translation>
 <translation id="2012276282211112603">Neste momento non hai ningún tema para mostrar</translation>
@@ -1194,6 +1195,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3441653493275994384">Pantalla</translation>
 <translation id="3443504041532578451">Disco óptico (satinado)</translation>
 <translation id="344449859752187052">Cookies de terceiros bloqueadas</translation>
+<translation id="3447644283769633681">Bloquea todas as cookies de terceiros</translation>
 <translation id="3447661539832366887">O propietario deste dispositivo desactivou o xogo do dinosauro.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervalo de recuperación:</translation>
@@ -1305,6 +1307,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="365641980390710834">Roupa informal</translation>
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
+<translation id="3665100783276035932">A maioría dos sitios deberían funcionar segundo o previsto</translation>
 <translation id="3667704023705708645">Capital de risco</translation>
 <translation id="3671117652518853176">Cando está opción estea desactivada, é posible que se che pida ocasionalmente que fagas unha verificación por motivos de seguranza</translation>
 <translation id="3671540257457995106">Queres permitir que a aplicación cambie de tamaño?</translation>
@@ -2292,6 +2295,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="568292603005599551">Posición X da imaxe</translation>
 <translation id="5684277895745049190">Lista</translation>
 <translation id="5684874026226664614">Non se puido traducir esta páxina.</translation>
+<translation id="5687340364605915800">Os sitios usan a súa discrecionalidade á hora de responder a esta solicitude</translation>
 <translation id="5688137257686092846">Profesionais da cosmética e a beleza</translation>
 <translation id="5689199277474810259">Exportar a JSON</translation>
 <translation id="5689516760719285838">Localización</translation>
@@ -2370,6 +2374,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5866898949289125849">Estás vendo unha páxina de ferramentas de programador</translation>
 <translation id="5869405914158311789">Non se pode acceder a este sitio</translation>
 <translation id="5869522115854928033">Contrasinais gardados</translation>
+<translation id="5872318519182427835">Afecta aos sitios incluídos aquí e aos seus subdominios. Por exemplo, se engades google.com, as cookies de terceiros tamén poderán estar activas en mail.google.com, xa que forma parte de google.com.</translation>
 <translation id="5872692522325383488">Gardouse o IBAN</translation>
 <translation id="5873297634595728366">Vehículos diésel</translation>
 <translation id="5877831137320480913">Beleza e actividade física</translation>
@@ -2521,6 +2526,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6177531123306197852">Sobre C2</translation>
 <translation id="6180316780098470077">Intervalo de reintentos</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome limita automaticamente as cookies de terceiros</translation>
 <translation id="61877208875190028">Roupa de muller</translation>
 <translation id="6194209731893739467">Aquí podes ver todos os produtos dos que fagas un seguimento</translation>
 <translation id="6195163219142236913">Cookies de terceiros limitadas</translation>
@@ -2630,6 +2636,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6394852772105848029">Este sitio quere abrir a aplicación <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Saír do modo de pantalla completa</translation>
 <translation id="6401136357288658127">Esta política quedou obsoleta. Debes utilizar a política <ph name="NEW_POLICY" />.</translation>
+<translation id="640163077447496506">Caduca hoxe</translation>
 <translation id="6402537308870515461">Cómpre revisar os ficheiros antes de movelos</translation>
 <translation id="6403167778944553">Dormitorio e baño</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
@@ -2852,6 +2859,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6874604403660855544">&amp;Refacer adición</translation>
 <translation id="6880941331070119097">Opción cara</translation>
 <translation id="6881240511396774766">Crear rapidamente un novo documento de Google</translation>
+<translation id="6882210908253838664">Se un sitio non funciona, proba a concederlle permiso temporal para usar as cookies de terceiros. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">A folla de autenticación da credencial de pagos seguros está pechada</translation>
 <translation id="6884662655240309489">Tamaño 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3261,6 +3269,7 @@ Detalles adicionais:
 <translation id="7631444403134069754">Atletismo</translation>
 <translation id="7631527008834753063">Concursos televisivos</translation>
 <translation id="7633909222644580952">Datos de rendemento e informes de fallos</translation>
+<translation id="7636346903338549690">Sitios con permiso para usar cookies de terceiros</translation>
 <translation id="7637571805876720304">Queres eliminar a túa tarxeta de crédito de Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Ningún}=1{1 contrasinal na túa conta (para <ph name="DOMAIN_LIST" />)}other{# contrasinais na túa conta (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Portos de serie</translation>

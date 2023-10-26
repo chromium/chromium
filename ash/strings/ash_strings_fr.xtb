@@ -1187,6 +1187,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="5774295353725270860">Ouvrir l'application Fichiers</translation>
 <translation id="5777841717266010279">Arrêter le partage d'écran ?</translation>
 <translation id="5779721926447984944">Fichiers épinglés</translation>
+<translation id="5785221443435874078">Supprimer cette suggestion</translation>
 <translation id="5788127256798019331">Fichiers Play</translation>
 <translation id="5788535737706478207">Rouvrir le dernier onglet ou la dernière fenêtre que vous avez fermé(e)</translation>
 <translation id="5790085346892983794">Succès</translation>
@@ -1266,7 +1267,6 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="6095008505822982596">Débit</translation>
 <translation id="6095425951508823973">Ajouter une connexion à <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Modifié le mois dernier</translation>
-<translation id="6099793635444444289">Impossible de démarrer la dictée, car le son du micro est coupé</translation>
 <translation id="6103838137565245112">système</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>

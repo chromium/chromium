@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">సిగ్నల్ బలహీనంగా ఉంది</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">అప్‌డేట్ అవుతోంది (<ph name="PERCENTAGE_VALUE" />% పూర్తయింది)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> నిమిషాలు</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> నెట్‌వర్క్ ఏదీ అందుబాటులో లేదు</translation>
 <translation id="131421566576084655">చివరిసారిగా డేటా రీసెట్ చేసిన తేదీ అందుబాటులో లేదు</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">ఫైల్‌ను జోడించండి</translation>
 <translation id="8230672074305416752">డిఫాల్ట్ నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="8246209727385807362">తెలియని క్యారియర్</translation>
+<translation id="8262870577632766028">1 గంట</translation>
 <translation id="827422111966801947">నీలిమందు రంగు</translation>
 <translation id="8286154143153872371">వాల్‌పేపర్‌ను చూడటానికి, దయచేసి నెట‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>
 <translation id="8291967909914612644">స్వస్థల నెట్‌వర్క్ ప్రదాత దేశం</translation>

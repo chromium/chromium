@@ -513,6 +513,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{и уште 1}one{и уште #}other{и уште #}}</translation>
 <translation id="2003709556000175978">Ресетирајте ја вашата лозинка сега</translation>
 <translation id="2003775180883135320">Четири дупки горе</translation>
+<translation id="2004697686368036666">Функциите на некои сајтови може да не функционираат</translation>
 <translation id="2009942480257059311">Копче за создавање настан, активирајте го за да набрзина создадете нов настан во „Календар на Google“</translation>
 <translation id="201174227998721785">Управувајте со дозволите и податоците коишто се складираат на сајтовите во поставките за Chrome</translation>
 <translation id="2012276282211112603">Нема теми за прикажување во моментов</translation>
@@ -1194,6 +1195,7 @@
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3443504041532578451">Оптички диск (сатен)</translation>
 <translation id="344449859752187052">Колачињата од трети страни се блокирани</translation>
+<translation id="3447644283769633681">Блокирајте ги сите колачиња од трети страни</translation>
 <translation id="3447661539832366887">Сопственикот на уредов ја исклучил играта со диносауруси.</translation>
 <translation id="3447884698081792621">Прикажи сертификат (издаден од <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Интервал на освежување:</translation>
@@ -1216,6 +1218,7 @@
 <translation id="3493660662684070951">Камиони, комбиња и теренски возила</translation>
 <translation id="3495081129428749620">Најди на страницата
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3497627066518778351">Прегледајте список со податоци од сајтови на уредот во нов прозорец</translation>
 <translation id="3498215018399854026">Во моментов не можевме да го добиеме вашиот родител. Обидете се повторно.</translation>
 <translation id="350069200438440499">Име на датотека:</translation>
 <translation id="3501300228850242680">Метал (музика)</translation>
@@ -1304,6 +1307,7 @@
 <translation id="365641980390710834">Секојдневна облека</translation>
 <translation id="3658742229777143148">Ревизија</translation>
 <translation id="3664782872746246217">Клучни зборови:</translation>
+<translation id="3665100783276035932">Повеќето сајтови би требало да функционираат според очекувањата</translation>
 <translation id="3667704023705708645">Вложувачки капитал</translation>
 <translation id="3671117652518853176">Кога е исклучено, можеби повремено ќе се бара од вас да се потврдите за безбедносни цели</translation>
 <translation id="3671540257457995106">Да се дозволи промена на големината?</translation>
@@ -2291,6 +2295,7 @@
 <translation id="568292603005599551">Позиција на сликата X</translation>
 <translation id="5684277895745049190">Список</translation>
 <translation id="5684874026226664614">Оваа страница не може да се преведе.</translation>
+<translation id="5687340364605915800">Сајтовите постапуваат според сопствено убедување при одговарање на барањево</translation>
 <translation id="5688137257686092846">Професионалци за козметологија и убавина</translation>
 <translation id="5689199277474810259">Изврши извоз во формат .JSON</translation>
 <translation id="5689516760719285838">Локација</translation>
@@ -2369,6 +2374,7 @@
 <translation id="5866898949289125849">Гледате страница со алатки за програмери</translation>
 <translation id="5869405914158311789">Не може да се пристапи до сајтот</translation>
 <translation id="5869522115854928033">Зачувани лозинки</translation>
+<translation id="5872318519182427835">Влијае на сајтовите што се наведени тука, како и нивните поддомени. На пример, додавањето „google.com“ значи дека за mail.google.com може да бидат активни и колачиња од трети страни затоа што е дел од google.com.</translation>
 <translation id="5872692522325383488">IBAN е зачуван</translation>
 <translation id="5873297634595728366">Возила на дизел</translation>
 <translation id="5877831137320480913">Убавина и фитнес</translation>
@@ -2520,6 +2526,7 @@
 <translation id="6177531123306197852">Плик C2</translation>
 <translation id="6180316780098470077">Обиди се повторно со интервалот</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6184868291074982484">Chrome автоматски ги ограничува колачињата од трети страни</translation>
 <translation id="61877208875190028">Женска облека</translation>
 <translation id="6194209731893739467">Видете ги сите ваши следени производи тука</translation>
 <translation id="6195163219142236913">Колачињата од трети страни се ограничени</translation>
@@ -2629,6 +2636,7 @@
 <translation id="6394852772105848029">Сајтов сака да ја отвори апликацијата <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Излези од цел екран</translation>
 <translation id="6401136357288658127">Правилово е неподдржано. Наместо него, треба да го користите правилото <ph name="NEW_POLICY" />.</translation>
+<translation id="640163077447496506">Истекува денес</translation>
 <translation id="6402537308870515461">Потребен е преглед пред преместувањето</translation>
 <translation id="6403167778944553">Кревети и бањи</translation>
 <translation id="6404511346730675251">Измени обележувач</translation>
@@ -2851,6 +2859,7 @@
 <translation id="6874604403660855544">&amp;Повтори додавање</translation>
 <translation id="6880941331070119097">Опција со високи цени</translation>
 <translation id="6881240511396774766">Создајте нов документ на Google брзо</translation>
+<translation id="6882210908253838664">Ако конкретен сајт не функционира, може да се обидете да му дадете привремена дозвола за користење колачиња од трети страни. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="6883221904761970440">Листот за проверка на акредитиви за безбедно плаќање е затворен</translation>
 <translation id="6884662655240309489">Големина 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -3260,6 +3269,7 @@
 <translation id="7631444403134069754">Атлетика</translation>
 <translation id="7631527008834753063">ТВ-емисии со игри</translation>
 <translation id="7633909222644580952">Податоци за изведбата и извештаи за падовите</translation>
+<translation id="7636346903338549690">Сајтови што имаат дозвола да користат колачиња од трети страни</translation>
 <translation id="7637571805876720304">Да се отстрани кредитната картичка од Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Ниедна}=1{1 лозинка во вашата сметка (за <ph name="DOMAIN_LIST" />)}one{# лозинка во вашата сметка (за <ph name="DOMAIN_LIST" />)}other{# лозинки во вашата сметка (за <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Сериски порти</translation>

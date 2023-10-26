@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">缩小</translation>
 <translation id="1510341833810331442">网站不得将数据保存在您的设备上</translation>
 <translation id="1547123415014299762">允许使用第三方 Cookie</translation>
+<translation id="1568470248891039841">您访问的网站可以嵌入来自其他网站的内容，例如图片、广告和文字。这些其他网站可向您请求权限，以便使用它们在您浏览所访网站时保存的与您相关的信息。<ph name="BEGIN_LINK" />详细了解嵌入式内容<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">屏幕顶部附近有多项可查看的新操作</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1633720957382884102">相关网站</translation>
@@ -291,6 +292,7 @@
 <translation id="6177128806592000436">您与此网站之间建立的连接不安全</translation>
 <translation id="6181444274883918285">添加例外网站</translation>
 <translation id="6192792657125177640">例外</translation>
+<translation id="6195163219142236913">第三方 Cookie 受限</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6207207788774442484">删除数据并重置权限</translation>
@@ -301,6 +303,7 @@
 <translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>
 <translation id="6295158916970320988">所有网站</translation>
 <translation id="6320088164292336938">振动</translation>
+<translation id="6344622098450209924">跟踪保护</translation>
 <translation id="6367753977865761591">禁止使用第三方账号登录特定网站。</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="640163077447496506">今天过期</translation>
@@ -452,6 +455,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">此设备的 NFC 功能处于关闭状态。请在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启此功能。</translation>
 <translation id="8928445016601307354">禁止网站查看和更改 NFC 设备上的信息</translation>
+<translation id="8944485226638699751">受限</translation>
 <translation id="8958424370300090006">阻止特定网站使用 Cookie。</translation>
 <translation id="8959122750345127698">无法访问 <ph name="URL" /></translation>
 <translation id="8986362086234534611">不保存</translation>

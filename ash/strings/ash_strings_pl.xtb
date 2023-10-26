@@ -503,6 +503,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3105917916468784889">Zapisz zrzut ekranu</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Podświetl poprzedni element na półce</translation>
+<translation id="311799651966070385">Zamknij ponaglenie</translation>
 <translation id="3120421559657122717">Wyłączyć urządzenie?</translation>
 <translation id="3122464029669770682">Procesor</translation>
 <translation id="3125690294288312932">Typ zadania</translation>
@@ -886,6 +887,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4585337515783392668">Zakończ przesyłanie do nieznanego odbiornika</translation>
 <translation id="4596144739579517758">Ciemny motyw jest wyłączony</translation>
 <translation id="4611292653554630842">Zaloguj się</translation>
+<translation id="462160925400706389">Połączono: <ph name="NAME" /></translation>
 <translation id="4623167406982293031">Zweryfikuj konto</translation>
 <translation id="4628757576491864469">Urządzenia</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, liczba gwiazdek <ph name="RATING_SCORE" /></translation>
@@ -1187,6 +1189,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5774295353725270860">Otwórz aplikację Pliki</translation>
 <translation id="5777841717266010279">Zakończyć udostępnianie ekranu?</translation>
 <translation id="5779721926447984944">Przypięte pliki</translation>
+<translation id="5785221443435874078">Usuń tę propozycję</translation>
 <translation id="5788127256798019331">Pliki Play</translation>
 <translation id="5788535737706478207">Przywróć ostatnią zamkniętą kartę lub ostatnie zamknięte okno</translation>
 <translation id="5790085346892983794">Udało się</translation>
@@ -1266,7 +1269,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6095008505822982596">Prędkość mowy</translation>
 <translation id="6095425951508823973">Dodaj połączenie, korzystając z programu <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Edytowane w zeszłym miesiącu</translation>
-<translation id="6099793635444444289">Nie można rozpocząć dyktowania, ponieważ mikrofon jest wyciszony</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Pliki z mową w języku: <ph name="LANGUAGE" /> zostały pobrane</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1312,6 +1314,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6284232397434400372">Rozdzielczość została zmieniona</translation>
 <translation id="6288235558961782912">Adres <ph name="USER_EMAIL_ADDRESS" /> będzie można dodać ponownie później po uzyskaniu zgody rodzica.</translation>
 <translation id="6291221004442998378">Nie ładuje się</translation>
+<translation id="6298183524022479114">Dostosuj to urządzenie w aplikacji</translation>
 <translation id="6309219492973062892">Kliknij ikony 1–8 na półce</translation>
 <translation id="6315170314923504164">Głos</translation>
 <translation id="6324916366299863871">Edytuj skrót</translation>

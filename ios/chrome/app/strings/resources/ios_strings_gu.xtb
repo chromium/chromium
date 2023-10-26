@@ -633,6 +633,7 @@
 <translation id="4371591986692297148">નિષ્ક્રિય</translation>
 <translation id="4375040482473363939">QR કોડ શોધો</translation>
 <translation id="4378154925671717803">ફોન</translation>
+<translation id="4388983683160515185"><ph name="FULL_NAME" /> દ્વારા તમારી સાથે <ph name="WEBSITE" /> માટેનો પાસવર્ડ શેર કરવામાં આવ્યો છે</translation>
 <translation id="4389019817280890563">ભાષા બદલવા માટે ટૅપ કરો.</translation>
 <translation id="4405320213589929829">સ્થાનિક માહિતી અને દિશાનિર્દેશો મેળવવા માટે, વેબપેજ પરના ઍડ્રેસનો ઉપયોગ કરો.</translation>
 <translation id="4420409367264901497">બુકમાર્કમાં ફેરફાર કરો</translation>
@@ -1179,7 +1180,6 @@
 <translation id="7154343200458623869">તમારું કામ પૂરું કરો.</translation>
 <translation id="7161230316646448869">બધા ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને વધુ સિંક કરો</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે છૂપી ટૅબ અનલૉક કરો</translation>
-<translation id="7168959436351276050">આ કાર્ડ છુપાવવાથી પૅકેજ ટ્રૅકિંગનો તમારો તમામ ડેટા કાઢી નાખવામાં આવશે</translation>
 <translation id="7172852049901402487">સુરક્ષા સંબંધિત સમસ્યાઓથી તમારા પાસવર્ડને સલામત રાખો</translation>
 <translation id="7173114856073700355">સેટિંગ ખોલો</translation>
 <translation id="7189598951263744875">શેર કરો...</translation>
@@ -1372,6 +1372,7 @@
 <translation id="8197543752516192074">પેજનો અનુવાદ કરો</translation>
 <translation id="8205564605687841303">રદ કરો</translation>
 <translation id="8206354486702514201">આ સેટિંગ તમારા વહીવટકર્તા દ્વારા લાગુ કરેલી છે.</translation>
+<translation id="8211030355252954494">તમે <ph name="WEBSITE" /> માટે પાસવર્ડ પ્રાપ્ત કર્યો છે</translation>
 <translation id="8214293972734702249">પિન કરેલા, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">કૅશ કરેલી છબીઓ અને ફાઇલો</translation>
 <translation id="823133356836493038">વાંચન સૂચિ છુપાવેલી છે</translation>
@@ -1548,6 +1549,7 @@
 <translation id="9100610230175265781">પાસફ્રેઝ આવશ્યક છે</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"માંથી</translation>
 <translation id="9107664647686727385">ચેડાં કરાયેલા પાસવર્ડ ચેક કરો</translation>
+<translation id="9109699888944026290">{count,plural, =1{આ સાઇટ માટે નવો પાસવર્ડ}one{આ સાઇટ માટે નવો પાસવર્ડ}other{આ સાઇટ માટે નવા પાસવર્ડ}}</translation>
 <translation id="9120217828624527905">આખા પેજના અનુવાદ પર સ્વિચ કરો</translation>
 <translation id="9124387962554796433">Search અને Googleની અન્ય સેવાઓને મનપસંદ બનાવવા માટે, Google તમારા ઇતિહાસનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="9137526406337347448">Google સેવાઓ</translation>

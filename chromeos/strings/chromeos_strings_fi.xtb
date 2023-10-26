@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Heikko signaali</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Päivitetään (<ph name="PERCENTAGE_VALUE" /> % valmiina)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minuuttia</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" />-verkkoja ei ole käytettävissä</translation>
 <translation id="131421566576084655">Edellisen nollauksen päivämäärä ei ole saatavilla</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -946,6 +947,7 @@
 <translation id="8227119283605456246">Liitä tiedosto</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
 <translation id="8246209727385807362">Tuntematon operaattori</translation>
+<translation id="8262870577632766028">1 tunti</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Yhdistä verkkoon ja päivitä sivu nähdäksesi taustakuvan.</translation>
 <translation id="8291967909914612644">Kotiverkon palveluntarjoajan maa</translation>
@@ -1010,6 +1012,7 @@
 <translation id="8747900814994928677">Vahvista muutos</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Kuvat ‑albumi</translation>
+<translation id="8775713578693478175">Modeemin APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Pikanäppäintä käytetään tähän: "<ph name="CONFLICT_ACCEL_NAME" />". Paina uutta pikanäppäintä. Jos haluat korvata alkuperäisen pikanäppäimen, paina tätä pikanäppäintä uudelleen.</translation>
 <translation id="879568662008399081">Tällä sivustolla saattaa olla captive portal</translation>

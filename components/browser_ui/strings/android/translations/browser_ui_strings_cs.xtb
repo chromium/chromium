@@ -291,6 +291,7 @@
 <translation id="6177128806592000436">Spojení s tímto webem není bezpečné</translation>
 <translation id="6181444274883918285">Přidat výjimku pro konkrétní web</translation>
 <translation id="6192792657125177640">Výjimky</translation>
+<translation id="6195163219142236913">Soubory cookie třetích stran jsou omezeny</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6205314730813004066">Ochrana soukromí v reklamách</translation>
 <translation id="6207207788774442484">Vymazat data a resetovat oprávnění</translation>
@@ -301,6 +302,7 @@
 <translation id="6270391203985052864">Weby mohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
 <translation id="6320088164292336938">Vibrovat</translation>
+<translation id="6344622098450209924">Ochrana před sledováním</translation>
 <translation id="6367753977865761591">Blokování přihlášení třetích stran na konkrétní web.</translation>
 <translation id="6398765197997659313">Ukončit režim celé obrazovky</translation>
 <translation id="640163077447496506">Platnost vyprší dnes</translation>
@@ -452,6 +454,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Funkce NFC je v tomto zařízení vypnutá. Zapnete ji v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Bránit webům v zobrazení a změně informací na zařízeních NFC</translation>
+<translation id="8944485226638699751">Omezeno</translation>
 <translation id="8958424370300090006">Blokovat soubory cookie pro konkrétní web.</translation>
 <translation id="8959122750345127698">Navigace není dosažitelná: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Odstranit</translation>

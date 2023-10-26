@@ -503,6 +503,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3105917916468784889">Hacer una captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Destaca el elemento anterior de la estantería</translation>
+<translation id="311799651966070385">Aviso de cierre</translation>
 <translation id="3120421559657122717">¿Apagar el dispositivo?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo de trabajo de clase</translation>
@@ -887,6 +888,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4585337515783392668">Dejar de enviar contenido a un receptor desconocido</translation>
 <translation id="4596144739579517758">Tema oscuro está desactivado</translation>
 <translation id="4611292653554630842">Iniciar sesión</translation>
+<translation id="462160925400706389"><ph name="NAME" /> conectado</translation>
 <translation id="4623167406982293031">Verificar cuenta</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valoración por estrellas de <ph name="RATING_SCORE" /></translation>
@@ -1188,6 +1190,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5774295353725270860">Abrir Archivos</translation>
 <translation id="5777841717266010279">¿Dejar de compartir la pantalla?</translation>
 <translation id="5779721926447984944">Archivos fijados</translation>
+<translation id="5785221443435874078">Elimina esta sugerencia</translation>
 <translation id="5788127256798019331">Archivos de Play</translation>
 <translation id="5788535737706478207">Reabrir la última pestaña o ventana cerrada</translation>
 <translation id="5790085346892983794">Completado correctamente</translation>
@@ -1267,7 +1270,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6095008505822982596">Velocidad de voz</translation>
 <translation id="6095425951508823973">Añadir conexión con <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Editado hace menos de un mes</translation>
-<translation id="6099793635444444289">No se puede iniciar el dictado porque el micrófono está silenciado</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Archivos de voz en <ph name="LANGUAGE" /> descargados</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1313,6 +1315,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6284232397434400372">Se ha cambiado la resolución</translation>
 <translation id="6288235558961782912">Se puede volver a añadir <ph name="USER_EMAIL_ADDRESS" /> más adelante con un permiso parental.</translation>
 <translation id="6291221004442998378">No se está cargando</translation>
+<translation id="6298183524022479114">Personaliza este dispositivo en la aplicación</translation>
 <translation id="6309219492973062892">Tocar o hacer clic en iconos 1-8 de la estantería</translation>
 <translation id="6315170314923504164">Voz</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>
