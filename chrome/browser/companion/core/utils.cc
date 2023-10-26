@@ -106,6 +106,13 @@ std::string GetCompanionIPHBlocklistedPageURLs() {
       "companion-iph-blocklisted-page-urls");
 }
 
+bool ShouldOpenContextualLensPanel() {
+  // Allow multiple field trials to control the value. This is needed because
+  // companion may be enabled by any of the field trials.
+  return base::GetFieldTrialParamByFeatureAsBool(
+      *GetFeatureToUse(), "open-contextual-lens-panel", true);
+}
+
 // Checks to see if the page url is a valid one to be sent to companion.
 bool IsValidPageURLForCompanion(const GURL& url) {
   if (!url.is_valid()) {
