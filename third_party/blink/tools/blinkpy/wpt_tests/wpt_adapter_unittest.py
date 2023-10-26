@@ -172,7 +172,7 @@ class WPTAdapterTest(unittest.TestCase):
             '-t',
             'Debug',
             '-p',
-            'chrome',
+            'content_shell',
             '-j',
             '5',
             '--iterations=7',
@@ -186,7 +186,7 @@ class WPTAdapterTest(unittest.TestCase):
         ]
         adapter = WPTAdapter.from_args(self.host, args, 'test-linux-trusty')
         with adapter.test_env() as options:
-            self.assertEqual(options.product, 'chrome')
+            self.assertEqual(options.product, 'content_shell')
             self.assertEqual(options.processes, 5)
             self.assertEqual(options.repeat, 7)
             self.assertEqual(options.rerun, 9)
@@ -211,7 +211,7 @@ class WPTAdapterTest(unittest.TestCase):
         self.assertEqual(
             self.output_stream.getvalue(),
             textwrap.dedent("""\
-                00:00:01 INFO: Running tests for chrome
+                00:00:01 INFO: Running tests for content_shell
                 00:00:02 INFO: Using port "test-linux-trusty"
                 00:00:03 INFO: View the test results at file:///tmp/layout-test-results/results.html
                 00:00:04 INFO: Using Debug build
@@ -502,31 +502,6 @@ class WPTAdapterTest(unittest.TestCase):
         self.assertFalse(
             self.fs.exists(
                 self.finder.path_from_wpt_tests('dir', 'reftest.html.ini')))
-
-    def test_reset_results_fail_to_pass_chrome_only(self):
-        self.write_contents(
-            'external/wpt/dir/reftest.html.ini', """\
-            [reftest.html]
-              expected: FAIL
-            """)
-        adapter = WPTAdapter.from_args(
-            self.host,
-            ['--no-manifest-update', '--reset-results', '--product=chrome'])
-        with adapter.test_env() as options:
-            self.write_wptreport(options, [{
-                'test': '/dir/reftest.html',
-                'subsuite': '',
-                'status': 'PASS',
-                'expected': 'FAIL',
-                'subtests': [],
-            }],
-                                 product='chrome')
-        self.assert_contents(
-            'external/wpt/dir/reftest.html.ini', """\
-            [reftest.html]
-              expected:
-                if product == "content_shell": FAIL
-            """)
 
     def test_reset_results_fail_to_pass_flag_specific_only(self):
         self.write_contents(

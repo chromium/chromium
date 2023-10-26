@@ -126,6 +126,10 @@ class StructuredLogAdapter(logging.Handler):
 
 
 class WPTAdapter:
+    PORT_NAME_BY_PRODUCT = {
+        'chrome': 'chrome',
+    }
+
     def __init__(self, product, port, options, paths):
         self.product = product
         self.port = port
@@ -147,7 +151,13 @@ class WPTAdapter:
         # only run virtual tests for content shell
         cls._ensure_value(options, 'no_virtual_tests',
                           options.product != 'content_shell')
-        port = host.port_factory.get(port_name, options)
+
+        if options.product in cls.PORT_NAME_BY_PRODUCT:
+            port = host.port_factory.get(
+                cls.PORT_NAME_BY_PRODUCT[options.product], options)
+        else:
+            port = host.port_factory.get(port_name, options)
+
         if options.product == 'chrome':
             port.set_option_default('driver_name', port.CHROME_NAME)
         product = make_product(port, options)

@@ -54,8 +54,6 @@ class LinuxPort(base.Port):
         super(LinuxPort, self).__init__(host, port_name, **kwargs)
         (self._version, ) = self.SUPPORTED_VERSIONS
         self._architecture = 'x86_64'
-        assert port_name == 'linux', ('Only one version of Linux is '
-                                      'supported. See crbug.com/1468322')
 
         if not self.get_option('disable_breakpad'):
             self._dump_reader = DumpReaderLinux(host, self.build_path())
