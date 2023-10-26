@@ -1066,25 +1066,11 @@ INSTANTIATE_TEST_SUITE_P(Capture_Browser,
                          ECKEncryptedMediaOutputProtectionTest,
                          Values("browser"));
 
-// TODO(https://crbug.com/1047944): Failing on Win.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_BeforeMediaKeys DISABLED_BeforeMediaKeys
-#else
-#define MAYBE_BeforeMediaKeys BeforeMediaKeys
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest,
-                       MAYBE_BeforeMediaKeys) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest, BeforeMediaKeys) {
   TestOutputProtection(/*create_recorder_before_media_keys=*/true);
 }
 
-// TODO(https://crbug.com/1047944): Failing on Win.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AfterMediaKeys DISABLED_AfterMediaKeys
-#else
-#define MAYBE_AfterMediaKeys AfterMediaKeys
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest,
-                       MAYBE_AfterMediaKeys) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest, AfterMediaKeys) {
   TestOutputProtection(/*create_recorder_before_media_keys=*/false);
 }
 
