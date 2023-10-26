@@ -186,7 +186,7 @@ void MetricReportingManager::OnLogin(Profile* profile) {
           EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY,
           /*rate_limiter=*/nullptr, std::move(source_info));
 
-  DCHECK(profile);
+  CHECK(profile);
   user_reporting_settings_ =
       std::make_unique<UserReportingSettings>(profile->GetWeakPtr());
 
@@ -390,7 +390,7 @@ void MetricReportingManager::InitOneShotTelemetryCollector(
     bool enable_default_value,
     base::TimeDelta init_delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(telemetry_collectors_, collector_name));
+  CHECK(!base::Contains(telemetry_collectors_, collector_name));
   if (!metric_report_queue) {
     return;
   }
@@ -408,7 +408,7 @@ void MetricReportingManager::InitManualTelemetryCollector(
     const std::string& enable_setting_path,
     bool enable_default_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(telemetry_collectors_, collector_name));
+  CHECK(!base::Contains(telemetry_collectors_, collector_name));
   if (!metric_report_queue) {
     return;
   }
@@ -430,7 +430,7 @@ void MetricReportingManager::InitPeriodicTelemetryCollector(
     int rate_unit_to_ms,
     base::TimeDelta init_delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(telemetry_collectors_, collector_name));
+  CHECK(!base::Contains(telemetry_collectors_, collector_name));
   if (!metric_report_queue) {
     return;
   }
@@ -555,10 +555,10 @@ void MetricReportingManager::InitNetworkPeriodicCollector(
 
 void MetricReportingManager::InitAppCollectors(Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(telemetry_collectors_, kAppTelemetry));
-  DCHECK(user_event_report_queue_);
-  DCHECK(user_reporting_settings_);
-  DCHECK(user_telemetry_report_queue_);
+  CHECK(!base::Contains(telemetry_collectors_, kAppTelemetry));
+  CHECK(user_event_report_queue_);
+  CHECK(user_reporting_settings_);
+  CHECK(user_telemetry_report_queue_);
   // App events.
   if (base::FeatureList::IsEnabled(kEnableAppEventsObserver)) {
     auto app_events_observer = AppEventsObserver::CreateForProfile(

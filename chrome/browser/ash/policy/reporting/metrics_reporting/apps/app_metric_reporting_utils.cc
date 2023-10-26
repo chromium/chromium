@@ -17,8 +17,8 @@ namespace reporting {
 
 absl::optional<std::string> GetPublisherIdForApp(const std::string& app_id,
                                                  Profile* profile) {
-  DCHECK(profile);
-  DCHECK(
+  CHECK(profile);
+  CHECK(
       ::apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
   absl::optional<std::string> publisher_id = absl::nullopt;
   ::apps::AppServiceProxyFactory::GetForProfile(profile)

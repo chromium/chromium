@@ -97,7 +97,7 @@ class DeviceSettingsServiceWaiter
     : public ::ash::DeviceSettingsService::Observer {
  public:
   DeviceSettingsServiceWaiter() {
-    DCHECK(::ash::DeviceSettingsService::IsInitialized());
+    CHECK(::ash::DeviceSettingsService::IsInitialized());
     device_settings_observation_.Observe(::ash::DeviceSettingsService::Get());
   }
 

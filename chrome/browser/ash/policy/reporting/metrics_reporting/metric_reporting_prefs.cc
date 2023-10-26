@@ -15,7 +15,7 @@
 namespace ash::reporting {
 
 void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry) {
-  DCHECK(registry);
+  CHECK(registry);
   registry->RegisterListPref(kReportAppInventory);
   registry->RegisterListPref(kReportAppUsage);
   registry->RegisterIntegerPref(
@@ -58,7 +58,7 @@ absl::optional<std::string> GetAppReportingCategoryForType(
 bool IsAppTypeAllowed(::apps::AppType app_type,
                       const ::reporting::ReportingSettings* reporting_settings,
                       const std::string& policy_setting) {
-  DCHECK(reporting_settings);
+  CHECK(reporting_settings);
   const base::Value::List* allowed_app_types;
   if (!reporting_settings->GetList(policy_setting, &allowed_app_types)) {
     // Policy likely unset. Disallow app usage reporting regardless of app type.

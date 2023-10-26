@@ -49,7 +49,7 @@ size_t GetDiskConsumptionForList(const base::Value::List& list) {
 std::unique_ptr<AppEventsObserver> AppEventsObserver::CreateForProfile(
     Profile* profile,
     const ReportingSettings* reporting_settings) {
-  DCHECK(profile);
+  CHECK(profile);
   const auto profile_weak_ptr = profile->GetWeakPtr();
   auto app_platform_metrics_retriever =
       std::make_unique<AppPlatformMetricsRetriever>(profile_weak_ptr);
@@ -63,7 +63,7 @@ std::unique_ptr<AppEventsObserver> AppEventsObserver::CreateForTest(
     Profile* profile,
     std::unique_ptr<AppPlatformMetricsRetriever> app_platform_metrics_retriever,
     const ReportingSettings* reporting_settings) {
-  DCHECK(profile);
+  CHECK(profile);
   return base::WrapUnique(new AppEventsObserver(
       profile->GetWeakPtr(), std::move(app_platform_metrics_retriever),
       reporting_settings));
@@ -81,7 +81,7 @@ void AppEventsObserver::AppInstallTracker::Add(std::string_view app_id) {
     // Profile destroyed. Skip.
     return;
   }
-  DCHECK(!Contains(app_id)) << "App already being tracked";
+  CHECK(!Contains(app_id)) << "App already being tracked";
   ScopedListPrefUpdate apps_installed_pref(profile_->GetPrefs(),
                                            ::ash::reporting::kAppsInstalled);
   apps_installed_pref->Append(app_id);
@@ -96,7 +96,7 @@ void AppEventsObserver::AppInstallTracker::Remove(std::string_view app_id) {
     // Profile destroyed. Skip.
     return;
   }
-  DCHECK(Contains(app_id)) << "App not being tracked";
+  CHECK(Contains(app_id)) << "App not being tracked";
   ScopedListPrefUpdate apps_installed_pref(profile_->GetPrefs(),
                                            ::ash::reporting::kAppsInstalled);
   apps_installed_pref->EraseValue(base::Value(app_id));
@@ -108,7 +108,7 @@ void AppEventsObserver::AppInstallTracker::Remove(std::string_view app_id) {
 bool AppEventsObserver::AppInstallTracker::Contains(
     std::string_view app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_);
+  CHECK(profile_);
   return base::Contains(
       profile_->GetPrefs()->GetList(::ash::reporting::kAppsInstalled), app_id);
 }
@@ -122,7 +122,7 @@ AppEventsObserver::AppEventsObserver(
       app_platform_metrics_retriever_(
           std::move(app_platform_metrics_retriever)),
       reporting_settings_(reporting_settings) {
-  DCHECK(app_platform_metrics_retriever_);
+  CHECK(app_platform_metrics_retriever_);
   app_platform_metrics_retriever_->GetAppPlatformMetrics(base::BindOnce(
       &AppEventsObserver::InitEventObserver, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -160,7 +160,7 @@ void AppEventsObserver::OnAppInstalled(const std::string& app_id,
                                        ::apps::InstallReason app_install_reason,
                                        ::apps::InstallTime app_install_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(reporting_settings_);
+  CHECK(reporting_settings_);
   if (!profile_ || app_install_tracker_->Contains(app_id)) {
     // Either the profile was destroyed or the app was already installed
     // (likely in a prior session). Skip.
@@ -207,7 +207,7 @@ void AppEventsObserver::OnAppLaunched(const std::string& app_id,
                                       ::apps::AppType app_type,
                                       ::apps::LaunchSource app_launch_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(reporting_settings_);
+  CHECK(reporting_settings_);
   if (!profile_ || !::ash::reporting::IsAppTypeAllowed(
                        app_type, reporting_settings_.get(),
                        ::ash::reporting::kReportAppInventory)) {
@@ -241,7 +241,7 @@ void AppEventsObserver::OnAppUninstalled(
     ::apps::AppType app_type,
     ::apps::UninstallSource app_uninstall_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(reporting_settings_);
+  CHECK(reporting_settings_);
   if (!profile_) {
     // Profile destroyed. Return.
     return;

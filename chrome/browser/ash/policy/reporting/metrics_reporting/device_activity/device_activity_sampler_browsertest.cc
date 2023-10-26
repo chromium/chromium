@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -30,6 +29,8 @@
 #include "ui/base/user_activity/user_activity_detector.h"
 
 using ::testing::Eq;
+using ::testing::IsNull;
+using ::testing::Not;
 using ::testing::StrEq;
 
 namespace reporting {
@@ -116,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(DeviceActivitySamplerBrowserTest,
   SetPolicyEnabled(true);
 
   // Simulate locked activity for the current session.
-  DCHECK(::session_manager::SessionManager::Get());
+  ASSERT_THAT(::session_manager::SessionManager::Get(), Not(IsNull()));
   ::ash::ScreenLockerTester().Lock();
 
   // Force telemetry collection by advancing the timer and verify data that is

@@ -33,10 +33,10 @@ base::CallbackListSubscription UserReportingSettings::AddSettingsObserver(
     const std::string& path,
     base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_);
-  DCHECK(profile_->GetPrefs()->FindPreference(path));
-  DCHECK(callback);
-  DCHECK(pref_change_registrar_);
+  CHECK(profile_);
+  CHECK(profile_->GetPrefs()->FindPreference(path));
+  CHECK(callback);
+  CHECK(pref_change_registrar_);
 
   auto [iterator, added_element] = settings_observers_.emplace(
       path, std::make_unique<base::RepeatingClosureList>());
@@ -58,7 +58,7 @@ bool UserReportingSettings::PrepareTrustedValues(base::OnceClosure callback) {
 bool UserReportingSettings::GetBoolean(const std::string& path,
                                        bool* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_);
+  CHECK(profile_);
   const auto* const pref_service = profile_->GetPrefs();
   if (!pref_service->FindPreference(path) ||
       !pref_service->GetValue(path).is_bool()) {
@@ -72,7 +72,7 @@ bool UserReportingSettings::GetBoolean(const std::string& path,
 bool UserReportingSettings::GetInteger(const std::string& path,
                                        int* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_);
+  CHECK(profile_);
   const auto* const pref_service = profile_->GetPrefs();
   if (!pref_service->FindPreference(path) ||
       !pref_service->GetValue(path).is_int()) {
@@ -86,7 +86,7 @@ bool UserReportingSettings::GetInteger(const std::string& path,
 bool UserReportingSettings::GetList(const std::string& path,
                                     const base::Value::List** out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_);
+  CHECK(profile_);
   const auto* const pref_service = profile_->GetPrefs();
   if (!pref_service->FindPreference(path) ||
       !pref_service->GetValue(path).is_list()) {
@@ -100,7 +100,7 @@ bool UserReportingSettings::GetList(const std::string& path,
 bool UserReportingSettings::GetReportingEnabled(const std::string& path,
                                                 bool* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_);
+  CHECK(profile_);
 
   const base::Value::List* list_value;
   if (GetBoolean(path, out_value)) {
@@ -132,10 +132,9 @@ void UserReportingSettings::OnProfileWillBeDestroyed(Profile* profile) {
 
 void UserReportingSettings::OnPrefChanged(const std::string& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(settings_observers_.contains(path));
-
-  // Notify registered subscribers.
-  settings_observers_.find(path)->second->Notify();
+  auto it = settings_observers_.find(path);
+  CHECK(it != settings_observers_.end());
+  it->second->Notify();
 }
 
 }  // namespace reporting
