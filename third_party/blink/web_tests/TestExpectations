@@ -4467,6 +4467,7 @@ crbug.com/1376976 http/tests/devtools/console/console-dirxml.js [ Failure Pass ]
 crbug.com/1376976 http/tests/devtools/console/console-xml-document.js [ Failure Pass ]
 crbug.com/1376976 http/tests/devtools/elements/iframe-load-event.js [ Failure Pass ]
 crbug.com/1376976 http/tests/devtools/oopif/oopif-elements-navigate-out.js [ Failure Pass ]
+crbug.com/1376976 virtual/portals/http/tests/devtools/portals/portals-elements-activate.js [ Failure Pass ]
 
 # [virtual/...]external/wpt/web-animation test flakes
 
