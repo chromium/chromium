@@ -125,6 +125,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     // We issued a drain message to the MF encoder want wait for the drain
     // to complete.
     kFlushing,
+    // We wait to return all encoded outputs from `encoder_output_queue_`
+    // before signaling that Flush() has finished.
+    kPostFlushing,
     kError,
   };
 
