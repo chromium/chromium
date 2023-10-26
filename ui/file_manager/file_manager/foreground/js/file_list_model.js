@@ -216,13 +216,11 @@ export class FileListModel extends ArrayDataModel {
    *
    * @param {number} index The index of the item to update.
    * @param {number} deleteCount The number of items to remove.
-   * @param {...*} var_args The items to add.
+   * @param {...*} args The items to add.
    * @return {!Array<*>} An array with the removed items.
    * @override
    */
-  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
-  // read.
-  splice(index, deleteCount, var_args) {
+  splice(index, deleteCount, ...args) {
     const insertPos = Math.max(0, Math.min(index, this.indexes_.length));
     deleteCount = Math.min(deleteCount, this.indexes_.length - insertPos);
 
@@ -231,8 +229,8 @@ export class FileListModel extends ArrayDataModel {
       // type.
       this.onRemoveEntryFromList_(this.array_[this.indexes_[i]]);
     }
-    for (let i = 2; i < arguments.length; i++) {
-      this.onAddEntryToList_(arguments[i]);
+    for (const arg of args) {
+      this.onAddEntryToList_(arg);
     }
 
     // Prepare a comparison function to sort the list.
@@ -257,8 +255,8 @@ export class FileListModel extends ArrayDataModel {
     // Store the given new items in |newItems| and sort it before marge them to
     // the existing list.
     const newItems = [];
-    for (let i = 0; i < arguments.length - 2; i++) {
-      newItems.push(arguments[i + 2]);
+    for (const arg of args) {
+      newItems.push(arg);
     }
     if (comp) {
       newItems.sort(comp);
@@ -334,11 +332,11 @@ export class FileListModel extends ArrayDataModel {
     // If at least one item is inserted, it should be the resulting index of the
     // item which is inserted first.
     let spliceIndex = insertPos;
-    if (arguments.length > 2) {
+    if (args.length > 0) {
       for (let i = 0; i < this.indexes_.length; i++) {
         // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
         // type.
-        if (this.array_[this.indexes_[i]] === arguments[2]) {
+        if (this.array_[this.indexes_[i]] === args[0]) {
           spliceIndex = i;
           break;
         }
@@ -354,7 +352,7 @@ export class FileListModel extends ArrayDataModel {
     spliceEvent.removed = deletedItems;
     // @ts-ignore: error TS2339: Property 'added' does not exist on type
     // 'Event'.
-    spliceEvent.added = Array.prototype.slice.call(arguments, 2);
+    spliceEvent.added = args;
     // @ts-ignore: error TS2339: Property 'index' does not exist on type
     // 'Event'.
     spliceEvent.index = spliceIndex;

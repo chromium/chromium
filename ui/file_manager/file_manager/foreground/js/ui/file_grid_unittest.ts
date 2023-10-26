@@ -17,25 +17,16 @@ import {A11yAnnounce} from './a11y_announce.js';
 import {FileGrid, FileGridSelectionController} from './file_grid.js';
 import {ListSelectionModel} from './list_selection_model.js';
 
-/** @type {!MockVolumeManager} */
-let volumeManager;
-
-/** @type {!MetadataModel} */
-let metadataModel;
-
-/** @type {!HTMLElement} */
-let element;
-
-/** @type {!A11yAnnounce} */
-let a11y;
+let volumeManager: MockVolumeManager;
+let metadataModel: MetadataModel;
+let element: HTMLElement;
+let a11y: A11yAnnounce;
 
 /**
  * Returns the element used to parent the file grid. The element is
  * attached to the body, and styled for visual display.
- *
- * @return {!HTMLElement}
  */
-function setupBody() {
+function setupBody(): HTMLElement {
   document.body.innerHTML = getTrustedHTML`
     <style>
       grid {
@@ -48,7 +39,7 @@ function setupBody() {
 
   const element = document.createElement('div');
   document.body.appendChild(element);
-  return /** @type {!HTMLElement} */ (element);
+  return element;
 }
 
 // Set up test components.
@@ -58,16 +49,14 @@ export function setUp() {
   });
   // Setup mock components.
   volumeManager = new MockVolumeManager();
-  // @ts-ignore: error TS2322: Type 'MockMetadataModel' is not assignable to
-  // type 'MetadataModel'.
-  metadataModel = new MockMetadataModel({});
+  metadataModel = new MockMetadataModel({}) as unknown as MetadataModel;
 
   const a11Messages = [];
-  a11y = /** @type {!A11yAnnounce} */ ({
+  a11y = {
     speakA11yMessage: (text) => {
       a11Messages.push(text);
     },
-  });
+  };
 
   // Create DOM element parent of the file grid under test.
   element = setupBody();
@@ -81,10 +70,7 @@ const ITEM_WIDTH = 100;
 const ITEM_MARGIN_TOP = 10;
 const ITEM_MARGIN_LEFT = 10;
 
-/**
- * @return {!FileGrid}
- */
-function setupFileGrid() {
+function setupFileGrid(): FileGrid {
   FileGrid.decorate(element, metadataModel, volumeManager, a11y);
 
   // Add 10 fake files.
@@ -95,9 +81,8 @@ function setupFileGrid() {
   }
   const dataModel = new FileListModel(metadataModel);
   dataModel.splice(0, 0, ...entries);
-  const grid = /** @type {!FileGrid} */ (element);
+  const grid = element as FileGrid;
   grid.dataModel = dataModel;
-  /** @suppress {accessControls} modify protected method in test. */
   // Mock item size.
   grid['getFileItemHeight_'] = () => FILE_ITEM_HEIGHT;
   grid['getFolderItemHeight_'] = () => FOLDER_ITEM_HEIGHT;
@@ -109,10 +94,7 @@ function setupFileGrid() {
   return grid;
 }
 
-/**
- * @param {!FileListModel} fileListModel
- */
-function groupByModificationTime(fileListModel) {
+function groupByModificationTime(fileListModel: FileListModel) {
   // Mock group by information.
   fileListModel.shouldShowGroupHeading = () => true;
   fileListModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;
@@ -159,10 +141,7 @@ function groupByModificationTime(fileListModel) {
   };
 }
 
-/**
- * @param {!FileListModel} fileListModel
- */
-function groupByDirectory(fileListModel) {
+function groupByDirectory(fileListModel: FileListModel) {
   // Mock group by information.
   fileListModel.shouldShowGroupHeading = () => true;
   fileListModel.groupByField = GROUP_BY_FIELD_DIRECTORY;
@@ -325,10 +304,7 @@ export function testGetItemPosition() {
 
 export function testGetAfterFillerHeight() {
   const grid = setupFileGrid();
-  /** @suppress {accessControls} modify protected method in test. */
-  // @ts-ignore: error TS2341: Property 'getGroupHeadingHeight_' is private and
-  // only accessible within class 'FileGrid'.
-  grid.getGroupHeadingHeight_ = () => GROUP_HEADING_HEIGHT;
+  grid['getGroupHeadingHeight_'] = () => GROUP_HEADING_HEIGHT;
   const ROW_HEIGHT = FILE_ITEM_HEIGHT;
   // Enable group by modification time.
   groupByModificationTime(grid.dataModel);
@@ -383,18 +359,10 @@ export function testGetAfterFillerHeight() {
   assertEquals(grid.getAfterFillerHeight(20), 1 * ROW_HEIGHT);
 }
 
-/**
- * @suppress {accessControls} test the private method here.
- */
 export function testGetRowForListOffset() {
   const grid = setupFileGrid();
-  /** @suppress {accessControls} modify protected method in test. */
-  // @ts-ignore: error TS2341: Property 'getGroupHeadingHeight_' is private and
-  // only accessible within class 'FileGrid'.
-  grid.getGroupHeadingHeight_ = () => GROUP_HEADING_HEIGHT;
-  // @ts-ignore: error TS2341: Property 'paddingTop_' is private and only
-  // accessible within class 'FileGrid'.
-  grid.paddingTop_ = 0;  // To ease calculation.
+  grid['getGroupHeadingHeight_'] = () => GROUP_HEADING_HEIGHT;
+  grid['paddingTop_'] = 0;  // To ease calculation.
   // Enable group by modification time.
   groupByModificationTime(grid.dataModel);
   // index                                       height      total height
@@ -413,41 +381,18 @@ export function testGetRowForListOffset() {
   // (row 6)   Item 16                             50              500
   // Heading #6/older:                             30              530
   // (row 7)   Item 17   Item 18   Item 19         50              580
-  // @ts-ignore: error TS2341: Property 'getRowForListOffset_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getRowForListOffset_(0), 0);
-  // @ts-ignore: error TS2341: Property 'getRowForListOffset_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getRowForListOffset_(30), 0);
-  // @ts-ignore: error TS2341: Property 'getRowForListOffset_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getRowForListOffset_(100), 1);
-  // @ts-ignore: error TS2341: Property 'getRowForListOffset_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getRowForListOffset_(200), 2);
-  // @ts-ignore: error TS2341: Property 'getRowForListOffset_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getRowForListOffset_(240), 3);
-  // @ts-ignore: error TS2341: Property 'getRowForListOffset_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getRowForListOffset_(300), 4);
-  // @ts-ignore: error TS2341: Property 'getRowForListOffset_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getRowForListOffset_(400), 5);
-  // @ts-ignore: error TS2341: Property 'getRowForListOffset_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getRowForListOffset_(450), 6);
-  // @ts-ignore: error TS2341: Property 'getRowForListOffset_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getRowForListOffset_(500), 7);
-  // @ts-ignore: error TS2341: Property 'getRowForListOffset_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getRowForListOffset_(600), 7);
+  assertEquals(grid['getRowForListOffset_'](0), 0);
+  assertEquals(grid['getRowForListOffset_'](30), 0);
+  assertEquals(grid['getRowForListOffset_'](100), 1);
+  assertEquals(grid['getRowForListOffset_'](200), 2);
+  assertEquals(grid['getRowForListOffset_'](240), 3);
+  assertEquals(grid['getRowForListOffset_'](300), 4);
+  assertEquals(grid['getRowForListOffset_'](400), 5);
+  assertEquals(grid['getRowForListOffset_'](450), 6);
+  assertEquals(grid['getRowForListOffset_'](500), 7);
+  assertEquals(grid['getRowForListOffset_'](600), 7);
 }
 
-/**
- * @suppress {accessControls} test the private method here.
- */
 export function testItemHeightForGroupByModificationTime() {
   const grid = setupFileGrid();
   // Enable group by modification time.
@@ -456,22 +401,13 @@ export function testItemHeightForGroupByModificationTime() {
   // We are testing the logic in getGroupHeadingHeight_(), so we should use
   // the real MODIFICATION_TIME_GROUP_HEADING_HEIGHT(57) and
   // GROUP_MARGIN_TOP(16) from file_grid.
-  // @ts-ignore: error TS2341: Property 'getGroupHeadingHeight_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getGroupHeadingHeight_(0), 57);
-  // @ts-ignore: error TS2341: Property 'getGroupHeadingHeight_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getGroupHeadingHeight_(1), 57 + 16);
+  assertEquals(grid['getGroupHeadingHeight_'](0), 57);
+  assertEquals(grid['getGroupHeadingHeight_'](1), 57 + 16);
   for (let i = 0; i < 20; i++) {
-    // @ts-ignore: error TS2341: Property 'getItemHeightByIndex_' is private and
-    // only accessible within class 'FileGrid'.
-    assertEquals(grid.getItemHeightByIndex_(i), FILE_ITEM_HEIGHT);
+    assertEquals(grid['getItemHeightByIndex_'](i), FILE_ITEM_HEIGHT);
   }
 }
 
-/**
- * @suppress {accessControls} test the private method here.
- */
 export function testItemHeightForGroupByDirectory() {
   const grid = setupFileGrid();
   // Enable group by directory.
@@ -480,33 +416,21 @@ export function testItemHeightForGroupByDirectory() {
   // We are testing the logic in getGroupHeadingHeight_(), so we should use
   // the real DIRECTORY_GROUP_HEADING_HEIGHT(40) and GROUP_MARGIN_TOP(16)
   // from file_grid.
-  // @ts-ignore: error TS2341: Property 'getGroupHeadingHeight_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getGroupHeadingHeight_(0), 40);
-  // @ts-ignore: error TS2341: Property 'getGroupHeadingHeight_' is private and
-  // only accessible within class 'FileGrid'.
-  assertEquals(grid.getGroupHeadingHeight_(1), 40 + 16);
+  assertEquals(grid['getGroupHeadingHeight_'](0), 40);
+  assertEquals(grid['getGroupHeadingHeight_'](1), 40 + 16);
   for (let i = 0; i < 20; i++) {
     // index 3 is the last item for folders
     assertEquals(
-        // @ts-ignore: error TS2341: Property 'getItemHeightByIndex_' is private
-        // and only accessible within class 'FileGrid'.
-        grid.getItemHeightByIndex_(i),
+        grid['getItemHeightByIndex_'](i),
         i <= 3 ? FOLDER_ITEM_HEIGHT : FILE_ITEM_HEIGHT);
   }
 }
 
-/**
- * @suppress {accessControls} test the private method here.
- */
 export function testGetHitRowIndex() {
   const grid = setupFileGrid();
   // Enable group by directory.
   groupByDirectory(grid.dataModel);
-  /** @suppress {accessControls} modify protected method in test. */
-  // @ts-ignore: error TS2341: Property 'getGroupHeadingHeight_' is private and
-  // only accessible within class 'FileGrid'.
-  grid.getGroupHeadingHeight_ = () => GROUP_HEADING_HEIGHT;
+  grid['getGroupHeadingHeight_'] = () => GROUP_HEADING_HEIGHT;
 
   // index                                       height      total height
   // --------------------------------------------------------------------
@@ -520,69 +444,31 @@ export function testGetHitRowIndex() {
   // (row 5)    Item 13   Item 14   Item 15       50             300
   // (row 6)    Item 16   Item 17   Item 18       50             350
   // (row 7)    Item 19                           50             400
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(0, true), 0);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(0, false), -1);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(30, true), 0);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(30, false), -1);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(70, true), 2);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(70, false), 1);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(70 + ITEM_MARGIN_TOP, true), 2);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(70 + ITEM_MARGIN_TOP, false), 1);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(100, true), 2);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(100, false), 1);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(180, true), 3);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(180, false), 3);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(250 + ITEM_MARGIN_TOP - 1, true), 5);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(250 + ITEM_MARGIN_TOP - 1, false), 4);
+  assertEquals(grid['getHitRowIndex_'](0, true), 0);
+  assertEquals(grid['getHitRowIndex_'](0, false), -1);
+  assertEquals(grid['getHitRowIndex_'](30, true), 0);
+  assertEquals(grid['getHitRowIndex_'](30, false), -1);
+  assertEquals(grid['getHitRowIndex_'](70, true), 2);
+  assertEquals(grid['getHitRowIndex_'](70, false), 1);
+  assertEquals(grid['getHitRowIndex_'](70 + ITEM_MARGIN_TOP, true), 2);
+  assertEquals(grid['getHitRowIndex_'](70 + ITEM_MARGIN_TOP, false), 1);
+  assertEquals(grid['getHitRowIndex_'](100, true), 2);
+  assertEquals(grid['getHitRowIndex_'](100, false), 1);
+  assertEquals(grid['getHitRowIndex_'](180, true), 3);
+  assertEquals(grid['getHitRowIndex_'](180, false), 3);
+  assertEquals(grid['getHitRowIndex_'](250 + ITEM_MARGIN_TOP - 1, true), 5);
+  assertEquals(grid['getHitRowIndex_'](250 + ITEM_MARGIN_TOP - 1, false), 4);
   // For larger y, the out of bound row index will be returned (e.g. max
   // index = 7), which is expected.
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(450, true), 8);
-  // @ts-ignore: error TS2341: Property 'getHitRowIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitRowIndex_(450, false), 8);
+  assertEquals(grid['getHitRowIndex_'](450, true), 8);
+  assertEquals(grid['getHitRowIndex_'](450, false), 8);
 }
 
-/**
- * @suppress {accessControls} test the private method here.
- */
 export function testGetHitColumnIndex() {
   const grid = setupFileGrid();
   // Enable group by directory.
   groupByDirectory(grid.dataModel);
-  /** @suppress {accessControls} modify protected method in test. */
-  // @ts-ignore: error TS2341: Property 'getGroupHeadingHeight_' is private and
-  // only accessible within class 'FileGrid'.
-  grid.getGroupHeadingHeight_ = () => GROUP_HEADING_HEIGHT;
+  grid['getGroupHeadingHeight_'] = () => GROUP_HEADING_HEIGHT;
 
   //           (col 0)  (col 1)   (col 2)
   // -----------------------------------------
@@ -598,32 +484,17 @@ export function testGetHitColumnIndex() {
   // (row 5)    Item 13   Item 14   Item 15
   // (row 6)    Item 16   Item 17   Item 18
   // (row 7)    Item 19
-  // @ts-ignore: error TS2341: Property 'getHitColumnIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitColumnIndex_(0, true), 0);
-  // @ts-ignore: error TS2341: Property 'getHitColumnIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitColumnIndex_(0, false), -1);
-  // @ts-ignore: error TS2341: Property 'getHitColumnIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitColumnIndex_(60, true), 0);
-  // @ts-ignore: error TS2341: Property 'getHitColumnIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitColumnIndex_(60, false), 0);
-  // @ts-ignore: error TS2341: Property 'getHitColumnIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitColumnIndex_(100 + ITEM_MARGIN_LEFT - 1, true), 1);
-  // @ts-ignore: error TS2341: Property 'getHitColumnIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitColumnIndex_(100 + ITEM_MARGIN_LEFT - 1, false), 0);
+  assertEquals(grid['getHitColumnIndex_'](0, true), 0);
+  assertEquals(grid['getHitColumnIndex_'](0, false), -1);
+  assertEquals(grid['getHitColumnIndex_'](60, true), 0);
+  assertEquals(grid['getHitColumnIndex_'](60, false), 0);
+  assertEquals(grid['getHitColumnIndex_'](100 + ITEM_MARGIN_LEFT - 1, true), 1);
+  assertEquals(
+      grid['getHitColumnIndex_'](100 + ITEM_MARGIN_LEFT - 1, false), 0);
   // For larger x, the out of bound column index will be returned (e.g. max
   // index = 2), which is expected.
-  // @ts-ignore: error TS2341: Property 'getHitColumnIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitColumnIndex_(400, true), 4);
-  // @ts-ignore: error TS2341: Property 'getHitColumnIndex_' is private and only
-  // accessible within class 'FileGrid'.
-  assertEquals(grid.getHitColumnIndex_(400, false), 3);
+  assertEquals(grid['getHitColumnIndex_'](400, true), 4);
+  assertEquals(grid['getHitColumnIndex_'](400, false), 3);
 }
 
 // Test FileGridSelectionController's getIndexAbove() and getIndexBelow().

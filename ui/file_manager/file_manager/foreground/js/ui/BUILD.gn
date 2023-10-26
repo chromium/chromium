@@ -210,22 +210,6 @@ js_library("drag_selector") {
   externs_list = [ "//ui/file_manager/file_manager/externs/drag_target.js" ]
 }
 
-js_unittest("file_grid_unittest") {
-  deps = [
-    ":a11y_announce",
-    ":list_selection_model",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/foreground/js:file_list_model",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-    "//ui/file_manager/file_manager/foreground/js/metadata:mock_metadata",
-  ]
-}
-
 js_library("file_list_selection_model") {
   deps = [
     ":list_selection_model",
@@ -422,13 +406,6 @@ js_library("gear_menu") {
   ]
 }
 
-js_unittest("grid_unittest") {
-  deps = [
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/common/js:array_data_model",
-  ]
-}
-
 js_library("install_linux_package_dialog") {
   deps = [
     ":file_manager_dialog_base",
@@ -448,14 +425,6 @@ js_unittest("install_linux_package_dialog_unittest") {
 
 js_library("import_crostini_image_dialog") {
   deps = [ ":dialogs" ]
-}
-
-js_unittest("list_unittest") {
-  deps = [
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/common/js:array_data_model",
-    "//ui/file_manager/file_manager/common/js:ui",
-  ]
 }
 
 js_library("list_container") {
