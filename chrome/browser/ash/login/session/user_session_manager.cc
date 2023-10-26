@@ -441,15 +441,18 @@ void SaveSyncTrustedVaultKeysToProfile(
   }
 
   if (!trusted_vault_keys.encryption_keys().empty()) {
-    trusted_vault_service->GetTrustedVaultClient()->StoreKeys(
-        gaia_id, trusted_vault_keys.encryption_keys(),
-        trusted_vault_keys.last_encryption_key_version());
+    trusted_vault_service
+        ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync)
+        ->StoreKeys(gaia_id, trusted_vault_keys.encryption_keys(),
+                    trusted_vault_keys.last_encryption_key_version());
   }
 
   for (const SyncTrustedVaultKeys::TrustedRecoveryMethod& method :
        trusted_vault_keys.trusted_recovery_methods()) {
-    trusted_vault_service->GetTrustedVaultClient()->AddTrustedRecoveryMethod(
-        gaia_id, method.public_key, method.type_hint, base::DoNothing());
+    trusted_vault_service
+        ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync)
+        ->AddTrustedRecoveryMethod(gaia_id, method.public_key, method.type_hint,
+                                   base::DoNothing());
   }
 }
 

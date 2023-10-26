@@ -65,17 +65,20 @@ std::string GetSecurityDomainName(SecurityDomainId domain) {
   switch (domain) {
     case SecurityDomainId::kChromeSync:
       return kSyncSecurityDomainName;
+    case SecurityDomainId::kPasskeys:
+      return kPasskeysSecurityDomainName;
   }
 }
 
 absl::optional<SecurityDomainId> GetSecurityDomainByName(
     base::StringPiece name) {
-  static_assert(static_cast<int>(SecurityDomainId::kMaxValue) == 0,
+  static_assert(static_cast<int>(SecurityDomainId::kMaxValue) == 1,
                 "Update GetSecurityDomainByName when adding SecurityDomainId "
                 "enum values");
   static constexpr auto kSecurityDomainNames =
       base::MakeFixedFlatMap<base::StringPiece, SecurityDomainId>({
           {kSyncSecurityDomainName, SecurityDomainId::kChromeSync},
+          {kPasskeysSecurityDomainName, SecurityDomainId::kPasskeys},
       });
   return base::Contains(kSecurityDomainNames, name)
              ? absl::make_optional(kSecurityDomainNames.at(name))

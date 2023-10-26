@@ -98389,6 +98389,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="SecurityDomainId">
   <int value="0" label="Invalid"/>
   <int value="1" label="Chrome Sync"/>
+  <int value="2" label="Passkeys"/>
 </enum>
 
 <enum name="SecurityFilteredTouchResult">

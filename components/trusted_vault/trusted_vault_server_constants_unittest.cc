@@ -49,7 +49,7 @@ TEST(TrustedVaultServerConstantsTest, GetSecurityDomainByName) {
   EXPECT_THAT(GetSecurityDomainByName("users/me/securitydomains/chromesync"),
               Eq(SecurityDomainId::kChromeSync));
   EXPECT_THAT(GetSecurityDomainByName("users/me/securitydomains/hw_protected"),
-              Eq(absl::nullopt));
+              Eq(SecurityDomainId::kPasskeys));
   EXPECT_THAT(GetSecurityDomainByName("users/me/securitydomains/example"),
               Eq(absl::nullopt));
   EXPECT_THAT(GetSecurityDomainByName("chromesync"), Eq(absl::nullopt));

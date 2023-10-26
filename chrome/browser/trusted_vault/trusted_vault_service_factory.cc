@@ -8,10 +8,12 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_service.h"
+#include "device/fido/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/trusted_vault/trusted_vault_client_android.h"
@@ -33,18 +35,11 @@
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-constexpr base::FilePath::CharType kTrustedVaultFilename[] =
-    FILE_PATH_LITERAL("trusted_vault.pb");
-constexpr base::FilePath::CharType kDeprecatedTrustedVaultFilename[] =
-    FILE_PATH_LITERAL("Trusted Vault");
-
 std::unique_ptr<trusted_vault::TrustedVaultClient>
 CreateChromeSyncStandaloneTrustedVaultClient(Profile* profile) {
-  const base::FilePath profile_path = profile->GetPath();
   return std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
       trusted_vault::SecurityDomainId::kChromeSync,
-      profile_path.Append(kTrustedVaultFilename),
-      profile_path.Append(kDeprecatedTrustedVaultFilename),
+      /*base_dir=*/profile->GetPath(),
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
@@ -95,10 +90,30 @@ CreateChromeSyncTrustedVaultClient(Profile* profile) {
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::unique_ptr<trusted_vault::TrustedVaultClient>
+CreatePasskeyTrustedVaultClient(Profile* profile) {
+  return std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
+      trusted_vault::SecurityDomainId::kPasskeys,
+      /*base_dir=*/profile->GetPath(),
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 std::unique_ptr<KeyedService> BuildTrustedVaultService(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(!profile->IsOffTheRecord());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(device::kChromeOsPasskeys)) {
+    return std::make_unique<trusted_vault::TrustedVaultService>(
+        CreateChromeSyncTrustedVaultClient(profile),
+        CreatePasskeyTrustedVaultClient(profile));
+  }
+#endif
 
   return std::make_unique<trusted_vault::TrustedVaultService>(
       CreateChromeSyncTrustedVaultClient(profile));

@@ -21,6 +21,8 @@ inline constexpr int kUnknownConstantKeyVersion = 0;
 
 inline constexpr char kSyncSecurityDomainName[] =
     "users/me/securitydomains/chromesync";
+inline constexpr char kPasskeysSecurityDomainName[] =
+    "users/me/securitydomains/hw_protected";
 inline constexpr char kSecurityDomainMemberNamePrefix[] = "users/me/members/";
 inline constexpr char kJoinSecurityDomainsErrorDetailTypeURL[] =
     "type.googleapis.com/"
@@ -35,12 +37,13 @@ inline constexpr char kQueryParameterAlternateOutputProto[] = "proto";
 // persisted.
 enum class SecurityDomainId {
   kChromeSync,
-  kMaxValue = kChromeSync,
+  kPasskeys,
+  kMaxValue = kPasskeys,
 };
 
 inline constexpr auto kAllSecurityDomainIdValues =
     base::MakeFixedFlatSetSorted<SecurityDomainId>(
-        {SecurityDomainId::kChromeSync});
+        {SecurityDomainId::kChromeSync, SecurityDomainId::kPasskeys});
 static_assert(static_cast<int>(SecurityDomainId::kMaxValue) ==
                   kAllSecurityDomainIdValues.size() - 1,
               "Update kAllSecurityDomainIdValues when adding SecurityDomainId "

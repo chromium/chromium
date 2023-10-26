@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_service.h"
 
 namespace ash {
@@ -47,8 +48,8 @@ TrustedVaultBackendServiceFactoryAsh::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TrustedVaultBackendServiceAsh>(
       IdentityManagerFactory::GetForProfile(profile),
-      TrustedVaultServiceFactory::GetForProfile(profile)
-          ->GetTrustedVaultClient());
+      TrustedVaultServiceFactory::GetForProfile(profile)->GetTrustedVaultClient(
+          trusted_vault::SecurityDomainId::kChromeSync));
 }
 
 }  // namespace ash

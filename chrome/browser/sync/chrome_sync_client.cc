@@ -547,7 +547,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 
 trusted_vault::TrustedVaultClient* ChromeSyncClient::GetTrustedVaultClient() {
   return TrustedVaultServiceFactory::GetForProfile(profile_)
-      ->GetTrustedVaultClient();
+      ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync);
 }
 
 syncer::SyncInvalidationsService*

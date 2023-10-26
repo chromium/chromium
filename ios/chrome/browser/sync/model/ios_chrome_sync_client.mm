@@ -223,7 +223,7 @@ IOSChromeSyncClient::GetSyncInvalidationsService() {
 trusted_vault::TrustedVaultClient*
 IOSChromeSyncClient::GetTrustedVaultClient() {
   return IOSTrustedVaultServiceFactory::GetForBrowserState(browser_state_)
-      ->GetTrustedVaultClient();
+      ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync);
 }
 
 scoped_refptr<syncer::ExtensionsActivity>
