@@ -7201,6 +7201,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCriticalPersistedTabData,
                                     kCriticalPersistedTabDataVariations,
                                     "CriticalPersistedTabData")},
+    {"enable-tabstate-flatbuffer", flag_descriptions::kTabStateFlatBufferName,
+     flag_descriptions::kTabStateFlatBufferDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStateFlatBuffer)},
 
     {"suppress-toolbar-captures",
      flag_descriptions::kSuppressToolbarCapturesName,

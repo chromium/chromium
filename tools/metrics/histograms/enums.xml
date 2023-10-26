@@ -63885,6 +63885,7 @@ from previous Chrome versions.
   <int value="-940915510" label="IgnoreCSPInWebPaymentAPI:disabled"/>
   <int value="-940390151" label="RoundedDisplay:disabled"/>
   <int value="-939676447" label="CrostiniResetLxdDb:enabled"/>
+  <int value="-939519091" label="TabStateFlatBuffer:disabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
   <int value="-937430451" label="IntensiveWakeUpThrottling:disabled"/>
   <int value="-936652950"
@@ -70114,6 +70115,7 @@ from previous Chrome versions.
   <int value="2078879219"
       label="CryptAuthV2DeviceActivityStatusUseConnectivity:disabled"/>
   <int value="2079094073" label="PrintPreviewDiscoveredPrinters:disabled"/>
+  <int value="2079182437" label="TabStateFlatBuffer:enabled"/>
   <int value="2079658706" label="IncreasedCmdBufferParseSlice:disabled"/>
   <int value="2079672348" label="ExperimentalKeyboardLockUI:disabled"/>
   <int value="2080666644"

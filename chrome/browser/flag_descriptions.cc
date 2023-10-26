@@ -3928,6 +3928,11 @@ const char kCriticalPersistedTabDataDescription[] =
     "A new method of persisting Tab data across restarts has been devised "
     "and implemented. This actives the new approach.";
 
+const char kTabStateFlatBufferName[] = "Enable TabState FlatBuffer";
+const char kTabStateFlatBufferDescription[] =
+    "Migrates TabState from a pickle based schema to a FlatBuffer based "
+    "schema.";
+
 const char kContextMenuPopupForAllScreenSizesName[] =
     "Context menu popup for all screen sizes";
 const char kContextMenuPopupForAllScreenSizesDescription[] =

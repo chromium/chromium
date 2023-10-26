@@ -493,6 +493,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataNativeTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataTestUtils.java",
+  "javatests/src/org/chromium/chrome/browser/tab/state/TabStateFlatBufferTest.java",
   "javatests/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImplTest.java",
   "javatests/src/org/chromium/chrome/browser/tabbed_mode/TabbedNavigationBarColorControllerTest.java",
   "javatests/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreatorTest.java",

@@ -467,6 +467,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_STRIP_STARTUP_REFACTORING = "TabStripStartupRefactoring";
     public static final String TABLET_TOOLBAR_REORDERING = "TabletToolbarReordering";
     public static final String TAB_TO_GTS_ANIMATION = "TabToGTSAnimation";
+    public static final String TAB_STATE_FLATBUFFER = "TabStateFlatBuffer";
     public static final String TANGIBLE_SYNC = "TangibleSync";
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
@@ -635,6 +636,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabLinkDragDropAndroid =
             new CachedFlag(TAB_LINK_DRAG_DROP_ANDROID, false);
     public static final CachedFlag sTabStripRedesign = new CachedFlag(TAB_STRIP_REDESIGN, true);
+    public static final CachedFlag sTabStateFlatBuffer =
+            new CachedFlag(TAB_STATE_FLATBUFFER, false);
     public static final CachedFlag sTabStripStartupRefactoring =
             new CachedFlag(TAB_STRIP_STARTUP_REFACTORING, false);
     public static final CachedFlag sTabletToolbarReordering =
@@ -722,6 +725,7 @@ public abstract class ChromeFeatureList {
                     sSurfacePolish,
                     sTabDragDropAsWindowAndroid,
                     sTabLinkDragDropAndroid,
+                    sTabStateFlatBuffer,
                     sTabStripRedesign,
                     sTabStripStartupRefactoring,
                     sTabletToolbarReordering,

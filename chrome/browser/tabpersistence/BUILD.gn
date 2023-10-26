@@ -6,10 +6,13 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "android/java/src/org/chromium/chrome/browser/tabpersistence/FlatBufferTabStateSerializer.java",
     "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateDirectory.java",
     "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateFileManager.java",
+    "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateSerializer.java",
   ]
   deps = [
+    ":flatbuffer_java",
     "//base:base_java",
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/flags:java",
@@ -17,6 +20,16 @@ android_library("java") {
     "//components/version_info/android:version_constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/flatbuffers:flatbuffers_java",
+  ]
+}
+
+flatbuffer_java_library("flatbuffer_java") {
+  root_dir =
+      "android/java/src/org/chromium/chrome/browser/tabpersistence/flatbuffer"
+  sources = [
+    "$root_dir/tab_state_common.fbs",
+    "$root_dir/tab_state_v1.fbs",
   ]
 }
 
@@ -29,6 +42,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tabpersistence:flatbuffer_java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",

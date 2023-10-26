@@ -730,8 +730,12 @@ public class StartSurfaceTestUtils {
      * @param encrypted for Incognito mode
      */
     private static void saveTabState(int tabId, boolean encrypted) {
-        File file = TabStateFileManager.getTabStateFile(
-                TabStateDirectory.getOrCreateTabbedModeStateDirectory(), tabId, encrypted);
+        File file =
+                TabStateFileManager.getTabStateFile(
+                        TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
+                        tabId,
+                        encrypted,
+                        /* isFlatBuffer= */ false);
         writeFile(file, M26_GOOGLE_COM.encodedTabState);
 
         TabState tabState = TabStateFileManager.restoreTabStateInternal(file, false);

@@ -3519,6 +3519,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "enable-tabstate-flatbuffer",
+    "owners": [ "chrome-shopping@google.com" ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "enable-tailored-security-retry-for-sync-users",
     "owners": ["jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com"],
     "expiry_milestone": 120

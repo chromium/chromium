@@ -271,7 +271,9 @@ public class CustomTabTabPersistencePolicyTest {
         assertThat(tabDataToDelete.get().getMetadataFiles(), Matchers.emptyIterable());
 
         // Create an unreferenced tab state file and ensure it is marked for deletion.
-        File tab999File = TabStateFileManager.getTabStateFile(stateDirectory, 999, false);
+        File tab999File =
+                TabStateFileManager.getTabStateFile(
+                        stateDirectory, 999, false, /* isFlatBuffer= */ false);
         Assert.assertTrue(tab999File.createNewFile());
         policy.cleanupUnusedFiles(tabDataToDeleteCallback);
         callbackSignal.waitForCallback(1);
@@ -313,11 +315,17 @@ public class CustomTabTabPersistencePolicyTest {
         } finally {
             StreamUtil.closeQuietly(fos);
         }
-        File tab111File = TabStateFileManager.getTabStateFile(stateDirectory, 111, false);
+        File tab111File =
+                TabStateFileManager.getTabStateFile(
+                        stateDirectory, 111, false, /* isFlatBuffer= */ false);
         Assert.assertTrue(tab111File.createNewFile());
-        File tab222File = TabStateFileManager.getTabStateFile(stateDirectory, 222, false);
+        File tab222File =
+                TabStateFileManager.getTabStateFile(
+                        stateDirectory, 222, false, /* isFlatBuffer= */ false);
         Assert.assertTrue(tab222File.createNewFile());
-        File tab333File = TabStateFileManager.getTabStateFile(stateDirectory, 333, false);
+        File tab333File =
+                TabStateFileManager.getTabStateFile(
+                        stateDirectory, 333, false, /* isFlatBuffer= */ false);
         Assert.assertTrue(tab333File.createNewFile());
         policy.cleanupUnusedFiles(tabDataToDeleteCallback);
         callbackSignal.waitForCallback(3);

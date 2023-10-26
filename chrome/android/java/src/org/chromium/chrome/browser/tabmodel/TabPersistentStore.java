@@ -1351,7 +1351,8 @@ public class TabPersistentStore {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public File getTabStateFile(int tabId, boolean encrypted) {
-        return TabStateFileManager.getTabStateFile(getStateDirectory(), tabId, encrypted);
+        return TabStateFileManager.getTabStateFile(
+                getStateDirectory(), tabId, encrypted, /* isFlatBuffer= */ false);
     }
 
     /**

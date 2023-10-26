@@ -1666,6 +1666,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/tab_group:java",
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/tabmodel/internal:java",
+      "//chrome/browser/tabpersistence:flatbuffer_java",
       "//chrome/browser/tabpersistence:java",
       "//chrome/browser/thumbnail:java",
       "//chrome/browser/thumbnail:javatests",
