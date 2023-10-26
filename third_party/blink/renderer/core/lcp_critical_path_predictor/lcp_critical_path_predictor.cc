@@ -60,11 +60,7 @@ void LCPCriticalPathPredictor::Reset() {
 }
 
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
-    Element* lcp_element) {
-  if (!lcp_element) {
-    return;
-  }
-
+    const Element& lcp_element) {
   std::string lcp_element_locator_string =
       element_locator::OfElement(lcp_element).SerializeAsString();
 
@@ -90,7 +86,7 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
   }
 
   if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
-    if (HTMLImageElement* image_element =
+    if (const HTMLImageElement* image_element =
             DynamicTo<HTMLImageElement>(lcp_element)) {
       auto& creators = image_element->creator_scripts();
       size_t max_allowed_url_length = base::checked_cast<size_t>(

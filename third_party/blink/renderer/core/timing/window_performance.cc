@@ -927,7 +927,7 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
 
     if (LocalFrame* local_frame = element->GetDocument().GetFrame()) {
       if (LCPCriticalPathPredictor* lcpp = local_frame->GetLCPP()) {
-        lcpp->OnLargestContentfulPaintUpdated(element);
+        lcpp->OnLargestContentfulPaintUpdated(*element);
       }
     }
   }
