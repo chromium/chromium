@@ -152,6 +152,8 @@ void PageTimelineMonitor::OnPageResourceUsageResult(
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kCPUInterventionEvaluationLogging)) {
+    LogCPUInterventionMetrics(page_cpu_usage, now,
+                              CPUInterventionSuffix::kBaseline);
     bool is_cpu_over_threshold =
         (100 * total_cpu_usage / base::SysInfo::NumberOfProcessors() >
          performance_manager::features::kThresholdChromeCPUPercent.Get());
@@ -159,7 +161,8 @@ void PageTimelineMonitor::OnPageResourceUsageResult(
       CHECK(!log_cpu_on_delay_timer_.IsRunning());
       if (is_cpu_over_threshold) {
         time_of_last_cpu_threshold_exceeded_ = now;
-        LogCPUInterventionMetrics(page_cpu_usage, now, "Immediate");
+        LogCPUInterventionMetrics(page_cpu_usage, now,
+                                  CPUInterventionSuffix::kImmediate);
 
         // Only logged delayed metrics when using the new CPU monitor.
         if (performance_manager::features::kUseResourceAttributionCPUMonitor
@@ -308,14 +311,14 @@ void PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult(
       performance_manager::features::kThresholdChromeCPUPercent.Get()) {
     // Still over the threshold so we should log .Delayed UMA metrics.
     LogCPUInterventionMetrics(page_cpu_usage, base::TimeTicks::Now(),
-                              "Delayed");
+                              CPUInterventionSuffix::kDelayed);
   }
 }
 
 void PageTimelineMonitor::LogCPUInterventionMetrics(
     const PageCPUUsageVector& page_cpu_usage,
     const base::TimeTicks now,
-    const std::string& suffix) {
+    CPUInterventionSuffix histogram_suffix) {
   std::vector<double> background_cpu_usage;
   double total_foreground_cpu_usage = 0;
 
@@ -338,6 +341,20 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
       background_cpu_usage.begin(), background_cpu_usage.end(), 0.0);
 
   // Log basic background UMA metrics.
+  const char* suffix = nullptr;
+  switch (histogram_suffix) {
+    case CPUInterventionSuffix::kBaseline:
+      suffix = "Baseline";
+      break;
+    case CPUInterventionSuffix::kImmediate:
+      suffix = "Immediate";
+      break;
+    case CPUInterventionSuffix::kDelayed:
+      suffix = "Delayed";
+      break;
+  }
+  CHECK(suffix);
+
   base::UmaHistogramPercentage(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalBackgroundCPU.",
@@ -374,6 +391,9 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
           foreground_tab_count);
 
   // Log derived background UMA metrics.
+  if (histogram_suffix == CPUInterventionSuffix::kBaseline) {
+    return;
+  }
   std::sort(background_cpu_usage.begin(), background_cpu_usage.end(),
             std::greater<double>());
 

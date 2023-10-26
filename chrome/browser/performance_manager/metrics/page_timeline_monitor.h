@@ -120,6 +120,13 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
     ~PageNodeInfo() = default;
   };
 
+  // Suffix for CPU intervention histograms.
+  enum class CPUInterventionSuffix {
+    kBaseline,
+    kImmediate,
+    kDelayed,
+  };
+
   using PageCPUUsageVector = std::vector<std::pair<const PageNode*, double>>;
 
   // Asynchronously collects the PageResourceUsage UKM. Calls `done_closure`
@@ -147,7 +154,7 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
   // Log CPU intervention metrics with the provided suffix.
   void LogCPUInterventionMetrics(const PageCPUUsageVector& page_cpu_usage,
                                  const base::TimeTicks now,
-                                 const std::string& suffix);
+                                 CPUInterventionSuffix histogram_suffix);
 
   // Asynchronously calculates per-PageNode CPU usage, converts the results to a
   // vector, and passes them to `callback`.

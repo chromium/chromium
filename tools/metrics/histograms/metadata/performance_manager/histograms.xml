@@ -14,6 +14,14 @@ each histogram.
 
 <histograms>
 
+<variants name="PerformanceInterventionsCPUTiming">
+  <variant name="Baseline"
+      summary="every 2 minutes regardless of CPU threshold"/>
+  <variant name="Delayed"
+      summary="1 minute after the CPU threshold is reached"/>
+  <variant name="Immediate" summary="when the CPU threshold is reached"/>
+</variants>
+
 <histogram name="PerformanceManager.Experimental.AccessibilityModeFlag"
     enum="AccessibilityModeFlagEnum" expires_after="2024-02-25">
   <owner>anthonyvd@chromium.org</owner>
@@ -41,13 +49,10 @@ each histogram.
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded when the CPU threshold is reached, this histogram represents the
-    average CPU usage of each background tab.
+    Recorded {Timing}, this histogram represents the average CPU usage of each
+    background tab.
   </summary>
-  <token key="Timing">
-    <variant name="Delayed"/>
-    <variant name="Immediate"/>
-  </token>
+  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
 <histogram
@@ -57,13 +62,10 @@ each histogram.
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded when the CPU threshold is reached, this histogram represents the
-    average CPU usage of each foreground (active, playing audio, etc) tab.
+    Recorded {Timing}, this histogram represents the average CPU usage of each
+    foreground (active, playing audio, etc) tab.
   </summary>
-  <token key="Timing">
-    <variant name="Delayed"/>
-    <variant name="Immediate"/>
-  </token>
+  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
 <histogram
@@ -73,14 +75,10 @@ each histogram.
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded when the CPU threshold is reached, this histogram represents the
-    lowest number of background tabs that would need to be closed to get CPU
-    usage under the threshold.
+    Recorded {Timing}, this histogram represents the lowest number of background
+    tabs that would need to be closed to get CPU usage under the threshold.
   </summary>
-  <token key="Timing">
-    <variant name="Delayed"/>
-    <variant name="Immediate"/>
-  </token>
+  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
 <histogram
@@ -102,8 +100,8 @@ each histogram.
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded when the CPU threshold is reached, this histogram represents the
-    sum of CPU capacity being used by the top N background tabs.
+    Recorded {Timing}, this histogram represents the sum of CPU capacity being
+    used by the top {N} background tabs.
   </summary>
   <token key="N">
     <variant name="1"/>
@@ -112,10 +110,7 @@ each histogram.
     <variant name="8"/>
     <variant name="16"/>
   </token>
-  <token key="Timing">
-    <variant name="Delayed"/>
-    <variant name="Immediate"/>
-  </token>
+  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
 <histogram
@@ -125,13 +120,10 @@ each histogram.
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded when the CPU threshold is reached, this histogram represents the
-    percent of CPU capacity being used by background tabs.
+    Recorded {Timing}, this histogram represents the percent of CPU capacity
+    being used by background tabs.
   </summary>
-  <token key="Timing">
-    <variant name="Delayed"/>
-    <variant name="Immediate"/>
-  </token>
+  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
 <histogram
@@ -141,13 +133,9 @@ each histogram.
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded when the CPU threshold is reached, this histogram represents the
-    number of background tabs.
+    Recorded {Timing}, this histogram represents the number of background tabs.
   </summary>
-  <token key="Timing">
-    <variant name="Delayed"/>
-    <variant name="Immediate"/>
-  </token>
+  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
 <histogram
@@ -157,14 +145,10 @@ each histogram.
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded when the CPU threshold is reached, this histogram represents the
-    percent of CPU capacity being used by foreground (active, playing audio,
-    etc) tabs.
+    Recorded {Timing}, this histogram represents the percent of CPU capacity
+    being used by foreground (active, playing audio, etc) tabs.
   </summary>
-  <token key="Timing">
-    <variant name="Delayed"/>
-    <variant name="Immediate"/>
-  </token>
+  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
 <histogram
@@ -174,13 +158,10 @@ each histogram.
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded when the CPU threshold is reached, this histogram represents the
-    number of foreground (active, playing audio, etc) tabs.
+    Recorded {Timing}, this histogram represents the number of foreground
+    (active, playing audio, etc) tabs.
   </summary>
-  <token key="Timing">
-    <variant name="Delayed"/>
-    <variant name="Immediate"/>
-  </token>
+  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.DatabaseInit"

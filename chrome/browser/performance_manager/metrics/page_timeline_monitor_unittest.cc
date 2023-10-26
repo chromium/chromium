@@ -10,8 +10,11 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -74,6 +77,7 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     monitor_->cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(
         graph(), cpu_delegate_factory_.GetFactoryCallback());
     graph()->PassToGraph(std::move(monitor));
+    ResetHistogramTester();
     ResetUkmRecorder();
   }
 
@@ -85,7 +89,7 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
   // To allow tests to call its methods and view its state.
   raw_ptr<PageTimelineMonitor> monitor_;
 
-  base::HistogramTester histogram_tester_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 
   // Factory to return CPUMeasurementDelegates. This must be deleted after
   // `monitor_` to ensure that it outlives all delegates it creates.
@@ -102,6 +106,60 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
     base::RunLoop run_loop;
     monitor_->CollectPageResourceUsage(run_loop.QuitClosure());
     run_loop.Run();
+  }
+
+  // Expects PerformanceManager.PerformanceInterventions.CPU.`name`.`suffix` to
+  // contain exactly 1 sample in the `sample_bucket` bucket.
+  template <typename T>
+  void ExpectCPUHistogram(
+      base::StringPiece name,
+      base::StringPiece suffix,
+      T sample_bucket,
+      const base::Location& location = base::Location::Current()) {
+    histogram_tester_->ExpectUniqueSample(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU.", name,
+                      ".", suffix}),
+        sample_bucket, 1, location);
+  }
+
+  // Expects PerformanceManager.PerformanceInterventions.CPU.`name` to contain
+  // exactly 1 sample in the `sample_bucket` bucket.
+  template <typename T>
+  void ExpectCPUHistogram(
+      base::StringPiece name,
+      T sample_bucket,
+      const base::Location& location = base::Location::Current()) {
+    histogram_tester_->ExpectUniqueSample(
+        base::StrCat(
+            {"PerformanceManager.PerformanceInterventions.CPU.", name}),
+        sample_bucket, 1, location);
+  }
+
+  // Expects PerformanceManager.PerformanceInterventions.CPU.`name`.`suffix` to
+  // contain no samples at all.
+  void ExpectNoCPUHistogram(
+      base::StringPiece name,
+      base::StringPiece suffix,
+      const base::Location& location = base::Location::Current()) {
+    histogram_tester_->ExpectTotalCount(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU.", name,
+                      ".", suffix}),
+        0, location);
+  }
+
+  // Expects PerformanceManager.PerformanceInterventions.CPU.`name` to contain
+  // no samples at all.
+  void ExpectNoCPUHistogram(
+      base::StringPiece name,
+      const base::Location& location = base::Location::Current()) {
+    histogram_tester_->ExpectTotalCount(
+        base::StrCat(
+            {"PerformanceManager.PerformanceInterventions.CPU.", name}),
+        0, location);
+  }
+
+  void ResetHistogramTester() {
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void ResetUkmRecorder() {
@@ -693,127 +751,185 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   mock_graph.other_page->SetType(performance_manager::PageType::kTab);
   mock_graph.other_page->SetUkmSourceId(mock_source_id2);
 
-  // The intervention metrics measure total CPU, not percentage of each core, so
-  // set the measurement delegates to return half of the total available CPU
-  // (100% per processor).
-  cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
-      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2);
+  // Set CPU usage to 0, so only the .Baseline metrics should be logged.
+  cpu_delegate_factory_.GetDelegate(mock_graph.process.get()).SetCPUUsage(0.0);
   cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
-      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2);
+      .SetCPUUsage(0.0);
 
   // Let an arbitrary amount of time pass so there's some CPU usage to measure.
   task_env().FastForwardBy(base::Minutes(1));
   TriggerCollectPageResourceUsage();
 
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundCPU."
-      "Immediate",
-      75, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundTabCount."
-      "Immediate",
-      1, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceManager.PerformanceInterventions.CPU.AverageBackgroundCPU."
-      "Immediate",
-      75, 1);
+  ExpectCPUHistogram("AverageBackgroundCPU", "Baseline", 0);
+  ExpectCPUHistogram("TotalBackgroundCPU", "Baseline", 0);
+  ExpectCPUHistogram("TotalBackgroundTabCount", "Baseline", 1);
+  ExpectCPUHistogram("AverageForegroundCPU", "Baseline", 0);
+  ExpectCPUHistogram("TotalForegroundCPU", "Baseline", 0);
+  ExpectCPUHistogram("TotalForegroundTabCount", "Baseline", 1);
 
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceManager.PerformanceInterventions.CPU.TotalForegroundCPU."
-      "Immediate",
-      25, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceManager.PerformanceInterventions.CPU.TotalForegroundTabCount."
-      "Immediate",
-      1, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceManager.PerformanceInterventions.CPU.AverageForegroundCPU."
-      "Immediate",
-      25, 1);
+  ExpectNoCPUHistogram("AverageBackgroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalBackgroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalBackgroundTabCount", "Immediate");
+  ExpectNoCPUHistogram("AverageForegroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalForegroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalForegroundTabCount", "Immediate");
+  ExpectNoCPUHistogram("BackgroundTabsToGetUnderCPUThreshold", "Immediate");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.1", "Immediate");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.2", "Immediate");
 
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceManager.PerformanceInterventions.CPU."
-      "BackgroundTabsToGetUnderCPUThreshold."
-      "Immediate",
-      1, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceManager.PerformanceInterventions.CPU."
-      "TopNBackgroundCPU.1."
-      "Immediate",
-      75, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceManager.PerformanceInterventions.CPU."
-      "TopNBackgroundCPU.2."
-      "Immediate",
-      75, 1);
+  ExpectNoCPUHistogram("AverageBackgroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalBackgroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalBackgroundTabCount", "Delayed");
+  ExpectNoCPUHistogram("AverageForegroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalForegroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalForegroundTabCount", "Delayed");
+  ExpectNoCPUHistogram("BackgroundTabsToGetUnderCPUThreshold", "Delayed");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.1", "Delayed");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.2", "Delayed");
+
+  ExpectNoCPUHistogram("DurationOverThreshold");
+
+  ResetHistogramTester();
+
+  // The intervention metrics measure total CPU, not percentage of each core, so
+  // set the measurement delegates to return half of the total available CPU
+  // (100% per processor).
+  cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
+      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2.0);
+  cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
+      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 2.0);
+
+  // Let an arbitrary amount of time pass so there's some CPU usage to measure.
+  task_env().FastForwardBy(base::Minutes(1));
+  TriggerCollectPageResourceUsage();
+
+  // `page` is in the foreground, and gets 50% of the `process` CPU (25% of
+  // total CPU). `other_page` is in the background, and gets 50% of the
+  // `process` CPU + all of the `other_process` CPU (75% of total CPU).
+
+  ExpectCPUHistogram("AverageBackgroundCPU", "Baseline", 75);
+  ExpectCPUHistogram("TotalBackgroundCPU", "Baseline", 75);
+  ExpectCPUHistogram("TotalBackgroundTabCount", "Baseline", 1);
+  ExpectCPUHistogram("AverageForegroundCPU", "Baseline", 25);
+  ExpectCPUHistogram("TotalForegroundCPU", "Baseline", 25);
+  ExpectCPUHistogram("TotalForegroundTabCount", "Baseline", 1);
+
+  ExpectCPUHistogram("AverageBackgroundCPU", "Immediate", 75);
+  ExpectCPUHistogram("TotalBackgroundCPU", "Immediate", 75);
+  ExpectCPUHistogram("TotalBackgroundTabCount", "Immediate", 1);
+  ExpectCPUHistogram("AverageForegroundCPU", "Immediate", 25);
+  ExpectCPUHistogram("TotalForegroundCPU", "Immediate", 25);
+  ExpectCPUHistogram("TotalForegroundTabCount", "Immediate", 1);
+  ExpectCPUHistogram("BackgroundTabsToGetUnderCPUThreshold", "Immediate", 1);
+  ExpectCPUHistogram("TopNBackgroundCPU.1", "Immediate", 75);
+  ExpectCPUHistogram("TopNBackgroundCPU.2", "Immediate", 75);
+
+  ExpectNoCPUHistogram("AverageBackgroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalBackgroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalBackgroundTabCount", "Delayed");
+  ExpectNoCPUHistogram("AverageForegroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalForegroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalForegroundTabCount", "Delayed");
+  ExpectNoCPUHistogram("BackgroundTabsToGetUnderCPUThreshold", "Delayed");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.1", "Delayed");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.2", "Delayed");
+
+  ExpectNoCPUHistogram("DurationOverThreshold");
+
+  ResetHistogramTester();
 
   // Fast forward for Delayed UMA to be logged.
   task_env().FastForwardBy(base::Minutes(1));
 
+  ExpectNoCPUHistogram("AverageBackgroundCPU", "Baseline");
+  ExpectNoCPUHistogram("TotalBackgroundCPU", "Baseline");
+  ExpectNoCPUHistogram("TotalBackgroundTabCount", "Baseline");
+  ExpectNoCPUHistogram("AverageForegroundCPU", "Baseline");
+  ExpectNoCPUHistogram("TotalForegroundCPU", "Baseline");
+  ExpectNoCPUHistogram("TotalForegroundTabCount", "Baseline");
+
+  ExpectNoCPUHistogram("AverageBackgroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalBackgroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalBackgroundTabCount", "Immediate");
+  ExpectNoCPUHistogram("AverageForegroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalForegroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalForegroundTabCount", "Immediate");
+  ExpectNoCPUHistogram("BackgroundTabsToGetUnderCPUThreshold", "Immediate");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.1", "Immediate");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.2", "Immediate");
+
+  ExpectNoCPUHistogram("DurationOverThreshold");
+
   if (GetParam()) {
-    histogram_tester_.ExpectUniqueSample(
-        "PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundCPU."
-        "Delayed",
-        75, 1);
-    histogram_tester_.ExpectUniqueSample(
-        "PerformanceManager.PerformanceInterventions.CPU."
-        "TotalBackgroundTabCount."
-        "Delayed",
-        1, 1);
-    histogram_tester_.ExpectUniqueSample(
-        "PerformanceManager.PerformanceInterventions.CPU.AverageBackgroundCPU."
-        "Delayed",
-        75, 1);
-
-    histogram_tester_.ExpectUniqueSample(
-        "PerformanceManager.PerformanceInterventions.CPU.TotalForegroundCPU."
-        "Delayed",
-        25, 1);
-    histogram_tester_.ExpectUniqueSample(
-        "PerformanceManager.PerformanceInterventions.CPU."
-        "TotalForegroundTabCount."
-        "Delayed",
-        1, 1);
-    histogram_tester_.ExpectUniqueSample(
-        "PerformanceManager.PerformanceInterventions.CPU.AverageForegroundCPU."
-        "Delayed",
-        25, 1);
-
-    histogram_tester_.ExpectUniqueSample(
-        "PerformanceManager.PerformanceInterventions.CPU."
-        "BackgroundTabsToGetUnderCPUThreshold."
-        "Delayed",
-        1, 1);
-    histogram_tester_.ExpectUniqueSample(
-        "PerformanceManager.PerformanceInterventions.CPU."
-        "TopNBackgroundCPU.1."
-        "Delayed",
-        75, 1);
-    histogram_tester_.ExpectUniqueSample(
-        "PerformanceManager.PerformanceInterventions.CPU."
-        "TopNBackgroundCPU.2."
-        "Delayed",
-        75, 1);
+    ExpectCPUHistogram("AverageBackgroundCPU", "Delayed", 75);
+    ExpectCPUHistogram("TotalBackgroundCPU", "Delayed", 75);
+    ExpectCPUHistogram("TotalBackgroundTabCount", "Delayed", 1);
+    ExpectCPUHistogram("AverageForegroundCPU", "Delayed", 25);
+    ExpectCPUHistogram("TotalForegroundCPU", "Delayed", 25);
+    ExpectCPUHistogram("TotalForegroundTabCount", "Delayed", 1);
+    ExpectCPUHistogram("BackgroundTabsToGetUnderCPUThreshold", "Delayed", 1);
+    ExpectCPUHistogram("TopNBackgroundCPU.1", "Delayed", 75);
+    ExpectCPUHistogram("TopNBackgroundCPU.2", "Delayed", 75);
   } else {
+    ExpectNoCPUHistogram("AverageBackgroundCPU", "Delayed");
+    ExpectNoCPUHistogram("TotalBackgroundCPU", "Delayed");
+    ExpectNoCPUHistogram("TotalBackgroundTabCount", "Delayed");
+    ExpectNoCPUHistogram("AverageForegroundCPU", "Delayed");
+    ExpectNoCPUHistogram("TotalForegroundCPU", "Delayed");
+    ExpectNoCPUHistogram("TotalForegroundTabCount", "Delayed");
+    ExpectNoCPUHistogram("BackgroundTabsToGetUnderCPUThreshold", "Delayed");
+    ExpectNoCPUHistogram("TopNBackgroundCPU.1", "Delayed");
+    ExpectNoCPUHistogram("TopNBackgroundCPU.2", "Delayed");
+
     // The legacy CPU monitor only measures the CPU during
     // TriggerCollectPageResourceUsage(), and returns the average CPU since the
     // last call. Measure now so the next test doesn't include the last minute
     // of CPU in the average.
     TriggerCollectPageResourceUsage();
   }
+  ResetHistogramTester();
 
   // Lower CPU measurement so the duration is logged.
   cpu_delegate_factory_.GetDelegate(mock_graph.process.get())
-      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 6);
+      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 8.0);
   cpu_delegate_factory_.GetDelegate(mock_graph.other_process.get())
-      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 6);
+      .SetCPUUsage(base::SysInfo::NumberOfProcessors() / 8.0);
   task_env().FastForwardBy(base::Minutes(1));
   TriggerCollectPageResourceUsage();
 
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceManager.PerformanceInterventions.CPU."
-      "DurationOverThreshold",
-      base::Minutes(2).InMilliseconds(), 1);
+  ExpectCPUHistogram("DurationOverThreshold",
+                     base::Minutes(2).InMilliseconds());
+
+  // `page` is in the foreground, and gets 50% of the `process` CPU (6.25%
+  // of total CPU). `other_page` is in the background, and gets 50% of the
+  // `process` CPU + all of the `other_process` CPU (18.75% of total CPU).
+
+  ExpectCPUHistogram("AverageBackgroundCPU", "Baseline", 18);
+  ExpectCPUHistogram("TotalBackgroundCPU", "Baseline", 18);
+  ExpectCPUHistogram("TotalBackgroundTabCount", "Baseline", 1);
+  ExpectCPUHistogram("AverageForegroundCPU", "Baseline", 6);
+  ExpectCPUHistogram("TotalForegroundCPU", "Baseline", 6);
+  ExpectCPUHistogram("TotalForegroundTabCount", "Baseline", 1);
+
+  ExpectNoCPUHistogram("AverageBackgroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalBackgroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalBackgroundTabCount", "Immediate");
+  ExpectNoCPUHistogram("AverageForegroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalForegroundCPU", "Immediate");
+  ExpectNoCPUHistogram("TotalForegroundTabCount", "Immediate");
+  ExpectNoCPUHistogram("BackgroundTabsToGetUnderCPUThreshold", "Immediate");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.1", "Immediate");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.2", "Immediate");
+
+  ExpectNoCPUHistogram("AverageBackgroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalBackgroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalBackgroundTabCount", "Delayed");
+  ExpectNoCPUHistogram("AverageForegroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalForegroundCPU", "Delayed");
+  ExpectNoCPUHistogram("TotalForegroundTabCount", "Delayed");
+  ExpectNoCPUHistogram("BackgroundTabsToGetUnderCPUThreshold", "Delayed");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.1", "Delayed");
+  ExpectNoCPUHistogram("TopNBackgroundCPU.2", "Delayed");
 }
 #endif
 
