@@ -72438,14 +72438,6 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Lock screen media view"/>
 </enum>
 
-<enum name="MediaNotificationMetadata">
-  <int value="0" label="Title"/>
-  <int value="1" label="Artist"/>
-  <int value="2" label="Album"/>
-  <int value="3" label="COUNT"/>
-  <int value="4" label="Source"/>
-</enum>
-
 <enum name="MediaNotificationSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="Web"/>

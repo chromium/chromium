@@ -40,14 +40,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
  public:
   METADATA_HEADER(MediaNotificationViewModernImpl);
 
-  // The name of the histogram used when recording whether the artwork was
-  // present.
-  static const char kArtworkHistogramName[];
-
-  // The name of the histogram used when recording the type of metadata that was
-  // displayed.
-  static const char kMetadataHistogramName[];
-
   // The type of metadata that was displayed. This is used in metrics so new
   // values must only be added to the end.
   enum class Metadata {

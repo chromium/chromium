@@ -4407,17 +4407,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Notification.ArtworkPresent" enum="Boolean"
-    expires_after="2021-10-25">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Whether the media notification (including ones for Cast sessions) is
-    displaying artwork. This is recorded when the artwork is updated by the
-    underlying media session.
-  </summary>
-</histogram>
-
 <histogram name="Media.Notification.Cast.Count" units="count"
     expires_after="2024-03-17">
   <owner>takumif@chromium.org</owner>
@@ -4469,17 +4458,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The page where the media notification is displayed to users. This is
     recorded when a media notification starts being displayed.
-  </summary>
-</histogram>
-
-<histogram name="Media.Notification.MetadataPresent"
-    enum="MediaNotificationMetadata" expires_after="2021-10-25">
-  <owner>beccahughes@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Whether the media notification (including ones for Cast sessions) is
-    displaying certain types of metadata. This is recorded when the metadata is
-    updated by the underlying media session.
   </summary>
 </histogram>
 

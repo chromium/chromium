@@ -75,11 +75,6 @@ constexpr auto kCrOSMainRowInsetsWithArtwork =
 constexpr auto kCrOSMainRowInsetsWithoutArtwork =
     gfx::Insets::TLBR(12, 8, 16, 16);
 
-void RecordMetadataHistogram(MediaNotificationViewImpl::Metadata metadata) {
-  UMA_HISTOGRAM_ENUMERATION(MediaNotificationViewImpl::kMetadataHistogramName,
-                            metadata);
-}
-
 size_t GetMaxNumActions(bool expanded) {
   return expanded ? kMediaNotificationExpandedActionsCount
                   : kMediaNotificationActionsCount;
@@ -97,14 +92,6 @@ void UpdateAppIconVisibility(message_center::NotificationHeaderView* header_row,
 }
 
 }  // namespace
-
-// static
-const char MediaNotificationViewImpl::kArtworkHistogramName[] =
-    "Media.Notification.ArtworkPresent";
-
-// static
-const char MediaNotificationViewImpl::kMetadataHistogramName[] =
-    "Media.Notification.MetadataPresent";
 
 MediaNotificationViewImpl::MediaNotificationViewImpl(
     MediaNotificationContainer* container,
@@ -409,7 +396,6 @@ void MediaNotificationViewImpl::UpdateWithMediaMetadata(
     title_label_->SetFocusBehavior(FocusBehavior::NEVER);
   } else {
     title_label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    RecordMetadataHistogram(Metadata::kTitle);
   }
 
   // The artist label should only be a11y-focusable when there is text to be
@@ -418,14 +404,7 @@ void MediaNotificationViewImpl::UpdateWithMediaMetadata(
     artist_label_->SetFocusBehavior(FocusBehavior::NEVER);
   } else {
     artist_label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    RecordMetadataHistogram(Metadata::kArtist);
   }
-
-  if (!metadata.album.empty()) {
-    RecordMetadataHistogram(Metadata::kAlbum);
-  }
-
-  RecordMetadataHistogram(Metadata::kCount);
 
   container_->OnMediaSessionMetadataChanged(metadata);
 
@@ -455,8 +434,6 @@ void MediaNotificationViewImpl::UpdateWithMediaArtwork(
 
   has_artwork_ = !image.isNull();
   UpdateViewForExpandedState();
-
-  UMA_HISTOGRAM_BOOLEAN(kArtworkHistogramName, has_artwork_);
 
   if (GetWidget()) {
     UpdateForegroundColor();
