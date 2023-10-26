@@ -29,7 +29,7 @@ build_webui_tests("build_webui_tests") {
     "scanning_app_test_utils.js",
     "scanning_mojom_imports.js",
     "scan_preview_test.ts",
-    "scan_to_select_test.js",
+    "scan_to_select_test.ts",
     "source_select_test.js",
     "test_scanning_browser_proxy.ts",
   ]
