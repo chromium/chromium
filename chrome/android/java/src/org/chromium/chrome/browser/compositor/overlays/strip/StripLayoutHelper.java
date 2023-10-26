@@ -127,6 +127,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final int SCROLL_DISTANCE_SHORT = 960;
     private static final int SCROLL_DISTANCE_MEDIUM = 1920;
     private static final long INVALID_TIME = 0L;
+    private static final int ANIM_HOVERED_TAB_CONTAINER_FADE_MS = 200;
     static final long DROP_INTO_GROUP_MS = 300L;
 
     // Visibility Constants
@@ -286,10 +287,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private MultiInstanceManager mMultiInstanceManager;
     private View mToolbarContainerView;
     private StripLayoutTab mActiveClickedTab;
-    private StripLayoutTab mLastHoveredTab;
     private TabDropTarget mTabDropTarget;
-    private StripTabHoverCardView mTabHoverCardView;
+
     private BrowserControlsStateProvider mBrowserControlStateProvider;
+
+    // Tab hover state.
+    private StripLayoutTab mLastHoveredTab;
+    private StripTabHoverCardView mTabHoverCardView;
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -1157,15 +1161,18 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     private void setTabContainerVisible(StripLayoutTab tab, boolean selected, boolean hovered) {
+        // Don't interrupt a hovered tab container visibility animation, this will be handled in the
+        // #onHover* methods.
+        if (hovered) return;
         // Don't interrupt tab group background tab visibility.
-        if (tab.getContainerOpacity() != TAB_OPACITY_VISIBLE_BACKGROUND) {
-            // The container will be visible if the tab is selected/hovered on or is a placeholder
-            // tab.
-            float containerOpacity = selected || tab.getIsPlaceholder() || hovered
-                    ? TAB_OPACITY_VISIBLE_FOREGROUND
-                    : TAB_OPACITY_HIDDEN;
-            tab.setContainerOpacity(containerOpacity);
-        }
+        if (tab.getContainerOpacity() == TAB_OPACITY_VISIBLE_BACKGROUND) return;
+
+        // The container will be visible if the tab is selected or is a placeholder tab.
+        float containerOpacity =
+                selected || tab.getIsPlaceholder()
+                        ? TAB_OPACITY_VISIBLE_FOREGROUND
+                        : TAB_OPACITY_HIDDEN;
+        tab.setContainerOpacity(containerOpacity);
     }
 
     /**
@@ -1612,11 +1619,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     @VisibleForTesting
-    CompositorButton getModelSelectorButtonForTesting() {
-        return mModelSelectorButton;
-    }
-
-    @VisibleForTesting
     void setTabHoverCardView(StripTabHoverCardView tabHoverCardView) {
         mTabHoverCardView = tabHoverCardView;
     }
@@ -1653,6 +1655,18 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (isTabCompletelyHidden(hoveredTab)) return;
 
         mLastHoveredTab = hoveredTab;
+        if (!mAnimationsDisabledForTesting) {
+            CompositorAnimator.ofFloatProperty(
+                            mUpdateHost.getAnimationHandler(),
+                            hoveredTab,
+                            StripLayoutTab.OPACITY,
+                            hoveredTab.getContainerOpacity(),
+                            TAB_OPACITY_VISIBLE_FOREGROUND,
+                            ANIM_HOVERED_TAB_CONTAINER_FADE_MS)
+                    .start();
+        } else {
+            hoveredTab.setContainerOpacity(TAB_OPACITY_VISIBLE_FOREGROUND);
+        }
         updateHoveredFolioTabState(mLastHoveredTab, true);
 
         // Show the tab hover card.

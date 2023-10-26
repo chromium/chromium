@@ -155,7 +155,7 @@ public class StripLayoutTab implements VirtualView {
                 }
             };
 
-    /** A property for animations to use for changing the trailingMargin of the tab. */
+    /** A property for animations to use for changing the brightness of the tab. */
     public static final FloatProperty<StripLayoutTab> BRIGHTNESS =
             new FloatProperty<StripLayoutTab>("brightness") {
                 @Override
@@ -166,6 +166,20 @@ public class StripLayoutTab implements VirtualView {
                 @Override
                 public Float get(StripLayoutTab object) {
                     return object.getBrightness();
+                }
+            };
+
+    /** A property for animations to use for changing the opacity of the tab. */
+    public static final FloatProperty<StripLayoutTab> OPACITY =
+            new FloatProperty<StripLayoutTab>("opacity") {
+                @Override
+                public void setValue(StripLayoutTab object, float value) {
+                    object.setContainerOpacity(value);
+                }
+
+                @Override
+                public Float get(StripLayoutTab object) {
+                    return object.getContainerOpacity();
                 }
             };
 

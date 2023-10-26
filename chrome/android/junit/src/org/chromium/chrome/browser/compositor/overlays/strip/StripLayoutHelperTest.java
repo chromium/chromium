@@ -2978,7 +2978,7 @@ public class StripLayoutHelperTest {
     @Test
     public void testUpdateLastHoveredTab() {
         // Assume tab0 is selected, tab1 is hovered on.
-        initializeTabHoverTest(false, false);
+        initializeTabHoverTest();
         var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
         mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
         assertEquals(
@@ -2990,12 +2990,17 @@ public class StripLayoutHelperTest {
                         hoveredTab.getDrawX(),
                         hoveredTab.getWidth(),
                         SCREEN_HEIGHT);
+        assertEquals(
+                "Tab container opacity is incorrect.",
+                StripLayoutHelper.TAB_OPACITY_VISIBLE_FOREGROUND,
+                hoveredTab.getContainerOpacity(),
+                0.0);
     }
 
     @Test
     public void testIsTabCompletelyHidden() {
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
-        initializeTabHoverTest(false, false);
+        initializeTabHoverTest();
         var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
 
         // Set simulated hovered StripLayoutTab drawX and width to assume a position beyond the left
@@ -3014,8 +3019,8 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.isTabCompletelyHidden(hoveredTab));
     }
 
-    private void initializeTabHoverTest(boolean rtl, boolean incognito) {
-        initializeTest(rtl, incognito, false, 0, 3);
+    private void initializeTabHoverTest() {
+        initializeTest(false, false, true, 0, 3);
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
         mStripLayoutHelper.setTabHoverCardView(mTabHoverCardView);
         // For ease of dp/px calculation.
