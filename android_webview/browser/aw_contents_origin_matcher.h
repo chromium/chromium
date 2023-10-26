@@ -12,6 +12,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+
 namespace url {
 class Origin;
 }
@@ -35,6 +39,15 @@ class AwContentsOriginMatcher
   // If there are bad rules, no update is performed
   std::vector<std::string> UpdateRuleList(
       const std::vector<std::string>& rules);
+
+  // Java bindings for the java exposed version of this class
+  jboolean MatchesOrigin(JNIEnv* env,
+                         const base::android::JavaParamRef<jstring>& jorigin);
+  base::android::ScopedJavaLocalRef<jobjectArray> UpdateRuleList(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& jrules);
+  // Use this method to perform native clean up
+  void Destroy(JNIEnv* env);
 
  private:
   friend class base::RefCountedThreadSafe<AwContentsOriginMatcher>;

@@ -4,7 +4,10 @@
 
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 
+#include "android_webview/browser_jni_headers/AwContentsOriginMatcher_jni.h"
+
 #include "components/js_injection/common/origin_matcher.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace android_webview {
@@ -39,6 +42,39 @@ std::vector<std::string> AwContentsOriginMatcher::UpdateRuleList(
     origin_matcher_.swap(new_matcher);
   }
   return bad_rules;
+}
+
+jboolean AwContentsOriginMatcher::MatchesOrigin(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& jorigin) {
+  const url::Origin origin =
+      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin)));
+  return MatchesOrigin(origin);
+}
+
+base::android::ScopedJavaLocalRef<jobjectArray>
+AwContentsOriginMatcher::UpdateRuleList(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobjectArray>& jrules) {
+  std::vector<std::string> rules;
+  base::android::AppendJavaStringArrayToStringVector(env, jrules, &rules);
+  std::vector<std::string> bad_rules = UpdateRuleList(rules);
+  return base::android::ToJavaArrayOfStrings(env, bad_rules);
+}
+
+void AwContentsOriginMatcher::Destroy(JNIEnv* env) {
+  Release();
+}
+
+static jlong JNI_AwContentsOriginMatcher_Init(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& caller) {
+  AwContentsOriginMatcher* matcher = new AwContentsOriginMatcher();
+  // We are handing over the raw pointer java so we manually increment the
+  // reference count instead of using ref_pointer directly because leaving this
+  // scope would decrement it.
+  matcher->AddRef();
+  return reinterpret_cast<intptr_t>(matcher);
 }
 
 }  // namespace android_webview
