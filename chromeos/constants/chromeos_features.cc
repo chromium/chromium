@@ -186,8 +186,8 @@ bool IsCrosComponentsEnabled() {
 
 bool IsCrosWebAppShortcutUiUpdateEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/304661502): Pass the value to lacros.
-  return false;
+  return chromeos::BrowserParamsProxy::Get()
+      ->IsCrosWebAppShortcutUiUpdateEnabled();
 #else
   return base::FeatureList::IsEnabled(kCrosWebAppShortcutUiUpdate);
 #endif

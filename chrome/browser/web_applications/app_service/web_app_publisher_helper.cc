@@ -1379,7 +1379,7 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
 void WebAppPublisherHelper::OnWebAppUninstalled(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // If a web app has been uninstalled, we do not know if it is a shortcut from
   // web app registrar. Here we check if we have got an app registered in
   // AppRegistryCache to be uninstalled. If not, we do not publish the update.
@@ -1389,8 +1389,7 @@ void WebAppPublisherHelper::OnWebAppUninstalled(
   if (!found) {
     return;
   }
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
+
   paused_apps_.MaybeRemoveApp(app_id);
 
   app_notifications_.RemoveNotificationsForApp(app_id);

@@ -1,12 +1,10 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/web_applications/app_service/web_apps.h"
 
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -15,22 +13,32 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "chrome/browser/web_applications/app_service/web_apps_with_shortcuts_test.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
+#include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
 #endif
 
 namespace web_app {
 
-class WebAppsTest : public testing::Test {
+// Test the publishing of web apps in all platforms, will test both
+// lacros_web_apps_controller and web_apps.
+class WebAppPublisherTest : public testing::Test,
+                            public WebAppsWithShortcutsTest {
  public:
   // testing::Test implementation.
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
+    TestingProfile::Builder builder;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    builder.SetIsMainProfile(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_ = builder.Build();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -69,21 +77,35 @@ class WebAppsTest : public testing::Test {
   void InitializeWebAppPublisher() {
     apps::AppServiceTest app_service_test;
     app_service_test.SetUp(profile());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // For Lacros, we need the loopback crosapi to publish
+    // the web app to app service proxy without actually connect to
+    // crosapi in the test. AppServiceTest::SetUp will resets the
+    // crosapi connections in the app service proxy, so we have to
+    // set up the loopback crosapi after the setup. And we need to initialize
+    // the web app controller after set up the loopback crosapi to publish
+    // already installed web apps in the web app system.
+    // TODO(b/307477703): Add the loopback crosapi and init in app service test.
+    loopback_crosapi_ =
+        std::make_unique<LoopbackCrosapiAppServiceProxy>(profile());
+    apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->LacrosWebAppsControllerForTesting()->Init();
+#endif
   }
 
   Profile* profile() { return profile_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
   std::unique_ptr<TestingProfile> profile_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<LoopbackCrosapiAppServiceProxy> loopback_crosapi_ = nullptr;
+#endif
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(WebAppsTest, ShortcutNotPublishedAsWebApp) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::features::kCrosWebAppShortcutUiUpdate);
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(WebAppPublisherTest, ShortcutNotPublishedAsWebApp) {
+  EnableCrosWebAppShortcutUiUpdate(true);
   apps::AppServiceTest app_service_test;
   app_service_test.SetUp(profile());
   auto app_id = CreateWebApp(GURL("https://example.com/"), "App");
@@ -92,13 +114,14 @@ TEST_F(WebAppsTest, ShortcutNotPublishedAsWebApp) {
 
   // Reinitialize web app publisher to verify web app initialization only
   // publish web apps.
-  apps::AppUpdateWaiter waiter(profile(), app_id);
   InitializeWebAppPublisher();
-  waiter.Wait();
+  apps::AppReadinessWaiter(profile(), app_id).Await();
 
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile())
           ->AppRegistryCache();
+  EXPECT_FALSE(cache.IsAppInstalled(shortcut_id));
+
   size_t num_app_after_web_app_init = cache.GetAllApps().size();
 
   // Install new web app and verify only web app get published.
@@ -113,23 +136,17 @@ TEST_F(WebAppsTest, ShortcutNotPublishedAsWebApp) {
 // For non ChromeOS platforms or when the kCrosWebAppShortcutUiUpdate is off,
 // we still want to publish shortcuts as web app. This is checking old behaviour
 // does not break.
-TEST_F(WebAppsTest, ShortcutPublishedAsWebApp) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      chromeos::features::kCrosWebAppShortcutUiUpdate);
-#endif
+TEST_F(WebAppPublisherTest, ShortcutPublishedAsWebApp) {
+  EnableCrosWebAppShortcutUiUpdate(false);
   auto app_id = CreateWebApp(GURL("https://example.com/"), "App");
   auto shortcut_id =
       CreateShortcut(GURL("https://example-shortcut.com/"), "Shortcut");
 
-  // Reinitialize web app publisher to verify web app initialization only
-  // publish web apps.
-  apps::AppUpdateWaiter waiter(profile(), app_id);
-  apps::AppUpdateWaiter shortcut_waiter(profile(), shortcut_id);
+  // Reinitialize web app publisher to verify web app initialization publish
+  // both web apps and shortcuts.
   InitializeWebAppPublisher();
-  waiter.Wait();
-  shortcut_waiter.Wait();
+  apps::AppReadinessWaiter(profile(), app_id).Await();
+  apps::AppReadinessWaiter(profile(), shortcut_id).Await();
 
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile())
@@ -145,14 +162,11 @@ TEST_F(WebAppsTest, ShortcutPublishedAsWebApp) {
   EXPECT_EQ(cache.GetAppType(new_app_id), apps::AppType::kWeb);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(WebAppsTest, UninstallWebApp_AppServiceShortcutEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::features::kCrosWebAppShortcutUiUpdate);
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(WebAppPublisherTest, UninstallWebApp_AppServiceShortcutEnabled) {
+  EnableCrosWebAppShortcutUiUpdate(true);
 
-  apps::AppServiceTest app_service_test;
-  app_service_test.SetUp(profile());
+  InitializeWebAppPublisher();
 
   // Verify that web app can be installed and uninstalled as normal.
   auto web_app_id = CreateWebApp(GURL("https://example.com/"), "App");
