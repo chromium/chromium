@@ -85,47 +85,21 @@ function conditionHolds(condition, error_message = 'Condition is not true anymor
   });
 }
 
-// TODO: Frames are animated every 1ms for testing. It may be better to have the
-// timeout based on time rather than frame count.
+// Waits until scrolling has stopped for a period of time.
 // @deprecated:
 //    If a scroll is expected then use waitForScrollendEvent.
-//    If asserting that no scroll tales place then:
+//    TODO(kevers): Not possible in all cases, e.g. an input field does not
+//    fire a scrollend event when scrolled. This is the exception rather than
+//    the rule. Once each remaining call has been reviewed, we can see if
+//    there are enough special cases to warrant a waitForScrollend with
+//    "polyfilled"  behavior in cases where a scrollend event is not expected.
+//    If asserting that no scroll takes place then:
 //        Add a scroll listener with assert_unreached(message)
 //        If possible, wait on a sentinel event that indicates when handling of
 //        the gesture is complete. Otherwise, wait a few animation frames.
 //        Pointerup is an example of a suitable sentinel event if the test
 //        is driven by pointer events since pointerup is replace by
 //        pointercancel if scrolling occurs.
-function waitForAnimationEnd(getValue, max_frame, max_unchanged_frame) {
-  const MAX_FRAME = max_frame;
-  const MAX_UNCHANGED_FRAME = max_unchanged_frame;
-  var last_changed_frame = 0;
-  var last_position = getValue();
-  return new Promise((resolve, reject) => {
-    function tick(frames) {
-    // We requestAnimationFrame either for MAX_FRAME or until
-    // MAX_UNCHANGED_FRAME with no change have been observed.
-      if (frames >= MAX_FRAME || frames - last_changed_frame > MAX_UNCHANGED_FRAME) {
-        resolve();
-      } else {
-        current_value = getValue();
-        if (last_position != current_value) {
-          last_changed_frame = frames;
-          last_position = current_value;
-        }
-        requestAnimationFrame(tick.bind(this, frames + 1));
-      }
-    }
-    tick(0);
-  })
-}
-
-// Waits until scrolling has stopped for a period of time.
-// @deprecated:
-//   For a scrolling test use waitForScrollend if expecting a scroll
-//   and use a scroll listener with assert_unreached if no scrolling is
-//   expected. See comments on waitForAnimationEnd for a more complete
-//   description of the recommended alternatives.
 function waitForAnimationEndTimeBased(getValue) {
   // Give up if the animation still isn't done after this many milliseconds.
   const TIMEOUT_MS = 1000;
