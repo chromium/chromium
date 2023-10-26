@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
@@ -19,18 +18,12 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
-if (is_chromeos_ash) {
-  import("//chrome/test/base/ash/js2gtest.gni")
-}
-
 assert(!is_android)
 
 source_set("browser_tests") {
   testonly = true
 
   sources = [
-    # TODO(crbug.com/1457360): List more '*_browsertest.cc' files below, as they
-    # are migrated from old js2gtest '*_browsertest.js' files.
     "access_code_cast/access_code_cast_browsertest.cc",
     "bookmarks/bookmarks_browsertest.cc",
     "chrome_timeticks_browsertest.cc",
@@ -195,8 +188,6 @@ source_set("interactive_ui_tests") {
   testonly = true
 
   sources = [
-    # TODO(crbug.com/1457360): List more '*test.cc' files below, as they
-    # are migrated from old js2gtest '*_focus_test.js' files.
     "bookmarks/bookmarks_focus_test.cc",
     "cr_components/cr_components_interactive_test.cc",
     "cr_elements/cr_elements_focus_test.cc",
@@ -229,114 +220,6 @@ source_set("interactive_ui_tests") {
     "//components/password_manager/content/common:common",
     "//components/search:search",
   ]
-}
-
-if (include_js2gtest_tests && is_chromeos_ash) {
-  js2gtest("interactive_ui_tests_js_webui") {
-    test_type = "webui"
-
-    sources = [ "cr_focus_row_behavior_interactive_test.js" ]
-
-    gen_include_files = [
-      "polymer_browser_test_base.js",
-      "polymer_interactive_ui_test.js",
-    ]
-
-    deps = [ "//chrome/browser/ui" ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  }
-
-  js2gtest("browser_tests_js_webui") {
-    test_type = "webui"
-
-    # Javascript sources. These are combined with the .cc files in the GYP
-    # build and are handled by a rule, but in the GN build they're in a
-    # separate action so need to be separated out.
-    sources = [
-      "../../../browser/resources/chromeos/login/security_token_pin_browsertest.js",
-      "../../../browser/ui/webui/ash/certificate_manager_dialog_browsertest.js",
-      "assertions.js",
-      "async_gen.js",
-      "chromeos/account_manager/account_manager_browsertest.js",
-      "chromeos/arc_account_picker/arc_account_picker_browsertest.js",
-      "chromeos/ash_common/ash_common_browsertest.js",
-      "chromeos/ash_common/ash_common_resources_browsertest.js",
-      "chromeos/ash_common/post_message_api/post_message_api_browsertest.js",
-      "chromeos/bluetooth_pairing_dialog_browsertest.js",
-      "chromeos/borealis_installer/borealis_installer_browsertest.js",
-      "chromeos/cloud_upload/cloud_upload_dialog_browsertest.js",
-      "chromeos/cloud_upload/connect_onedrive_browsertest.js",
-      "chromeos/cloud_upload/file_handler_page_browsertest.js",
-      "chromeos/cloud_upload/move_confirmation_page_browsertest.js",
-      "chromeos/edu_coexistence/edu_coexistence_browsertest.js",
-      "chromeos/edu_coexistence/edu_coexistence_with_arc_restrictions_browsertest.js",
-      "chromeos/emoji_picker/emoji_picker_browsertest.js",
-      "chromeos/gaia_action_buttons/gaia_action_buttons_browsertest.js",
-      "chromeos/internet_config_dialog_browsertest.js",
-      "chromeos/internet_detail_dialog_browsertest.js",
-      "chromeos/network_browsertest.js",
-      "chromeos/office_fallback/office_fallback_browsertest.js",
-      "chromeos/set_time_dialog_browsertest.js",
-      "chromeos/sys_internals/sys_internals_browsertest.js",
-      "cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
-      "js/i18n_process_test.js",
-      "js2gtest_browsertest.js",
-      "settings/chromeos/os_settings_browsertest.js",
-    ]
-
-    gen_include_files = [ "polymer_browser_test_base.js" ]
-
-    deps = [
-      "//build:branding_buildflags",
-      "//build/config/coverage:buildflags",
-      "//chrome/browser/ui",
-      "//crypto:buildflags",
-      "//services/network/public/cpp",
-      "//skia",
-    ]
-
-    if (is_cfm) {
-      sources += [
-        "chromeos/chromebox_for_meetings/cfm_network_settings_browsertest.js",
-      ]
-    }
-
-    data = [ "//ui/webui/resources/js/load_time_data_deprecated.js" ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  }
-
-  js2gtest("browser_tests_js_mojo_lite_webui") {
-    test_type = "mojo_lite_webui"
-
-    deps = [ "//chrome/browser/ui" ]
-
-    sources = [
-      "chromeos/crostini_installer_browsertest.js",
-      "chromeos/crostini_upgrader_browsertest.js",
-      "chromeos/firmware_update/firmware_update_browsertest.js",
-      "chromeos/os_feedback_ui/os_feedback_browsertest.js",
-      "chromeos/scanning/scanning_app_browsertest.js",
-      "chromeos/shimless_rma/shimless_rma_browsertest.js",
-    ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  }
-
-  js2gtest("browser_tests_js_mojo_webui") {
-    test_type = "mojo_webui"
-    sources = [
-      "chromeos/diagnostics/diagnostics_browsertest.js",
-      "chromeos/manage_mirrorsync/manage_mirrorsync_browsertest.js",
-      "chromeos/parent_access/parent_access_browsertest.js",
-      "chromeos/personalization_app/personalization_app_browsertest.js",
-      "chromeos/print_management/print_management_browsertest.js",
-      "chromeos/shortcut_customization/shortcut_customization_browsertest.js",
-      "nearby_share/nearby_browsertest.js",
-      "nearby_share/shared/nearby_shared_v3_browsertest.js",
-    ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  }
 }
 
 if (is_chromeos_ash) {

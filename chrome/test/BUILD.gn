@@ -3244,14 +3244,15 @@ if (!is_android) {
         "//ash/webui/media_app_ui:browser_tests_js",
         "//ash/webui/system_apps:browser_tests",
         "//ash/webui/system_extensions_internals_ui:browser_tests_js",
-        "//chrome/test/data/webui:browser_tests_js_mojo_lite_webui",
-        "//chrome/test/data/webui:browser_tests_js_mojo_webui",
-        "//chrome/test/data/webui:browser_tests_js_webui",
+        "//chrome/test/data/webui/chromeos:browser_tests_js_mojo_lite_webui",
+        "//chrome/test/data/webui/chromeos:browser_tests_js_mojo_webui",
+        "//chrome/test/data/webui/chromeos:browser_tests_js_webui",
         "//chromeos/ash/components/human_presence:browser_tests_js",
       ]
 
       data += js2gtest_js_libraries
-      data_deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
+      data_deps +=
+          [ "//chrome/test/data/webui/chromeos:browser_tests_js_webui" ]
 
       if (!is_official_build) {
         deps += [ "//ash/webui/sample_system_web_app_ui:browser_tests_js" ]
@@ -10639,7 +10640,8 @@ if (!is_android && !is_chromeos_device) {
     }
     if (include_js2gtest_tests && is_chromeos_ash) {
       data += js2gtest_js_libraries
-      deps += [ "//chrome/test/data/webui:interactive_ui_tests_js_webui" ]
+      deps +=
+          [ "//chrome/test/data/webui/chromeos:interactive_ui_tests_js_webui" ]
     }
 
     # Runtime dependencies

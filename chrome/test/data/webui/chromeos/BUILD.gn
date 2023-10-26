@@ -2,12 +2,122 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
+import("//chrome/test/include_js_tests.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
+
+if (include_js2gtest_tests) {
+  js2gtest("interactive_ui_tests_js_webui") {
+    test_type = "webui"
+
+    sources = [ "cr_focus_row_behavior_interactive_test.js" ]
+
+    gen_include_files = [
+      "polymer_browser_test_base.js",
+      "polymer_interactive_ui_test.js",
+    ]
+
+    deps = [ "//chrome/browser/ui" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+
+  js2gtest("browser_tests_js_webui") {
+    test_type = "webui"
+
+    # Javascript sources. These are combined with the .cc files in the GYP
+    # build and are handled by a rule, but in the GN build they're in a
+    # separate action so need to be separated out.
+    sources = [
+      "../../../../browser/resources/chromeos/login/security_token_pin_browsertest.js",
+      "../../../../browser/ui/webui/ash/certificate_manager_dialog_browsertest.js",
+      "../cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
+      "../settings/chromeos/os_settings_browsertest.js",
+      "account_manager/account_manager_browsertest.js",
+      "arc_account_picker/arc_account_picker_browsertest.js",
+      "ash_common/ash_common_browsertest.js",
+      "ash_common/ash_common_resources_browsertest.js",
+      "ash_common/i18n_process_test.js",
+      "ash_common/post_message_api/post_message_api_browsertest.js",
+      "assertions.js",
+      "async_gen.js",
+      "bluetooth_pairing_dialog_browsertest.js",
+      "borealis_installer/borealis_installer_browsertest.js",
+      "cloud_upload/cloud_upload_dialog_browsertest.js",
+      "cloud_upload/connect_onedrive_browsertest.js",
+      "cloud_upload/file_handler_page_browsertest.js",
+      "cloud_upload/move_confirmation_page_browsertest.js",
+      "edu_coexistence/edu_coexistence_browsertest.js",
+      "edu_coexistence/edu_coexistence_with_arc_restrictions_browsertest.js",
+      "emoji_picker/emoji_picker_browsertest.js",
+      "gaia_action_buttons/gaia_action_buttons_browsertest.js",
+      "internet_config_dialog_browsertest.js",
+      "internet_detail_dialog_browsertest.js",
+      "js2gtest_browsertest.js",
+      "network_browsertest.js",
+      "office_fallback/office_fallback_browsertest.js",
+      "set_time_dialog_browsertest.js",
+      "sys_internals/sys_internals_browsertest.js",
+    ]
+
+    gen_include_files = [ "polymer_browser_test_base.js" ]
+
+    deps = [
+      "//build:branding_buildflags",
+      "//build/config/coverage:buildflags",
+      "//chrome/browser/ui",
+      "//crypto:buildflags",
+      "//services/network/public/cpp",
+      "//skia",
+    ]
+
+    if (is_cfm) {
+      sources +=
+          [ "chromebox_for_meetings/cfm_network_settings_browsertest.js" ]
+    }
+
+    data = [ "//ui/webui/resources/js/load_time_data_deprecated.js" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+
+  js2gtest("browser_tests_js_mojo_lite_webui") {
+    test_type = "mojo_lite_webui"
+
+    deps = [ "//chrome/browser/ui" ]
+
+    sources = [
+      "crostini_installer_browsertest.js",
+      "crostini_upgrader_browsertest.js",
+      "firmware_update/firmware_update_browsertest.js",
+      "os_feedback_ui/os_feedback_browsertest.js",
+      "scanning/scanning_app_browsertest.js",
+      "shimless_rma/shimless_rma_browsertest.js",
+    ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+
+  js2gtest("browser_tests_js_mojo_webui") {
+    test_type = "mojo_webui"
+    sources = [
+      "../nearby_share/nearby_browsertest.js",
+      "../nearby_share/shared/nearby_shared_v3_browsertest.js",
+      "diagnostics/diagnostics_browsertest.js",
+      "manage_mirrorsync/manage_mirrorsync_browsertest.js",
+      "parent_access/parent_access_browsertest.js",
+      "personalization_app/personalization_app_browsertest.js",
+      "print_management/print_management_browsertest.js",
+      "shortcut_customization/shortcut_customization_browsertest.js",
+    ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+}
 
 js_type_check("closure_compile_local") {
   is_polymer3 = true
