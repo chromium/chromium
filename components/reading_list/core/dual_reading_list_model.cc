@@ -799,12 +799,17 @@ void DualReadingListModel::UpdateEntryStateCountersOnEntryInsertion(
   }
 }
 
-const ReadingListModel* DualReadingListModel::GetLocalOrSyncableModel() const {
-  return local_or_syncable_model_.get();
-}
-
-const ReadingListModel* DualReadingListModel::GetAccountModel() const {
-  return account_model_.get();
+base::flat_set<GURL> DualReadingListModel::GetKeysThatNeedUploadToSyncServer()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!local_or_syncable_model_->IsTrackingSyncMetadata() ||
+        !account_model_->IsTrackingSyncMetadata());
+  // If `local_or_syncable_model_` is used for sync, no data needs explicit
+  // upload to the sync server.
+  if (local_or_syncable_model_->IsTrackingSyncMetadata()) {
+    return {};
+  }
+  return local_or_syncable_model_->GetKeys();
 }
 
 }  // namespace reading_list

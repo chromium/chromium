@@ -206,7 +206,7 @@ class LocalDataQueryHelper::LocalDataQueryRequest
 
   void FetchLocalReadingList() {
     base::flat_set<GURL> keys =
-        helper_->dual_reading_list_model_->GetLocalOrSyncableModel()->GetKeys();
+        helper_->dual_reading_list_model_->GetKeysThatNeedUploadToSyncServer();
 
     result_.emplace(
         syncer::READING_LIST,

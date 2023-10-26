@@ -3634,5 +3634,48 @@ TEST_F(DualReadingListModelTest,
   EXPECT_EQ(local_or_syncable_model_ptr_->size(), 0u);
 }
 
+TEST_F(DualReadingListModelTest,
+       ShouldReturnAllLocalKeysUponGetKeysThatNeedUploadToSyncServer) {
+  const GURL kLocalURL("http://local_url.com/");
+  const GURL kAccountURL("http://account_url.com/");
+  const GURL kCommonURL("http://common_url.com/");
+
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_entries_builders=*/{TestEntryBuilder(kLocalURL,
+                                                           clock_.Now())
+                                              .SetTitle("local_entry_title"),
+                                          TestEntryBuilder(kCommonURL,
+                                                           clock_.Now())
+                                              .SetTitle("common_entry_title")},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kAccountURL, clock_.Now())
+              .SetTitle("account_entry_title"),
+          TestEntryBuilder(kCommonURL, clock_.Now())
+              .SetTitle("common_entry_title")}));
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalURL),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountURL),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonURL),
+            StorageStateForTesting::kExistsInBothModels);
+
+  base::flat_set<GURL> keys = dual_model_->GetKeysThatNeedUploadToSyncServer();
+  EXPECT_EQ(keys, base::flat_set<GURL>({kLocalURL, kCommonURL}));
+}
+
+TEST_F(
+    DualReadingListModelTest,
+    ShouldReturnNullIfLocalOrSyncableModelIsSyncingUponGetKeysThatNeedUploadToSyncServer) {
+  ASSERT_TRUE(
+      ResetStorageAndMimicSyncEnabled(/*initial_syncable_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+
+  base::flat_set<GURL> keys = dual_model_->GetKeysThatNeedUploadToSyncServer();
+  EXPECT_THAT(keys, ::testing::IsEmpty());
+}
+
 }  // namespace
 }  // namespace reading_list
