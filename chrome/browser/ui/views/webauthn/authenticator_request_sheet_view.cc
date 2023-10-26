@@ -159,6 +159,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
         title, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
     title_label->SetMultiLine(true);
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    title_label->SetAccessibleRole(ax::mojom::Role::kHeading);
     title_label->SetAllowCharacterBreak(true);
     if (features::IsChromeRefresh2023()) {
       title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
