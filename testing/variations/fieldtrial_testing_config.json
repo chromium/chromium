@@ -11353,6 +11353,26 @@
             ]
         }
     ],
+    "OneCopyLegacyMPVideoFrameUploadViaSI": [
+        {
+            "platforms": [
+                "mac",
+                "windows",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "fuchsia"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OneCopyLegacyMPVideoFrameUploadViaSI"
+                    ]
+                }
+            ]
+        }
+    ],
     "OneGroupPerRenderer": [
         {
             "platforms": [
