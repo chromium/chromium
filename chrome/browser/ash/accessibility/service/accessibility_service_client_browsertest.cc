@@ -406,9 +406,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
 
 // Test that the AccessibilityServiceClient can toggle features in the service
 // using the mojom interface.
-// Disbled by crbug.com/1495948
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
-                       DISABLED_TogglesAccessibilityFeatures) {
+                       TogglesAccessibilityFeatures) {
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kChromeVox));
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kSelectToSpeak));
   EXPECT_FALSE(ServiceHasATEnabled(AssistiveTechnologyType::kSwitchAccess));
