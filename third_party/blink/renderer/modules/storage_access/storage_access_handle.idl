@@ -7,7 +7,7 @@ interface StorageAccessHandle {
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute Storage sessionStorage;
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute Storage localStorage;
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute IDBFactory indexedDB;
-    // TODO(crbug.com/1484966): Add web locks
+    [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute LockManager locks;
     // TODO(crbug.com/1484966): Add cache storage
     // TODO(crbug.com/1484966): Add origin private file system
     // TODO(crbug.com/1484966): Add quota

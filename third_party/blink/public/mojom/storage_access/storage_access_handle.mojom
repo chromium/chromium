@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
+import "third_party/blink/public/mojom/locks/lock_manager.mojom";
 
 // A LocalDOMWindow with a third-party StorageKey in the renderer can bind this
 // on a RenderFrameHost in the browser to access storage for the first-party
@@ -16,4 +17,7 @@ interface StorageAccessHandle {
 
   // Binds an IDBFactory with access to first-party storage.
   BindIndexedDB(pending_receiver<IDBFactory> receiver);
+
+  // Binds a LockManager with access to first-party locks.
+  BindLocks(pending_receiver<LockManager> receiver);
 };

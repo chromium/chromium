@@ -8,6 +8,7 @@
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
+#include "third_party/blink/public/mojom/locks/lock_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_handle.mojom.h"
 
 namespace content {
@@ -24,6 +25,8 @@ class StorageAccessHandle
 
   void BindIndexedDB(
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
+  void BindLocks(
+      mojo::PendingReceiver<blink::mojom::LockManager> receiver) override;
 
  private:
   StorageAccessHandle(

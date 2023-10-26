@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/storage_access/storage_access_handle.h"
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/modules/storage/storage_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -25,6 +26,10 @@ const char StorageAccessHandle::kLocalStorageNotRequested[] =
 // static
 const char StorageAccessHandle::kIndexedDBNotRequested[] =
     "IndexedDB not requested when storage access handle was initialized.";
+
+// static
+const char StorageAccessHandle::kLocksNotRequested[] =
+    "Web Locks not requested when storage access handle was initialized.";
 
 StorageAccessHandle::StorageAccessHandle(
     LocalDOMWindow& window,
@@ -53,6 +58,10 @@ StorageAccessHandle::StorageAccessHandle(
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB);
   }
+  if (storage_access_types_->locks()) {
+    window.CountUse(
+        WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks);
+  }
   if (storage_access_types_->all() || storage_access_types_->sessionStorage()) {
     InitSessionStorage();
   }
@@ -62,6 +71,9 @@ StorageAccessHandle::StorageAccessHandle(
   if (storage_access_types_->all() || storage_access_types_->indexedDB()) {
     InitIndexedDB();
   }
+  if (storage_access_types_->all() || storage_access_types_->locks()) {
+    InitLocks();
+  }
 }
 
 void StorageAccessHandle::Trace(Visitor* visitor) const {
@@ -70,6 +82,7 @@ void StorageAccessHandle::Trace(Visitor* visitor) const {
   visitor->Trace(local_storage_);
   visitor->Trace(remote_);
   visitor->Trace(indexed_db_);
+  visitor->Trace(locks_);
   ScriptWrappable::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
@@ -133,6 +146,17 @@ IDBFactory* StorageAccessHandle::indexedDB(
   return indexed_db_;
 }
 
+LockManager* StorageAccessHandle::locks(ExceptionState& exception_state) const {
+  if (!storage_access_types_->all() && !storage_access_types_->locks()) {
+    exception_state.ThrowSecurityError(kLocksNotRequested);
+    return nullptr;
+  }
+  GetSupplementable()->CountUse(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use);
+  return locks_;
+}
+
 void StorageAccessHandle::InitSessionStorage() {
   LocalDOMWindow* window = GetSupplementable();
   if (!window->GetFrame()) {
@@ -194,6 +218,18 @@ void StorageAccessHandle::InitIndexedDB() {
   mojo::PendingRemote<mojom::blink::IDBFactory> indexed_db_remote;
   remote->BindIndexedDB(indexed_db_remote.InitWithNewPipeAndPassReceiver());
   indexed_db_->SetRemote(std::move(indexed_db_remote));
+}
+
+void StorageAccessHandle::InitLocks() {
+  HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote = GetRemote();
+  if (!remote) {
+    return;
+  }
+  locks_ = MakeGarbageCollected<LockManager>(*GetSupplementable()->navigator());
+  mojo::PendingRemote<mojom::blink::LockManager> locks_remote;
+  remote->BindLocks(locks_remote.InitWithNewPipeAndPassReceiver());
+  locks_->SetManager(std::move(locks_remote),
+                     GetSupplementable()->GetExecutionContext());
 }
 
 }  // namespace blink

@@ -4043,6 +4043,8 @@ enum WebFeature {
   kElementCheckVisibilityOptionCheckOpacity = 4703,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB = 4704,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use = 4705,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks = 4706,
+  kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use = 4707,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

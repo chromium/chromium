@@ -44,6 +44,14 @@ void StorageAccessHandle::BindIndexedDB(
       render_frame_host().GetGlobalId(), std::move(receiver));
 }
 
+void StorageAccessHandle::BindLocks(
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
+  render_frame_host().GetProcess()->CreateLockManager(
+      blink::StorageKey::CreateFirstParty(
+          render_frame_host().GetStorageKey().origin()),
+      std::move(receiver));
+}
+
 StorageAccessHandle::StorageAccessHandle(
     RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver)

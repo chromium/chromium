@@ -7,7 +7,7 @@ dictionary StorageAccessTypes {
     boolean sessionStorage = false;
     boolean localStorage = false;
     boolean indexedDB = false;
-    // TODO(crbug.com/1484966): Add web locks
+    boolean locks = false;
     // TODO(crbug.com/1484966): Add cache storage
     // TODO(crbug.com/1484966): Add origin private file system
     // TODO(crbug.com/1484966): Add quota

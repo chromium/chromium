@@ -55,6 +55,8 @@ TEST_F(StorageAccessHandleTest, LoadAllHandles) {
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB));
   EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks));
+  EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
   EXPECT_FALSE(window->document()->IsUseCounted(
@@ -63,6 +65,9 @@ TEST_F(StorageAccessHandleTest, LoadAllHandles) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
@@ -92,6 +97,16 @@ TEST_F(StorageAccessHandleTest, LoadAllHandles) {
     EXPECT_TRUE(window->document()->IsUseCounted(
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
+  }
+  {
+    V8TestingScope scope;
+    storage_access_handle->locks(scope.GetExceptionState());
+    EXPECT_EQ(DOMExceptionCode::kNoError,
+              scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(nullptr, scope.GetExceptionState().Message());
+    EXPECT_TRUE(window->document()->IsUseCounted(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
   }
 }
 
@@ -116,6 +131,8 @@ TEST_F(StorageAccessHandleTest, LoadSessionStorageHandle) {
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB));
   EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks));
+  EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
   EXPECT_FALSE(window->document()->IsUseCounted(
@@ -124,6 +141,9 @@ TEST_F(StorageAccessHandleTest, LoadSessionStorageHandle) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
@@ -155,6 +175,17 @@ TEST_F(StorageAccessHandleTest, LoadSessionStorageHandle) {
     EXPECT_FALSE(window->document()->IsUseCounted(
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
+  }
+  {
+    V8TestingScope scope;
+    storage_access_handle->locks(scope.GetExceptionState());
+    EXPECT_EQ(DOMExceptionCode::kSecurityError,
+              scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(StorageAccessHandle::kLocksNotRequested,
+              scope.GetExceptionState().Message());
+    EXPECT_FALSE(window->document()->IsUseCounted(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
   }
 }
 
@@ -179,6 +210,8 @@ TEST_F(StorageAccessHandleTest, LoadLocalStorageHandle) {
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB));
   EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks));
+  EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
   EXPECT_FALSE(window->document()->IsUseCounted(
@@ -187,6 +220,9 @@ TEST_F(StorageAccessHandleTest, LoadLocalStorageHandle) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
@@ -218,6 +254,17 @@ TEST_F(StorageAccessHandleTest, LoadLocalStorageHandle) {
     EXPECT_FALSE(window->document()->IsUseCounted(
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
+  }
+  {
+    V8TestingScope scope;
+    storage_access_handle->locks(scope.GetExceptionState());
+    EXPECT_EQ(DOMExceptionCode::kSecurityError,
+              scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(StorageAccessHandle::kLocksNotRequested,
+              scope.GetExceptionState().Message());
+    EXPECT_FALSE(window->document()->IsUseCounted(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
   }
 }
 
@@ -242,6 +289,8 @@ TEST_F(StorageAccessHandleTest, LoadIndexedDBHandle) {
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB));
   EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks));
+  EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
   EXPECT_FALSE(window->document()->IsUseCounted(
@@ -250,6 +299,9 @@ TEST_F(StorageAccessHandleTest, LoadIndexedDBHandle) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
@@ -282,12 +334,24 @@ TEST_F(StorageAccessHandleTest, LoadIndexedDBHandle) {
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
   }
+  {
+    V8TestingScope scope;
+    storage_access_handle->locks(scope.GetExceptionState());
+    EXPECT_EQ(DOMExceptionCode::kSecurityError,
+              scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(StorageAccessHandle::kLocksNotRequested,
+              scope.GetExceptionState().Message());
+    EXPECT_FALSE(window->document()->IsUseCounted(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
+  }
 }
 
-TEST_F(StorageAccessHandleTest, LoadNoHandles) {
+TEST_F(StorageAccessHandleTest, LoadLocksHandle) {
   LocalDOMWindow* window = getLocalDOMWindow();
   StorageAccessTypes* storage_access_types =
       MakeGarbageCollected<StorageAccessTypes>();
+  storage_access_types->setLocks(true);
   StorageAccessHandle* storage_access_handle =
       MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
   EXPECT_TRUE(window->document()->IsUseCounted(
@@ -303,6 +367,8 @@ TEST_F(StorageAccessHandleTest, LoadNoHandles) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB));
+  EXPECT_TRUE(window->document()->IsUseCounted(
+      WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks));
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
@@ -312,6 +378,9 @@ TEST_F(StorageAccessHandleTest, LoadNoHandles) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
@@ -344,6 +413,95 @@ TEST_F(StorageAccessHandleTest, LoadNoHandles) {
     EXPECT_FALSE(window->document()->IsUseCounted(
         WebFeature::
             kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
+  }
+  {
+    V8TestingScope scope;
+    storage_access_handle->locks(scope.GetExceptionState());
+    EXPECT_EQ(DOMExceptionCode::kNoError,
+              scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(nullptr, scope.GetExceptionState().Message());
+    EXPECT_TRUE(window->document()->IsUseCounted(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
+  }
+}
+
+TEST_F(StorageAccessHandleTest, LoadNoHandles) {
+  LocalDOMWindow* window = getLocalDOMWindow();
+  StorageAccessTypes* storage_access_types =
+      MakeGarbageCollected<StorageAccessTypes>();
+  StorageAccessHandle* storage_access_handle =
+      MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
+  EXPECT_TRUE(window->document()->IsUseCounted(
+      WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_all));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
+  {
+    V8TestingScope scope;
+    storage_access_handle->sessionStorage(scope.GetExceptionState());
+    EXPECT_EQ(DOMExceptionCode::kSecurityError,
+              scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(StorageAccessHandle::kSessionStorageNotRequested,
+              scope.GetExceptionState().Message());
+    EXPECT_FALSE(window->document()->IsUseCounted(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
+  }
+  {
+    V8TestingScope scope;
+    storage_access_handle->localStorage(scope.GetExceptionState());
+    EXPECT_EQ(DOMExceptionCode::kSecurityError,
+              scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(StorageAccessHandle::kLocalStorageNotRequested,
+              scope.GetExceptionState().Message());
+    EXPECT_FALSE(window->document()->IsUseCounted(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage_Use));
+  }
+  {
+    V8TestingScope scope;
+    storage_access_handle->indexedDB(scope.GetExceptionState());
+    EXPECT_EQ(DOMExceptionCode::kSecurityError,
+              scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(StorageAccessHandle::kIndexedDBNotRequested,
+              scope.GetExceptionState().Message());
+    EXPECT_FALSE(window->document()->IsUseCounted(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use));
+  }
+  {
+    V8TestingScope scope;
+    storage_access_handle->locks(scope.GetExceptionState());
+    EXPECT_EQ(DOMExceptionCode::kSecurityError,
+              scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+    EXPECT_EQ(StorageAccessHandle::kLocksNotRequested,
+              scope.GetExceptionState().Message());
+    EXPECT_FALSE(window->document()->IsUseCounted(
+        WebFeature::
+            kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use));
   }
 }
 

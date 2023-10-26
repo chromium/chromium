@@ -47,6 +47,19 @@
         await handle.indexedDB.deleteDatabase(id);
         break;
       }
+      case "locks": {
+        const handle = await document.requestStorageAccess({locks: true});
+        const handle_state = await handle.locks.query();
+        if (handle_state.held.length != 1 || handle_state.held[0].name != id) {
+          message = "No first-party Web Lock access";
+        }
+        const local_state = await window.navigator.locks.query();
+        if (local_state.held.length != 0) {
+          message = "Handle should not override window Web Locks";
+        }
+        await handle.locks.request(id, {steal: true}, async () => {});
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;

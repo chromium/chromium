@@ -33,6 +33,13 @@
         }
         break;
       }
+      case "locks": {
+        const state = await handle.locks.query();
+        if (state.held.length != 0) {
+          message = "Cross-site first-party Web Locks should be empty";
+        }
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;
