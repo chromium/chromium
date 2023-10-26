@@ -1625,7 +1625,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ProxyFallback) {
   TestProxyFallbackProxyDelegate test_delegate;
   service.SetProxyDelegate(&test_delegate);
   service.ReportSuccess(info);
-  EXPECT_EQ("[foopy1:8080]", test_delegate.proxy_chain().ToDebugString());
+  EXPECT_EQ("foopy1:8080", test_delegate.proxy_chain().ToDebugString());
   EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED,
             test_delegate.last_proxy_fallback_net_error());
   service.SetProxyDelegate(nullptr);
