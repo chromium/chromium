@@ -6570,6 +6570,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, SyncDataCreatesCorrectShelfItem) {
   ASSERT_TRUE(promise_item);
   EXPECT_TRUE(promise_item->is_promise_app);
   EXPECT_EQ(promise_item->progress, 0.3f);
+  EXPECT_EQ(promise_item->package_id, package_id.ToString());
 
   // Add an app in ArcAppListPrefs, which will register an app in App Service.
   // We need to add an app into ArcAppListPrefs (and not just the
@@ -6590,6 +6591,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, SyncDataCreatesCorrectShelfItem) {
   ASSERT_TRUE(app_item);
   EXPECT_FALSE(app_item->is_promise_app);
   EXPECT_EQ(app_item->progress, -1);
+  EXPECT_EQ(app_item->package_id, package_id.ToString());
 }
 
 TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemCreationUpdatesMetrics) {

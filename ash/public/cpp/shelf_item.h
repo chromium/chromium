@@ -41,6 +41,9 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   // the default value will be `title`.
   std::u16string accessible_name;
 
+  // The package ID of the application from which the item is associated with.
+  std::string package_id;
+
   SkColor notification_badge_color = SK_ColorWHITE;
 
   // App status.

@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
@@ -193,6 +194,38 @@ std::u16string ShelfControllerHelper::GetPromiseAppAccessibleName(
   }
   return GetAccessibleLabelForPromiseStatus(promise_app->name,
                                             promise_app->status);
+}
+
+// static
+std::string ShelfControllerHelper::GetAppPackageId(Profile* profile,
+                                                   const std::string& app_id) {
+  if (app_id.empty()) {
+    return std::string();
+  }
+
+  if (ash::features::ArePromiseIconsEnabled()) {
+    const apps::PromiseApp* promise_app =
+        apps::AppServiceProxyFactory::GetForProfile(profile)
+            ->PromiseAppRegistryCache()
+            ->GetPromiseAppForStringPackageId(app_id);
+    if (promise_app) {
+      return promise_app->package_id.ToString();
+    }
+  }
+
+  absl::optional<apps::PackageId> package_id;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&package_id, profile](const apps::AppUpdate& update) {
+        if (apps_util::IsInstalled(update.Readiness())) {
+          package_id = apps_util::GetPackageIdForApp(profile, update);
+        }
+      });
+  if (package_id) {
+    return package_id->ToString();
+  }
+
+  return std::string();
 }
 
 // static

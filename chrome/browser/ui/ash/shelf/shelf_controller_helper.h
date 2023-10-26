@@ -50,6 +50,11 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   static std::u16string GetAppTitle(Profile* profile,
                                     const std::string& app_id);
 
+  // Helper function to return the package id associated with |app_id|.
+  // Returns an empty string if no matching extension can be found.
+  static std::string GetAppPackageId(Profile* profile,
+                                     const std::string& app_id);
+
   // Helper function to return the app status associated with |app_id|. if the
   // app is blocked, return AppStatus::kBlocked. Otherwise, if the app is
   // paused, return AppStatus::kPaused. Otherwise, return AppStatus::kReady.

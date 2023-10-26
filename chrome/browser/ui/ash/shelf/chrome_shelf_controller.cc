@@ -924,6 +924,14 @@ void ChromeShelfController::OnAppInstalled(
             ShelfControllerHelper::GetAppTitle(latest_active_profile_, app_id);
       }
 
+      if (item.package_id.empty()) {
+        item.package_id = ShelfControllerHelper::GetAppPackageId(
+            latest_active_profile_, app_id);
+        if (!item.package_id.empty()) {
+          needs_update = true;
+        }
+      }
+
       ash::AppStatus app_status =
           ShelfControllerHelper::GetAppStatus(latest_active_profile_, app_id);
       if (app_status != item.app_status) {
@@ -971,6 +979,13 @@ void ChromeShelfController::OnAppUpdated(
       if (item.title != title) {
         needs_update = true;
         item.title = title;
+      }
+
+      std::string package_id = ShelfControllerHelper::GetAppPackageId(
+          latest_active_profile_, app_id);
+      if (item.package_id != package_id) {
+        needs_update = true;
+        item.package_id = package_id;
       }
 
       if (needs_update)
@@ -1730,6 +1745,11 @@ void ChromeShelfController::ShelfItemAdded(int index) {
       needs_update = true;
       item.title =
           ShelfControllerHelper::GetAppTitle(latest_active_profile_, id.app_id);
+    }
+    if (item.package_id.empty()) {
+      needs_update = true;
+      item.package_id = ShelfControllerHelper::GetAppPackageId(
+          latest_active_profile_, id.app_id);
     }
     if (!BrowserAppShelfControllerShouldHandleApp(id.app_id,
                                                   latest_active_profile_)) {

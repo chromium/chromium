@@ -47,6 +47,7 @@ std::unique_ptr<ash::ShelfItem> ChromeShelfItemFactory::CreateShelfItemForApp(
         ShelfControllerHelper::GetPromiseAppProgress(profile_, app_id);
     item->is_promise_app =
         ShelfControllerHelper::IsPromiseApp(profile_, app_id);
+    item->package_id = ShelfControllerHelper::GetAppPackageId(profile_, app_id);
 
     if (item->is_promise_app) {
       // TODO(b/302408509): Temporary fix for ShelfViews crash that happens only
