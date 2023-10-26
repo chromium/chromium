@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.touch_to_fill.password_generation.Touc
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
 
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.IntegrationTest;
 import org.chromium.base.test.util.Matchers;
@@ -78,6 +80,10 @@ import java.util.concurrent.atomic.AtomicReference;
                 "TODO(crbug.com/1346583): add resetting logic for"
                         + "FakePasswordStoreAndroidBackend to allow batching")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
+@DisableIf.Build(
+        message = "crbug.com/1496214",
+        sdk_is_greater_than = VERSION_CODES.R,
+        sdk_is_less_than = VERSION_CODES.TIRAMISU)
 public class PasswordGenerationIntegrationTest {
     /**
      * The number of buttons currently available in the keyboard accessory bar. The offered options
