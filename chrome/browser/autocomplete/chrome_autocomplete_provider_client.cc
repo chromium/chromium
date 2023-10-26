@@ -15,8 +15,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
-#include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
+#include "chrome/browser/autocomplete/provider_state_service_factory.h"
 #include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
@@ -296,8 +296,7 @@ ChromeAutocompleteProviderClient::GetBuiltinsToProvideAsUserTypes() {
   std::vector<std::u16string> builtins_to_provide;
   builtins_to_provide.push_back(
       base::ASCIIToUTF16(chrome::kChromeUIChromeURLsURL));
-  builtins_to_provide.push_back(
-      base::ASCIIToUTF16(chrome::kChromeUIFlagsURL));
+  builtins_to_provide.push_back(base::ASCIIToUTF16(chrome::kChromeUIFlagsURL));
 #if !BUILDFLAG(IS_ANDROID)
   builtins_to_provide.push_back(
       base::ASCIIToUTF16(chrome::kChromeUISettingsURL));
@@ -331,8 +330,7 @@ signin::IdentityManager* ChromeAutocompleteProviderClient::GetIdentityManager()
 AutocompleteScoringModelService*
 ChromeAutocompleteProviderClient::GetAutocompleteScoringModelService() const {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  return AutocompleteScoringModelServiceFactory::GetInstance()->GetForProfile(
-      profile_);
+  return AutocompleteScoringModelServiceFactory::GetForProfile(profile_);
 #else
   return nullptr;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -341,11 +339,15 @@ ChromeAutocompleteProviderClient::GetAutocompleteScoringModelService() const {
 OnDeviceTailModelService*
 ChromeAutocompleteProviderClient::GetOnDeviceTailModelService() const {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  return OnDeviceTailModelServiceFactory::GetInstance()->GetForProfile(
-      profile_);
+  return OnDeviceTailModelServiceFactory::GetForProfile(profile_);
 #else
   return nullptr;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+}
+
+ProviderStateService*
+ChromeAutocompleteProviderClient::GetProviderStateService() const {
+  return ProviderStateServiceFactory::GetForProfile(profile_);
 }
 
 bool ChromeAutocompleteProviderClient::IsOffTheRecord() const {

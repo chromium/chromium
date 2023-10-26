@@ -13,13 +13,17 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
+#include "components/omnibox/browser/provider_state_service.h"
 #include "components/omnibox/browser/search_provider.h"
 
-CalculatorProvider::CalculatorProvider(AutocompleteProviderListener* listener,
+CalculatorProvider::CalculatorProvider(AutocompleteProviderClient* client,
+                                       AutocompleteProviderListener* listener,
                                        SearchProvider* search_provider)
     : AutocompleteProvider(AutocompleteProvider::TYPE_CALCULATOR),
+      client_(client),
       search_provider_(search_provider) {
   CHECK(search_provider_);
   AddListener(listener);
@@ -64,11 +68,11 @@ void CalculatorProvider::Stop(bool clear_cached_results,
 }
 
 void CalculatorProvider::DeleteMatch(const AutocompleteMatch& match) {
-  auto it = base::ranges::find_if(cache_, [&](const auto& cached_match) {
+  auto it = base::ranges::find_if(Cache(), [&](const auto& cached_match) {
     return cached_match.destination_url == match.destination_url;
   });
-  if (it != cache_.end()) {
-    cache_.erase(it);
+  if (it != Cache().end()) {
+    Cache().erase(it);
     AddMatches();
   }
 }
@@ -108,23 +112,22 @@ void CalculatorProvider::AddMatchToCache(AutocompleteMatch match) {
   // As the user types out an input, e.g. '1+22+33', replace the intermediate
   // matches to avoid showing all of: '1+2=3', '1+22=23', '1+22+3=26', &
   // '1+22+33=56'.
-  if (!cache_.empty() && grew_input_) {
-    cache_.pop_back();
-  }
+  if (!Cache().empty() && grew_input_ && !last_calc_input_.empty())
+    Cache().pop_back();
 
   // Remove duplicates to avoid a repeated match reducing cache capacity.
   auto duplicate = base::ranges::find_if(
-      cache_, [&](const auto& cached) { return cached == match.contents; },
+      Cache(), [&](const auto& cached) { return cached == match.contents; },
       &AutocompleteMatch::contents);
-  if (duplicate != cache_.end())
-    cache_.erase(duplicate);
+  if (duplicate != Cache().end())
+    Cache().erase(duplicate);
 
-  if (cache_.size() >
+  if (Cache().size() >
       omnibox_feature_configs::CalcProvider::Get().max_matches) {
-    cache_.erase(cache_.begin());
+    Cache().erase(Cache().begin());
   }
 
-  cache_.push_back(std::move(match));
+  Cache().push_back(std::move(match));
   last_calc_input_ = input_;
   since_last_calculator_suggestion_ = 0;
 }
@@ -134,9 +137,9 @@ void CalculatorProvider::AddMatches() {
   // Score sequentially so they're ranked sequentially.
   // TODO(manukh) Consider enforcing hard grouping (e.g. search v URL).
   int relevance = omnibox_feature_configs::CalcProvider::Get().score;
-  for (auto& match : cache_)
+  for (auto& match : Cache())
     match.relevance = relevance++;
-  matches_ = cache_;
+  matches_ = Cache();
 }
 
 bool CalculatorProvider::Show() {
@@ -150,4 +153,8 @@ bool CalculatorProvider::Show() {
   return (grew_input_ || shrunk_input_) &&
          since_last_calculator_suggestion_ <=
              omnibox_feature_configs::CalcProvider::Get().num_non_calc_inputs;
+}
+
+std::vector<AutocompleteMatch>& CalculatorProvider::Cache() {
+  return client_->GetProviderStateService()->calculator_provider_cache;
 }

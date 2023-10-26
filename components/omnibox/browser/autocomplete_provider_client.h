@@ -32,6 +32,7 @@ class TabMatcher;
 class ZeroSuggestCacheService;
 class AutocompleteScoringModelService;
 class OnDeviceTailModelService;
+struct ProviderStateService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -41,7 +42,7 @@ namespace history {
 class HistoryService;
 class URLDatabase;
 class TopSites;
-}
+}  // namespace history
 
 namespace history_clusters {
 class HistoryClustersService;
@@ -100,6 +101,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual AutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const = 0;
   virtual OnDeviceTailModelService* GetOnDeviceTailModelService() const = 0;
+  virtual ProviderStateService* GetProviderStateService() const = 0;
 
   // The value to use for Accept-Languages HTTP header when making an HTTP
   // request.

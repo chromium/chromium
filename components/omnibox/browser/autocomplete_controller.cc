@@ -644,6 +644,14 @@ void AutocompleteController::OnProviderUpdate(
 
   if (updated_matches || done_)
     UpdateResult(false, false, true);
+
+  if (done_) {
+    size_t calculator_count =
+        base::ranges::count_if(published_result_, [](const auto& match) {
+          return match.type == AutocompleteMatchType::CALCULATOR;
+        });
+    UMA_HISTOGRAM_COUNTS_100("Omnibox.NumCalculatorMatches", calculator_count);
+  }
 }
 
 void AutocompleteController::AddProviderAndTriggeringLogs(
@@ -822,7 +830,8 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
   }
   if (provider_types & AutocompleteProvider::TYPE_CALCULATOR &&
       search_provider_ != nullptr) {
-    providers_.push_back(new CalculatorProvider(this, search_provider_));
+    providers_.push_back(
+        new CalculatorProvider(provider_client_.get(), this, search_provider_));
   }
 }
 

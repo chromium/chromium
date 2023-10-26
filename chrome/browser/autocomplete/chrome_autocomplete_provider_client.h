@@ -83,6 +83,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   AutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const override;
   OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
+  ProviderStateService* GetProviderStateService() const override;
   bool IsOffTheRecord() const override;
   bool IsIncognitoProfile() const override;
   bool IsGuestSession() const override;

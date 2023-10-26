@@ -1308,6 +1308,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.NumCalculatorMatches" units="count"
+    expires_after="2024-09-25">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    How many calculator matches where shown. Includes matches from both the
+    search and calculator providers.
+
+    Logged after deduping, so duplicate matches from the search and calc
+    provider won't be double counted.
+
+    Logged after culling, so matches that were generated but not shown are not
+    counted.
+
+    Logged when the last provider calls `OnProviderUpdate()`. So autocomplete
+    calls with `omit_asynchronous_matches` true (i.e. classification calls)
+    won't log this. Likewise, interrupted autocompleted passes (i.e. when the
+    user is typing faster than the slowest async provider) won't log this. The
+    search and calculator providers are on the slow end of async providers; so
+    if they complete, it's likely this will be logged.
+
+    Logged once per input (whose last autocomplete pass completed). Not logged
+    once per autocomplete pass or once per omnibox selection.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.NumTypedTerms" units="terms"
     expires_after="2024-02-25">
   <owner>jdonnelly@chromium.org</owner>

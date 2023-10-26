@@ -15,6 +15,7 @@
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
+#include "chrome/browser/autocomplete/provider_state_service_factory.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
@@ -1007,6 +1008,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   PromoServiceFactory::GetInstance();
 #endif
   ProtocolHandlerRegistryFactory::GetInstance();
+  ProviderStateServiceFactory::GetInstance();
   PushMessagingServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
   ReadingListManagerFactory::GetInstance();

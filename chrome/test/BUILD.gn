@@ -5933,6 +5933,7 @@ test("unit_tests") {
     "../browser/apps/user_type_filter_unittest.cc",
     "../browser/autocomplete/chrome_autocomplete_provider_client_unittest.cc",
     "../browser/autocomplete/chrome_autocomplete_scheme_classifier_unittest.cc",
+    "../browser/autocomplete/provider_state_service_factory_unittest.cc",
     "../browser/autocomplete/search_provider_unittest.cc",
     "../browser/autocomplete/shortcuts_provider_extension_unittest.cc",
     "../browser/autofill/automated_tests/cache_replayer_unittest.cc",
