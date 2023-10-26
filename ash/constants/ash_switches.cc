@@ -830,6 +830,9 @@ const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 const char kBrowserDataBackwardMigrationForUser[] =
     "browser-data-backward-migration-for-user";
 
+// Supply secret key for Coral feature.
+const char kCoralFeatureKey[] = "coral-feature-key";
+
 // Tells Chrome to forcefully trigger backward data migration.
 extern const char kForceBrowserDataBackwardMigration[] =
     "force-browser-data-backward-migration";

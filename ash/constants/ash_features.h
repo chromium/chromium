@@ -125,6 +125,7 @@ BASE_DECLARE_FEATURE(kConsumerAutoUpdateToggleAllowed);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kContextualNudges);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kContinuousOverviewScrollAnimation);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCoralFeature);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCrosPrivacyHub);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCrosPrivacyHubAppPermissions);
@@ -898,6 +899,7 @@ bool IsClipboardHistoryWebContentsPasteEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsConsumerAutoUpdateToggleAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsContinuousOverviewScrollAnimationEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCoralFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubAppPermissionsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubLocationEnabled();

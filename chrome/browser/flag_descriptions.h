@@ -128,6 +128,11 @@ extern const char kClipboardMaximumAgeDescription[];
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kCoralFeatureKeyName[];
+extern const char kCoralFeatureKeyDescription[];
+#endif  // IS_CHROMEOS_ASH
+
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kCrOSLegacyMediaFormatsName[];
 extern const char kCrOSLegacyMediaFormatsDescription[];

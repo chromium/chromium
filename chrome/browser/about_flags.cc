@@ -11110,6 +11110,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"app-install-service-uri", flag_descriptions::kAppInstallServiceUriName,
      flag_descriptions::kAppInstallServiceUriDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kAppInstallServiceUri)},
+
+    {"coral-feature-key", flag_descriptions::kCoralFeatureKeyName,
+     flag_descriptions::kCoralFeatureKeyDescription, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kCoralFeatureKey, "")},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)

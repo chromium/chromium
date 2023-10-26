@@ -1312,6 +1312,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "coral-feature-key",
+    "owners": [ "cros-coral@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "cormorant",
     "owners": [ "jeffreycohen@chromium.org", "markeh@chromium.org", "wissemgamra@chromium.org", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 119

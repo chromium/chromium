@@ -65119,6 +65119,7 @@ from previous Chrome versions.
   <int value="-331137136"
       label="WebAssemblyExperimentalStackSwitching:disabled"/>
   <int value="-329727402" label="disable-files-quick-view"/>
+  <int value="-329174540" label="CoralFeature:disabled"/>
   <int value="-328361990" label="enable-experimental-extension-apis"/>
   <int value="-328339709" label="WebFeedAwareness:enabled"/>
   <int value="-327520505" label="RelatedSearchesAlternateUx:enabled"/>
@@ -68986,6 +68987,7 @@ from previous Chrome versions.
   <int value="1553310752" label="AccessibilityCursorColor:enabled"/>
   <int value="1553422694" label="EnablePalmOnMaxTouchMajor:enabled"/>
   <int value="1553430984" label="Projector:enabled"/>
+  <int value="1553667664" label="CoralFeature:enabled"/>
   <int value="1553777815" label="enable-search-prefetch-service"/>
   <int value="1556554961" label="DriveFsBidirectionalNativeMessaging:enabled"/>
   <int value="1556739957" label="Jelly:disabled"/>

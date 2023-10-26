@@ -155,6 +155,12 @@ const char kContentLanguagesInLanguagePickerDescription[] =
     "Enables bringing user's content languages that are translatable to the "
     "top of the list with all languages shown in the translate menu";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kCoralFeatureKeyName[] = "Secret key for Coral feature.";
+const char kCoralFeatureKeyDescription[] =
+    "Secret key for Coral feature. Incorrect values will cause chrome crashes.";
+#endif  // IS_CHROMEOS_ASH
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kCrOSLegacyMediaFormatsName[] = "Legacy media format support";
 const char kCrOSLegacyMediaFormatsDescription[] =
