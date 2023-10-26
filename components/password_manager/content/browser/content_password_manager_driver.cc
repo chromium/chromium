@@ -457,12 +457,16 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
     // TODO (crbug.com/1448579): Make ShowTouchToFill to return bool (whether it
     // was shown or not) and do not call the OnShowPasswordSuggestions on the
     // password autofill manager if TTF was shown.
-    client_->ShowKeyboardReplacingSurface(
-        this,
-        SubmissionReadinessParams(
-            form, username_field_index, password_field_index,
-            autofill::mojom::SubmissionReadinessState::kNoInformation),
-        options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS);
+    bool keyboard_replacing_surface_shown =
+        client_->ShowKeyboardReplacingSurface(
+            this,
+            SubmissionReadinessParams(
+                form, username_field_index, password_field_index,
+                autofill::mojom::SubmissionReadinessState::kNoInformation),
+            options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS);
+    if (keyboard_replacing_surface_shown) {
+      return;
+    }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 

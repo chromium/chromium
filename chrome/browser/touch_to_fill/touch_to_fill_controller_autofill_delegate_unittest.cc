@@ -81,7 +81,7 @@ class MockPasswordManagerClient
 };
 
 struct MockTouchToFillView : TouchToFillView {
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               Show,
               (const GURL&,
                IsOriginSecure,

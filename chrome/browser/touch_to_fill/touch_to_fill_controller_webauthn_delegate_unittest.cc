@@ -69,7 +69,7 @@ class MockWebAuthnRequestDelegateAndroid
 };
 
 struct MockTouchToFillView : public TouchToFillView {
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               Show,
               (const GURL&,
                IsOriginSecure,

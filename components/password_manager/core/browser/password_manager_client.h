@@ -211,7 +211,7 @@ class PasswordManagerClient {
 
   // Instructs the client to show a keyboard replacing surface UI (e.g.
   // TouchToFill).
-  virtual void ShowKeyboardReplacingSurface(
+  virtual bool ShowKeyboardReplacingSurface(
       PasswordManagerDriver* driver,
       const SubmissionReadinessParams& submission_readiness_params,
       bool is_webauthn_form);

@@ -143,7 +143,7 @@ class ChromePasswordManagerClient
       password_manager::ErrorMessageFlowType flow_type,
       password_manager::PasswordStoreBackendErrorType error_type) override;
 
-  void ShowKeyboardReplacingSurface(
+  bool ShowKeyboardReplacingSurface(
       password_manager::PasswordManagerDriver* driver,
       const password_manager::SubmissionReadinessParams& submission_readiness,
       bool is_webauthn_form) override;

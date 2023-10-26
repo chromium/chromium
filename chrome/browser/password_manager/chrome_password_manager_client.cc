@@ -418,7 +418,7 @@ void ChromePasswordManagerClient::ShowPasswordManagerErrorMessage(
   }
 }
 
-void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
+bool ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
     password_manager::PasswordManagerDriver* driver,
     const password_manager::SubmissionReadinessParams&
         submission_readiness_params,
@@ -427,7 +427,7 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
           password_manager::features::kPasswordSuggestionBottomSheetV2) &&
       keyboard_replacing_surface_visibility_controller_ &&
       !keyboard_replacing_surface_visibility_controller_->CanBeShown()) {
-    return;
+    return false;
   }
 
   password_manager::ContentPasswordManagerDriver* content_driver =
@@ -438,7 +438,7 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
           std::make_unique<password_manager::PasswordCredentialFillerImpl>(
               driver->AsWeakPtr(), submission_readiness_params),
           base::AsWeakPtr(content_driver), is_webauthn_form)) {
-    return;
+    return true;
   }
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
   std::vector<password_manager::PasskeyCredential> passkeys;
@@ -456,7 +456,7 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
           std::move(filler),
           TouchToFillControllerAutofillDelegate::ShowHybridOption(
               should_show_hybrid_option));
-  GetOrCreateTouchToFillController()->Show(
+  return GetOrCreateTouchToFillController()->Show(
       credential_cache_
           .GetCredentialStore(url::Origin::Create(
               driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))

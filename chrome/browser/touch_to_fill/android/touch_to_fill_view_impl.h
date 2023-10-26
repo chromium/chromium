@@ -28,7 +28,7 @@ class TouchToFillViewImpl : public TouchToFillView {
   ~TouchToFillViewImpl() override;
 
   // TouchToFillView:
-  void Show(
+  bool Show(
       const GURL& url,
       IsOriginSecure is_origin_secure,
       base::span<const password_manager::UiCredential> credentials,

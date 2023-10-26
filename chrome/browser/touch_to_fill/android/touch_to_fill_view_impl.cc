@@ -88,7 +88,7 @@ TouchToFillViewImpl::~TouchToFillViewImpl() {
   }
 }
 
-void TouchToFillViewImpl::Show(
+bool TouchToFillViewImpl::Show(
     const GURL& url,
     IsOriginSecure is_origin_secure,
     base::span<const password_manager::UiCredential> credentials,
@@ -100,7 +100,7 @@ void TouchToFillViewImpl::Show(
     // state so report that TouchToFill is dismissed in order to show the normal
     // Android keyboard (plus keyboard accessory) instead.
     controller_->OnDismiss();
-    return;
+    return false;
   }
   // Serialize the |credentials| span into a Java array and instruct the bridge
   // to show it together with |url| to the user.
@@ -140,6 +140,7 @@ void TouchToFillViewImpl::Show(
       !(flags & TouchToFillView::kCanManagePasswordsWhenPasskeysPresent),
       !!(flags & TouchToFillView::kShouldShowHybridOption),
       !!(flags & TouchToFillView::kShouldShowCredManEntry));
+  return true;
 }
 
 void TouchToFillViewImpl::OnCredentialSelected(const UiCredential& credential) {

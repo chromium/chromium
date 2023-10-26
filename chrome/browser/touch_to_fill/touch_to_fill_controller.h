@@ -41,7 +41,7 @@ class TouchToFillController
 
   // Instructs the controller to show the provided |credentials| and
   // |passkey_credentials| to the user.
-  void Show(base::span<const password_manager::UiCredential> credentials,
+  bool Show(base::span<const password_manager::UiCredential> credentials,
             base::span<password_manager::PasskeyCredential> passkey_credentials,
             std::unique_ptr<TouchToFillControllerDelegate> ttf_delegate,
             webauthn::WebAuthnCredManDelegate* cred_man_delegate,

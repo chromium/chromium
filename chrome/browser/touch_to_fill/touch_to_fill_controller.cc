@@ -50,7 +50,7 @@ TouchToFillController::TouchToFillController(
     : visibility_controller_(visibility_controller) {}
 TouchToFillController::~TouchToFillController() = default;
 
-void TouchToFillController::Show(
+bool TouchToFillController::Show(
     base::span<const UiCredential> credentials,
     base::span<PasskeyCredential> passkey_credentials,
     std::unique_ptr<TouchToFillControllerDelegate> ttf_delegate,
@@ -77,7 +77,7 @@ void TouchToFillController::Show(
     // and treat this case as dismissal, in order to restore the soft keyboard.
     if (!!(flags & TouchToFillView::kShouldShowCredManEntry)) {
       OnShowCredManSelected();
-      return;
+      return true;
     }
     if (ttf_delegate_->ShouldShowNoPasskeysSheetIfRequired()) {
       if (!no_passkeys_bridge_) {
@@ -88,10 +88,10 @@ void TouchToFillController::Show(
           base::BindOnce(&TouchToFillController::OnDismiss, AsWeakPtr()),
           base::BindOnce(&TouchToFillController::OnHybridSignInSelected,
                          AsWeakPtr()));
-      return;
+      return true;
     }
     OnDismiss();
-    return;
+    return false;
   }
 
   if (!view_)
@@ -107,7 +107,7 @@ void TouchToFillController::Show(
     flags |= TouchToFillView::kShouldShowHybridOption;
   }
 
-  view_->Show(
+  return view_->Show(
       url,
       TouchToFillView::IsOriginSecure(
           network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url))),
