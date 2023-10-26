@@ -116,6 +116,7 @@ enum class TreeScopeType;
 
 class AssociatedInterfaceProvider;
 class BrowserInterfaceBrokerProxy;
+class WebBackgroundResourceFetchAssets;
 class WebComputedAXTree;
 class WebContentDecryptionModule;
 class WebDedicatedWorkerHostFactoryClient;
@@ -700,6 +701,11 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   virtual std::unique_ptr<WebURLLoaderThrottleProviderForFrame>
   CreateWebURLLoaderThrottleProviderForFrame() {
+    return nullptr;
+  }
+
+  virtual scoped_refptr<WebBackgroundResourceFetchAssets>
+  MaybeGetBackgroundResourceFetchAssets() {
     return nullptr;
   }
 

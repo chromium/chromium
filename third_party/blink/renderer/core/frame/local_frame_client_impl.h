@@ -233,6 +233,9 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
 
   blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() override;
 
+  scoped_refptr<WebBackgroundResourceFetchAssets>
+  MaybeGetBackgroundResourceFetchAssets() override;
+
   blink::BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
 
   AssociatedInterfaceProvider* GetRemoteNavigationAssociatedInterfaces()

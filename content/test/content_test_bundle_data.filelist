@@ -5451,6 +5451,15 @@ data/back_forward_cache/webusb/worker.js
 data/back_forward_cache/worker.js
 data/back_forward_cache/worker_with_importscripts.js
 data/back_forward_cache/worker_with_webtransport.js
+data/background_resource_fetch/404.js
+data/background_resource_fetch/404.js.mock-http-headers
+data/background_resource_fetch/SpaceOnly.otf
+data/background_resource_fetch/invalid-chunked-encoding.js
+data/background_resource_fetch/invalid-chunked-encoding.js.mock-http-headers
+data/background_resource_fetch/redirect
+data/background_resource_fetch/redirect.mock-http-headers
+data/background_resource_fetch/redirected.txt
+data/background_resource_fetch/test.js
 data/background_sync/background_sync_test_helpers.js
 data/background_sync/empty.html
 data/background_sync/empty_service_worker.js

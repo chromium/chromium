@@ -10626,6 +10626,14 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="Exit"/>
 </enum>
 
+<enum name="BackgroundResourceFetchSupportStatus">
+  <int value="0" label="Supported"/>
+  <int value="1" label="Unsupported sync request"/>
+  <int value="2" label="Unsupported because HTTP method is not GET"/>
+  <int value="3" label="Unsupported non-HTTP scheme URL request"/>
+  <int value="4" label="Unsupported keepalive request"/>
+</enum>
+
 <enum name="BackgroundSyncFiredEvents">
   <int value="0" label="No events fired"/>
   <int value="1" label="Some events fired"/>

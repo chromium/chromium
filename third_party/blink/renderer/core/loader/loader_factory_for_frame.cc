@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/loader_factory_for_frame.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
@@ -24,6 +26,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/prefetched_signed_exchange_manager.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_url_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -182,6 +185,20 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
   auto loader = frame->CreateURLLoaderForTesting();
   if (loader) {
     return loader;
+  }
+
+  if (BackgroundURLLoader::CanHandleRequest(request, options)) {
+    scoped_refptr<WebBackgroundResourceFetchAssets>
+        web_background_resource_fetch_assets =
+            frame->MaybeGetBackgroundResourceFetchAssets();
+    if (web_background_resource_fetch_assets) {
+      // TODO(crbug.com/1379780): Consider using a cloned ThrottleProvider
+      // instead of cloning all `throttles`.
+      return std::make_unique<BackgroundURLLoader>(
+          std::move(web_background_resource_fetch_assets),
+          GetCorsExemptHeaderList(), freezable_task_runner,
+          unfreezable_task_runner, std::move(throttles));
+    }
   }
 
   return std::make_unique<URLLoaderFactory>(

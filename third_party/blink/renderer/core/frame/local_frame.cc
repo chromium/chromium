@@ -69,6 +69,7 @@
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/url_conversion.h"
+#include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -2119,6 +2120,11 @@ LocalFrame::GetURLLoaderFactory() {
 
 std::unique_ptr<URLLoader> LocalFrame::CreateURLLoaderForTesting() {
   return Client()->CreateURLLoaderForTesting();
+}
+
+scoped_refptr<WebBackgroundResourceFetchAssets>
+LocalFrame::MaybeGetBackgroundResourceFetchAssets() {
+  return Client()->MaybeGetBackgroundResourceFetchAssets();
 }
 
 WebPluginContainerImpl* LocalFrame::GetWebPluginContainer(Node* node) const {

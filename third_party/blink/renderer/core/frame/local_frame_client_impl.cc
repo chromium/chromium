@@ -47,6 +47,7 @@
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -1003,6 +1004,11 @@ std::unique_ptr<URLLoader> LocalFrameClientImpl::CreateURLLoaderForTesting() {
 blink::ChildURLLoaderFactoryBundle*
 LocalFrameClientImpl::GetLoaderFactoryBundle() {
   return web_frame_->Client()->GetLoaderFactoryBundle();
+}
+
+scoped_refptr<WebBackgroundResourceFetchAssets>
+LocalFrameClientImpl::MaybeGetBackgroundResourceFetchAssets() {
+  return web_frame_->Client()->MaybeGetBackgroundResourceFetchAssets();
 }
 
 blink::BrowserInterfaceBrokerProxy&

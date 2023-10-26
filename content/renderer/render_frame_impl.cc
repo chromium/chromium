@@ -86,6 +86,7 @@
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/accessibility/render_accessibility_manager.h"
 #include "content/renderer/agent_scheduling_group.h"
+#include "content/renderer/background_resource_fetch_assets.h"
 #include "content/renderer/content_security_policy_util.h"
 #include "content/renderer/document_state.h"
 #include "content/renderer/dom_automation_controller.h"
@@ -1614,21 +1615,22 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     // the creator frame (e.g. TrackedChildURLLoaderFactoryBundle will be
     // updated when the creator's bundle recovers from a NetworkService crash).
     // See also https://crbug.com/1194763#c5.
-    render_frame->loader_factories_ =
+    render_frame->SetLoaderFactoryBundle(
         base::MakeRefCounted<blink::TrackedChildURLLoaderFactoryBundle>(
             base::WrapUnique(
                 static_cast<blink::TrackedChildPendingURLLoaderFactoryBundle*>(
-                    params->subresource_loader_factories.release())));
+                    params->subresource_loader_factories.release()))));
   } else {
     // In browser-initiated creation of a new main frame (e.g. popup with
     // rel=noopener, or when creating a new tab) the Browser process provides
     // `params->subresource_loader_factories`.
-    render_frame->loader_factories_ = render_frame->CreateLoaderFactoryBundle(
-        std::move(params->subresource_loader_factories),
-        /*subresource_overrides=*/absl::nullopt,
-        /*subresource_proxying_loader_factory=*/mojo::NullRemote(),
-        /*keep_alive_loader_factory=*/mojo::NullRemote(),
-        /*fetch_later_loader_factory=*/mojo::NullAssociatedRemote());
+    render_frame->SetLoaderFactoryBundle(
+        render_frame->CreateLoaderFactoryBundle(
+            std::move(params->subresource_loader_factories),
+            /*subresource_overrides=*/absl::nullopt,
+            /*subresource_proxying_loader_factory=*/mojo::NullRemote(),
+            /*keep_alive_loader_factory=*/mojo::NullRemote(),
+            /*fetch_later_loader_factory=*/mojo::NullAssociatedRemote()));
   }
 
   return render_frame;
@@ -3312,6 +3314,10 @@ void RenderFrameImpl::UpdateSubresourceLoaderFactories(
         ->Update(std::move(subresource_loader_factories));
     loader_factories_->Update(partial_bundle->PassInterface());
   }
+
+  // Resetting `background_resource_fetch_context_` here so it will be recreated
+  // when MaybeGetBackgroundResourceFetchAssets() is called.
+  background_resource_fetch_context_.reset();
 }
 
 // blink::WebLocalFrameClient implementation
@@ -3643,7 +3649,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
       *agent_scheduling_group_, child_routing_id,
       std::move(pending_frame_receiver), std::move(browser_interface_broker),
       std::move(associated_interface_provider), devtools_frame_token);
-  child_render_frame->loader_factories_ = CloneLoaderFactories();
+  child_render_frame->SetLoaderFactoryBundle(CloneLoaderFactories());
   child_render_frame->unique_name_helper_.set_propagated_name(
       frame_unique_name);
   if (is_created_by_script)
@@ -3811,7 +3817,7 @@ void RenderFrameImpl::DidCommitNavigation(
   if (pending_loader_factories_) {
     // Commits triggered by the browser process should always provide
     // |pending_loader_factories_|.
-    loader_factories_ = std::move(pending_loader_factories_);
+    SetLoaderFactoryBundle(std::move(pending_loader_factories_));
   }
   DCHECK(loader_factories_);
   DCHECK(loader_factories_->HasBoundDefaultFactory());
@@ -5675,6 +5681,15 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
   GetFrameHost()->OpenURL(std::move(params));
 }
 
+void RenderFrameImpl::SetLoaderFactoryBundle(
+    scoped_refptr<blink::ChildURLLoaderFactoryBundle> loader_factories) {
+  // `background_resource_fetch_context_` will be lazy initialized the first
+  // time MaybeGetBackgroundResourceFetchAssets() is called if
+  // BackgroundResourceFetch feature is enabled.
+  background_resource_fetch_context_.reset();
+  loader_factories_ = std::move(loader_factories);
+}
+
 blink::ChildURLLoaderFactoryBundle* RenderFrameImpl::GetLoaderFactoryBundle() {
   // GetLoaderFactoryBundle should not be called before `loader_factories_` have
   // been set up - before a document is committed (e.g. before a navigation
@@ -6163,6 +6178,27 @@ std::unique_ptr<blink::WebURLLoaderThrottleProviderForFrame>
 RenderFrameImpl::CreateWebURLLoaderThrottleProviderForFrame() {
   return std::make_unique<WebURLLoaderThrottleProviderForFrameImpl>(
       routing_id_);
+}
+
+scoped_refptr<blink::WebBackgroundResourceFetchAssets>
+RenderFrameImpl::MaybeGetBackgroundResourceFetchAssets() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kBackgroundResourceFetch)) {
+    return nullptr;
+  }
+
+  if (!background_resource_fetch_context_) {
+    if (!background_resource_fetch_task_runner_) {
+      background_resource_fetch_task_runner_ =
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::TaskPriority::USER_BLOCKING});
+    }
+    background_resource_fetch_context_ =
+        base::MakeRefCounted<BackgroundResourceFetchAssets>(
+            GetLoaderFactoryBundle()->Clone(),
+            background_resource_fetch_task_runner_);
+  }
+  return background_resource_fetch_context_;
 }
 
 void RenderFrameImpl::OnStopLoading() {

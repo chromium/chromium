@@ -449,6 +449,11 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
     return nullptr;
   }
 
+  scoped_refptr<WebBackgroundResourceFetchAssets>
+  MaybeGetBackgroundResourceFetchAssets() override {
+    return nullptr;
+  }
+
   void AnnotatedRegionsChanged() override {}
   base::UnguessableToken GetDevToolsFrameToken() const override {
     return base::UnguessableToken::Create();

@@ -104,6 +104,7 @@ class ResourceError;
 class ResourceRequest;
 class ResourceResponse;
 class SourceLocation;
+class WebBackgroundResourceFetchAssets;
 class WebContentCaptureClient;
 class WebDedicatedWorkerHostFactoryClient;
 class WebLocalFrame;
@@ -372,6 +373,9 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   GetURLLoaderFactory() = 0;
   virtual std::unique_ptr<URLLoader> CreateURLLoaderForTesting() = 0;
   virtual blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() = 0;
+
+  virtual scoped_refptr<WebBackgroundResourceFetchAssets>
+  MaybeGetBackgroundResourceFetchAssets() = 0;
 
   virtual void AnnotatedRegionsChanged() = 0;
 

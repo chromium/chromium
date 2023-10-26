@@ -157,6 +157,7 @@ class SystemClipboard;
 class TextFragmentHandler;
 class TextSuggestionController;
 class VirtualKeyboardOverlayChangedObserver;
+class WebBackgroundResourceFetchAssets;
 class WebContentSettingsClient;
 class WebInputEventAttribution;
 class WebPluginContainerImpl;
@@ -517,6 +518,9 @@ class CORE_EXPORT LocalFrame final
   // For some tests, we use this method to create a URLLoader instead of using
   // GetURLLoaderFactory().
   std::unique_ptr<URLLoader> CreateURLLoaderForTesting();
+
+  scoped_refptr<WebBackgroundResourceFetchAssets>
+  MaybeGetBackgroundResourceFetchAssets();
 
   bool IsInert() const { return is_inert_; }
 

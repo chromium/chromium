@@ -127,6 +127,7 @@ class WebAgentGroupScheduler;
 }  // namespace scheduler
 
 class WeakWrapperResourceLoadInfoNotifier;
+class WebBackgroundResourceFetchAssets;
 class WebComputedAXTree;
 class WebContentDecryptionModule;
 class WebElement;
@@ -634,6 +635,8 @@ class CONTENT_EXPORT RenderFrameImpl
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   std::unique_ptr<blink::WebURLLoaderThrottleProviderForFrame>
   CreateWebURLLoaderThrottleProviderForFrame() override;
+  scoped_refptr<blink::WebBackgroundResourceFetchAssets>
+  MaybeGetBackgroundResourceFetchAssets() override;
   void OnStopLoading() override;
   void DraggableRegionsChanged() override;
   blink::BrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
@@ -906,6 +909,12 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Requests that the browser process navigates to |url|.
   void OpenURL(std::unique_ptr<blink::WebNavigationInfo> info);
+
+  // Sets `loader_factories_`. And clears `background_resource_fetch_context_`.
+  // `background_resource_fetch_context_` will be lazily initialized when
+  // creating a WebURLLoader if BackgroundResourceFetch feature is enabled.
+  void SetLoaderFactoryBundle(
+      scoped_refptr<blink::ChildURLLoaderFactoryBundle> loader_factories);
 
   scoped_refptr<blink::ChildURLLoaderFactoryBundle> CreateLoaderFactoryBundle(
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> info,
@@ -1422,6 +1431,14 @@ class CONTENT_EXPORT RenderFrameImpl
   // and DidCommitNavigation calls. These happen synchronously one after
   // another.
   scoped_refptr<blink::ChildURLLoaderFactoryBundle> pending_loader_factories_;
+
+  // The context used for background resource fetch. Used only when
+  // BackgroundResourceFetch feature is enabled.
+  scoped_refptr<blink::WebBackgroundResourceFetchAssets>
+      background_resource_fetch_context_;
+  // Used for background resource fetch.
+  scoped_refptr<base::SequencedTaskRunner>
+      background_resource_fetch_task_runner_;
 
   mojo::PendingRemote<blink::mojom::CodeCacheHost> pending_code_cache_host_;
   mojo::PendingRemote<blink::mojom::ResourceCache> pending_resource_cache_;
