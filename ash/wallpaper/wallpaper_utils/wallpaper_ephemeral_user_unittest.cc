@@ -30,6 +30,12 @@ TEST_F(WallpaperEphemeralUserTest, RegularUserLoggedIn) {
   EXPECT_FALSE(IsEphemeralUser(account_id));
 }
 
+TEST_F(WallpaperEphemeralUserTest, PublicAccount) {
+  const AccountId& account_id = AccountId::FromUserEmail("managed_guest@");
+  SimulateUserLogin(account_id, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  EXPECT_TRUE(IsEphemeralUser(account_id));
+}
+
 }  // namespace
 
 }  // namespace ash
