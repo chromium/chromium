@@ -5,8 +5,8 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
@@ -126,18 +126,25 @@ public class CronetTestRule implements TestRule {
 
         EnumSet<CronetImplementation> excludedImplementations =
                 EnumSet.noneOf(CronetImplementation.class);
-        IgnoreFor ignoreAnnotation = getTestAnnotation(desc, IgnoreFor.class);
-        if (ignoreAnnotation != null) {
-            excludedImplementations =
-                    EnumSet.copyOf(Arrays.asList(ignoreAnnotation.implementations()));
+        IgnoreFor ignoreDueToClassAnnotation = getTestClassAnnotation(desc, IgnoreFor.class);
+        if (ignoreDueToClassAnnotation != null) {
+            excludedImplementations.addAll(
+                    Arrays.asList(ignoreDueToClassAnnotation.implementations()));
+        }
+        IgnoreFor ignoreDueToMethodAnnotation = getTestMethodAnnotation(desc, IgnoreFor.class);
+        if (ignoreDueToMethodAnnotation != null) {
+            excludedImplementations.addAll(
+                    Arrays.asList(ignoreDueToMethodAnnotation.implementations()));
         }
         Log.i(TAG, "Excluded implementations: %s", excludedImplementations);
 
         Set<CronetImplementation> implementationsUnderTest =
                 EnumSet.complementOf(excludedImplementations);
-        assumeFalse("Test skipped because all implementations were excluded. Provided reason: "
-                        + safeGetIgnoreReason(ignoreAnnotation),
-                implementationsUnderTest.isEmpty());
+        assertWithMessage(
+                        "Test should not be skipped via IgnoreFor annotation. "
+                                + "Use DisabledTest instead")
+                .that(implementationsUnderTest)
+                .isNotEmpty();
 
         // Find the API version required by the test.
         int requiredApiVersion = getMaximumAvailableApiLevel();
@@ -225,9 +232,11 @@ public class CronetTestRule implements TestRule {
     }
 
     /**
-     * Annotation for test methods in org.chromium.net package that disables running the test
-     * against some of the implementations. When this annotation is present the test is only run
-     * against the {@link CronetImplementation} cases not specified in the annotation.
+     * Annotation allowing classes or individual tests to be skipped based on the implementation
+     * being currently tested. When this annotation is present the test is only run against the
+     * {@link CronetImplementation} cases not specified in the annotation. If the annotation is
+     * specified both at the class and method levels, the union of IgnoreFor#implementations() will
+     * be skipped.
      */
     @Target({ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
@@ -650,19 +659,15 @@ public class CronetTestRule implements TestRule {
         }
     }
 
-    /**
-     * Returns the most specific annotation of a given type applicable to the test case described by
-     * {@code description}. Returns {@code null} if no such annotation is found.
-     */
     @Nullable
-    private static <T extends Annotation> T getTestAnnotation(
+    private static <T extends Annotation> T getTestMethodAnnotation(
             Description description, Class<T> clazz) {
-        T annotation = description.getAnnotation(clazz);
+        return description.getAnnotation(clazz);
+    }
 
-        if (annotation != null) {
-            return annotation;
-        }
-
+    @Nullable
+    private static <T extends Annotation> T getTestClassAnnotation(
+            Description description, Class<T> clazz) {
         return description.getTestClass().getAnnotation(clazz);
     }
 
