@@ -2522,30 +2522,22 @@ void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile) {
 }
 
 void PersonalDataManager::RemoveProfileFromDB(const std::string& guid) {
-  // Find the profile to remove. Since `ongoing_profile_changes_` returns a
-  // `const AutofillProfile*`, this logic is in a separate lambda.
-  const AutofillProfile* profile = [&]() -> const AutofillProfile* {
-    if (AutofillProfile* profile = GetProfileByGUID(guid)) {
-      return profile;
-    }
-    if (ProfileChangesAreOngoing(guid)) {
-      return &ongoing_profile_changes_[guid].back().first.data_model();
-    }
-    return nullptr;
-  }();
+  // Find the profile to remove.
+  // TODO(crbug.com/1420547): This shouldn't be necessary. Providing a `guid`
+  // to the `AutofillProfileChange()` should suffice for removals.
+  const AutofillProfile* profile =
+      ProfileChangesAreOngoing(guid)
+          ? &ongoing_profile_changes_[guid].back().first.data_model()
+          : GetProfileByGUID(guid);
   if (!profile) {
     NotifyPersonalDataObserver();
     return;
   }
-  AutofillProfileChange change(AutofillProfileChange::REMOVE, profile->guid(),
-                               *profile);
-  bool is_ongoing = false;
-  if (!ProfileChangesAreOngoing(guid)) {
-    database_helper_->GetLocalDatabase()->RemoveAutofillProfile(
-        guid, profile->source());
-    is_ongoing = true;
-  }
-  ongoing_profile_changes_[guid].emplace_back(std::move(change), is_ongoing);
+
+  ongoing_profile_changes_[guid].emplace_back(
+      AutofillProfileChange(AutofillProfileChange::REMOVE, guid, *profile),
+      /*is_ongoing=*/false);
+  HandleNextProfileChange(guid);
 }
 
 void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
