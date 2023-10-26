@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/frame_sink/test/test_begin_frame_source.h"
 #include "ash/frame_sink/test/test_layer_tree_frame_sink.h"
 #include "ash/frame_sink/ui_resource.h"
@@ -17,6 +18,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -40,14 +42,28 @@ namespace {
 class FastInkHostTest
     : public AshTestBase,
       public ::testing::WithParamInterface<
-          std::tuple<std::string, bool, gfx::Rect, gfx::Rect, gfx::Rect>> {
+          std::
+              tuple<std::string, bool, gfx::Rect, gfx::Rect, gfx::Rect, bool>> {
  public:
   FastInkHostTest()
       : first_display_specs_(std::get<0>(GetParam())),
         auto_update_(std::get<1>(GetParam())),
         content_rect_(std::get<2>(GetParam())),
         expected_quad_rect_(std::get<3>(GetParam())),
-        expected_quad_layer_rect_(std::get<4>(GetParam())) {}
+        expected_quad_layer_rect_(std::get<4>(GetParam())),
+        use_one_si_for_fast_ink_host_resources_(std::get<5>(GetParam())) {
+    std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+    if (use_one_si_for_fast_ink_host_resources_) {
+      enabled_features.push_back(
+          features::kUseOneSharedImageForFastInkHostResources);
+    } else {
+      disabled_features.push_back(
+          features::kUseOneSharedImageForFastInkHostResources);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
 
   FastInkHostTest(const FastInkHostTest&) = delete;
   FastInkHostTest& operator=(const FastInkHostTest&) = delete;
@@ -96,12 +112,16 @@ class FastInkHostTest
   gfx::Rect content_rect_;
   gfx::Rect expected_quad_rect_;
   gfx::Rect expected_quad_layer_rect_;
+  bool use_one_si_for_fast_ink_host_resources_;
 
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<aura::Window, DanglingUntriaged> host_window_;
   std::unique_ptr<FastInkHost> fast_ink_host_;
   raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged> layer_tree_frame_sink_;
   std::unique_ptr<TestBeginFrameSource> begin_frame_source_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
@@ -160,6 +180,7 @@ TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
 TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
   // Buffer is not initialized when there is no begin frame received.
   ASSERT_FALSE(fast_ink_host_->gpu_memory_buffer_for_test());
+  ASSERT_TRUE(fast_ink_host_->mailbox_for_test().IsZero());
   EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
 
   int pending_bitmaps_size = 0;
@@ -183,6 +204,12 @@ TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
   // Buffer should be initialized after receiving the first begin frame.
   gfx::GpuMemoryBuffer* gpu_memory_buffer =
       fast_ink_host_->gpu_memory_buffer_for_test();
+  if (use_one_si_for_fast_ink_host_resources_) {
+    ASSERT_FALSE(fast_ink_host_->mailbox_for_test().IsZero());
+  } else {
+    ASSERT_TRUE(fast_ink_host_->mailbox_for_test().IsZero());
+  }
+
   ASSERT_TRUE(gpu_memory_buffer);
   // Pending bitmaps should be drawn and cleared.
   EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
@@ -205,19 +232,30 @@ INSTANTIATE_TEST_SUITE_P(
             /*auto_update=*/true,
             /*content_rect=*/gfx::Rect(10, 10),
             /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500)),
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
+            /*use_one_si_for_fast_ink_host_resources=*/false),
+        // Run a test with `use_one_si_for_fast_ink_host_resources` set to true.
+        std::make_tuple(
+            /*first_display_specs=*/"1000x500",
+            /*auto_update=*/true,
+            /*content_rect=*/gfx::Rect(10, 10),
+            /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
+            /*use_one_si_for_fast_ink_host_resources=*/true),
         std::make_tuple(
             /*first_display_specs=*/"1000x500*2",
             /*auto_update=*/true,
             /*content_rect=*/gfx::Rect(10, 10),
             /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500)),
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
+            /*use_one_si_for_fast_ink_host_resources=*/false),
         std::make_tuple(
             /*first_display_specs=*/"1000x500*2/r",
             /*auto_update=*/true,
             /*content_rect=*/gfx::Rect(10, 10),
             /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 500, 1000)),
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 500, 1000),
+            /*use_one_si_for_fast_ink_host_resources=*/false),
         // When auto updating is off, we update the surface enclosed by
         // content_rect.
         std::make_tuple(
@@ -225,19 +263,22 @@ INSTANTIATE_TEST_SUITE_P(
             /*auto_update=*/false,
             /*content_rect=*/gfx::Rect(10, 10),
             /*expected_quad_rect=*/gfx::Rect(0, 0, 10, 10),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500)),
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
+            /*use_one_si_for_fast_ink_host_resources=*/false),
         std::make_tuple(
             /*first_display_specs=*/"1000x500*2",
             /*auto_update=*/false,
             /*content_rect=*/gfx::Rect(10, 10),
             /*expected_quad_rect=*/gfx::Rect(0, 0, 20, 20),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500)),
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
+            /*use_one_si_for_fast_ink_host_resources=*/false),
         std::make_tuple(
             /*first_display_specs=*/"1000x500*2/l",
             /*auto_update=*/false,
             /*content_rect=*/gfx::Rect(10, 15),
             /*expected_quad_rect=*/gfx::Rect(0, 480, 30, 20),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 500, 1000)),
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 500, 1000),
+            /*use_one_si_for_fast_ink_host_resources=*/false),
         // If content rect is partially outside of the buffer, quad rect is
         // clipped by buffer size.
         std::make_tuple(
@@ -245,7 +286,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*auto_update=*/false,
             /*content_rect=*/gfx::Rect(995, 0, 10, 10),
             /*expected_quad_rect=*/gfx::Rect(995, 0, 5, 10),
-            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500))));
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
+            /*use_one_si_for_fast_ink_host_resources=*/false)));
 
 }  // namespace
 }  // namespace ash

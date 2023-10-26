@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/fast_ink/fast_ink_host_frame_utils.h"
 #include "base/logging.h"
@@ -28,12 +29,6 @@
 #include "ui/gfx/video_types.h"
 
 namespace ash {
-
-namespace {
-BASE_FEATURE(kUseOneSharedImageForFastInkHostResources,
-             "UseOneSharedImageForFastInkHostResources",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}
 
 // -----------------------------------------------------------------------------
 // FastInkHost::ScopedPaint
@@ -59,7 +54,8 @@ FastInkHost::ScopedPaint::~ScopedPaint() {
 
 FastInkHost::FastInkHost() = default;
 FastInkHost::~FastInkHost() {
-  if (base::FeatureList::IsEnabled(kUseOneSharedImageForFastInkHostResources)) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseOneSharedImageForFastInkHostResources)) {
     if (!mailbox_.IsZero()) {
       CHECK(context_provider_);
       context_provider_->SharedImageInterface()->DestroySharedImage(sync_token_,
@@ -138,7 +134,8 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
                                              : gfx::BufferFormat::BGRA_8888));
   LOG_IF(ERROR, !gpu_memory_buffer_) << "Failed to create GPU memory buffer";
 
-  if (base::FeatureList::IsEnabled(kUseOneSharedImageForFastInkHostResources)) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseOneSharedImageForFastInkHostResources)) {
     context_provider_ = aura::Env::GetInstance()
                             ->context_factory()
                             ->SharedMainThreadRasterContextProvider();

@@ -2914,6 +2914,11 @@ BASE_FEATURE(kArcFileTasksUseAppService,
              "ArcFileTasksUseAppService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether FastInkHost uses a single SharedImage for all of its UiResources.
+BASE_FEATURE(kUseOneSharedImageForFastInkHostResources,
+             "UseOneSharedImageForFastInkHostResources",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreContextualNudgesEnabled() {
