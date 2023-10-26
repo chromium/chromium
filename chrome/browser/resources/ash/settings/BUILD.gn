@@ -296,6 +296,7 @@ build_webui("build") {
     "os_privacy_page/metrics_consent_toggle_button.ts",
     "os_privacy_page/os_privacy_page.ts",
     "os_privacy_page/peripheral_data_access_protection_dialog.ts",
+    "os_privacy_page/privacy_hub_geolocation_subpage.ts",
     "os_privacy_page/privacy_hub_microphone_subpage.ts",
     "os_privacy_page/privacy_hub_subpage.ts",
     "os_privacy_page/smart_privacy_subpage.ts",

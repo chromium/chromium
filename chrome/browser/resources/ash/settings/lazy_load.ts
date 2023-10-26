@@ -51,6 +51,7 @@ import './os_people_page/lock_screen_subpage.js';
 import './os_people_page/os_sync_controls_subpage.js';
 import './os_people_page/os_sync_subpage.js';
 import './os_privacy_page/manage_users_subpage.js';
+import './os_privacy_page/privacy_hub_geolocation_subpage.js';
 import './os_privacy_page/privacy_hub_microphone_subpage.js';
 import './os_privacy_page/privacy_hub_subpage.js';
 import './os_privacy_page/smart_privacy_subpage.js';
@@ -290,6 +291,7 @@ export {PrintingSettingsCardElement} from './os_printing_page/printing_settings_
 export {SettingsManageUsersSubpageElement} from './os_privacy_page/manage_users_subpage.js';
 export {MediaDevicesProxy} from './os_privacy_page/media_devices_proxy.js';
 export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_page/privacy_hub_browser_proxy.js';
+export {SettingsPrivacyHubGeolocationSubpage} from './os_privacy_page/privacy_hub_geolocation_subpage.js';
 export {SettingsPrivacyHubMicrophoneSubpage} from './os_privacy_page/privacy_hub_microphone_subpage.js';
 export {SettingsPrivacyHubSubpage} from './os_privacy_page/privacy_hub_subpage.js';
 export {SettingsSmartPrivacySubpage} from './os_privacy_page/smart_privacy_subpage.js';
