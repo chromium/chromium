@@ -574,7 +574,69 @@ struct ServerCvc {
 //  last_updated_timestamp
 //                      The timestamp of the most recent update to the data
 //                      entry.
-
+//
+// payment_instruments  This table contains basic details that apply to all
+//                      payment instruments synced from Payments backend via
+//                      Chrome Sync. This does not apply to credit cards or IBAN
+//                      for legacy reasons.
+//                      The pair of (`instrument_id`, `instrument_type`) are the
+//                      composite primary key for this table
+//
+//  instrument_id       The server-generated id for the payment instrument.
+//  instrument_type     The type of payment instrument. This is an integer
+//                      mapping to one of the following types: {BankAccount}.
+//                      This determines which table to query for fetching the
+//                      instrument details.
+//  nickname            The nickname set by the user for the payment instrument.
+//  display_icon_url    The URL for the icon to be displayed when showing the
+//                      payment instrument to the user.
+//
+// payment_instruments_metadata
+//                      Metadata (currently, usage data) about payment
+//                      instruments. This will be synced.
+//                      The pair of (`instrument_id`, `instrument_type`) are the
+//                      composite primary key for this table and can be used as
+//                      the foreign key to the `payment_instruments` table.
+//
+//  instrument_id       The server-generated id for the payment instrument.
+//  instrument_type     The type of payment instrument. This is an integer
+//                      mapping to one of the following types: {BankAccount}.
+//  use_count           The number of times this payment instrument has been
+//                      used.
+//  use_date            The date this payment instrument was last used.
+//
+// payment_instrument_supported_rails
+//                      This table stores the mapping of what payment instrument
+//                      is supported for which payment rails, where a rail can
+//                      loosely represent the different ways in which Chrome can
+//                      intercept a user's payment journey and assist in
+//                      completing it. For example: Pix, UPI, Card number, IBAN
+//                      etc.
+//                      The tuple of (`instrument_id`, `instrument_type`,
+//                      `payment_rail`) are the composite primary key for this
+//                      table. The pair of can (`instrument_id`,
+//                      `instrument_type`) can be used as foreign key to the
+//                      `payment_instruments` table.
+//
+//  instrument_id       The server-generated id for the payment instrument.
+//  instrument_type     The type of payment instrument. This is an integer
+//                      mapping to one of the following types: {BankAccount}.
+//  payment_rail        This is an integer mapping to one of the following
+//                      types: {Pix}.
+//
+// bank_accounts        This table contains the bank account data synced via
+//                      Chrome Sync.
+//
+//  instrument_id       The identifier assigned by the GPay server to this bank
+//                      account. This is intended to be a unique field.
+//  bank_name           The name of the bank where the account is registered.
+//  account_number_suffix
+//                      The last four digits of the bank account, with which the
+//                      user can identify the account.
+//  account_type        The type of bank account. This is an integer mapping to
+//                      one of the following types: {Checking, Savings, Current,
+//                      Salary, Transacting}
+//
 class AutofillTable : public WebDatabaseTable,
                       public syncer::SyncMetadataStore {
  public:
@@ -932,6 +994,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion117AddProfileObservationColumn();
   bool MigrateToVersion118RemovePaymentsUpiVpaTable();
   bool MigrateToVersion119AddMaskedIbanTablesAndRenameLocalIbanTable();
+  bool MigrateToVersion120AddPaymentInstrumentAndBankAccountTables();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -1055,6 +1118,10 @@ class AutofillTable : public WebDatabaseTable,
   bool InitProfileMetadataTable(AutofillProfile::Source source);
   bool InitProfileTypeTokensTable(AutofillProfile::Source source);
   bool InitVirtualCardUsageDataTable();
+  bool InitBankAccountsTable();
+  bool InitPaymentInstrumentsTable();
+  bool InitPaymentInstrumentsMetadataTable();
+  bool InitPaymentInstrumentSupportedRailsTable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
 };
