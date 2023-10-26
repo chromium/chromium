@@ -25,6 +25,7 @@ class AwGLSurfaceExternalStencil : public AwGLSurface {
                                    gfx::Rect* clip_rect,
                                    gfx::Transform* transform) override;
   bool IsDrawingToFBO() override;
+  void DestroyExternalStencilFramebuffer() override;
 
  protected:
   ~AwGLSurfaceExternalStencil() override;

@@ -133,6 +133,13 @@ OutputSurfaceProviderWebView::~OutputSurfaceProviderWebView() {
   if (gl_surface_->is_angle()) {
     shared_context_state_->MakeCurrent(nullptr);
   }
+  // Given this surface is held by gl::GLContext as a default surface, releasing
+  // it here doesn't result in destruction of the GL objects (namely the stencil
+  // buffer) when it's released. As a result, when the surface is finally
+  // destroyed (happens when the context that also holds that is destroyed), the
+  // stencil buffer is destroyed on a wrong context resulting in a no context
+  // crash. Thus, explicitly ask to destroy the fb here.
+  gl_surface_->DestroyExternalStencilFramebuffer();
   gl_surface_.reset();
 }
 
