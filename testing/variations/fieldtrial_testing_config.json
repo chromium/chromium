@@ -6573,6 +6573,25 @@
             ]
         }
     ],
+    "EnterpriseReportingRelaxAffiliationCheck": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableRelaxedAffiliationCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "EventTimingMatchPresentationIndex": [
         {
             "platforms": [
