@@ -7052,3 +7052,6 @@ crbug.com/1495422 [ Mac10.15 ] external/wpt/css/css-typed-om/the-stylepropertyma
 
 # Gardener 2023-10-26
 crbug.com/1496252 [ Win ] virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html [ Pass Failure ]
+
+# TODO(crbug.com/1496301): Fix expectations to reflect new default setting and reenable
+crbug.com/1496301 http/tests/devtools/a11y-axe-core/settings/blackbox-a11y-test.js [ Pass Failure ]
