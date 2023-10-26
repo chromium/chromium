@@ -246,6 +246,10 @@ if (also_build_lacros_chrome_for_architecture != "") {
       lacros_args =
           read_file("//build/args/chromeos/arm-generic-crostoolchain.gni",
                     "scope")
+    } else if (also_build_lacros_chrome_for_architecture == "arm64") {
+      lacros_args =
+          read_file("//build/args/chromeos/arm64-generic-crostoolchain.gni",
+                    "scope")
     } else {
       assert(false,
              "also_build_lacros_chrome_for_architecture is not " +

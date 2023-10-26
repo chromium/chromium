@@ -2395,6 +2395,7 @@
     ],
     'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
+      'also_build_lacros_chrome_for_architecture_arm',
     ],
     'chromeos_jacuzzi_include_unwind_tables_official_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official',
@@ -2405,6 +2406,7 @@
     ],
     'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official', 'is_skylab',
+      'also_build_lacros_chrome_for_architecture_arm',
     ],
 
     'chromeos_js_coverage_reclient': [
@@ -2456,9 +2458,11 @@
 
     'chromeos_trogdor_include_unwind_tables_official_skylab': [
       'chromeos_device', 'trogdor', 'include_unwind_tables', 'official', 'is_skylab',
+      'also_build_lacros_chrome_for_architecture_arm64',
     ],
     'chromeos_trogdor_include_unwind_tables_official_skylab_reclient': [
-      'chromeos_device_reclient', 'trogdor', 'include_unwind_tables', 'official', 'is_skylab', 'ozone_headless'
+      'chromeos_device_reclient', 'trogdor', 'include_unwind_tables', 'official', 'is_skylab', 'ozone_headless',
+      'also_build_lacros_chrome_for_architecture_arm64',
     ],
 
     'chromeos_volteer_include_unwind_tables_official_skylab': [
@@ -3946,6 +3950,10 @@
 
     'also_build_lacros_chrome_for_architecture_arm': {
       'gn_args': 'also_build_lacros_chrome_for_architecture="arm"',
+    },
+
+    'also_build_lacros_chrome_for_architecture_arm64': {
+      'gn_args': 'also_build_lacros_chrome_for_architecture="arm64"',
     },
 
     'amd64-generic': {
