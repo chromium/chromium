@@ -287,7 +287,7 @@ class WPTManifestUnitTest(unittest.TestCase):
                                 'd23fbb8c66def47e31ad01aa7a311064ba8fddbd',
                                 [
                                     '/dir/reftest-with-variant.html?xyz',
-                                    [['/dir/reftest-ref.html', '==']],
+                                    [['about:blank', '==']],
                                     {},
                                 ],
                             ],
@@ -306,7 +306,7 @@ class WPTManifestUnitTest(unittest.TestCase):
         self.assertEqual(
             manifest.extract_reference_list(
                 'dir/reftest-with-variant.html?xyz'), [
-                    ('==', '/dir/reftest-ref.html'),
+                    ('==', 'about:blank'),
                 ])
 
     def test_extract_fuzzy_metadata(self):

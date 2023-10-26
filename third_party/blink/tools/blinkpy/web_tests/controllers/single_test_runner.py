@@ -671,8 +671,11 @@ class SingleTestRunner(object):
         args = self._port.args_for_test(self._test_name)
         # sort self._reference_files to put mismatch tests first
         for expectation, reference_filename in sorted(self._reference_files):
-            reference_test_name = self._port.relative_test_filename(
-                reference_filename)
+            if reference_filename.startswith('about:'):
+                reference_test_name = reference_filename
+            else:
+                reference_test_name = self._port.relative_test_filename(
+                    reference_filename)
             reference_test_names.append(reference_test_name)
             driver_input = DriverInput(reference_test_name,
                                        self._timeout_ms,

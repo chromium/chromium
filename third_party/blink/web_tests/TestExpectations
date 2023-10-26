@@ -78,7 +78,11 @@ crbug.com/1339285 [ Mac ] fast/loader/iframe-window-open-stealing-focus.html [ P
 crbug.com/1393073 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/anchor-focus.https.html [ Failure Pass ]
 
 # WPT Test harness doesn't deal with finding an about:blank ref test
-crbug.com/1066130 external/wpt/infrastructure/assumptions/blank.html [ Failure ]
+crbug.com/895777 external/wpt/infrastructure/assumptions/blank.html [ Timeout ]
+crbug.com/895777 external/wpt/css/css-transforms/text-perspective-001.html [ Timeout ]
+crbug.com/895777 external/wpt/css/css-transforms/transform-flattening-001.html [ Timeout ]
+crbug.com/895777 external/wpt/mathml/relations/html5-tree/dynamic-mozilla-162063.xhtml [ Timeout ]
+crbug.com/895777 crbug.com/1090628 external/wpt/css/css-break/ink-overflow-001-print.html [ Timeout ]
 
 crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
 
@@ -2886,7 +2890,6 @@ crbug.com/626703 external/wpt/mathml/presentation-markup/scripts/stretchy-munder
 crbug.com/626703 external/wpt/mathml/presentation-markup/scripts/stretchy-munderover-2g.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mathml/relations/css-styling/mozilla-393760-2.xml [ Failure ]
 crbug.com/626703 external/wpt/mathml/relations/css-styling/table-width-3.html [ Failure ]
-crbug.com/626703 external/wpt/mathml/relations/html5-tree/dynamic-mozilla-162063.xhtml [ Failure ]
 crbug.com/626703 external/wpt/preload/preload-nonce.sub.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-disallow.https.html [ Timeout ]
 crbug.com/626703 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-disallow.https.html [ Timeout ]
@@ -5671,7 +5674,6 @@ crbug.com/1358312 [ Linux ] external/wpt/touch-events/single-touch-vertical-rl.h
 
 # unskip print ref tests
 crbug.com/1090628 external/wpt/css/css-break/float-with-large-margin-bottom-cross-page-001-print.html [ Failure ]
-crbug.com/1090628 external/wpt/css/css-break/ink-overflow-001-print.html [ Failure ]
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-print.sub.html [ Failure ]
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-scaled-print.sub.html [ Failure ]
 crbug.com/1090628 external/wpt/infrastructure/reftest/reftest_match_fail-print.html [ Failure ]

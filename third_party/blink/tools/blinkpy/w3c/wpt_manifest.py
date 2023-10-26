@@ -295,7 +295,8 @@ class WPTManifest:
         for ref_path_in_wpt, expectation in (item[1] if item else []):
             # Ref URLs in MANIFEST should be absolute, but we double check
             # just in case.
-            if not ref_path_in_wpt.startswith('/'):
+            if (not ref_path_in_wpt.startswith('about:')
+                    and not ref_path_in_wpt.startswith('/')):
                 ref_path_in_wpt = '/' + ref_path_in_wpt
             reftest_list.append((expectation, ref_path_in_wpt))
         return reftest_list
