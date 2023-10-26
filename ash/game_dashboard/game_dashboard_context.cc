@@ -51,7 +51,9 @@ static constexpr base::TimeDelta kToolbarBoundsChangeAnimationDuration =
 std::unique_ptr<GameDashboardWidget> CreateTransientChildWidget(
     aura::Window* game_window,
     const std::string& widget_name,
-    std::unique_ptr<views::View> view) {
+    std::unique_ptr<views::View> view,
+    views::Widget::InitParams::Activatable activatable =
+        views::Widget::InitParams::Activatable::kDefault) {
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -60,6 +62,7 @@ std::unique_ptr<GameDashboardWidget> CreateTransientChildWidget(
   // screenshots or screen recordings.
   params.parent = game_window;
   params.name = widget_name;
+  params.activatable = activatable;
 
   auto widget = std::make_unique<GameDashboardWidget>();
   widget->Init(std::move(params));
@@ -72,81 +75,6 @@ std::unique_ptr<GameDashboardWidget> CreateTransientChildWidget(
 }
 
 }  // namespace
-
-// Monitors input events that occur on the `game_dashboard_button_widget_` to
-// determine whether an event should be consumed or passed onto the
-// `game_dashboard_button_widget_`.
-class GameDashboardButtonInputMonitor : public ui::EventHandler {
- public:
-  explicit GameDashboardButtonInputMonitor(GameDashboardContext* context)
-      : context_(context) {}
-  GameDashboardButtonInputMonitor(const GameDashboardButtonInputMonitor&) =
-      delete;
-  GameDashboardButtonInputMonitor& operator=(
-      const GameDashboardButtonInputMonitor&) = delete;
-  ~GameDashboardButtonInputMonitor() override = default;
-
-  // ui::EventHandler:
-  void OnEvent(ui::Event* event) override {
-    if (ShouldConsumeEvent(event->type())) {
-      event->StopPropagation();
-      event->SetHandled();
-    }
-  }
-
- private:
-  bool ShouldConsumeEvent(ui::EventType event_type) {
-    // Since the `main_menu_view_` closes itself whenever any touch occurs
-    // outside its bounds, it will duplicate the work of the
-    // `main_menu_button_`'s NotifyClick(). To avoid toggling the
-    // `main_menu_view_` visibility twice, determine whether this event should
-    // be consumed or passed onto the `main_menu_button_`.
-    GameDashboardMainMenuView* main_menu_view = context_->main_menu_view();
-    switch (event_type) {
-      case ui::ET_MOUSE_PRESSED:
-        ignore_next_mouse_released_gesture = main_menu_view;
-        break;
-      case ui::ET_GESTURE_TAP_DOWN:
-        ignore_next_tap_gesture_ = main_menu_view;
-        break;
-      case ui::ET_GESTURE_TAP:
-        if (ignore_next_tap_gesture_) {
-          ignore_next_tap_gesture_ = false;
-          return true;
-        }
-        break;
-      case ui::ET_MOUSE_RELEASED:
-        if (ignore_next_mouse_released_gesture) {
-          ignore_next_mouse_released_gesture = false;
-          return true;
-        }
-        break;
-      case ui::ET_GESTURE_TAP_CANCEL:
-      case ui::ET_GESTURE_END:
-      case ui::ET_GESTURE_SCROLL_END:
-        // Reset params for next `ui::ET_GESTURE_TAP_DOWN` event.
-        ignore_next_tap_gesture_ = false;
-        break;
-      default:
-        break;
-    }
-
-    return false;
-  }
-
-  // Allows this class to access `GameDashboardContext` owned functions/objects.
-  const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
-
-  // When an initial mouse/touch interaction occurs, the `main_menu_view_`
-  // is destroyed on the `ui::ET_MOUSE_PRESSED`/`ui::ET_GESTURE_TAP_DOWN`
-  // events. However, the `main_menu_button_` won't be notified about the click
-  // until the `ui::ET_MOUSE_RELEASED`/`ui::ET_GESTURE_TAP` event. To prevent
-  // the button from receiving its OnClick() event after the `main_menu_view_`
-  // has already closed itself, utilize these variables to notify that the next
-  // `ui::ET_MOUSE_RELEASED` or `ui::ET_GESTURE_TAP` event should be consumed.
-  bool ignore_next_mouse_released_gesture = false;
-  bool ignore_next_tap_gesture_ = false;
-};
 
 GameDashboardContext::GameDashboardContext(aura::Window* game_window)
     : game_window_(game_window),
@@ -312,15 +240,11 @@ void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
   DCHECK(!game_dashboard_button_);
   game_dashboard_button_ = game_dashboard_button.get();
   game_dashboard_button_widget_ = CreateTransientChildWidget(
-      game_window_, "GameDashboardButton", std::move(game_dashboard_button));
+      game_window_, "GameDashboardButton", std::move(game_dashboard_button),
+      views::Widget::InitParams::Activatable::kNo);
   // Add observer after `game_dashboard_button_widget_` is created because the
   // observation is to update `game_dashboard_button_widget_` bounds.
   game_dashboard_button_->AddObserver(this);
-  game_dashboard_button_input_monitor_ =
-      std::make_unique<GameDashboardButtonInputMonitor>(this);
-  game_dashboard_button_widget_->GetContentsView()->AddPreTargetHandler(
-      game_dashboard_button_input_monitor_.get(),
-      ui::EventTarget::Priority::kSystem);
   DCHECK_EQ(
       game_window_,
       wm::GetTransientParent(game_dashboard_button_widget_->GetNativeWindow()));

@@ -116,6 +116,12 @@ class GameDashboardContextTest : public GameDashboardTestBase {
       game_window_->SetProperty(kArcGameControlsFlagsKey,
                                 ArcGameControlsFlag::kKnown);
     }
+
+    auto* game_dashboard_button_widget =
+        test_api_->GetGameDashboardButton()->GetWidget();
+    CHECK(game_dashboard_button_widget);
+    ASSERT_FALSE(game_dashboard_button_widget->CanActivate());
+    ASSERT_FALSE(game_dashboard_button_widget->IsActive());
   }
 
   // Opens the main menu and toolbar, and checks Game Controls UI states. At the
