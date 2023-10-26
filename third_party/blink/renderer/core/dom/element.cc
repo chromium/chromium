@@ -9061,6 +9061,16 @@ FocusgroupFlags Element::GetFocusgroupFlags() const {
 }
 
 bool Element::checkVisibility(CheckVisibilityOptions* options) const {
+  if (options->checkVisibilityCSS()) {
+    UseCounter::Count(
+        GetDocument(),
+        WebFeature::kElementCheckVisibilityOptionCheckVisibilityCSS);
+  }
+  if (options->checkOpacity()) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kElementCheckVisibilityOptionCheckOpacity);
+  }
+
   // Unlock ancestor content-visibility:auto elements. If this element is
   // offscreen and locked due to content-visibility:auto, this method should not
   // count that as invisible.

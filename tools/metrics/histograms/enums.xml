@@ -44548,6 +44548,8 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage"/>
   <int value="4701"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage_Use"/>
+  <int value="4702" label="ElementCheckVisibilityOptionCheckVisibilityCSS"/>
+  <int value="4703" label="ElementCheckVisibilityOptionCheckOpacity"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
