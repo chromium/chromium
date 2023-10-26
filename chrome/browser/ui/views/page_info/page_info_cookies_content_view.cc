@@ -135,7 +135,8 @@ void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
 
 void PageInfoCookiesContentView::SetCookieInfo(
     const CookiesNewInfo& cookie_info) {
-  SetDescriptionLabel(cookie_info.blocking_status, cookie_info.enforcement);
+  SetDescriptionLabel(cookie_info.blocking_status, cookie_info.enforcement,
+                      cookie_info.is_otr);
 
   if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
     SetThirdPartyCookiesInfo(cookie_info);
@@ -305,7 +306,8 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
 
 void PageInfoCookiesContentView::SetDescriptionLabel(
     CookieBlocking3pcdStatus blocking_status,
-    CookieControlsEnforcement enforcement) {
+    CookieControlsEnforcement enforcement,
+    bool is_otr) {
   // Text on cookies description label has an embedded link to cookies settings.
   std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
       blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd
@@ -319,7 +321,12 @@ void PageInfoCookiesContentView::SetDescriptionLabel(
   } else if (blocking_status == CookieBlocking3pcdStatus::kLimited) {
     description = IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION;
   } else if (blocking_status == CookieBlocking3pcdStatus::kAll) {
-    description = IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION;
+    // Since prefs are set to default in Guest, we won't ever end up in this
+    // branch, so `is_otr` means incognito here.
+    description =
+        is_otr
+            ? IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION
+            : IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION;
   } else {
     description = IDS_PAGE_INFO_COOKIES_DESCRIPTION;
   }

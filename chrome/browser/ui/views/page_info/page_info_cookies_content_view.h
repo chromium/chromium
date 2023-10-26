@@ -65,10 +65,11 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // Sets properties for `third_party_cookies_toggle_` using `cookie_info`.
   void SetThirdPartyCookiesToggle(const CookiesNewInfo& cookie_info);
 
-  // Sets `cookie_description_label_` text and style using `blocking_status` or
-  // `enforcement`.
+  // Sets `cookie_description_label_` text and style using `blocking_status`,
+  // `enforcement`, and `is_otr`.
   void SetDescriptionLabel(CookieBlocking3pcdStatus blocking_status,
-                           CookieControlsEnforcement enforcement);
+                           CookieControlsEnforcement enforcement,
+                           bool is_otr);
 
   // Updates the new third-party cookies section using |cookie_info|.
   void SetThirdPartyCookiesInfo(const CookiesNewInfo& cookie_info);

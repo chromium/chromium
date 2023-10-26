@@ -119,6 +119,9 @@ class PageInfoUI {
 
     // The confidence level of site breakage related to third-party cookies.
     CookieControlsBreakageConfidenceLevel confidence;
+
+    // Whether the current profile is "off the record".
+    bool is_otr;
   };
 
   // |ChosenObjectInfo| contains information about a single |chooser_object| of

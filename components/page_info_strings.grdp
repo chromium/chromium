@@ -750,6 +750,9 @@
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble if all cookies are blocked. Contains a link to the Tracking Protection settings page.">
     You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
   </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble in incognito mode when cookies are blocked. Contains a link to the Tracking Protection settings page.">
+    Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
+  </message>
   <message name="IDS_PAGE_INFO_COOKIES_SETTINGS_LINK" desc="The text of the link to cookies settings.">
     Settings
   </message>
