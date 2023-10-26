@@ -713,11 +713,9 @@ export class PrimaryTts extends AbstractTts {
     return match => {
       const retain =
           this.retainPunctuation_.indexOf(match) !== -1 ? match : ' ';
-      return clear ? retain :
-                     ' ' +
-              (new goog.i18n.MessageFormat(
-                   Msgs.getMsg(ttsTypes.CharacterDictionary[match])))
-                  .format({'COUNT': 1}) +
+      return clear ?
+          retain :
+          ' ' + Msgs.getMsgWithCount(ttsTypes.CharacterDictionary[match], 1) +
               retain + ' ';
     };
   }

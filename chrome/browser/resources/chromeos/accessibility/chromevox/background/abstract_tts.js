@@ -273,9 +273,7 @@ export class AbstractTts {
     // Handle single characters that we want to make sure we pronounce.
     if (text.length === 1) {
       return ttsTypes.CharacterDictionary[text] ?
-          (new goog.i18n.MessageFormat(
-               Msgs.getMsg(ttsTypes.CharacterDictionary[text])))
-              .format({'COUNT': 1}) :
+          Msgs.getMsgWithCount(ttsTypes.CharacterDictionary[text], 1) :
           text.toUpperCase();
     }
 
@@ -296,9 +294,7 @@ export class AbstractTts {
   static repetitionReplace_(match) {
     const count = match.length;
     return ' ' +
-        (new goog.i18n.MessageFormat(
-             Msgs.getMsg(ttsTypes.CharacterDictionary[match[0]])))
-            .format({'COUNT': count}) +
+        Msgs.getMsgWithCount(ttsTypes.CharacterDictionary[match[0]], count) +
         ' ';
   }
 
