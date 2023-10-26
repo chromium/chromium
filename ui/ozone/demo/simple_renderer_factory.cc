@@ -101,7 +101,7 @@ std::unique_ptr<Renderer> SimpleRendererFactory::CreateRenderer(
       if (auto presenter = CreatePresenter(display_, widget)) {
         return std::make_unique<SurfacelessGlRenderer>(
             widget, std::move(window_surface),
-            gl::init::CreateOffscreenGLSurface(display_, gfx::Size(1, 1)),
+            gl::init::CreateOffscreenGLSurface(display_, gfx::Size(0, 0)),
             presenter, size);
       }
       scoped_refptr<gl::GLSurface> surface = CreateGLSurface(display_, widget);
