@@ -15,6 +15,8 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -56,6 +58,8 @@ namespace views {
 
 // Testing button that exposes protected methods.
 class TestLabelButton : public LabelButton {
+  METADATA_HEADER(TestLabelButton, LabelButton)
+
  public:
   explicit TestLabelButton(const std::u16string& text = std::u16string(),
                            int button_context = style::CONTEXT_BUTTON)
@@ -71,6 +75,9 @@ class TestLabelButton : public LabelButton {
   using LabelButton::label;
   using LabelButton::OnThemeChanged;
 };
+
+BEGIN_METADATA(TestLabelButton)
+END_METADATA
 
 class LabelButtonTest : public test::WidgetTest {
  public:

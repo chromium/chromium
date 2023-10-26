@@ -10,6 +10,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -102,6 +104,8 @@ class DummyComboboxModel : public ui::ComboboxModel {
 
 // A View that can act as a pane.
 class PaneView : public View, public FocusTraversable {
+  METADATA_HEADER(PaneView, View)
+
  public:
   PaneView() = default;
 
@@ -129,10 +133,15 @@ class PaneView : public View, public FocusTraversable {
   raw_ptr<FocusSearch> focus_search_ = nullptr;
 };
 
+BEGIN_METADATA(PaneView)
+END_METADATA
+
 // BorderView is a view containing a native window with its own view hierarchy.
 // It is interesting to test focus traversal from a view hierarchy to an inner
 // view hierarchy.
 class BorderView : public NativeViewHost {
+  METADATA_HEADER(BorderView, NativeViewHost)
+
  public:
   explicit BorderView(std::unique_ptr<View> child) : child_(std::move(child)) {
     DCHECK(child_);
@@ -178,6 +187,9 @@ class BorderView : public NativeViewHost {
   std::unique_ptr<View> child_;
   raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
 };
+
+BEGIN_METADATA(BorderView)
+END_METADATA
 
 }  // namespace
 

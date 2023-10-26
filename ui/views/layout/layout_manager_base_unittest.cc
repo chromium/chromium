@@ -604,8 +604,9 @@ TEST_F(LayoutManagerBaseManagerTest, ViewRemoved) {
   EXPECT_TRUE(child(2)->GetVisible());
   EXPECT_EQ(child(2)->GetPreferredSize(), child(2)->size());
 
-  host_view()->RemoveChildView(child_view);
-  child_view->SetSize(kLargeSize);
+  std::unique_ptr<View> owned_child_view =
+      host_view()->RemoveChildViewT(child_view);
+  owned_child_view->SetSize(kLargeSize);
   test::RunScheduledLayout(host_view());
 
   EXPECT_TRUE(child(0)->GetVisible());
@@ -613,11 +614,8 @@ TEST_F(LayoutManagerBaseManagerTest, ViewRemoved) {
   EXPECT_TRUE(child(1)->GetVisible());
   EXPECT_EQ(child(1)->GetPreferredSize(), child(1)->size());
 
-  EXPECT_TRUE(child_view->GetVisible());
-  EXPECT_EQ(kLargeSize, child_view->size());
-
-  // Required since we removed it from the parent view.
-  delete child_view;
+  EXPECT_TRUE(owned_child_view->GetVisible());
+  EXPECT_EQ(kLargeSize, owned_child_view->size());
 }
 
 TEST(LayoutManagerBase_ProposedLayoutTest, Equality) {

@@ -18,6 +18,8 @@
 #include "build/build_config.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/test_accelerator_target.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
@@ -59,6 +61,8 @@ class FocusTestEventList : public base::RefCounted<FocusTestEventList> {
 };
 
 class SimpleTestView : public View {
+  METADATA_HEADER(SimpleTestView, View)
+
  public:
   SimpleTestView(scoped_refptr<FocusTestEventList> event_list, int view_id)
       : event_list_(std::move(event_list)) {
@@ -89,6 +93,9 @@ class SimpleTestView : public View {
  private:
   const scoped_refptr<FocusTestEventList> event_list_;
 };
+
+BEGIN_METADATA(SimpleTestView)
+END_METADATA
 
 // Tests that the appropriate Focus related methods are called when a View
 // gets/loses focus.
@@ -452,6 +459,8 @@ TEST_F(FocusManagerTest, SuspendAccelerators) {
 namespace {
 
 class FocusInAboutToRequestFocusFromTabTraversalView : public View {
+  METADATA_HEADER(FocusInAboutToRequestFocusFromTabTraversalView, View)
+
  public:
   FocusInAboutToRequestFocusFromTabTraversalView() = default;
 
@@ -469,6 +478,10 @@ class FocusInAboutToRequestFocusFromTabTraversalView : public View {
  private:
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> view_to_focus_ = nullptr;
 };
+
+BEGIN_METADATA(FocusInAboutToRequestFocusFromTabTraversalView)
+END_METADATA
+
 }  // namespace
 
 // Verifies a focus change done during a call to

@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/test/views_test_base.h"
@@ -24,6 +26,8 @@ namespace views {
 using AccessiblePaneViewTest = ViewsTestBase;
 
 class TestBarView : public AccessiblePaneView {
+  METADATA_HEADER(TestBarView, AccessiblePaneView)
+
  public:
   TestBarView();
 
@@ -67,6 +71,9 @@ void TestBarView::Init() {
 View* TestBarView::GetDefaultFocusableChild() {
   return child_button_;
 }
+
+BEGIN_METADATA(TestBarView)
+END_METADATA
 
 TEST_F(AccessiblePaneViewTest, SimpleSetPaneFocus) {
   TestBarView* test_view = new TestBarView();

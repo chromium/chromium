@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/view.h"
 
@@ -15,6 +16,8 @@ namespace views {
 
 // A view that requests a set amount of space.
 class StaticSizedView : public View {
+  METADATA_HEADER(StaticSizedView, View)
+
  public:
   explicit StaticSizedView(const gfx::Size& preferred_size = gfx::Size());
 
@@ -46,6 +49,8 @@ class StaticSizedView : public View {
 
 // A view that accomodates testing layouts that use GetHeightForWidth.
 class ProportionallySizedView : public View {
+  METADATA_HEADER(ProportionallySizedView, View)
+
  public:
   explicit ProportionallySizedView(int factor);
 
@@ -71,6 +76,8 @@ class ProportionallySizedView : public View {
 // Class that closes the widget (which ends up deleting it immediately) when the
 // appropriate event is received.
 class CloseWidgetView : public View {
+  METADATA_HEADER(CloseWidgetView, View)
+
  public:
   explicit CloseWidgetView(ui::EventType event_type);
 
@@ -86,6 +93,8 @@ class CloseWidgetView : public View {
 
 // A view that keeps track of the events it receives, optionally consuming them.
 class EventCountView : public View {
+  METADATA_HEADER(EventCountView, View)
+
  public:
   // Whether to call SetHandled() on events as they are received. For some event
   // types, this will allow EventCountView to receives future events in the
@@ -127,6 +136,8 @@ class EventCountView : public View {
 // A view which reacts to PreferredSizeChanged() from its children and calls
 // Layout().
 class ResizeAwareParentView : public View {
+  METADATA_HEADER(ResizeAwareParentView, View)
+
  public:
   ResizeAwareParentView();
 

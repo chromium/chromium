@@ -8,6 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/point.h"
@@ -52,6 +54,8 @@ constexpr gfx::Size kDefaultToolbarSize(400, kIconDimension);
 // Base class for elements in the toolbar that animate; a stand-in for e.g.
 // ToolbarIconContainer.
 class SimulatedToolbarElement : public View {
+  METADATA_HEADER(SimulatedToolbarElement, View)
+
  public:
   AnimatingLayoutManager* layout() {
     return static_cast<AnimatingLayoutManager*>(GetLayoutManager());
@@ -82,9 +86,14 @@ class SimulatedToolbarElement : public View {
   }
 };
 
+BEGIN_METADATA(SimulatedToolbarElement)
+END_METADATA
+
 // Simulates an avatar button on the Chrome toolbar, with a fixed-size icon and
 // a label that can animate in and out.
 class SimulatedAvatarButton : public SimulatedToolbarElement {
+  METADATA_HEADER(SimulatedAvatarButton, SimulatedToolbarElement)
+
  public:
   SimulatedAvatarButton() {
     AddChildView(std::make_unique<StaticSizedView>(kIconSize));
@@ -145,10 +154,15 @@ class SimulatedAvatarButton : public SimulatedToolbarElement {
   bool showing_label_ = false;
 };
 
+BEGIN_METADATA(SimulatedAvatarButton)
+END_METADATA
+
 // Simulates extensions buttons in the new toolbar extensions view, with a fixed
 // button on the right and buttons to the left that can animate in and out and
 // be hidden if there is insufficient space.
 class SimulatedExtensionsContainer : public SimulatedToolbarElement {
+  METADATA_HEADER(SimulatedExtensionsContainer, SimulatedToolbarElement)
+
  public:
   SimulatedExtensionsContainer() {
     auto* const main_button =
@@ -292,9 +306,14 @@ class SimulatedExtensionsContainer : public SimulatedToolbarElement {
   std::set<const View*> visible_views_;
 };
 
+BEGIN_METADATA(SimulatedExtensionsContainer)
+END_METADATA
+
 // Simulates a toolbar with buttons on either side, a "location bar", and mock
 // versions of the extensions container and avatar button.
 class SimulatedToolbar : public View {
+  METADATA_HEADER(SimulatedToolbar, View)
+
  public:
   SimulatedToolbar() {
     AddChildView(std::make_unique<StaticSizedView>(kIconSize));
@@ -369,6 +388,9 @@ class SimulatedToolbar : public View {
   raw_ptr<SimulatedExtensionsContainer> extensions_;
   raw_ptr<SimulatedAvatarButton> avatar_;
 };
+
+BEGIN_METADATA(SimulatedToolbar)
+END_METADATA
 
 }  // anonymous namespace
 

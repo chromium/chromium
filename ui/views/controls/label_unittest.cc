@@ -22,6 +22,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/canvas_painter.h"
@@ -63,6 +65,8 @@ const int kControlCommandModifier = ui::EF_CONTROL_DOWN;
 const int kMinTextDimension = 4;
 
 class TestLabel : public Label {
+  METADATA_HEADER(TestLabel, Label)
+
  public:
   TestLabel() : Label(u"TestLabel") { SizeToPreferredSize(); }
 
@@ -89,6 +93,9 @@ class TestLabel : public Label {
  private:
   int schedule_paint_count_ = 0;
 };
+
+BEGIN_METADATA(TestLabel)
+END_METADATA
 
 // A test utility function to set the application default text direction.
 void SetRTL(bool rtl) {

@@ -16,6 +16,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -71,6 +73,8 @@ class TestContextMenuController : public ContextMenuController {
 };
 
 class TestButton : public Button {
+  METADATA_HEADER(TestButton, Button)
+
  public:
   explicit TestButton(bool has_ink_drop_action_on_click)
       : Button(base::BindRepeating([](bool* pressed) { *pressed = true; },
@@ -113,6 +117,9 @@ class TestButton : public Button {
 
   KeyClickAction custom_key_click_action_ = KeyClickAction::kNone;
 };
+
+BEGIN_METADATA(TestButton)
+END_METADATA
 
 class TestButtonObserver {
  public:
