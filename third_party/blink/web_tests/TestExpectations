@@ -4458,6 +4458,12 @@ crbug.com/1416204 external/wpt/scroll-animations/css/printing/scroll-timeline-de
 crbug.com/1059262 virtual/threaded/http/tests/worklet/webexposed/global-interface-listing-paint-worklet.html [ Failure Pass ]
 crbug.com/1059262 [ Mac ] webexposed/global-interface-listing-platform-specific.html [ Failure Pass ]
 
+# Temporarily disabled to unblock https://crrev.com/c/4976445
+crbug.com/1376976 http/tests/devtools/console/console-dirxml.js [ Failure Pass ]
+crbug.com/1376976 http/tests/devtools/console/console-xml-document.js [ Failure Pass ]
+crbug.com/1376976 http/tests/devtools/elements/iframe-load-event.js [ Failure Pass ]
+crbug.com/1376976 http/tests/devtools/oopif/oopif-elements-navigate-out.js [ Failure Pass ]
+
 # [virtual/...]external/wpt/web-animation test flakes
 
 # Sheriff 2020-04-01
