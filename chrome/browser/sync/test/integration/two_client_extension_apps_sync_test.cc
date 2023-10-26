@@ -24,7 +24,9 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_sorting.h"
@@ -64,6 +66,20 @@ class TwoClientExtensionAppsSyncTest : public AppsSyncTestBase {
       const TwoClientExtensionAppsSyncTest&) = delete;
 
   ~TwoClientExtensionAppsSyncTest() override = default;
+  bool SetupClients() override {
+    if (!SyncTest::SetupClients()) {
+      return false;
+    }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Apps sync is controlled by a dedicated preference on Lacros,
+    // corresponding to the Apps toggle in OS Sync settings.
+    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
+      GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
+    }
+#endif
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
