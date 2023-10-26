@@ -150,6 +150,7 @@ web_component_files_ts = [
   "quick_unlock/pin_keyboard.ts",
   "quick_unlock/setup_pin_keyboard.ts",
   "quick_unlock/fingerprint_progress.ts",
+  "shortcut_input_ui/shortcut_input_key.ts",
 ]
 
 non_web_component_files_ts = [
@@ -174,6 +175,7 @@ icons_html_files = [
   "bluetooth/bluetooth_icons.html",
   "cellular_setup/cellular_setup_icons.html",
   "network/network_icons.html",
+  "shortcut_input_ui/icons.html",
   "quick_unlock/pin_keyboard_icons.html",
   "quick_unlock/fingerprint_progress_icons.html",
 ]
@@ -428,6 +430,8 @@ generate_definitions_js_files = [
   "quick_unlock/pin_keyboard.html.js",
   "quick_unlock/pin_keyboard_icons.html.js",
   "quick_unlock/setup_pin_keyboard.html.js",
+  "shortcut_input_ui/shortcut_input_key.html.js",
+  "shortcut_input_ui/icons.html.js",
   "traffic_counters/traffic_counters_adapter.js",
   "util.js",
 ]
