@@ -95,6 +95,15 @@
   #labelWrapper {
     /* Expand to fill remaining space */
     flex-grow: 1;
+    max-width: 200px;
+  }
+
+  #label,
+  #sublabel {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   #sublabel {
@@ -109,6 +118,6 @@
 
 <iron-icon icon="[[icon]]" hidden="[[!icon]]"></iron-icon>
 <div id="labelWrapper">
-  <slot></slot>
+  <slot id="label"></slot>
   <div id="sublabel">[[sublabel]]</div>
 </div>
