@@ -101,10 +101,8 @@ void QuicChromiumClientStream::Handle::OnDataAvailable() {
   if (!read_body_callback_)
     return;  // Wait for ReadBody to be called.
 
-  // TODO(https://crbug.com/1335423): Change to DCHECK() or remove after bug is
-  // fixed.
-  CHECK(read_body_buffer_);
-  CHECK_GT(read_body_buffer_len_, 0);
+  DCHECK(read_body_buffer_);
+  DCHECK_GT(read_body_buffer_len_, 0);
 
   int rv = stream_->Read(read_body_buffer_, read_body_buffer_len_);
   if (rv == ERR_IO_PENDING)
@@ -214,10 +212,8 @@ int QuicChromiumClientStream::Handle::ReadBody(
   if (rv != ERR_IO_PENDING)
     return rv;
 
-  // TODO(https://crbug.com/1335423): Change to DCHECK() or remove after bug is
-  // fixed.
-  CHECK(buffer);
-  CHECK_GT(buffer_len, 0);
+  DCHECK(buffer);
+  DCHECK_GT(buffer_len, 0);
 
   SetCallback(std::move(callback), &read_body_callback_);
   read_body_buffer_ = buffer;
@@ -651,10 +647,8 @@ void QuicChromiumClientStream::OnError(int error) {
 }
 
 int QuicChromiumClientStream::Read(IOBuffer* buf, int buf_len) {
-  // TODO(https://crbug.com/1335423): Change to DCHECK() or remove after bug
-  // is fixed.
-  CHECK_GT(buf_len, 0);
-  CHECK(buf->data());
+  DCHECK_GT(buf_len, 0);
+  DCHECK(buf->data());
 
   if (IsDoneReading())
     return 0;  // EOF

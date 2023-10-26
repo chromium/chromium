@@ -1380,9 +1380,7 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
 
 int HttpNetworkTransaction::DoReadBody() {
   DCHECK(read_buf_.get());
-  // TODO(https://crbug.com/1335423): Change to DCHECK_GT() or remove after bug
-  // is fixed.
-  CHECK_GT(read_buf_len_, 0);
+  DCHECK_GT(read_buf_len_, 0);
   DCHECK(stream_ != nullptr);
 
   next_state_ = STATE_READ_BODY_COMPLETE;
