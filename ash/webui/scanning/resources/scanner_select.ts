@@ -25,7 +25,7 @@ import {alphabeticalCompare, getScannerDisplayName, tokenToString} from './scann
 const ScannerSelectElementBase =
     I18nMixin(PolymerElement) as {new (): PolymerElement & I18nMixinInterface};
 
-class ScannerSelectElement extends ScannerSelectElementBase {
+export class ScannerSelectElement extends ScannerSelectElementBase {
   static get is() {
     return 'scanner-select' as const;
   }

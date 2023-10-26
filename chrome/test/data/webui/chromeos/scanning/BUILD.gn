@@ -24,7 +24,7 @@ build_webui_tests("build_webui_tests") {
     "page_size_select_test.ts",
     "resolution_select_test.ts",
     "scan_done_section_test.ts",
-    "scanner_select_test.js",
+    "scanner_select_test.ts",
     "scanning_app_test.js",
     "scanning_app_test_utils.js",
     "scanning_mojom_imports.js",
