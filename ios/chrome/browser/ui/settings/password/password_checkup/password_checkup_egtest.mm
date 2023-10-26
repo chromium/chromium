@@ -893,4 +893,23 @@ NSString* LeakedPasswordDescription() {
       assertWithMatcher:grey_notVisible()];
 }
 
+// Tests that Password Checkup Homepage is dismissed when there are no saved
+// passwords.
+- (void)testPasswordCheckupDismissedAfterAllPasswordsGone {
+  SavePasswordForm();
+
+  OpenPasswordCheckupHomepage(
+      /*number_of_affiliated_groups=*/1,
+      /*result_state=*/PasswordCheckStateSafe,
+      /*result_password_count=*/0);
+
+  [PasswordSettingsAppInterface clearPasswordStore];
+
+  // Verify that the Password Checkup Homepage is dismissed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(password_manager::kPasswordCheckupTableViewId)]
+      assertWithMatcher:grey_nil()];
+}
+
 @end

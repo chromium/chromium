@@ -156,11 +156,11 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     return;
   }
 
-  // If the view controller is at the top of the navigation stack, go to the
-  // previous view controller.
+  // Dismiss the whole navigation stack if checkup is the root view controller.
   if (viewControllerIndex == 0) {
-    [self.baseNavigationController popViewControllerAnimated:YES];
-
+    UIViewController* presentingViewController =
+        _baseNavigationController.presentingViewController;
+    [presentingViewController dismissViewControllerAnimated:YES completion:nil];
     return;
   }
 
