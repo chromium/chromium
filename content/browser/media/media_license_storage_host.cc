@@ -173,9 +173,6 @@ void MediaLicenseStorageHost::WriteFile(const media::CdmType& cdm_type,
     // `MediaLicenseStorageHost` to still maintain control. We just call in to
     // the `CdmStorageManager` object to be able to update the
     // `CdmStorageDatabase` to keep it in line with `MediaLicenseDatabase`.
-    // TODO(crbug.com/1454512): Create UMA to track failures from the
-    // MediaLicense* path, as we choose to fail silently to not affect the
-    // current code-path's behavior and affect CDM operations.
     manager_->cdm_storage_manager()->WriteFile(
         storage_key(), cdm_type, file_name, data, base::DoNothing());
   }
