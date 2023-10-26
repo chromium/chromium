@@ -215,6 +215,7 @@ sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
   trimmed_password_data.clear_sender_name();
   trimmed_password_data.clear_date_received_windows_epoch_micros();
   trimmed_password_data.clear_sharing_notification_displayed();
+  trimmed_password_data.clear_sender_profile_image_url();
 
   TrimPasswordSpecificsDataNotesForCaching(trimmed_password_data);
 
@@ -290,6 +291,10 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
       password_form.date_received.ToDeltaSinceWindowsEpoch().InMicroseconds());
   password_data.set_sharing_notification_displayed(
       password_form.sharing_notification_displayed);
+  password_data.set_sender_profile_image_url(
+      password_form.sender_profile_image_url.is_valid()
+          ? password_form.sender_profile_image_url.spec()
+          : "");
   return password_data;
 }
 
@@ -353,6 +358,8 @@ PasswordForm PasswordFromSpecifics(
       ConvertToBaseTime(password_data.date_received_windows_epoch_micros());
   password.sharing_notification_displayed =
       password_data.sharing_notification_displayed();
+  password.sender_profile_image_url =
+      GURL(password_data.sender_profile_image_url());
   return password;
 }
 

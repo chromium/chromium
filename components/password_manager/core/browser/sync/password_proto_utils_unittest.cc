@@ -91,6 +91,8 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   password_specifics.set_date_received_windows_epoch_micros(
       kIssuesCreationTime);
   password_specifics.set_sharing_notification_displayed(true);
+  password_specifics.set_sender_profile_image_url(
+      "http://www.sender.com/profile_image");
   return password_specifics;
 }
 

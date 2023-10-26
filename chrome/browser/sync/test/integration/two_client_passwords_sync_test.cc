@@ -226,6 +226,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier,
   PasswordForm form = CreateTestPasswordForm(0);
   form.sender_email = u"sender@example.com";
   form.sender_name = u"Sender Name";
+  form.sender_profile_image_url = GURL("http://www.sender.com/profile_image");
   form.date_received = form.date_created;
   form.sharing_notification_displayed = true;
   GetVerifierProfilePasswordStoreInterface()->AddLogin(form);
