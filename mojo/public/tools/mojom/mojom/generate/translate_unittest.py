@@ -2,15 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import imp
-import os.path
-import sys
 import unittest
 
 from mojom.generate import module as mojom
 from mojom.generate import translate
 from mojom.parse import ast
-
 
 class TranslateTest(unittest.TestCase):
   """Tests |parser.Parse()|."""

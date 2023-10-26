@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import imp
+import importlib.util
 import os
 import sys
 import unittest
-
 
 def _GetDirAbove(dirname):
   """Returns the directory "above" this file containing |dirname| (which must
@@ -18,9 +17,8 @@ def _GetDirAbove(dirname):
     if tail == dirname:
       return path
 
-
 try:
-  imp.find_module('mojom')
+  importlib.util.find_spec("mojom")
 except ImportError:
   sys.path.append(os.path.join(_GetDirAbove('pylib'), 'pylib'))
 import mojom.parse.ast as ast
@@ -28,7 +26,6 @@ import mojom.parse.conditional_features as conditional_features
 import mojom.parse.parser as parser
 
 ENABLED_FEATURES = frozenset({'red', 'green', 'blue'})
-
 
 class ConditionalFeaturesTest(unittest.TestCase):
   """Tests |mojom.parse.conditional_features|."""
@@ -374,7 +371,6 @@ class ConditionalFeaturesTest(unittest.TestCase):
     self.assertRaises(conditional_features.EnableIfError,
                       conditional_features.RemoveDisabledDefinitions,
                       definition, ENABLED_FEATURES)
-
 
 if __name__ == '__main__':
   unittest.main()
