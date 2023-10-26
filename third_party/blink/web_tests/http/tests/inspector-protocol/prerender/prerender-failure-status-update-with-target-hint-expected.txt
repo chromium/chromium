@@ -1,0 +1,42 @@
+Test that prerender navigations receives the failure status updates
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            targetHint : Blank
+            url : http://127.0.0.1:8000/echo?status=204
+        }
+        status : Pending
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            targetHint : Blank
+            url : http://127.0.0.1:8000/echo?status=204
+        }
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            targetHint : Blank
+            url : http://127.0.0.1:8000/echo?status=204
+        }
+        prerenderStatus : NavigationBadHttpStatus
+        status : Failure
+    }
+    sessionId : <string>
+}
+

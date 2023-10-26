@@ -2005,6 +2005,20 @@
     "expires": "Jul 1, 2024"
   },
   {
+    "prefix": "speculation-rules-prerender-target-hint",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "http/tests/inspector-protocol/prerender/prerender-failure-status-update-with-target-hint.js",
+      "http/tests/inspector-protocol/prerender/prerender-status-update-with-target-hint.js"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=Prerender2InNewTab"
+    ],
+    "owners": ["nhiroki@chromium.org"],
+    "expires": "Jul 1, 2024"
+  },
+  {
     "prefix": "cookie-reject-domain-non-ascii",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
