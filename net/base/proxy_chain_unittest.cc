@@ -17,7 +17,41 @@ namespace {
 
 TEST(ProxyChainTest, DefaultConstructor) {
   ProxyChain proxy_chain;
-  EXPECT_FALSE(proxy_chain.proxy_server().is_valid());
+  EXPECT_FALSE(proxy_chain.IsValid());
+}
+
+TEST(ProxyChainTest, DirectProxy) {
+  ProxyChain proxy_chain1 = ProxyChain::Direct();
+  ProxyChain proxy_chain2 = ProxyChain(ProxyServer::Direct());
+  ProxyChain proxy_chain3 =
+      ProxyChain(std::vector<ProxyServer>{ProxyServer::Direct()});
+  ProxyChain proxy_chain4 = ProxyChain(
+      std::vector<ProxyServer>{ProxyServer::Direct(), ProxyServer::Direct()});
+  std::vector<ProxyServer> proxy_servers = {};
+
+  // Equal and valid proxy chains.
+  ASSERT_EQ(proxy_chain1, proxy_chain2);
+  EXPECT_TRUE(proxy_chain1.IsValid());
+  EXPECT_TRUE(proxy_chain2.IsValid());
+
+  EXPECT_TRUE(proxy_chain1.is_direct());
+  EXPECT_FALSE(proxy_chain1.is_single_proxy());
+  EXPECT_FALSE(proxy_chain1.is_multi_proxy());
+  ASSERT_EQ(proxy_chain1.length(), 0u);
+  ASSERT_EQ(proxy_chain1.proxy_servers(), proxy_servers);
+
+  // Not equal proxy chains.
+  ASSERT_NE(proxy_chain2, proxy_chain3);
+
+  EXPECT_FALSE(proxy_chain3.is_direct());
+  EXPECT_FALSE(proxy_chain3.is_single_proxy());
+  EXPECT_FALSE(proxy_chain3.is_multi_proxy());
+  ASSERT_EQ(proxy_chain3.length(), 0u);
+
+  // Equal and not valid proxy chains.
+  ASSERT_EQ(proxy_chain3, proxy_chain4);
+  EXPECT_FALSE(proxy_chain3.IsValid());
+  EXPECT_FALSE(proxy_chain4.IsValid());
 }
 
 TEST(ProxyChainTest, Ostream) {
@@ -25,7 +59,24 @@ TEST(ProxyChainTest, Ostream) {
       ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP, "foo", 80);
   std::ostringstream out;
   out << proxy_chain;
-  EXPECT_EQ(out.str(), "PROXY foo:80");
+  EXPECT_EQ(out.str(), "[foo:80]");
+}
+
+TEST(ProxyChainTest, ToDebugString) {
+  ProxyChain proxy_chain1 =
+      ProxyChain(ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_SOCKS5));
+  EXPECT_EQ(proxy_chain1.ToDebugString(), "[socks5://foo:333]");
+
+  ProxyChain proxy_chain2 =
+      ProxyChain({ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS),
+                  ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS)});
+  EXPECT_EQ(proxy_chain2.ToDebugString(), "[https://foo:444, https://foo:555]");
+
+  ProxyChain direct_proxy_chain = ProxyChain::Direct();
+  EXPECT_EQ(direct_proxy_chain.ToDebugString(), "[direct://]");
+
+  ProxyChain invalid_proxy_chain = ProxyChain();
+  EXPECT_EQ(invalid_proxy_chain.ToDebugString(), "INVALID PROXY CHAIN");
 }
 
 TEST(ProxyChainTest, FromSchemeHostAndPort) {
@@ -138,59 +189,126 @@ TEST(ProxyChainTest, InvalidPort) {
   }
 }
 
-TEST(ProxyChainTest, ComparatorAndEquality) {
-  const struct {
-    // Inputs.
-    ProxyChain chain1;
-    ProxyChain chain2;
+TEST(ProxyChainTest, SingleProxyChain) {
+  auto proxy_server =
+      ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_HTTPS);
 
-    // Expectation.
-    //   -1 means chain1 is less than chain2
-    //    0 means chain1 equals chain2
-    //    1 means chain1 is greater than chain2
-    int expected_comparison;
-  } kTests[] = {
-      {// Equal.
-       ProxyUriToProxyChain("foo:11", ProxyServer::SCHEME_HTTP),
-       ProxyUriToProxyChain("http://foo:11", ProxyServer::SCHEME_HTTP), 0},
-      {// Port is different.
-       ProxyUriToProxyChain("foo:333", ProxyServer::SCHEME_HTTP),
-       ProxyUriToProxyChain("foo:444", ProxyServer::SCHEME_HTTP), -1},
-      {// Host is different.
-       ProxyUriToProxyChain("foo:33", ProxyServer::SCHEME_HTTP),
-       ProxyUriToProxyChain("bar:33", ProxyServer::SCHEME_HTTP), 1},
-      {// Scheme is different.
-       ProxyUriToProxyChain("socks4://foo:33", ProxyServer::SCHEME_HTTP),
-       ProxyUriToProxyChain("http://foo:33", ProxyServer::SCHEME_HTTP), 1},
-  };
+  std::vector<ProxyServer> proxy_servers = {proxy_server};
+  auto proxy = ProxyChain(proxy_servers);
 
-  for (const auto& test : kTests) {
-    EXPECT_TRUE(test.chain1.proxy_server().is_valid());
-    EXPECT_TRUE(test.chain2.proxy_server().is_valid());
+  EXPECT_FALSE(proxy.is_direct());
+  EXPECT_TRUE(proxy.is_single_proxy());
+  EXPECT_FALSE(proxy.is_multi_proxy());
+  ASSERT_EQ(proxy.proxy_servers(), proxy_servers);
+  ASSERT_EQ(proxy.length(), 1u);
+  ASSERT_EQ(proxy.GetProxyServer(0), proxy_server);
+}
 
-    switch (test.expected_comparison) {
-      case -1:
-        EXPECT_TRUE(test.chain1 < test.chain2);
-        EXPECT_FALSE(test.chain2 < test.chain1);
-        EXPECT_FALSE(test.chain2 == test.chain1);
-        EXPECT_FALSE(test.chain1 == test.chain2);
-        break;
-      case 0:
-        EXPECT_FALSE(test.chain1 < test.chain2);
-        EXPECT_FALSE(test.chain2 < test.chain1);
-        EXPECT_TRUE(test.chain2 == test.chain1);
-        EXPECT_TRUE(test.chain1 == test.chain2);
-        break;
-      case 1:
-        EXPECT_FALSE(test.chain1 < test.chain2);
-        EXPECT_TRUE(test.chain2 < test.chain1);
-        EXPECT_FALSE(test.chain2 == test.chain1);
-        EXPECT_FALSE(test.chain1 == test.chain2);
-        break;
-      default:
-        FAIL() << "Invalid expectation. Can be only -1, 0, 1";
+TEST(ProxyChainTest, MultiProxyChain) {
+  auto proxy_server1 =
+      ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_HTTPS);
+  auto proxy_server2 =
+      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+  auto proxy_server3 =
+      ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS);
+
+  std::vector<ProxyServer> proxy_servers = {proxy_server1, proxy_server2,
+                                            proxy_server3};
+  auto proxy = ProxyChain(proxy_servers);
+
+  EXPECT_FALSE(proxy.is_direct());
+  EXPECT_FALSE(proxy.is_single_proxy());
+  EXPECT_TRUE(proxy.is_multi_proxy());
+  ASSERT_EQ(proxy.proxy_servers(), proxy_servers);
+  ASSERT_EQ(proxy.length(), 3u);
+  ASSERT_EQ(proxy.GetProxyServer(0), proxy_server1);
+  ASSERT_EQ(proxy.GetProxyServer(1), proxy_server2);
+  ASSERT_EQ(proxy.GetProxyServer(2), proxy_server3);
+}
+
+TEST(ProxyChainTest, IsValid) {
+  ProxyServer direct_proxy =
+      ProxyUriToProxyServer("", ProxyServer::SCHEME_DIRECT);
+  ProxyServer http_proxy1 =
+      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+  ProxyServer http_proxy2 =
+      ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS);
+
+  // Single hop proxy of type Direct is valid.
+  EXPECT_TRUE(ProxyChain(direct_proxy).IsValid());
+
+  // Multi hop proxy with same type is valid.
+  EXPECT_TRUE(ProxyChain({http_proxy1, http_proxy2}).IsValid());
+}
+
+TEST(ProxyChainTest, Unequal) {
+  // Unordered proxy chains.
+  std::vector<ProxyChain> proxy_chain_list = {
+      ProxyUriToProxyChain("", ProxyServer::SCHEME_DIRECT),
+      ProxyUriToProxyChain("foo:333", ProxyServer::SCHEME_HTTP),
+      ProxyUriToProxyChain("foo:444", ProxyServer::SCHEME_HTTP),
+      ProxyChain({ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),
+                  ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_HTTPS)}),
+      ProxyUriToProxyChain("socks4://foo:33", ProxyServer::SCHEME_SOCKS4),
+      ProxyUriToProxyChain("http://foo:33", ProxyServer::SCHEME_HTTP),
+      ProxyChain({ProxyUriToProxyChain("bar:33", ProxyServer::SCHEME_HTTP)})};
+
+  // Ordered proxy chains.
+  std::set<ProxyChain> proxy_chain_set(proxy_chain_list.begin(),
+                                       proxy_chain_list.end());
+
+  // Initial proxy chain list and set are equal.
+  ASSERT_EQ(proxy_chain_list.size(), proxy_chain_set.size());
+
+  for (const ProxyChain& proxy_chain1 : proxy_chain_list) {
+    auto proxy_chain2 = proxy_chain_set.begin();
+    // Chain set entries less than `proxy_chain1`.
+    while (*proxy_chain2 < proxy_chain1) {
+      EXPECT_TRUE(*proxy_chain2 < proxy_chain1);
+      EXPECT_FALSE(proxy_chain1 < *proxy_chain2);
+      EXPECT_FALSE(*proxy_chain2 == proxy_chain1);
+      EXPECT_FALSE(proxy_chain1 == *proxy_chain2);
+      ++proxy_chain2;
     }
+
+    // Chain set entry for `proxy_chain1`.
+    EXPECT_FALSE(*proxy_chain2 < proxy_chain1);
+    EXPECT_FALSE(proxy_chain1 < *proxy_chain2);
+    EXPECT_TRUE(*proxy_chain2 == proxy_chain1);
+    EXPECT_TRUE(proxy_chain1 == *proxy_chain2);
+    ++proxy_chain2;
+
+    // Chain set entries greater than `proxy_chain1`.
+    while (proxy_chain2 != proxy_chain_set.end() &&
+           proxy_chain1 < *proxy_chain2) {
+      EXPECT_FALSE(*proxy_chain2 < proxy_chain1);
+      EXPECT_TRUE(proxy_chain1 < *proxy_chain2);
+      EXPECT_FALSE(*proxy_chain2 == proxy_chain1);
+      EXPECT_FALSE(proxy_chain1 == *proxy_chain2);
+      ++proxy_chain2;
+    }
+    ASSERT_EQ(proxy_chain2, proxy_chain_set.end());
   }
+}
+
+TEST(ProxyChainTest, Equal) {
+  ProxyServer proxy_server =
+      ProxyUriToProxyServer("foo:11", ProxyServer::SCHEME_HTTP);
+
+  ProxyChain proxy_chain1 = ProxyChain(proxy_server);
+  ProxyChain proxy_chain2 = ProxyChain(std::vector<ProxyServer>{proxy_server});
+  ProxyChain proxy_chain3 =
+      ProxyChain(ProxyServer::SCHEME_HTTP, HostPortPair("foo", 11));
+
+  EXPECT_FALSE(proxy_chain1 < proxy_chain2);
+  EXPECT_FALSE(proxy_chain2 < proxy_chain1);
+  EXPECT_TRUE(proxy_chain2 == proxy_chain1);
+  EXPECT_TRUE(proxy_chain2 == proxy_chain1);
+
+  EXPECT_FALSE(proxy_chain2 < proxy_chain3);
+  EXPECT_FALSE(proxy_chain3 < proxy_chain2);
+  EXPECT_TRUE(proxy_chain3 == proxy_chain2);
+  EXPECT_TRUE(proxy_chain3 == proxy_chain2);
 }
 
 }  // namespace

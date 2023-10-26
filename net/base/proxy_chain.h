@@ -10,8 +10,8 @@
 #include <ostream>
 #include <string>
 #include <tuple>
+#include <vector>
 
-#include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
@@ -28,20 +28,24 @@ namespace net {
 // TODO(crbug.com/1491092): Initial implementations of proxy chaining may, in
 // fact, not tunnel through the last proxy in the ProxyChain if the destination
 // is http.
-//
-// TODO(crbug.com/1491092): This does not currently support multi-proxy chains,
-// so a ProxyChain is always inter-convertable to a ProxyServer.
 class NET_EXPORT ProxyChain {
  public:
-  // Default copy-constructor and assignment operator are OK!
-
   // Constructs an invalid ProxyChain.
-  ProxyChain() = default;
+  ProxyChain();
 
-  ProxyChain(ProxyServer::Scheme scheme, const HostPortPair& host_port_pair)
-      : proxy_server_(scheme, host_port_pair) {}
+  ProxyChain(const ProxyChain& other);      // Copy constructor
+  ProxyChain(ProxyChain&& other) noexcept;  // Move constructor
 
-  explicit ProxyChain(ProxyServer proxy_server) : proxy_server_(proxy_server) {}
+  ProxyChain& operator=(const ProxyChain& other);  // Copy assignment operator
+  ProxyChain& operator=(
+      ProxyChain&& other) noexcept;  // Move assignment operator
+
+  ProxyChain(ProxyServer::Scheme scheme, const HostPortPair& host_port_pair);
+
+  explicit ProxyChain(std::vector<ProxyServer> proxy_server_list);
+  explicit ProxyChain(ProxyServer proxy_server);
+
+  ~ProxyChain();  // Destructor declaration
 
   // Creates a single-proxy ProxyChain, validating and canonicalizing input.
   // Port is optional and, if not provided, will be replaced with the default
@@ -63,42 +67,69 @@ class NET_EXPORT ProxyChain {
                                           absl::optional<uint16_t> port) {
     return ProxyChain(ProxyServer::FromSchemeHostAndPort(scheme, host, port));
   }
-
   // Create a "direct" proxy chain, which includes no proxy servers.
   static ProxyChain Direct() { return ProxyChain(ProxyServer::Direct()); }
 
+  // Get ProxyServer at index in chain. This is not valid for direct or invalid
+  // proxy chains.
+  const ProxyServer& GetProxyServer(size_t chain_index) const;
+
+  // Get the ProxyServers to this chain. This must not be called on invalid
+  // proxy chains. An empty vector is returned for direct proxy chains.
+  const std::vector<ProxyServer>& proxy_servers() const;
+
+  // Get the single ProxyServer equivalent to this chain. This must not be
+  // called for multi-proxy chains.
+  // TODO(crbug.com/1491092): Remove this method.
+  const ProxyServer& proxy_server() const;
+
+  // Returns number of proxy servers in chain.
+  size_t length() const {
+    return proxy_server_list_.has_value() ? proxy_server_list_.value().size()
+                                          : 0;
+  }
+
   // Returns true if this chain contains more than one proxy.
-  bool is_multi_proxy() const { return false; }
+  bool is_multi_proxy() const {
+    return proxy_server_list_.has_value()
+               ? proxy_server_list_.value().size() > 1
+               : false;
+  }
+
+  // Returns true if this chain contains exactly one proxy.
+  bool is_single_proxy() const {
+    return proxy_server_list_.has_value()
+               ? proxy_server_list_.value().size() == 1
+               : false;
+  }
 
   // Returns true if this is a direct (equivalently, zero-proxy) chain.
-  bool is_direct() const { return proxy_server_.is_direct(); }
+  bool is_direct() const {
+    return proxy_server_list_.has_value() ? proxy_server_list_.value().empty()
+                                          : false;
+  }
 
-  // Returns true if this chain is valid.
-  bool IsValid() const;
+  // Returns true if a proxy server list is available .
+  bool IsValid() const { return proxy_server_list_.has_value(); }
 
   bool operator==(const ProxyChain& other) const {
-    return proxy_server_ == other.proxy_server_;
+    return proxy_server_list_ == other.proxy_server_list_;
   }
 
   bool operator!=(const ProxyChain& other) const { return !(*this == other); }
 
   // Comparator function so this can be placed in a std::map.
   bool operator<(const ProxyChain& other) const {
-    return proxy_server_ < other.proxy_server_;
+    return proxy_server_list_ < other.proxy_server_list_;
   }
 
   std::string ToDebugString() const;
 
-  // Get the single ProxyServer equivalent to this chain. This must not be
-  // called for multi-proxy chains.
-  // TODO(crbug.com/1491092): Remove this method.
-  const ProxyServer& proxy_server() const {
-    CHECK(!is_multi_proxy());
-    return proxy_server_;
-  }
-
  private:
-  ProxyServer proxy_server_;
+  absl::optional<std::vector<ProxyServer>> proxy_server_list_;
+
+  // Returns true if this chain is valid.
+  bool IsValidInternal() const;
 };
 
 NET_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,
