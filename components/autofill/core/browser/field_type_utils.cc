@@ -74,8 +74,7 @@ size_t AddressLineIndex(ServerFieldType type) {
   NOTREACHED_NORETURN();
 }
 
-size_t DetermineExpirationYearLength(const AutofillField& field,
-                                     ServerFieldType assumed_field_type) {
+size_t DetermineExpirationYearLength(ServerFieldType assumed_field_type) {
   switch (assumed_field_type) {
     case CREDIT_CARD_EXP_2_DIGIT_YEAR:
       return 2;

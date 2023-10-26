@@ -232,7 +232,7 @@ TEST_F(AutofillFieldFillerTest, Type_CreditCardOverrideHtml_Heuristics) {
 
 // Tests that a credit card related prediction made by the server overrides an
 // unrecognized autocomplete attribute.
-TEST_F(AutofillFieldFillerTest, Type_CreditCardOverrideHtml_ServerPredicitons) {
+TEST_F(AutofillFieldFillerTest, Type_CreditCardOverrideHtml_ServerPredictions) {
   AutofillField field;
 
   field.SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
@@ -1793,38 +1793,38 @@ TEST_F(AutofillFieldFillerTest, FindShortestSubstringMatchInSelect) {
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
 
   // Case 1: Exact match
-  int ret =
-      FieldFiller::FindShortestSubstringMatchInSelect(u"Canada", false, &field);
+  int ret = FieldFiller::FindShortestSubstringMatchInSelect(u"Canada", false,
+                                                            field.options);
   EXPECT_EQ(1, ret);
 
   // Case 2: Case-insensitive
-  ret =
-      FieldFiller::FindShortestSubstringMatchInSelect(u"CANADA", false, &field);
+  ret = FieldFiller::FindShortestSubstringMatchInSelect(u"CANADA", false,
+                                                        field.options);
   EXPECT_EQ(1, ret);
 
   // Case 3: Proper substring
-  ret =
-      FieldFiller::FindShortestSubstringMatchInSelect(u"États", false, &field);
+  ret = FieldFiller::FindShortestSubstringMatchInSelect(u"États", false,
+                                                        field.options);
   EXPECT_EQ(0, ret);
 
   // Case 4: Accent-insensitive
   ret = FieldFiller::FindShortestSubstringMatchInSelect(u"Etats-Unis", false,
-                                                        &field);
+                                                        field.options);
   EXPECT_EQ(0, ret);
 
   // Case 5: Whitespace-insensitive
   ret = FieldFiller::FindShortestSubstringMatchInSelect(u"Ca na da", true,
-                                                        &field);
+                                                        field.options);
   EXPECT_EQ(1, ret);
 
   // Case 6: No match (whitespace-sensitive)
   ret = FieldFiller::FindShortestSubstringMatchInSelect(u"Ca Na Da", false,
-                                                        &field);
+                                                        field.options);
   EXPECT_EQ(-1, ret);
 
   // Case 7: No match (not present)
-  ret =
-      FieldFiller::FindShortestSubstringMatchInSelect(u"Canadia", true, &field);
+  ret = FieldFiller::FindShortestSubstringMatchInSelect(u"Canadia", true,
+                                                        field.options);
   EXPECT_EQ(-1, ret);
 }
 
@@ -2152,7 +2152,7 @@ TEST_F(AutofillFieldFillerTest,
   test::ClearAlternativeStateNameMapForTesting();
 
   AutofillField field = CreateTestSelectAutofillField(
-      {"Colombia", "Connecticut", "Colifornia"}, ADDRESS_HOME_STATE);
+      {"Colombia", "Connecticut", "California"}, ADDRESS_HOME_STATE);
   AutofillProfile address;
   address.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");

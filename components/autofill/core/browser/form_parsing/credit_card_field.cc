@@ -400,10 +400,10 @@ bool CreditCardField::LikelyCardTypeSelectField(AutofillScanner* scanner) {
   // a pretty common mistake; e.g., "Master card" instead of "Mastercard".
   bool isSelect = (FieldFiller::FindShortestSubstringMatchInSelect(
                        l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA), true,
-                       field) >= 0) ||
+                       field->options) >= 0) ||
                   (FieldFiller::FindShortestSubstringMatchInSelect(
                        l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MASTERCARD),
-                       true, field) >= 0);
+                       true, field->options) >= 0);
   return isSelect;
 }
 
