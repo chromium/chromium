@@ -75,6 +75,9 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 100,
+    ),
 )
 
 try_.compilator_builder(

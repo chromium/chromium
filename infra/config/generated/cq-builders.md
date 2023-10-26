@@ -604,6 +604,9 @@ as required builders.
 * [android-x86-dual-coverage-exp-rel](https://ci.chromium.org/p/chromium/builders/try/android-x86-dual-coverage-exp-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-x86-dual-coverage-exp-rel""))
   * Experiment percentage: 10.0
 
+* [chromeos-amd64-generic-rel-renamed](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-renamed) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-rel-renamed""))
+  * Experiment percentage: 100.0
+
 * [chromeos-amd64-generic-siso-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-siso-rel""))
   * Experiment percentage: 10.0
 
