@@ -4555,9 +4555,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //
   // Note that some use cases may still consider a RenderFrameHost used after a
   // crash, in which case is_initial_empty_document() may be a more relevant
-  // check. Also, unlike is_initial_empty_document(), this field does not
-  // change if this frame is modified via document.open().
+  // check. Also, unlike is_initial_empty_document(), this field does not change
+  // if this frame is modified via document.open().  However, note that
+  // is_initial_empty_document() is updated at DidCommitNavigation() time,
+  // whereas this field is updated at CommitNavigation() time.
   bool has_committed_any_navigation_ = false;
+
   bool must_be_replaced_ = false;
 
   // Counts the number of times the associated renderer process has exited.
@@ -5121,7 +5124,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Whether this document is the initial about:blank document or the
   // synchronously committed about:blank document committed at frame creation,
   // and its "initial empty document"-ness is still true.
-  // This will be false if either of these has happened:
+  // This will become false if either of these has happened:
   // - The RenderFrameHost had committed a cross-document navigation that is
   //   not the synchronously committed about:blank document per:
   //   https://html.spec.whatwg.org/multipage/browsers.html#creating-browsing-contexts:is-initial-about:blank
@@ -5134,6 +5137,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // "initial about:blank document". See also:
   // - https://github.com/whatwg/html/issues/6863
   // - https://crbug.com/1215096
+  //
+  // Note that cross-document navigations update this state at
+  // DidCommitNavigation() time. Thus, this is still true when a cross-document
+  // navigation from an initial empty document is in the pending-commit window,
+  // after sending the CommitNavigation IPC but before receiving
+  // DidCommitNavigation().  This is in contrast to
+  // has_committed_any_navigation(), which is updated in CommitNavigation().
+  // TODO(alexmos): Consider updating this at CommitNavigation() time as well to
+  // match the has_committed_any_navigation() behavior.
   bool is_initial_empty_document_ = true;
 
   // Testing callback run in DidStopLoading() regardless of loading state. This

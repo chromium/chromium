@@ -265,8 +265,7 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, PRE_Default) {
   // PRE-condition.
 }
 
-// TODO(crbug.com/1492076): Flaky on Chrome OS.
-IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, DISABLED_Default) {
+IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsNetworkTelemetry));
 

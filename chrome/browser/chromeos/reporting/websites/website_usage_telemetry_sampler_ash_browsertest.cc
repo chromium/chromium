@@ -170,9 +170,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
       affiliation_mixin_.account_id());
 }
 
-// TODO(crbug.com/1492076): Re-enable test once the issue is fixed.
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
-                       DISABLED_ReportUrlUsage) {
+                       ReportUrlUsage) {
   // Login as affiliated user and set policy.
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   SetAllowlistedUrls({ContentSettingsPattern::Wildcard().ToString()});
@@ -207,9 +206,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
       affiliation_mixin_.account_id());
 }
 
-// TODO(crbug.com/1492076): Re-enable test once the issue is fixed.
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
-                       DISABLED_DisallowedUrlUsage) {
+                       DisallowedUrlUsage) {
   // Login as affiliated user and set policy.
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   SetAllowlistedUrls({});
@@ -233,9 +231,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
       affiliation_mixin_.account_id());
 }
 
-// TODO(crbug.com/1492076): Re-enable test once the issue is fixed.
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
-                       DISABLED_DisallowedUsageTelemetryType) {
+                       DisallowedUsageTelemetryType) {
   // Login as affiliated user and set policy.
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   SetAllowlistedUrls({ContentSettingsPattern::Wildcard().ToString()});
@@ -259,9 +256,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
       affiliation_mixin_.account_id());
 }
 
-// TODO(crbug.com/1492076): Re-enable test once the issue is fixed.
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
-                       DISABLED_ReportSubsequentUsage) {
+                       ReportSubsequentUsage) {
   // Login as affiliated user and set policy.
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   SetAllowlistedUrls({ContentSettingsPattern::Wildcard().ToString()});
@@ -300,9 +296,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
       affiliation_mixin_.account_id());
 }
 
-// TODO(crbug.com/1492076): Re-enable test once the issue is fixed.
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
-                       DISABLED_ReportUsageDataOnSessionTermination) {
+                       ReportUsageDataOnSessionTermination) {
   // Login as affiliated user and set policy.
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   SetAllowlistedUrls({ContentSettingsPattern::Wildcard().ToString()});

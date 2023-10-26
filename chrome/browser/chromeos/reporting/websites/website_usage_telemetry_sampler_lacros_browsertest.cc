@@ -178,9 +178,8 @@ class WebsiteUsageTelemetrySamplerBrowserTest
       &mixin_host_};
 };
 
-// TODO(crbug.com/1492076): Re-enable test once the issue is fixed.
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
-                       DISABLED_ReportAllUrlUsage) {
+                       ReportAllUrlUsage) {
   SetAllowlistedUrls({ContentSettingsPattern::Wildcard().ToString()});
   SetAllowlistedTelemetryTypes({kWebsiteTelemetryUsageType});
 
@@ -206,9 +205,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
   EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
 }
 
-// TODO(crbug.com/1492076): Re-enable test once the issue is fixed.
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
-                       DISABLED_DisallowedUrlUsage) {
+                       DisallowedUrlUsage) {
   SetAllowlistedUrls({});
   SetAllowlistedTelemetryTypes({kWebsiteTelemetryUsageType});
 
@@ -223,9 +221,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
   EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
 }
 
-// TODO(crbug.com/1492076): Re-enable test once the issue is fixed.
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
-                       DISABLED_DisallowedUsageTelemetryType) {
+                       DisallowedUsageTelemetryType) {
   SetAllowlistedUrls({ContentSettingsPattern::Wildcard().ToString()});
   SetAllowlistedTelemetryTypes({});
 
@@ -240,9 +237,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
   EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
 }
 
-// TODO(crbug.com/1492076): Re-enable test once the issue is fixed.
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
-                       DISABLED_ReportSubsequentUsage) {
+                       ReportSubsequentUsage) {
   SetAllowlistedUrls({ContentSettingsPattern::Wildcard().ToString()});
   SetAllowlistedTelemetryTypes({kWebsiteTelemetryUsageType});
 

@@ -278,9 +278,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   // PRE-condition.
 }
 
-// TODO(crbug.com/1492076): Flaky on Chrome OS.
-IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
-                       DISABLED_ReportUsageData) {
+IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest, ReportUsageData) {
   // Install webapp and simulate its usage.
   const auto& app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
@@ -327,9 +325,8 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   // PRE-condition.
 }
 
-// TODO(crbug.com/1492076): Flaky on Chrome OS.
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
-                       DISABLED_ReportUsageDataWhenSyncDisabled) {
+                       ReportUsageDataWhenSyncDisabled) {
   sync_service()->SetDisableReasons(
       {::syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
@@ -372,9 +369,8 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   // PRE-condition.
 }
 
-// TODO(crbug.com/1492076): Flaky on Chrome OS.
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
-                       DISABLED_ReportUsageDataWhenPolicyDisabled) {
+                       ReportUsageDataWhenPolicyDisabled) {
   // Disable policy.
   SetAllowedAppReportingTypes({});
 
