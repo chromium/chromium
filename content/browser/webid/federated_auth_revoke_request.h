@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDERATED_AUTH_USER_INFO_REQUEST_H_
-#define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_USER_INFO_REQUEST_H_
+#ifndef CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REVOKE_REQUEST_H_
+#define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REVOKE_REQUEST_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/webid/federated_provider_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 
@@ -26,60 +23,52 @@ class FederatedIdentityPermissionContextDelegate;
 class FederatedProviderFetcher;
 class RenderFrameHost;
 
-using FederatedAuthUserInfoRequestResult =
-    blink::mojom::FederatedAuthUserInfoRequestResult;
-
-// Fetches data for user-info request.
-class CONTENT_EXPORT FederatedAuthUserInfoRequest {
+// Fetches data for a FedCM revoke request.
+class CONTENT_EXPORT FederatedAuthRevokeRequest {
  public:
-  // Returns an object which fetches data for user-info request.
-  static std::unique_ptr<FederatedAuthUserInfoRequest> Create(
+  // Returns an object which fetches data for revoke request.
+  static std::unique_ptr<FederatedAuthRevokeRequest> Create(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
       FedCmMetrics* metrics,
-      blink::mojom::IdentityProviderConfigPtr provider);
+      blink::mojom::IdentityCredentialRevokeOptionsPtr options,
+      bool should_complete_request_immediately);
 
-  FederatedAuthUserInfoRequest(const FederatedAuthUserInfoRequest&) = delete;
-  FederatedAuthUserInfoRequest& operator=(const FederatedAuthUserInfoRequest&) =
+  FederatedAuthRevokeRequest(const FederatedAuthRevokeRequest&) = delete;
+  FederatedAuthRevokeRequest& operator=(const FederatedAuthRevokeRequest&) =
       delete;
-  ~FederatedAuthUserInfoRequest();
+  ~FederatedAuthRevokeRequest();
 
   // There is a separate method to set the callback because the callback relies
   // on having a pointer to this object, hence cannot be passed in the
   // constructor. Once the callback is set, start fetching.
   void SetCallbackAndStart(
-      blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback,
+      blink::mojom::FederatedAuthRequest::RevokeCallback callback,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
 
  private:
-  FederatedAuthUserInfoRequest(
+  FederatedAuthRevokeRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
       FedCmMetrics* metrics,
-      blink::mojom::IdentityProviderConfigPtr provider);
+      blink::mojom::IdentityCredentialRevokeOptionsPtr options,
+      bool should_complete_request_immediately);
 
   void OnAllConfigAndWellKnownFetched(
       std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
 
-  void OnAccountsResponseReceived(
-      IdpNetworkRequestManager::FetchStatus fetch_status,
-      IdpNetworkRequestManager::AccountList accounts);
+  void OnRevokeResponse(IdpNetworkRequestManager::RevokeResponse response);
 
-  void MaybeReturnAccounts(
-      const IdpNetworkRequestManager::AccountList& accounts);
-
-  bool IsReturningAccount(const IdentityRequestAccount& account);
-
+  // `should_delay_callback` represents whether we should call the callback
+  // with some delay or immediately. For some failures we choose to reject
+  // with some delay for privacy reasons. `revoke_status_for_metrics` is
+  // non-nullopt if metrics have not yet been recorded for this request.
   void Complete(
-      blink::mojom::RequestUserInfoStatus status,
-      absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,
-      FederatedAuthUserInfoRequestResult request_status);
-
-  void CompleteWithError(FederatedAuthUserInfoRequestResult error);
-
-  void AddDevToolsIssue(FederatedAuthUserInfoRequestResult error);
+      blink::mojom::RevokeStatus status,
+      absl::optional<content::FedCmRevokeStatus> revoke_status_for_metrics,
+      bool should_delay_callback);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   // Owned by |BrowserContext|
@@ -90,21 +79,17 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
   std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
-  bool does_idp_have_failing_signin_status_{false};
-  std::string client_id_;
-  GURL idp_config_url_;
+  blink::mojom::IdentityCredentialRevokeOptionsPtr options_;
+  bool should_complete_request_immediately_{false};
 
   url::Origin origin_;
   url::Origin embedding_origin_;
-  url::Origin parent_frame_origin_;
 
-  base::TimeTicks request_start_time_;
+  blink::mojom::FederatedAuthRequest::RevokeCallback callback_;
 
-  blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback_;
-
-  base::WeakPtrFactory<FederatedAuthUserInfoRequest> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FederatedAuthRevokeRequest> weak_ptr_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDERATED_AUTH_USER_INFO_REQUEST_H_
+#endif  // CONTENT_BROWSER_WEBID_FEDERATED_AUTH_REVOKE_REQUEST_H_

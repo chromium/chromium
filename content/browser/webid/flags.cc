@@ -68,4 +68,8 @@ bool IsFedCmErrorEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmError);
 }
 
+bool IsFedCmRevokeEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmRevoke);
+}
+
 }  // namespace content

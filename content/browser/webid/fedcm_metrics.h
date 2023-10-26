@@ -109,6 +109,33 @@ enum class PreventSilentAccessFrameType {
   kMaxValue = kCrossSiteIframe
 };
 
+// This enum describes the status of a revocation call to the FedCM API.
+enum class FedCmRevokeStatus {
+  // Don't change the meaning or the order of these values because they are
+  // being recorded in metrics and in sync with the counterpart in enums.xml.
+  kSuccess,
+  kTooManyRequests,
+  kUnhandledRequest,
+  kNoAccountToRevoke,
+  kRevokeUrlIsCrossOrigin,
+  kRevocationFailedOnServer,
+  kConfigHttpNotFound,
+  kConfigNoResponse,
+  kConfigInvalidResponse,
+  kDisabledInSettings,
+  kDisabledInFlags,
+  kWellKnownHttpNotFound,
+  kWellKnownNoResponse,
+  kWellKnownInvalidResponse,
+  kWellKnownListEmpty,
+  kConfigNotInWellKnown,
+  kWellKnownTooBig,
+  kWellKnownInvalidContentType,
+  kConfigInvalidContentType,
+
+  kMaxValue = kConfigInvalidContentType
+};
+
 class CONTENT_EXPORT FedCmMetrics {
  public:
   FedCmMetrics(const GURL& provider,
@@ -206,6 +233,9 @@ class CONTENT_EXPORT FedCmMetrics {
   // document. Requests made when FedCM is disabled, when there is a pending
   // FedCM request or for the purpose of MDocs or multi-IDP are not counted.
   void RecordNumRequestsPerDocument(const int num_requests);
+
+  // Records the status of the |Revoke| call.
+  void RecordRevokeStatus(FedCmRevokeStatus status);
 
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.

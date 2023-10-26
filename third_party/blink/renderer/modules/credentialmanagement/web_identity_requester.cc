@@ -91,7 +91,7 @@ void WebIdentityRequester::RequestToken() {
 
 void WebIdentityRequester::AppendGetCall(
     ScriptPromiseResolver* resolver,
-    const HeapVector<Member<IdentityProviderConfig>>& providers,
+    const HeapVector<Member<IdentityProviderRequestOptions>>& providers,
     mojom::blink::RpContext rp_context,
     mojom::blink::RpMode rp_mode) {
   if (is_requesting_token_) {
@@ -103,9 +103,9 @@ void WebIdentityRequester::AppendGetCall(
 
   Vector<mojom::blink::IdentityProviderPtr> idp_ptrs;
   for (const auto& provider : providers) {
-    mojom::blink::IdentityProviderConfigPtr config =
-        blink::mojom::blink::IdentityProviderConfig::From(*provider);
-    if (provider_to_resolver_.Contains(KURL(config->config_url))) {
+    mojom::blink::IdentityProviderRequestOptionsPtr options =
+        blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);
+    if (provider_to_resolver_.Contains(KURL(options->config->config_url))) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "More than one navigator.credentials.get calls to the same "
@@ -113,13 +113,14 @@ void WebIdentityRequester::AppendGetCall(
       return;
     }
     mojom::blink::IdentityProviderPtr idp =
-        mojom::blink::IdentityProvider::NewFederated(std::move(config));
+        mojom::blink::IdentityProvider::NewFederated(std::move(options));
     idp_ptrs.push_back(std::move(idp));
   }
 
   for (const auto& idp_ptr : idp_ptrs) {
-    provider_to_resolver_.insert(KURL(idp_ptr->get_federated()->config_url),
-                                 WrapPersistent(resolver));
+    provider_to_resolver_.insert(
+        KURL(idp_ptr->get_federated()->config->config_url),
+        WrapPersistent(resolver));
   }
 
   mojom::blink::IdentityProviderGetParametersPtr get_params =

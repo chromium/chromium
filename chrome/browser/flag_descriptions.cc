@@ -1634,6 +1634,11 @@ const char kFedCmMultiIdpDescription[] =
     "Allows the FedCM API to request multiple identity providers "
     "simultaneously. Requires FedCM to be enabled as well.";
 
+const char kFedCmRevokeName[] = "FedCmRevoke";
+const char kFedCmRevokeDescription[] =
+    "Enables the IdentityCredential.revoke() API which allows revoking "
+    "accounts created via federated login through FedCM.";
+
 const char kFedCmSelectiveDisclosureName[] = "FedCmSelectiveDisclosure";
 const char kFedCmSelectiveDisclosureDescription[] =
     "Allows a relying party to selectively request a set of identity "

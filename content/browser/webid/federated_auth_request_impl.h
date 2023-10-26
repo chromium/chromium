@@ -31,6 +31,7 @@
 
 namespace content {
 
+class FederatedAuthRevokeRequest;
 class FederatedAuthUserInfoRequest;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityAutoReauthnPermissionContextDelegate;
@@ -89,8 +90,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void RegisterIdP(const ::GURL& idp, RegisterIdPCallback) override;
   void UnregisterIdP(const ::GURL& idp, UnregisterIdPCallback) override;
   void CloseModalDialogView() override;
-
   void PreventSilentAccess(PreventSilentAccessCallback callback) override;
+  void Revoke(blink::mojom::IdentityCredentialRevokeOptionsPtr options,
+              RevokeCallback) override;
 
   // FederatedIdentityPermissionContextDelegate::IdpSigninStatusObserver:
   void OnIdpSigninStatusChanged(const url::Origin& idp_config_origin,
@@ -115,20 +117,20 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   GetApiPermissionStatus(const url::Origin& idp_origin);
 
   struct IdentityProviderGetInfo {
-    IdentityProviderGetInfo(blink::mojom::IdentityProviderConfigPtr,
+    IdentityProviderGetInfo(blink::mojom::IdentityProviderRequestOptionsPtr,
                             blink::mojom::RpContext rp_context,
                             blink::mojom::RpMode rp_mode);
     ~IdentityProviderGetInfo();
     IdentityProviderGetInfo(const IdentityProviderGetInfo&);
     IdentityProviderGetInfo& operator=(const IdentityProviderGetInfo& other);
 
-    blink::mojom::IdentityProviderConfigPtr provider;
+    blink::mojom::IdentityProviderRequestOptionsPtr provider;
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
     blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kWidget};
   };
 
   struct IdentityProviderInfo {
-    IdentityProviderInfo(const blink::mojom::IdentityProviderConfigPtr&,
+    IdentityProviderInfo(const blink::mojom::IdentityProviderRequestOptionsPtr&,
                          IdpNetworkRequestManager::Endpoints,
                          IdentityProviderMetadata,
                          blink::mojom::RpContext rp_context,
@@ -136,7 +138,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     ~IdentityProviderInfo();
     IdentityProviderInfo(const IdentityProviderInfo&);
 
-    blink::mojom::IdentityProviderConfigPtr provider;
+    blink::mojom::IdentityProviderRequestOptionsPtr provider;
     IdpNetworkRequestManager::Endpoints endpoints;
     IdentityProviderMetadata metadata;
     bool has_failing_idp_signin_status{false};
@@ -251,14 +253,15 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDialogDismissed(
       IdentityRequestDialogController::DismissReason dismiss_reason);
-  void CompleteTokenRequest(blink::mojom::IdentityProviderConfigPtr idp,
+  void CompleteTokenRequest(blink::mojom::IdentityProviderRequestOptionsPtr idp,
                             IdpNetworkRequestManager::FetchStatus status,
                             const std::string& token);
-  void OnTokenResponseReceived(blink::mojom::IdentityProviderConfigPtr idp,
-                               IdpNetworkRequestManager::FetchStatus status,
-                               IdpNetworkRequestManager::TokenResult result);
+  void OnTokenResponseReceived(
+      blink::mojom::IdentityProviderRequestOptionsPtr idp,
+      IdpNetworkRequestManager::FetchStatus status,
+      IdpNetworkRequestManager::TokenResult result);
   void OnContinueOnResponseReceived(
-      blink::mojom::IdentityProviderConfigPtr idp,
+      blink::mojom::IdentityProviderRequestOptionsPtr idp,
       IdpNetworkRequestManager::FetchStatus status,
       const GURL& url);
   void DispatchOneLogout();
@@ -320,7 +323,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // reorders accounts so that those that are considered returning users are
   // before users that are not returning.
   void ComputeLoginStateAndReorderAccounts(
-      const blink::mojom::IdentityProviderConfigPtr& idp,
+      const url::Origin& idp_origin,
       IdpNetworkRequestManager::AccountList& accounts);
 
   url::Origin GetEmbeddingOrigin() const;
@@ -341,6 +344,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void SetRequiresUserMediation(bool requires_user_mediation);
 
   void SignInToIdP(GURL signin_url);
+
+  void CompleteRevokeRequest(RevokeCallback callback,
+                             blink::mojom::RevokeStatus status);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
@@ -400,6 +406,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Set of pending user info requests.
   base::flat_set<std::unique_ptr<FederatedAuthUserInfoRequest>>
       user_info_requests_;
+
+  // Pending revoke request.
+  std::unique_ptr<FederatedAuthRevokeRequest> revoke_request_;
 
   base::queue<blink::mojom::LogoutRpsRequestPtr> logout_requests_;
   LogoutRpsCallback logout_callback_;

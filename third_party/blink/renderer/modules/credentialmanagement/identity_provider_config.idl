@@ -8,16 +8,16 @@ dictionary IdentityProviderConfig {
   // URL for the Identity Provider Configuration.
   USVString configURL;
   USVString clientId;
+};
+
+dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   USVString nonce;
   DOMString loginHint;
   [RuntimeEnabled=FedCmHostedDomain] DOMString hostedDomain;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> scope;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> responseType;
   [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
-};
-
-// extends the IdentityProviderConfig with DigitalCredential-specific attributes
-partial dictionary IdentityProviderConfig  {
+  // DigitalCredential-specific attributes
   [RuntimeEnabled=WebIdentityDigitalCredentials] DigitalCredentialProvider holder;
 };
 

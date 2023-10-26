@@ -50,6 +50,9 @@ bool IsFedCmHostedDomainEnabled();
 // Whether the Error API is enabled.
 bool IsFedCmErrorEnabled();
 
+// Whether the revoke API is enabled.
+bool IsFedCmRevokeEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

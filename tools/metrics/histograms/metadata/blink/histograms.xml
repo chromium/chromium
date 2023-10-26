@@ -1591,6 +1591,16 @@ chromium-metrics-reviews@google.com.
   <summary>Records the status of a revoke call to the FedCM API.</summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Status.Revoke2" enum="FedCmRevokeStatus2"
+    expires_after="M125">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the status of a revoke call to the FedCM API. Recorded once per
+    IdentityCredential.revoke() call, once the browser knows the result.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Status.SignInStateMatch"
     enum="FedCmSignInStateMatchStatus" expires_after="M125">
   <owner>tanzachary@chromium.org</owner>

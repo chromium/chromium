@@ -31,7 +31,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_mode.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_revoke_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
@@ -73,10 +75,14 @@ using blink::mojom::blink::DigitalCredentialProvider;
 using blink::mojom::blink::DigitalCredentialProviderPtr;
 using blink::mojom::blink::DigitalCredentialSelector;
 using blink::mojom::blink::DigitalCredentialSelectorPtr;
+using blink::mojom::blink::IdentityCredentialRevokeOptions;
+using blink::mojom::blink::IdentityCredentialRevokeOptionsPtr;
 using blink::mojom::blink::IdentityProvider;
 using blink::mojom::blink::IdentityProviderConfig;
 using blink::mojom::blink::IdentityProviderConfigPtr;
 using blink::mojom::blink::IdentityProviderPtr;
+using blink::mojom::blink::IdentityProviderRequestOptions;
+using blink::mojom::blink::IdentityProviderRequestOptionsPtr;
 using blink::mojom::blink::IdentityUserInfo;
 using blink::mojom::blink::IdentityUserInfoPtr;
 using blink::mojom::blink::LargeBlobSupport;
@@ -833,36 +839,49 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
 
   mojo_provider->config_url = blink::KURL(provider.configURL());
   mojo_provider->client_id = provider.clientId();
-  mojo_provider->nonce = provider.getNonceOr("");
-  mojo_provider->login_hint = provider.getLoginHintOr("");
-  mojo_provider->hosted_domain =
-      blink::RuntimeEnabledFeatures::FedCmHostedDomainEnabled()
-          ? provider.getHostedDomainOr("")
-          : "";
-
-  if (blink::RuntimeEnabledFeatures::FedCmAuthzEnabled()) {
-    if (provider.hasScope()) {
-      mojo_provider->scope = provider.scope();
-    }
-    if (provider.hasResponseType()) {
-      mojo_provider->responseType = provider.responseType();
-    }
-    if (provider.hasParams()) {
-      HashMap<String, String> params;
-      for (const auto& pair : provider.params()) {
-        params.Set(pair.first, pair.second);
-      }
-      mojo_provider->params = std::move(params);
-    }
-  }
-
   return mojo_provider;
 }
 
 // static
+IdentityProviderRequestOptionsPtr
+TypeConverter<IdentityProviderRequestOptionsPtr,
+              blink::IdentityProviderRequestOptions>::
+    Convert(const blink::IdentityProviderRequestOptions& options) {
+  auto mojo_options = IdentityProviderRequestOptions::New();
+  mojo_options->config = IdentityProviderConfig::New();
+  mojo_options->config->config_url = blink::KURL(options.configURL());
+  mojo_options->config->client_id = options.clientId();
+
+  mojo_options->nonce = options.getNonceOr("");
+  mojo_options->login_hint = options.getLoginHintOr("");
+  mojo_options->hosted_domain =
+      blink::RuntimeEnabledFeatures::FedCmHostedDomainEnabled()
+          ? options.getHostedDomainOr("")
+          : "";
+
+  if (blink::RuntimeEnabledFeatures::FedCmAuthzEnabled()) {
+    if (options.hasScope()) {
+      mojo_options->scope = options.scope();
+    }
+    if (options.hasResponseType()) {
+      mojo_options->responseType = options.responseType();
+    }
+    if (options.hasParams()) {
+      HashMap<String, String> params;
+      for (const auto& pair : options.params()) {
+        params.Set(pair.first, pair.second);
+      }
+      mojo_options->params = std::move(params);
+    }
+  }
+
+  return mojo_options;
+}
+
+// static
 IdentityProviderPtr
-TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
-    const blink::IdentityProviderConfig& provider) {
+TypeConverter<IdentityProviderPtr, blink::IdentityProviderRequestOptions>::
+    Convert(const blink::IdentityProviderRequestOptions& provider) {
   if (provider.hasHolder() &&
       blink::RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled() &&
       // TODO(https://crbug.com/1416939): make sure the Digital Credentials API
@@ -909,7 +928,7 @@ TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
     }
     return IdentityProvider::NewHolder(std::move(mojo_provider));
   } else {
-    auto config = IdentityProviderConfig::From(provider);
+    auto config = IdentityProviderRequestOptions::From(provider);
     return IdentityProvider::NewFederated(std::move(config));
   }
 }
@@ -1002,6 +1021,21 @@ TypeConverter<Vector<PRFValuesPtr>, blink::AuthenticationExtensionsPRFInputs>::
 
   std::sort(ret.begin(), ret.end(), SortPRFValuesByCredentialId);
   return ret;
+}
+
+// static
+IdentityCredentialRevokeOptionsPtr
+TypeConverter<IdentityCredentialRevokeOptionsPtr,
+              blink::IdentityCredentialRevokeOptions>::
+    Convert(const blink::IdentityCredentialRevokeOptions& options) {
+  auto mojo_revoke_options = IdentityCredentialRevokeOptions::New();
+
+  mojo_revoke_options->config = IdentityProviderConfig::New();
+  mojo_revoke_options->config->config_url = blink::KURL(options.configURL());
+  mojo_revoke_options->config->client_id = options.clientId();
+
+  mojo_revoke_options->account_hint = options.accountHint();
+  return mojo_revoke_options;
 }
 
 }  // namespace mojo

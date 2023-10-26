@@ -44887,6 +44887,28 @@ Called by update_permissions_policy_enum.py.-->
   <int value="17" label="ThirdPartyCookiesBlocked"/>
 </enum>
 
+<enum name="FedCmRevokeStatus2">
+  <int value="0" label="Success"/>
+  <int value="1" label="TooManyRequests"/>
+  <int value="2" label="UnhandledRequest"/>
+  <int value="3" label="NoAccountToRevoke"/>
+  <int value="4" label="RevokeUrlIsCrossOrigin"/>
+  <int value="5" label="RevocationFailedOnServer"/>
+  <int value="6" label="ConfigHttpNotFound"/>
+  <int value="7" label="ConfigNoResponse"/>
+  <int value="8" label="ConfigInvalidResponse"/>
+  <int value="9" label="DisabledInSettings"/>
+  <int value="10" label="DisabledInFlags"/>
+  <int value="11" label="WellKnownHttpNotFound"/>
+  <int value="12" label="WellKnownNoResponse"/>
+  <int value="13" label="WellKnownInvalidResponse"/>
+  <int value="14" label="WellKnownListEmpty"/>
+  <int value="15" label="ConfigNotInWellKnown"/>
+  <int value="16" label="WellKnownTooBig"/>
+  <int value="17" label="WellKnownInvalidContentType"/>
+  <int value="18" label="ConfigInvalidContentType"/>
+</enum>
+
 <enum name="FedCmRpContext">
   <int value="0" label="Sign in"/>
   <int value="1" label="Sign up"/>
@@ -63128,6 +63150,7 @@ from previous Chrome versions.
   <int value="-1284637134" label="pull-to-refresh"/>
   <int value="-1284303269" label="SidePanelWebView:enabled"/>
   <int value="-1283306503" label="LensSearchOptimizations:disabled"/>
+  <int value="-1283235938" label="FedCmRevoke:disabled"/>
   <int value="-1283164264" label="CroshSWA:disabled"/>
   <int value="-1282992935"
       label="AutofillLocalCardMigrationShowFeedback:disabled"/>
@@ -68714,6 +68737,7 @@ from previous Chrome versions.
   <int value="1443836294"
       label="AboutThisSitePersistentSidePanelEntry:enabled"/>
   <int value="1444066555" label="MessagesForAndroidSyncError:disabled"/>
+  <int value="1444102509" label="FedCmRevoke:enabled"/>
   <int value="1444324195" label="ForceReSyncDrive:enabled"/>
   <int value="1444347795"
       label="PageInfoAboutThisSiteDescriptionPlaceholder:enabled"/>

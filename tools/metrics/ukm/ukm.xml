@@ -4279,6 +4279,12 @@ be describing additional metrics about the same event.
       Records the status of a revoke call to the FedCM API.
     </summary>
   </metric>
+  <metric name="Status.Revoke2" enum="FedCmRevokeStatus2">
+    <summary>
+      Records the status of a revoke call to the FedCM API. Recorded once per
+      IdentityCredential.revoke() call, once the browser knows the result.
+    </summary>
+  </metric>
   <metric name="Timing.AccountsDialogShownDuration">
     <summary>
       Records the duration from when an accounts dialog is shown to when dialog
@@ -4374,6 +4380,12 @@ be describing additional metrics about the same event.
   <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">
     <summary>
       Records the status of a request id token call to the FedCM API.
+    </summary>
+  </metric>
+  <metric name="Status.Revoke2" enum="FedCmRevokeStatus2">
+    <summary>
+      Records the status of a revoke call to the FedCM API. Recorded once per
+      IdentityCredential.revoke() call, once the browser knows the result.
     </summary>
   </metric>
   <metric name="Status.SignInStateMatch" enum="FedCmSignInStateMatchStatus">

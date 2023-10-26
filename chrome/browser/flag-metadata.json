@@ -4054,6 +4054,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "fedcm-revoke",
+    "owners": ["npm@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "fedcm-selective-disclosure",
     "owners": ["goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 125

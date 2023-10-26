@@ -930,6 +930,9 @@ extern const char kFedCmLogoutRpsDescription[];
 extern const char kFedCmMultiIdpName[];
 extern const char kFedCmMultiIdpDescription[];
 
+extern const char kFedCmRevokeName[];
+extern const char kFedCmRevokeDescription[];
+
 extern const char kFedCmSelectiveDisclosureName[];
 extern const char kFedCmSelectiveDisclosureDescription[];
 

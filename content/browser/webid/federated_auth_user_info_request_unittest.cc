@@ -50,7 +50,6 @@ constexpr char kProviderUrl[] = "https://idp.example/fedcm.json";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kClientId[] = "client_id_123";
-constexpr char kNonce[] = "nonce123";
 
 constexpr char kAccountEmailFormat[] = "%s@foo.com";
 constexpr char kAccountName[] = "The Liliputian";
@@ -288,7 +287,6 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
         blink::mojom::IdentityProviderConfig::New();
     idp_ptr->config_url = GURL(kProviderUrl);
     idp_ptr->client_id = kClientId;
-    idp_ptr->nonce = kNonce;
 
     UserInfoCallbackHelper callback_helper;
     request_ = FederatedAuthUserInfoRequest::Create(

@@ -9059,6 +9059,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmMultiIdpDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmMultipleIdentityProviders)},
 
+    {"fedcm-revoke", flag_descriptions::kFedCmRevokeName,
+     flag_descriptions::kFedCmRevokeDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmRevoke)},
+
     {"fedcm-selective-disclosure",
      flag_descriptions::kFedCmSelectiveDisclosureName,
      flag_descriptions::kFedCmSelectiveDisclosureDescription, kOsAll,

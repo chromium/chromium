@@ -5,21 +5,21 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_credential.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
 namespace {
 using mojom::blink::LogoutRpsStatus;
 using mojom::blink::RequestTokenStatus;
+using mojom::blink::RevokeStatus;
 
 constexpr char kIdentityCredentialType[] = "identity";
 
@@ -42,6 +42,15 @@ void OnLogoutRpsResponse(ScriptPromiseResolver* resolver,
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNetworkError, "Error logging out endpoints."));
 
+    return;
+  }
+  resolver->Resolve();
+}
+
+void OnRevoke(ScriptPromiseResolver* resolver, RevokeStatus status) {
+  if (status != RevokeStatus::kSuccess) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNetworkError, "Error revoking account."));
     return;
   }
   resolver->Resolve();
@@ -157,6 +166,43 @@ ScriptPromise IdentityCredential::logoutRPs(
   fedcm_logout_request->LogoutRps(
       std::move(logout_requests),
       WTF::BindOnce(&OnLogoutRpsResponse, WrapPersistent(resolver)));
+  return promise;
+}
+
+ScriptPromise IdentityCredential::revoke(
+    ScriptState* script_state,
+    const blink::IdentityCredentialRevokeOptions* options,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  if (!options->hasConfigURL()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "configURL is required"));
+    return promise;
+  }
+
+  if (!options->hasAccountHint()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "accountHint is required"));
+    return promise;
+  }
+
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+
+  ContentSecurityPolicy* policy =
+      resolver->GetExecutionContext()
+          ->GetContentSecurityPolicyForCurrentWorld();
+  if (IsRejectingPromiseDueToCSP(policy, resolver,
+                                 KURL(options->configURL()))) {
+    return promise;
+  }
+
+  mojom::blink::IdentityCredentialRevokeOptionsPtr revoke_options =
+      blink::mojom::blink::IdentityCredentialRevokeOptions::From(*options);
+  auth_request->Revoke(std::move(revoke_options),
+                       WTF::BindOnce(&OnRevoke, WrapPersistent(resolver)));
   return promise;
 }
 

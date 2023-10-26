@@ -5,12 +5,10 @@
 #include "content/browser/webid/federated_auth_request_impl.h"
 
 #include <memory>
-#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/adapters.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,7 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
@@ -29,11 +26,9 @@
 #include "content/browser/webid/test/mock_identity_registry.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
-#include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -43,7 +38,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
@@ -91,6 +85,7 @@ constexpr char kClientMetadataEndpoint[] =
     "https://idp.example/client_metadata";
 constexpr char kMetricsEndpoint[] = "https://idp.example/metrics";
 constexpr char kIdpLoginUrl[] = "https://idp.example/login_url";
+constexpr char kIdpRevokeUrl[] = "https://idp.example/revoke";
 constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
 constexpr char kClientId[] = "client_id_123";
@@ -263,6 +258,7 @@ struct MockConfig {
   std::string client_metadata_endpoint;
   std::string metrics_endpoint;
   std::string idp_login_url;
+  std::string revoke_endpoint;
 };
 
 struct MockIdpInfo {
@@ -306,12 +302,13 @@ static const MockClientIdConfiguration kDefaultClientMetadata{
     kPrivacyPolicyUrl,
     kTermsOfServiceUrl};
 
-static const IdentityProviderParameters kDefaultIdentityProviderConfig{
+static const IdentityProviderParameters kDefaultIdentityProviderRequestOptions{
     kProviderUrlFull, kClientId, kNonce, /*login_hint=*/"",
     /*hosted_domain=*/""};
 
 static const RequestParameters kDefaultRequestParameters{
-    std::vector<IdentityProviderParameters>{kDefaultIdentityProviderConfig},
+    std::vector<IdentityProviderParameters>{
+        kDefaultIdentityProviderRequestOptions},
     blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kWidget};
 
 static const MockIdpInfo kDefaultIdentityProviderInfo{
@@ -323,6 +320,7 @@ static const MockIdpInfo kDefaultIdentityProviderInfo{
         kClientMetadataEndpoint,
         kMetricsEndpoint,
         kIdpLoginUrl,
+        kIdpRevokeUrl,
     },
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
@@ -342,6 +340,7 @@ static const MockIdpInfo kProviderTwoInfo{
         "https://idp2.example/client_metadata",
         "https://idp2.example/metrics",
         "https://idp2.example/login_url",
+        "https://idp2.example/revoke",
     },
     kDefaultClientMetadata,
     {ParseStatus::kSuccess, net::HTTP_OK},
@@ -436,6 +435,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         GURL(config_.idp_info[provider_key].config.client_metadata_endpoint);
     endpoints.metrics =
         GURL(config_.idp_info[provider_key].config.metrics_endpoint);
+    endpoints.revoke =
+        GURL(config_.idp_info[provider_key].config.revoke_endpoint);
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = provider;
@@ -898,16 +899,17 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     for (const auto& identity_provider :
          request_parameters.identity_providers) {
       std::vector<blink::mojom::IdentityProviderPtr> idp_ptrs;
-      blink::mojom::IdentityProviderConfigPtr config =
-          blink::mojom::IdentityProviderConfig::New();
-      config->config_url = GURL(identity_provider.provider);
-      config->client_id = identity_provider.client_id;
-      config->nonce = identity_provider.nonce;
-      config->login_hint = identity_provider.login_hint;
-      config->hosted_domain = identity_provider.hosted_domain;
-      config->scope = std::move(identity_provider.scope);
+      blink::mojom::IdentityProviderRequestOptionsPtr options =
+          blink::mojom::IdentityProviderRequestOptions::New();
+      options->config = blink::mojom::IdentityProviderConfig::New();
+      options->config->config_url = GURL(identity_provider.provider);
+      options->config->client_id = identity_provider.client_id;
+      options->nonce = identity_provider.nonce;
+      options->login_hint = identity_provider.login_hint;
+      options->hosted_domain = identity_provider.hosted_domain;
+      options->scope = std::move(identity_provider.scope);
       blink::mojom::IdentityProviderPtr idp_ptr =
-          blink::mojom::IdentityProvider::NewFederated(std::move(config));
+          blink::mojom::IdentityProvider::NewFederated(std::move(options));
       idp_ptrs.push_back(std::move(idp_ptr));
       blink::mojom::IdentityProviderGetParametersPtr get_params =
           blink::mojom::IdentityProviderGetParameters::New(
@@ -1273,11 +1275,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         ukm_recorder()->GetEntriesByName(FedCmIdpEntry::kEntryName));
   }
 
-  void ComputeLoginStateAndReorderAccounts(
-      const blink::mojom::IdentityProviderConfigPtr& identity_provider,
-      AccountList& accounts) {
+  void ComputeLoginStateAndReorderAccounts(const std::string& config_url,
+                                           AccountList& accounts) {
     federated_auth_request_impl_->ComputeLoginStateAndReorderAccounts(
-        identity_provider, accounts);
+        url::Origin::Create(GURL(config_url)), accounts);
   }
 
  protected:
@@ -3257,13 +3258,7 @@ TEST_F(FederatedAuthRequestImplTest, ReorderMultipleAccounts) {
               kConfigurationValid);
 
   AccountList multiple_accounts = kMultipleAccounts;
-  blink::mojom::IdentityProviderConfigPtr identity_provider =
-      blink::mojom::IdentityProviderConfig::New();
-  identity_provider->config_url = GURL(kProviderUrlFull);
-  identity_provider->client_id = kClientId;
-  identity_provider->nonce = kNonce;
-
-  ComputeLoginStateAndReorderAccounts(identity_provider, multiple_accounts);
+  ComputeLoginStateAndReorderAccounts(kProviderUrlFull, multiple_accounts);
 
   // Check the account order using the account ids.
   ASSERT_EQ(multiple_accounts.size(), 3u);

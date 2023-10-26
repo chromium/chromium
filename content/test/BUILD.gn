@@ -2721,6 +2721,7 @@ test("content_unittests") {
     "../browser/webid/federated_auth_request_impl_multiple_frames_unittest.cc",
     "../browser/webid/federated_auth_request_impl_registry_unittest.cc",
     "../browser/webid/federated_auth_request_impl_unittest.cc",
+    "../browser/webid/federated_auth_revoke_request_unittest.cc",
     "../browser/webid/federated_auth_user_info_request_unittest.cc",
     "../browser/webid/federated_provider_fetcher_unittest.cc",
     "../browser/webid/identity_registry_unittest.cc",

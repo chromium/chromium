@@ -886,6 +886,16 @@ void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
               maxResponseSizeInKiB * 1024);
 }
 
+void IdpNetworkRequestManager::SendRevokeRequest(
+    const GURL& revoke_url,
+    const std::string& account_id,
+    const url::Origin& top_frame_origin,
+    const url::Origin& relying_party,
+    RevokeCallback callback) {
+  // TODO(crbug.com/1473134): implement this method properly.
+  std::move(callback).Run(RevokeResponse::kSuccess);
+}
+
 void IdpNetworkRequestManager::DownloadJsonAndParse(
     std::unique_ptr<network::ResourceRequest> resource_request,
     absl::optional<std::string> url_encoded_post_data,

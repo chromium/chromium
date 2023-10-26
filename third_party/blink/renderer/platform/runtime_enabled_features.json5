@@ -1697,6 +1697,12 @@
       public: true,
     },
     {
+      name: "FedCmRevoke",
+      depends_on: ["FedCm"],
+      base_feature: "none",
+      public: true,
+    },
+    {
       name: "FedCmSelectiveDisclosure",
       depends_on: ["FedCm"],
       public: true,
