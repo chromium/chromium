@@ -1521,3 +1521,6 @@ crbug.com/1488860 virtual/threaded-prefer-compositing/external/wpt/scroll-animat
 crbug.com/1493194 external/wpt/css/cssom/insert-dir-rule-in-iframe-crash.html [ Slow ]
 
 crbug.com/1465046 [ Mac ] virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html [ Slow ]
+
+# Gardener 2023-10-26
+crbug.com/1496281 [ Mac ] external/wpt/html/semantics/embedded-content/bfcache/embedded-js.html [ Slow ]
