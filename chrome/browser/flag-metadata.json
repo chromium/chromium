@@ -5062,6 +5062,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "legacy-tech-report-enable-cookie-issue-reports",
+    "owners": ["sandormajor@google.com", "zmin@chromium.org", "parastoog@chromium.org"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "legacy-tech-report-top-level-url",
     "owners": ["zmin@chromium.org", "parastoog@chromium.org"],
     "expiry_milestone": 122

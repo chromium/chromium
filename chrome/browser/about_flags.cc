@@ -7014,6 +7014,12 @@ const FeatureEntry kFeatureEntries[] = {
          "")},
 #endif
 
+    {"legacy-tech-report-enable-cookie-issue-reports",
+     flag_descriptions::kLegacyTechReportEnableCookieIssueReportsName,
+     flag_descriptions::kLegacyTechReportEnableCookieIssueReportsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kLegacyTechReportEnableCookieIssueReports)},
+
     {"legacy-tech-report-top-level-url",
      flag_descriptions::kLegacyTechReportTopLevelUrlName,
      flag_descriptions::kLegacyTechReportTopLevelUrlDescription, kOsAll,
