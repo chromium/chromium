@@ -36,6 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "components/content_settings/core/common/features.h"
@@ -1322,6 +1323,40 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAA) {
             CONTENT_SETTING_BLOCK);
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 third_url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+}
+
+// Test that http exceptions also affect websocket requests.
+TEST_P(CookieSettingsTest, GetCookieSettingSAAWebsocket) {
+  const GURL top_level_url = GURL(kFirstPartySite);
+  const GURL url = GURL(kHttpsSite);
+
+  GURL::Replacements ws_replacement;
+  ws_replacement.SetSchemeStr(url::kWsScheme);
+  const GURL ws_url = url.ReplaceComponents(ws_replacement);
+
+  GURL::Replacements wss_replacement;
+  wss_replacement.SetSchemeStr(url::kWssScheme);
+  const GURL wss_url = url.ReplaceComponents(wss_replacement);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::FromURLNoWildcard(top_level_url),
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
+
+  // Https should be allowed.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            SettingWithSaaOverride());
+  // Secure websocket is also allowed.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                wss_url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            SettingWithSaaOverride());
+  // Insecure websocket stays blocked.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                ws_url, top_level_url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 }
 
