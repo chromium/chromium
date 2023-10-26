@@ -252,6 +252,7 @@ try_.builder(
     mirrors = [
         "ci/android-cronet-arm-dbg",
     ],
+    contact_team_email = "cronet-team@google.com",
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -268,30 +269,35 @@ try_.builder(
 try_.builder(
     name = "android-cronet-arm64-dbg",
     mirrors = ["ci/android-cronet-arm64-dbg"],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-arm64-rel",
     mirrors = ["ci/android-cronet-arm64-rel"],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-asan-arm-rel",
     mirrors = ["ci/android-cronet-asan-arm-rel"],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-mainline-clang-arm64-dbg",
     mirrors = ["ci/android-cronet-mainline-clang-arm64-dbg"],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-mainline-clang-arm64-rel",
     mirrors = ["ci/android-cronet-mainline-clang-arm64-rel"],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -299,18 +305,21 @@ try_.builder(
     name = "android-cronet-mainline-clang-x86-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/android-cronet-mainline-clang-x86-dbg"],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-mainline-clang-x86-rel",
     mirrors = ["ci/android-cronet-mainline-clang-x86-rel"],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-x64-rel",
     mirrors = ["ci/android-cronet-x64-rel"],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -318,6 +327,7 @@ try_.builder(
     name = "android-cronet-x64-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/android-cronet-x64-dbg"],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -327,6 +337,7 @@ try_.builder(
         "ci/android-cronet-x64-dbg",
         "ci/android-cronet-x64-dbg-12-tests",
     ],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -336,6 +347,7 @@ try_.builder(
         "ci/android-cronet-x64-dbg",
         "ci/android-cronet-x64-dbg-13-tests",
     ],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -352,15 +364,15 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x86-dbg",
-    mirrors = [
-        "ci/android-cronet-x86-dbg",
-    ],
+    mirrors = ["ci/android-cronet-x86-dbg"],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "android-cronet-x86-rel",
     mirrors = ["ci/android-cronet-x86-rel"],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -371,6 +383,7 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-10-tests",
     ],
+    contact_team_email = "cronet-team@google.com",
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -390,6 +403,7 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-11-tests",
     ],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -399,6 +413,7 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-oreo-tests",
     ],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -408,6 +423,7 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-pie-tests",
     ],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -417,6 +433,7 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-nougat-tests",
     ],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -824,6 +841,7 @@ try_.builder(
         is_compile_only = True,
     ),
     builderless = not settings.is_main,
+    contact_team_email = "cronet-team@google.com",
     main_list_view = "try",
     tryjob = try_.job(),
 )

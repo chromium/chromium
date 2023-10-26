@@ -682,6 +682,7 @@ ci.builder(
         short_name = "dbg",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -716,6 +717,7 @@ ci.builder(
         short_name = "rel",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -744,6 +746,7 @@ ci.builder(
         category = "cronet|arm64",
         short_name = "dbg",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -772,6 +775,7 @@ ci.builder(
         category = "cronet|arm64",
         short_name = "rel",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -799,6 +803,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -828,6 +833,7 @@ ci.builder(
         category = "cronet|mainline_clang|arm64",
         short_name = "dbg",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -857,6 +863,7 @@ ci.builder(
         category = "cronet|mainline_clang|arm64",
         short_name = "rel",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -891,6 +898,7 @@ ci.builder(
         category = "cronet|mainline_clang|x86",
         short_name = "dbg",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -920,6 +928,7 @@ ci.builder(
         category = "cronet|mainline_clang|x86",
         short_name = "rel",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -935,7 +944,7 @@ ci.builder(
         category = "cronet|test|perf",
         short_name = "m",
     ),
-    contact_team_email = "clank-engprod@google.com",
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
     reclient_jobs = reclient.jobs.DEFAULT,
 )
@@ -970,6 +979,7 @@ ci.builder(
         category = "cronet|x86",
         short_name = "dbg",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1003,6 +1013,7 @@ ci.builder(
         category = "cronet|x64",
         short_name = "dbg",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1037,6 +1048,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "12",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1071,6 +1083,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "13",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1141,6 +1154,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "l",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1175,6 +1189,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "m",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1209,6 +1224,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "n",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1243,6 +1259,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "o",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1277,6 +1294,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "p",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1312,6 +1330,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "10",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1346,6 +1365,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "11",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1374,6 +1394,7 @@ ci.builder(
         category = "cronet|x86",
         short_name = "rel",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1402,6 +1423,7 @@ ci.builder(
         category = "cronet|x64",
         short_name = "rel",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 

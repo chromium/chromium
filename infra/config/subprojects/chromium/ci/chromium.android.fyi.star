@@ -391,6 +391,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",
     ),
+    contact_team_email = "cronet-team@google.com",
 )
 
 ci.builder(
