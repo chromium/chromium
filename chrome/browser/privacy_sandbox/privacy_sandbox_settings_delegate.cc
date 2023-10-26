@@ -209,14 +209,16 @@ TpcdExperimentEligibility PrivacySandboxSettingsDelegate::
   }
 
   // Whether third-party cookies are blocked.
-  scoped_refptr<content_settings::CookieSettings> cookie_settings =
-      CookieSettingsFactory::GetForProfile(profile_);
-  DCHECK(cookie_settings);
-  if (cookie_settings->ShouldBlockThirdPartyCookies() ||
-      cookie_settings->GetDefaultCookieSetting() ==
-          ContentSetting::CONTENT_SETTING_BLOCK) {
-    return TpcdExperimentEligibility(
-        TpcdExperimentEligibility::Reason::k3pCookiesBlocked);
+  if (tpcd::experiment::kExclude3PCBlocked.Get()) {
+    scoped_refptr<content_settings::CookieSettings> cookie_settings =
+        CookieSettingsFactory::GetForProfile(profile_);
+    DCHECK(cookie_settings);
+    if (cookie_settings->ShouldBlockThirdPartyCookies() ||
+        cookie_settings->GetDefaultCookieSetting() ==
+            ContentSetting::CONTENT_SETTING_BLOCK) {
+      return TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::k3pCookiesBlocked);
+    }
   }
 
   // Whether the privacy sandbox Ads APIs notice has been seen.
@@ -224,17 +226,20 @@ TpcdExperimentEligibility PrivacySandboxSettingsDelegate::
   // TODO(linnan): Consider checking whether the restricted notice has been
   // acknowledged (`prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged`) as
   // well.
-  const bool row_notice_acknowledged = profile_->GetPrefs()->GetBoolean(
-      prefs::kPrivacySandboxM1RowNoticeAcknowledged);
-  const bool eaa_notice_acknowledged = profile_->GetPrefs()->GetBoolean(
-      prefs::kPrivacySandboxM1EEANoticeAcknowledged);
-  if (!row_notice_acknowledged && !eaa_notice_acknowledged) {
-    return TpcdExperimentEligibility(
-        TpcdExperimentEligibility::Reason::kHasNotSeenNotice);
+  if (tpcd::experiment::kExcludeNotSeenAdsAPIsNotice.Get()) {
+    const bool row_notice_acknowledged = profile_->GetPrefs()->GetBoolean(
+        prefs::kPrivacySandboxM1RowNoticeAcknowledged);
+    const bool eaa_notice_acknowledged = profile_->GetPrefs()->GetBoolean(
+        prefs::kPrivacySandboxM1EEANoticeAcknowledged);
+    if (!row_notice_acknowledged && !eaa_notice_acknowledged) {
+      return TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::kHasNotSeenNotice);
+    }
   }
 
   // Whether it's a dasher account.
-  if (IsSubjectToEnterprisePolicies()) {
+  if (tpcd::experiment::kExcludeDasherAccount.Get() &&
+      IsSubjectToEnterprisePolicies()) {
     return TpcdExperimentEligibility(
         TpcdExperimentEligibility::Reason::kEnterpriseUser);
   }
@@ -243,17 +248,22 @@ TpcdExperimentEligibility PrivacySandboxSettingsDelegate::
   // `ExperimentManager`.
 
   // Whether it's a new client.
-  base::Time install_date = base::Time::FromTimeT(
-      g_browser_process->local_state()->GetInt64(metrics::prefs::kInstallDate));
-  if (install_date.is_null() ||
-      base::Time::Now() - install_date < base::Days(30)) {
-    return TpcdExperimentEligibility(
-        TpcdExperimentEligibility::Reason::kNewUser);
+  if (tpcd::experiment::kExcludeNewUser.Get()) {
+    base::Time install_date =
+        base::Time::FromTimeT(g_browser_process->local_state()->GetInt64(
+            metrics::prefs::kInstallDate));
+    if (install_date.is_null() ||
+        base::Time::Now() - install_date <
+            tpcd::experiment::kInstallTimeForNewUser.Get()) {
+      return TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::kNewUser);
+    }
   }
 
 // Whether PWA or TWA has been installed on Android.
 #if BUILDFLAG(IS_ANDROID)
-  if (!webapp_registry_->GetOriginsWithInstalledApp().empty()) {
+  if (tpcd::experiment::kExcludePwaOrTwaInstalled.Get() &&
+      !webapp_registry_->GetOriginsWithInstalledApp().empty()) {
     return TpcdExperimentEligibility(
         TpcdExperimentEligibility::Reason::kPwaOrTwaInstalled);
   }
