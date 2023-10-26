@@ -130,7 +130,8 @@ scoped_refptr<Image> StyleImageSet::GetImage(
     const ImageResourceObserver& image_resource_observer,
     const Document& document,
     const ComputedStyle& style,
-    const gfx::SizeF& target_size) const {
+    const gfx::SizeF& target_size,
+    const gfx::RectF& reference_box) const {
   return best_fit_image_
              ? best_fit_image_->GetImage(image_resource_observer, document,
                                          style, target_size)

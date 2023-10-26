@@ -36,6 +36,21 @@ AffineTransform MaskToContentTransform(const LayoutSVGResourceMasker& masker,
   return content_transformation;
 }
 
+LayoutSVGResourceMasker* ResolveElementReference(SVGResource* mask_resource,
+                                                 SVGResourceClient& client) {
+  auto* masker =
+      GetSVGResourceAsType<LayoutSVGResourceMasker>(client, mask_resource);
+  if (!masker) {
+    return nullptr;
+  }
+  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*masker)) {
+    return nullptr;
+  }
+  SECURITY_DCHECK(!masker->SelfNeedsFullLayout());
+  masker->ClearInvalidationMask();
+  return masker;
+}
+
 }  // namespace
 
 void SVGMaskPainter::Paint(GraphicsContext& context,
@@ -100,16 +115,10 @@ PaintRecord SVGMaskPainter::PaintResource(SVGResource* mask_resource,
                                           SVGResourceClient& client,
                                           const gfx::RectF& reference_box,
                                           float zoom) {
-  auto* masker =
-      GetSVGResourceAsType<LayoutSVGResourceMasker>(client, mask_resource);
+  auto* masker = ResolveElementReference(mask_resource, client);
   if (!masker) {
     return PaintRecord();
   }
-  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*masker)) {
-    return PaintRecord();
-  }
-  SECURITY_DCHECK(!masker->SelfNeedsFullLayout());
-  masker->ClearInvalidationMask();
 
   const AffineTransform content_transformation =
       MaskToContentTransform(*masker, reference_box, zoom);
@@ -118,10 +127,13 @@ PaintRecord SVGMaskPainter::PaintResource(SVGResource* mask_resource,
   if (record.empty()) {
     return record;
   }
+  gfx::RectF bounds = masker->ResourceBoundingBox(reference_box, zoom);
+  AffineTransform origin =
+      AffineTransform::Translation(-bounds.x(), -bounds.y());
 
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording();
-  canvas->concat(AffineTransformToSkM44(content_transformation));
+  canvas->concat(AffineTransformToSkM44(origin * content_transformation));
   bool needs_luminance_layer =
       masker->StyleRef().MaskType() == EMaskType::kLuminance;
   if (needs_luminance_layer) {
@@ -134,6 +146,17 @@ PaintRecord SVGMaskPainter::PaintResource(SVGResource* mask_resource,
     canvas->restore();
   }
   return recorder.finishRecordingAsPicture();
+}
+
+gfx::RectF SVGMaskPainter::ResourceBounds(SVGResource* mask_resource,
+                                          SVGResourceClient& client,
+                                          const gfx::RectF& reference_box,
+                                          float zoom) {
+  auto* masker = ResolveElementReference(mask_resource, client);
+  if (!masker) {
+    return gfx::RectF();
+  }
+  return masker->ResourceBoundingBox(reference_box, zoom);
 }
 
 }  // namespace blink

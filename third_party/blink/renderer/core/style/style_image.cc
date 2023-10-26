@@ -4,9 +4,18 @@
 
 #include "third_party/blink/renderer/core/style/style_image.h"
 
+#include "third_party/blink/renderer/platform/graphics/image.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
+
+scoped_refptr<Image> StyleImage::GetImage(const ImageResourceObserver& observer,
+                                          const Document& document,
+                                          const ComputedStyle& style,
+                                          const gfx::SizeF& target_size) const {
+  return GetImage(observer, document, style, target_size, gfx::RectF());
+}
 
 gfx::SizeF StyleImage::ApplyZoom(const gfx::SizeF& size, float multiplier) {
   if (multiplier == 1.0f) {

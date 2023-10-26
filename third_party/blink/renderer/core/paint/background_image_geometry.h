@@ -63,6 +63,10 @@ class BackgroundImageGeometry {
   const PhysicalRect& UnsnappedDestRect() const { return unsnapped_dest_rect_; }
   const PhysicalRect& SnappedDestRect() const { return snapped_dest_rect_; }
 
+  // Reference box for the box/fragment/part that the image will be drawn
+  // for. Used for <mask> reference painting.
+  const gfx::RectF& ReferenceBox() const { return reference_box_; }
+
   // Compute the phase of the image accounting for the size and spacing of the
   // image.
   PhysicalOffset ComputePhase() const;
@@ -129,6 +133,10 @@ class BackgroundImageGeometry {
   PhysicalRect FixedAttachmentPositioningArea(const PaintInfo&) const;
   void UseFixedAttachment(const PhysicalOffset& attachment_point);
 
+  PhysicalRect ComputePositioningArea(const PaintInfo& paint_info,
+                                      const FillLayer& fill_layer,
+                                      const PhysicalRect& paint_rect) const;
+
   // Compute adjustments for the destination rects. Adjustments
   // both optimize painting when the background is obscured by a
   // border, and snap the dest rect to the border. They also
@@ -148,13 +156,13 @@ class BackgroundImageGeometry {
                                          PhysicalBoxStrut&,
                                          PhysicalBoxStrut&) const;
 
-  void ComputePositioningArea(const PaintInfo&,
-                              const FillLayer&,
-                              const PhysicalRect&,
-                              PhysicalRect&,
-                              PhysicalRect&,
-                              PhysicalOffset&,
-                              PhysicalOffset&);
+  void AdjustPositioningArea(const PaintInfo&,
+                             const FillLayer&,
+                             const PhysicalRect&,
+                             PhysicalRect&,
+                             PhysicalRect&,
+                             PhysicalOffset&,
+                             PhysicalOffset&);
   void CalculateFillTileSize(const FillLayer&,
                              const PhysicalSize&,
                              const PhysicalSize&);
@@ -193,6 +201,7 @@ class BackgroundImageGeometry {
 
   PhysicalRect unsnapped_dest_rect_;
   PhysicalRect snapped_dest_rect_;
+  gfx::RectF reference_box_;
   PhysicalOffset phase_;
   PhysicalSize tile_size_;
   PhysicalSize repeat_spacing_;

@@ -83,12 +83,11 @@ scoped_refptr<Image> StyleSVGMaskReferenceImage::GetImage(
     const ImageResourceObserver& observer,
     const Document& document,
     const ComputedStyle& style,
-    const gfx::SizeF& target_size) const {
+    const gfx::SizeF& target_size,
+    const gfx::RectF& reference_box) const {
   if (!resource_) {
     return Image::NullImage();
   }
-  // TODO(fs): Need to plumb a proper reference box.
-  const gfx::RectF reference_box;
   PaintRecord record = SVGMaskPainter::PaintResource(
       resource_, GetSVGResourceClient(), reference_box, style.EffectiveZoom());
   return PaintGeneratedImage::Create(std::move(record), target_size);
@@ -102,6 +101,16 @@ bool StyleSVGMaskReferenceImage::KnownToBeOpaque(
     const Document& document,
     const ComputedStyle& style) const {
   return false;
+}
+
+gfx::RectF StyleSVGMaskReferenceImage::GetMaskArea(
+    const gfx::RectF& reference_box,
+    float zoom) const {
+  if (!resource_) {
+    return gfx::RectF();
+  }
+  return SVGMaskPainter::ResourceBounds(resource_, GetSVGResourceClient(),
+                                        reference_box, zoom);
 }
 
 bool StyleSVGMaskReferenceImage::IsEqual(const StyleImage& other) const {

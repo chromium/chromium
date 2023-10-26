@@ -1124,7 +1124,8 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
     geometry.Calculate(paint_info, bg_layer, scrolled_paint_rect);
     image = fill_layer_info.image->GetImage(
         geometry.ImageClient(), geometry.ImageDocument(),
-        geometry.ImageStyle(style_), gfx::SizeF(geometry.TileSize()));
+        geometry.ImageStyle(style_), gfx::SizeF(geometry.TileSize()),
+        geometry.ReferenceBox());
     image_rendering_settings_context.emplace(
         context, geometry.ImageInterpolationQuality(),
         geometry.DynamicRangeLimit());

@@ -71,7 +71,8 @@ class StyleImageSet final : public StyleImage {
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
-                                const gfx::SizeF& target_size) const override;
+                                const gfx::SizeF& target_size,
+                                const gfx::RectF& reference_box) const override;
 
   float ImageScaleFactor() const override;
 

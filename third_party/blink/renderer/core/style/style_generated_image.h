@@ -68,7 +68,8 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
-                                const gfx::SizeF& target_size) const override;
+                                const gfx::SizeF& target_size,
+                                const gfx::RectF& reference_box) const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
 
   bool IsUsingCustomProperty(const AtomicString& custom_property_name,

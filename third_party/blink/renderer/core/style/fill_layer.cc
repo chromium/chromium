@@ -344,12 +344,25 @@ void FillLayer::CullEmptyLayers() {
   }
 }
 
+EFillBox FillLayer::EffectiveClip() const {
+  // When the layer is for a mask and the image is an SVG <mask> reference, the
+  // effective clip value is no-clip.
+  if (GetType() == EFillLayerType::kMask) {
+    auto* image = GetImage();
+    if (image && image->IsSVGMaskReference()) {
+      return EFillBox::kNoClip;
+    }
+  }
+  return Clip();
+}
+
 void FillLayer::ComputeCachedProperties() const {
   DCHECK(!cached_properties_computed_);
 
-  layers_clip_max_ = static_cast<unsigned>(Clip());
+  const EFillBox effective_clip = EffectiveClip();
+  layers_clip_max_ = static_cast<unsigned>(effective_clip);
   any_layer_uses_content_box_ =
-      Clip() == EFillBox::kContent || Origin() == EFillBox::kContent;
+      effective_clip == EFillBox::kContent || Origin() == EFillBox::kContent;
   any_layer_has_image_ = !!GetImage();
   any_layer_has_url_image_ =
       any_layer_has_image_ && GetImage()->CssValue()->MayContainUrl();

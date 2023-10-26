@@ -297,6 +297,7 @@ class CORE_EXPORT FillLayer {
   bool ImageTilesLayer() const;
   bool LayerPropertiesEqual(const FillLayer&) const;
 
+  EFillBox EffectiveClip() const;
   void ComputeCachedPropertiesIfNeeded() const {
     if (!cached_properties_computed_) {
       ComputeCachedProperties();

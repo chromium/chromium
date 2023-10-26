@@ -498,8 +498,6 @@ crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSp
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-004.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-clip-2.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-1c.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3f.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3g.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-a.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-b.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-c.html [ Failure ]
