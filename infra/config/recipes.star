@@ -249,10 +249,6 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:perf/crossbench",
-)
-
-build_recipe(
     name = "recipe:presubmit",
 )
 
