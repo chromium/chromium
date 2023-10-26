@@ -95,7 +95,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
                             ContextMenuHeaderViewBinder::bind);
                     mAdapter.registerType(
                             ListItemType.DIVIDER,
-                            new LayoutViewBuilder(R.layout.app_menu_divider),
+                            new LayoutViewBuilder(R.layout.list_section_divider),
                             (m, v, p) -> {});
                     mAdapter.registerType(
                             ListItemType.CONTEXT_MENU_ITEM,

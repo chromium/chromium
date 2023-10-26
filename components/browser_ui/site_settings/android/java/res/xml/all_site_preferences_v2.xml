@@ -13,5 +13,5 @@ found in the LICENSE file.
         android:key="clear_browsing_data_link" />
     <Preference
         android:key="clear_browsing_divider"
-        android:layout="@layout/divider_preference"/>
+        android:layout="@layout/horizontal_divider"/>
 </PreferenceScreen>

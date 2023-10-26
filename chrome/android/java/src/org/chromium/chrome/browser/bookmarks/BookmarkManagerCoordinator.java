@@ -439,7 +439,7 @@ public class BookmarkManagerCoordinator
     }
 
     static @VisibleForTesting View buildDividerView(ViewGroup parent) {
-        return inflate(parent, R.layout.horizontal_divider);
+        return inflate(parent, R.layout.list_section_divider);
     }
 
     static @VisibleForTesting View buildShoppingFilterView(ViewGroup parent) {

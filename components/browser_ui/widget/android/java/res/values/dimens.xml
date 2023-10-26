@@ -46,7 +46,6 @@ found in the LICENSE file.
     <dimen name="list_menu_item_icon_size">24dp</dimen>
 
     <!-- Custom Menu dimensions -->
-    <dimen name="menu_divider_padding">8dp</dimen>
     <dimen name="menu_padding_start">16dp</dimen>
 
     <!-- Drag-Reorderable List dimensions -->
@@ -202,9 +201,6 @@ found in the LICENSE file.
     <!-- Surface color elevations -->
     <dimen name="menu_bg_color_elev">@dimen/default_elevation_0</dimen>
     <dimen name="dialog_elevation">@dimen/default_elevation_0</dimen>
-
-    <!-- Vertical divider dimens -->
-    <dimen name="horizontal_divider_vertical_margin">8dp</dimen>
 
     <!-- Empty view layout dimensions -->
     <dimen name="empty_state_text_width">341dp</dimen>

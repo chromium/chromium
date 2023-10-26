@@ -8,9 +8,8 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/menu_divider_padding"
-    android:paddingBottom="@dimen/menu_divider_padding"
+    android:paddingTop="@dimen/list_section_divider_padding"
+    android:paddingBottom="@dimen/list_section_divider_padding"
     android:importantForAccessibility="no" >
-    <!-- TODO(sinansahin): divider_preference can be renamed to horizontal_divider -->
-    <include layout="@layout/divider_preference" />
+    <include layout="@layout/horizontal_divider" />
 </FrameLayout>

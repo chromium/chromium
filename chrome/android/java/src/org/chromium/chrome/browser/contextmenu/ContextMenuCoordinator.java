@@ -238,7 +238,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 ContextMenuHeaderViewBinder::bind);
         adapter.registerType(
                 ListItemType.DIVIDER,
-                new LayoutViewBuilder(R.layout.app_menu_divider),
+                new LayoutViewBuilder(R.layout.list_section_divider),
                 (m, v, p) -> {});
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM,

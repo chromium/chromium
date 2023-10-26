@@ -263,7 +263,7 @@ public class ChosenObjectSettings
         // WebsitePreference to extend ChromeBasePreference to more easily set dividers
         // programmatically.
         Preference divider = new Preference(getStyledContext());
-        divider.setLayoutResource(R.layout.divider_preference);
+        divider.setLayoutResource(R.layout.horizontal_divider);
         preferenceScreen.addPreference(divider);
     }
 

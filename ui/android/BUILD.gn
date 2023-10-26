@@ -213,6 +213,8 @@ android_resources("ui_java_resources") {
     "java/res/font/accent_font.xml",
     "java/res/layout/custom_toast_layout.xml",
     "java/res/layout/dropdown_item.xml",
+    "java/res/layout/horizontal_divider.xml",
+    "java/res/layout/list_section_divider.xml",
     "java/res/values-ldrtl/dimens.xml",
     "java/res/values-ldrtl/values.xml",
     "java/res/values-night/colors.xml",
