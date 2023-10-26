@@ -22,8 +22,10 @@ public class TabManagementFieldTrial {
     // Field trial parameter for enabling folio for tab strip redesign.
     private static final String TAB_STRIP_REDESIGN_ENABLE_FOLIO_PARAM = "enable_folio";
     public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_ENABLE_FOLIO =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_REDESIGN,
-                    TAB_STRIP_REDESIGN_ENABLE_FOLIO_PARAM, false);
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_STRIP_REDESIGN,
+                    TAB_STRIP_REDESIGN_ENABLE_FOLIO_PARAM,
+                    true);
 
     // Field trial parameter for enabling detached for tab strip redesign.
     private static final String TAB_STRIP_REDESIGN_ENABLE_DETACHED_PARAM = "enable_detached";

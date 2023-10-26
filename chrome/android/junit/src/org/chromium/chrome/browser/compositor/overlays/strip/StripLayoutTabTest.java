@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -59,6 +60,7 @@ public class StripLayoutTabTest {
     @Test
     @Feature("Tab Strip Redesign")
     @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testGetTint() {
         int expectedColor;
 
@@ -191,6 +193,7 @@ public class StripLayoutTabTest {
         ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP
     })
     public void testGetTint_TabStripRedesignDetached() {
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(false);
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
         int expectedColor;
 
@@ -257,6 +260,7 @@ public class StripLayoutTabTest {
         ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP
     })
     public void testGetTint_Startup_TabStripRedesign() {
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(false);
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
         int expectedColor;
 
@@ -295,6 +299,7 @@ public class StripLayoutTabTest {
     @Test
     @Feature("Tab Strip Redesign")
     @EnableFeatures({ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP})
+    @DisableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
     public void testGetOutlineTint() {
         int expectedColor;
 
@@ -395,6 +400,7 @@ public class StripLayoutTabTest {
 
     @Test
     @Feature("Tab Strip Redesign")
+    @DisableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
     public void testGetDividerTint() {
         int expectedColor = Color.TRANSPARENT;
 
@@ -440,6 +446,7 @@ public class StripLayoutTabTest {
     @EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
     public void testGetDividerTint_TabStripRedesignDetached() {
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(false);
         int expectedColor;
 
         // Normal.

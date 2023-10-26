@@ -137,11 +137,11 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
     }
 
-    private void initializeTestWithTsrArm(BooleanCachedFieldTrialParameter param) {
+    private void initializeTestWithTsrArm(BooleanCachedFieldTrialParameter param, boolean value) {
         // Since we check TSR arm and determine model selector button properties(eg. color/bg color,
         // width, etc) inside constructor, so need to set TSR arm before initialize test each time
         // we switch arm.
-        param.setForTesting(true);
+        param.setForTesting(value);
         initializeTest();
     }
 
@@ -149,6 +149,7 @@ public class StripLayoutHelperManagerTest {
     @Feature("Tab Strip Redesign")
     public void testGetBackgroundColorDetached() {
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO, false);
         mStripLayoutHelperManager.onContextChanged(mContext);
         assertEquals(
                 ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_0),
@@ -234,7 +235,7 @@ public class StripLayoutHelperManagerTest {
     @Feature("Tab Strip Redesign")
     public void testModelSelectorButtonYPosition_Folio() {
         // setup
-        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO);
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO, true);
 
         // Set model selector button position.
         mStripLayoutHelperManager.onSizeChanged(
@@ -252,7 +253,9 @@ public class StripLayoutHelperManagerTest {
     @Feature("Tab Strip Redesign")
     public void testModelSelectorButtonYPosition_Detached() {
         // setup
-        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED);
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(false);
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
+        initializeTest();
 
         // Set model selector button position.
         mStripLayoutHelperManager.onSizeChanged(
@@ -270,7 +273,7 @@ public class StripLayoutHelperManagerTest {
     @Feature("Advanced Peripherals Support")
     public void testModelSelectorButtonHoverHighlightProperties() {
         // setup
-        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED);
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED, true);
 
         // Set model selector button position.
         mStripLayoutHelperManager.onSizeChanged(
@@ -342,7 +345,7 @@ public class StripLayoutHelperManagerTest {
     @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testModelSelectorButtonHoverEnter() {
         // Setup
-        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED);
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED, true);
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
 
         int x = (int) mStripLayoutHelperManager.getModelSelectorButton().getX();
@@ -373,7 +376,7 @@ public class StripLayoutHelperManagerTest {
     @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testModelSelectorButtonHoverOnDown() {
         // Setup
-        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED);
+        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED, true);
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
 
         // Verify model selector button is in pressed state, not hover state, when click is from
@@ -503,6 +506,10 @@ public class StripLayoutHelperManagerTest {
     @Test
     @Feature("Tab Strip Redesign")
     public void testButtonIconColor() {
+        // setup
+        initializeTestWithTsrArm(
+                TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE, false);
+
         // Verify TSR button icon color.
         assertEquals(
                 "Unexpected incognito button color.",
@@ -515,7 +522,8 @@ public class StripLayoutHelperManagerTest {
     @Feature("Tab Strip Redesign")
     public void testButtonIconColor_DisableButtonStyle() {
         // setup
-        initializeTestWithTsrArm(TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE);
+        initializeTestWithTsrArm(
+                TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE, true);
 
         // Verify TSR button icon color after disabling button style.
         assertEquals(

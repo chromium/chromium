@@ -634,7 +634,7 @@ public abstract class ChromeFeatureList {
             new CachedFlag(TAB_DRAG_DROP_ANDROID, false);
     public static final CachedFlag sTabLinkDragDropAndroid =
             new CachedFlag(TAB_LINK_DRAG_DROP_ANDROID, false);
-    public static final CachedFlag sTabStripRedesign = new CachedFlag(TAB_STRIP_REDESIGN, false);
+    public static final CachedFlag sTabStripRedesign = new CachedFlag(TAB_STRIP_REDESIGN, true);
     public static final CachedFlag sTabStripStartupRefactoring =
             new CachedFlag(TAB_STRIP_STARTUP_REFACTORING, false);
     public static final CachedFlag sTabletToolbarReordering =

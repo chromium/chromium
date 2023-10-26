@@ -608,6 +608,7 @@ public class StripLayoutHelperTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testNewTabButtonXPosition() {
+        TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.setForTesting(false);
         when(mModelSelectorBtn.getWidth()).thenReturn(24.f);
 
         int tabCount = 11;
@@ -632,6 +633,7 @@ public class StripLayoutHelperTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testNewTabButtonXPosition_Rtl() {
+        TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.setForTesting(false);
         when(mModelSelectorBtn.getWidth()).thenReturn(24.f);
 
         int tabCount = 11;
@@ -676,6 +678,7 @@ public class StripLayoutHelperTest {
     @Feature("Tab Strip Redesign")
     public void testNewTabButtonXPosition_RTL_TSR() {
         // Setup
+        TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.setForTesting(false);
         int tabCount = 4;
         initializeTest(true, false, false, 3, tabCount);
 
@@ -761,6 +764,7 @@ public class StripLayoutHelperTest {
     @Feature("Tab Strip Redesign")
     public void testNewTabButtonYPosition_Detached() {
         // Setup
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(false);
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
         int tabCount = 4;
         initializeTest(false, false, false, 3, tabCount);
@@ -781,7 +785,6 @@ public class StripLayoutHelperTest {
     @Feature("Tab Strip Redesign")
     public void testNewTabButtonXPosition_NotAnchored() {
         // Setup
-        TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.setForTesting(true);
         int tabCount = 1;
         initializeTest(false, false, false, 0, tabCount);
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
@@ -820,6 +823,7 @@ public class StripLayoutHelperTest {
     public void testNewTabButtonStyle_ButtonStyleDisabled() {
         // Setup
         TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE.setForTesting(true);
+        TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.setForTesting(false);
         int tabCount = 1;
         initializeTest(false, false, false, 0, tabCount);
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);

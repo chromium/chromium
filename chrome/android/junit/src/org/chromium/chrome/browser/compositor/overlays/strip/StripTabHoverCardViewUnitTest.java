@@ -308,6 +308,9 @@ public class StripTabHoverCardViewUnitTest {
 
     @Test
     public void getHoverCardPosition_CardWidthExceedsWindowWidth() {
+        // setup
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(false);
+
         // Set window width to be slightly smaller than the default card width.
         mContext.getResources().getDisplayMetrics().widthPixels = (int) (mHoverCardWidth - 1);
 
@@ -352,6 +355,9 @@ public class StripTabHoverCardViewUnitTest {
 
     @Test
     public void getHoverCardPosition_CardCrossesWindowBounds() {
+        // setup
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(false);
+
         float windowHorizontalMargin =
                 mContext.getResources()
                         .getDimension(R.dimen.tab_hover_card_window_horizontal_margin);
