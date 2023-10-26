@@ -70,11 +70,11 @@ class Vp9Decoder : public VideoDecoder {
   // Parser for the IVF stream to decode.
   const std::unique_ptr<IvfParser> ivf_parser_;
 
-  // VP9-specific data.
-  const std::unique_ptr<Vp9Parser> vp9_parser_;
-
   // Supports parsed compressed headers
   const bool supports_compressed_headers_;
+
+  // VP9-specific data.
+  const std::unique_ptr<Vp9Parser> vp9_parser_;
 
   // Reference frames currently in use.
   std::array<scoped_refptr<MmappedBuffer>, kVp9NumRefFrames> ref_frames_;

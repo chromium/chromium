@@ -136,10 +136,9 @@ Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        gfx::Size display_resolution)
     : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl), display_resolution),
       ivf_parser_(std::move(ivf_parser)),
-      vp9_parser_(
-          std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/true)),
       supports_compressed_headers_(
-          v4l2_ioctl_->QueryCtrl(V4L2_CID_STATELESS_VP9_COMPRESSED_HDR)) {
+          v4l2_ioctl_->QueryCtrl(V4L2_CID_STATELESS_VP9_COMPRESSED_HDR)),
+      vp9_parser_(std::make_unique<Vp9Parser>(supports_compressed_headers_)) {
   DCHECK(v4l2_ioctl_);
 
   // This control was landed in v5.17 and is pretty much a marker that the
