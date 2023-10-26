@@ -403,14 +403,6 @@ void StatusAreaWidget::HandleLocaleChange() {
   EnsureTrayOrder();
 }
 
-void StatusAreaWidget::NotifyAnyBubbleVisibilityChanged(
-    views::Widget* bubble_widget,
-    bool visible) {
-  for (auto* tray_button : tray_buttons_) {
-    tray_button->OnAnyBubbleVisibilityChanged(bubble_widget, visible);
-  }
-}
-
 void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
   if (!initialized_) {
     return;

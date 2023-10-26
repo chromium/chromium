@@ -677,10 +677,6 @@ void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
   views::View::SetVisible(GetEffectiveVisibility());
 }
 
-void TrayBackgroundView::OnAnyBubbleVisibilityChanged(
-    views::Widget* bubble_widget,
-    bool visible) {}
-
 void TrayBackgroundView::UpdateBackground() {
   layer()->SetRoundedCornerRadius(GetRoundedCorners());
   layer()->SetIsFastRoundedCorner(true);

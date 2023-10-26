@@ -374,17 +374,6 @@ void EcheTray::OnVirtualKeyboardVisibilityChanged() {
   TrayBackgroundView::OnVirtualKeyboardVisibilityChanged();
 }
 
-void EcheTray::OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
-                                            bool visible) {
-  // We only care about "other" bubbles being shown.
-  if (!bubble_ || bubble_widget == GetBubbleWidget())
-    return;
-
-  // Another bubble has become visible, so minimize this one.
-  if (visible && IsBubbleVisible())
-    HideBubble();
-}
-
 bool EcheTray::CacheBubbleViewForHide() const {
   return true;
 }
@@ -502,6 +491,20 @@ void EcheTray::OnRequestBackgroundConnectionAttempt() {
       &EcheTray::OnBackgroundConnectionTimeout);
   initializer_timeout_->Reset();  // Starts the timer.
   SetIconVisibility(false);
+}
+
+void EcheTray::OnStatusAreaAnchoredBubbleVisibilityChanged(
+    TrayBubbleView* tray_bubble,
+    bool visible) {
+  // We only care about "other" bubbles being shown.
+  if (!bubble_ || tray_bubble == GetBubbleView()) {
+    return;
+  }
+
+  // Another bubble has become visible, so minimize this one.
+  if (visible && IsBubbleVisible()) {
+    HideBubble();
+  }
 }
 
 void EcheTray::CloseInitializer() {

@@ -15,6 +15,7 @@
 #include "ash/shell_observer.h"
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
 #include "ash/system/screen_layout_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
@@ -68,6 +69,7 @@ class ASH_EXPORT EcheTray
       public SessionObserver,
       public ScreenLayoutObserver,
       public ShelfObserver,
+      public SystemTrayObserver,
       public TabletModeObserver,
       public KeyboardControllerObserver,
       public ShellObserver,
@@ -139,8 +141,6 @@ class ASH_EXPORT EcheTray
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   void OnVirtualKeyboardVisibilityChanged() override;
-  void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
-                                    bool visible) override;
   bool CacheBubbleViewForHide() const override;
 
   // TrayBubbleView::Delegate:
@@ -159,6 +159,11 @@ class ASH_EXPORT EcheTray
   void OnConnectionStatusChanged(
       eche_app::mojom::ConnectionStatus connection_status) override;
   void OnRequestBackgroundConnectionAttempt() override;
+
+  // SystemTrayObserver:
+  void OnFocusLeavingSystemTray(bool reverse) override {}
+  void OnStatusAreaAnchoredBubbleVisibilityChanged(TrayBubbleView* tray_bubble,
+                                                   bool visible) override;
 
   // Callback called when the eche icon or tray button is pressed.
   void OnButtonPressed();

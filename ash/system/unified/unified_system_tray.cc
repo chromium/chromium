@@ -524,28 +524,6 @@ absl::optional<AcceleratorAction> UnifiedSystemTray::GetAcceleratorAction()
   return absl::make_optional(AcceleratorAction::kToggleSystemTrayBubble);
 }
 
-void UnifiedSystemTray::OnAnyBubbleVisibilityChanged(
-    views::Widget* bubble_widget,
-    bool visible) {
-  if (!features::IsQsRevampEnabled()) {
-    return;
-  }
-
-  if (!IsBubbleShown()) {
-    return;
-  }
-
-  if (bubble_widget == GetBubbleWidget()) {
-    return;
-  }
-
-  if (visible) {
-    // Another bubble is becoming visible while this bubble is being shown, so
-    // hide this bubble.
-    CloseBubble();
-  }
-}
-
 void UnifiedSystemTray::OnShelfConfigUpdated() {
   // Ensure the margin is updated correctly depending on whether dense shelf
   // is currently shown or not.

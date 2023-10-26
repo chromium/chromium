@@ -64,12 +64,6 @@ class TestTrayBackgroundView : public TrayBackgroundView,
                                : nullptr;
   }
 
-  void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
-                                    bool visible) override {
-    on_bubble_visibility_change_captured_widget_ = bubble_widget;
-    on_bubble_visibility_change_captured_visibility_ = visible;
-  }
-
   void ShowBubble() override {
     show_bubble_called_ = true;
 
@@ -104,10 +98,6 @@ class TestTrayBackgroundView : public TrayBackgroundView,
   TrayBubbleWrapper* bubble() { return bubble_.get(); }
 
   bool show_bubble_called() const { return show_bubble_called_; }
-
-  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh>
-      on_bubble_visibility_change_captured_widget_ = nullptr;
-  bool on_bubble_visibility_change_captured_visibility_ = false;
 
  private:
   std::unique_ptr<TrayBubbleWrapper> bubble_;
@@ -548,23 +538,6 @@ TEST_F(TrayBackgroundViewTest, AutoHideShelfWithContextMenu) {
   ASSERT_FALSE(TriggerAutoHideTimeout(layout_manager));
   EXPECT_FALSE(test_tray_background_view()->IsShowingMenu());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
-}
-
-// Loads a bubble inside the tray and shows that. Then verifies that
-// OnAnyBubbleVisibilityChanged is called.
-TEST_F(TrayBackgroundViewTest, OnAnyBubbleVisibilityChanged) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  test_tray_background_view()->SetVisiblePreferred(true);
-
-  test_tray_background_view()->ShowBubble();
-
-  EXPECT_EQ(test_tray_background_view()->bubble()->GetBubbleWidget(),
-            test_tray_background_view()
-                ->on_bubble_visibility_change_captured_widget_);
-  EXPECT_TRUE(test_tray_background_view()
-                  ->on_bubble_visibility_change_captured_visibility_);
 }
 
 // Tests that `TrayBackgroundView::SetPressedCallback()` overrides
