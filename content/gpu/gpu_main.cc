@@ -328,6 +328,18 @@ int GpuMain(MainFunctionParams parameters) {
   // before it.
   InitializeSkia();
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Thread type delegate of the process should be registered before
+  // first thread type change in ChildProcess constructor.
+  // It also needs to be registered before the process has multiple threads,
+  // which may race with application of the sandbox. InitializeAndStartSandbox()
+  // sandboxes the process and starts threads so this has to happen first.
+  if (base::FeatureList::IsEnabled(
+          features::kHandleChildThreadTypeChangesInBrowser)) {
+    SandboxedProcessThreadTypeHandler::Create();
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
   // The ThreadPool must have been created before invoking |gpu_init| as it
   // needs the ThreadPool (in angle::InitializePlatform()). Do not start it
   // until after the sandbox is initialized however to avoid creating threads
@@ -350,15 +362,6 @@ int GpuMain(MainFunctionParams parameters) {
   if (client) {
     client->PostSandboxInitialized();
   }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Thread type delegate of the process should be registered before
-  // first thread type change in ChildProcess constructor.
-  if (base::FeatureList::IsEnabled(
-          features::kHandleChildThreadTypeChangesInBrowser)) {
-    SandboxedProcessThreadTypeHandler::Create();
-  }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   GetContentClient()->SetGpuInfo(gpu_init->gpu_info());
 
