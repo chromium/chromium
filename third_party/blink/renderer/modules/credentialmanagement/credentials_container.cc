@@ -1658,7 +1658,7 @@ ScriptPromise CredentialsContainer::store(ScriptState* script_state,
         credential->IsPasswordCredential())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
-        "Store operation not permitted for PublicKey credentials."));
+        "Store operation not permitted for this credential type."));
     return promise;
   }
 
