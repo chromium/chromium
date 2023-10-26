@@ -31,8 +31,8 @@ class HyphenationCF final : public Hyphenation {
                                         text.length() - MinSuffixLength() + 1);
 
     const CFIndex result = CFStringGetHyphenationLocationBeforeIndex(
-        text.ToString().Impl()->CreateCFString(), before_index,
-        CFRangeMake(0, text.length()), 0, locale_cf_, 0);
+        text.ToString().Impl()->CreateCFString().get(), before_index,
+        CFRangeMake(0, text.length()), 0, locale_cf_.get(), 0);
     if (result == kCFNotFound) {
       return 0;
     }
@@ -83,8 +83,8 @@ scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
   base::apple::ScopedCFTypeRef<CFStringRef> locale_cf_string(
       locale.Impl()->CreateCFString());
   base::apple::ScopedCFTypeRef<CFLocaleRef> locale_cf(
-      CFLocaleCreate(kCFAllocatorDefault, locale_cf_string));
-  if (!CFStringIsHyphenationAvailableForLocale(locale_cf)) {
+      CFLocaleCreate(kCFAllocatorDefault, locale_cf_string.get()));
+  if (!CFStringIsHyphenationAvailableForLocale(locale_cf.get())) {
     return nullptr;
   }
   scoped_refptr<Hyphenation> hyphenation(

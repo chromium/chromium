@@ -63,7 +63,7 @@ CGContextRef GraphicsContextCanvas::CgContext() {
   int display_height = offscreen_.height();
   cg_context_.reset(CGBitmapContextCreate(
       offscreen_.getPixels(), offscreen_.width(), offscreen_.height(), 8,
-      offscreen_.rowBytes(), color_space,
+      offscreen_.rowBytes(), color_space.get(),
       uint32_t{kCGBitmapByteOrder32Host} | kCGImageAlphaPremultipliedFirst));
   DCHECK(cg_context_);
 
@@ -73,7 +73,8 @@ CGContextRef GraphicsContextCanvas::CgContext() {
   matrix.postScale(bitmap_scale_factor_, -bitmap_scale_factor_);
   matrix.postTranslate(0, SkIntToScalar(display_height));
 
-  CGContextConcatCTM(cg_context_, skia::SkMatrixToCGAffineTransform(matrix));
+  CGContextConcatCTM(cg_context_.get(),
+                     skia::SkMatrixToCGAffineTransform(matrix));
 
   return cg_context_.get();
 }

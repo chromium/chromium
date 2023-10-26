@@ -131,15 +131,15 @@ NSFont* MatchUniqueFont(const AtomicString& unique_font_name, float size) {
           base::apple::NSToCFPtrCast(attributes)));
 
   base::apple::ScopedCFTypeRef<CTFontRef> matched_font(
-      CTFontCreateWithFontDescriptor(descriptor, 0, nullptr));
+      CTFontCreateWithFontDescriptor(descriptor.get(), 0, nullptr));
   DCHECK(matched_font);
 
   // CoreText will usually give us *something* but not always an exactly matched
   // font.
   NSString* matched_postscript_name = base::apple::CFToNSOwnershipCast(
-      CTFontCopyName(matched_font, kCTFontPostScriptNameKey));
+      CTFontCopyName(matched_font.get(), kCTFontPostScriptNameKey));
   NSString* matched_full_font_name = base::apple::CFToNSOwnershipCast(
-      CTFontCopyName(matched_font, kCTFontFullNameKey));
+      CTFontCopyName(matched_font.get(), kCTFontFullNameKey));
   // If the found font does not match in PostScript name or full font name, it's
   // not the exact match that is required, so return nullptr.
   if ([matched_postscript_name caseInsensitiveCompare:desired_name] !=

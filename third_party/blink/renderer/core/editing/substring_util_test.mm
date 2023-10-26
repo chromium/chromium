@@ -140,12 +140,12 @@ TEST_F(SubStringUtilTest, SubstringUtilIframe) {
   base::apple::ScopedCFTypeRef<CFAttributedStringRef> result =
       SubstringUtil::AttributedSubstringInRange(child_frame->GetFrame(), 11, 7,
                                                 baseline_point);
-  ASSERT_NE(result, nullptr);
+  ASSERT_TRUE(result);
 
   gfx::Point point(baseline_point);
   result.reset(SubstringUtil::AttributedWordAtPoint(
       main_frame->FrameWidgetImpl(), point, baseline_point));
-  ASSERT_NE(result, nullptr);
+  ASSERT_TRUE(result);
 
   int y_before_change = baseline_point.y();
 
@@ -156,7 +156,7 @@ TEST_F(SubStringUtilTest, SubstringUtilIframe) {
   point = gfx::Point(point.x(), point.y() + 100);
   result.reset(SubstringUtil::AttributedWordAtPoint(
       main_frame->FrameWidgetImpl(), point, baseline_point));
-  ASSERT_NE(result, nullptr);
+  ASSERT_TRUE(result);
 
   EXPECT_EQ(y_before_change, baseline_point.y() - 100);
 }
