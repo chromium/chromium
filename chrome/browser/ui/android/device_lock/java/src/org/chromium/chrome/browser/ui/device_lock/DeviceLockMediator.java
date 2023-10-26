@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -146,6 +147,8 @@ public class DeviceLockMediator {
         }
         mDeviceLockAuthenticatorBridge.reauthenticate(
                 (authSucceeded) -> {
+                    RecordHistogram.recordBooleanHistogram(
+                            "Android.Automotive.DeviceLockOutcome", authSucceeded);
                     if (authSucceeded) {
                         onSuccess.run();
                     } else {
