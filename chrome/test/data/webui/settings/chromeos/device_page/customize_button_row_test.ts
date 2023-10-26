@@ -54,6 +54,7 @@ suite('<customize-button-row>', () => {
           showKeyCombinationDialogEventCount++;
         });
     document.body.appendChild(customizeButtonRow);
+    customizeButtonRow.blur();
     return flushTasks();
   }
 

@@ -208,6 +208,8 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   override connectedCallback(): void {
     super.connectedCallback();
     this.observeButtonPresses();
+    // Focus dropdown right away as this button was just pressed.
+    this.$.remappingActionDropdown!.focus();
   }
 
   private observeButtonPresses(): void {
