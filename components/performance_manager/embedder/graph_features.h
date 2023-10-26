@@ -155,7 +155,6 @@ class GraphFeatures {
     EnableNodeImplDescribers();
     EnablePageLoadTrackerDecorator();
     EnableProcessHostedContentTypesAggregator();
-    EnableResourceAttributionScheduler();
     EnableSiteDataRecorder();
     EnableTabPropertiesDecorator();
     EnableV8ContextTracker();
