@@ -120,8 +120,10 @@ class CustomizeChromePageHandler
       const base::Token& result_id) override;
 
  private:
-  void OnDescriptorsRetrieved(std::unique_ptr<std::string> response_body);
-  void OnDescriptorsJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnDescriptorsRetrieved(GetDescriptorsCallback callback,
+                              std::unique_ptr<std::string> response_body);
+  void OnDescriptorsJsonParsed(GetDescriptorsCallback callback,
+                               data_decoder::DataDecoder::ValueOrError result);
   void OnWallpaperSearchResultsRetrieved(
       GetWallpaperSearchResultsCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result);
@@ -157,7 +159,6 @@ class CustomizeChromePageHandler
   void FileSelectionCanceled(void* params) override;
 
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
-  GetDescriptorsCallback get_descriptors_callback_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

@@ -948,7 +948,63 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 }
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetDescriptors_Success_DescriptorsFormatIncorrect) {
+       GetDescriptors_Success_PrioritizesLatestRequest) {
+  side_panel::mojom::DescriptorsPtr descriptors;
+  side_panel::mojom::DescriptorsPtr descriptors_2;
+  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
+      callback;
+  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
+      callback_2;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&descriptors](
+              side_panel::mojom::DescriptorsPtr descriptors_ptr_arg) {
+            descriptors = std::move(descriptors_ptr_arg);
+          }));
+  EXPECT_CALL(callback_2, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&descriptors_2](
+              side_panel::mojom::DescriptorsPtr descriptors_2_ptr_arg) {
+            descriptors_2 = std::move(descriptors_2_ptr_arg);
+          }));
+  SetUpDescriptorsResponseWithData(
+      R"()]}'
+        {
+          "descriptor_a":[
+            {"category":"foo","labels":["bar"]}
+          ],
+          "descriptor_b":[
+            {"label":"foo","image":"bar.png"}
+          ],
+          "descriptor_c":["foo"]
+        })");
+
+  handler().GetDescriptors(callback.Get());
+  handler().GetDescriptors(callback_2.Get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(descriptors);
+  EXPECT_TRUE(descriptors_2);
+  const auto& descriptor_a = descriptors_2->descriptor_a;
+  EXPECT_EQ(1u, descriptor_a.size());
+  const auto& foo_descriptor = descriptor_a[0];
+  EXPECT_EQ(foo_descriptor->category, "foo");
+  EXPECT_EQ(1u, foo_descriptor->labels.size());
+  EXPECT_EQ("bar", foo_descriptor->labels[0]);
+  const auto& descriptor_b = descriptors_2->descriptor_b;
+  EXPECT_EQ(1u, descriptor_b.size());
+  EXPECT_EQ("foo", descriptor_b[0]->label);
+  EXPECT_EQ(base::StrCat({kDescriptorsBaseURL, "bar.png"}),
+            descriptor_b[0]->image_path);
+  const auto& descriptor_c = descriptors_2->descriptor_c;
+  EXPECT_EQ(1u, descriptor_c.size());
+  EXPECT_EQ("foo", descriptor_c[0]);
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       GetDescriptors_Failure_DescriptorsFormatIncorrect) {
   side_panel::mojom::DescriptorsPtr descriptors;
   base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
       callback;
@@ -973,7 +1029,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 }
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetDescriptors_Fails_NoValidDescriptors) {
+       GetDescriptors_Failure_NoValidDescriptors) {
   side_panel::mojom::DescriptorsPtr descriptors;
   base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
       callback;
@@ -999,7 +1055,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 }
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetDescriptors_Fails_DataIsUnreachable) {
+       GetDescriptors_Failure_DataIsUnreachable) {
   side_panel::mojom::DescriptorsPtr descriptors;
   base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
       callback;

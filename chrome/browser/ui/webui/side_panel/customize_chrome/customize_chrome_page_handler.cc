@@ -422,10 +422,6 @@ void CustomizeChromePageHandler::GetDescriptors(
     GetDescriptorsCallback callback) {
   callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr);
-  if (get_descriptors_callback_) {
-    return;
-  }
-  get_descriptors_callback_ = std::move(callback);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("customize_chrome_page_handler", R"(
@@ -473,7 +469,7 @@ void CustomizeChromePageHandler::GetDescriptors(
   simple_url_loader_->DownloadToString(
       profile_->GetURLLoaderFactory().get(),
       base::BindOnce(&CustomizeChromePageHandler::OnDescriptorsRetrieved,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       1024 * 1024);
 }
 
@@ -532,11 +528,12 @@ void CustomizeChromePageHandler::SetBackgroundToWallpaperSearchResult(
 }
 
 void CustomizeChromePageHandler::OnDescriptorsRetrieved(
+    GetDescriptorsCallback callback,
     std::unique_ptr<std::string> response_body) {
   if (!response_body) {
     // Network errors (i.e. the server did not provide a response).
     DVLOG(1) << "Request failed with error: " << simple_url_loader_->NetError();
-    std::move(get_descriptors_callback_).Run(nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -551,14 +548,15 @@ void CustomizeChromePageHandler::OnDescriptorsRetrieved(
   data_decoder_->ParseJson(
       response,
       base::BindOnce(&CustomizeChromePageHandler::OnDescriptorsJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CustomizeChromePageHandler::OnDescriptorsJsonParsed(
+    GetDescriptorsCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value() || !result->is_dict()) {
     DVLOG(1) << "Parsing JSON failed: " << result.error();
-    std::move(get_descriptors_callback_).Run(nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -570,7 +568,7 @@ void CustomizeChromePageHandler::OnDescriptorsJsonParsed(
       result->GetDict().FindList("descriptor_c");
   if (!descriptor_a || !descriptor_b || !descriptor_c_labels) {
     DVLOG(1) << "Parsing JSON failed: no valid descriptors.";
-    std::move(get_descriptors_callback_).Run(nullptr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -619,7 +617,7 @@ void CustomizeChromePageHandler::OnDescriptorsJsonParsed(
     }
   }
   mojo_descriptors->descriptor_c = std::move(mojo_descriptor_c_labels);
-  std::move(get_descriptors_callback_).Run(std::move(mojo_descriptors));
+  std::move(callback).Run(std::move(mojo_descriptors));
 }
 
 void CustomizeChromePageHandler::OnWallpaperSearchResultsRetrieved(
