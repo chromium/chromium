@@ -7,6 +7,7 @@ assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
 
 source_set("common") {
   sources = [
+    "self_owned_mojo_proxy.h",
     "telemetry_extension_converters.cc",
     "telemetry_extension_converters.h",
   ]
@@ -15,6 +16,7 @@ source_set("common") {
     "//base",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
+    "//mojo/public/cpp/bindings",
   ]
 }
 

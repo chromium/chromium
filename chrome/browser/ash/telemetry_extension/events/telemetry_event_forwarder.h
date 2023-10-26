@@ -5,16 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_FORWARDER_H_
 #define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_FORWARDER_H_
 
-#include <cstdint>
-#include <string>
-
-#include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
@@ -35,10 +28,9 @@ namespace ash {
 class CrosHealthdEventForwarder : public cros_healthd::mojom::EventObserver {
  public:
   explicit CrosHealthdEventForwarder(
-      crosapi::mojom::TelemetryEventCategoryEnum category,
-      base::OnceCallback<void(CrosHealthdEventForwarder*)> on_disconnect,
       mojo::PendingRemote<crosapi::mojom::TelemetryEventObserver>
-          crosapi_remote);
+          crosapi_remote,
+      crosapi::mojom::TelemetryEventCategoryEnum category);
   CrosHealthdEventForwarder(const CrosHealthdEventForwarder&) = delete;
   CrosHealthdEventForwarder& operator=(const CrosHealthdEventForwarder&) =
       delete;
@@ -47,34 +39,13 @@ class CrosHealthdEventForwarder : public cros_healthd::mojom::EventObserver {
   // cros_healthd::mojom::EventObserver:
   void OnEvent(cros_healthd::mojom::EventInfoPtr info) override;
 
-  // Called when cros_healthd cuts the mojom connection. In this case
-  // we want to forward the disconnection reason and description to
-  // crosapi. After this is called, an instance of this class can be
-  // removed.
-  void OnCrosHealthdDisconnect(uint32_t custom_reason,
-                               const std::string& description);
-
-  // Called when crosapi cuts the mojom connection. In this case we
-  // want to also cut the connection with cros_healthd.
-  // After this is called, an instance of this class can be
-  // removed.
-  void OnCrosapiDisconnect();
+  mojo::Remote<crosapi::mojom::TelemetryEventObserver>& GetRemote();
 
  private:
-  void CallDeleter();
-
   const crosapi::mojom::TelemetryEventCategoryEnum category_;
 
-  // Called when the connection is reset from either side.
-  base::OnceCallback<void(CrosHealthdEventForwarder*)> deleter_callback_;
-
   // The mojo remote that corresponds to a crosapi observer connection.
-  mojo::Remote<crosapi::mojom::TelemetryEventObserver> crosapi_observer_;
-
-  // The mojo receiver that corresponds to the connection with cros_healthd.
-  mojo::Receiver<cros_healthd::mojom::EventObserver> cros_healthd_receiver_;
-
-  base::WeakPtrFactory<CrosHealthdEventForwarder> weak_factory{this};
+  mojo::Remote<crosapi::mojom::TelemetryEventObserver> remote_;
 };
 
 }  // namespace ash

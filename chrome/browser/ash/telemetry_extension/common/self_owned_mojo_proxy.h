@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_ROUTINES_SELF_OWNED_MOJO_PROXY_H_
-#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_ROUTINES_SELF_OWNED_MOJO_PROXY_H_
+#ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_COMMON_SELF_OWNED_MOJO_PROXY_H_
+#define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_COMMON_SELF_OWNED_MOJO_PROXY_H_
 
 #include <cstdint>
 #include <memory>
@@ -58,8 +58,8 @@ class SelfOwnedMojoProxy : public SelfOwnedMojoProxyInterface {
       mojo::PendingRemote<RemoteInterface> pending_remote,
       OnDisconnectCallback on_disconnect_callback,
       ImplArgs... impl_args) {
-    auto impl = std::make_unique<ReceiverImpl>(std::move(pending_remote),
-                                               std::forward(impl_args)...);
+    auto impl =
+        std::make_unique<ReceiverImpl>(std::move(pending_remote), impl_args...);
     return new SelfOwnedMojoProxy(std::move(impl), std::move(pending_receiver),
                                   std::move(on_disconnect_callback));
   }
@@ -134,4 +134,4 @@ class SelfOwnedMojoProxy : public SelfOwnedMojoProxyInterface {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_ROUTINES_SELF_OWNED_MOJO_PROXY_H_
+#endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_COMMON_SELF_OWNED_MOJO_PROXY_H_

@@ -9,7 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/telemetry_extension/routines/self_owned_mojo_proxy.h"
+#include "chrome/browser/ash/telemetry_extension/common/self_owned_mojo_proxy.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

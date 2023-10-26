@@ -13,7 +13,6 @@ source_set("routines") {
     "routine_converters.h",
     "routine_events_forwarder.cc",
     "routine_events_forwarder.h",
-    "self_owned_mojo_proxy.h",
     "telemetry_diagnostic_routine_service_ash.cc",
     "telemetry_diagnostic_routine_service_ash.h",
   ]
