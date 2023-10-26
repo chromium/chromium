@@ -103,8 +103,15 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest, CanGoBack_ServerSide) {
   CheckCanGoBackOnServer(id, false /* expected_value */);
 }
 
+// TODO(b/257291972): This test is flaky on Lacros asan builder.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_CanGoBackMultipleTabs_ServerSide \
+  DISABLED_CanGoBackMultipleTabs_ServerSide
+#else
+#define MAYBE_CanGoBackMultipleTabs_ServerSide CanGoBackMultipleTabs_ServerSide
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
-                       CanGoBackMultipleTabs_ServerSide) {
+                       MAYBE_CanGoBackMultipleTabs_ServerSide) {
   auto* lacros_service = chromeos::LacrosService::Get();
   ASSERT_TRUE(lacros_service);
   ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
