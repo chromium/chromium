@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/common/content_features.h"
@@ -24,7 +24,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "gpu/GLES2/gl2extchromium.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/media_switches.h"
@@ -44,7 +44,8 @@
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 #include "services/video_capture/public/mojom/virtual_device.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/khronos/GLES2/gl2ext.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor.h"
 
 // ImageTransportFactory::GetInstance is not available on all build configs.
@@ -99,19 +100,19 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
     ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
     CHECK(factory);
     context_provider_ =
-        factory->GetContextFactory()->SharedMainThreadContextProvider();
+        factory->GetContextFactory()->SharedMainThreadRasterContextProvider();
     CHECK(context_provider_);
-    gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
-    CHECK(gl);
+    gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+    CHECK(ri);
 
     gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
     CHECK(sii);
 
-    const uint8_t kDarkFrameByteValue = 0;
-    const uint8_t kLightFrameByteValue = 200;
-    CreateDummyRgbFrame(gl, sii, kDarkFrameByteValue,
+    const SkColor4f kDarkFrameColor = SkColors::kBlack;
+    const SkColor4f kLightFrameColor = SkColors::kGray;
+    CreateDummyRgbFrame(ri, sii, kDarkFrameColor,
                         &dummy_frame_0_mailbox_holder_);
-    CreateDummyRgbFrame(gl, sii, kLightFrameByteValue,
+    CreateDummyRgbFrame(ri, sii, kLightFrameColor,
                         &dummy_frame_1_mailbox_holder_);
   }
 
@@ -181,18 +182,16 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
   }
 
  private:
-  void CreateDummyRgbFrame(gpu::gles2::GLES2Interface* gl,
+  void CreateDummyRgbFrame(gpu::raster::RasterInterface* ri,
                            gpu::SharedImageInterface* sii,
-                           uint8_t value_for_all_rgb_bytes,
+                           SkColor4f frame_color,
                            std::vector<gpu::MailboxHolder>* target) {
-    const int32_t kBytesPerRGBAPixel = 4;
-    int32_t frame_size_in_bytes = kDummyFrameCodedSize.width() *
-                                  kDummyFrameCodedSize.height() *
-                                  kBytesPerRGBAPixel;
-    std::unique_ptr<uint8_t[]> dummy_frame_data(
-        new uint8_t[frame_size_in_bytes]);
-    memset(dummy_frame_data.get(), value_for_all_rgb_bytes,
-           frame_size_in_bytes);
+    SkBitmap frame_bitmap;
+    frame_bitmap.allocPixels(SkImageInfo::Make(
+        kDummyFrameCodedSize.width(), kDummyFrameCodedSize.height(),
+        kRGBA_8888_SkColorType, kOpaque_SkAlphaType));
+    frame_bitmap.eraseColor(frame_color);
+
     for (int i = 0; i < media::VideoFrame::kMaxPlanes; i++) {
       // For RGB formats, only the first plane needs to be filled with an
       // actual texture.
@@ -202,37 +201,26 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
       }
 
       gpu::Mailbox mailbox = sii->CreateSharedImage(
-          viz::SinglePlaneFormat::kRGBA_8888,
-          gfx::Size(kDummyFrameCodedSize.width(),
-                    kDummyFrameCodedSize.height()),
+          viz::SinglePlaneFormat::kRGBA_8888, kDummyFrameCodedSize,
           gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
           kOpaque_SkAlphaType,
           gpu::SHARED_IMAGE_USAGE_RASTER |
               gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-              gpu::SHARED_IMAGE_USAGE_GLES2 |
-              gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
+              gpu::SHARED_IMAGE_USAGE_GLES2,
           "TestLabel", gpu::kNullSurfaceHandle);
 
       gpu::SyncToken sii_token = sii->GenVerifiedSyncToken();
-      gl->WaitSyncTokenCHROMIUM(sii_token.GetConstData());
-      GLuint texture =
-          gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
-      gl->BeginSharedImageAccessDirectCHROMIUM(
-          texture, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-      gl->BindTexture(GL_TEXTURE_2D, texture);
-      gl->TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, kDummyFrameCodedSize.width(),
-                        kDummyFrameCodedSize.height(), GL_RGBA,
-                        GL_UNSIGNED_BYTE, dummy_frame_data.get());
-      gl->BindTexture(GL_TEXTURE_2D, 0);
-      gl->EndSharedImageAccessDirectCHROMIUM(texture);
-      gl->DeleteTextures(1, &texture);
-      gpu::SyncToken gl_token;
-      gl->GenSyncTokenCHROMIUM(gl_token.GetData());
+      ri->WaitSyncTokenCHROMIUM(sii_token.GetConstData());
+      ri->WritePixels(mailbox, 0, 0, /*dst_plane_index=*/0, GL_TEXTURE_2D,
+                      frame_bitmap.pixmap());
 
-      target->push_back(gpu::MailboxHolder(mailbox, gl_token, GL_TEXTURE_2D));
+      gpu::SyncToken ri_token;
+      ri->GenSyncTokenCHROMIUM(ri_token.GetData());
+
+      target->emplace_back(mailbox, ri_token, GL_TEXTURE_2D);
     }
-    gl->ShallowFlushCHROMIUM();
-    CHECK_EQ(gl->GetError(), static_cast<GLenum>(GL_NO_ERROR));
+    ri->ShallowFlushCHROMIUM();
+    CHECK_EQ(ri->GetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
 
   void OnFrameConsumptionFinished(int32_t frame_index) {
@@ -241,7 +229,7 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  scoped_refptr<viz::ContextProvider> context_provider_;
+  scoped_refptr<viz::RasterContextProvider> context_provider_;
   mojo::Remote<video_capture::mojom::TextureVirtualDevice> virtual_device_;
   bool virtual_device_has_frame_access_handler_ = false;
   int dummy_frame_index_ = 0;
