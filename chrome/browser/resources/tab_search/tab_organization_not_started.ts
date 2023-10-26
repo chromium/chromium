@@ -19,21 +19,18 @@ export class TabOrganizationNotStartedElement extends PolymerElement {
 
   static get properties() {
     return {
-      showFRE_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('showTabOrganizationFRE'),
-      },
+      showFre: Boolean,
     };
   }
 
-  private showFRE_: boolean;
+  showFre: boolean;
 
   static get template() {
     return getTemplate();
   }
 
   private getTitle_(): string {
-    if (this.showFRE_) {
+    if (this.showFre) {
       return loadTimeData.getString('notStartedTitleFRE');
     } else {
       return loadTimeData.getString('notStartedTitle');
@@ -41,7 +38,7 @@ export class TabOrganizationNotStartedElement extends PolymerElement {
   }
 
   private getBody_(): string {
-    if (this.showFRE_) {
+    if (this.showFre) {
       return loadTimeData.getString('notStartedBodyFRE');
     } else {
       return loadTimeData.getString('notStartedBody');

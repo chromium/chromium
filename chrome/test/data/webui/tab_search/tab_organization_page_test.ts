@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Tab, TabOrganizationError, TabOrganizationPageElement, TabOrganizationResultsElement, TabOrganizationSession, TabOrganizationState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -145,5 +146,29 @@ suite('TabOrganizationPageTest', () => {
     await flushTasks();
 
     assertEquals(1, testProxy.getCallCount('acceptTabOrganization'));
+  });
+
+  test('Tip action starts tutorial', async () => {
+    loadTimeData.overrideValues({
+      showTabOrganizationFRE: true,
+    });
+
+    await tabOrganizationPageSetup();
+
+    testProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+        createSession({
+          state: TabOrganizationState.kFailure,
+          error: TabOrganizationError.kGeneric,
+        }));
+
+    assertEquals(0, testProxy.getCallCount('startTabGroupTutorial'));
+
+    const tipAction =
+        tabOrganizationPage.shadowRoot!.querySelector<HTMLElement>('.link');
+    assertTrue(!!tipAction);
+    tipAction.click();
+    await flushTasks();
+
+    assertEquals(1, testProxy.getCallCount('startTabGroupTutorial'));
   });
 });

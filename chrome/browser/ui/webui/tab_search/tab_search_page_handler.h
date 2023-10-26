@@ -74,6 +74,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void RequestTabOrganization() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void SetTabIndex(int32_t index) override;
+  void StartTabGroupTutorial() override;
   void ShowUI() override;
 
   // TabStripModelObserver:

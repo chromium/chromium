@@ -81,6 +81,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"notStartedTitleFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE_FRE},
       {"successTitle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE},
       {"tabOrganizationTabName", IDS_TAB_ORGANIZATION_TAB_NAME},
+      {"tipTitle", IDS_TAB_ORGANIZATION_TIP_TITLE},
+      {"tipBody", IDS_TAB_ORGANIZATION_TIP_BODY},
+      {"tipAction", IDS_TAB_ORGANIZATION_TIP_ACTION},
   };
   webui::SetupChromeRefresh2023(source);
   source->AddLocalizedStrings(kStrings);

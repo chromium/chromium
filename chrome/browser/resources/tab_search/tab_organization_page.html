@@ -1,13 +1,25 @@
-<style>
+<style include="tab-organization-shared-style">
   .body {
     margin: 16px var(--mwb-list-item-horizontal-margin);
+  }
+
+  .footer {
+    background-color: var(--color-bubble-footer-background);
+    padding: 16px var(--mwb-list-item-horizontal-margin);
+  }
+
+  .link {
+    color: var(--color-link-foreground-on-bubble-footer);
+    cursor: pointer;
+    text-decoration: underline;
   }
 </style>
 
 <div class="body">
   <tab-organization-not-started
       hidden="[[!isState_(tabOrganizationStateEnum_.kNotStarted, state_)]]"
-      on-organize-tabs-click="onOrganizeTabsClick_">
+      on-organize-tabs-click="onOrganizeTabsClick_"
+      show-fre="[[showFRE_]]">
   </tab-organization-not-started>
   <tab-organization-in-progress
       hidden="[[!isState_(tabOrganizationStateEnum_.kInProgress, state_)]]">
@@ -22,4 +34,10 @@
       hidden="[[!isState_(tabOrganizationStateEnum_.kFailure, state_)]]"
       error="[[error_]]">
   </tab-organization-failure>
+</div>
+<div class="footer" hidden="[[!showFooter_(state_, showFRE_)]]">
+  <div class="tab-organization-body"><b>$i18n{tipTitle}</b> $i18n{tipBody}</div>
+  <div class="tab-organization-body link" on-click="onTipClick_">
+    $i18n{tipAction}
+  </div>
 </div>

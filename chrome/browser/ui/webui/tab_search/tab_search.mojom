@@ -226,6 +226,9 @@ interface PageHandler {
   // when next shown.
   SetTabIndex(int32 index);
 
+  // Force trigger the tab group tutorial.
+  StartTabGroupTutorial();
+
   // Notify the backend that the UI is ready to be shown.
   ShowUI();
 };

@@ -39,6 +39,8 @@ export interface TabSearchApiProxy {
 
   setTabIndex(index: number): void;
 
+  startTabGroupTutorial(): void;
+
   showUi(): void;
 }
 
@@ -108,6 +110,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   setTabIndex(index: number) {
     this.handler.setTabIndex(index);
+  }
+
+  startTabGroupTutorial() {
+    this.handler.startTabGroupTutorial();
   }
 
   showUi() {

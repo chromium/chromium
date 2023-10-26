@@ -6,11 +6,14 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
+import './strings.m.js';
 import './tab_organization_failure.js';
 import './tab_organization_in_progress.js';
 import './tab_organization_not_started.js';
 import './tab_organization_results.js';
+import './tab_organization_shared_style.css.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './tab_organization_page.html.js';
@@ -33,6 +36,11 @@ export class TabOrganizationPageElement extends PolymerElement {
         type: Object,
         value: TabOrganizationState,
       },
+
+      showFRE_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('showTabOrganizationFRE'),
+      },
     };
   }
 
@@ -44,6 +52,7 @@ export class TabOrganizationPageElement extends PolymerElement {
   private error_: TabOrganizationError = TabOrganizationError.kNone;
   private sessionId_: number = -1;
   private organizationId_: number = -1;
+  private showFRE_: boolean;
 
   static get template() {
     return getTemplate();
@@ -88,6 +97,10 @@ export class TabOrganizationPageElement extends PolymerElement {
     return this.state_ === state;
   }
 
+  private showFooter_(): boolean {
+    return this.state_ === TabOrganizationState.kFailure && this.showFRE_;
+  }
+
   private onOrganizeTabsClick_() {
     this.apiProxy_.requestTabOrganization();
   }
@@ -98,6 +111,10 @@ export class TabOrganizationPageElement extends PolymerElement {
 
     this.apiProxy_.acceptTabOrganization(
         this.sessionId_, this.organizationId_, this.name_, this.tabs_);
+  }
+
+  private onTipClick_() {
+    this.apiProxy_.startTabGroupTutorial();
   }
 }
 

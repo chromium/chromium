@@ -10465,6 +10465,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING" desc="The body text for the grouping failure state in the tab organization UI" translateable="false">
         You'll get more opportunities for tab organization after you open new related tabs
       </message>
+      <message name="IDS_TAB_ORGANIZATION_TIP_TITLE" desc="The bolded text at the start of the tip in the tab organization UI" translateable="false">
+        Tip:
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_TIP_BODY" desc="The main text of the tip in the tab organization UI" translateable="false">
+        You can organize your own tabs anytime.
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_TIP_ACTION" desc="The actionable text of the tip in the tab organization UI" translateable="false">
+        Show me how
+      </message>
 
       <!-- Strings for Window Titles in Menus -->
       <if expr="not use_titlecase">
