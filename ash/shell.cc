@@ -189,6 +189,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/ash_focus_rules.h"
 #include "ash/wm/container_finder.h"
+#include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/cursor_manager_chromeos.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
@@ -1694,6 +1695,11 @@ void Shell::Init(
   if (features::IsUserEducationEnabled()) {
     user_education_controller_ = std::make_unique<UserEducationController>(
         shell_delegate_->CreateUserEducationDelegate());
+  }
+
+  if (features::IsCoralFeatureEnabled() &&
+      CoralController::IsSecretKeyMatched()) {
+    coral_controller_ = std::make_unique<CoralController>();
   }
 
   // Injects the factory which fulfills the implementation of the text context

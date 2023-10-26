@@ -2379,6 +2379,8 @@ component("ash") {
     "wm/collision_detection/collision_detection_utils.h",
     "wm/container_finder.cc",
     "wm/container_finder.h",
+    "wm/coral/coral_controller.cc",
+    "wm/coral/coral_controller.h",
     "wm/cursor_manager_chromeos.cc",
     "wm/cursor_manager_chromeos.h",
     "wm/default_state.cc",

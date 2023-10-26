@@ -19,6 +19,7 @@
 #include "ash/public/cpp/system_sounds_delegate.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/system/toast/system_nudge_pause_manager_impl.h"
+#include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -126,6 +127,7 @@ class CameraEffectsController;
 class CaptureModeController;
 class ColorPaletteController;
 class ControlVHistogramRecorder;
+class CoralController;
 class CrosDisplayConfig;
 class DarkLightModeControllerImpl;
 class DesksController;
@@ -804,6 +806,8 @@ class ASH_EXPORT Shell : public SessionObserver,
     return occlusion_tracker_pauser_.get();
   }
 
+  CoralController* coral_controller() { return coral_controller_.get(); }
+
   // Does the primary display have status area?
   bool HasPrimaryStatusArea();
 
@@ -1198,6 +1202,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<quick_pair::Mediator> quick_pair_mediator_;
 
   std::unique_ptr<display::NativeDisplayDelegate> native_display_delegate_;
+
+  std::unique_ptr<CoralController> coral_controller_;
 
   base::ObserverList<ShellObserver>::Unchecked shell_observers_;
 
