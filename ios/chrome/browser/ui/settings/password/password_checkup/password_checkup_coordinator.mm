@@ -26,7 +26,17 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 
 @interface PasswordCheckupCoordinator () <PasswordCheckupCommands,
                                           PasswordIssuesCoordinatorDelegate,
-                                          ReauthenticationCoordinatorDelegate> {
+                                          ReauthenticationCoordinatorDelegate>
+
+@end
+
+@implementation PasswordCheckupCoordinator {
+  // Main view controller for this coordinator.
+  PasswordCheckupViewController* _viewController;
+
+  // Main mediator for this coordinator.
+  PasswordCheckupMediator* _mediator;
+
   // Coordinator for password issues.
   PasswordIssuesCoordinator* _passwordIssuesCoordinator;
 
@@ -42,16 +52,6 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   // Location in the app from which Password Checkup was opened.
   PasswordCheckReferrer _referrer;
 }
-
-// Main view controller for this coordinator.
-@property(nonatomic, strong) PasswordCheckupViewController* viewController;
-
-// Main mediator for this coordinator.
-@property(nonatomic, strong) PasswordCheckupMediator* mediator;
-
-@end
-
-@implementation PasswordCheckupCoordinator
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -78,20 +78,20 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   [super start];
 
   password_manager::LogOpenPasswordCheckupHomePage();
-  self.viewController = [[PasswordCheckupViewController alloc]
+  _viewController = [[PasswordCheckupViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
-  self.viewController.handler = self;
-  self.mediator = [[PasswordCheckupMediator alloc]
+  _viewController.handler = self;
+  _mediator = [[PasswordCheckupMediator alloc]
       initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                        GetForBrowserState(
                                            self.browser->GetBrowserState())];
-  self.viewController.delegate = self.mediator;
-  self.mediator.consumer = self.viewController;
+  _viewController.delegate = _mediator;
+  _mediator.consumer = _viewController;
 
   // Disable animation when content will be blocked for reauth to prevent
   // flickering in navigation bar.
   [self.baseNavigationController
-      pushViewController:self.viewController
+      pushViewController:_viewController
                 animated:![self shouldRequireAuthOnStart]];
 
   if (IsAuthOnEntryV2Enabled()) {
@@ -101,10 +101,10 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 }
 
 - (void)stop {
-  [self.mediator disconnect];
-  self.mediator = nil;
-  self.viewController.handler = nil;
-  self.viewController = nil;
+  [_mediator disconnect];
+  _mediator = nil;
+  _viewController.handler = nil;
+  _viewController = nil;
 
   [self stopPasswordIssuesCoordinator];
   [self stopReauthenticationCoordinator];
@@ -148,7 +148,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   NSArray<UIViewController*>* viewControllers =
       self.baseNavigationController.viewControllers;
   NSInteger viewControllerIndex =
-      [viewControllers indexOfObject:self.viewController];
+      [viewControllers indexOfObject:_viewController];
 
   // Nothing to do if the view controller was already removed from the
   // navigation stack.
