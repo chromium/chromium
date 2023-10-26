@@ -823,7 +823,7 @@ void MediaDrmBridge::OnSessionExpirationUpdate(
       FROM_HERE,
       base::BindOnce(
           session_expiration_update_cb_, std::move(session_id),
-          base::Time::FromSecondsSinceUnixEpoch(expiry_time_ms / 1000.0)));
+          base::Time::FromMillisecondsSinceUnixEpoch(expiry_time_ms)));
 }
 
 //------------------------------------------------------------------------------
