@@ -18749,7 +18749,11 @@
     "UseMultiPlaneFormatForSoftwareVideo": [
         {
             "platforms": [
-                "mac"
+                "mac",
+                "windows",
+                "chromeos",
+                "chromeos_lacros",
+                "linux"
             ],
             "experiments": [
                 {
