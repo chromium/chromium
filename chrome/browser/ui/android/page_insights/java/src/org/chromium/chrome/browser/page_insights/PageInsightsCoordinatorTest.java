@@ -267,8 +267,11 @@ public class PageInsightsCoordinatorTest {
         waitForAnimationToFinish();
     }
 
-    private void collapseSheet() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mPageInsightsController.collapseSheet(true));
+    private void hideSheet() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mPageInsightsController.hideContent(
+                                mPageInsightsController.getCurrentSheetContent(), true));
         waitForAnimationToFinish();
     }
 
@@ -411,7 +414,7 @@ public class PageInsightsCoordinatorTest {
         waitForAnimationToFinish();
         assertEquals(
                 "Sheet should be restored",
-                SheetState.PEEK,
+                SheetState.FULL,
                 mPageInsightsController.getSheetState());
 
         // Other bottom sheets
@@ -435,7 +438,7 @@ public class PageInsightsCoordinatorTest {
         waitForAnimationToFinish();
         assertEquals(
                 "Sheet should be restored",
-                SheetState.PEEK,
+                SheetState.FULL,
                 mPageInsightsController.getSheetState());
     }
 
@@ -445,7 +448,7 @@ public class PageInsightsCoordinatorTest {
         createAndLaunchPageInsightsCoordinator();
         expandSheet();
         verify(mExpandedSheetHelper).onSheetExpanded();
-        collapseSheet();
+        hideSheet();
         verify(mExpandedSheetHelper).onSheetCollapsed();
     }
 

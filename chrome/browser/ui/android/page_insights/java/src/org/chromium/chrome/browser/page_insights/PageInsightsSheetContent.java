@@ -65,6 +65,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     private boolean mShouldPrivacyNoticeBeShown;
     private int mFullScreenHeight;
     private Callback<View> mOnPrivacyNoticeLinkClickCallback;
+    private boolean mShouldHavePeekState;
     @Nullable private RecyclerView mCurrentRecyclerView;
 
     /**
@@ -150,15 +151,20 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     public void destroy() {
         mLayoutView.removeOnLayoutChangeListener(this);
         mCurrentRecyclerView = null;
+        mShouldHavePeekState = false;
     }
 
     @Override
     public int getPeekHeight() {
-        // TODO(b/282739536): Find the right peeking height value from the feed view dimension.
-        if (mShouldPrivacyNoticeBeShown) {
+        if (!mShouldHavePeekState) {
+            return HeightMode.DISABLED;
+        } else if (mShouldPrivacyNoticeBeShown) {
+            // TODO(b/282739536): Find the right peeking height value from the feed view dimension.
             return (int) (PEEK_HEIGHT_RATIO_WITH_PRIVACY_NOTICE * mFullScreenHeight);
+        } else {
+            // TODO(b/282739536): Find the right peeking height value from the feed view dimension.
+            return (int) (PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE * mFullScreenHeight);
         }
-        return (int) (PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE * mFullScreenHeight);
     }
 
     @Override
@@ -263,7 +269,9 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         updateCurrentRecyclerView(mSheetContentView.findViewById(R.id.page_insights_feed_content));
     }
 
-    void initContent(View feedPageView, boolean isPrivacyNoticeRequired) {
+    void initContent(
+            View feedPageView, boolean isPrivacyNoticeRequired, boolean shouldHavePeekState) {
+        mShouldHavePeekState = shouldHavePeekState;
         initPrivacyNotice(isPrivacyNoticeRequired);
         if (mShouldPrivacyNoticeBeShown) {
             ViewGroup privacyNoticeView =

@@ -311,7 +311,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         if (mIsShowingChildView) {
             mSheetContent.showFeedPage();
             mIsShowingChildView = false;
-        } else {
+        } else if (!mSheetController.collapseSheet(true)) {
             mSheetController.hideContent(mSheetContent, true);
         }
         return true;
@@ -398,7 +398,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                             PageInsightsLoggingParametersImpl.create(
                                     mProfileSupplier.get(), metadata));
         }
-        initSheetContent(metadata, /* isPrivacyNoticeRequired= */ shouldXsurfaceLog);
+        initSheetContent(
+                metadata,
+                /* isPrivacyNoticeRequired= */ shouldXsurfaceLog,
+                /* shouldHavePeekState= */ true);
         logPageInsightsEvent(PageInsightsEvent.AUTO_PEEK_TRIGGERED);
         getSurfaceRenderer().onEvent(BOTTOM_SHEET_PEEKING);
         mSheetController.requestShowContent(mSheetContent, true);
@@ -422,7 +425,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                                                 mProfileSupplier.get(), metadata));
                     }
                     initSheetContent(
-                            metadata, /* isPrivacyNoticeRequired= */ config.getShouldXsurfaceLog());
+                            metadata,
+                            /* isPrivacyNoticeRequired= */ config.getShouldXsurfaceLog(),
+                            /* shouldHavePeekState= */ false);
                     setCornerRadiusPx(mMaxCornerRadiusPx);
                     logPageInsightsEvent(PageInsightsEvent.USER_INVOKES_PIH);
                     // We need to perform this logging here, even though we also do it when the
@@ -433,9 +438,12 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                 });
     }
 
-    private void initSheetContent(PageInsightsMetadata metadata, boolean isPrivacyNoticeRequired) {
+    private void initSheetContent(
+            PageInsightsMetadata metadata,
+            boolean isPrivacyNoticeRequired,
+            boolean shouldHavePeekState) {
         mCurrentFeedView = getXSurfaceView(metadata.getFeedPage().getElementsOutput());
-        mSheetContent.initContent(mCurrentFeedView, isPrivacyNoticeRequired);
+        mSheetContent.initContent(mCurrentFeedView, isPrivacyNoticeRequired, shouldHavePeekState);
         mSheetContent.showFeedPage();
     }
 
