@@ -29,6 +29,7 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -47,11 +48,12 @@ public class QuickDeleteTabsFilterTest {
     private final List<MockTab> mMockTabList = new ArrayList<>();
 
     @Mock private TabModel mTabModelMock;
+    @Mock private Profile mProfileMock;
 
     private void createTabsAndUpdateTabModel(int countOfTabs) {
         // Create tabs.
         for (int id = 0; id < countOfTabs; id++) {
-            MockTab mockTab = new MockTab(id, /* incognito= */ false);
+            MockTab mockTab = new MockTab(id, mProfileMock);
             mockTab.setRootId(id);
             mMockTabList.add(mockTab);
         }

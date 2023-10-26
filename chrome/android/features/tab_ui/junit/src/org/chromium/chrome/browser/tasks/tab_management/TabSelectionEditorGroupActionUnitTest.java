@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -56,6 +57,7 @@ public class TabSelectionEditorGroupActionUnitTest {
     @Mock private TabModelFilterProvider mTabModelFilterProvider;
     @Mock private TabGroupModelFilter mGroupFilter;
     @Mock private ActionDelegate mDelegate;
+    @Mock private Profile mProfile;
     private MockTabModel mTabModel;
     private TabSelectionEditorAction mAction;
 
@@ -68,7 +70,7 @@ public class TabSelectionEditorGroupActionUnitTest {
                         ShowMode.MENU_ONLY,
                         ButtonType.TEXT,
                         IconPosition.START);
-        mTabModel = spy(new MockTabModel(false, null));
+        mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mGroupFilter);
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);

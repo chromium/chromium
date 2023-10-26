@@ -29,6 +29,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -46,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 public class TabStateAttributesTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
+    @Mock private Profile mProfile;
     @Mock private WebContents mWebContents;
     @Mock private TabStateAttributes.Observer mAttributesObserver;
 
@@ -62,7 +64,7 @@ public class TabStateAttributesTest {
                 });
 
         mTab =
-                new MockTab(0, false) {
+                new MockTab(0, mProfile) {
                     @Override
                     public WebContents getWebContents() {
                         return mWebContents;

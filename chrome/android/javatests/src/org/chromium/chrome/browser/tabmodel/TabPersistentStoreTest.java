@@ -425,7 +425,13 @@ public class TabPersistentStoreTest {
 
         // Set up the TabPersistentStore.
         MockTabModelSelector mockSelector =
-                TestThreadUtils.runOnUiThreadBlocking(() -> new MockTabModelSelector(0, 0, null));
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Profile profile = Profile.getLastUsedRegularProfile();
+                            return new MockTabModelSelector(
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
+                        });
+
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabCreator regularCreator = mockManager.getTabCreator(false);
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
@@ -483,7 +489,13 @@ public class TabPersistentStoreTest {
 
         // Set up the TabPersistentStore.
         MockTabModelSelector mockSelector =
-                TestThreadUtils.runOnUiThreadBlocking(() -> new MockTabModelSelector(0, 0, null));
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Profile profile = Profile.getLastUsedRegularProfile();
+                            return new MockTabModelSelector(
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
+                        });
+
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);
         final TabPersistentStore store =
@@ -524,7 +536,8 @@ public class TabPersistentStoreTest {
         MockTab tab =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            MockTab newTab = new MockTab(tabId, false);
+                            MockTab newTab =
+                                    new MockTab(tabId, Profile.getLastUsedRegularProfile());
                             ObservableSupplierImpl<Boolean> observableSupplier =
                                     new ObservableSupplierImpl<>();
                             observableSupplier.set(true);
@@ -569,7 +582,13 @@ public class TabPersistentStoreTest {
         // Load up one TabPersistentStore, but don't load up the TabState files.  This prevents the
         // Tabs from being added to the TabModel.
         MockTabModelSelector firstSelector =
-                TestThreadUtils.runOnUiThreadBlocking(() -> new MockTabModelSelector(0, 0, null));
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Profile profile = Profile.getLastUsedRegularProfile();
+                            return new MockTabModelSelector(
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
+                        });
+
         MockTabCreatorManager firstManager = new MockTabCreatorManager(firstSelector);
         MockTabPersistentStoreObserver firstObserver = new MockTabPersistentStoreObserver();
         TabPersistencePolicy firstPersistencePolicy = createTabPersistencePolicy(0, false, true);
@@ -591,7 +610,13 @@ public class TabPersistentStoreTest {
 
         // Prepare a second TabPersistentStore.
         MockTabModelSelector secondSelector =
-                TestThreadUtils.runOnUiThreadBlocking(() -> new MockTabModelSelector(0, 0, null));
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Profile profile = Profile.getLastUsedRegularProfile();
+                            return new MockTabModelSelector(
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
+                        });
+
         MockTabCreatorManager secondManager = new MockTabCreatorManager(secondSelector);
         MockTabCreator secondCreator = secondManager.getTabCreator(false);
         MockTabPersistentStoreObserver secondObserver = new MockTabPersistentStoreObserver();
@@ -664,7 +689,13 @@ public class TabPersistentStoreTest {
 
         // Initialize the classes.
         MockTabModelSelector mockSelector =
-                TestThreadUtils.runOnUiThreadBlocking(() -> new MockTabModelSelector(0, 0, null));
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Profile profile = Profile.getLastUsedRegularProfile();
+                            return new MockTabModelSelector(
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
+                        });
+
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
         TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);
@@ -717,7 +748,12 @@ public class TabPersistentStoreTest {
 
         // Initialize the classes.
         MockTabModelSelector mockSelector =
-                TestThreadUtils.runOnUiThreadBlocking(() -> new MockTabModelSelector(0, 0, null));
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Profile profile = Profile.getLastUsedRegularProfile();
+                            return new MockTabModelSelector(
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
+                        });
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
         TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);
@@ -758,7 +794,13 @@ public class TabPersistentStoreTest {
         TabStateInfo incognitoTab =
                 new TabStateInfo(true, 2, 17, "https://incognito.com", "Incognito", null);
 
-        MockTabModelSelector mockSelector = new MockTabModelSelector(0, 0, null);
+        MockTabModelSelector mockSelector =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Profile profile = Profile.getLastUsedRegularProfile();
+                            return new MockTabModelSelector(
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
+                        });
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         final MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
         TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);
@@ -833,7 +875,12 @@ public class TabPersistentStoreTest {
 
         // Initialize the classes.
         MockTabModelSelector mockSelector =
-                TestThreadUtils.runOnUiThreadBlocking(() -> new MockTabModelSelector(0, 0, null));
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Profile profile = Profile.getLastUsedRegularProfile();
+                            return new MockTabModelSelector(
+                                    profile, profile.getPrimaryOTRProfile(true), 0, 0, null);
+                        });
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
         TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);

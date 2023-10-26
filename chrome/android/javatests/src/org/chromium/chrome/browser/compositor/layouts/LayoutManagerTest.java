@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -213,7 +214,13 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         }
         when(mStartSurface.getTabGridDialogVisibilitySupplier()).thenReturn(() -> false);
 
-        mTabModelSelector = new MockTabModelSelector(standardTabCount, incognitoTabCount, this);
+        mTabModelSelector =
+                new MockTabModelSelector(
+                        Profile.getLastUsedRegularProfile(),
+                        Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(true),
+                        standardTabCount,
+                        incognitoTabCount,
+                        this);
         if (standardIndexSelected != TabModel.INVALID_TAB_INDEX) {
             TabModelUtils.setIndex(mTabModelSelector.getModel(false), standardIndexSelected, false);
         }
@@ -909,6 +916,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Override
     public MockTab createTab(int id, boolean incognito) {
-        return MockTab.createAndInitialize(id, incognito);
+        Profile profile = Profile.getLastUsedRegularProfile();
+        return MockTab.createAndInitialize(
+                id, incognito ? profile.getPrimaryOTRProfile(true) : profile);
     }
 }

@@ -14,6 +14,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -25,6 +28,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
@@ -43,6 +47,10 @@ import java.util.concurrent.Callable;
 @Batch(Batch.UNIT_TESTS)
 public class RestoreMigrateTest {
     private static final String TEST_DIR = "test";
+
+    @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
+
     private Context mAppContextToRestore;
     private Context mAppContext;
 
@@ -81,6 +89,9 @@ public class RestoreMigrateTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+
         mAppContextToRestore = ContextUtils.getApplicationContext();
         mAppContext =
                 new AdvancedMockContextWithTestDir(
@@ -167,7 +178,8 @@ public class RestoreMigrateTest {
         Assert.assertTrue("Could not create tab 3 file", tab3.createNewFile());
 
         // Build the TabPersistentStore which will try to move the files.
-        MockTabModelSelector selector = new MockTabModelSelector(0, 0, null);
+        MockTabModelSelector selector =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
         TabPersistentStore store = buildTabPersistentStore(selector, 0);
         store.waitForMigrationToFinish();
 
@@ -235,7 +247,8 @@ public class RestoreMigrateTest {
         Assert.assertTrue("Could not create new state file", newStateFile.createNewFile());
 
         // Build the TabPersistentStore which will try to move the files.
-        MockTabModelSelector selector = new MockTabModelSelector(0, 0, null);
+        MockTabModelSelector selector =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
         TabPersistentStore store = buildTabPersistentStore(selector, 0);
         store.waitForMigrationToFinish();
 
@@ -278,7 +291,8 @@ public class RestoreMigrateTest {
         Assert.assertTrue("Could not create other file", otherFile.createNewFile());
 
         // Build the TabPersistentStore which will try to move the files.
-        MockTabModelSelector selector = new MockTabModelSelector(0, 0, null);
+        MockTabModelSelector selector =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
         TabPersistentStore store = buildTabPersistentStore(selector, 0);
         store.waitForMigrationToFinish();
 
@@ -307,13 +321,16 @@ public class RestoreMigrateTest {
     @Feature({"TabPersistentStore"})
     @UiThreadTest
     public void testFindsMaxIdProperly() throws IOException {
-        TabModelSelector selector0 = new MockTabModelSelector(1, 1, null);
-        TabModelSelector selector1 = new MockTabModelSelector(1, 1, null);
+        TabModelSelector selector0 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 1, 1, null);
+        TabModelSelector selector1 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 1, 1, null);
 
         writeStateFile(selector0, 0);
         writeStateFile(selector1, 1);
 
-        TabModelSelector selectorIn = new MockTabModelSelector(0, 0, null);
+        TabModelSelector selectorIn =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
         TabPersistentStore storeIn = buildTabPersistentStore(selectorIn, 0);
 
         int maxId = Math.max(getMaxId(selector0), getMaxId(selector1));
@@ -336,14 +353,18 @@ public class RestoreMigrateTest {
     @Feature({"TabPersistentStore"})
     @UiThreadTest
     public void testOnlyLoadsSingleModel() throws IOException {
-        TabModelSelector selector0 = new MockTabModelSelector(3, 3, null);
-        TabModelSelector selector1 = new MockTabModelSelector(2, 1, null);
+        TabModelSelector selector0 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 3, 3, null);
+        TabModelSelector selector1 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 2, 1, null);
 
         writeStateFile(selector0, 0);
         writeStateFile(selector1, 1);
 
-        TabModelSelector selectorIn0 = new MockTabModelSelector(0, 0, null);
-        TabModelSelector selectorIn1 = new MockTabModelSelector(0, 0, null);
+        TabModelSelector selectorIn0 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+        TabModelSelector selectorIn1 =
+                new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
 
         TabPersistentStore storeIn0 = buildTabPersistentStore(selectorIn0, 0);
 

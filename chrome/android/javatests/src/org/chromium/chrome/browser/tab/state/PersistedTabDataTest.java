@@ -59,9 +59,6 @@ public class PersistedTabDataTest {
                     MockitoAnnotations.initMocks(this);
                 });
 
-        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
-        //                      TabHelpers from needing to use getLastUsedRegularProfile.
-        Profile.setLastUsedProfileForTesting(mProfile);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         jniMocker.mock(PersistedTabDataJni.TEST_HOOKS, mPersistedTabDataJni);
@@ -75,7 +72,7 @@ public class PersistedTabDataTest {
         Tab tab =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Tab t = MockTab.createAndInitialize(1, false);
+                            Tab t = MockTab.createAndInitialize(1, mProfile);
                             return t;
                         });
         MockPersistedTabData mockPersistedTabData =
@@ -131,7 +128,7 @@ public class PersistedTabDataTest {
     @UiThreadTest
     @Test
     public void testSerializeAndLogOutOfMemoryError_Get() {
-        Tab tab = MockTab.createAndInitialize(1, false);
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
         OutOfMemoryMockPersistedTabDataGet outOfMemoryMockPersistedTabData =
                 new OutOfMemoryMockPersistedTabDataGet(tab);
         Assert.assertNull(outOfMemoryMockPersistedTabData.getOomAndMetricsWrapper().get());
@@ -141,7 +138,7 @@ public class PersistedTabDataTest {
     @UiThreadTest
     @Test
     public void testSerializeAndLogOutOfMemoryError() {
-        Tab tab = MockTab.createAndInitialize(1, false);
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
         OutOfMemoryMockPersistedTabData outOfMemoryMockPersistedTabData =
                 new OutOfMemoryMockPersistedTabData(tab);
         Assert.assertNull(outOfMemoryMockPersistedTabData.getOomAndMetricsWrapper().get());
@@ -155,7 +152,7 @@ public class PersistedTabDataTest {
         int count = helper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Tab tab = MockTab.createAndInitialize(1, false);
+                    Tab tab = MockTab.createAndInitialize(1, mProfile);
                     ThreadVerifierMockPersistedTabData threadVerifierMockPersistedTabData =
                             new ThreadVerifierMockPersistedTabData(tab);
                     threadVerifierMockPersistedTabData.save();
@@ -168,7 +165,7 @@ public class PersistedTabDataTest {
     @UiThreadTest
     @Test
     public void testOnTabClose() throws TimeoutException {
-        TabImpl tab = MockTab.createAndInitialize(1, false);
+        TabImpl tab = MockTab.createAndInitialize(1, mProfile);
         tab.getUserDataHost()
                 .setUserData(ShoppingPersistedTabData.class, mShoppingPersistedTabDataMock);
         PersistedTabData.onTabClose(tab);

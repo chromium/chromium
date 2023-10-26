@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -20,45 +21,33 @@ public class MockTab extends TabImpl {
     private boolean mIsInitialized;
     private boolean mIsDestroyed;
     private boolean mIsBeingRestored;
-    private boolean mIncognito;
 
     private boolean mIsCustomTab;
 
     private Long mTimestampMillis;
     private Integer mParentId;
 
-    /**
-     * Create a new Tab for testing and initializes Tab UserData objects.
-     */
-    public static MockTab createAndInitialize(int id, boolean incognito) {
-        MockTab tab = new MockTab(id, incognito);
+    /** Create a new Tab for testing and initializes Tab UserData objects. */
+    public static MockTab createAndInitialize(int id, Profile profile) {
+        MockTab tab = new MockTab(id, profile);
         tab.initialize(null, null, null, null, null, false, null, false);
         return tab;
     }
 
-    /**
-     * Create a new Tab for testing and initializes Tab UserData objects.
-     */
+    /** Create a new Tab for testing and initializes Tab UserData objects. */
     public static MockTab createAndInitialize(
-            int id, boolean incognito, @TabLaunchType int tabLaunchType) {
-        MockTab tab = new MockTab(id, incognito, tabLaunchType);
+            int id, Profile profile, @TabLaunchType int tabLaunchType) {
+        MockTab tab = new MockTab(id, profile, tabLaunchType);
         tab.initialize(null, null, null, null, null, false, null, false);
         return tab;
     }
 
-    /**
-     * Constructor for id and incognito attribute. Tests often need to initialize
-     * these two fields only.
-     */
-    public MockTab(int id, boolean incognito) {
-        this(id, incognito, null);
+    public MockTab(int id, Profile profile) {
+        this(id, profile, null);
     }
 
-    // TODO(crbug/1494442): Update to take a Profile instead of an incognito boolean. Ensure the
-    //                      Profile reference is non-null.
-    public MockTab(int id, boolean incognito, @TabLaunchType Integer type) {
-        super(id, null, type);
-        mIncognito = incognito;
+    public MockTab(int id, Profile profile, @TabLaunchType Integer type) {
+        super(id, profile, type);
     }
 
     @Override
@@ -98,11 +87,6 @@ public class MockTab extends TabImpl {
             return mWebContentsOverride;
         }
         return super.getWebContents();
-    }
-
-    @Override
-    public boolean isIncognito() {
-        return mIncognito;
     }
 
     @Override

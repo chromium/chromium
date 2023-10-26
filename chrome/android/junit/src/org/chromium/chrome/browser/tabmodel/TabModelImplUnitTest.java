@@ -55,6 +55,8 @@ public class TabModelImplUnitTest {
     /** Required to be non-null for {@link TabModelJniBridge}. */
     @Mock private Profile mProfile;
 
+    @Mock private Profile mIncognitoProfile;
+
     /** Required to simulate tab thumbnail deletion. */
     @Mock private TabContentManager mTabContentManager;
 
@@ -76,9 +78,7 @@ public class TabModelImplUnitTest {
         // Disable HomepageManager#shouldCloseAppWithZeroTabs() for TabModelImpl#closeAllTabs().
         HomepageManager.getInstance().setPrefHomepageEnabled(false);
 
-        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
-        //                      TabHelpers from needing to use getLastUsedRegularProfile.
-        Profile.setLastUsedProfileForTesting(mProfile);
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         mJniMocker.mock(TabModelJniBridgeJni.TEST_HOOKS, mTabModelJniBridge);
@@ -101,7 +101,7 @@ public class TabModelImplUnitTest {
 
     private Tab createTab(final TabModel model, long activeTimestampMillis, int parentId) {
         final int launchType = TabLaunchType.FROM_CHROME_UI;
-        MockTab tab = MockTab.createAndInitialize(mNextTabId++, model.isIncognito());
+        MockTab tab = MockTab.createAndInitialize(mNextTabId++, model.getProfile());
         tab.setTimestampMillis(activeTimestampMillis);
         tab.setParentId(parentId);
         tab.setIsInitialized(true);
@@ -119,11 +119,10 @@ public class TabModelImplUnitTest {
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
         TabModelOrderControllerImpl orderController =
                 new TabModelOrderControllerImpl(mTabModelSelector);
-        TabModel tabModel;
-        when(mProfile.isOffTheRecord()).thenReturn(isIncognito);
-        tabModel =
+        Profile profile = isIncognito ? mIncognitoProfile : mProfile;
+        TabModel tabModel =
                 new TabModelImpl(
-                        mProfile,
+                        profile,
                         ActivityType.TABBED,
                         /* regularTabCreator= */ null,
                         /* incognitoTabCreator= */ null,

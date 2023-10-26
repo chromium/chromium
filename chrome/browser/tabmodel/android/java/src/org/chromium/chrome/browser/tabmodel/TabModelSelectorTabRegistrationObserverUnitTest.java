@@ -65,9 +65,6 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         when(mProfile.isOffTheRecord()).thenReturn(false);
 
-        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
-        //                      TabHelpers from needing to use getLastUsedRegularProfile.
-        Profile.setLastUsedProfileForTesting(mProfile);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         mTabModelSelector = createTabModelSelector();
@@ -118,9 +115,9 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 mock(TabModelSelectorTabRegistrationObserver.Observer.class);
         mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
 
-        Tab normalTab1 = MockTab.createAndInitialize(1, false);
-        Tab normalTab2 = MockTab.createAndInitialize(2, false);
-        Tab incognitoTab1 = MockTab.createAndInitialize(3, true);
+        Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
+        Tab normalTab2 = MockTab.createAndInitialize(2, mProfile);
+        Tab incognitoTab1 = MockTab.createAndInitialize(3, mIncognitoProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(
@@ -150,9 +147,9 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
 
     @Test
     public void testOnTabRegistered_ExistingTabs() {
-        Tab normalTab1 = MockTab.createAndInitialize(1, false);
-        Tab normalTab2 = MockTab.createAndInitialize(2, false);
-        Tab incognitoTab1 = MockTab.createAndInitialize(3, true);
+        Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
+        Tab normalTab2 = MockTab.createAndInitialize(2, mProfile);
+        Tab incognitoTab1 = MockTab.createAndInitialize(3, mIncognitoProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(
@@ -186,8 +183,8 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
 
     @Test
     public void testOnTabRegistered_NotCalledForPreviouslyRemovedTabs() {
-        Tab normalTab1 = MockTab.createAndInitialize(1, false);
-        Tab normalTab2 = MockTab.createAndInitialize(2, false);
+        Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
+        Tab normalTab2 = MockTab.createAndInitialize(2, mProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(
@@ -213,7 +210,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
 
     @Test
     public void testOnTabUnRegistered_ExistingTab() {
-        Tab normalTab1 = MockTab.createAndInitialize(1, false);
+        Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(
@@ -239,7 +236,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 mock(TabModelSelectorTabRegistrationObserver.Observer.class);
         mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
 
-        Tab normalTab1 = MockTab.createAndInitialize(1, false);
+        Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(
@@ -259,7 +256,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 mock(TabModelSelectorTabRegistrationObserver.Observer.class);
         mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
 
-        Tab normalTab1 = MockTab.createAndInitialize(1, false);
+        Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(
@@ -280,7 +277,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 mock(TabModelSelectorTabRegistrationObserver.Observer.class);
         mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
 
-        Tab normalTab1 = MockTab.createAndInitialize(1, false);
+        Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(
@@ -292,7 +289,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
 
         mTabRegistrationObserver.removeObserver(observer);
 
-        Tab normalTab2 = MockTab.createAndInitialize(2, false);
+        Tab normalTab2 = MockTab.createAndInitialize(2, mProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(
@@ -311,8 +308,8 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 mock(TabModelSelectorTabRegistrationObserver.Observer.class);
         mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
 
-        Tab normalTab1 = MockTab.createAndInitialize(1, false);
-        Tab normalTab2 = MockTab.createAndInitialize(2, false);
+        Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
+        Tab normalTab2 = MockTab.createAndInitialize(2, mProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(
@@ -334,7 +331,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
         verify(observer).onTabUnregistered(normalTab1);
         verify(observer).onTabUnregistered(normalTab2);
 
-        Tab normalTab3 = MockTab.createAndInitialize(3, false);
+        Tab normalTab3 = MockTab.createAndInitialize(3, mProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(

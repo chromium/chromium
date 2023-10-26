@@ -158,7 +158,7 @@ public class TabPersistentStoreIntegrationTest {
     private void doTestOpenAndCloseTabCreatesAndDeletesFile() {
         // Setup the test: Create a tab
         TabModel tabModel = mTabModelSelector.getModel(false);
-        MockTab tab = MockTab.createAndInitialize(TAB_ID, false, TabLaunchType.FROM_CHROME_UI);
+        MockTab tab = MockTab.createAndInitialize(TAB_ID, mProfile, TabLaunchType.FROM_CHROME_UI);
         // Ordinarily, TabState comes from native, so setup a stub in TabStateExtractor.
         TabState tabState = new TabState();
         tabState.contentsState = WEB_CONTENTS_STATE;
@@ -199,7 +199,7 @@ public class TabPersistentStoreIntegrationTest {
 
         // Setup the test: Create a tab and close it
         TabModel tabModel = mTabModelSelector.getModel(false);
-        Tab tab = MockTab.createAndInitialize(TAB_ID, false, TabLaunchType.FROM_CHROME_UI);
+        Tab tab = MockTab.createAndInitialize(TAB_ID, mProfile, TabLaunchType.FROM_CHROME_UI);
         tabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         tabModel.closeTab(tab, false, false, true);
         runAllAsyncTasks();
@@ -222,7 +222,7 @@ public class TabPersistentStoreIntegrationTest {
 
         // Setup the test: Create a tab and close it.
         TabModel tabModel = mTabModelSelector.getModel(false);
-        Tab tab = MockTab.createAndInitialize(1, false, TabLaunchType.FROM_CHROME_UI);
+        Tab tab = MockTab.createAndInitialize(1, mProfile, TabLaunchType.FROM_CHROME_UI);
         tabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
@@ -250,11 +250,11 @@ public class TabPersistentStoreIntegrationTest {
 
         // Setup the test: Create three tabs and close them all.
         TabModel tabModel = mTabModelSelector.getModel(false);
-        Tab tab1 = MockTab.createAndInitialize(1, false, TabLaunchType.FROM_CHROME_UI);
+        Tab tab1 = MockTab.createAndInitialize(1, mProfile, TabLaunchType.FROM_CHROME_UI);
         tabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        Tab tab2 = MockTab.createAndInitialize(2, false, TabLaunchType.FROM_CHROME_UI);
+        Tab tab2 = MockTab.createAndInitialize(2, mProfile, TabLaunchType.FROM_CHROME_UI);
         tabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        Tab tab3 = MockTab.createAndInitialize(3, false, TabLaunchType.FROM_CHROME_UI);
+        Tab tab3 = MockTab.createAndInitialize(3, mProfile, TabLaunchType.FROM_CHROME_UI);
         tabModel.addTab(tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();

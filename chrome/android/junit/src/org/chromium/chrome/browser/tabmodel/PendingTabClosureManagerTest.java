@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -106,6 +107,7 @@ public class PendingTabClosureManagerTest {
 
     FakeTabModel mTabModel;
     @Mock PendingClosureDelegate mDelegate;
+    @Mock Profile mProfile;
 
     @Before
     public void setUp() {
@@ -148,7 +150,7 @@ public class PendingTabClosureManagerTest {
     @Test
     public void testCommitSingleTabEvent() {
         InOrder delegateInOrder = inOrder(mDelegate);
-        Tab tab0 = new MockTab(0, false);
+        Tab tab0 = new MockTab(0, mProfile);
         Tab[] tabList = new Tab[] {tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
@@ -167,7 +169,7 @@ public class PendingTabClosureManagerTest {
     @Test
     public void testCancelSingleTabEvent() {
         InOrder delegateInOrder = inOrder(mDelegate);
-        Tab tab0 = new MockTab(0, false);
+        Tab tab0 = new MockTab(0, mProfile);
         Tab[] tabList = new Tab[] {tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
@@ -187,8 +189,8 @@ public class PendingTabClosureManagerTest {
     @Test
     public void testCommitMultipleTabEvent() {
         InOrder delegateInOrder = inOrder(mDelegate);
-        Tab tab0 = new MockTab(0, false);
-        Tab tab1 = new MockTab(1, false);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab tab1 = new MockTab(1, mProfile);
         Tab[] tabList = new Tab[] {tab1, tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
@@ -211,8 +213,8 @@ public class PendingTabClosureManagerTest {
     @Test
     public void testCancelMultipleTabEvent() {
         InOrder delegateInOrder = inOrder(mDelegate);
-        Tab tab0 = new MockTab(0, false);
-        Tab tab1 = new MockTab(1, false);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab tab1 = new MockTab(1, mProfile);
         Tab[] tabList = new Tab[] {tab1, tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
@@ -235,8 +237,8 @@ public class PendingTabClosureManagerTest {
      */
     @Test
     public void testEnforceAtomicityOfCommit() {
-        Tab tab0 = new MockTab(0, false);
-        Tab tab1 = new MockTab(1, false);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab tab1 = new MockTab(1, mProfile);
         Tab[] tabList = new Tab[] {tab1, tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
@@ -263,8 +265,8 @@ public class PendingTabClosureManagerTest {
     @Test
     public void testEnforceAtomicityOfCancel() {
         InOrder delegateInOrder = inOrder(mDelegate);
-        Tab tab0 = new MockTab(0, false);
-        Tab tab1 = new MockTab(1, false);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab tab1 = new MockTab(1, mProfile);
         Tab[] tabList = new Tab[] {tab1, tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
@@ -287,11 +289,11 @@ public class PendingTabClosureManagerTest {
     @Test
     public void testCommitAndCancelMultipleEventsOutOfOrder() {
         InOrder delegateInOrder = inOrder(mDelegate);
-        Tab tab0 = new MockTab(0, false);
-        Tab tab1 = new MockTab(1, false);
-        Tab tab2 = new MockTab(2, false);
-        Tab tab3 = new MockTab(3, false);
-        Tab tab4 = new MockTab(4, false);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab tab1 = new MockTab(1, mProfile);
+        Tab tab2 = new MockTab(2, mProfile);
+        Tab tab3 = new MockTab(3, mProfile);
+        Tab tab4 = new MockTab(4, mProfile);
         Tab[] tabList = new Tab[] {tab0, tab1, tab2, tab3, tab4};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
@@ -336,12 +338,12 @@ public class PendingTabClosureManagerTest {
     @Test
     public void testCommitAllClosures() {
         InOrder delegateInOrder = inOrder(mDelegate);
-        Tab tab0 = new MockTab(0, false);
-        Tab tab1 = new MockTab(1, false);
-        Tab tab2 = new MockTab(2, false);
-        Tab tab3 = new MockTab(3, false);
-        Tab tab4 = new MockTab(4, false);
-        Tab tab5 = new MockTab(5, false);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab tab1 = new MockTab(1, mProfile);
+        Tab tab2 = new MockTab(2, mProfile);
+        Tab tab3 = new MockTab(3, mProfile);
+        Tab tab4 = new MockTab(4, mProfile);
+        Tab tab5 = new MockTab(5, mProfile);
         Tab[] tabList = new Tab[] {tab0, tab1, tab2, tab3, tab4, tab5};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
@@ -393,10 +395,10 @@ public class PendingTabClosureManagerTest {
     @Test
     public void testOpenMostRecentlyClosedWithCommit() {
         InOrder delegateInOrder = inOrder(mDelegate);
-        Tab tab0 = new MockTab(0, false);
-        Tab tab1 = new MockTab(1, false);
-        Tab tab2 = new MockTab(2, false);
-        Tab tab3 = new MockTab(3, false);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab tab1 = new MockTab(1, mProfile);
+        Tab tab2 = new MockTab(2, mProfile);
+        Tab tab3 = new MockTab(3, mProfile);
         Tab[] tabList = new Tab[] {tab0, tab1, tab2, tab3};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
@@ -423,10 +425,10 @@ public class PendingTabClosureManagerTest {
     @Test
     public void testOpenMostRecentlyClosedWithClose() {
         InOrder delegateInOrder = inOrder(mDelegate);
-        Tab tab0 = new MockTab(0, false);
-        Tab tab1 = new MockTab(1, false);
-        Tab tab2 = new MockTab(2, false);
-        Tab tab3 = new MockTab(3, false);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab tab1 = new MockTab(1, mProfile);
+        Tab tab2 = new MockTab(2, mProfile);
+        Tab tab3 = new MockTab(3, mProfile);
         Tab[] tabList = new Tab[] {tab0, tab1, tab2, tab3};
         setupRewoundState(mPendingTabClosureManager, tabList);
 

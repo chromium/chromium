@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.media.ui.MediaSessionTabHelper;
 import org.chromium.chrome.browser.password_check.PasswordCheckUkmRecorder;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 
 /**
@@ -45,10 +44,9 @@ public final class TabHelpers {
         // we should only do it if the user is eligible for the feature (e.g. has sync enabled).
         if (!tab.isIncognito()
                 && !((TabImpl) tab).isCustomTab()
-                && PriceTrackingFeatures.isPriceTrackingEligible(
-                        Profile.getLastUsedRegularProfile())
+                && PriceTrackingFeatures.isPriceTrackingEligible(tab.getProfile())
                 && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled(
-                        Profile.getLastUsedRegularProfile())) {
+                        tab.getProfile())) {
             ShoppingPersistedTabData.initialize(tab);
         }
     }

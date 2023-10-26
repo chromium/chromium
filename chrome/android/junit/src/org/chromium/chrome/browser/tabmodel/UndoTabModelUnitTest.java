@@ -61,6 +61,8 @@ public class UndoTabModelUnitTest {
     /** Required to be non-null for {@link TabModelJniBridge}. */
     @Mock private Profile mProfile;
 
+    @Mock private Profile mIncognitoProfile;
+
     /** Required to simulate tab thumbnail deletion. */
     @Mock private TabContentManager mTabContentManager;
 
@@ -82,9 +84,8 @@ public class UndoTabModelUnitTest {
         // Disable HomepageManager#shouldCloseAppWithZeroTabs() for TabModelImpl#closeAllTabs().
         HomepageManager.getInstance().setPrefHomepageEnabled(false);
 
-        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
-        //                      TabHelpers from needing to use getLastUsedRegularProfile.
-        Profile.setLastUsedProfileForTesting(mProfile);
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         mJniMocker.mock(TabModelJniBridgeJni.TEST_HOOKS, mTabModelJniBridge);
@@ -111,10 +112,9 @@ public class UndoTabModelUnitTest {
         final boolean supportsUndo = !isIncognito;
         if (isIncognito) {
             // TODO(crbug.com/1318046): Consider using an incognito tab model.
-            when(mProfile.isOffTheRecord()).thenReturn(isIncognito);
             tabModel =
                     new TabModelImpl(
-                            mProfile,
+                            mIncognitoProfile,
                             ActivityType.TABBED,
                             /* regularTabCreator= */ null,
                             /* incognitoTabCreator= */ null,
@@ -124,9 +124,8 @@ public class UndoTabModelUnitTest {
                             realAsyncTabParamsManager,
                             mTabModelDelegate,
                             supportsUndo);
-            when(mTabModelSelector.getModel(isIncognito)).thenReturn(tabModel);
+            when(mTabModelSelector.getModel(true)).thenReturn(tabModel);
         } else {
-            when(mProfile.isOffTheRecord()).thenReturn(isIncognito);
             tabModel =
                     new TabModelImpl(
                             mProfile,
@@ -139,7 +138,7 @@ public class UndoTabModelUnitTest {
                             realAsyncTabParamsManager,
                             mTabModelDelegate,
                             supportsUndo);
-            when(mTabModelSelector.getModel(isIncognito)).thenReturn(tabModel);
+            when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
         }
         // Assume the model is the current and active model.
         tabModel.setActive(true);
@@ -194,7 +193,9 @@ public class UndoTabModelUnitTest {
 
     private void createTab(final TabModel model, boolean isIncognito) {
         final int launchType = TabLaunchType.FROM_CHROME_UI;
-        MockTab tab = MockTab.createAndInitialize(mNextTabId++, isIncognito, launchType);
+        MockTab tab =
+                MockTab.createAndInitialize(
+                        mNextTabId++, isIncognito ? mIncognitoProfile : mProfile, launchType);
         tab.setIsInitialized(true);
         model.addTab(tab, -1, launchType, TabCreationState.LIVE_IN_FOREGROUND);
     }

@@ -20,6 +20,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -40,6 +43,7 @@ import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -67,6 +71,9 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Tests for the Custom Tab persistence logic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class CustomTabTabPersistencePolicyTest {
+    @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
+
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
     private SequencedTaskRunner mSequencedTaskRunner =
@@ -74,6 +81,10 @@ public class CustomTabTabPersistencePolicyTest {
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+
+        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+
         // CustomTabsConnection needs a true context, not the mock context set below.
         TestThreadUtils.runOnUiThreadBlocking(() -> CustomTabsConnection.getInstance());
 
@@ -452,7 +463,8 @@ public class CustomTabTabPersistencePolicyTest {
                 new MockTabModel.MockTabModelDelegate() {
                     @Override
                     public MockTab createTab(int id, boolean incognito) {
-                        return new MockTab(id, incognito) {
+                        Profile profile = incognito ? mIncognitoProfile : mProfile;
+                        return new MockTab(id, profile) {
                             @Override
                             public GURL getUrl() {
                                 return new GURL("https://www.google.com");
@@ -460,11 +472,12 @@ public class CustomTabTabPersistencePolicyTest {
                         };
                     }
                 };
-        final MockTabModel normalTabModel = new MockTabModel(false, tabModelDelegate);
+        final MockTabModel normalTabModel = new MockTabModel(mProfile, tabModelDelegate);
         if (normalTabIds != null) {
             for (int tabId : normalTabIds) normalTabModel.addTab(tabId);
         }
-        final MockTabModel incognitoTabModel = new MockTabModel(true, tabModelDelegate);
+        final MockTabModel incognitoTabModel =
+                new MockTabModel(mIncognitoProfile, tabModelDelegate);
         if (incognitoTabIds != null) {
             for (int tabId : incognitoTabIds) incognitoTabModel.addTab(tabId);
         }

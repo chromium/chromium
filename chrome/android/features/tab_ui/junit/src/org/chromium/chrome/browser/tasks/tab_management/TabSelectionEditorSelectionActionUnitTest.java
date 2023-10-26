@@ -24,6 +24,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
@@ -43,6 +44,7 @@ public class TabSelectionEditorSelectionActionUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
+    @Mock private Profile mProfile;
     private MockTabModel mTabModel;
     private TabSelectionEditorAction mAction;
     private Context mContext;
@@ -55,7 +57,7 @@ public class TabSelectionEditorSelectionActionUnitTest {
         mAction =
                 TabSelectionEditorSelectionAction.createAction(
                         mContext, ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END);
-        mTabModel = spy(new MockTabModel(false, null));
+        mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         // TODO(ckitagawa): Add tests for when this is true.
         mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate, false);

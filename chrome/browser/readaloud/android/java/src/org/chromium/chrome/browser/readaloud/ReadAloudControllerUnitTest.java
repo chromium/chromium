@@ -75,6 +75,7 @@ public class ReadAloudControllerUnitTest {
     private FakeTranslateBridgeJni mFakeTranslateBridge;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     @Mock private Profile mMockProfile;
+    @Mock private Profile mMockIncognitoProfile;
     @Mock private ReadAloudReadabilityHooksImpl mHooksImpl;
     @Mock private ReadAloudPlaybackHooks mPlaybackHooks;
     @Mock private Player mPlayerCoordinator;
@@ -102,21 +103,22 @@ public class ReadAloudControllerUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         when(mMockProfile.isOffTheRecord()).thenReturn(false);
+        when(mMockIncognitoProfile.isOffTheRecord()).thenReturn(true);
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
 
-        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
-        //                      TabHelpers from needing to use getLastUsedRegularProfile.
-        Profile.setLastUsedProfileForTesting(mMockProfile);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         mFakeTranslateBridge = new FakeTranslateBridgeJni();
         mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mFakeTranslateBridge);
         mTabModelSelector =
                 new MockTabModelSelector(
+                        mMockProfile,
+                        mMockIncognitoProfile,
                         /* tabCount= */ 2,
                         /* incognitoTabCount= */ 1,
                         (id, incognito) -> {
-                            MockTab tab = spy(MockTab.createAndInitialize(id, incognito));
+                            Profile profile = incognito ? mMockIncognitoProfile : mMockProfile;
+                            MockTab tab = spy(MockTab.createAndInitialize(id, profile));
                             return tab;
                         });
         when(mHooksImpl.isEnabled()).thenReturn(true);

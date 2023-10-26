@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.EventFilter.EventType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -93,6 +94,8 @@ public class CompositorViewHolderUnitTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock private Activity mActivity;
+    @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
     @Mock private ToolbarControlContainer mControlContainer;
     @Mock private View mContainerView;
     @Mock private ActivityTabProvider mActivityTabProvider;
@@ -128,8 +131,10 @@ public class CompositorViewHolderUnitTest {
         mKeyboardAccessoryInsetSupplier = new ObservableSupplierImpl<>();
         mViewportInsets.setKeyboardAccessoryInsetSupplier(mKeyboardAccessoryInsetSupplier);
 
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+
         // Setup the TabModelSelector.
-        mTabModelSelector = new MockTabModelSelector(0, 0, null);
+        mTabModelSelector = new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
 
         // Setup for BrowserControlsManager which initiates content/control offset changes
         // for CompositorViewHolder.

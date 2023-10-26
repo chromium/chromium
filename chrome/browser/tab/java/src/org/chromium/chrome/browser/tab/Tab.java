@@ -62,7 +62,7 @@ public interface Tab extends TabLifecycle {
     UserDataHost getUserDataHost();
 
     /** Returns the Profile this tab is associated with. */
-    // TODO(crbug/1494442): Add @NonNull when MockTab is updated to pass a non-null Profile.
+    @NonNull
     Profile getProfile();
 
     /**

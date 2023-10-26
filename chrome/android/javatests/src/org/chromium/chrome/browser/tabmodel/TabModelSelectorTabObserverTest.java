@@ -8,15 +8,20 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -35,11 +40,19 @@ import java.util.concurrent.ExecutionException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class TabModelSelectorTabObserverTest {
+    @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
     private int mTabId;
 
     @ClassRule
     public static final TabModelSelectorObserverTestRule sTestRule =
             new TabModelSelectorObserverTestRule();
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+    }
 
     @Test
     @SmallTest
@@ -183,7 +196,7 @@ public class TabModelSelectorTabObserverTest {
     private Tab createTestTab(boolean incognito) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
-                    return new MockTab(mTabId++, incognito);
+                    return new MockTab(mTabId++, incognito ? mIncognitoProfile : mProfile);
                 });
     }
 

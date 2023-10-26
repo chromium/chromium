@@ -20,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -56,6 +57,7 @@ public class PseudoTabUnitTest {
     @Mock TabModelFilter mTabModelFilter2;
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabModelFilterProvider mTabModelFilterProvider;
+    @Mock Profile mProfile;
 
     private TabImpl mTab1;
     private TabImpl mTab2;
@@ -413,7 +415,7 @@ public class PseudoTabUnitTest {
 
     @Test
     public void testTabDestroyedTitle() {
-        Tab tab = new MockTab(TAB4_ID, false);
+        Tab tab = new MockTab(TAB4_ID, mProfile);
         PseudoTab pseudoTab = PseudoTab.fromTab(tab);
         tab.destroy();
         // Title was not set. Without the isInitialized() check,
@@ -424,7 +426,7 @@ public class PseudoTabUnitTest {
 
     @Test
     public void testTabDestroyedUrl() {
-        Tab tab = new MockTab(TAB4_ID, false);
+        Tab tab = new MockTab(TAB4_ID, mProfile);
         PseudoTab pseudoTab = PseudoTab.fromTab(tab);
         tab.destroy();
         // Url was not set. Without the isInitialized() check,
@@ -435,7 +437,7 @@ public class PseudoTabUnitTest {
 
     @Test
     public void testTabDestroyedRootId() {
-        Tab tab = new MockTab(TAB4_ID, false);
+        Tab tab = new MockTab(TAB4_ID, mProfile);
         PseudoTab pseudoTab = PseudoTab.fromTab(tab);
         tab.destroy();
         // Root ID was not set. Without the isInitialized() check,
@@ -446,7 +448,7 @@ public class PseudoTabUnitTest {
 
     @Test
     public void testTabDestroyedTimestamp() {
-        Tab tab = new MockTab(TAB4_ID, false);
+        Tab tab = new MockTab(TAB4_ID, mProfile);
         PseudoTab pseudoTab = PseudoTab.fromTab(tab);
         tab.destroy();
         // Timestamp was not set. Without the isInitialized() check,

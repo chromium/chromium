@@ -47,7 +47,9 @@ public class MockTabCreator extends TabCreator {
     @Override
     public Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position) {
-        Tab tab = new MockTab(0, mIsIncognito, TabLaunchType.FROM_LINK);
+        Tab tab =
+                new MockTab(
+                        0, mSelector.getModel(mIsIncognito).getProfile(), TabLaunchType.FROM_LINK);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(false));
         ((TabImpl) tab).initialize(null, null, loadUrlParams, null, null, false, null, false);
         mSelector.getModel(mIsIncognito)
@@ -58,7 +60,11 @@ public class MockTabCreator extends TabCreator {
 
     @Override
     public Tab createFrozenTab(TabState state, int id, boolean isIncognito, int index) {
-        Tab tab = new MockTab(id, isIncognito, TabLaunchType.FROM_RESTORE);
+        Tab tab =
+                new MockTab(
+                        id,
+                        mSelector.getModel(mIsIncognito).getProfile(),
+                        TabLaunchType.FROM_RESTORE);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(true));
         if (state != null) TabTestUtils.restoreFieldsFromState(tab, state);
         ((TabImpl) tab).initialize(null, null, null, null, null, false, null, false);

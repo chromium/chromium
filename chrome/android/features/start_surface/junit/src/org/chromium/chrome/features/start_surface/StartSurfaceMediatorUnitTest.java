@@ -1519,7 +1519,7 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(TabSwitcherType.SINGLE)
                 .when(mCarouselOrSingleTabSwitcherModuleController)
                 .getTabSwitcherType();
-        MockTab regularTab = new MockTab(1, false);
+        MockTab regularTab = new MockTab(1, mProfile);
         regularTab.setGurlOverrideForTesting(JUnitTestGURLs.NTP_URL);
         when(mTabModelSelector.getCurrentTab()).thenReturn(regularTab);
 

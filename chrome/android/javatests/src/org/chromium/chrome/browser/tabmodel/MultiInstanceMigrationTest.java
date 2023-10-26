@@ -14,6 +14,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -23,6 +26,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -40,10 +44,17 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class MultiInstanceMigrationTest {
+    @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
+
     private Context mAppContext;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+
+        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+
         mAppContext =
                 new AdvancedMockContext(
                         InstrumentationRegistry.getInstrumentation()
@@ -75,7 +86,8 @@ public class MultiInstanceMigrationTest {
     private void buildPersistentStoreAndWaitForMigration() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    MockTabModelSelector selector = new MockTabModelSelector(0, 0, null);
+                    MockTabModelSelector selector =
+                            new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
                     TabbedModeTabPersistencePolicy persistencePolicy =
                             new TabbedModeTabPersistencePolicy(
                                     0,

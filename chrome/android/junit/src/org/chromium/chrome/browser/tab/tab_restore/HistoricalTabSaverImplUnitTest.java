@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -38,6 +39,7 @@ import java.util.List;
 public class HistoricalTabSaverImplUnitTest {
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
     @Mock private TabModel mTabModel;
     @Mock private HistoricalTabSaverImpl.Natives mHistoricalTabSaverJni;
 
@@ -51,9 +53,7 @@ public class HistoricalTabSaverImplUnitTest {
         mHistoricalTabSaver = new HistoricalTabSaverImpl(mTabModel);
         mHistoricalTabSaver.ignoreUrlSchemesForTesting(true);
 
-        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
-        //                      TabHelpers from needing to use getLastUsedRegularProfile.
-        Profile.setLastUsedProfileForTesting(mProfile);
+        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
     }
 
@@ -78,7 +78,7 @@ public class HistoricalTabSaverImplUnitTest {
     /** Tests nothing is saved for an incognito tab closure. */
     @Test
     public void testCreateHistoricalBulk_Incognito() {
-        Tab tab = new MockTab(0, true);
+        Tab tab = new MockTab(0, mIncognitoProfile);
         mHistoricalTabSaver.createHistoricalTab(tab);
 
         verifyNoMoreInteractions(mHistoricalTabSaverJni);
@@ -87,7 +87,7 @@ public class HistoricalTabSaverImplUnitTest {
     /** Tests collapsing a group with a single tab into a single tab entry. */
     @Test
     public void testCreateHistoricalTab_FromGroup() {
-        Tab tab = new MockTab(0, false);
+        Tab tab = new MockTab(0, mProfile);
 
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {tab}));
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
@@ -108,7 +108,7 @@ public class HistoricalTabSaverImplUnitTest {
         WebContentsState tempState = new WebContentsState(buf);
         tempState.setVersion(1);
 
-        MockTab tab = MockTab.createAndInitialize(0, false);
+        MockTab tab = MockTab.createAndInitialize(0, mProfile);
         tab.setWebContentsState(tempState);
 
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {tab}));
@@ -120,7 +120,7 @@ public class HistoricalTabSaverImplUnitTest {
     /** Tests collapsing a bulk closure with a single tab into a single tab entry. */
     @Test
     public void testCreateHistoricalTab_FromBulk() {
-        Tab tab = new MockTab(0, false);
+        Tab tab = new MockTab(0, mProfile);
 
         mHistoricalTabSaver.createHistoricalBulkClosure(
                 Collections.singletonList(new HistoricalEntry(tab)));
@@ -141,7 +141,7 @@ public class HistoricalTabSaverImplUnitTest {
         WebContentsState tempState = new WebContentsState(buf);
         tempState.setVersion(1);
 
-        MockTab tab = MockTab.createAndInitialize(0, false);
+        MockTab tab = MockTab.createAndInitialize(0, mProfile);
         tab.setWebContentsState(tempState);
 
         mHistoricalTabSaver.createHistoricalBulkClosure(
@@ -153,8 +153,8 @@ public class HistoricalTabSaverImplUnitTest {
     /** Tests a bulk closure is collapsed to a group if there is just a group. */
     @Test
     public void testCreateHistoricalGroup_FromBulk() {
-        Tab tab0 = new MockTab(0, false);
-        Tab tab1 = new MockTab(1, false);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab tab1 = new MockTab(1, mProfile);
 
         // Also test duplicates are allowed.
         Tab[] tabList = new Tab[] {tab0, tab1};
@@ -173,8 +173,8 @@ public class HistoricalTabSaverImplUnitTest {
     /** Tests incognito tabs are removed and collapse to a single tab. */
     @Test
     public void testCreateHistoricalTab_FromGroupWithIncognito() {
-        Tab tab0 = new MockTab(0, false);
-        Tab tab1 = new MockTab(1, true);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab tab1 = new MockTab(1, mIncognitoProfile);
 
         // Also test duplicates are allowed.
         Tab[] tabList = new Tab[] {tab0, tab1};
@@ -189,9 +189,9 @@ public class HistoricalTabSaverImplUnitTest {
     /** Tests incognito tabs are removed and maintain a group. */
     @Test
     public void testCreateHistoricalGroup_FromGroupWithIncognito() {
-        Tab tab0 = new MockTab(0, false);
-        Tab tab1 = new MockTab(1, true);
-        Tab tab2 = new MockTab(2, false);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab tab1 = new MockTab(1, mIncognitoProfile);
+        Tab tab2 = new MockTab(2, mProfile);
 
         // Also test duplicates are allowed.
         Tab[] tabList = new Tab[] {tab0, tab1, tab2};
@@ -214,7 +214,7 @@ public class HistoricalTabSaverImplUnitTest {
     /** Tests duplicates are allowed. */
     @Test
     public void testCreateHistoricalGroup_FromGroupWithDuplicates() {
-        Tab tab0 = new MockTab(0, false);
+        Tab tab0 = new MockTab(0, mProfile);
 
         // Also test duplicates are allowed.
         Tab[] tabList = new Tab[] {tab0, tab0, tab0};
@@ -233,9 +233,9 @@ public class HistoricalTabSaverImplUnitTest {
     /** Tests a bulk closure of tabs including some invalid entries. */
     @Test
     public void testCreateHistoricalBulk_AllTabsWithInvalid() {
-        Tab tab0 = new MockTab(0, true);
-        Tab tab1 = new MockTab(1, false);
-        Tab tab2 = new MockTab(2, false);
+        Tab tab0 = new MockTab(0, mIncognitoProfile);
+        Tab tab1 = new MockTab(1, mProfile);
+        Tab tab2 = new MockTab(2, mProfile);
 
         // Also test duplicates are allowed.
         List<HistoricalEntry> entries = new ArrayList<>();
@@ -264,24 +264,24 @@ public class HistoricalTabSaverImplUnitTest {
     @Test
     public void testCreateHistoricalBulk_MixedWithInvalid() {
         // Tab.
-        Tab tab0 = new MockTab(0, false);
+        Tab tab0 = new MockTab(0, mProfile);
         // Incognito tab.
-        Tab tab1 = new MockTab(1, true);
+        Tab tab1 = new MockTab(1, mIncognitoProfile);
         // Incognito group.
-        Tab tab2 = new MockTab(2, true);
-        Tab tab3 = new MockTab(3, true);
+        Tab tab2 = new MockTab(2, mIncognitoProfile);
+        Tab tab3 = new MockTab(3, mIncognitoProfile);
         // Group.
-        Tab tab4 = new MockTab(4, false);
-        Tab tab5 = new MockTab(5, true);
-        Tab tab6 = new MockTab(6, false);
+        Tab tab4 = new MockTab(4, mProfile);
+        Tab tab5 = new MockTab(5, mIncognitoProfile);
+        Tab tab6 = new MockTab(6, mProfile);
         // Tab.
-        Tab tab7 = new MockTab(7, false);
+        Tab tab7 = new MockTab(7, mProfile);
         // Group collapse to tab.
-        Tab tab8 = new MockTab(8, false);
-        Tab tab9 = new MockTab(9, true);
+        Tab tab8 = new MockTab(8, mProfile);
+        Tab tab9 = new MockTab(9, mIncognitoProfile);
         // Group.
-        Tab tab10 = new MockTab(10, false);
-        Tab tab11 = new MockTab(11, false);
+        Tab tab10 = new MockTab(10, mProfile);
+        Tab tab11 = new MockTab(11, mProfile);
 
         // Also test duplicates are allowed.
         List<HistoricalEntry> entries = new ArrayList<>();

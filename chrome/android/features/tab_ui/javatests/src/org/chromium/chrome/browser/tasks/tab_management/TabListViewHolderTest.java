@@ -350,8 +350,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         doReturn(false).when(mProfile).isOffTheRecord();
         LevelDBPersistedDataStorage.setSkipNativeAssertionsForTesting(true);
 
-        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
-        //                      TabHelpers from needing to use getLastUsedRegularProfile.
         Profile.setLastUsedProfileForTesting(mProfile);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
@@ -861,7 +859,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @UiThreadTest
     public void testPriceStringPriceDrop() {
-        Tab tab = MockTab.createAndInitialize(1, false);
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
         fetcher.setPriceStrings(EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
         testPriceString(
@@ -872,7 +870,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @UiThreadTest
     public void testPriceStringNullPriceDrop() {
-        Tab tab = MockTab.createAndInitialize(1, false);
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
         fetcher.setNullPriceDrop();
         testPriceString(
@@ -883,7 +881,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @UiThreadTest
     public void testPriceStringPriceDropThenNull() {
-        Tab tab = MockTab.createAndInitialize(1, false);
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
         fetcher.setPriceStrings(EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
         testPriceString(
@@ -897,7 +895,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @UiThreadTest
     public void testPriceStringTurnFeatureOff() {
-        Tab tab = MockTab.createAndInitialize(1, false);
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
         fetcher.setPriceStrings(EXPECTED_PRICE_STRING, EXPECTED_PREVIOUS_PRICE_STRING);
         testPriceString(
@@ -982,7 +980,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                     mockUrlUtilities();
                     mockOptimizationGuideResponse(
                             OptimizationGuideDecision.TRUE, ANY_PRICE_TRACKING_DATA);
-                    MockTab tab = MockTab.createAndInitialize(1, false);
+                    MockTab tab = MockTab.createAndInitialize(1, mProfile);
                     tab.setGurlOverrideForTesting(TEST_GURL);
                     tab.setIsInitialized(true);
                     tab.setTimestampMillis(System.currentTimeMillis());

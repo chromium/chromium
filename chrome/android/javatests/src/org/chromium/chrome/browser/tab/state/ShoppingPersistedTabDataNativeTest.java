@@ -16,6 +16,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -45,9 +46,12 @@ public class ShoppingPersistedTabDataNativeTest {
                 () -> {
                     ShoppingPersistedTabData.onDeferredStartup();
                 });
-        final Tab tab0 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, false);
-        final Tab tab1 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(1, false);
-        final Tab tab2 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(2, false);
+        Profile profile =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        Profile::getLastUsedRegularProfile);
+        final Tab tab0 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, profile);
+        final Tab tab1 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(1, profile);
+        final Tab tab2 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(2, profile);
         ShoppingPersistedTabData shoppingPersistedTabData0 =
                 ShoppingPersistedTabDataTestUtils.createSavedShoppingPersistedTabDataOnUiThread(
                         tab0);

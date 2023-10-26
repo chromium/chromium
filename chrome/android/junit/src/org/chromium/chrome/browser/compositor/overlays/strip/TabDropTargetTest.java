@@ -81,9 +81,6 @@ public class TabDropTargetTest {
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
 
-        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
-        //                      TabHelpers from needing to use getLastUsedRegularProfile.
-        Profile.setLastUsedProfileForTesting(mProfile);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         // Create both the TabDragSource and TabDropTarget.
@@ -98,7 +95,7 @@ public class TabDropTargetTest {
         mTabsToolbarViewDropTarget.setLayoutParams(new MarginLayoutParams(300, 50));
 
         // Mock the tab to be dragged.
-        mTabBeingDragged = MockTab.createAndInitialize(5, false);
+        mTabBeingDragged = MockTab.createAndInitialize(5, mProfile);
 
         // Create drop payload from the drag source view.
         mContentInfoCompatPayload =
@@ -200,7 +197,7 @@ public class TabDropTargetTest {
                 .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
 
         // Create ClipData for non-Chrome apps with invalid tab id.
-        Tab tabForBadClipData = MockTab.createAndInitialize(555, false);
+        Tab tabForBadClipData = MockTab.createAndInitialize(555, mProfile);
         ContentInfoCompat compactPayloadWithBadClipData =
                 new ContentInfoCompat.Builder(
                                 createClipData(mTabsToolbarViewDragSource, tabForBadClipData),

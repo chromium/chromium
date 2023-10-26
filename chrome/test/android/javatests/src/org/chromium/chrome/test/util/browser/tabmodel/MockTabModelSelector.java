@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.util.browser.tabmodel;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -26,9 +27,14 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     private int mTabCount;
 
     public MockTabModelSelector(
-            int tabCount, int incognitoTabCount, MockTabModel.MockTabModelDelegate delegate) {
+            Profile profile,
+            Profile incognitoProfile,
+            int tabCount,
+            int incognitoTabCount,
+            MockTabModel.MockTabModelDelegate delegate) {
         super(null, TabGroupModelFilter::new, false);
-        initialize(new MockTabModel(false, delegate), new MockTabModel(true, delegate));
+        initialize(
+                new MockTabModel(profile, delegate), new MockTabModel(incognitoProfile, delegate));
         for (int i = 0; i < tabCount; i++) {
             addMockTab();
         }

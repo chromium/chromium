@@ -2990,7 +2990,7 @@ public class TabListMediatorUnitTest {
 
     @Test(expected = AssertionError.class)
     public void testGetDomainOnDestroyedTab() {
-        Tab tab = new MockTab(TAB1_ID, false);
+        Tab tab = new MockTab(TAB1_ID, mProfile);
         tab.destroy();
         TabListMediator.getDomain(tab);
     }

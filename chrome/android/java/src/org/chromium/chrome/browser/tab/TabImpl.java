@@ -245,12 +245,10 @@ public class TabImpl implements Tab {
      * @param launchType Type indicating how this tab was launched.
      */
     @SuppressLint("HandlerLeak")
-    // TODO(crbug/1494442): Mark Profile as NonNull once MockTab passes a non-null profile.
-    TabImpl(int id, Profile profile, @Nullable @TabLaunchType Integer launchType) {
+    TabImpl(int id, @NonNull Profile profile, @Nullable @TabLaunchType Integer launchType) {
         mId = TabIdManager.getInstance().generateValidId(id);
         mProfile = profile;
-        // TODO(crbug/1494442): Enable once MockTab passes a non-null profile.
-        // assert mProfile != null;
+        assert mProfile != null;
         mRootId = mId;
 
         // Override the configuration for night mode to always stay in light mode until all UIs in

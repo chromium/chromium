@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionDelegate;
@@ -57,6 +58,7 @@ public class TabSelectionEditorBookmarkActionUnitTest {
     @Mock private ActionDelegate mDelegate;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private BookmarkModel mBookmarkModel;
+    @Mock private Profile mProfile;
 
     @Mock
     private TabSelectionEditorBookmarkActionDelegate mTabSelectionEditorBookmarkActionDelegate;
@@ -77,7 +79,7 @@ public class TabSelectionEditorBookmarkActionUnitTest {
                 (TabSelectionEditorBookmarkAction)
                         TabSelectionEditorBookmarkAction.createAction(
                                 mActivity, ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START);
-        mTabModel = spy(new MockTabModel(false, null));
+        mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate, false);
     }

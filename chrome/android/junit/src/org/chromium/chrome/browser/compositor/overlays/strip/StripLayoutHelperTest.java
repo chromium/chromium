@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -119,6 +120,7 @@ public class StripLayoutHelperTest {
     @Mock private ActivityInfo mActivityInfo;
     @Mock private PackageManager mPackageManager;
     @Mock private StripTabHoverCardView mTabHoverCardView;
+    @Mock private Profile mProfile;
 
     private Activity mActivity;
     private Context mContext;
@@ -2300,7 +2302,7 @@ public class StripLayoutHelperTest {
 
         // Mock a tab model and set it in the StripLayoutHelper.
         int expectedActiveTabId = 0;
-        MockTabModel tabModel = new MockTabModel(false, null);
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
         tabModel.setAsActiveModelForTesting();
@@ -2325,7 +2327,7 @@ public class StripLayoutHelperTest {
     public void testPlaceholderStripLayout_PrepareOnSetTabModelInfo() {
         // Create StripLayoutHelper and mock a tab model and set it in the StripLayoutHelper.
         int expectedActiveTabId = 0;
-        MockTabModel tabModel = new MockTabModel(false, null);
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
         tabModel.setAsActiveModelForTesting();
@@ -2364,7 +2366,7 @@ public class StripLayoutHelperTest {
 
         // Mock a tab model and set it in the StripLayoutHelper.
         int expectedActiveTabId = 0;
-        MockTabModel tabModel = new MockTabModel(false, null);
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
         tabModel.setAsActiveModelForTesting();
@@ -2373,7 +2375,7 @@ public class StripLayoutHelperTest {
         // Mark that a tab was restored.
         int expectedRestoredTabId = 1;
         tabModel.addTab(
-                new MockTab(expectedRestoredTabId, false),
+                new MockTab(expectedRestoredTabId, mProfile),
                 0,
                 TabLaunchType.FROM_RESTORE,
                 TabCreationState.FROZEN_ON_RESTORE);
@@ -2408,7 +2410,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabModelStartupInfo(5, 2, false);
 
         // Mock a tab model and set it in the StripLayoutHelper.
-        MockTabModel tabModel = new MockTabModel(false, null);
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.setAsActiveModelForTesting();
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
@@ -2452,7 +2454,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabModelStartupInfo(20, 19, false);
 
         // Mock a tab model and set it in the StripLayoutHelper.
-        MockTabModel tabModel = new MockTabModel(false, null);
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.setAsActiveModelForTesting();
         mStripLayoutHelper.setTabModel(tabModel, null, false);
         assertEquals("Offset should be 0.", 0, mStripLayoutHelper.getScrollOffset(), EPSILON);
@@ -2473,7 +2475,7 @@ public class StripLayoutHelperTest {
 
         // Mock a tab model and set it in the StripLayoutHelper.
         int expectedCreatedTabId = 4;
-        MockTabModel tabModel = new MockTabModel(false, null);
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedCreatedTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
         tabModel.setAsActiveModelForTesting();

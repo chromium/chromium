@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -44,6 +45,7 @@ public class HistoricalTabModelObserverUnitTest {
     private Context mContext;
     @Mock private SharedPreferences mSharedPreferences;
     @Mock private TabModel mTabModel;
+    @Mock private Profile mProfile;
     @Mock private HistoricalTabSaver mHistoricalTabSaver;
 
     private HistoricalTabModelObserver mObserver;
@@ -218,7 +220,7 @@ public class HistoricalTabModelObserverUnitTest {
     }
 
     private MockTab createMockTab(int id) {
-        MockTab mockTab = new MockTab(id, false);
+        MockTab mockTab = new MockTab(id, mProfile);
         mockTab.setRootId(id);
         return mockTab;
     }

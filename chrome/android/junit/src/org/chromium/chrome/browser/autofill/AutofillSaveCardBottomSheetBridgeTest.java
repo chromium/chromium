@@ -28,6 +28,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
 import org.chromium.components.autofill.payments.CardDetail;
@@ -56,6 +57,8 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
 
     private WindowAndroid mWindow;
 
+    @Mock private Profile mProfile;
+
     private MockTabModel mTabModel;
 
     @Mock private ManagedBottomSheetController mBottomSheetController;
@@ -78,7 +81,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
         mActivity = buildActivity(Activity.class).create().get();
         mShadowActivity = shadowOf(mActivity);
         mWindow = new WindowAndroid(mActivity);
-        mTabModel = new MockTabModel(/* incognito= */ false, /* delegate= */ null);
+        mTabModel = new MockTabModel(mProfile, /* delegate= */ null);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
         mAutofillSaveCardBottomSheetBridge =

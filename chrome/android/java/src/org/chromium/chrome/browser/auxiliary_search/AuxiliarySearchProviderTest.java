@@ -82,7 +82,7 @@ public class AuxiliarySearchProviderTest {
     @Test
     @SmallTest
     public void testGetTabsSearchableDataProto() throws InterruptedException {
-        MockTabModel mockTabModel = new MockTabModel(false, null);
+        MockTabModel mockTabModel = new MockTabModel(mProfile, null);
         for (int i = 0; i < 200; i++) {
             MockTab tab = mockTabModel.addTab(i);
             tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
@@ -153,7 +153,7 @@ public class AuxiliarySearchProviderTest {
     @Test
     @SmallTest
     public void testTabHasNullTitle() {
-        MockTabModel mockTabModel = new MockTabModel(false, null);
+        MockTabModel mockTabModel = new MockTabModel(mProfile, null);
 
         // Add a normal tab
         MockTab tab = mockTabModel.addTab(0);
@@ -180,7 +180,7 @@ public class AuxiliarySearchProviderTest {
     @Test
     @SmallTest
     public void testTabHasEmptyTitle() {
-        MockTabModel mockTabModel = new MockTabModel(false, null);
+        MockTabModel mockTabModel = new MockTabModel(mProfile, null);
 
         // Add a normal tab
         MockTab tab = mockTabModel.addTab(0);
@@ -207,7 +207,7 @@ public class AuxiliarySearchProviderTest {
     @Test
     @SmallTest
     public void testTabHasNullUrl() {
-        MockTabModel mockTabModel = new MockTabModel(false, null);
+        MockTabModel mockTabModel = new MockTabModel(mProfile, null);
 
         // Add a normal tab
         MockTab tab = mockTabModel.addTab(0);
@@ -234,7 +234,7 @@ public class AuxiliarySearchProviderTest {
     @Test
     @SmallTest
     public void testTabHasInvalidlUrl() {
-        MockTabModel mockTabModel = new MockTabModel(false, null);
+        MockTabModel mockTabModel = new MockTabModel(mProfile, null);
 
         // Add a normal tab
         MockTab tab = mockTabModel.addTab(0);
@@ -261,7 +261,7 @@ public class AuxiliarySearchProviderTest {
     @Test
     @SmallTest
     public void testGetTabsSearchableDataProtoAsync() {
-        MockTabModel mockTabModel = new MockTabModel(false, null);
+        MockTabModel mockTabModel = new MockTabModel(mProfile, null);
         ArrayList<Tab> tabList = new ArrayList<>();
         // Create 200 tabs with different timestamps(from 0 to 199), and only the newest 100 tabs
         // should be returned from 'getTabsSearchableDataProtoAsync'.

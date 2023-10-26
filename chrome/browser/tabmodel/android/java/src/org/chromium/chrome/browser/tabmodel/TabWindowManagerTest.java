@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
@@ -23,6 +24,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -43,23 +45,26 @@ public class TabWindowManagerTest {
     private TabWindowManager mSubject;
     private AsyncTabParamsManager mAsyncTabParamsManager;
     @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
     private NextTabPolicySupplier mNextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
-
-    private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
-            new TabModelSelectorFactory() {
-                @Override
-                public TabModelSelector buildSelector(
-                        Activity activity,
-                        TabCreatorManager tabCreatorManager,
-                        NextTabPolicySupplier nextTabPolicySupplier,
-                        int selectorIndex) {
-                    return new MockTabModelSelector(0, 0, null);
-                }
-            };
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+
+        TabModelSelectorFactory mockTabModelSelectorFactory =
+                new TabModelSelectorFactory() {
+                    @Override
+                    public TabModelSelector buildSelector(
+                            Activity activity,
+                            TabCreatorManager tabCreatorManager,
+                            NextTabPolicySupplier nextTabPolicySupplier,
+                            int selectorIndex) {
+                        return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+                    }
+                };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAsyncTabParamsManager =
@@ -70,7 +75,7 @@ public class TabWindowManagerTest {
                                     : TabWindowManager.MAX_SELECTORS_LEGACY);
                     mSubject =
                             TabWindowManagerFactory.createInstance(
-                                    sMockTabModelSelectorFactory,
+                                    mockTabModelSelectorFactory,
                                     mAsyncTabParamsManager,
                                     maxInstances);
                 });
@@ -358,7 +363,7 @@ public class TabWindowManagerTest {
         mAsyncTabParamsManager.getAsyncTabParams().clear();
         final int asyncTabId = 123;
         final TabReparentingParams dummyParams =
-                new TabReparentingParams(new MockTab(0, false), null);
+                new TabReparentingParams(new MockTab(0, mProfile), null);
         Assert.assertNull(mSubject.getTabById(asyncTabId));
         mAsyncTabParamsManager.add(asyncTabId, dummyParams);
         try {
@@ -397,7 +402,7 @@ public class TabWindowManagerTest {
         mAsyncTabParamsManager.getAsyncTabParams().clear();
         final int asyncTabId = 123;
         final TabReparentingParams dummyParams =
-                new TabReparentingParams(new MockTab(0, false), null);
+                new TabReparentingParams(new MockTab(0, mProfile), null);
         Assert.assertNull(mSubject.getTabById(asyncTabId));
         mAsyncTabParamsManager.add(asyncTabId, dummyParams);
         try {

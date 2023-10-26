@@ -31,6 +31,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
@@ -71,6 +72,8 @@ public class TabSelectionEditorShareActionUnitTest {
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
     private Context mContext;
     private MockTabModel mTabModel;
     private TabSelectionEditorShareAction mAction;
@@ -99,15 +102,17 @@ public class TabSelectionEditorShareActionUnitTest {
         mTabModel =
                 spy(
                         new MockTabModel(
-                                false,
+                                mProfile,
                                 new MockTabModel.MockTabModelDelegate() {
                                     @Override
                                     public MockTab createTab(int id, boolean incognito) {
-                                        MockTab tab = new MockTab(id, incognito);
+                                        Profile profile = incognito ? mIncognitoProfile : mProfile;
+                                        MockTab tab = new MockTab(id, profile);
                                         tab.setGurlOverrideForTesting(mIdUrlMap.get(id));
                                         return tab;
                                     }
                                 }));
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mTabModelFilter);

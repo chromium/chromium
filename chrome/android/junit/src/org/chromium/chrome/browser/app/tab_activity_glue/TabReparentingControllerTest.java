@@ -21,6 +21,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController.Delegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -67,6 +68,8 @@ public class TabReparentingControllerTest {
     }
 
     @Mock ReparentingTask mTask;
+    @Mock Profile mProfile;
+    @Mock Profile mIncognitoProfile;
 
     MockTabModel mTabModel;
     MockTabModel mIncognitoTabModel;
@@ -80,9 +83,10 @@ public class TabReparentingControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 
-        mTabModel = new MockTabModel(false, null);
-        mIncognitoTabModel = new MockTabModel(true, null);
+        mTabModel = new MockTabModel(mProfile, null);
+        mIncognitoTabModel = new MockTabModel(mIncognitoProfile, null);
 
         mFakeDelegate = new FakeNightModeReparentingDelegate();
         mRealAsyncTabParamsManager = AsyncTabParamsManagerFactory.createAsyncTabParamsManager();

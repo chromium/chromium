@@ -34,12 +34,13 @@ public class TabModelTabObserverUnitTest {
     @Mock private Profile mProfile;
     private TabModelTabObserver mTabModelTabObserver;
 
-    private Tab mTab = new MockTab(1, false);
+    private Tab mTab;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mTabModel = new MockTabModel(false, null);
+        mTab = new MockTab(1, mProfile);
+        mTabModel = new MockTabModel(mProfile, null);
         mTabModel.addTab(0);
         mTabModel.setIndex(0, TabSelectionType.FROM_USER, false);
         mTabModelTabObserver = new TabModelTabObserver(mTabModel);

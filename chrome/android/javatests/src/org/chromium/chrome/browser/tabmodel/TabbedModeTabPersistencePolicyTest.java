@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -62,26 +63,24 @@ public class TabbedModeTabPersistencePolicyTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock Profile mProfile;
+    @Mock Profile mIncognitoProfile;
 
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
 
-    private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
-            new TabModelSelectorFactory() {
-                @Override
-                public TabModelSelector buildSelector(
-                        Activity activity,
-                        TabCreatorManager tabCreatorManager,
-                        NextTabPolicySupplier nextTabPolicySupplier,
-                        int selectorIndex) {
-                    return new MockTabModelSelector(0, 0, null);
-                }
-            };
-
     @Before
     public void setUp() throws Exception {
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
-                sMockTabModelSelectorFactory);
+                new TabModelSelectorFactory() {
+                    @Override
+                    public TabModelSelector buildSelector(
+                            Activity activity,
+                            TabCreatorManager tabCreatorManager,
+                            NextTabPolicySupplier nextTabPolicySupplier,
+                            int selectorIndex) {
+                        return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+                    }
+                });
         mAppContext =
                 new AdvancedMockContext(
                         InstrumentationRegistry.getInstrumentation()
@@ -96,9 +95,7 @@ public class TabbedModeTabPersistencePolicyTest {
                         TabStateDirectory.TABBED_MODE_DIRECTORY);
         TabStateDirectory.setBaseStateDirectoryForTests(mMockDirectory.getBaseDirectory());
 
-        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
-        //                      TabHelpers from needing to use getLastUsedRegularProfile.
-        Profile.setLastUsedProfileForTesting(mProfile);
+        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
     }
 
@@ -122,8 +119,9 @@ public class TabbedModeTabPersistencePolicyTest {
                 new MockTabModel.MockTabModelDelegate() {
                     @Override
                     public MockTab createTab(int id, boolean incognito) {
+                        Profile profile = incognito ? mIncognitoProfile : mProfile;
                         MockTab tab =
-                                new MockTab(id, incognito) {
+                                new MockTab(id, profile) {
                                     @Override
                                     public GURL getUrl() {
                                         return new GURL("https://www.google.com");
@@ -136,10 +134,10 @@ public class TabbedModeTabPersistencePolicyTest {
 
         final MockTabModel normalTabModel =
                 TestThreadUtils.runOnUiThreadBlocking(
-                        () -> new MockTabModel(false, tabModelDelegate));
+                        () -> new MockTabModel(mProfile, tabModelDelegate));
         final MockTabModel incognitoTabModel =
                 TestThreadUtils.runOnUiThreadBlocking(
-                        () -> new MockTabModel(true, tabModelDelegate));
+                        () -> new MockTabModel(mIncognitoProfile, tabModelDelegate));
         TabbedModeTabModelOrchestrator orchestrator =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {

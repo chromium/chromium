@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -102,9 +103,10 @@ public class OptionalNewTabButtonControllerActivityTest {
 
     @Before
     public void setUp() {
-        // TODO(crbug/1494442): Remove when MockTab requires a Profile reference that can avoid
-        //                      TabHelpers from needing to use getLastUsedRegularProfile.
-        Profile.setLastUsedProfileForTesting(Mockito.mock(Profile.class));
+        Profile originalProfile = Mockito.mock(Profile.class);
+        Profile incognitoProfile = Mockito.mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         // Avoid leaking state from the previous test.
@@ -116,10 +118,13 @@ public class OptionalNewTabButtonControllerActivityTest {
                 new Pair<>(true, AdaptiveToolbarButtonVariant.NEW_TAB));
         MockTabModelSelector tabModelSelector =
                 new MockTabModelSelector(
+                        originalProfile,
+                        incognitoProfile,
                         /* tabCount= */ 1,
                         /* incognitoTabCount= */ 0,
                         (id, incognito) -> {
-                            MockTab tab = spy(MockTab.createAndInitialize(id, incognito));
+                            Profile profile = incognito ? incognitoProfile : originalProfile;
+                            MockTab tab = spy(MockTab.createAndInitialize(id, profile));
                             doReturn(Mockito.mock(WebContents.class)).when(tab).getWebContents();
                             return tab;
                         });

@@ -157,9 +157,9 @@ public abstract class ShoppingPersistedTabDataTestUtils {
                 .build();
     }
 
-    static ShoppingPersistedTabData createShoppingPersistedTabDataWithDefaults() {
+    static ShoppingPersistedTabData createShoppingPersistedTabDataWithDefaults(Profile profile) {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
+                new ShoppingPersistedTabData(createTabOnUiThread(TAB_ID, profile));
         shoppingPersistedTabData.setCurrencyCode(UNITED_STATES_CURRENCY_CODE);
         shoppingPersistedTabData.setPriceDropGurl(DEFAULT_GURL);
         return shoppingPersistedTabData;
@@ -206,19 +206,19 @@ public abstract class ShoppingPersistedTabDataTestUtils {
     }
 
     static ShoppingPersistedTabData createShoppingPersistedTabDataWithCurrencyCode(
-            int tabId, boolean isIncognito, String currencyCode) {
+            int tabId, Profile profile, String currencyCode) {
         ShoppingPersistedTabData shoppingPersistedTabData =
-                new ShoppingPersistedTabData(createTabOnUiThread(tabId, isIncognito));
+                new ShoppingPersistedTabData(createTabOnUiThread(tabId, profile));
         shoppingPersistedTabData.setCurrencyCode(currencyCode);
         shoppingPersistedTabData.setPriceDropGurl(DEFAULT_GURL);
         return shoppingPersistedTabData;
     }
 
-    static MockTab createTabOnUiThread(int tabId, boolean isIncognito) {
+    static MockTab createTabOnUiThread(int tabId, Profile profile) {
         AtomicReference<MockTab> res = new AtomicReference<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    MockTab tab = MockTab.createAndInitialize(tabId, isIncognito);
+                    MockTab tab = MockTab.createAndInitialize(tabId, profile);
                     tab.setIsInitialized(true);
                     tab.setGurlOverrideForTesting(DEFAULT_GURL);
                     tab.setTimestampMillis(System.currentTimeMillis());

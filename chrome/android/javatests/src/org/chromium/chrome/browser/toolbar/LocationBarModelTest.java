@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -294,7 +295,7 @@ public class LocationBarModelTest {
             initializeWithNative();
 
             Tab tab =
-                    new MockTab(0, false) {
+                    new MockTab(0, Profile.getLastUsedRegularProfile()) {
                         @Override
                         public boolean isInitialized() {
                             return true;

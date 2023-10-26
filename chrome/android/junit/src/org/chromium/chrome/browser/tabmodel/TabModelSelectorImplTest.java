@@ -29,6 +29,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -56,6 +57,8 @@ public class TabModelSelectorImplTest {
     IncognitoTabModelObserver.IncognitoReauthDialogDelegate mIncognitoReauthDialogDelegateMock;
 
     @Mock TabModelSelectorObserver mTabModelSelectorObserverMock;
+    @Mock Profile mProfile;
+    @Mock Profile mIncognitoProfile;
 
     private TabModelSelectorImpl mTabModelSelector;
     private MockTabCreatorManager mTabCreatorManager;
@@ -64,6 +67,7 @@ public class TabModelSelectorImplTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        doReturn(true).when(mIncognitoProfile).isOffTheRecord();
         doReturn(mock(TabModelFilter.class))
                 .when(mMockTabModelFilterFactory)
                 .createTabModelFilter(any());
@@ -84,13 +88,13 @@ public class TabModelSelectorImplTest {
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(
                 mMockTabContentManager,
-                new MockTabModel(false, null),
-                new MockTabModel(true, null));
+                new MockTabModel(mProfile, null),
+                new MockTabModel(mIncognitoProfile, null));
     }
 
     @Test
     public void testTabActivityAttachmentChanged_detaching() {
-        MockTab tab = new MockTab(1, false);
+        MockTab tab = new MockTab(1, mProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
@@ -104,7 +108,7 @@ public class TabModelSelectorImplTest {
 
     @Test
     public void testTabActivityAttachmentChanged_movingWindows() {
-        MockTab tab = new MockTab(1, false);
+        MockTab tab = new MockTab(1, mProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
@@ -118,7 +122,7 @@ public class TabModelSelectorImplTest {
 
     @Test
     public void testTabActivityAttachmentChanged_detachingWhileReparentingInProgress() {
-        MockTab tab = new MockTab(1, false);
+        MockTab tab = new MockTab(1, mProfile);
         mTabModelSelector
                 .getModel(false)
                 .addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);

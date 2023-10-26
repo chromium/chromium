@@ -29,6 +29,7 @@ import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
 import org.chromium.components.autofill.payments.CardDetail;
@@ -48,6 +49,8 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
 
     @Mock private LayoutStateProvider mLayoutStateProvider;
 
+    @Mock private Profile mProfile;
+
     private MockTabModel mTabModel;
 
     private AutofillSaveCardUiInfo mUiInfo;
@@ -64,7 +67,7 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                         .build();
         Activity activity = buildActivity(Activity.class).create().get();
         mShadowActivity = shadowOf(activity);
-        mTabModel = new MockTabModel(/* incognito= */ false, /* delegate= */ null);
+        mTabModel = new MockTabModel(mProfile, /* delegate= */ null);
         mCoordinator = new AutofillSaveCardBottomSheetCoordinator(activity, mBridge, mMediator);
     }
 

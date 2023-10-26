@@ -89,7 +89,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
                 HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
-        final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, false);
+        final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
         Semaphore semaphore = new Semaphore(0);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -123,7 +123,7 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
                 HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
                 ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
                         .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
-        final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, false);
+        final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, mProfileMock);
         final Semaphore semaphore = new Semaphore(0);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
