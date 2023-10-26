@@ -161,14 +161,13 @@ LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
   }
 }
 
-
-// Returns the current lacros mode.
-LacrosMode GetLacrosModeInternal(const User* user,
-                                 LacrosAvailability lacros_availability,
-                                 bool check_migration_status) {
+// Returns whether the lacros is enabled currently.
+bool IsLacrosEnabledInternal(const User* user,
+                             LacrosAvailability lacros_availability,
+                             bool check_migration_status) {
   if (!ash::standalone_browser::BrowserSupport::IsAllowedInternal(
           user, lacros_availability)) {
-    return LacrosMode::kDisabled;
+    return false;
   }
 
   DCHECK(user);
@@ -183,7 +182,7 @@ LacrosMode GetLacrosModeInternal(const User* user,
             local_state,
             UserManager::Get()->GetPrimaryUser()->username_hash())) {
       // If migration has not been completed, do not enable lacros.
-      return LacrosMode::kDisabled;
+      return false;
     }
   }
 
@@ -192,44 +191,17 @@ LacrosMode GetLacrosModeInternal(const User* user,
       break;
     case LacrosAvailability::kLacrosDisallowed:
       NOTREACHED();  // Guarded by IsLacrosAllowedInternal.
-      return LacrosMode::kDisabled;
+      return false;
     case LacrosAvailability::kLacrosOnly:
-      return LacrosMode::kOnly;
+      return true;
   }
 
   if (base::FeatureList::IsEnabled(
           ash::standalone_browser::features::kLacrosOnly)) {
-    return LacrosMode::kOnly;
+    return true;
   }
 
-  return LacrosMode::kDisabled;
-}
-
-bool IsLacrosEnabledInternal(const User* user,
-                             LacrosAvailability lacros_availability,
-                             bool check_migration_status) {
-  LacrosMode mode =
-      GetLacrosModeInternal(user, lacros_availability, check_migration_status);
-  switch (mode) {
-    case LacrosMode::kDisabled:
-      return false;
-    case LacrosMode::kOnly:
-      return true;
-  }
-}
-
-// This is equivalent to "not LacrosOnly".
-bool IsAshWebBrowserEnabledInternal(const User* user,
-                                    LacrosAvailability lacros_availability,
-                                    bool check_migration_status) {
-  LacrosMode mode =
-      GetLacrosModeInternal(user, lacros_availability, check_migration_status);
-  switch (mode) {
-    case LacrosMode::kDisabled:
-      return true;
-    case LacrosMode::kOnly:
-      return false;
-  }
+  return false;
 }
 
 // Returns the string value for the kLacrosStabilitySwitch if present.
@@ -407,21 +379,12 @@ bool IsProfileMigrationAvailable() {
 }
 
 bool IsAshWebBrowserEnabled() {
-  return IsAshWebBrowserEnabledInternal(GetPrimaryUser(),
-                                        GetCachedLacrosAvailability(),
-                                        /*check_migration_status=*/true);
+  return !IsLacrosEnabled();
 }
 
 bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
                                         PolicyInitState policy_init_state) {
-  return IsAshWebBrowserEnabledInternal(
-      user, GetLacrosAvailability(user, policy_init_state),
-      /*check_migration_status=*/false);
-}
-
-LacrosMode GetLacrosMode() {
-  return GetLacrosModeInternal(GetPrimaryUser(), GetCachedLacrosAvailability(),
-                               /*check_migration_status=*/true);
+  return !IsLacrosEnabledForMigration(user, policy_init_state);
 }
 
 bool IsLacrosOnlyBrowserAllowed() {

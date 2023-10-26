@@ -2085,14 +2085,9 @@ AutotestPrivateGetLacrosInfoFunction::ToLacrosState(
 
 // static
 api::autotest_private::LacrosMode
-AutotestPrivateGetLacrosInfoFunction::ToLacrosMode(
-    crosapi::browser_util::LacrosMode lacrosMode) {
-  switch (lacrosMode) {
-    case crosapi::browser_util::LacrosMode::kDisabled:
-      return api::autotest_private::LacrosMode::kDisabled;
-    case crosapi::browser_util::LacrosMode::kOnly:
-      return api::autotest_private::LacrosMode::kOnly;
-  }
+AutotestPrivateGetLacrosInfoFunction::ToLacrosMode(bool is_enabled) {
+  return is_enabled ? api::autotest_private::LacrosMode::kOnly
+                    : api::autotest_private::LacrosMode::kDisabled;
 }
 
 ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
@@ -2110,7 +2105,8 @@ ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
                    ? ""
                    : browser_manager->lacros_path().DirName().MaybeAsASCII())
           .Set("mode", api::autotest_private::ToString(ToLacrosMode(
-                           crosapi::browser_util::GetLacrosMode())))));
+                           crosapi::browser_util::IsLacrosEnabled())))
+          .Set("isEnabled", crosapi::browser_util::IsLacrosEnabled())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

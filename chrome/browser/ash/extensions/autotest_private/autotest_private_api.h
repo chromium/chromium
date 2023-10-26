@@ -334,8 +334,7 @@ class AutotestPrivateGetLacrosInfoFunction : public ExtensionFunction {
   ResponseAction Run() override;
   static api::autotest_private::LacrosState ToLacrosState(
       crosapi::BrowserManager::State state);
-  static api::autotest_private::LacrosMode ToLacrosMode(
-      crosapi::browser_util::LacrosMode lacrosMode);
+  static api::autotest_private::LacrosMode ToLacrosMode(bool is_enabled);
 };
 
 class AutotestPrivateGetArcAppFunction : public ExtensionFunction {

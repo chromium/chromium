@@ -132,20 +132,6 @@ enum class MigrationStatus {
   kMaxValue = kMaxAttemptReached,
 };
 
-// Specifies the mode Lacros is currently running.
-// This enum is different from LacrosAvailability in the way that
-// it describes the mode Lacros is running at a given point in time
-// which can be influenced by multiple factors such as flags,
-// while LacrosAvailability describes the policy that dictates how
-// Lacros is supposed to be launched.
-// Values 1 and 2 were removed and should not be reused.
-enum class LacrosMode {
-  // Indicates that Lacros is disabled. Ash is the only browser.
-  kDisabled = 0,
-  // Indicates that Lacros is the only available browser.
-  kOnly = 3,
-};
-
 extern const ComponentInfo kLacrosDogfoodCanaryInfo;
 extern const ComponentInfo kLacrosDogfoodDevInfo;
 extern const ComponentInfo kLacrosDogfoodBetaInfo;
@@ -239,10 +225,6 @@ bool IsAshWebBrowserEnabled();
 // profile and policy are initialized.
 bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
                                         PolicyInitState policy_init_state);
-
-// Returns the current mode Lacros is running.
-// See LacrosMode definition for a full list of modes.
-LacrosMode GetLacrosMode();
 
 // Returns true if Lacros can be used as the only browser
 // for the current session.

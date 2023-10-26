@@ -408,14 +408,13 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabledByFlags) {
 
 TEST_F(BrowserUtilTest, LacrosOnlyBrowserByFlags) {
   AddRegularUser("user@test.com");
-  EXPECT_EQ(browser_util::LacrosMode::kDisabled, browser_util::GetLacrosMode());
+  EXPECT_FALSE(browser_util::IsLacrosEnabled());
 
   // Just setting LacrosOnly should work.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {ash::standalone_browser::features::kLacrosOnly}, {});
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
 }
 
 TEST_F(BrowserUtilTest, LacrosDisabledForOldHardware) {
@@ -424,12 +423,11 @@ TEST_F(BrowserUtilTest, LacrosDisabledForOldHardware) {
   feature_list.InitWithFeatures(
       {ash::standalone_browser::features::kLacrosOnly}, {});
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
 
   ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(false);
-  EXPECT_EQ(browser_util::LacrosMode::kDisabled, browser_util::GetLacrosMode());
+  EXPECT_FALSE(browser_util::IsLacrosEnabled());
   ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(true);
-  EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
+  EXPECT_TRUE(browser_util::IsLacrosEnabled());
 }
 
 TEST_F(BrowserUtilTest, LacrosOnlyBrowserAllowed) {
@@ -447,15 +445,12 @@ TEST_F(BrowserUtilTest, ManagedAccountLacrosPrimary) {
     ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosDisallowed);
     EXPECT_FALSE(browser_util::IsLacrosOnlyBrowserAllowed());
     EXPECT_FALSE(browser_util::IsLacrosEnabled());
-    EXPECT_EQ(browser_util::LacrosMode::kDisabled,
-              browser_util::GetLacrosMode());
   }
 
   {
     ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
     EXPECT_TRUE(browser_util::IsLacrosOnlyBrowserAllowed());
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
-    EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
   }
 }
 
@@ -930,7 +925,6 @@ TEST_F(BrowserUtilTest, LacrosGoogleRolloutOnly) {
   // Check that Lacros is allowed, enabled, and set to lacros-only.
   EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  EXPECT_EQ(browser_util::LacrosMode::kOnly, browser_util::GetLacrosMode());
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabledForMigration(
       user, browser_util::PolicyInitState::kAfterInit));
