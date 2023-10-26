@@ -109,6 +109,10 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   scoped_refptr<LockHandle> TakeLock(const storage::FileSystemURL& url,
                                      LockType lock_type);
 
+  // Returns true if there is not an existing lock on `url` that is contentious
+  // with `lock_type`.
+  bool IsContentious(const storage::FileSystemURL& url, LockType lock_type);
+
   // Creates a new shared lock type.
   [[nodiscard]] LockType CreateSharedLockType();
 
@@ -124,8 +128,12 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   scoped_refptr<LockHandle> TakeLockImpl(const EntryLocator& entry_locator,
                                          LockType lock_type);
 
+  bool IsContentiousImpl(const EntryLocator& entry_locator, LockType lock_type);
+
   // Releases the lock on `entry_locator`. Called from the Lock destructor.
   void ReleaseLock(const EntryLocator& entry_locator);
+
+  Lock* GetExistingLock(const EntryLocator& entry_locator);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

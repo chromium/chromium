@@ -194,6 +194,11 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       const storage::FileSystemURL& url,
       FileSystemAccessLockManager::LockType lock_type);
 
+  // Returns true if there is not an existing lock on `url` that is contentious
+  // with `lock_type`.
+  bool IsContentious(const storage::FileSystemURL& url,
+                     FileSystemAccessLockManager::LockType lock_type);
+
   // Creates a new shared lock type for testing.
   [[nodiscard]] FileSystemAccessLockManager::LockType
   CreateSharedLockTypeForTesting() const;

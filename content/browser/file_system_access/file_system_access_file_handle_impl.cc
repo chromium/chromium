@@ -598,13 +598,19 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
   storage::FileSystemURL swap_url = url().CreateSibling(*opt_swap_name);
   CHECK(swap_url.is_valid());
 
-  auto swap_lock =
-      manager()->TakeLock(swap_url, manager()->GetExclusiveLockType());
-  if (!swap_lock) {
+  // Check if this swap file is not in use. If it isn't, take a lock on it.
+  if (manager()->IsContentious(swap_url, manager()->GetExclusiveLockType())) {
     StartCreateSwapFile(count + 1, keep_existing_data, auto_close,
                         std::move(lock), std::move(callback));
     return;
   }
+
+  auto swap_lock =
+      manager()->TakeLock(swap_url, manager()->GetExclusiveLockType());
+
+  // Taking `swap_lock` should succeed since we checked for contention ahead of
+  // time.
+  CHECK(swap_lock);
 
   if (keep_existing_data) {
     // Check whether a file exists at the intended path of the swap file.

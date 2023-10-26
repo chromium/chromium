@@ -162,6 +162,36 @@ FileSystemAccessLockManager::FileSystemAccessLockManager(
 
 FileSystemAccessLockManager::~FileSystemAccessLockManager() = default;
 
+bool FileSystemAccessLockManager::IsContentious(
+    const storage::FileSystemURL& url,
+    LockType lock_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return IsContentiousImpl(EntryLocator::FromFileSystemURL(url), lock_type);
+}
+
+bool FileSystemAccessLockManager::IsContentiousImpl(
+    const EntryLocator& entry_locator,
+    LockType lock_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If the parent is contentious, then the lock is contentious.
+  auto parent_path = entry_locator.path.DirName();
+  if (parent_path != entry_locator.path) {
+    EntryLocator parent_entry_locator{entry_locator.type, parent_path,
+                                      entry_locator.bucket_locator};
+    if (IsContentiousImpl(parent_entry_locator, ancestor_lock_type_)) {
+      return true;
+    }
+  }
+
+  Lock* existing_lock = GetExistingLock(entry_locator);
+
+  // Can take the lock if there isn't an existing one or `lock_type` is not in
+  // contention with it.
+  return existing_lock && existing_lock->IsContentious(lock_type);
+}
+
 scoped_refptr<LockHandle> FileSystemAccessLockManager::TakeLock(
     const storage::FileSystemURL& url,
     LockType lock_type) {
@@ -176,9 +206,7 @@ scoped_refptr<LockHandle> FileSystemAccessLockManager::TakeLockImpl(
     LockType lock_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto lock_it = locks_.find(entry_locator);
-  Lock* existing_lock =
-      lock_it != locks_.end() ? lock_it->second.get() : nullptr;
+  Lock* existing_lock = GetExistingLock(entry_locator);
 
   if (!existing_lock) {
     // Recursively try to acquire shared locks on all parent directories. If any
@@ -228,6 +256,14 @@ void FileSystemAccessLockManager::ReleaseLock(
   size_t count_removed = locks_.erase(entry_locator);
 
   DCHECK_EQ(1u, count_removed);
+}
+
+Lock* FileSystemAccessLockManager::GetExistingLock(
+    const EntryLocator& entry_locator) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto lock_it = locks_.find(entry_locator);
+  return lock_it != locks_.end() ? lock_it->second.get() : nullptr;
 }
 
 FileSystemAccessLockManager::LockType

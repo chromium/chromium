@@ -1098,6 +1098,12 @@ FileSystemAccessManagerImpl::TakeLock(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return lock_manager_->TakeLock(url, lock_type);
 }
+bool FileSystemAccessManagerImpl::IsContentious(
+    const storage::FileSystemURL& url,
+    FileSystemAccessLockManager::LockType lock_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return lock_manager_->IsContentious(url, lock_type);
+}
 FileSystemAccessLockManager::LockType
 FileSystemAccessManagerImpl::CreateSharedLockTypeForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
