@@ -354,6 +354,8 @@ const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
              : views::kEyeCrossedIcon;
 }
 
+void CookieControlsIconView::UpdateTooltipForFocus() {}
+
 BEGIN_METADATA(CookieControlsIconView, PageActionIconView)
 ADD_READONLY_PROPERTY_METADATA(bool, AssociatedBubble)
 END_METADATA

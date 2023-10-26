@@ -43,6 +43,10 @@ void TooltipManagerMac::UpdateTooltip() {
   bridge_->UpdateTooltip();
 }
 
+void TooltipManagerMac::UpdateTooltipForFocus(View* view) {
+  // Macs don't use keyboard-triggered tooltips, so this is a no-op.
+}
+
 void TooltipManagerMac::TooltipTextChanged(View* view) {
   // The intensive part is View::GetTooltipHandlerForPoint(), which will be done
   // in [BridgedContentView updateTooltipIfRequiredAt:]. Don't do it here as
