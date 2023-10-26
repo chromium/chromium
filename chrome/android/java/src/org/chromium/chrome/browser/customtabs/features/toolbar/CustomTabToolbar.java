@@ -97,9 +97,11 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
+import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -152,7 +154,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private OnClickListener mCloseClickListener;
     private CookieControlsBridge mCookieControlsBridge;
-    private boolean mShouldAnimateCookieControlsIcon;
+    private boolean mHighConfidenceBreakageReceived;
+    private int mCookieBlockingStatus;
+    private int mBlockingStatus3pcd;
 
     private final Handler mTaskHandler = new Handler();
 
@@ -1110,7 +1114,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         // CookieControlsObserver interface
         @Override
         public void onBreakageConfidenceLevelChanged(int level) {
-            mShouldAnimateCookieControlsIcon = level == CookieControlsBreakageConfidenceLevel.HIGH;
+            if (mHighConfidenceBreakageReceived) return;
+            mHighConfidenceBreakageReceived = level == CookieControlsBreakageConfidenceLevel.HIGH;
+        }
+
+        @Override
+        public void onStatusChanged(
+                int status, int enforcement, int blockingStatus, long expiration) {
+            mCookieBlockingStatus = status;
+            mBlockingStatus3pcd = blockingStatus;
         }
 
         private void cacheRegularState() {
@@ -1295,9 +1307,25 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void onPageLoadStopped() {
-            if (mShouldAnimateCookieControlsIcon) {
+            if (mPageInfoIPHController == null) {
+                Tab currentTab = getCurrentTab();
+                if (currentTab == null) return;
+                Activity activity = currentTab.getWindowAndroid().getActivity().get();
+                if (activity == null) return;
+                mPageInfoIPHController = new PageInfoIPHController(activity, getSecurityIconView());
+            }
+
+            if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
+                if (mCookieBlockingStatus != CookieControlsStatus.ENABLED) return;
+                mPageInfoIPHController.showCookieControlsReminderIPH(
+                        COOKIE_CONTROLS_ICON_DISPLAY_TIMEOUT,
+                        R.string.cookie_controls_reminder_iph_message,
+                        this::animateCookieControlsIcon);
+            } else if (mHighConfidenceBreakageReceived) {
+                mPageInfoIPHController.showCookieControlsIPH(
+                        COOKIE_CONTROLS_ICON_DISPLAY_TIMEOUT, R.string.cookie_controls_iph_message);
                 animateCookieControlsIcon();
-                mShouldAnimateCookieControlsIcon = false;
+                mHighConfidenceBreakageReceived = false;
             }
         }
 
@@ -1383,25 +1411,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void animateCookieControlsIcon() {
-            if (mPageInfoIPHController == null) {
-                var securityViewAnchor = getSecurityIconView();
-                securityViewAnchor.setTop(
-                        securityViewAnchor.getTop() - securityViewAnchor.getHeight());
-                securityViewAnchor.setBottom(
-                        securityViewAnchor.getBottom() + securityViewAnchor.getHeight() / 2);
-
-                Tab currentTab = getCurrentTab();
-                if (currentTab == null) return;
-                Activity activity = currentTab.getWindowAndroid().getActivity().get();
-                if (activity == null) return;
-                mPageInfoIPHController = new PageInfoIPHController(activity, securityViewAnchor);
-            }
-
             mTaskHandler.removeCallbacksAndMessages(null);
             mAnimDelegate.setUseRotationSecurityButtonTransition(true);
             mAnimDelegate.updateSecurityButton(R.drawable.ic_eye_crossed, true);
-            mPageInfoIPHController.showCookieControlsIPH(
-                    COOKIE_CONTROLS_ICON_DISPLAY_TIMEOUT, R.string.cookie_controls_iph_message);
 
             Runnable finishIconAnimation = () -> {
                 updateSecurityIcon();

@@ -80,7 +80,9 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
+import org.chromium.components.content_settings.CookieControlsStatus;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -532,6 +534,60 @@ public class CustomTabToolbarUnitTest {
         mLocationBar.onPageLoadStopped();
         verify(mAnimationDelegate, times(1)).updateSecurityButton(R.drawable.ic_eye_crossed, true);
         verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingEnabled() {
+        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt(), anyBoolean());
+
+        mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+        mLocationBar.onStatusChanged(
+                CookieControlsStatus.ENABLED,
+                /* enforcement= */ 0,
+                CookieBlocking3pcdStatus.LIMITED,
+                /* expiration= */ 0);
+
+        // Should show only the reminder IPH.
+        mLocationBar.onPageLoadStopped();
+        verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIPHController, times(1))
+                .showCookieControlsReminderIPH(anyInt(), anyInt(), any());
+    }
+
+    @Test
+    public void testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingDisabled() {
+        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt(), anyBoolean());
+
+        mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+        mLocationBar.onStatusChanged(
+                CookieControlsStatus.DISABLED,
+                /* enforcement= */ 0,
+                CookieBlocking3pcdStatus.LIMITED,
+                /* expiration= */ 0);
+
+        // None of the IPHs should be shown.
+        mLocationBar.onPageLoadStopped();
+        verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIPHController, never())
+                .showCookieControlsReminderIPH(anyInt(), anyInt(), any());
+    }
+
+    @Test
+    public void testCookieControlsIcon_trackingProtectionDisabled_cookieBlockingEnabled() {
+        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt(), anyBoolean());
+
+        mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+        mLocationBar.onStatusChanged(
+                CookieControlsStatus.ENABLED,
+                /* enforcement= */ 0,
+                CookieBlocking3pcdStatus.NOT_IN3PCD,
+                /* expiration= */ 0);
+
+        // Should show only the Cookie controls IPH.
+        mLocationBar.onPageLoadStopped();
+        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+        verify(mPageInfoIPHController, never())
+                .showCookieControlsReminderIPH(anyInt(), anyInt(), any());
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {
