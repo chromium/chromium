@@ -17,6 +17,7 @@
 @protocol ApplicationCommands;
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
+@protocol TextFieldViewContaining;
 
 @protocol LocationBarViewControllerDelegate<NSObject>
 
@@ -90,7 +91,7 @@
 
 // Sets the edit view to use in the editing state. This must be set before the
 // view of this view controller is initialized. This must only be called once.
-- (void)setEditView:(UIView*)editView;
+- (void)setEditView:(UIView<TextFieldViewContaining>*)editView;
 
 // Sets the badge view to display badges. This must be set before the
 // view of this view controller is initialized. This must only be called once.

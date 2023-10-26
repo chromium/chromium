@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
+#import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
 #import "ios/chrome/browser/ui/omnibox/zero_suggest_prefetch_helper.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -286,6 +287,10 @@
 
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer {
   return self.popupCoordinator.toolbarOmniboxConsumer;
+}
+
+- (UIView<TextFieldViewContaining>*)editView {
+  return self.viewController.viewContainingTextField;
 }
 
 #pragma mark Scribble

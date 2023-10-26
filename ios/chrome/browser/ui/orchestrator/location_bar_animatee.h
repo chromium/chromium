@@ -11,19 +11,19 @@
 // Calling those methods should not start any animation.
 @protocol LocationBarAnimatee<NSObject>
 
-// Moves the edit view to a position where the text in it visually overlays the
+// Moves the text field to a position where the text in it visually overlays the
 // text in steady view.
-- (void)offsetEditViewToMatchSteadyView;
-// Call this after calling -offsetEditViewToMatchSteadyView. Moves the edit view
-// to its normal position and offsets the steady view to match the normal edit
-// view position, so that the text in it visually overlaying the text in edit
-// view.
-- (void)resetEditViewOffsetAndOffsetSteadyViewToMatch;
+- (void)offsetTextFieldToMatchSteadyView;
+// Call this after calling -offsetTextFieldToMatchSteadyView. Moves the text
+// field to its normal position and offsets the steady view to match the normal
+// text field position, so that the text in it visually overlaying the text in
+// edit view.
+- (void)resetTextFieldOffsetAndOffsetSteadyViewToMatch;
 
-// See comment for -offsetEditViewToMatchSteadyView.
-- (void)offsetSteadyViewToMatchEditView;
-// See comment for -resetEditViewOffsetAndOffsetSteadyViewToMatch.
-- (void)resetSteadyViewOffsetAndOffsetEditViewToMatch;
+// See comment for -offsetTextFieldToMatchSteadyView.
+- (void)offsetSteadyViewToMatchTextField;
+// See comment for -resetTextFieldOffsetAndOffsetSteadyViewToMatch.
+- (void)resetSteadyViewOffsetAndOffsetTextFieldToMatch;
 
 // Hides badge view for steady view.
 - (void)hideSteadyViewBadgeView;

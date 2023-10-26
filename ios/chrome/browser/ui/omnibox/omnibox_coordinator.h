@@ -14,6 +14,7 @@ class WebLocationBar;
 @class OmniboxTextFieldIOS;
 @protocol LocationBarOffsetProvider;
 @protocol OmniboxPopupPresenterDelegate;
+@protocol TextFieldViewContaining;
 @protocol ToolbarOmniboxConsumer;
 
 // The coordinator for the omnibox.
@@ -34,6 +35,9 @@ class WebLocationBar;
 
 // Bubble presenter for displaying IPH bubbles relating to the omnibox.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
+
+//// The edit view, which contains a text field.
+@property(nonatomic, readonly) UIView<TextFieldViewContaining>* editView;
 
 // The view controller managed by this coordinator. The parent of this
 // coordinator is expected to add it to the responder chain.

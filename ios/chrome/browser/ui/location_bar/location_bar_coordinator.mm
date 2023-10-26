@@ -201,8 +201,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       willMoveToParentViewController:self.viewController];
   [self.viewController
       addChildViewController:self.omniboxCoordinator.managedViewController];
-  [self.viewController
-      setEditView:self.omniboxCoordinator.managedViewController.view];
+  [self.viewController setEditView:self.omniboxCoordinator.editView];
   [self.omniboxCoordinator.managedViewController
       didMoveToParentViewController:self.viewController];
   self.viewController.offsetProvider = [self.omniboxCoordinator offsetProvider];

@@ -115,6 +115,12 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
                           underName:kOmniboxTextFieldGuide];
 }
 
+#pragma mark - TextFieldViewContaining
+
+- (UIView*)textFieldView {
+  return self.textField;
+}
+
 #pragma mark - Private
 
 - (void)setupLeadingImageViewWithTint:(UIColor*)iconTint {

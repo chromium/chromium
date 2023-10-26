@@ -222,6 +222,10 @@ const CGFloat kClearButtonImageSize = 17.0f;
   _isTextfieldEditing = owns;
 }
 
+- (UIView<TextFieldViewContaining>*)viewContainingTextField {
+  return self.view;
+}
+
 #pragma mark - public methods
 
 - (OmniboxTextFieldIOS*)textField {

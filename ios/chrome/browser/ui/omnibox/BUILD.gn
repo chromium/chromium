@@ -108,6 +108,7 @@ source_set("omnibox_internal") {
     "omnibox_view_controller.mm",
     "omnibox_view_ios.h",
     "omnibox_view_ios.mm",
+    "text_field_view_containing.h",
     "web_location_bar_impl.h",
     "web_location_bar_impl.mm",
     "zero_suggest_prefetch_helper.h",

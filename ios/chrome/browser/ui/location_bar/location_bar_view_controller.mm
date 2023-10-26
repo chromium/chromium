@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
+#import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_offset_provider.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -60,7 +61,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 @interface LocationBarViewController () <UIContextMenuInteractionDelegate,
                                          UIIndirectScribbleInteractionDelegate>
 // The injected edit view.
-@property(nonatomic, strong) UIView* editView;
+@property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
+
+// The injected text field.
+@property(nonatomic, weak) UIView* textField;
 
 // The injected badge view.
 @property(nonatomic, strong) UIView* badgeView;
@@ -100,9 +104,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   return self;
 }
 
-- (void)setEditView:(UIView*)editView {
+- (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
   DCHECK(!self.editView);
   _editView = editView;
+  _textField = editView.textFieldView;
 }
 
 - (void)setBadgeView:(UIView*)badgeView {
@@ -283,26 +288,26 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 #pragma mark - LocationBarAnimatee
 
-- (void)offsetEditViewToMatchSteadyView {
+- (void)offsetTextFieldToMatchSteadyView {
   CGAffineTransform offsetTransform =
       CGAffineTransformMakeTranslation([self targetOffset], 0);
-  self.editView.transform = offsetTransform;
+  self.textField.transform = offsetTransform;
 }
 
-- (void)resetEditViewOffsetAndOffsetSteadyViewToMatch {
+- (void)resetTextFieldOffsetAndOffsetSteadyViewToMatch {
   self.locationBarSteadyView.transform =
-      CGAffineTransformMakeTranslation(-self.editView.transform.tx, 0);
-  self.editView.transform = CGAffineTransformIdentity;
+      CGAffineTransformMakeTranslation(-self.textField.transform.tx, 0);
+  self.textField.transform = CGAffineTransformIdentity;
 }
 
-- (void)offsetSteadyViewToMatchEditView {
+- (void)offsetSteadyViewToMatchTextField {
   CGAffineTransform offsetTransform =
       CGAffineTransformMakeTranslation(-[self targetOffset], 0);
   self.locationBarSteadyView.transform = offsetTransform;
 }
 
-- (void)resetSteadyViewOffsetAndOffsetEditViewToMatch {
-  self.editView.transform = CGAffineTransformMakeTranslation(
+- (void)resetSteadyViewOffsetAndOffsetTextFieldToMatch {
+  self.textField.transform = CGAffineTransformMakeTranslation(
       -self.locationBarSteadyView.transform.tx, 0);
   self.locationBarSteadyView.transform = CGAffineTransformIdentity;
 }
@@ -333,9 +338,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (void)resetTransforms {
   // Focus/defocus animations only affect translations and not scale. So reset
   // translation and keep the scale.
-  self.editView.transform = CGAffineTransformMake(
-      self.editView.transform.a, self.editView.transform.b,
-      self.editView.transform.c, self.editView.transform.d, 0, 0);
+  self.textField.transform = CGAffineTransformMake(
+      self.textField.transform.a, self.textField.transform.b,
+      self.textField.transform.c, self.textField.transform.d, 0, 0);
   self.locationBarSteadyView.transform =
       CGAffineTransformMake(self.locationBarSteadyView.transform.a,
                             self.locationBarSteadyView.transform.b,

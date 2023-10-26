@@ -102,7 +102,7 @@
 
   if (animated) {
     // Prepare for animation.
-    [self.locationBarAnimatee offsetEditViewToMatchSteadyView];
+    [self.locationBarAnimatee offsetTextFieldToMatchSteadyView];
     // Hide badge view before the transform regardless of current displayed
     // state to prevent it from being visible outside of the location bar as the
     // steadView moves outside to the leading side of the location bar.
@@ -119,7 +119,7 @@
         options:UIViewAnimationCurveEaseInOut
         animations:^{
           [self.locationBarAnimatee
-                  resetEditViewOffsetAndOffsetSteadyViewToMatch];
+                  resetTextFieldOffsetAndOffsetSteadyViewToMatch];
 
           // Fading the views happens with a different timing for a better
           // visual effect. The steady view looks like an ordinary label, and it
@@ -143,8 +143,8 @@
                                         }];
 
           // Scale the leading icon in with a slight bounce / spring.
-          [UIView addKeyframeWithRelativeStartTime:0.2
-                                  relativeDuration:0.55
+          [UIView addKeyframeWithRelativeStartTime:0
+                                  relativeDuration:0.75
                                         animations:^{
                                           [self.editViewAnimatee
                                               setLeadingIconScale:1.3];
@@ -181,7 +181,7 @@
 
   if (animated) {
     // Prepare for animation.
-    [self.locationBarAnimatee offsetSteadyViewToMatchEditView];
+    [self.locationBarAnimatee offsetSteadyViewToMatchTextField];
     // Make steady view transparent, but not hidden.
     [self.locationBarAnimatee setSteadyViewHidden:NO];
     [self.locationBarAnimatee setSteadyViewFaded:YES];
@@ -195,7 +195,7 @@
         options:UIViewAnimationCurveEaseInOut
         animations:^{
           [self.locationBarAnimatee
-                  resetSteadyViewOffsetAndOffsetEditViewToMatch];
+                  resetSteadyViewOffsetAndOffsetTextFieldToMatch];
         }
         completion:^(BOOL finished) {
           cleanup();
