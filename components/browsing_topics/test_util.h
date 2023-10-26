@@ -7,6 +7,7 @@
 
 #include "base/containers/queue.h"
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/annotator.h"
@@ -151,6 +152,10 @@ class TestAnnotator : public Annotator {
   void UseModelInfo(
       const absl::optional<optimization_guide::ModelInfo>& model_info);
 
+  // If setting to true when it had been false, all callbacks that have been
+  // passed to |NotifyWhenModelAvailable| will be ran.
+  void SetModelAvailable(bool is_available);
+
   // Annotator:
   void BatchAnnotate(BatchAnnotationCallback callback,
                      const std::vector<std::string>& inputs) override;
@@ -161,6 +166,8 @@ class TestAnnotator : public Annotator {
  private:
   std::map<std::string, std::set<int32_t>> annotations_;
   absl::optional<optimization_guide::ModelInfo> model_info_;
+  bool model_available_ = true;
+  base::OnceClosureList model_available_callbacks_;
 };
 
 }  // namespace browsing_topics
