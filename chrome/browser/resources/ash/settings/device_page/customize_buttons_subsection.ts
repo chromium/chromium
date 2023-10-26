@@ -38,7 +38,7 @@ declare global {
   }
 }
 
-const MAX_BUTTON_NAME_INPUT_LENGTH = 64;
+const MAX_BUTTON_NAME_INPUT_LENGTH = 32;
 
 const CustomizeButtonsSubsectionElementBase = I18nMixin(PolymerElement);
 

@@ -866,27 +866,27 @@ TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletSettingsAreValid) {
                                          mojom::GraphicsTabletSettings::New());
   EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 2u);
 
-  // Invalid settings with a button remapping name more than 64 characters.
+  // Invalid settings with a button remapping name more than 32 characters.
   settings->pen_button_remappings[0]->name =
-      "This is a really long name which is used to test the name max length";
+      "This is a really long name to test the name max length";
   controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
                                          settings.Clone());
   EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 2u);
 
-  // Valid settings with a button remapping name fewer than 64 characters.
+  // Valid settings with a button remapping name fewer than 32 characters.
   settings->pen_button_remappings[0]->name = "Short valid name";
   controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
                                          settings.Clone());
   EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 3u);
 
-  // Valid settings with a button remapping name with exactly 64 characters.
-  settings->pen_button_remappings[0]->name = std::string(64, 'a');
+  // Valid settings with a button remapping name with exactly 32 characters.
+  settings->pen_button_remappings[0]->name = std::string(32, 'a');
   controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
                                          settings.Clone());
   EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 4u);
 
-  // Valid settings with a button remapping name with exactly 65 characters.
-  settings->pen_button_remappings[0]->name = std::string(65, 'a');
+  // Valid settings with a button remapping name with exactly 33 characters.
+  settings->pen_button_remappings[0]->name = std::string(33, 'a');
   controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
                                          settings.Clone());
   EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 4u);

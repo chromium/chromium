@@ -84,15 +84,15 @@ suite('<customize-buttons-subsection>', () => {
     // Verify that if the new button is too long, it will cause invalid and be
     // truncated.
     buttonLabelInput.value =
-        'Button name which exceeds 64 character is too long and is invalid.';
+        'Button name which exceeds 32 character is invalid.';
     await flushTasks();
 
     assertFalse(saveButton.disabled);
     assertTrue(customizeButtonsSubsection.get('buttonNameInvalid_'));
-    assertEquals(buttonLabelInput.value.length, 64);
+    assertEquals(buttonLabelInput.value.length, 32);
     const inputCountText: HTMLDivElement|null =
         customizeButtonsSubsection.shadowRoot!.querySelector('#inputCount');
-    assertEquals(inputCountText!.textContent!.trim(), '64/64');
+    assertEquals(inputCountText!.textContent!.trim(), '32/32');
 
     // Verify that if the button name is duplicate with other buttons, the
     // save button is blocked.
@@ -103,7 +103,7 @@ suite('<customize-buttons-subsection>', () => {
     assertEquals(buttonRemappingChangedEventCount, 0);
 
     buttonLabelInput.value = 'New Button Name';
-    assertEquals(inputCountText!.textContent!.trim(), '15/64');
+    assertEquals(inputCountText!.textContent!.trim(), '15/32');
     assertFalse(customizeButtonsSubsection.get('buttonNameInvalid_'));
     saveButton.click();
     await flushTasks();

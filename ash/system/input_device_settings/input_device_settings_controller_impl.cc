@@ -55,7 +55,7 @@ namespace ash {
 
 namespace {
 
-const int kMaxButtonNameLength = 64;
+const int kMaxButtonNameLength = 32;
 
 mojom::MetaKey GetMetaKeyForKeyboard(const ui::KeyboardDevice& keyboard) {
   const auto device_type =
@@ -288,7 +288,7 @@ bool TouchpadSettingsAreValid(const mojom::Touchpad& touchpad,
 
 // ValidateButtonRemappingList verifies if the new button remapping list has
 // the same buttons as these in the original button remapping list and all the
-// button remapping names should be fewer than 64 characters.
+// button remapping names should be fewer than 32 characters.
 bool ValidateButtonRemappingList(
     const std::vector<mojom::ButtonRemappingPtr>& original_remapping_list,
     const std::vector<mojom::ButtonRemappingPtr>& new_remapping_list) {
@@ -314,7 +314,7 @@ bool ValidateButtonRemappingList(
 
 // Valid graphics tablet settings should have the same tablet and pen buttons
 // as these in the graphics tablet and all the button remapping names should be
-// fewer than 64 characters.
+// fewer than 32 characters.
 bool GraphicsTabletSettingsAreValid(
     const mojom::GraphicsTablet& graphics_tablet,
     const mojom::GraphicsTabletSettings& settings) {
@@ -328,7 +328,7 @@ bool GraphicsTabletSettingsAreValid(
 
 // Valid mouse settings should have the same buttons as those
 // in the mouse and all the button remapping names should be
-// fewer than 64 characters.
+// fewer than 32 characters.
 bool MouseSettingsAreValid(const mojom::Mouse& mouse,
                            const mojom::MouseSettings& settings) {
   if (!features::IsPeripheralCustomizationEnabled()) {
