@@ -45,8 +45,13 @@ export class SettingsPageContentPageElement extends
   }
 
   private computeShowComposeToggle(): boolean {
+    // <if expr="enable_compose">
     return loadTimeData.getBoolean('enableComposeSetting') &&
         this.prefs.page_content_collection.enabled.value;
+    // </if>
+    // <if expr="not enable_compose">
+    return false;
+    // </if>
   }
 }
 
