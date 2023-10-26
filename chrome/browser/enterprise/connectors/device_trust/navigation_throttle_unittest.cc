@@ -104,6 +104,14 @@ scoped_refptr<net::HttpResponseHeaders> GetHeaderChallenge(
       net::HttpUtil::AssembleRawHeaders(raw_response_headers));
 }
 
+scoped_refptr<net::HttpResponseHeaders> GetRedirectedHeader() {
+  std::string raw_response_headers =
+      "HTTP/1.1 302\r\n"
+      "content-type:text/html";
+  return base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(raw_response_headers));
+}
+
 }  // namespace
 
 class DeviceTrustNavigationThrottleTest : public testing::Test {
@@ -245,6 +253,29 @@ TEST_F(DeviceTrustNavigationThrottleTest, ExpectHeaderDeviceTrustOnRequest) {
               SetRequestHeader("X-Device-Trust", "VerifiedAccess"));
   auto throttle = CreateThrottle(&test_handle);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+  histogram_tester_.ExpectUniqueSample(
+      kFunnelHistogramName, DTAttestationFunnelStep::kAttestationFlowStarted,
+      1);
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest,
+       ExpectHeaderDeviceTrustOnRedirectedRequest) {
+  EnableDTCPolicy();
+  SetCanCollectSignals();
+  SetShouldCollectConsent(/*should_collect=*/false);
+
+  content::MockNavigationHandle test_handle(GURL(kTrustedUrl), main_frame());
+
+  // A redirected request will have non-empty response headers.
+  test_handle.set_response_headers(GetRedirectedHeader());
+
+  EXPECT_CALL(test_handle,
+              SetRequestHeader("X-Device-Trust", "VerifiedAccess"));
+  auto throttle = CreateThrottle(&test_handle);
+  EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+  histogram_tester_.ExpectUniqueSample(
+      kFunnelHistogramName, DTAttestationFunnelStep::kAttestationFlowStarted,
+      1);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, NullDeviceTrustService) {
@@ -257,6 +288,7 @@ TEST_F(DeviceTrustNavigationThrottleTest, NullDeviceTrustService) {
   auto throttle = std::make_unique<DeviceTrustNavigationThrottle>(
       nullptr, &mock_user_permission_service_, &test_handle);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, NullUserPermissionService) {
@@ -268,6 +300,7 @@ TEST_F(DeviceTrustNavigationThrottleTest, NullUserPermissionService) {
   auto throttle = std::make_unique<DeviceTrustNavigationThrottle>(
       &mock_device_trust_service_, nullptr, &test_handle);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, DTCPolicyDisabled) {
@@ -279,6 +312,7 @@ TEST_F(DeviceTrustNavigationThrottleTest, DTCPolicyDisabled) {
   auto throttle = CreateThrottle(&test_handle);
 
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest,
@@ -293,6 +327,7 @@ TEST_F(DeviceTrustNavigationThrottleTest,
   auto throttle = CreateThrottle(&test_handle);
 
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, NoHeaderDeviceTrustOnRequest) {
@@ -306,6 +341,7 @@ TEST_F(DeviceTrustNavigationThrottleTest, NoHeaderDeviceTrustOnRequest) {
       .Times(0);
   auto throttle = CreateThrottle(&test_handle);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, InvalidURL) {
@@ -318,6 +354,7 @@ TEST_F(DeviceTrustNavigationThrottleTest, InvalidURL) {
       .Times(0);
   auto throttle = CreateThrottle(&test_handle);
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
@@ -337,6 +374,9 @@ TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
 
   base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(
+      kFunnelHistogramName, DTAttestationFunnelStep::kChallengeReceived, 1);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, TestReplyValidChallengeResponse) {
