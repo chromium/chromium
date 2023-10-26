@@ -718,7 +718,10 @@ struct SkiaRenderer::DrawRPDQParams {
     mutable sk_sp<SkShader> sk_shader_ = nullptr;
   };
 
-  explicit DrawRPDQParams(const gfx::RectF& visible_rect);
+  DrawRPDQParams() : filter_bounds(SkRect::MakeEmpty()) {}
+
+  explicit DrawRPDQParams(const gfx::RectF& visible_rect)
+      : filter_bounds(gfx::RectFToSkRect(visible_rect)) {}
 
   // Root of the calculated image filter DAG to be applied to the render pass.
   sk_sp<SkImageFilter> image_filter = nullptr;
@@ -726,15 +729,18 @@ struct SkiaRenderer::DrawRPDQParams {
   // be that filter. |image_filter| will still be non-null.
   sk_sp<SkColorFilter> color_filter = nullptr;
   // Root of the calculated backdrop filter DAG to be applied to the render pass
+  // Backdrop filtered content must be clipped to |backdrop_filter_bounds| and
+  // the DrawQuad's rect (or draw_region if BSP-clipped).
   sk_sp<SkImageFilter> backdrop_filter = nullptr;
   // If present, the mask image, which can be applied using SkCanvas::clipShader
-  // in RPDQ's coord space.
+  // in the RPDQ's coord space.
   absl::optional<MaskShader> mask_shader;
   // Backdrop border box for the render pass, to clip backdrop-filtered content
-  absl::optional<gfx::RRectF> backdrop_filter_bounds;
+  // (but not the rest of the RPDQ itself).
+  absl::optional<SkRRect> backdrop_filter_bounds;
   // The content space bounds that includes any filtered extents. If empty,
-  // the draw can be skipped.
-  gfx::Rect filter_bounds;
+  // the draw can be skipped.It may represent fractional pixel coverage.
+  SkRect filter_bounds;
 
   // Multiplier used for downscaling backdrop filter.
   float backdrop_filter_quality = 1.0f;
@@ -760,6 +766,29 @@ struct SkiaRenderer::DrawRPDQParams {
     return !bypass_geometry->clip_rect.Contains(
         gfx::SkRectToRectF(content_bounds));
   }
+
+  // Returns either |params->visible_rect| or |bypass_geometry->clip_rect|,
+  // which corresponds to the visible_rect of the originating RPDQ.
+  SkRect GetContentBounds(const DrawQuadParams* params) const {
+    return gfx::RectFToSkRect(bypass_geometry ? bypass_geometry->clip_rect
+                                              : params->visible_rect);
+  }
+
+  // Sets a clip on the canvas to restrict the size of the Skia layer that holds
+  // the backdrop filtered content to the size of the DrawQuad. When possible
+  // this is an exact clip to reduce operations performed within the backdrop
+  // layer; otherwise it's conservative to constrain size without impacting
+  // visuals.
+  void SetBackdropFilterClip(SkCanvas* canvas,
+                             const DrawQuadParams* params) const;
+
+  // Erases backdrop filtered content outside of the DrawQuad and backdrop
+  // filter bounds rrect within the backdrop layer. This is a no-op if exact
+  // clipping was used in SetBackdropFilterClip to achieve the same effect.
+  // Otherwise, this is necessary to limit the backdrop content without
+  // impacting the DrawQuad or regular filter output.
+  void ClearOutsideBackdropBounds(SkCanvas* canvas,
+                                  const DrawQuadParams* params) const;
 };
 
 sk_sp<SkShader> SkiaRenderer::DrawRPDQParams::MaskShader::GetOrCreateSkShader(
@@ -780,8 +809,72 @@ sk_sp<SkShader> SkiaRenderer::DrawRPDQParams::MaskShader::GetOrCreateSkShader(
   return sk_shader_;
 }
 
-SkiaRenderer::DrawRPDQParams::DrawRPDQParams(const gfx::RectF& visible_rect)
-    : filter_bounds(gfx::ToEnclosingRect(visible_rect)) {}
+void SkiaRenderer::DrawRPDQParams::SetBackdropFilterClip(
+    SkCanvas* canvas,
+    const DrawQuadParams* params) const {
+  if (!backdrop_filter) {
+    return;  // No clipping necessary
+  }
+
+  const bool aa = params->aa_flags != SkCanvas::kNone_QuadAAFlags;
+  if (backdrop_filter_bounds) {
+    // The final backdrop content is complex, so excess filter values will be
+    // erased from within the layer. Only clip to the aggregate bounds.
+    canvas->clipRect(filter_bounds, aa);
+  } else {
+    // The backdrop content is restricted to the draw region and visible_rect
+    // (or bypass clip_rect, which corresponds to the visible_rect of the quad
+    // that had the filter on it).
+    canvas->clipRect(GetContentBounds(params), aa);
+  }
+  if (params->draw_region) {
+    SkPath clip_path = params->draw_region_in_path();
+    if (bypass_geometry) {
+      clip_path.transform(bypass_geometry->transform);
+    }
+    canvas->clipPath(clip_path, aa);
+  }
+}
+
+void SkiaRenderer::DrawRPDQParams::ClearOutsideBackdropBounds(
+    SkCanvas* canvas,
+    const DrawQuadParams* params) const {
+  if (!backdrop_filter || !backdrop_filter_bounds) {
+    return;  // Nothing to clear within the layer
+  }
+
+  // Must erase pixels not in the intersection of the backdrop_filter_bounds,
+  // visible_rect, and any draw_region. This is the union of the inverse fills
+  // of those shapes, which can be accomplished most efficiently by clipping
+  // the shape with the kDifference op and then clearing the canvas, per shape
+  const bool aa = params->aa_flags != SkCanvas::kNone_QuadAAFlags;
+
+  canvas->save();
+  canvas->clipRRect(*backdrop_filter_bounds, SkClipOp::kDifference, aa);
+  canvas->clear(SK_ColorTRANSPARENT);
+  canvas->restore();
+
+  if (params->draw_region) {
+    canvas->save();
+    canvas->concat(bypass_geometry->transform);
+    canvas->clipPath(params->draw_region_in_path(), SkClipOp::kDifference, aa);
+    canvas->clear(SK_ColorTRANSPARENT);
+    canvas->restore();
+  } else {
+    SkRect content = GetContentBounds(params);
+    if (!content.contains(backdrop_filter_bounds->rect())) {
+      // If the |draw_region| is defined, it's already a subset of |rect|, so
+      // we don't have to clear both. Similarly, if |backdrop_filter_bounds|
+      // is contained within the quad, the first clear was sufficient.
+      // Otherwise, have some excess backdrop content that must still be
+      // erased.
+      canvas->save();
+      canvas->clipRect(content, SkClipOp::kDifference, aa);
+      canvas->clear(SK_ColorTRANSPARENT);
+      canvas->restore();
+    }
+  }
+}
 
 // A read lock based fence that is signaled after gpu commands are completed
 // meaning the resource has been read.
@@ -1444,11 +1537,10 @@ void SkiaRenderer::PrepareGradient(
 
 void SkiaRenderer::PrepareCanvasForRPDQ(const DrawRPDQParams& rpdq_params,
                                         DrawQuadParams* params) {
-  // Clip to the filter bounds prior to saving the layer, which has been
-  // constructed to contain the actual filtered contents (visually no
-  // clipping effect, but lets Skia minimize internal layer size).
-  bool aa = params->aa_flags != SkCanvas::kNone_QuadAAFlags;
-  current_canvas_->clipRect(gfx::RectToSkRect(rpdq_params.filter_bounds), aa);
+  // Clip before the saveLayer() so that Skia only filters the backdrop that is
+  // necessary for the |backdrop_filter_bounds| (otherwise it will fill the
+  // quad's SharedQuadState's |clip_rect|).
+  rpdq_params.SetBackdropFilterClip(current_canvas_, params);
 
   SkPaint layer_paint = params->paint(nullptr /* color_filter */);
   // The layer always consumes the opacity, but its blend mode depends on if
@@ -1466,86 +1558,15 @@ void SkiaRenderer::PrepareCanvasForRPDQ(const DrawRPDQParams& rpdq_params,
     layer_paint.setImageFilter(rpdq_params.image_filter);
   }
 
-  // Canocalize the backdrop bounds rrect type; if there's no backdrop filter or
-  // filter bounds, this will be empty. If it's a rect or rrect, we must work
-  // around Skia's background filter auto-expansion. If it's an rrect, we must
-  // also clear out the rounded corners after filtering.
-  gfx::RRectF::Type backdrop_bounds_type = gfx::RRectF::Type::kEmpty;
-  if (rpdq_params.backdrop_filter &&
-      rpdq_params.backdrop_filter_bounds.has_value()) {
-    backdrop_bounds_type = rpdq_params.backdrop_filter_bounds->GetType();
-  }
-
-  // Initially the backdrop filter fills the entire rect; if we draw less than
-  // that we need to clear the excess.
-  bool post_backdrop_filter_clear_needed = !!params->draw_region;
-
-  // Explicitly crop the input and the output to the backdrop bounds; this is
-  // required for the backdrop-filter spec.
-  sk_sp<SkImageFilter> backdrop_filter = rpdq_params.backdrop_filter;
-  if (backdrop_bounds_type != gfx::RRectF::Type::kEmpty) {
-    DCHECK(backdrop_filter);
-
-    gfx::RectF crop_rect = rpdq_params.backdrop_filter_bounds->rect();
-
-    // Only sample from pixels behind the RPDQ for backdrop filters to avoid
-    // color bleeding with pixel-moving filters.
-    crop_rect.Intersect(params->rect);
-
-    SkIRect sk_crop_rect = gfx::RectToSkIRect(gfx::ToEnclosingRect(crop_rect));
-
-    SkIRect sk_src_rect = backdrop_filter->filterBounds(
-        sk_crop_rect, SkMatrix::I(), SkImageFilter::kReverse_MapDirection,
-        &sk_crop_rect);
-    if (sk_crop_rect == sk_src_rect) {
-      // The backdrop filter does not "move" pixels, i.e. a pixel's value only
-      // depends on its (x,y) and prior color. Avoid cropping the input in this
-      // case since composing a crop rect into the filter DAG forces Skia to
-      // map the backdrop content into the local space, which can introduce
-      // filtering artifacts: crbug.com/1044032. Instead just post-filter
-      // clearing will achieve the same cropping of the output at higher quality
-      post_backdrop_filter_clear_needed = true;
-    } else {
-      // Offsetting (0,0) does nothing to the actual image, but is the most
-      // convenient way to embed the crop rect into the filter DAG.
-      // TODO(michaelludwig) - Remove this once Skia doesn't always auto-expand
-      sk_sp<SkImageFilter> crop =
-          SkImageFilters::Offset(0.0f, 0.0f, nullptr, &sk_crop_rect);
-      backdrop_filter = SkImageFilters::Compose(
-          crop, SkImageFilters::Compose(std::move(backdrop_filter), crop));
-      // Update whether or not a post-filter clear is needed (crop didn't
-      // completely match bounds)
-      post_backdrop_filter_clear_needed |=
-          backdrop_bounds_type != gfx::RRectF::Type::kRect ||
-          crop_rect != rpdq_params.backdrop_filter_bounds->rect();
-    }
-  }
-
-  SkRect bounds = gfx::RectFToSkRect(
-      rpdq_params.bypass_geometry ? rpdq_params.bypass_geometry->clip_rect
-                                  : params->visible_rect);
+  SkRect bounds = rpdq_params.GetContentBounds(params);
   current_canvas_->saveLayer(SkCanvasPriv::ScaledBackdropLayer(
-      &bounds, &layer_paint, backdrop_filter.get(),
+      &bounds, &layer_paint, rpdq_params.backdrop_filter.get(),
       rpdq_params.backdrop_filter_quality, 0));
+
   // If we have backdrop filtered content (and not transparent black like with
   // regular render passes), we have to clear out the parts of the layer that
-  // shouldn't show the backdrop
-  if (backdrop_filter && post_backdrop_filter_clear_needed) {
-    current_canvas_->save();
-    if (rpdq_params.backdrop_filter_bounds.has_value()) {
-      current_canvas_->clipRRect(SkRRect(*rpdq_params.backdrop_filter_bounds),
-                                 SkClipOp::kDifference, aa);
-    }
-    if (params->draw_region) {
-      SkPath clip_path = params->draw_region_in_path();
-      if (rpdq_params.bypass_geometry) {
-        clip_path.transform(rpdq_params.bypass_geometry->transform);
-      }
-      current_canvas_->clipPath(clip_path, SkClipOp::kDifference, aa);
-    }
-    current_canvas_->clear(SK_ColorTRANSPARENT);
-    current_canvas_->restore();
-  }
+  // shouldn't show the backdrop.
+  rpdq_params.ClearOutsideBackdropBounds(current_canvas_, params);
 }
 
 void SkiaRenderer::PreparePaintOrCanvasForRPDQ(
@@ -2964,67 +2985,72 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
     return rpdq_params;
   }
 
-  // Calculate local matrix that's shared by filters and backdrop_filters
+  // Calculate local matrix that's shared by filters and backdrop_filters. This
+  // local matrix represents the UI display scale that's already been applied to
+  // the DrawQuads but not any geometric properties of the filters.
   SkMatrix local_matrix;
   local_matrix.setTranslate(quad->filters_origin.x(), quad->filters_origin.y());
   local_matrix.postScale(quad->filters_scale.x(), quad->filters_scale.y());
+
+  // Calculate local clip bounds. Note that doing this here is redundant with
+  // letting SkCanvas reject clipped-out draws, but detecting it early means
+  // SkiaRenderer does not have to prepare renderpass backings in those cases.
+  absl::optional<SkRect> local_clip_rect;
+  if (!params->content_device_transform.HasPerspective() &&
+      params->content_device_transform.IsInvertible()) {
+    // The |clip_rect| and |current_draw_rect_| are in target space, so map
+    // to device space, then inverse-map to quad space.
+    const auto& target_to_device = current_frame()->target_to_device_transform;
+    gfx::RectF clip_rect = target_to_device.MapRect(gfx::RectF(
+        quad->shared_quad_state->clip_rect.value_or(current_draw_rect_)));
+    local_clip_rect = gfx::RectFToSkRect(
+        cc::MathUtil::InverseMapQuadToLocalSpace(
+            params->content_device_transform, gfx::QuadF(clip_rect))
+            .BoundingBox());
+  }
+
+  auto to_sk_image_filter =
+      [](sk_sp<cc::PaintFilter> paint_filter,
+         const SkMatrix& local_matrix) -> sk_sp<SkImageFilter> {
+    if (paint_filter && paint_filter->cached_sk_filter_) {
+      return paint_filter->cached_sk_filter_->makeWithLocalMatrix(local_matrix);
+    } else {
+      return nullptr;
+    }
+  };
 
   // Convert CC image filters into a SkImageFilter root node
   if (filters) {
     DCHECK(!filters->IsEmpty());
     auto paint_filter = cc::RenderSurfaceFilters::BuildImageFilter(*filters);
-    auto sk_filter = paint_filter ? paint_filter->cached_sk_filter_ : nullptr;
+    rpdq_params.image_filter =
+        to_sk_image_filter(std::move(paint_filter), local_matrix);
 
-    if (sk_filter) {
-      // Update the filter bounds based to account for how the image filters
-      // grow or expand the area touched by drawing.
-      rpdq_params.filter_bounds =
-          filters->MapRect(rpdq_params.filter_bounds, local_matrix);
+    if (rpdq_params.image_filter) {
+      // Update the filter bounds to account for how the image filters
+      // grow or move the area touched by the base quad.
+      rpdq_params.filter_bounds = rpdq_params.image_filter->computeFastBounds(
+          rpdq_params.filter_bounds);
 
       // If after applying the filter we would be clipped out, skip the draw.
-      gfx::Rect clip_rect =
-          quad->shared_quad_state->clip_rect.value_or(current_draw_rect_);
-      gfx::Transform transform =
-          quad->shared_quad_state->quad_to_target_transform;
-      transform.Flatten();
-      if (!transform.IsInvertible()) {
-        return rpdq_params;
+      if (local_clip_rect) {
+        if (!rpdq_params.filter_bounds.intersect(*local_clip_rect)) {
+          return {};
+        }
       }
-
-      // If the transform has perspective, there might be visible content
-      // outside of the bounds of the quad.
-      if (!transform.HasPerspective()) {
-        gfx::QuadF clip_quad = gfx::QuadF(gfx::RectF(clip_rect));
-        gfx::QuadF local_clip =
-            cc::MathUtil::InverseMapQuadToLocalSpace(transform, clip_quad);
-
-        rpdq_params.filter_bounds.Intersect(
-            gfx::ToEnclosingRect(local_clip.BoundingBox()));
-      }
-
-      // If we've been fully clipped out (by crop rect or clipping), there's
-      // nothing to draw.
-      if (rpdq_params.filter_bounds.IsEmpty()) {
-        return rpdq_params;
-      }
-
-      rpdq_params.image_filter = sk_filter->makeWithLocalMatrix(local_matrix);
 
       // Attempt to simplify the image filter to a color filter, which enables
       // the RPDQ effects to be applied more efficiently.
       SkColorFilter* color_filter_ptr = nullptr;
-      if (rpdq_params.image_filter) {
-        if (rpdq_params.image_filter->asAColorFilter(&color_filter_ptr)) {
-          // asAColorFilter already ref'ed the filter when true is returned,
-          // reset() does not add a ref itself, so everything is okay.
-          rpdq_params.color_filter.reset(color_filter_ptr);
-        }
+      if (rpdq_params.image_filter->asAColorFilter(&color_filter_ptr)) {
+        // asAColorFilter already ref'ed the filter when true is returned,
+        // reset() does not add a ref itself, so everything is okay.
+        rpdq_params.color_filter.reset(color_filter_ptr);
       }
     }
   }
 
   // Convert CC image filters for the backdrop into a SkImageFilter root node
-  // TODO(weiliangc): ChromeOS would need backdrop_filter_quality implemented
   if (backdrop_filters) {
     DCHECK(!backdrop_filters->IsEmpty());
     rpdq_params.backdrop_filter_quality = quad->backdrop_filter_quality;
@@ -3042,44 +3068,84 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
       auto bg_paint_filter = cc::RenderSurfaceFilters::BuildImageFilter(
           *backdrop_filters, gfx::SkIRectToRect(filter_rect));
 
-      auto sk_bg_filter =
-          bg_paint_filter ? bg_paint_filter->cached_sk_filter_ : nullptr;
-
-      if (sk_bg_filter) {
-        rpdq_params.backdrop_filter =
-            sk_bg_filter->makeWithLocalMatrix(local_matrix);
-      }
+      rpdq_params.backdrop_filter =
+          to_sk_image_filter(std::move(bg_paint_filter), local_matrix);
     }
   }
 
-  // Determine if the backdrop filter has its own clip (which only needs to be
-  // checked when we have a backdrop filter to apply)
+  // Determine the clipping to apply to the backdrop filter. Skia normally
+  // fills layers with the backdrop content, whereas viz wants the backdrop
+  // content restricted to the intersection of the DrawQuad and any defined
+  // |backdrop_filter_bounds|.
   if (rpdq_params.backdrop_filter) {
-    const absl::optional<gfx::RRectF> backdrop_filter_bounds =
+    SkRect backdrop_rect = gfx::RectFToSkRect(params->visible_rect);
+    // Pass bounds do not match the display scale; they will be scaled and
+    // converted into an SkRRect in |backdrop_filter_bounds| if defined.
+    absl::optional<gfx::RRectF> pass_bounds =
         BackdropFilterBoundsForPass(quad->render_pass_id);
-    if (backdrop_filter_bounds) {
-      // The backdrop filters effect will be cropped by these bounds. If the
-      // bounds are empty, discard the backdrop filter now since none of it
-      // would have been visible anyways.
-      if (backdrop_filter_bounds->IsEmpty()) {
+    absl::optional<SkRRect> backdrop_filter_bounds;
+    if (pass_bounds) {
+      // Scale by the filter's scale, but don't apply filter origin
+      SkRRect result;
+      if (!SkRRect(*pass_bounds).transform(local_matrix, &result) ||
+          !backdrop_rect.intersect(result.rect())) {
+        // No visible backdrop filter
         rpdq_params.backdrop_filter = nullptr;
+        return rpdq_params;
       } else {
-        rpdq_params.backdrop_filter_bounds = *backdrop_filter_bounds;
-        // Scale by the filter's scale, but don't apply filter origin
-        rpdq_params.backdrop_filter_bounds->Scale(quad->filters_scale.x(),
-                                                  quad->filters_scale.y());
+        backdrop_filter_bounds = result;
+      }
 
-        // If there are also regular image filters, they apply to the area of
-        // the backdrop_filter_bounds too, so expand the backdrop bounds and
-        // join it with the main filter bounds.
-        if (rpdq_params.image_filter) {
-          gfx::Rect backdrop_rect =
-              gfx::ToEnclosingRect(rpdq_params.backdrop_filter_bounds->rect());
-          rpdq_params.filter_bounds.Union(
-              filters->MapRect(backdrop_rect, local_matrix));
+      if (backdrop_filter_bounds->contains(rpdq_params.filter_bounds)) {
+        // The backdrop filter bounds are a no-op since the quad rect or region
+        // fully limits the backdrop filter.
+        backdrop_filter_bounds.reset();
+      } else {
+        // The backdrop filter bounds might have an effect, but a simple case to
+        // check for is if the backdrop rounded corners are identical to the
+        // quad's rounded corner mask info. In that case, the prior contains()
+        // check would be false, but we can still discard these bounds since the
+        // final mask clip will achieve the same visual effect.
+        if (params->mask_filter_info) {
+          SkMatrix m = gfx::TransformToFlattenedSkMatrix(
+              params->content_device_transform);
+          if (backdrop_filter_bounds->transform(m, &result) &&
+              SkRRect(params->mask_filter_info->rounded_corner_bounds()) ==
+                  result) {
+            backdrop_filter_bounds.reset();
+          }
         }
       }
     }
+
+    if (local_clip_rect && !backdrop_rect.intersect(*local_clip_rect)) {
+      rpdq_params.backdrop_filter = nullptr;
+      return rpdq_params;
+    }
+
+    // Besides ensuring the output of the backdrop filter doesn't go beyond its
+    // bounds, it should not read pixels outside of its bounds to prevent color
+    // bleeding. If it's a pixel-moving filter, we compose a kClamp-tiling Crop
+    // image filter to enforce this requirement.
+    // TODO(crbug.com/978031): Revisit the tilemode, perhaps kMirror is better
+    SkIRect sk_crop_rect = backdrop_rect.roundOut();
+    SkIRect sk_src_rect = rpdq_params.backdrop_filter->filterBounds(
+        sk_crop_rect, SkMatrix::I(), SkImageFilter::kReverse_MapDirection,
+        /*inputRect=*/nullptr);
+    if (!sk_crop_rect.contains(sk_src_rect)) {
+      rpdq_params.backdrop_filter = SkImageFilters::Compose(
+          /*outer=*/std::move(rpdq_params.backdrop_filter),
+          /*inner=*/SkImageFilters::Crop(backdrop_rect, SkTileMode::kClamp,
+                                         nullptr));
+    }
+
+    // Update |filter_bounds| to include content produced by the backdrop. Under
+    // most circumstances this will be a no-op since content is restricted to
+    // underneath the RPDQ's draw region, but if a backdrop filter is combined
+    // with some pixel-moving filters, that may not remain the case and this
+    // ensures |filter_bounds| will contain all possible output.
+    rpdq_params.filter_bounds.join(backdrop_rect);
+    rpdq_params.backdrop_filter_bounds = backdrop_filter_bounds;
   }
 
   return rpdq_params;
@@ -3096,8 +3162,9 @@ void SkiaRenderer::DrawRenderPassQuad(
 
   // |filter_bounds| is the content space bounds that includes any filtered
   // extents. If empty, the draw can be skipped.
-  if (rpdq_params.filter_bounds.IsEmpty())
+  if (rpdq_params.filter_bounds.isEmpty()) {
     return;
+  }
 
   auto bypass = render_pass_bypass_quads_.find(quad->render_pass_id);
   // When Render Pass has a single quad inside we would draw that directly.
@@ -3622,12 +3689,14 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     rpdq_params = CalculateRPDQParams(quad, &params);
   }
 
-  const auto& filter_bounds = rpdq_params.filter_bounds;
+  const gfx::Rect filter_bounds =
+      gfx::SkIRectToRect(rpdq_params.filter_bounds.roundOut());
 
   // |filter_bounds| is the content space bounds that includes any filtered
   // extents. If empty, the draw can be skipped.
-  if (filter_bounds.IsEmpty())
+  if (filter_bounds.IsEmpty()) {
     return;
+  }
 
   SharedImageFormat buffer_format;
   gfx::ColorSpace color_space;

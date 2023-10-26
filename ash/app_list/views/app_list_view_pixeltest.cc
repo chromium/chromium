@@ -232,7 +232,7 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_answer_card_search_results",
-      /*revision_number=*/JellyEnabled() ? 9 : 7,
+      /*revision_number=*/JellyEnabled() ? 10 : 8,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -255,7 +255,7 @@ TEST_P(AppListViewPixelRTLTest, URLSearchResult) {
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_url_search_results",
-      /*revision_number=*/JellyEnabled() ? 8 : 6,
+      /*revision_number=*/JellyEnabled() ? 9 : 7,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -277,7 +277,7 @@ TEST_P(AppListViewPixelRTLTest, KeyboardShortcutSearchResult) {
 
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_ks_search_results", /*revision_number=*/0,
+      "bubble_launcher_ks_search_results", /*revision_number=*/1,
       GetAppListTestHelper()->GetBubbleView()));
 }
 
@@ -291,7 +291,7 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
       GetAppListTestHelper()->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_basics",
-      /*revision_number=*/JellyEnabled() ? 8 : 6,
+      /*revision_number=*/JellyEnabled() ? 9 : 7,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -314,7 +314,7 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bubble_launcher_gradient_zone",
-      /*revision_number=*/JellyEnabled() ? 8 : 6,
+      /*revision_number=*/JellyEnabled() ? 9 : 7,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -426,7 +426,7 @@ INSTANTIATE_TEST_SUITE_P(RTL,
 // Verifies the default layout for tablet mode launcher.
 TEST_P(AppListViewTabletPixelTest, Basic) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_basics", 9,
+      "tablet_launcher_basics", /*revision_number=*/10,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -447,7 +447,7 @@ TEST_P(AppListViewTabletPixelTest, TopGradientZone) {
   generator->MoveTouchBy(0, -40);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_top_gradient_zone", 7,
+      "tablet_launcher_top_gradient_zone", /*revision_number=*/8,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -468,7 +468,7 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
   generator->MoveTouchBy(0, -90);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_bottom_gradient_zone", 9,
+      "tablet_launcher_bottom_gradient_zone", /*revision_number=*/10,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -479,7 +479,7 @@ TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "search_box_view_active",
-      /*revision_number=*/IsJellyEnabled() ? 4 : 3, search_box_view));
+      /*revision_number=*/IsJellyEnabled() ? 5 : 4, search_box_view));
 }
 
 class AppListViewAssistantZeroStateTest
@@ -526,7 +526,7 @@ TEST_P(AppListViewAssistantZeroStateTest, Basic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "app_list_view_assistant_zero_state",
-      /*revision_number=*/JellyEnabled(GetParam()) ? 5 : 4,
+      /*revision_number=*/JellyEnabled(GetParam()) ? 6 : 5,
       page_view()->GetViewByID(AssistantViewID::kZeroStateView)));
 }
 

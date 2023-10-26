@@ -54,7 +54,9 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
   // backdrop of the render pass, from behind it.
   cc::FilterOperations backdrop_filters;
 
-  // Clipping bounds for backdrop filter.
+  // Clipping bounds for backdrop filter. If defined, is in a coordinate space
+  // equivalent to render pass physical pixels after applying
+  // `RenderPassDrawQuad::filter_scale`.
   absl::optional<gfx::RRectF> backdrop_filter_bounds;
 
   // If false, the pixels in the render pass' texture are all opaque.

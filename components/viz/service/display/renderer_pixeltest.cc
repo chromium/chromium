@@ -3802,10 +3802,18 @@ TEST_P(RendererPixelTestWithBackdropFilter, OffsetFilter) {
   backdrop_filters_.Append(
       cc::FilterOperation::CreateOffsetFilter(gfx::Point(5, 5)));
   SetUpRenderPassList();
-  EXPECT_TRUE(RunPixelTest(
-      &pass_list_,
-      base::FilePath(FILE_PATH_LITERAL("backdrop_filter_offset.png")),
-      cc::ExactPixelComparator()));
+
+  // TODO(989329): See comment in
+  // LayerTreeHostFiltersPixelTest/BackdropFilterOffsetTest. The software
+  // compositor does not correctly apply clamping when accessing content outside
+  // of the layer.
+  base::FilePath expected_path(
+      is_software_renderer()
+          ? FILE_PATH_LITERAL("backdrop_filter_offset_sw.png")
+          : FILE_PATH_LITERAL("backdrop_filter_offset.png"));
+
+  EXPECT_TRUE(
+      RunPixelTest(&pass_list_, expected_path, cc::ExactPixelComparator()));
 }
 
 TEST_P(RendererPixelTestWithBackdropFilter, InvertFilter) {
