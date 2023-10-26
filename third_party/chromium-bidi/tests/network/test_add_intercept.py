@@ -315,6 +315,7 @@ async def test_add_intercept_blocks_use_cdp_events(websocket, context_id,
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
@@ -398,6 +399,7 @@ async def test_add_intercept_blocks_use_bidi_events(websocket, context_id,
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 

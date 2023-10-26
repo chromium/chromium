@@ -125,8 +125,8 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "context": context_id,
                 "url": hang_url,
+                "context": context_id,
                 "wait": "complete",
             }
         })
@@ -180,6 +180,7 @@ async def test_continue_request_completes_use_cdp_events(
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
     event_response = await wait_for_event(websocket, "cdp.Fetch.requestPaused")
@@ -236,6 +237,7 @@ async def test_continue_request_completes_use_bidi_events(
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
@@ -317,6 +319,7 @@ async def test_continue_request_twice(websocket, context_id, example_url):
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
@@ -406,6 +409,7 @@ async def test_continue_request_remove_intercept_inflight_request(
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 

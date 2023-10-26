@@ -49,8 +49,8 @@ async def test_fail_request_non_blocked_request(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "context": context_id,
                 "url": hang_url,
+                "context": context_id,
                 "wait": "complete",
             }
         })
@@ -106,6 +106,7 @@ async def test_fail_request_twice(websocket, context_id, example_url):
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
@@ -202,6 +203,7 @@ async def test_fail_request_with_auth_required_phase(
             "params": {
                 "url": auth_required_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
@@ -308,6 +310,7 @@ async def test_fail_request_completes_use_cdp_events(websocket, context_id,
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
@@ -393,6 +396,7 @@ async def test_fail_request_completes_use_bidi_events(websocket, context_id,
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
@@ -623,6 +627,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
@@ -661,6 +666,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
             "params": {
                 "url": example_url,
                 "context": another_context_id,
+                "wait": "complete",
             }
         })
 
@@ -789,6 +795,7 @@ async def test_fail_request_remove_intercept_inflight_request(
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 

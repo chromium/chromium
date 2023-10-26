@@ -138,6 +138,7 @@ async def test_remove_intercept_unblocks_use_cdp_events(
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
@@ -176,8 +177,8 @@ async def test_remove_intercept_unblocks_use_cdp_events(
             "method": "browsingContext.navigate",
             "params": {
                 "url": example_url,
-                "wait": "complete",
                 "context": another_context_id,
+                "wait": "complete",
             }
         })
 
@@ -270,6 +271,7 @@ async def test_remove_intercept_unblocks_use_bidi_events(
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
@@ -387,6 +389,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
     event_response = await wait_for_event(websocket,
@@ -422,6 +425,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
             "params": {
                 "url": another_example_url,
                 "context": another_context_id,
+                "wait": "complete",
             }
         })
     event_response_2 = await wait_for_event(websocket,

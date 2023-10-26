@@ -81,8 +81,8 @@ async def test_continue_with_auth_non_blocked_request(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "context": context_id,
                 "url": hang_url,
+                "context": context_id,
                 "wait": "complete",
             }
         })
@@ -234,6 +234,7 @@ async def test_continue_with_auth_twice(websocket, context_id, example_url):
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
