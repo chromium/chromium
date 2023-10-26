@@ -1260,7 +1260,7 @@
     // <transform-function> syntax.
     {
       name: "CSSVariables2TransformValues",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSVideoDynamicRangeMediaQueries",
