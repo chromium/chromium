@@ -10,14 +10,18 @@ class AtpSpeechRecognitionEventObserver {
    * @param {!function(): void} onStopCallback
    * @param {!function(!ax.mojom.SpeechRecognitionResultEvent): void}
    *    onResultCallback
+   * @param {!function(): void} onErrorCallback
    */
-  constructor(pendingReceiver, onStopCallback, onResultCallback) {
+  constructor(pendingReceiver, onStopCallback, onResultCallback,
+        onErrorCallback) {
     this.receiver_ = new ax.mojom.SpeechRecognitionEventObserverReceiver(this);
     this.receiver_.$.bindHandle(pendingReceiver.handle);
     /** @private {!function(): void} */
     this.onStopCallback_ = onStopCallback;
     /** @private {!function(!ax.mojom.SpeechRecognitionResultEvent): void} */
     this.onResultCallback_ = onResultCallback;
+    /** @private {!function(!ax.mojom.SpeechRecognitionErrorEvent): void} */
+    this.onErrorCallback_ = onErrorCallback;
   }
 
   onStop() {
@@ -27,6 +31,11 @@ class AtpSpeechRecognitionEventObserver {
   /** @param {!ax.mojom.SpeechRecognitionResultEvent} event */
   onResult(event) {
     this.onResultCallback_(event);
+  }
+
+  /** @param {ax.mojom.SpeechRecognitionErrorEvent} event */
+  onError(event) {
+    this.onErrorCallback_(event);
   }
 }
 
@@ -41,6 +50,8 @@ class AtpSpeechRecognition {
     this.onStop = new ChromeEvent();
     /** @type {!ChromeEvent} */
     this.onResult = new ChromeEvent();
+    /** @type {!ChromeEvent} */
+    this.onError = new ChromeEvent();
   }
 
   /**
@@ -63,6 +74,9 @@ class AtpSpeechRecognition {
         },
         /*onResultCallback=*/(event) => {
           this.handleOnResult_(event);
+        },
+        /*onErrorCallback=*/(event) => {
+          this.handleOnError_(event);
         });
       // Default client ID is 0. It is possible for clients to pass an ID of 0,
       // but this will never happen in practice since we control the only
@@ -101,6 +115,17 @@ class AtpSpeechRecognition {
     this.onResult.callListeners(
       /**
        * @type {!chrome.speechRecognitionPrivate.SpeechRecognitionResultEvent}
+       */ (event));
+  }
+
+  /**
+   * @param {!ax.mojom.SpeechRecognitionErrorEvent} event
+   * @private
+   */
+  handleOnError_(event) {
+    this.onError.callListeners(
+      /**
+       * @type {!chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent}
        */ (event));
   }
 

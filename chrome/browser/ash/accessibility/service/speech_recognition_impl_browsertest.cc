@@ -28,10 +28,13 @@ class MockSpeechRecognitionEventObserverImpl
           pending_receiver,
       base::RepeatingCallback<void()> on_stop_callback,
       base::RepeatingCallback<void(ax::mojom::SpeechRecognitionResultEventPtr)>
-          on_result_callback)
+          on_result_callback,
+      base::RepeatingCallback<void(ax::mojom::SpeechRecognitionErrorEventPtr)>
+          on_error_callback)
       : receiver_(this, std::move(pending_receiver)),
         on_stop_callback_(std::move(on_stop_callback)),
-        on_result_callback_(std::move(on_result_callback)) {}
+        on_result_callback_(std::move(on_result_callback)),
+        on_error_callback_(std::move(on_error_callback)) {}
   MockSpeechRecognitionEventObserverImpl(
       const MockSpeechRecognitionEventObserverImpl&) = delete;
   MockSpeechRecognitionEventObserverImpl& operator=(
@@ -42,12 +45,17 @@ class MockSpeechRecognitionEventObserverImpl
   void OnResult(ax::mojom::SpeechRecognitionResultEventPtr event) override {
     on_result_callback_.Run(std::move(event));
   }
+  void OnError(ax::mojom::SpeechRecognitionErrorEventPtr event) override {
+    on_error_callback_.Run(std::move(event));
+  }
 
  private:
   mojo::Receiver<ax::mojom::SpeechRecognitionEventObserver> receiver_;
   base::RepeatingCallback<void()> on_stop_callback_;
   base::RepeatingCallback<void(ax::mojom::SpeechRecognitionResultEventPtr)>
       on_result_callback_;
+  base::RepeatingCallback<void(ax::mojom::SpeechRecognitionErrorEventPtr)>
+      on_error_callback_;
 };
 }  // namespace
 
@@ -77,9 +85,18 @@ class SpeechRecognitionImplTest : public InProcessBrowserTest {
     sr_impl_->HandleSpeechRecognitionResult(key, transcript, is_final);
   }
 
+  void HandleSpeechRecognitionError(const std::string& key,
+                                    const std::string& error) {
+    sr_impl_->HandleSpeechRecognitionError(key, error);
+  }
+
   extensions::SpeechRecognitionPrivateRecognizer* GetSpeechRecognizer(
       const std::string& key) {
     return sr_impl_->GetSpeechRecognizer(key);
+  }
+
+  void CreateEventObserverWrapper(const std::string& key) {
+    sr_impl_->CreateEventObserverWrapper(key);
   }
 
   SpeechRecognitionImpl::SpeechRecognitionEventObserverWrapper*
@@ -117,11 +134,14 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, GetEventObserverWrapper) {
   SpeechRecognitionImpl::SpeechRecognitionEventObserverWrapper* first = nullptr;
   SpeechRecognitionImpl::SpeechRecognitionEventObserverWrapper* second =
       nullptr;
+  ASSERT_EQ(nullptr, GetEventObserverWrapper("Hello"));
+  CreateEventObserverWrapper("Hello");
   first = GetEventObserverWrapper("Hello");
   second = GetEventObserverWrapper("Hello");
   ASSERT_NE(nullptr, first);
   ASSERT_NE(nullptr, second);
   ASSERT_EQ(first, second);
+  CreateEventObserverWrapper("World");
   second = GetEventObserverWrapper("World");
   ASSERT_NE(nullptr, second);
   ASSERT_NE(first, second);
@@ -179,8 +199,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, StartOptions) {
       callback = base::BindLambdaForTesting(
           [&waiter, &key, this](ax::mojom::SpeechRecognitionStartInfoPtr info) {
             auto* recognizer = GetSpeechRecognizer(key);
-            EXPECT_EQ("ja-JP", recognizer->locale());
-            EXPECT_EQ(true, recognizer->interim_results());
+            ASSERT_EQ("ja-JP", recognizer->locale());
+            ASSERT_EQ(true, recognizer->interim_results());
             waiter.Quit();
           });
   sr_impl_->Start(std::move(options), std::move(callback));
@@ -207,11 +227,11 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchStopEvent) {
       base::BindLambdaForTesting(
           [&mock_event_observer_impl, &on_stop_callback, &key,
            this](ax::mojom::SpeechRecognitionStartInfoPtr info) {
-            EXPECT_EQ(1, GetNumEventObserverWrappers());
+            ASSERT_EQ(1, GetNumEventObserverWrappers());
             mock_event_observer_impl =
                 std::make_unique<MockSpeechRecognitionEventObserverImpl>(
                     std::move(info->observer), std::move(on_stop_callback),
-                    base::DoNothing());
+                    base::DoNothing(), base::DoNothing());
             // Calling this method will dispatch a request to
             // `mock_event_observer_impl`.
             HandleSpeechRecognitionStopped(key);
@@ -237,8 +257,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchResultEvent) {
       ax::mojom::SpeechRecognitionResultEventPtr event)>
       on_result_callback = base::BindLambdaForTesting(
           [this, &key](ax::mojom::SpeechRecognitionResultEventPtr event) {
-            EXPECT_EQ("Hello world", event->transcript);
-            EXPECT_EQ(true, event->is_final);
+            ASSERT_EQ("Hello world", event->transcript);
+            ASSERT_EQ(true, event->is_final);
             HandleSpeechRecognitionStopped(key);
           });
 
@@ -255,13 +275,53 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchResultEvent) {
             mock_event_observer_impl =
                 std::make_unique<MockSpeechRecognitionEventObserverImpl>(
                     std::move(info->observer), std::move(on_stop_callback),
-                    std::move(on_result_callback));
+                    std::move(on_result_callback), base::DoNothing());
             // Calling this method will dispatch a request to
             // `mock_event_observer_impl`.
             HandleSpeechRecognitionResult(
                 /*key=*/key, /*transcript=*/u"Hello world", /*is_final=*/true);
           }));
   waiter.Run();
+}
+
+// Verifies that SpeechRecognitionImpl notifies the correct event observer
+// when dispatching error events.
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchErrorEvent) {
+  // Variables used throughout the test.
+  base::RunLoop waiter;
+  absl::optional<int> client_id(123);
+  std::string key = CreateKey(client_id);
+
+  // Called when a speech recognition result has been returned.
+  base::RepeatingCallback<void(ax::mojom::SpeechRecognitionErrorEventPtr event)>
+      on_error_callback = base::BindLambdaForTesting(
+          [&waiter](ax::mojom::SpeechRecognitionErrorEventPtr event) {
+            ASSERT_EQ("Hello world", event->message);
+            waiter.Quit();
+          });
+
+  std::unique_ptr<MockSpeechRecognitionEventObserverImpl>
+      mock_event_observer_impl;
+
+  auto start_options = ax::mojom::StartOptions::New();
+  start_options->client_id = client_id;
+  sr_impl_->Start(
+      std::move(start_options),
+      base::BindLambdaForTesting(
+          [&mock_event_observer_impl, &on_error_callback, &key,
+           this](ax::mojom::SpeechRecognitionStartInfoPtr info) {
+            ASSERT_EQ(1, GetNumEventObserverWrappers());
+            mock_event_observer_impl =
+                std::make_unique<MockSpeechRecognitionEventObserverImpl>(
+                    std::move(info->observer), base::DoNothing(),
+                    base::DoNothing(), std::move(on_error_callback));
+            // Calling this method will dispatch a request to
+            // `mock_event_observer_impl`.
+            HandleSpeechRecognitionError(
+                /*key=*/key, /*error=*/"Hello world");
+          }));
+  waiter.Run();
+  ASSERT_EQ(0, GetNumEventObserverWrappers());
 }
 
 }  // namespace ash

@@ -18,6 +18,12 @@ struct SpeechRecognitionResultEvent {
   bool is_final;
 };
 
+// An event that is sent when speech recognition encounters an error.
+struct SpeechRecognitionErrorEvent {
+  // The human-readable error message.
+  string message;
+};
+
 // Options used when starting speech recognition.
 struct StartOptions {
   // An optional ID to specify the client.
@@ -43,11 +49,17 @@ interface SpeechRecognitionEventObserver {
   // Called when speech recognition stops. Note that this differs from the
   // callback of the Stop() method on SpeechRecognition, which gets called when
   // speech recognition is stopped because of an explicit request from the
-  // caller.
+  // caller. Destroys the remote in the browser process so that no other events
+  // will be fired after this gets called.
   OnStop();
   // Called when a speech recognition result is returned from the speech
   // recognition service to the browser process.
   OnResult(SpeechRecognitionResultEvent event);
+  // Called when a speech recognition error is returned from the speech
+  // recognition service to the browser process. Destroys the remote in the
+  // browser process so that no other events will be fired after this gets
+  // called.
+  OnError(SpeechRecognitionErrorEvent event);
 };
 
 // Information that is returned once speech recognition has started.

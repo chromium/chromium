@@ -49,6 +49,9 @@ class SpeechRecognitionImpl
     // Called when a speech recognition result is returned.
     void OnResult(ax::mojom::SpeechRecognitionResultEventPtr event);
 
+    // Called when speech recognition encounters an error.
+    void OnError(ax::mojom::SpeechRecognitionErrorEventPtr event);
+
     mojo::PendingReceiver<ax::mojom::SpeechRecognitionEventObserver>
     PassReceiver();
 
@@ -76,9 +79,8 @@ class SpeechRecognitionImpl
   void HandleSpeechRecognitionResult(const std::string& key,
                                      const std::u16string& transcript,
                                      bool is_final) override;
-  // TODO(b/304305202): Implement this method.
   void HandleSpeechRecognitionError(const std::string& key,
-                                    const std::string& error) override {}
+                                    const std::string& error) override;
 
   base::WeakPtr<SpeechRecognitionImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -108,8 +110,11 @@ class SpeechRecognitionImpl
   extensions::SpeechRecognitionPrivateRecognizer* GetSpeechRecognizer(
       const std::string& key);
 
-  // Returns the event observer wrapper associated with the key. Creates one if
-  // none exists.
+  // Creates an event observer wrapper associated with the key, if none already
+  // exists.
+  void CreateEventObserverWrapper(const std::string& key);
+
+  // Returns the event observer wrapper associated with the key, if one exists.
   SpeechRecognitionEventObserverWrapper* GetEventObserverWrapper(
       const std::string& key);
 

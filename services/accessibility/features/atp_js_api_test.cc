@@ -869,4 +869,21 @@ TEST_F(SpeechRecognitionJSApiTest, ResultEvent) {
   WaitForJSTestComplete();
 }
 
+TEST_F(SpeechRecognitionJSApiTest, ErrorEvent) {
+  client_->SetSpeechRecognitionStartCallback(base::BindLambdaForTesting(
+      [this]() { client_->SendSpeechRecognitionErrorEvent(); }));
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.speechRecognitionPrivate.onError.addListener((event) => {
+      if (event.message === 'Goodnight world') {
+        remote.testComplete(/*success=*/true);
+      }
+    });
+
+    const options = {};
+    chrome.speechRecognitionPrivate.start(options, (type) => {});
+  )JS");
+  WaitForJSTestComplete();
+}
+
 }  // namespace ax

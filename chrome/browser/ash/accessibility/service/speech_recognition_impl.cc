@@ -41,6 +41,11 @@ void SpeechRecognitionImpl::SpeechRecognitionEventObserverWrapper::OnResult(
   observer_->OnResult(std::move(event));
 }
 
+void SpeechRecognitionImpl::SpeechRecognitionEventObserverWrapper::OnError(
+    ax::mojom::SpeechRecognitionErrorEventPtr event) {
+  observer_->OnError(std::move(event));
+}
+
 mojo::PendingReceiver<ax::mojom::SpeechRecognitionEventObserver>
 SpeechRecognitionImpl::SpeechRecognitionEventObserverWrapper::PassReceiver() {
   return observer_.BindNewPipeAndPassReceiver();
@@ -102,7 +107,9 @@ void SpeechRecognitionImpl::Stop(ax::mojom::StopOptionsPtr options,
 void SpeechRecognitionImpl::HandleSpeechRecognitionStopped(
     const std::string& key) {
   auto* observer = GetEventObserverWrapper(key);
-  CHECK(observer);
+  if (!observer) {
+    return;
+  }
 
   observer->OnStop();
   RemoveEventObserverWrapper(key);
@@ -113,12 +120,28 @@ void SpeechRecognitionImpl::HandleSpeechRecognitionResult(
     const std::u16string& transcript,
     bool is_final) {
   auto* observer = GetEventObserverWrapper(key);
-  CHECK(observer);
+  if (!observer) {
+    return;
+  }
 
   auto result = ax::mojom::SpeechRecognitionResultEvent::New();
   result->transcript = base::UTF16ToUTF8(transcript);
   result->is_final = is_final;
   observer->OnResult(std::move(result));
+}
+
+void SpeechRecognitionImpl::HandleSpeechRecognitionError(
+    const std::string& key,
+    const std::string& error) {
+  auto* observer = GetEventObserverWrapper(key);
+  if (!observer) {
+    return;
+  }
+
+  auto event = ax::mojom::SpeechRecognitionErrorEvent::New();
+  event->message = error;
+  observer->OnError(std::move(event));
+  RemoveEventObserverWrapper(key);
 }
 
 void SpeechRecognitionImpl::StartHelper(StartCallback callback,
@@ -133,6 +156,7 @@ void SpeechRecognitionImpl::StartHelper(StartCallback callback,
   // Send relevant information back to the caller.
   auto info = ax::mojom::SpeechRecognitionStartInfo::New();
   info->type = ToMojo(type);
+  CreateEventObserverWrapper(key);
   auto* observer = GetEventObserverWrapper(key);
   info->observer = observer->PassReceiver();
   std::move(callback).Run(std::move(info));
@@ -171,11 +195,18 @@ SpeechRecognitionImpl::GetSpeechRecognizer(const std::string& key) {
   return recognizer.get();
 }
 
+void SpeechRecognitionImpl::CreateEventObserverWrapper(const std::string& key) {
+  auto& observer = event_observer_wrappers_[key];
+  if (!observer) {
+    observer = std::make_unique<SpeechRecognitionEventObserverWrapper>();
+  }
+}
+
 SpeechRecognitionImpl::SpeechRecognitionEventObserverWrapper*
 SpeechRecognitionImpl::GetEventObserverWrapper(const std::string& key) {
   auto& observer = event_observer_wrappers_[key];
   if (!observer) {
-    observer = std::make_unique<SpeechRecognitionEventObserverWrapper>();
+    return nullptr;
   }
 
   return observer.get();
