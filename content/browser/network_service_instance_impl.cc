@@ -23,7 +23,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -97,17 +96,18 @@ namespace content {
 namespace {
 
 #if BUILDFLAG(IS_POSIX)
-// Environment variable pointing to credential cache file.
+// Environment variable pointing to Kerberos credential cache file.
 constexpr char kKrb5CCEnvName[] = "KRB5CCNAME";
 // Environment variable pointing to Kerberos config file.
 constexpr char kKrb5ConfEnvName[] = "KRB5_CONFIG";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-constexpr char kKrb5CCFilePrefix[] = "FILE:";
-constexpr char kKrb5Directory[] = "kerberos";
-constexpr char kKrb5CCFile[] = "krb5cc";
-constexpr char kKrb5ConfFile[] = "krb5.conf";
+// File paths to the Kerberos credentials cache and configuration. The `FILE:`
+// prefix describes the type of credentials cache used. The `/home/chronos/user`
+// subpath corresponds to a bind mount of the active user.
+constexpr char kKrb5CCFilePath[] = "FILE:/home/chronos/user/kerberos/krb5cc";
+constexpr char kKrb5ConfFilePath[] = "/home/chronos/user/kerberos/krb5.conf";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool g_force_create_network_service_directly = false;
@@ -338,22 +338,6 @@ scoped_refptr<base::SequencedTaskRunner>& GetNetworkTaskRunnerStorage() {
   return *storage;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-base::FilePath GetKerberosDir() {
-  base::FilePath dir;
-  base::PathService::Get(base::DIR_HOME, &dir);
-  return dir.Append(kKrb5Directory);
-}
-
-std::string GetKrb5CCEnvValue() {
-  return kKrb5CCFilePrefix + GetKerberosDir().Append(kKrb5CCFile).value();
-}
-
-std::string GetKrb5ConfEnvValue() {
-  return GetKerberosDir().Append(kKrb5ConfFile).value();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 void CreateInProcessNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
   TRACE_EVENT0("loading", "CreateInProcessNetworkService");
@@ -413,17 +397,20 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_POSIX)
-  // Send Kerberos environment variables to the network service.
-  if (IsOutOfProcessNetworkService()) {
 #if BUILDFLAG(IS_CHROMEOS)
-    network_service_params->environment.push_back(
-        network::mojom::EnvironmentVariable::New(kKrb5CCEnvName,
-                                                 GetKrb5CCEnvValue()));
-    network_service_params->environment.push_back(
-        network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName,
-                                                 GetKrb5ConfEnvValue()));
-#else
+  // On ChromeOS, the network service is always out of process (unless
+  // --single-process is set on the command-line). In any case, we set Kerberos
+  // environment variables during the service initialization.
+  network_service_params->environment.push_back(
+      network::mojom::EnvironmentVariable::New(kKrb5CCEnvName,
+                                               kKrb5CCFilePath));
+  network_service_params->environment.push_back(
+      network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName,
+                                               kKrb5ConfFilePath));
+#elif BUILDFLAG(IS_POSIX)
+  // Send Kerberos environment variables to the network service, if it's running
+  // in another process.
+  if (IsOutOfProcessNetworkService()) {
     std::unique_ptr<base::Environment> env(base::Environment::Create());
     std::string value;
     if (env->HasVar(kKrb5CCEnvName)) {
@@ -436,7 +423,6 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
       network_service_params->environment.push_back(
           network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName, value));
     }
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 #endif  // BUILDFLAG(IS_POSIX)
 
