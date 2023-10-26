@@ -1834,6 +1834,15 @@ test("content_browsertests") {
     sources += [ "../browser/plugin_service_impl_browsertest.cc" ]
   }
 
+  if (enable_library_cdms) {
+    deps += [ "//media/cdm:cdm_paths" ]
+
+    # Runtime dependencies.
+    data_deps += [
+      "//media/cdm/library_cdm/clear_key_cdm",
+    ]
+  }
+
   if (enable_ppapi) {
     sources += [
       "../renderer/pepper/fake_pepper_plugin_instance.cc",
