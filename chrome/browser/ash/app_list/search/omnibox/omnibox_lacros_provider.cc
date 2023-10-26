@@ -63,39 +63,49 @@ OmniboxLacrosProvider::OmniboxLacrosProvider(
 
 OmniboxLacrosProvider::~OmniboxLacrosProvider() = default;
 
+void OmniboxLacrosProvider::StartWithoutSearchProvider(
+    const std::u16string& query) {
+  // If Lacros is unexpectedly not available (e.g. mount failure), make sure
+  // that at least known system (Ash) URLs can be found. AppListClient will
+  // handle these directly (without involving Lacros), so that one can still
+  // open tools such as os://flags.
+  GURL url(query);
+  if (crosapi::gurl_os_handler_utils::HasOsScheme(url) &&
+      ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
+          crosapi::gurl_os_handler_utils::GetAshUrlFromLacrosUrl(url))) {
+    AutocompleteInput input;
+
+    SearchSuggestionParser::SuggestResult suggest_result(
+        query, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+        /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
+        /*from_keyword=*/false,
+        /*relevance=*/kMaxOmniboxScore, /*relevance_from_server=*/false,
+        /*input_text=*/query);
+    AutocompleteMatch match(/*provider=*/nullptr, suggest_result.relevance(),
+                            /*deletable=*/false, suggest_result.type());
+    match.destination_url = url;
+    match.allowed_to_be_default_match = true;
+    match.contents = suggest_result.match_contents();
+    match.contents_class = suggest_result.match_contents_class();
+    match.suggestion_group_id = suggest_result.suggestion_group_id();
+    match.answer = suggest_result.answer();
+    match.stripped_destination_url = url;
+
+    crosapi::mojom::SearchResultPtr result =
+        crosapi::CreateResult(match, /*controller=*/nullptr,
+                              /*favicon_cache=*/nullptr,
+                              /*bookmark_model=*/nullptr, input);
+
+    SearchProvider::Results new_results;
+    new_results.emplace_back(std::make_unique<OmniboxResult>(
+        profile_, list_controller_, std::move(result), query));
+    SwapResults(&new_results);
+  }
+}
+
 void OmniboxLacrosProvider::Start(const std::u16string& query) {
   if (!search_provider_ || !search_provider_->IsSearchControllerConnected()) {
-    const bool is_system_url =
-        ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(GURL(query));
-    if (is_system_url) {
-      AutocompleteInput input;
-
-      SearchSuggestionParser::SuggestResult suggest_result(
-          query, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
-          /*suggest_type=*/omnibox::TYPE_NATIVE_CHROME, /*subtypes=*/{},
-          /*from_keyword=*/false,
-          /*relevance=*/kMaxOmniboxScore, /*relevance_from_server=*/false,
-          /*input_text=*/query);
-      AutocompleteMatch match(/*provider=*/nullptr, suggest_result.relevance(),
-                              /*deletable=*/false, suggest_result.type());
-      match.destination_url = GURL(query);
-      match.allowed_to_be_default_match = true;
-      match.contents = suggest_result.match_contents();
-      match.contents_class = suggest_result.match_contents_class();
-      match.suggestion_group_id = suggest_result.suggestion_group_id();
-      match.answer = suggest_result.answer();
-      match.stripped_destination_url = GURL(query);
-
-      crosapi::mojom::SearchResultPtr result =
-          crosapi::CreateResult(match, /*controller=*/nullptr,
-                                /*favicon_cache=*/nullptr,
-                                /*bookmark_model=*/nullptr, input);
-
-      SearchProvider::Results new_results;
-      new_results.emplace_back(std::make_unique<OmniboxResult>(
-          profile_, list_controller_, std::move(result), query));
-      SwapResults(&new_results);
-    }
+    StartWithoutSearchProvider(query);
     return;
   }
 

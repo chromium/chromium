@@ -441,9 +441,7 @@ class OmniboxLacrosProviderNoCrosAPITest : public testing::Test {
   std::unique_ptr<OmniboxLacrosProvider> omnibox_provider_;
 };
 
-// TODO(crbug.com/1492413): Reenable test when this bug is fixed.
-TEST_F(OmniboxLacrosProviderNoCrosAPITest,
-       DISABLED_SystemURLsWorkWithNoSearchProvider) {
+TEST_F(OmniboxLacrosProviderNoCrosAPITest, SystemURLsWorkWithNoSearchProvider) {
   StartSearch(u"os://flags");
 
   ASSERT_EQ(1u, search_controller_->last_results().size());
