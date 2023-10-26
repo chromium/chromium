@@ -59,16 +59,12 @@ class Recorder {
     virtual void OnReportingStateChanged(bool enabled) = 0;
     // Called when SystemProfile has finished loading
     virtual void OnSystemProfileInitialized() {}
-    // Called on a call to LastKeyRotation.
-    virtual absl::optional<int> LastKeyRotation(uint64_t project_name_hash) = 0;
   };
 
   Recorder(const Recorder&) = delete;
   Recorder& operator=(const Recorder&) = delete;
 
   static Recorder* GetInstance();
-
-  validator::Validators* GetValidator();
 
   // This signals to StructuredMetricsProvider that the event should be
   // recorded.
@@ -82,10 +78,6 @@ class Recorder {
   // TODO(crbug.com/1016655): When structured metrics expands beyond Chrome OS,
   // investigate whether initialization can be simplified for Chrome.
   void ProfileAdded(const base::FilePath& profile_path);
-
-  // Returns when the key for |event| was last rotated, in days since epoch.
-  // Returns nullopt if the information is not available.
-  absl::optional<int> LastKeyRotation(const Event& event);
 
   // Notifies observers that metrics reporting has been enabled or disabled.
   void OnReportingStateChanged(bool enabled);
@@ -121,8 +113,6 @@ class Recorder {
   base::ObserverList<RecorderImpl> observers_;
 
   DelegatingEventsProcessor delegating_events_processor_;
-
-  std::unique_ptr<validator::Validators> validators_;
 };
 
 }  // namespace metrics::structured

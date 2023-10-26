@@ -116,12 +116,6 @@ void TestStructuredMetricsProvider::OnReportingStateChanged(bool enabled) {
   structured_metrics_provider_->recorder().OnReportingStateChanged(enabled);
 }
 
-absl::optional<int> TestStructuredMetricsProvider::LastKeyRotation(
-    uint64_t project_name_hash) {
-  return structured_metrics_provider_->recorder().LastKeyRotation(
-      project_name_hash);
-}
-
 void TestStructuredMetricsProvider::AddProfilePath(
     const base::FilePath& user_path) {
   OnProfileAdded(temp_dir_.GetPath().Append(user_path));

@@ -136,7 +136,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   void OnEventRecord(const Event& event) override;
   void OnReportingStateChanged(bool enabled) override;
   void OnSystemProfileInitialized() override;
-  absl::optional<int> LastKeyRotation(uint64_t project_name_hash) override;
 
   void WriteNowForTest();
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

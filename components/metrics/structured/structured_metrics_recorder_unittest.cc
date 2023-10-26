@@ -994,26 +994,6 @@ TEST_F(StructuredMetricsRecorderTest,
   EXPECT_EQ(GetEventMetrics().events_size(), 0);
 }
 
-// Check that LastKeyRotation returns a value in the correct range of possible
-// last rotations for a newly generated key.
-TEST_F(StructuredMetricsRecorderTest, LastKeyRotation) {
-  Init();
-
-  events::v2::test_project_one::TestEventOne event;
-
-  // Record a metric so that the key is created.
-  event.Record();
-
-  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-  const absl::optional<int> last_rotation =
-      Recorder::GetInstance()->LastKeyRotation(event);
-
-  // The last rotation should be a random day between today and 90 days in the
-  // past, ie. the rotation period for this project.
-  ASSERT_TRUE(last_rotation.has_value());
-  EXPECT_GE(last_rotation, today - 90);
-}
-
 // Ensures that events part of event sequence are recorded properly.
 TEST_F(StructuredMetricsRecorderTest, EventSequenceLogging) {
   Init();

@@ -280,30 +280,6 @@ void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
   test_callback_on_record_.Run();
 }
 
-absl::optional<int> StructuredMetricsRecorder::LastKeyRotation(
-    const uint64_t project_name_hash) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  if (init_state_ != InitState::kInitialized) {
-    return absl::nullopt;
-  }
-
-  KeyData* device_key_data = key_data_provider_->GetDeviceKeyData();
-  KeyData* profile_key_data = key_data_provider_->GetProfileKeyData();
-
-  DCHECK(IsDeviceKeyDataInitialized());
-  DCHECK(IsProfileKeyDataInitialized());
-
-  // |project_name_hash| could store its keys in either the profile or device
-  // key data, so check both. As they cannot both contain the same name hash,
-  // at most one will return a non-nullopt value.
-  absl::optional<int> profile_day =
-      profile_key_data->LastKeyRotation(project_name_hash);
-  absl::optional<int> device_day =
-      device_key_data->LastKeyRotation(project_name_hash);
-  DCHECK(!(profile_day && device_day));
-  return profile_day ? profile_day : device_day;
-}
-
 void StructuredMetricsRecorder::OnReportingStateChanged(bool enabled) {
   DCHECK(base::CurrentUIThread::IsSet());
 
@@ -393,8 +369,7 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
   // Validates the event. If valid, retrieve the metadata associated
   // with the event.
   auto maybe_project_validator =
-      Recorder::GetInstance()->GetValidator()->GetProjectValidator(
-          event.project_name());
+      validator::Validators::Get()->GetProjectValidator(event.project_name());
 
   DCHECK(maybe_project_validator.has_value());
   if (!maybe_project_validator.has_value()) {
