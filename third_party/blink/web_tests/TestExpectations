@@ -7045,3 +7045,6 @@ crbug.com/1363683 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas
 crbug.com/1495422 [ Mac10.15 ] external/wpt/css/css-text/parsing/white-space-shorthand-text-wrap.html [ Failure ]
 crbug.com/1495422 [ Mac10.15 ] external/wpt/html/semantics/popovers/popover-light-dismiss-flat-tree-nested.html [ Failure ]
 crbug.com/1495422 [ Mac10.15 ] external/wpt/css/css-typed-om/the-stylepropertymap/properties/white-space.html [ Failure ]
+
+# Gardener 2023-10-26
+crbug.com/1496252 [ Win ] virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html [ Pass Failure ]
