@@ -311,8 +311,8 @@ bool PrerenderHostObserver::was_activated() const {
 ScopedPrerenderFeatureList::ScopedPrerenderFeatureList() {
   // Disable the memory requirement of Prerender2
   // so the test can run on any bot.
-  feature_list_.InitAndDisableFeature(
-      blink::features::kPrerender2MemoryControls);
+  feature_list_.InitWithFeatures({blink::features::kPrerender2InNewTab},
+                                 {blink::features::kPrerender2MemoryControls});
 }
 
 PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
