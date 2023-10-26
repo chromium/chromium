@@ -100,6 +100,7 @@ class PLATFORM_EXPORT ResourceError final {
   bool IsTimeout() const;
   bool IsCacheMiss() const;
   bool WasBlockedByResponse() const;
+  bool WasBlockedByORB() const;
   bool ShouldCollapseInitiator() const { return should_collapse_inititator_; }
   bool IsCancelledFromHttpError() const {
     return is_cancelled_from_http_error_;

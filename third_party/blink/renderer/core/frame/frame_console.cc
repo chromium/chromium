@@ -131,6 +131,12 @@ void FrameConsole::DidFailLoading(DocumentLoader* loader,
     return;
   }
 
+  if (error.WasBlockedByORB()) {
+    // ORB loading errors are reported from the network service directly to
+    // DevTools (CorsURLLoader::ReportCorbErrorToDevTools).
+    return;
+  }
+
   StringBuilder message;
   message.Append("Failed to load resource");
   if (!error.LocalizedDescription().empty()) {

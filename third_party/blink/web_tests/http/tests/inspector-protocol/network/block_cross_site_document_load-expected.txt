@@ -1,9 +1,8 @@
 Tests that CORB/ORB blocking gets reported as an issue to DevTools.
 Blocking cross-site document at http://devtools.oopif.test:8000/inspector-protocol/network/resources/nosniff.pl: shouldReportCorbBlocking=true.
 Blocking cross-site document at http://devtools.oopif.test:8000/inspector-protocol/network/resources/simple-iframe.html: shouldReportCorbBlocking=true.
-Blocking, but not reporting cross-site document at http://devtools.oopif.test:8000/inspector-protocol/network/resources/204.pl: shouldReportCorbBlocking=false.
-Blocking, but not reporting cross-site document at http://devtools.oopif.test:8000/inspector-protocol/network/resources/404.pl: shouldReportCorbBlocking=false.
-Blocking, but not reporting cross-site document at http://devtools.oopif.test:8000/inspector-protocol/network/resources/content-length-0.pl: shouldReportCorbBlocking=false.
+Blocking cross-site document at http://devtools.oopif.test:8000/inspector-protocol/network/resources/404.pl: shouldReportCorbBlocking=true.
+Blocking cross-site document at http://devtools.oopif.test:8000/inspector-protocol/network/resources/content-length-0.pl: shouldReportCorbBlocking=true.
 Allowing cross-site document at http://127.0.0.1:8000/inspector-protocol/network/resources/nosniff.pl: shouldReportCorbBlocking=false.
 Allowing cross-site document at http://127.0.0.1:8000/inspector-protocol/network/resources/simple-iframe.html: shouldReportCorbBlocking=false.
 Allowing cross-site document at http://devtools.oopif.test:8000/inspector-protocol/network/resources/test.css: shouldReportCorbBlocking=false.
