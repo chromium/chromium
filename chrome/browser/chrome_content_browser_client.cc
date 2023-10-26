@@ -2523,6 +2523,11 @@ bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
     return true;
   }
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (lock_url == chrome::kChromeUIUntrustedTerminalURL) {
+    return true;
+  }
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
