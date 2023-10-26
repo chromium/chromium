@@ -1,0 +1,33 @@
+{
+  "name": "BFCache test extension",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Extension for BFCache and Prerendering test.",
+  "permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "externally_connectable": {
+    "matches": [
+      "*://a.com/*"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/title2.html",
+        "https://*/title2.html"
+      ],
+      "js": [
+        "content_script.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  }
+}

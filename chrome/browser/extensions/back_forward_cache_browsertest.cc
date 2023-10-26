@@ -18,12 +18,14 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-shared.h"
 
@@ -1340,6 +1342,74 @@ IN_PROC_BROWSER_TEST_P(
            "extension URL, and they are recorded twice each with different UKM "
            "source id.";
   }
+}
+
+class ExtensionBackForwardCacheWithPrerenderBrowserTest
+    : public ExtensionBackForwardCacheBrowserTest {
+ public:
+  ExtensionBackForwardCacheWithPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &ExtensionBackForwardCacheBrowserTest::web_contents,
+            base::Unretained(this))) {}
+
+  void SetUp() override {
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
+    ExtensionBackForwardCacheBrowserTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionBackForwardCacheWithPrerenderBrowserTest,
+                         ::testing::Bool());
+
+// Test the extension message port created during prerendering won't be closed
+// after the prerendered page is activated.
+// TODO(https://crbug.com/1472186): This test is added as a reproducing case for
+// the known bug. It will fail when
+// `DisconnectExtensionMessagePortWhenPageEntersBFCache` is disabled and crash
+// when it's enabled.
+IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheWithPrerenderBrowserTest,
+                       DISABLED_PortIsStillOpenAfterPrerenderAndActivate) {
+  // This extension will automatically create a port from the content script.
+  // It's only registers on title2.html, the prerendered page from this test.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("content_script_auto_connect"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHostWrapper render_frame_host_a(
+      ui_test_utils::NavigateToURL(browser(), url_a));
+
+  // 2) Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("a.com", "/title2.html");
+  prerender_helper().AddPrerender(prerender_url);
+
+  // 3) Activate.
+  content::TestActivationManager activation_manager(web_contents(),
+                                                    prerender_url);
+  ASSERT_TRUE(
+      content::ExecJs(web_contents()->GetPrimaryMainFrame(),
+                      content::JsReplace("location = $1", prerender_url)));
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      /* PrerenderFinalStatus::kActivated */ 0, 1);
+
+  // The channel associated to the prerendered page should be open.
+  EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
 }
 
 }  // namespace extensions
