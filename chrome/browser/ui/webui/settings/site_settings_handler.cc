@@ -1862,6 +1862,13 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
   if (content_type == ContentSettingsType::NOTIFICATIONS) {
     SendNotificationPermissionReviewList();
   }
+
+  if (content_type == ContentSettingsType::COOKIES &&
+      primary_pattern.MatchesAllHosts() &&
+      !secondary_pattern.MatchesAllHosts()) {
+    base::RecordAction(base::UserMetricsAction(
+        "ThirdPartyCookies.SettingsSiteException.Removed"));
+  }
 }
 
 void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
@@ -1933,6 +1940,13 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
 
   if (content_type == ContentSettingsType::NOTIFICATIONS) {
     SendNotificationPermissionReviewList();
+  }
+
+  if (content_type == ContentSettingsType::COOKIES &&
+      primary_pattern.MatchesAllHosts() &&
+      !secondary_pattern.MatchesAllHosts()) {
+    base::RecordAction(base::UserMetricsAction(
+        "ThirdPartyCookies.SettingsSiteException.Added"));
   }
 }
 

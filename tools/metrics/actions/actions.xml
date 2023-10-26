@@ -37647,6 +37647,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ThirdPartyCookies.SettingsSiteException.Added">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when a third-party cookie site exception is added via the settings
+    page.
+  </description>
+</action>
+
+<action name="ThirdPartyCookies.SettingsSiteException.Removed">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when a third-party cookie site exception is removed via the
+    settings page.
+  </description>
+</action>
+
 <action name="TodayExtension.ExtensionDismissed">
   <obsolete>
     Deprecated. Replaced by IOS.SearchExtension.Action histogram.
