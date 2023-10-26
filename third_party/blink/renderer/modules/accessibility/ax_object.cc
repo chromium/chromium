@@ -260,16 +260,11 @@ bool IsValidRole(ax::mojom::blink::Role role) {
 }
 #endif
 
-using RoleHashTraits =
-    EnumHashTraits<ax::mojom::blink::Role, ax::mojom::blink::Role::kUnknown>;
-
 constexpr wtf_size_t kNumRoles =
     static_cast<wtf_size_t>(ax::mojom::blink::Role::kMaxValue) + 1;
 
-using ARIARoleMap = HashMap<String,
-                            ax::mojom::blink::Role,
-                            CaseFoldingHashTraits<String>,
-                            RoleHashTraits>;
+using ARIARoleMap =
+    HashMap<String, ax::mojom::blink::Role, CaseFoldingHashTraits<String>>;
 
 struct RoleEntry {
   const char* role_name;
