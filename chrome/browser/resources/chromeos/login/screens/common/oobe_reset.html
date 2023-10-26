@@ -35,18 +35,19 @@ found in the LICENSE file.
 <link rel="stylesheet" href="//resources/css/throbber.css">
 <oobe-adaptive-dialog id="resetDialog" role="dialog"
     aria-label$="[[i18nDynamic(locale, 'resetScreenAccessibleTitle')]]"
-    footer-shrinkable hidden="[[inErrorState_]]">
+    for-step="restart-required,revert-promise,powerwash-proposal"
+    footer-shrinkable>
   <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
   <h1 slot="title">
     [[i18nDynamic(locale, 'resetWarningTitle')]]
   </h1>
   <div slot="subtitle" class="powerwash-warning">
     <!-- Subtitle:  Restart required  -->
-    <span hidden="[[!inRestartRequiredState_]]">
+    <span for-step="restart-required">
       [[i18nDynamic(locale, 'resetRestartMessage')]]
     </span>
     <!-- Subtitle: Powerwash state (depends on powerwash mode) -->
-    <span hidden="[[!inPowerwashState_]]">
+    <span for-step="powerwash-proposal">
       <span>[[powerwashStateSubtitle_]]</span>
       <span>
         [[i18nDynamic(locale, 'resetWarningDataDetails')]]
@@ -61,7 +62,7 @@ found in the LICENSE file.
       </a>
     </if>
     <!-- Spinner - Shown when the revert process is ongoing -->
-    <div hidden="[[!inRevertState_]]">
+    <div for-step="revert-promise">
       <div>
         [[i18nDynamic(locale, 'resetRevertPromise')]]
       </div>
@@ -79,7 +80,7 @@ found in the LICENSE file.
     </iron-icon>
     <!-- TPM Update - Only shown during powerwash state -->
     <div id="tpmFirmwareUpdate" class="layout horizontal"
-        hidden="[[!inPowerwashState_]]">
+        for-step="powerwash-proposal">
       <cr-checkbox id="tpmFirmwareUpdateCheckbox"
           checked="{{tpmUpdateChecked_}}"
           disabled="[[!tpmUpdateEditable_]]"
@@ -106,12 +107,12 @@ found in the LICENSE file.
     <!-- Restart button -->
     <oobe-text-button inverse on-click="onRestartTap_" class="focus-on-show"
         id="restart" text-key="resetButtonRestart"
-        hidden="[[!inRestartRequiredState_]]">
+        for-step="restart-required">
     </oobe-text-button>
     <!-- Powerwash button (depends on powerwash mode) -->
     <oobe-text-button inverse on-click="onPowerwashTap_"
         class="focus-on-show" id="powerwash"
-        hidden="[[!inPowerwashState_]]"
+        for-step="powerwash-proposal"
         text-key="[[powerwashButtonTextKey_]]"
         disabled="[[powerwashButtonDisabled_]]">
     </oobe-text-button>
@@ -134,7 +135,7 @@ found in the LICENSE file.
 
 <!-- Rollback attempt error -->
 <oobe-adaptive-dialog id="rollbackError" role="dialog"
-    hidden="[[!inErrorState_]]">
+    for-step="error">
   <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
   <h1 slot="title">
     [[i18nDynamic(locale, 'resetRollbackErrorTitle')]]
