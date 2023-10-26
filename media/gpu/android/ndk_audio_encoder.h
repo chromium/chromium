@@ -121,6 +121,7 @@ class MEDIA_GPU_EXPORT NdkAudioEncoder : public AudioEncoder,
   std::unique_ptr<AudioTimestampHelper> output_timestamp_tracker_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  std::vector<uint8_t> codec_desc_;
   std::vector<uint8_t> temp_header_buffer_;
   mp4::AAC aac_config_parser_;
 

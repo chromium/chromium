@@ -161,7 +161,9 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     return options_.sample_rate == kAudioSampleRateWithDelay;
   }
 
-  void SetUp() override {
+  void SetUp() override { CreateEncoder(); }
+
+  void CreateEncoder() {
     if (options_.codec == AudioCodec::kOpus) {
       encoder_ = std::make_unique<AudioOpusEncoder>();
       buffer_duration_ = kOpusBufferDuration;
@@ -774,7 +776,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_BitrateMode) {
     const int kOpusDecoderFramesPerBuffer = AudioTimestampHelper::TimeToFrames(
         kOpusBufferDuration, kOpusDecoderSampleRate);
 
-    // Override the work done in Setup().
+    // Override the work done in CreateEncoder().
     encoder_ = std::make_unique<AudioOpusEncoder>();
     options_.bitrate_mode = bitrate_mode;
 
@@ -851,7 +853,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_OpusOptions) {
   for (const AudioEncoder::OpusOptions& opus_options : kTestOpusOptions) {
     const int kOpusDecoderSampleRate = 48000;
 
-    // Override the work done in Setup().
+    // Override the work done in CreateEncoder().
     encoder_ = std::make_unique<AudioOpusEncoder>();
     options_.opus = opus_options;
     buffer_duration_ = opus_options.frame_duration;
@@ -1051,8 +1053,8 @@ TEST_P(AACAudioEncoderTest, FullCycleEncodeDecode_BitrateMode) {
     decoder_output_callback_count = 0;
     options_.bitrate_mode = bitrate_mode;
 
-    // Override the work done in Setup().
-    SetUp();
+    // Recreate the encoder to pick up changes to `options_`.
+    CreateEncoder();
 
     InitializeDecoder();
 
@@ -1081,6 +1083,42 @@ TEST_P(AACAudioEncoderTest, FullCycleEncodeDecode_BitrateMode) {
                       static_cast<double>(frames_per_buffer_));
 
     EXPECT_EQ(expected_outputs, decoder_output_callback_count);
+  }
+}
+
+// Makes sure we get extradata on the first output when we are using AAC output
+// format, and no extradata when we are using ADTS output format.
+TEST_P(AACAudioEncoderTest, AacOutputFormat) {
+  constexpr AudioEncoder::AacOutputFormat kTestAacOutputFormat[] = {
+      AudioEncoder::AacOutputFormat::AAC, AudioEncoder::AacOutputFormat::ADTS};
+
+  for (const auto& output_format : kTestAacOutputFormat) {
+    options_.aac = {output_format};
+
+    // Recreate the encoder to pick up changes to `options_`.
+    CreateEncoder();
+
+    bool first_output = true;
+    const bool needs_description =
+        output_format == AudioEncoder::AacOutputFormat::AAC;
+
+    auto encode_output_cb = [&](EncodedAudioBuffer output,
+                                MaybeDesc codec_description) {
+      if (first_output) {
+        first_output = false;
+        EXPECT_EQ(codec_description.has_value(), needs_description);
+      } else {
+        EXPECT_FALSE(codec_description);
+      }
+    };
+
+    InitializeEncoder(base::BindLambdaForTesting(encode_output_cb));
+
+    ProduceAudioAndEncode();
+    ProduceAudioAndEncode();
+    ProduceAudioAndEncode();
+
+    FlushAndVerifyStatus();
   }
 }
 #endif  // BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
