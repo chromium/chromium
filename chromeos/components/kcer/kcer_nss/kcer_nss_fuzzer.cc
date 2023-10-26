@@ -169,7 +169,7 @@ struct FuzzKey {
   FuzzKey(PublicKey pub_key,
           Token token,
           KeyType type,
-          absl::optional<uint32_t> rsa_key_size,
+          absl::optional<RsaModulusLength> rsa_key_size,
           bool can_be_listed)
       : public_key(std::move(pub_key)),
         token(token),
@@ -192,7 +192,7 @@ struct FuzzKey {
   PublicKey public_key;
   Token token;
   KeyType key_type;
-  absl::optional<uint32_t> rsa_key_size;
+  absl::optional<RsaModulusLength> rsa_key_size;
   // Contains imported net::X509Certificate certs. The corresponding kcer::Cert
   // certs will be found on the next ListCerts (from the related token) and
   // pending certs will be "converted" into kcer::Cert certs and stored in
@@ -678,7 +678,9 @@ void KcerFuzzer::RunNextMethod() {
 
 void KcerFuzzer::RunGenerateRsaKey() {
   Token token = data_provider_.ConsumeEnum<Token>();
-  uint32_t modulus_length_bits = data_provider_.ConsumeBool() ? 1024 : 2048;
+  RsaModulusLength modulus_length_bits = data_provider_.ConsumeBool()
+                                             ? RsaModulusLength::k1024
+                                             : RsaModulusLength::k2048;
   // TODO(miersh): Generating software-backed keys requires d-bus communication
   // with Chaps. Figure out how to simulate that for the fuzzer.
   bool hardware_backed = true;
@@ -1162,7 +1164,7 @@ void KcerFuzzer::RunSign() {
   }
 
   if (expected_key->rsa_key_size.has_value() &&
-      (expected_key->rsa_key_size.value() < 1034) &&
+      (expected_key->rsa_key_size.value() == RsaModulusLength::k1024) &&
       (signing_scheme == SigningScheme::kRsaPssRsaeSha512)) {
     // The key is too small, a failure is expected.
     return;

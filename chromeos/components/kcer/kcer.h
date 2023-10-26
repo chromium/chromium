@@ -104,6 +104,14 @@ enum class COMPONENT_EXPORT(KCER) KeyType {
   kEcc,
 };
 
+// Supported sizes for RSA keys. It's allowed to static_cast the values to
+// uint32_t.
+enum class COMPONENT_EXPORT(KCER) RsaModulusLength {
+  k1024 = 1024,
+  k2048 = 2048,
+  k4096 = 4096
+};
+
 enum class COMPONENT_EXPORT(KCER) EllipticCurve {
   kP256,
 };
@@ -282,7 +290,7 @@ class COMPONENT_EXPORT(KCER) Kcer {
   // they are only used there. When Kcer-without-NSS is implemented, they should
   // work everywhere.
   virtual void GenerateRsaKey(Token token,
-                              uint32_t modulus_length_bits,
+                              RsaModulusLength modulus_length_bits,
                               bool hardware_backed,
                               GenerateKeyCallback callback) = 0;
   // Generates a new EC key pair in the `token`. If `hardware_backed` is false,

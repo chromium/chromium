@@ -63,7 +63,7 @@ base::CallbackListSubscription KcerImpl::AddObserver(
 }
 
 void KcerImpl::GenerateRsaKey(Token token,
-                              uint32_t modulus_length_bits,
+                              RsaModulusLength modulus_length_bits,
                               bool hardware_backed,
                               GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

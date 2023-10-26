@@ -114,22 +114,24 @@ base::expected<crypto::ScopedSECKEYPrivateKey, Error> GetSECKEYPrivateKey(
 
 void GenerateRsaKeyOnWorkerThread(Token token,
                                   crypto::ScopedPK11Slot slot,
-                                  uint32_t modulus_length_bits,
+                                  RsaModulusLength modulus_length_bits,
                                   bool hardware_backed,
                                   Kcer::GenerateKeyCallback callback) {
+  uint32_t modulus_length_bits_uint =
+      static_cast<uint32_t>(modulus_length_bits);
   bool key_gen_success = false;
   crypto::ScopedSECKEYPublicKey public_key;
   crypto::ScopedSECKEYPrivateKey private_key;
 
   if (hardware_backed) {
     key_gen_success = crypto::GenerateRSAKeyPairNSS(
-        slot.get(), modulus_length_bits, /*permanent=*/true, &public_key,
+        slot.get(), modulus_length_bits_uint, /*permanent=*/true, &public_key,
         &private_key);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     auto chaps_util = chromeos::ChapsUtil::Create();
     key_gen_success = chaps_util->GenerateSoftwareBackedRSAKey(
-        slot.get(), modulus_length_bits, &public_key, &private_key);
+        slot.get(), modulus_length_bits_uint, &public_key, &private_key);
 #else
     return std::move(callback).Run(base::unexpected(Error::kNotImplemented));
 #endif
@@ -993,7 +995,7 @@ void KcerTokenImplNss::OnClientCertStoreChanged() {
   }
 }
 
-void KcerTokenImplNss::GenerateRsaKey(uint32_t modulus_length_bits,
+void KcerTokenImplNss::GenerateRsaKey(RsaModulusLength modulus_length_bits,
                                       bool hardware_backed,
                                       Kcer::GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);

@@ -304,7 +304,7 @@ TEST_F(KcerNssTest, UseUnavailableTokenThenGetError) {
   InitializeKcer(/*tokens=*/{});
 
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer_->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+  kcer_->GenerateRsaKey(Token::kUser, RsaModulusLength::k2048,
                         /*hardware_backed=*/true,
                         generate_waiter.GetCallback());
 
@@ -335,7 +335,7 @@ TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
   auto subscription = kcer->AddObserver(observer_.GetCallback());
 
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_rsa_waiter;
-  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+  kcer->GenerateRsaKey(Token::kUser, RsaModulusLength::k2048,
                        /*hardware_backed=*/true,
                        generate_rsa_waiter.GetCallback());
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_ec_waiter;
@@ -397,7 +397,7 @@ TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
   // with other methods before and after them.
   base::test::TestFuture<base::expected<PublicKey, Error>>
       generate_rsa_waiter_2;
-  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+  kcer->GenerateRsaKey(Token::kUser, RsaModulusLength::k2048,
                        /*hardware_backed=*/true,
                        generate_rsa_waiter_2.GetCallback());
   // TODO(244408716): Add more methods when they are implemented.
@@ -538,7 +538,7 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<base::expected<PublicKey, Error>>
         generate_key_waiter;
-    kcer_->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+    kcer_->GenerateRsaKey(Token::kUser, RsaModulusLength::k2048,
                           /*hardware_backed=*/true,
                           generate_key_waiter.GetCallback());
     ASSERT_TRUE(generate_key_waiter.Get().has_value());
@@ -561,7 +561,7 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<base::expected<PublicKey, Error>>
         generate_key_waiter;
-    kcer_->GenerateRsaKey(Token::kDevice, /*modulus_length_bits=*/2048,
+    kcer_->GenerateRsaKey(Token::kDevice, RsaModulusLength::k2048,
                           /*hardware_backed=*/true,
                           generate_key_waiter.GetCallback());
     ASSERT_TRUE(generate_key_waiter.Get().has_value());
@@ -646,7 +646,7 @@ TEST_F(KcerNssTest, SignRsa) {
   InitializeKcer({Token::kUser});
 
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_key_waiter;
-  kcer_->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+  kcer_->GenerateRsaKey(Token::kUser, RsaModulusLength::k2048,
                         /*hardware_backed=*/true,
                         generate_key_waiter.GetCallback());
   ASSERT_TRUE(generate_key_waiter.Get().has_value());
@@ -841,7 +841,7 @@ TEST_F(KcerNssTest, GetKeyInfoForRsaKey) {
 
   // Generate new key.
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer_->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+  kcer_->GenerateRsaKey(Token::kUser, RsaModulusLength::k2048,
                         /*hardware_backed=*/true,
                         generate_waiter.GetCallback());
   ASSERT_TRUE(generate_waiter.Get().has_value());
@@ -1197,7 +1197,7 @@ class KcerNssAllKeyTypesTest : public KcerNssTest,
     base::test::TestFuture<base::expected<PublicKey, Error>> key_waiter;
     switch (key_type) {
       case TestKeyType::kRsa:
-        kcer_->GenerateRsaKey(token, /*modulus_length_bits=*/2048,
+        kcer_->GenerateRsaKey(token, RsaModulusLength::k2048,
                               /*hardware_backed=*/true,
                               key_waiter.GetCallback());
         key_can_be_listed_ = true;

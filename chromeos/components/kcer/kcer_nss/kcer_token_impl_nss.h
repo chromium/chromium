@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   void OnClientCertStoreChanged() override;
 
   // Implements KcerToken.
-  void GenerateRsaKey(uint32_t modulus_length_bits,
+  void GenerateRsaKey(RsaModulusLength modulus_length_bits,
                       bool hardware_backed,
                       Kcer::GenerateKeyCallback callback) override;
   void GenerateEcKey(EllipticCurve curve,
