@@ -2476,7 +2476,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     This metric shows how user created / edited / cleared the note field in the
     passwords settings page. Recorded after closing the add/edit password dialog
-    in settings.
+    in settings. This metric was mistakenly deleted between M116 and M120 and
+    data is missing in this period.
   </summary>
 </histogram>
 
