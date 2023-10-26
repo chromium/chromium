@@ -774,16 +774,6 @@ void Color::UnpremultiplyColor() {
   }
 }
 
-// static
-Color Color::FromRGBAFloat(float r, float g, float b, float a) {
-  return Color(SkColor4f{r, g, b, a});
-}
-
-// static
-Color Color::FromSkColor4f(SkColor4f fc) {
-  return Color(fc);
-}
-
 // This converts -0.0 to 0.0, so that they have the same hash value. This
 // ensures that equal FontDescription have the same hash value.
 float NormalizeSign(float number) {

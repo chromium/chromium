@@ -191,7 +191,9 @@ class PLATFORM_EXPORT Color {
 
   // Create a color using the rgba() syntax, with float arguments. All
   // parameters will be clamped to the [0, 1] interval.
-  static Color FromRGBAFloat(float r, float g, float b, float a);
+  static constexpr Color FromRGBAFloat(float r, float g, float b, float a) {
+    return Color(SkColor4f{r, g, b, a});
+  }
 
   // Create a color from a generic color space. Parameters that are none should
   // be specified as absl::nullopt. The value for `alpha` will be clamped to the
@@ -259,7 +261,7 @@ class PLATFORM_EXPORT Color {
 
   // TODO(crbug.com/1308932): These three functions are just helpers for
   // while we're converting platform/graphics to float color.
-  static Color FromSkColor4f(SkColor4f fc);
+  static constexpr Color FromSkColor4f(SkColor4f fc) { return Color(fc); }
   static constexpr Color FromSkColor(SkColor color) { return Color(color); }
   static constexpr Color FromRGBA32(RGBA32 color) { return Color(color); }
 
