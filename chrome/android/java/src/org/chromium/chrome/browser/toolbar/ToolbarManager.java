@@ -123,7 +123,6 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout;
-import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -207,8 +206,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final FullscreenManager.Observer mFullscreenObserver;
     private final ObservableSupplierImpl<Boolean> mHomepageEnabledSupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mHomepageManagedByPolicySupplier =
-            new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mStartSurfaceAsHomepageSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
@@ -271,6 +268,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private OnAttachStateChangeListener mAttachStateChangeListener;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
     private final BackPressManager mBackPressManager;
+    private final UserEducationHelper mUserEducationHelper;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private ToggleTabStackButtonCoordinator mToggleTabStackButtonCoordinator;
@@ -543,6 +541,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mSnackbarManager = snackbarManager;
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
+        mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
 
         ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
         NewTabPageDelegate ntpDelegate = createNewTabPageDelegate(toolbarLayout);
@@ -1197,35 +1196,54 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             ObservableSupplier<Integer> constraintsSupplier) {
         ViewStub tabSwitcherToolbarStub = mActivity.findViewById(R.id.tab_switcher_toolbar_stub);
 
-        TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer,
-                tabSwitcherToolbarStub, toolbarLayout,
-                mLocationBarModel, mToolbarTabController,
-                new UserEducationHelper(mActivity, mHandler), buttonDataProviders,
-                mLayoutStateProviderSupplier, browsingModeThemeColorProvider,
-                mAppThemeColorProvider, mMenuButtonCoordinator, mOverviewModeMenuButtonCoordinator,
-                mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
-                mHomepageEnabledSupplier,
-                identityDiscController, (client) -> {
-                    if (invalidator != null) {
-                        invalidator.invalidate(client);
-                    } else {
-                        client.run();
-                    }
-                }, () -> identityDiscController.getForStartSurface(mStartSurfaceState,
-                mLayoutStateProvider == null ? LayoutType.NONE
-                                             : mLayoutStateProvider.getActiveLayoutType()),
-                mCompositorViewHolder::getResourceManager,
-                IncognitoUtils::isIncognitoModeEnabled,
-                isTabToGtsAnimationEnabled,
-                isStartSurfaceEnabled,
-                HistoryManagerUtils::showHistoryManager,
-                PartnerBrowserCustomizations.getInstance()::isHomepageProviderAvailableAndEnabled,
-                DownloadUtils::downloadOfflinePage, initializeWithIncognitoColors,
-                logoClickedCallback, mIsStartSurfaceRefactorEnabled, constraintsSupplier,
-                mCompositorViewHolder.getInMotionSupplier(), mControlsVisibilityDelegate,
-                !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity)
-                    && !ReturnToChromeUtil.moveDownLogo(),
-                mFullscreenManager);
+        TopToolbarCoordinator toolbar =
+                new TopToolbarCoordinator(
+                        controlContainer,
+                        tabSwitcherToolbarStub,
+                        toolbarLayout,
+                        mLocationBarModel,
+                        mToolbarTabController,
+                        mUserEducationHelper,
+                        buttonDataProviders,
+                        mLayoutStateProviderSupplier,
+                        browsingModeThemeColorProvider,
+                        mAppThemeColorProvider,
+                        mMenuButtonCoordinator,
+                        mOverviewModeMenuButtonCoordinator,
+                        mMenuButtonCoordinator.getMenuButtonHelperSupplier(),
+                        mTabModelSelectorSupplier,
+                        mHomepageEnabledSupplier,
+                        identityDiscController,
+                        (client) -> {
+                            if (invalidator != null) {
+                                invalidator.invalidate(client);
+                            } else {
+                                client.run();
+                            }
+                        },
+                        () ->
+                                identityDiscController.getForStartSurface(
+                                        mStartSurfaceState,
+                                        mLayoutStateProvider == null
+                                                ? LayoutType.NONE
+                                                : mLayoutStateProvider.getActiveLayoutType()),
+                        mCompositorViewHolder::getResourceManager,
+                        IncognitoUtils::isIncognitoModeEnabled,
+                        isTabToGtsAnimationEnabled,
+                        isStartSurfaceEnabled,
+                        HistoryManagerUtils::showHistoryManager,
+                        PartnerBrowserCustomizations.getInstance()
+                                ::isHomepageProviderAvailableAndEnabled,
+                        DownloadUtils::downloadOfflinePage,
+                        initializeWithIncognitoColors,
+                        logoClickedCallback,
+                        mIsStartSurfaceRefactorEnabled,
+                        constraintsSupplier,
+                        mCompositorViewHolder.getInMotionSupplier(),
+                        mControlsVisibilityDelegate,
+                        !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity)
+                                && !ReturnToChromeUtil.moveDownLogo(),
+                        mFullscreenManager);
 
         mHomepageStateListener = () -> {
             mHomepageEnabledSupplier.set(HomepageManager.isHomepageEnabled());
@@ -1233,16 +1251,25 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             // customized. So we add a supplier to observe homepage URI change.
             mStartSurfaceAsHomepageSupplier.set(
                     ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(mActivity));
-            mHomepageManagedByPolicySupplier.set(HomepagePolicyManager.isHomepageManagedByPolicy());
         };
 
         HomepageManager.getInstance().addListener(mHomepageStateListener);
         mHomepageStateListener.onHomepageStateUpdated();
 
-        HomeButton homeButton = controlContainer.findViewById(R.id.home_button);
+        View homeButton = controlContainer.findViewById(R.id.home_button);
         if (homeButton != null) {
-            homeButton.init(mHomepageEnabledSupplier, this::onHomeButtonMenuClick,
-                    mHomepageManagedByPolicySupplier);
+            mHomeButtonCoordinator =
+                    new HomeButtonCoordinator(
+                            mActivity,
+                            homeButton,
+                            mUserEducationHelper,
+                            mIncognitoStateProvider::isIncognitoSelected,
+                            mPromoShownOneshotSupplier,
+                            HomepageManager::isHomepageNonNtp,
+                            FeedFeatures::isFeedEnabled,
+                            mActivityTabProvider,
+                            this::onHomeButtonMenuClick,
+                            HomepagePolicyManager::isHomepageManagedByPolicy);
         }
         return toolbar;
     }
@@ -1536,27 +1563,18 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mControlContainer.setReadyForBitmapCapture(true);
         }
 
-        UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, mHandler);
-        View homeButton = mControlContainer.findViewById(R.id.home_button);
-        if (homeButton != null) {
-            mHomeButtonCoordinator =
-                    new HomeButtonCoordinator(
-                            mActivity,
-                            homeButton,
-                            userEducationHelper,
-                            mIncognitoStateProvider::isIncognitoSelected,
-                            mPromoShownOneshotSupplier,
-                            HomepageManager::isHomepageNonNtp,
-                            FeedFeatures::isFeedEnabled,
-                            mActivityTabProvider);
-        }
         ToggleTabStackButton toggleTabStackButton =
                 mControlContainer.findViewById(R.id.tab_switcher_button);
         mToggleTabStackButtonCoordinator =
-                new ToggleTabStackButtonCoordinator(mActivity, toggleTabStackButton,
-                        userEducationHelper, mIncognitoStateProvider::isIncognitoSelected,
-                        mPromoShownOneshotSupplier, mLayoutStateProviderSupplier,
-                        mToolbar::setNewTabButtonHighlight, mActivityTabProvider);
+                new ToggleTabStackButtonCoordinator(
+                        mActivity,
+                        toggleTabStackButton,
+                        mUserEducationHelper,
+                        mIncognitoStateProvider::isIncognitoSelected,
+                        mPromoShownOneshotSupplier,
+                        mLayoutStateProviderSupplier,
+                        mToolbar::setNewTabButtonHighlight,
+                        mActivityTabProvider);
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }
 
@@ -2136,16 +2154,20 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     public void showPriceDropIPH() {
         ToggleTabStackButton toggleTabStackButton =
                 mControlContainer.findViewById(R.id.tab_switcher_button);
-        UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, mHandler);
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
-        userEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mControlContainer.getResources(),
-                        FeatureConstants.PRICE_DROP_NTP_FEATURE, R.string.price_drop_spotted_iph,
-                        R.string.price_drop_spotted_iph)
-                        .setInsetRect(new Rect(0, 0, 0,
-                                -(mControlContainer.getResources().getDimensionPixelOffset(
-                                        R.dimen.price_drop_spotted_iph_ntp_tabswitcher_y_inset))))
+        int yInset =
+                mControlContainer
+                        .getResources()
+                        .getDimensionPixelOffset(
+                                R.dimen.price_drop_spotted_iph_ntp_tabswitcher_y_inset);
+        mUserEducationHelper.requestShowIPH(
+                new IPHCommandBuilder(
+                                mControlContainer.getResources(),
+                                FeatureConstants.PRICE_DROP_NTP_FEATURE,
+                                R.string.price_drop_spotted_iph,
+                                R.string.price_drop_spotted_iph)
+                        .setInsetRect(new Rect(0, 0, 0, -yInset))
                         .setAnchorView(toggleTabStackButton)
                         .setHighlightParams(params)
                         .setDismissOnTouch(true)
@@ -2352,14 +2374,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         return mToolbar.getToolbarLayoutForTesting();
     }
 
-    /**
-     * Get the home button on the top toolbar to verify the button status. Note that this home
-     * button is not always the home button that on the UI, and the button is not always visible.
-     *
-     * @return The home button that lives in the top toolbar.
-     */
-    public View getHomeButtonForTesting() {
-        return mToolbar.getToolbarLayoutForTesting().getHomeButton();
+    public HomeButtonCoordinator getHomeButtonCoordinatorForTesting() {
+        return mHomeButtonCoordinator;
     }
 
     /**

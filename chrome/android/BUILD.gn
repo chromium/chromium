@@ -1447,6 +1447,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/theme:java",
       "//chrome/browser/ui/android/toolbar:java",
       "//chrome/browser/ui/messages/android:java",
+      "//chrome/browser/user_education:java",
       "//chrome/test/android:chrome_java_integration_test_support",
       "//chrome/test/android:chrome_java_unit_test_support",
       "//components/autofill/android:main_autofill_java",
