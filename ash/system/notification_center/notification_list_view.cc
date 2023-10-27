@@ -810,7 +810,7 @@ void NotificationListView::OnNotificationUpdated(const std::string& id) {
 
   InterruptClearAll();
 
-  MessageView* found_child;
+  MessageView* found_child = nullptr;
   for (auto* child : children()) {
     auto* mvc = AsMVC(child);
     // First checks through the immediate children.
