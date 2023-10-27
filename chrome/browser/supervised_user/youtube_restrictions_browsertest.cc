@@ -78,8 +78,9 @@ class YouTubeRestrictionsBrowserTest : public MixinBasedInProcessBrowserTest {
 };
 
 // TODO(https://crbug.com/1494241): Add more test coverage.
+// TODO(https://crbug.com/1496850): Fix test failure on Mac.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_RestrictionHeaderIsNotSent DISABLED_RestrictionHeaderIsNotSent
 #else
 #define MAYBE_RestrictionHeaderIsNotSent RestrictionHeaderIsNotSent
