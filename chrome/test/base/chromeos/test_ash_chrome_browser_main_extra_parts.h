@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_BASE_CHROMEOS_FAKE_ASH_TEST_CHROME_BROWSER_MAIN_EXTRA_PARTS_H_
-#define CHROME_TEST_BASE_CHROMEOS_FAKE_ASH_TEST_CHROME_BROWSER_MAIN_EXTRA_PARTS_H_
+#ifndef CHROME_TEST_BASE_CHROMEOS_TEST_ASH_CHROME_BROWSER_MAIN_EXTRA_PARTS_H_
+#define CHROME_TEST_BASE_CHROMEOS_TEST_ASH_CHROME_BROWSER_MAIN_EXTRA_PARTS_H_
 
 #include <memory>
 
@@ -16,15 +16,15 @@ class TestControllerAsh;
 
 namespace test {
 
-class FakeAshTestChromeBrowserMainExtraParts
+class TestAshChromeBrowserMainExtraParts
     : public ChromeBrowserMainExtraParts {
  public:
-  FakeAshTestChromeBrowserMainExtraParts();
-  FakeAshTestChromeBrowserMainExtraParts(
-      const FakeAshTestChromeBrowserMainExtraParts&) = delete;
-  FakeAshTestChromeBrowserMainExtraParts& operator=(
-      const FakeAshTestChromeBrowserMainExtraParts&) = delete;
-  ~FakeAshTestChromeBrowserMainExtraParts() override;
+  TestAshChromeBrowserMainExtraParts();
+  TestAshChromeBrowserMainExtraParts(
+      const TestAshChromeBrowserMainExtraParts&) = delete;
+  TestAshChromeBrowserMainExtraParts& operator=(
+      const TestAshChromeBrowserMainExtraParts&) = delete;
+  ~TestAshChromeBrowserMainExtraParts() override;
 
   void PreProfileInit() override;
   void PreBrowserStart() override;
@@ -42,4 +42,4 @@ class FakeAshTestChromeBrowserMainExtraParts
 
 }  // namespace test
 
-#endif  // CHROME_TEST_BASE_CHROMEOS_FAKE_ASH_TEST_CHROME_BROWSER_MAIN_EXTRA_PARTS_H_
+#endif  // CHROME_TEST_BASE_CHROMEOS_TEST_ASH_CHROME_BROWSER_MAIN_EXTRA_PARTS_H_

@@ -4868,7 +4868,7 @@ targets.legacy_basic_suite(
             test = "browser_tests",
             args = [
                 "--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter",
-                "--lacros-chrome-path=lacros_clang_x64",
+                "--lacros-chrome-path=lacros_clang_x64/test_lacros_chrome",
             ],
             swarming = targets.swarming(
                 shards = 8,

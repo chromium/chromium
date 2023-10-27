@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/standalone_browser_test_controller.h"
+#include "chrome/test/chromeos/standalone_browser_test_controller.h"
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -99,6 +100,7 @@ class StandaloneBrowserTestController::LacrosUtteranceEventDelegate
 
 StandaloneBrowserTestController::StandaloneBrowserTestController(
     mojo::Remote<crosapi::mojom::TestController>& test_controller) {
+  CHECK_IS_TEST();
   test_controller->RegisterStandaloneBrowserTestController(
       controller_receiver_.BindNewPipeAndPassRemoteWithVersion());
   test_controller.FlushAsync();

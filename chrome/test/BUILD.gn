@@ -514,7 +514,11 @@ static_library("test_support") {
   }
 
   if (is_chromeos_ash && also_build_lacros_chrome) {
-    data_deps += [ "//chrome:chrome(//build/toolchain/linux:lacros_clang_x64)" ]
+    data_deps += [
+      # TODO(crbug.com/1480917): Try to drop building ordinary Lacros binary.
+      "//chrome:chrome(//build/toolchain/linux:lacros_clang_x64)",
+      "//chrome/test:test_lacros_chrome(//build/toolchain/linux:lacros_clang_x64)",
+    ]
   }
 
   if (is_linux) {
@@ -11658,7 +11662,10 @@ if (!is_android) {
     # This target should not require the Chrome executable to run
     # except it wants to build lacros as a secondary toolchain.
     if (!(is_chromeos_ash && also_build_lacros_chrome)) {
-      assert_no_deps = [ "//chrome" ]
+      assert_no_deps = [
+        "//chrome",
+        "//chrome/test:test_lacros_chrome",
+      ]
     }
   }
 
@@ -12068,49 +12075,31 @@ if (!is_android) {
 
 # This target is defined for Lacros testing.
 # See //chrome/test/base/chromeos/README.md for more information.
-if (is_chromeos_ash) {
+if (is_chromeos) {
   assert(use_aura)
 
-  # crbug.com/1223310 There is an issue that for the second toolchain the built
-  # nacl_irt_x86_64.nexe is not in subfolder ash_clang_x64.
-  # This action will copy the related files to the correct folder.
-  if (enable_nacl && current_cpu == "x64" && also_build_ash_chrome) {
-    copy("copy_files_to_ash_clang_x64") {
-      sources = [
-        "${root_build_dir}/nacl_irt_x86_64.nexe",
-        "${root_build_dir}/nacl_irt_x86_64.nexe.debug",
-      ]
-
-      outputs = [ "${root_build_dir}/ash_clang_x64/{{source_file_part}}" ]
-      deps = [ "//ppapi/native_client:irt" ]
-    }
+  if (is_chromeos_ash) {
+    _target_name = "test_ash_chrome"
+  } else {
+    _target_name = "test_lacros_chrome"
   }
-
-  _target_name = "test_ash_chrome"
   executable(_target_name) {
     output_name = _target_name
     testonly = true
+
     sources = [
       "//chrome/app/chrome_exe_main_aura.cc",
       "//chrome/app/chrome_main_delegate.cc",
       "//chrome/app/chrome_main_delegate.h",
-      "base/chromeos/fake_ash_test_chrome_browser_main_extra_parts.cc",
-      "base/chromeos/fake_ash_test_chrome_browser_main_extra_parts.h",
       "base/chromeos/test_chrome_base.cc",
       "base/chromeos/test_chrome_base.h",
       "base/chromeos/test_chrome_main.cc",
     ]
+
     deps = [
-      "//ash:test_support",
       "//base/test:test_support",
       "//chrome/common:version_header",
-      "//chromeos/services/machine_learning/public/cpp:stub",
-      "//components/exo/wayland:ui_controls_protocol",
-      "//ui/base:test_support",
-
-      # For crosapi specific test support.
-      "//chrome/browser/ash/crosapi",
-      "//chrome/browser/ash/crosapi:test_support",
+      "//testing/gmock",
 
       # On Linux, link the dependencies (libraries) that make up actual
       # Chromium functionality directly into the executable.
@@ -12125,13 +12114,61 @@ if (is_chromeos_ash) {
       # For headless mode.
       "//headless:headless_shell_lib",
     ]
+
     data = [ "$root_out_dir/resources.pak" ]
     data_deps = [
       # The step's output are needed at runtime, so we also need a data_dep.
       "//chrome:packed_resources",
     ]
-    if (enable_nacl && current_cpu == "x64" && also_build_ash_chrome) {
-      deps += [ ":copy_files_to_ash_clang_x64" ]
+
+    if (is_chromeos_ash) {
+      sources += [
+        "base/chromeos/test_ash_chrome_browser_main_extra_parts.cc",
+        "base/chromeos/test_ash_chrome_browser_main_extra_parts.h",
+      ]
+      deps += [
+        "//ash:test_support",
+        "//chrome/browser/ash/crosapi",
+        "//chrome/browser/ash/crosapi:test_support",
+        "//chromeos/services/machine_learning/public/cpp:stub",
+        "//components/exo/wayland:ui_controls_protocol",
+        "//ui/base:test_support",
+      ]
+
+      # crbug.com/1223310 There is an issue that for the second toolchain the built
+      # nacl_irt_x86_64.nexe is not in subfolder ash_clang_x64.
+      # This action will copy the related files to the correct folder.
+      if (enable_nacl && current_cpu == "x64" && also_build_ash_chrome) {
+        copy("copy_files_to_ash_clang_x64") {
+          sources = [
+            "${root_build_dir}/nacl_irt_x86_64.nexe",
+            "${root_build_dir}/nacl_irt_x86_64.nexe.debug",
+          ]
+          outputs = [ "${root_build_dir}/ash_clang_x64/{{source_file_part}}" ]
+          deps = [ "//ppapi/native_client:irt" ]
+        }
+        deps += [ ":copy_files_to_ash_clang_x64" ]
+      }
+    }
+
+    if (is_chromeos_lacros) {
+      sources += [
+        "//chrome/test/chromeos/standalone_browser_test_controller.cc",
+        "//chrome/test/chromeos/standalone_browser_test_controller.h",
+        "base/chromeos/test_lacros_chrome_browser_main_extra_parts.cc",
+        "base/chromeos/test_lacros_chrome_browser_main_extra_parts.h",
+      ]
+      deps += [
+        # For StandaloneBrowserTestController.
+        "//chrome/browser/apps/app_service",
+        "//chrome/browser/extensions:test_support",
+        "//chrome/browser/web_applications",
+        "//chromeos/lacros:lacros_paths",
+        "//components/webapps/browser",
+        "//components/webapps/common",
+        "//content/test:test_support",
+        "//extensions/browser",
+      ]
     }
   }
 }

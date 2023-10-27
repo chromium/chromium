@@ -166,7 +166,7 @@ use_goma = true
 ```
 Run the demo test with:
 ```
-out/ashdesktop/browser_tests --lacros-chrome-path=out/ashdesktop/lacros_clang_x64 --gtest_filter=DemoAshRequiresLacrosTest*
+out/ashdesktop/browser_tests --lacros-chrome-path=out/ashdesktop/lacros_clang_x64/test_lacros_chrome --gtest_filter=DemoAshRequiresLacrosTest*
 ```
 Demo test is at
 [demo_ash_requires_lacros_browsertest.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/base/chromeos/demo_ash_requires_lacros_browsertest.cc)
@@ -179,7 +179,7 @@ Demo test is at
 Writing a browser test for Lacros is similar to that on other platforms.
 
 If you need to fake some components in ash, you can add it in
-[fake_ash_test_chrome_browser_main_extra_parts.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/base/chromeos/fake_ash_test_chrome_browser_main_extra_parts.cc).
+[test_ash_chrome_browser_main_extra_parts.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/base/chromeos/test_ash_chrome_browser_main_extra_parts.cc).
 
 If you need Lacros to control Ash behavior, you can modify
 [TestControllerAsh](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/crosapi/test_controller_ash.h?q=TestControllerAsh&ss=chromium%2Fchromium%2Fsrc).

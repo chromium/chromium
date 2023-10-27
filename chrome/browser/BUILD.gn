@@ -5644,8 +5644,6 @@ static_library("browser") {
       "lacros/remote_apps/remote_apps_proxy_lacros_factory.h",
       "lacros/screen_orientation_delegate_lacros.cc",
       "lacros/screen_orientation_delegate_lacros.h",
-      "lacros/standalone_browser_test_controller.cc",
-      "lacros/standalone_browser_test_controller.h",
       "lacros/sync/crosapi_session_sync_favicon_delegate.cc",
       "lacros/sync/crosapi_session_sync_favicon_delegate.h",
       "lacros/sync/crosapi_session_sync_notifier.cc",

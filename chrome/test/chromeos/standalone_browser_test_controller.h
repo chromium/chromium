@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LACROS_STANDALONE_BROWSER_TEST_CONTROLLER_H_
-#define CHROME_BROWSER_LACROS_STANDALONE_BROWSER_TEST_CONTROLLER_H_
+#ifndef CHROME_TEST_CHROMEOS_STANDALONE_BROWSER_TEST_CONTROLLER_H_
+#define CHROME_TEST_CHROMEOS_STANDALONE_BROWSER_TEST_CONTROLLER_H_
 
 #include <memory>
 #include <string>
@@ -17,9 +17,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-// Created in lacros-chrome and registered with ash-chrome's test controller
-// over crosapi to let the Ash browser tests that require Lacros to send
-// commands to this lacros-chrome instance.
+// Created in lacros-chrome (test_lacros_chrome) and registered with
+// ash-chrome's test controller over crosapi to let the Ash browser tests that
+// require Lacros to send commands to this lacros-chrome instance.
 class StandaloneBrowserTestController
     : public crosapi::mojom::StandaloneBrowserTestController {
  public:
@@ -67,4 +67,4 @@ class StandaloneBrowserTestController
   base::WeakPtrFactory<StandaloneBrowserTestController> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_LACROS_STANDALONE_BROWSER_TEST_CONTROLLER_H_
+#endif  // CHROME_TEST_CHROMEOS_STANDALONE_BROWSER_TEST_CONTROLLER_H_

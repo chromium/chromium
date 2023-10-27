@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fake_ash_test_chrome_browser_main_extra_parts.h"
+#include "test_ash_chrome_browser_main_extra_parts.h"
 
 #include "ash/test/ui_controls_ash.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/test/allow_check_is_test_for_testing.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -26,13 +25,11 @@ namespace test {
 // ash is ready for testing, the file will be created.
 constexpr char kAshReadyFilePathFlag[] = "ash-ready-file-path";
 
-FakeAshTestChromeBrowserMainExtraParts::FakeAshTestChromeBrowserMainExtraParts()
-    : test_controller_ash_(std::make_unique<crosapi::TestControllerAsh>()) {
-  base::test::AllowCheckIsTestForTesting();
-}
+TestAshChromeBrowserMainExtraParts::TestAshChromeBrowserMainExtraParts()
+    : test_controller_ash_(std::make_unique<crosapi::TestControllerAsh>()) {}
 
-FakeAshTestChromeBrowserMainExtraParts::
-    ~FakeAshTestChromeBrowserMainExtraParts() = default;
+TestAshChromeBrowserMainExtraParts::
+    ~TestAshChromeBrowserMainExtraParts() = default;
 
 // Create a file so test_runner know ash is ready for testing.
 void AshIsReadyForTesting() {
@@ -52,21 +49,21 @@ void AshIsReadyForTesting() {
   CHECK(base::WriteFile(path, "ash is ready"));
 }
 
-void FakeAshTestChromeBrowserMainExtraParts::PreProfileInit() {
+void TestAshChromeBrowserMainExtraParts::PreProfileInit() {
   crosapi::BrowserManager::DisableForTesting();
   // TODO(crbug.com/1422469): Explore whether there is a better place to disable
-  // the built-in tts engine other than FakeAshTestChromeBrowserMainExtraParts,
+  // the built-in tts engine other than TestAshChromeBrowserMainExtraParts,
   // which may make test_ash_chrome behavior differs from production ash chrome.
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
 }
 
-void FakeAshTestChromeBrowserMainExtraParts::PreBrowserStart() {
+void TestAshChromeBrowserMainExtraParts::PreBrowserStart() {
   // These are used by exo's weston-test protocol for event injection.
   // TODO(oshima): Move this to the test protocol side.
   ash::test::EnableUIControlsAsh();
 }
 
-void FakeAshTestChromeBrowserMainExtraParts::PostBrowserStart() {
+void TestAshChromeBrowserMainExtraParts::PostBrowserStart() {
   // Fake ML service is needed because ml service client library
   // requires the ml service daemon, which is not present in the
   // unit test or browser test environment.
@@ -88,7 +85,7 @@ void FakeAshTestChromeBrowserMainExtraParts::PostBrowserStart() {
   AshIsReadyForTesting();
 }
 
-void FakeAshTestChromeBrowserMainExtraParts::PostMainMessageLoopRun() {
+void TestAshChromeBrowserMainExtraParts::PostMainMessageLoopRun() {
   crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
       nullptr);
 }

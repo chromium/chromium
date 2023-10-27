@@ -23,6 +23,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -236,7 +237,10 @@ class TestControllerAsh::SelfOwnedAshBrowserWindowOpenWaiter
   base::OneShotTimer timer_;
 };
 
-TestControllerAsh::TestControllerAsh() = default;
+TestControllerAsh::TestControllerAsh() {
+  CHECK_IS_TEST();
+}
+
 TestControllerAsh::~TestControllerAsh() = default;
 
 void TestControllerAsh::BindReceiver(

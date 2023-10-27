@@ -43,7 +43,6 @@
 #include "chrome/browser/lacros/multitask_menu_nudge_delegate_lacros.h"
 #include "chrome/browser/lacros/net/network_change_manager_bridge.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
-#include "chrome/browser/lacros/standalone_browser_test_controller.h"
 #include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/ui_metric_recorder_lacros.h"
@@ -219,25 +218,6 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   }
 
   EmbeddedA11yManagerLacros::GetInstance()->Init();
-
-#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
-  // The test controller is only created in test builds AND when Ash's test
-  // controller service is available.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::TestController>()) {
-    int remote_version =
-        lacros_service->GetInterfaceVersion<crosapi::mojom::TestController>();
-    if (static_cast<uint32_t>(remote_version) >=
-        crosapi::mojom::TestController::
-            kRegisterStandaloneBrowserTestControllerMinVersion) {
-      auto& ash_test_controller =
-          lacros_service->GetRemote<crosapi::mojom::TestController>();
-      standalone_browser_test_controller_ =
-          std::make_unique<StandaloneBrowserTestController>(
-              ash_test_controller);
-    }
-  }
-#endif
 
   // Construct ArcIconCache and set it to provider.
   arc_icon_cache_ = std::make_unique<ArcIconCache>();

@@ -103,7 +103,7 @@ function build_args {
     --enable-features=${FEATURES} \
     ${TOUCH_DEVICE_OPTION} \
     --enable-ash-debug-browser \
-    --lacros-chrome-path=${LACROS_BUILD_DIR} \
+    --lacros-chrome-path=${LACROS_BUILD_DIR}/chrome \
     ${EXTRA_ARGS}"
 
   # To enable internal display.
