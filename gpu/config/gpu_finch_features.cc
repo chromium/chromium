@@ -170,7 +170,7 @@ BASE_FEATURE(kCanvasOopRasterization,
 // unnecessary construction/destruction of GLTextures.
 BASE_FEATURE(kEnablePerContextGLTextureCache,
              "EnablePerContextGLTextureCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Detect front buffering condition and set buffer usage as such.
 // This is a killswitch to be removed once launched.
