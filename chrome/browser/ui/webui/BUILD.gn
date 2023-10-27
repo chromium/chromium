@@ -17,6 +17,7 @@ source_set("configs") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    "//chrome/browser/ui:ui",
     "//components/lens:buildflags",
     "//content/public/browser",
     "//printing/buildflags",

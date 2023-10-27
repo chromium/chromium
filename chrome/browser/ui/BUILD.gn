@@ -436,7 +436,6 @@ static_library("ui") {
     "//chrome/browser/share",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/ui/side_panel:side_panel_enums",
-    "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui/location_internals:mojo_bindings",
     "//chrome/browser/ui/webui/omnibox:mojo_bindings",
     "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings",
@@ -697,7 +696,6 @@ static_library("ui") {
     "//chrome/browser/favicon",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/profiling_host",
-    "//chrome/browser/ui/webui:configs",
   ]
 
   if (enable_vr && is_win) {
