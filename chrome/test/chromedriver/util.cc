@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -487,8 +488,10 @@ bool GetOptionalInt(const base::Value::Dict& dict,
   }
   // See if we have a double that contains an int value.
   absl::optional<double> maybe_decimal = dict.FindDoubleByDottedPath(path);
-  if (!maybe_decimal.has_value())
+  if (!maybe_decimal.has_value() ||
+      !base::IsValueInRangeForNumericType<int>(maybe_decimal.value())) {
     return false;
+  }
 
   int i = static_cast<int>(maybe_decimal.value());
   if (i == maybe_decimal.value()) {
