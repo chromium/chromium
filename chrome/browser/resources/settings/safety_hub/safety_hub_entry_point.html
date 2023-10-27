@@ -1,11 +1,10 @@
 <style include="cr-shared-style">
 </style>
 
-<!-- TODO(1443466): Change icon color based on state. -->
 <!-- TODO(1443466): Right-align button. -->
 <settings-safety-hub-module class="cr-row first" id="module"
     header$="[[headerString_]]" subheader$="[[subheaderString_]]"
-    header-icon="cr:security">
+    header-icon-color$="[[headerIconColor_]]" header-icon="cr:security">
   <cr-button id="button" on-click="onClick_" slot="button-container"
       class$="[[buttonClass_]]">
     $i18n{safetyHubEntryPointButton}

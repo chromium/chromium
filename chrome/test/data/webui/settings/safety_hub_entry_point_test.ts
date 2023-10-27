@@ -14,7 +14,7 @@ import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 
 // clang-format on
 
-suite('SafetyHubEntryPointUI', function() {
+suite('SafetyHubEntryPoint', function() {
   let browserProxy: TestSafetyHubBrowserProxy;
   let page: SettingsSafetyHubEntryPointElement;
 
@@ -47,6 +47,9 @@ suite('SafetyHubEntryPointUI', function() {
         page.i18n('safetyHubEntryPointHeader'));
     assertTrue(page.$.module.hasAttribute('subheader'));
     assertEquals(page.$.module.getAttribute('subheader')!.trim(), subheader);
+    assertTrue(page.$.module.hasAttribute('header-icon-color'));
+    assertEquals(
+        page.$.module.getAttribute('header-icon-color')!.trim(), 'blue');
 
     // Entry point has primary button leading to Safety Hub.
     assertEquals(page.$.button!.getAttribute('class'), 'action-button');
@@ -65,6 +68,8 @@ suite('SafetyHubEntryPointUI', function() {
     assertEquals(
         page.$.module.getAttribute('subheader')!.trim(),
         page.i18n('safetyHubEntryPointNothingToDo'));
+    assertTrue(page.$.module.hasAttribute('header-icon-color'));
+    assertEquals(page.$.module.getAttribute('header-icon-color')!.trim(), '');
 
     // Entry point has secondary button leading to Safety Hub.
     assertEquals(page.$.button!.getAttribute('class'), '');

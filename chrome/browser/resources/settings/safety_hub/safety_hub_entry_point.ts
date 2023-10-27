@@ -57,6 +57,11 @@ export class SettingsSafetyHubEntryPointElement extends
       },
 
       subheaderString_: String,
+
+      headerIconColor_: {
+        type: String,
+        computed: 'computeHeaderIconColor_(hasRecommendations_)',
+      },
     };
   }
 
@@ -67,6 +72,7 @@ export class SettingsSafetyHubEntryPointElement extends
   private hasRecommendations_: boolean;
   private headerString_: string;
   private subheaderString_: string;
+  private headerIconColor_: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -88,6 +94,10 @@ export class SettingsSafetyHubEntryPointElement extends
   private computeHeaderString_() {
     return this.hasRecommendations_ ? this.i18n('safetyHubEntryPointHeader') :
                                       '';
+  }
+
+  private computeHeaderIconColor_() {
+    return this.hasRecommendations_ ? 'blue' : '';
   }
 
   private onClick_() {

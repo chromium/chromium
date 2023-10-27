@@ -267,15 +267,12 @@ export class SettingsSafetyHubModuleElement extends
   }
 
   private onHeaderIconChanged_() {
-    switch (this.headerIcon) {
-      case 'cr:check':
-        this.headerIconColor = 'green';
-        break;
-      case 'cr:security':
-        this.headerIconColor = 'blue';
-        break;
-      default:
-        this.headerIconColor = '';
+    // The check icon is always green for all Safety Hub modules.
+    if (this.headerIcon === 'cr:check') {
+      this.headerIconColor = 'green';
+      // The Safety Check icon color is managed in specific Safety Hub modules.
+    } else if (this.headerIcon !== 'cr:security') {
+      this.headerIconColor = '';
     }
   }
 
