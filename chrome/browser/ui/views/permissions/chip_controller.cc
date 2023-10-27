@@ -121,9 +121,11 @@ void ChipController::OnTabVisibilityChanged(content::Visibility visibility) {
 }
 
 void ChipController::OnRequestsFinalized() {
-  if (!is_confirmation_showing_) {
-    ResetPermissionPromptChip();
-  }
+  ResetPermissionRequestChip();
+}
+
+void ChipController::OnPromptRemoved() {
+  ResetPermissionRequestChip();
 }
 
 void ChipController::OnRequestDecided(
@@ -334,6 +336,12 @@ void ChipController::ResetPermissionPromptChip() {
   is_confirmation_showing_ = false;
 }
 
+void ChipController::ResetPermissionRequestChip() {
+  if (!is_confirmation_showing_) {
+    ResetPermissionPromptChip();
+  }
+}
+
 void ChipController::ShowPageInfoDialog() {
   content::WebContents* contents = GetLocationBarView()->GetWebContents();
   if (!contents)
@@ -373,7 +381,7 @@ void ChipController::OnPageInfoBubbleClosed(
 void ChipController::CollapseConfirmation() {
   chip_->AnimateCollapse(GetAnimationDuration(base::Milliseconds(75)));
   is_confirmation_showing_ = false;
-  is_waiting_for_confirmation_collapse = true;
+  is_waiting_for_confirmation_collapse_ = true;
   GetLocationBarView()->ResetConfirmationChipShownTime();
 }
 
@@ -460,9 +468,9 @@ void ChipController::OnExpandAnimationEnded() {
 }
 
 void ChipController::OnCollapseAnimationEnded() {
-  if (is_waiting_for_confirmation_collapse) {
+  if (is_waiting_for_confirmation_collapse_) {
     HideChip();
-    is_waiting_for_confirmation_collapse = false;
+    is_waiting_for_confirmation_collapse_ = false;
   }
 }
 

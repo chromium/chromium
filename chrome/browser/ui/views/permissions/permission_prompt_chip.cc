@@ -48,7 +48,11 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
   chip_controller_->ShowPermissionPrompt(delegate->GetWeakPtr());
 }
 
-PermissionPromptChip::~PermissionPromptChip() = default;
+PermissionPromptChip::~PermissionPromptChip() {
+  if (chip_controller_) {
+    chip_controller_->ResetPermissionRequestChip();
+  }
+}
 
 bool PermissionPromptChip::UpdateAnchor() {
   if (UpdateBrowser()) {

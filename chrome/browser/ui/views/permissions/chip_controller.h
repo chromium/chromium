@@ -49,13 +49,20 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // PermissionRequestManager::Observer:
   void OnPermissionRequestManagerDestructed() override;
   void OnTabVisibilityChanged(content::Visibility visibility) override;
+  // Called when the currently active permission request was finalized. That
+  // could be called independently of `OnRequestDecided`.
   void OnRequestsFinalized() override;
+  // Called when currently visible permission prompt was removed. That is called
+  // independently from `OnRequestsFinalized` and `OnRequestDecided`.
+  void OnPromptRemoved() override;
 
   // OnBubbleRemoved only triggers when a request chip (bubble) is removed, when
   // the user navigates while a confirmation chip is showing, the request is
   // already finished and hence OnBubbleRemoved is not triggered. Thus we need
   // to handle chip cleanup on navigation events separately.
   void OnNavigation(content::NavigationHandle* navigation_handle) override;
+
+  // Called when there is a decision for a permission request.
   void OnRequestDecided(permissions::PermissionAction permissions) override;
 
   // BubbleOwnerDelegate:
@@ -85,8 +92,12 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // Chip View.
   OmniboxChipButton* chip() { return chip_; }
 
-  // Hide and clean up permission parts of the chip.
+  // Hide and clean up the chip.
   void ResetPermissionPromptChip();
+
+  // Hide and clean up only if the chip displays a permission request. That
+  // method is no-op if the confirmation chip is displayed.
+  void ResetPermissionRequestChip();
 
   bool IsPermissionPromptChipVisible() {
     return chip_ && chip_->GetVisible() && permission_prompt_model_;
@@ -180,7 +191,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   LocationBarView* GetLocationBarView();
 
   bool is_confirmation_showing_ = false;
-  bool is_waiting_for_confirmation_collapse = false;
+  bool is_waiting_for_confirmation_collapse_ = false;
 
   // The chip view this controller modifies.
   raw_ptr<OmniboxChipButton> chip_;
