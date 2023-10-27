@@ -21,6 +21,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "gpu/command_buffer/service/dawn_instance.h"
 #include "gpu/command_buffer/service/dawn_platform.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
@@ -125,17 +126,19 @@ const char* HRESULTToString(HRESULT result) {
 
 std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
     const GpuPreferences& gpu_preferences,
+    const GpuDriverBugWorkarounds& gpu_driver_workarounds,
     webgpu::DawnCachingInterfaceFactory* caching_interface_factory,
     CacheBlobCallback callback) {
   return DawnContextProvider::CreateWithBackend(
       GetDefaultBackendType(), DefaultForceFallbackAdapter(), gpu_preferences,
-      caching_interface_factory, std::move(callback));
+      gpu_driver_workarounds, caching_interface_factory, std::move(callback));
 }
 
 std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
+    const GpuDriverBugWorkarounds& gpu_driver_workarounds,
     webgpu::DawnCachingInterfaceFactory* caching_interface_factory,
     CacheBlobCallback callback) {
   auto context_provider =
@@ -146,7 +149,8 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
   // a Dawn device, get the actual Metal device from it, and compare against
   // MTLCreateSystemDefaultDevice().
   if (!context_provider->Initialize(backend_type, force_fallback_adapter,
-                                    gpu_preferences, std::move(callback))) {
+                                    gpu_preferences, gpu_driver_workarounds,
+                                    std::move(callback))) {
     context_provider.reset();
   }
   return context_provider;
@@ -204,10 +208,12 @@ DawnContextProvider::~DawnContextProvider() {
   }
 }
 
-bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
-                                     bool force_fallback_adapter,
-                                     const GpuPreferences& gpu_preferences,
-                                     CacheBlobCallback callback) {
+bool DawnContextProvider::Initialize(
+    wgpu::BackendType backend_type,
+    bool force_fallback_adapter,
+    const GpuPreferences& gpu_preferences,
+    const GpuDriverBugWorkarounds& gpu_driver_workarounds,
+    CacheBlobCallback callback) {
   std::unique_ptr<webgpu::DawnCachingInterface> caching_interface;
   if (caching_interface_factory_) {
     caching_interface = caching_interface_factory_->CreateInstance(
@@ -265,7 +271,11 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = backend_type;
   adapter_options.forceFallbackAdapter = force_fallback_adapter;
-  adapter_options.powerPreference = wgpu::PowerPreference::LowPower;
+  if (gpu_driver_workarounds.force_high_performance_gpu) {
+    adapter_options.powerPreference = wgpu::PowerPreference::HighPerformance;
+  } else {
+    adapter_options.powerPreference = wgpu::PowerPreference::LowPower;
+  }
   adapter_options.nextInChain = &toggles_desc;
 
 #if BUILDFLAG(IS_WIN)
