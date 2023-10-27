@@ -166,10 +166,8 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
     return ImageViewFromVectorIcon(kGlobeIcon, kIconSize);
   }
 
-  // TODO(crbug.com/1459990): Use proper icon. The magic_button icon does not
-  // exist yet, I will introduce it in a follow up cl.
   if (icon_str == "magicIcon") {
-    return ImageViewFromVectorIcon(kGlobeIcon, kIconSize);
+    return ImageViewFromVectorIcon(vector_icons::kMagicButtonIcon, kIconSize);
   }
 
   if (icon_str == "accountIcon") {

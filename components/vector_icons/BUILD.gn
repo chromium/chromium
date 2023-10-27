@@ -132,6 +132,7 @@ aggregate_vector_icons("components_vector_icons") {
     "location_on.icon",
     "location_on_chrome_refresh.icon",
     "lock.icon",
+    "magic_button.icon",
     "media_next_track.icon",
     "media_previous_track.icon",
     "media_router_active.icon",
