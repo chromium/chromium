@@ -62,7 +62,6 @@ pub struct RuleConcrete {
     pub cargo_pkg_name: String,
     pub cargo_pkg_description: Option<String>,
     pub deps: Vec<DepGroup>,
-    pub dev_deps: Vec<DepGroup>,
     pub build_deps: Vec<DepGroup>,
     pub aliased_deps: Vec<(String, String)>,
     pub features: Vec<String>,
@@ -333,14 +332,8 @@ fn make_build_file_for_chromium_dep(
     };
 
     // Enumerate the dependencies of each kind for the package.
-    //
-    // TODO(crbug.com/1304772): If this target itself was a ":cargo_tests_support"
-    // then it should only depend on other ":cargo_tests_support" targets. We
-    // should also define a group("cargo_tests_support") that points to ":lib"
-    // if there is no Development library rule definition.
     for (gn_deps, cargo_deps) in [
         (&mut rule_template.deps, &dep.dependencies),
-        (&mut rule_template.dev_deps, &dep.dev_dependencies),
         (&mut rule_template.build_deps, &dep.build_dependencies),
     ] {
         let cargo_deps: Vec<_> = cargo_deps.iter().collect();
@@ -403,16 +396,11 @@ fn make_build_file_for_chromium_dep(
     }
 
     // Generate the rule for the main library target, if it exists.
-    //
-    // TODO(crbug.com/1304772): We should also define a group("cargo_tests_support")
-    // that points to ":lib" if there is no Development library rule definition
-    // so that other ":cargo_tests_support" rules are simpler and can always
-    // depend on that target name.
     if let Some(lib_target) = &dep.lib_target {
         use deps::DependencyKind::*;
         // Generate the rules for each dependency kind. We use a stable
         // order instead of the hashmap iteration order.
-        for dep_kind in [Normal, Build, Development] {
+        for dep_kind in [Normal, Build] {
             let per_kind_info = match dep.dependency_kinds.get(&dep_kind) {
                 Some(x) => x,
                 None => continue,
@@ -420,7 +408,6 @@ fn make_build_file_for_chromium_dep(
 
             let lib_rule_name = match dep_kind {
                 deps::DependencyKind::Normal => "lib",
-                deps::DependencyKind::Development => "cargo_tests_support",
                 deps::DependencyKind::Build => "buildrs_support",
                 _ => unreachable!(),
             }
@@ -453,9 +440,10 @@ fn make_build_file_for_chromium_dep(
 
             rules.push((lib_rule_name.clone(), lib_rule));
 
-            // If first-party tests should be able to use the dependency, but it's only
-            // visible to third-party we need to provide a ":test_support"
-            // target for the tests to use.
+            // A package may be available to first-party tests. In this case limit :lib's
+            // visibility to third-party but provide a testonly alias visible
+            // everywhere. The :lib target must still exist for third-party
+            // transitive deps, which aren't testonly.
             if dep_kind == Normal && visibility == Visibility::TestOnlyAndThirdParty {
                 let test_support_rule = Rule::Group {
                     common: RuleCommon { testonly: true, public_visibility: true },
