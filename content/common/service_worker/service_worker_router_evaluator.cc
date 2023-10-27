@@ -9,7 +9,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
@@ -176,75 +175,47 @@ std::string RunningStatusToString(
 base::Value OrConditionToValue(
     const blink::ServiceWorkerRouterOrCondition& or_condition) {
   base::Value::List ret;
-  ret.reserve(or_condition.objects.size());
-  for (const auto& ob : or_condition.objects) {
-    base::Value::List out_ob;
-    out_ob.reserve(ob.conditions.size());
-    for (auto&& c : ob.conditions) {
-      out_ob.Append(ConditionToValue(c));
-    }
-    ret.Append(std::move(out_ob));
+  ret.reserve(or_condition.conditions.size());
+  for (const auto& c : or_condition.conditions) {
+    ret.Append(ConditionToValue(c));
   }
   return base::Value(std::move(ret));
 }
 
 base::Value ConditionToValue(
     const blink::ServiceWorkerRouterCondition& condition) {
-  switch (condition.type) {
-    case blink::ServiceWorkerRouterCondition::Type::kUrlPattern: {
-      base::Value::Dict out_c;
-      const blink::SafeUrlPattern& url_pattern = *condition.url_pattern;
-      base::Value::Dict url_pattern_value;
-#define TO_VALUE(type, type_name)                           \
-  do {                                                      \
-    auto value = ConvertToPatternString(url_pattern, type); \
-    url_pattern_value.Set(type_name, value);                \
+  base::Value::Dict out_c;
+  const auto& [url_pattern, request, running_status, or_condition] =
+      condition.get();
+  if (url_pattern) {
+    base::Value::Dict url_pattern_value;
+#define TO_VALUE(type, type_name)                            \
+  do {                                                       \
+    auto value = ConvertToPatternString(*url_pattern, type); \
+    url_pattern_value.Set(type_name, value);                 \
   } while (0)
-      TO_VALUE(URLPatternFieldType::kProtocol, "protocol");
-      TO_VALUE(URLPatternFieldType::kUsername, "username");
-      TO_VALUE(URLPatternFieldType::kPassword, "password");
-      TO_VALUE(URLPatternFieldType::kHostname, "hostname");
-      TO_VALUE(URLPatternFieldType::kPort, "port");
-      TO_VALUE(URLPatternFieldType::kPathname, "pathname");
-      TO_VALUE(URLPatternFieldType::kSearch, "search");
-      TO_VALUE(URLPatternFieldType::kHash, "hash");
+
+    TO_VALUE(URLPatternFieldType::kProtocol, "protocol");
+    TO_VALUE(URLPatternFieldType::kUsername, "username");
+    TO_VALUE(URLPatternFieldType::kPassword, "password");
+    TO_VALUE(URLPatternFieldType::kHostname, "hostname");
+    TO_VALUE(URLPatternFieldType::kPort, "port");
+    TO_VALUE(URLPatternFieldType::kPathname, "pathname");
+    TO_VALUE(URLPatternFieldType::kSearch, "search");
+    TO_VALUE(URLPatternFieldType::kHash, "hash");
 #undef TO_VALUE
       out_c.Set("urlPattern", std::move(url_pattern_value));
-      return base::Value(std::move(out_c));
-    }
-    case blink::ServiceWorkerRouterCondition::Type::kRequest: {
-      base::Value::Dict out_c;
-      out_c.Set("request", RequestToValue(*condition.request));
-      return base::Value(std::move(out_c));
-    }
-    case blink::ServiceWorkerRouterCondition::Type::kRunningStatus: {
-      base::Value::Dict out_c;
-      out_c.Set("running_status",
-                RunningStatusToString(*condition.running_status));
-      return base::Value(std::move(out_c));
-    }
-    case blink::ServiceWorkerRouterCondition::Type::kOr: {
-      base::Value::Dict out_c;
-      out_c.Set("or", OrConditionToValue(*condition.or_condition));
-      return base::Value(std::move(out_c));
-    }
   }
-}
-
-bool IsValidCondition(const blink::ServiceWorkerRouterCondition& condition) {
-  switch (condition.type) {
-    case blink::ServiceWorkerRouterCondition::Type::kUrlPattern:
-      return condition.url_pattern.has_value();
-    case blink::ServiceWorkerRouterCondition::Type::kRequest:
-      return condition.request.has_value() &&
-             (condition.request->method.has_value() ||
-              condition.request->mode.has_value() ||
-              condition.request->destination.has_value());
-    case blink::ServiceWorkerRouterCondition::Type::kRunningStatus:
-      return condition.running_status.has_value();
-    case blink::ServiceWorkerRouterCondition::Type::kOr:
-      return condition.or_condition.has_value();
+  if (request) {
+    out_c.Set("request", RequestToValue(*request));
   }
+  if (running_status) {
+    out_c.Set("running_status", RunningStatusToString(*running_status));
+  }
+  if (or_condition) {
+    out_c.Set("or", OrConditionToValue(*or_condition));
+  }
+  return base::Value(std::move(out_c));
 }
 
 bool IsValidSources(
@@ -292,19 +263,20 @@ bool IsValidSources(
 }
 
 [[nodiscard]] bool ExceedsMaxConditionDepth(
-    const std::vector<blink::ServiceWorkerRouterCondition>& conditions,
+    const blink::ServiceWorkerRouterCondition& condition,
     int depth = 0) {
   if (depth >= blink::kServiceWorkerRouterConditionMaxRecursionDepth) {
     return true;
   }
-  for (const auto& c : conditions) {
-    if (c.type != blink::ServiceWorkerRouterCondition::Type::kOr) {
-      continue;
-    }
-    for (const auto& ob : c.or_condition->objects) {
-      if (ExceedsMaxConditionDepth(ob.conditions, depth + 1)) {
-        return true;
-      }
+  const auto& or_condition =
+      std::get<const std::optional<blink::ServiceWorkerRouterOrCondition>&>(
+          condition.get());
+  if (!or_condition) {
+    return false;
+  }
+  for (const auto& c : or_condition->conditions) {
+    if (ExceedsMaxConditionDepth(c, depth + 1)) {
+      return true;
     }
   }
   return false;
@@ -337,16 +309,6 @@ bool MatchRunningCondition(
   return is_condition_running == is_status_running;
 }
 
-absl::optional<size_t> FindOrCondition(
-    const std::vector<blink::ServiceWorkerRouterCondition>& conditions) {
-  for (size_t i = 0; i < conditions.size(); ++i) {
-    if (conditions[i].type == blink::ServiceWorkerRouterCondition::Type::kOr) {
-      return i;
-    }
-  }
-  return absl::nullopt;
-}
-
 class BaseCondition {
  public:
   BaseCondition() = default;
@@ -356,7 +318,7 @@ class BaseCondition {
   BaseCondition(BaseCondition&&) = default;
   BaseCondition& operator=(BaseCondition&&) = default;
   // Returns true on success. Otherwise, false.
-  bool Set(const std::vector<blink::ServiceWorkerRouterCondition>& conditions);
+  bool Set(const blink::ServiceWorkerRouterCondition& condition);
   bool Match(const network::ResourceRequest& request,
              absl::optional<blink::EmbeddedWorkerStatus> running_status) const;
   bool need_running_status() const { return need_running_status_; }
@@ -377,37 +339,30 @@ class BaseCondition {
   std::unique_ptr<RE2> hash_pattern_;
   bool has_url_pattern_ = false;
   // Non-SafeUrlPattern conditions are processed one by one.
-  std::vector<blink::ServiceWorkerRouterCondition> non_url_pattern_conditions_;
+  blink::ServiceWorkerRouterCondition non_url_pattern_condition_;
   bool need_running_status_ = false;
 };
 
-bool BaseCondition::Set(
-    const std::vector<blink::ServiceWorkerRouterCondition>& conditions) {
-  if (conditions.empty()) {
+bool BaseCondition::Set(const blink::ServiceWorkerRouterCondition& condition) {
+  if (condition.IsEmpty()) {
     // At least one condition must be set.
     RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kEmptyCondition);
     return false;
   }
-  for (const auto& condition : conditions) {
-    if (!IsValidCondition(condition)) {
-      RecordSetupError(
-          ServiceWorkerRouterEvaluatorErrorEnums::kInvalidCondition);
-      return false;
-    }
-    if (condition.type !=
-        blink::ServiceWorkerRouterCondition::Type::kUrlPattern) {
-      non_url_pattern_conditions_.push_back(condition);
-      if (condition.type ==
-          blink::ServiceWorkerRouterCondition::Type::kRunningStatus) {
-        need_running_status_ = true;
-      }
-      continue;
-    }
+  const auto& [url_pattern, request, running_status, or_condition] =
+      condition.get();
 
-    const blink::SafeUrlPattern& url_pattern = *condition.url_pattern;
+  CHECK(!or_condition);
+
+  non_url_pattern_condition_ = {absl::nullopt, request, running_status,
+                                absl::nullopt};
+  if (running_status) {
+    need_running_status_ = true;
+  }
+  if (url_pattern) {
 #define SET_PATTERN(type_name, type)                                         \
   do {                                                                       \
-    auto regex = ConvertToRegex(url_pattern, type);                          \
+    auto regex = ConvertToRegex(*url_pattern, type);                         \
     type_name##_pattern_ = std::make_unique<RE2>(regex, RE2::Options());     \
     if (!type_name##_pattern_->ok()) {                                       \
       RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kParseError); \
@@ -467,25 +422,16 @@ bool BaseCondition::MatchUrlPatternConditions(
 bool BaseCondition::MatchNonUrlPatternConditions(
     const network::ResourceRequest& request,
     absl::optional<blink::EmbeddedWorkerStatus> running_status) const {
-  for (const auto& c : non_url_pattern_conditions_) {
-    switch (c.type) {
-      case blink::ServiceWorkerRouterCondition::Type::kUrlPattern:
-        NOTREACHED_NORETURN()
-            << "UrlPattern should be separated in the compile time.";
-      case blink::ServiceWorkerRouterCondition::Type::kRequest:
-        if (!MatchRequestCondition(*c.request, request)) {
-          return false;
-        }
-        break;
-      case blink::ServiceWorkerRouterCondition::Type::kRunningStatus:
-        if (running_status &&
-            !MatchRunningCondition(*c.running_status, *running_status)) {
-          return false;
-        }
-        break;
-      case blink::ServiceWorkerRouterCondition::Type::kOr:
-        NOTREACHED_NORETURN() << "OrCondition should be separated in advance";
-    }
+  const auto& [url_pattern, request_pattern, running_status_pattern,
+               or_condition] = non_url_pattern_condition_.get();
+  CHECK(!url_pattern);
+  CHECK(!or_condition);
+  if (request_pattern && !MatchRequestCondition(*request_pattern, request)) {
+    return false;
+  }
+  if (running_status && running_status_pattern &&
+      !MatchRunningCondition(*running_status_pattern, *running_status)) {
+    return false;
   }
   return true;
 }
@@ -499,8 +445,7 @@ class OrCondition {
   OrCondition(OrCondition&&) = default;
   OrCondition& operator=(OrCondition&&) = default;
   // Returns true on success. Otherwise, false.
-  bool Set(
-      const std::vector<blink::ServiceWorkerRouterConditionObject>& objects);
+  bool Set(const std::vector<blink::ServiceWorkerRouterCondition>& conditions);
   bool Match(const network::ResourceRequest& request,
              absl::optional<blink::EmbeddedWorkerStatus> running_status) const;
   bool need_running_status() const { return need_running_status_; }
@@ -518,21 +463,23 @@ class OrCondition {
 class ConditionObject {
  public:
   // Returns true on success. Otherwise, false.
-  bool Set(const std::vector<blink::ServiceWorkerRouterCondition>& conditions) {
-    if (auto&& or_idx = FindOrCondition(conditions); or_idx) {
-      if (conditions.size() >= 2) {
-        // `or` condition must be exclusive.
-        RecordSetupError(
-            ServiceWorkerRouterEvaluatorErrorEnums::kInvalidCondition);
-        return false;
-      }
+  bool Set(const blink::ServiceWorkerRouterCondition& condition) {
+    if (!condition.IsValid()) {
+      RecordSetupError(
+          ServiceWorkerRouterEvaluatorErrorEnums::kInvalidCondition);
+      return false;
+    }
+    const auto& or_condition =
+        std::get<const absl::optional<blink::ServiceWorkerRouterOrCondition>&>(
+            condition.get());
+    if (or_condition) {
       OrCondition v;
-      bool success = v.Set(conditions[*or_idx].or_condition->objects);
+      bool success = v.Set(or_condition->conditions);
       value_ = std::move(v);
       return success;
     } else {
       BaseCondition v;
-      bool success = v.Set(conditions);
+      bool success = v.Set(condition);
       value_ = std::move(v);
       return success;
     }
@@ -556,16 +503,17 @@ class ConditionObject {
 };
 
 bool OrCondition::Set(
-    const std::vector<blink::ServiceWorkerRouterConditionObject>& objects) {
-  conditions_.reserve(objects.size());
-  for (const auto& ob : objects) {
+    const std::vector<blink::ServiceWorkerRouterCondition>& conditions) {
+  conditions_.reserve(conditions.size());
+  for (const auto& c : conditions) {
     conditions_.emplace_back();
-    auto& c = conditions_.back();
-    if (!c.Set(ob.conditions)) {
+
+    ConditionObject& ob = conditions_.back();
+    if (!ob.Set(c)) {
       conditions_.clear();
       return false;
     }
-    need_running_status_ = need_running_status_ || c.need_running_status();
+    need_running_status_ = need_running_status_ || ob.need_running_status();
   }
   return true;
 }
@@ -588,13 +536,13 @@ namespace content {
 class ServiceWorkerRouterEvaluator::RouterRule {
  public:
   bool SetRule(const blink::ServiceWorkerRouterRule& rule) {
-    if (ExceedsMaxConditionDepth(rule.conditions)) {
+    if (ExceedsMaxConditionDepth(rule.condition)) {
       // Too many recursion in the condition.
       RecordSetupError(
           ServiceWorkerRouterEvaluatorErrorEnums::kExceedMaxConditionDepth);
       return false;
     }
-    return condition_.Set(rule.conditions) && SetSources(rule.sources);
+    return condition_.Set(rule.condition) && SetSources(rule.sources);
   }
   bool Match(const network::ResourceRequest& request,
              absl::optional<blink::EmbeddedWorkerStatus> running_status) const {
@@ -674,11 +622,8 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
   base::Value::List out;
   for (const auto& r : rules_.rules) {
     base::Value::Dict rule;
-    base::Value::List condition;
+    base::Value condition = ConditionToValue(r.condition);
     base::Value::List source;
-    for (const auto& c : r.conditions) {
-      condition.Append(ConditionToValue(c));
-    }
     for (const auto& s : r.sources) {
       switch (s.type) {
         case blink::ServiceWorkerRouterSource::Type::kNetwork:

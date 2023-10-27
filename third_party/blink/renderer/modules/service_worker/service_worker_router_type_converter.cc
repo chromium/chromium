@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.h"
 
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
@@ -25,7 +26,7 @@ namespace blink {
 
 namespace {
 
-absl::optional<ServiceWorkerRouterConditionObject> RouterConditionToBlink(
+absl::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
     RouterCondition* v8_condition,
     const KURL& url_pattern_base_url,
     ExceptionState& exception_state);
@@ -86,7 +87,7 @@ absl::optional<std::vector<liburlpattern::Part>> ToPartList(
 // TODO(crbug.com/1371756): Make URLPattern has a method to construct the
 // SafeURLPattern and remove the conversion from here.
 // The method should take a exception_state to raise on regex usage.
-absl::optional<SafeUrlPattern> ConvertURLPatternInputToSafeUrlPattern(
+absl::optional<SafeUrlPattern> RouterUrlPatternConditionToBlink(
     const V8URLPatternInput* url_pattern_input,
     const KURL& url_pattern_base_url,
     ExceptionState& exception_state) {
@@ -131,28 +132,9 @@ absl::optional<SafeUrlPattern> ConvertURLPatternInputToSafeUrlPattern(
   return safe_url_pattern;
 }
 
-absl::optional<ServiceWorkerRouterCondition> RouterUrlPatternConditionToBlink(
-    RouterCondition* v8_condition,
-    const KURL& url_pattern_base_url,
-    ExceptionState& exception_state) {
-  CHECK(v8_condition);
-
-  absl::optional<SafeUrlPattern> url_pattern =
-      ConvertURLPatternInputToSafeUrlPattern(
-          v8_condition->urlPattern(), url_pattern_base_url, exception_state);
-  if (!url_pattern) {
-    CHECK(exception_state.HadException());
-    return absl::nullopt;
-  }
-  blink::ServiceWorkerRouterCondition condition;
-  condition.type = blink::ServiceWorkerRouterCondition::Type::kUrlPattern;
-  condition.url_pattern = std::move(*url_pattern);
-  return condition;
-}
-
-absl::optional<ServiceWorkerRouterCondition> RouterRequestConditionToBlink(
-    RouterCondition* v8_condition,
-    ExceptionState& exception_state) {
+absl::optional<ServiceWorkerRouterRequestCondition>
+RouterRequestConditionToBlink(RouterCondition* v8_condition,
+                              ExceptionState& exception_state) {
   CHECK(v8_condition);
   bool request_condition_exist = false;
   ServiceWorkerRouterRequestCondition request;
@@ -176,13 +158,10 @@ absl::optional<ServiceWorkerRouterCondition> RouterRequestConditionToBlink(
     exception_state.ThrowTypeError("Request condition should not be empty.");
     return absl::nullopt;
   }
-  ServiceWorkerRouterCondition condition;
-  condition.type = ServiceWorkerRouterCondition::Type::kRequest;
-  condition.request = std::move(request);
-  return condition;
+  return request;
 }
 
-absl::optional<ServiceWorkerRouterCondition>
+absl::optional<ServiceWorkerRouterRunningStatusCondition>
 RouterRunningStatusConditionToBlink(RouterCondition* v8_condition,
                                     ExceptionState& exception_state) {
   CHECK(v8_condition);
@@ -203,90 +182,82 @@ RouterRunningStatusConditionToBlink(RouterCondition* v8_condition,
           RunningStatusEnum::kNotRunning;
       break;
   }
-  ServiceWorkerRouterCondition condition;
-  condition.type = ServiceWorkerRouterCondition::Type::kRunningStatus;
-  condition.running_status = std::move(running_status);
-  return condition;
+  return running_status;
 }
 
-absl::optional<ServiceWorkerRouterCondition> RouterOrConditionToBlink(
+absl::optional<ServiceWorkerRouterOrCondition> RouterOrConditionToBlink(
     RouterCondition* v8_condition,
     const KURL& url_pattern_base_url,
     ExceptionState& exception_state) {
   ServiceWorkerRouterOrCondition or_condition;
   const auto& v8_objects = v8_condition->orConditions();
-  or_condition.objects.reserve(v8_objects.size());
+  or_condition.conditions.reserve(v8_objects.size());
   for (auto&& v8_ob : v8_objects) {
-    absl::optional<ServiceWorkerRouterConditionObject> ob =
+    absl::optional<ServiceWorkerRouterCondition> c =
         RouterConditionToBlink(v8_ob, url_pattern_base_url, exception_state);
-    if (!ob) {
+    if (!c) {
       CHECK(exception_state.HadException());
       return absl::nullopt;
     }
-    or_condition.objects.emplace_back(std::move(*ob));
+    or_condition.conditions.emplace_back(std::move(*c));
   }
-  ServiceWorkerRouterCondition condition;
-  condition.type = ServiceWorkerRouterCondition::Type::kOr;
-  condition.or_condition = std::move(or_condition);
-
-  return condition;
+  return or_condition;
 }
 
-absl::optional<ServiceWorkerRouterConditionObject> RouterConditionToBlink(
+absl::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
     RouterCondition* v8_condition,
     const KURL& url_pattern_base_url,
     ExceptionState& exception_state) {
-  ServiceWorkerRouterConditionObject ret;
+  absl::optional<SafeUrlPattern> url_pattern;
   if (v8_condition->hasUrlPattern()) {
-    const absl::optional<ServiceWorkerRouterCondition> condition =
-        RouterUrlPatternConditionToBlink(v8_condition, url_pattern_base_url,
-                                         exception_state);
-    if (!condition.has_value()) {
+    url_pattern = RouterUrlPatternConditionToBlink(
+        v8_condition->urlPattern(), url_pattern_base_url, exception_state);
+    if (!url_pattern.has_value()) {
       CHECK(exception_state.HadException());
       return absl::nullopt;
     }
-    ret.conditions.emplace_back(*condition);
   }
+  absl::optional<ServiceWorkerRouterRequestCondition> request;
   if (v8_condition->hasRequestMethod() || v8_condition->hasRequestMode() ||
       v8_condition->hasRequestDestination()) {
-    const absl::optional<ServiceWorkerRouterCondition> condition =
-        RouterRequestConditionToBlink(v8_condition, exception_state);
-    if (!condition.has_value()) {
+    request = RouterRequestConditionToBlink(v8_condition, exception_state);
+    if (!request.has_value()) {
       CHECK(exception_state.HadException());
       return absl::nullopt;
     }
-    ret.conditions.emplace_back(*condition);
   }
+  absl::optional<ServiceWorkerRouterRunningStatusCondition> running_status;
   if (v8_condition->hasRunningStatus()) {
-    const absl::optional<ServiceWorkerRouterCondition> condition =
+    running_status =
         RouterRunningStatusConditionToBlink(v8_condition, exception_state);
-    if (!condition.has_value()) {
+    if (!running_status.has_value()) {
       CHECK(exception_state.HadException());
       return absl::nullopt;
     }
-    ret.conditions.emplace_back(*condition);
   }
+  absl::optional<ServiceWorkerRouterOrCondition> or_condition;
   if (v8_condition->hasOrConditions()) {
-    if (!ret.conditions.empty()) {
-      // `or` condition must be exclusive.
-      exception_state.ThrowTypeError(
-          "Cannot set other conditions when the `or` condition is specified");
-      return absl::nullopt;
-    }
-    const absl::optional<ServiceWorkerRouterCondition> condition =
-        RouterOrConditionToBlink(v8_condition, url_pattern_base_url,
-                                 exception_state);
-    if (!condition.has_value()) {
+    // Not checking here for the `or` is actually exclusive.
+    or_condition = RouterOrConditionToBlink(v8_condition, url_pattern_base_url,
+                                            exception_state);
+    if (!or_condition.has_value()) {
       CHECK(exception_state.HadException());
       return absl::nullopt;
     }
-    ret.conditions.emplace_back(std::move(*condition));
   }
-  if (ret.conditions.empty()) {
+  blink::ServiceWorkerRouterCondition ret(url_pattern, request, running_status,
+                                          or_condition);
+  if (ret.IsEmpty()) {
     // At least one condition should exist per rule.
     exception_state.ThrowTypeError(
         "At least one condition must be set, but no condition has been set "
         "to the rule.");
+    return absl::nullopt;
+  }
+  if (!ret.IsOrConditionExclusive()) {
+    // `or` condition must be exclusive.
+    exception_state.ThrowTypeError(
+        "Cannot set other conditions when the `or` condition is specified");
     return absl::nullopt;
   }
   return ret;
@@ -376,13 +347,13 @@ absl::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
     CHECK(exception_state.HadException());
     return absl::nullopt;
   }
-  const absl::optional<ServiceWorkerRouterConditionObject> condition_object =
+  absl::optional<ServiceWorkerRouterCondition> condition =
       RouterConditionToBlink(input->condition(), url_pattern_base_url,
                              exception_state);
-  if (!condition_object.has_value()) {
+  if (!condition.has_value()) {
     return absl::nullopt;
   }
-  rule.conditions = std::move(condition_object->conditions);
+  rule.condition = std::move(*condition);
 
   // Set up sources.
   // TODO(crbug.com/1371756): support multiple sources.

@@ -20,7 +20,7 @@ enum class RequestDestination : int32_t;
 
 namespace blink {
 
-struct ServiceWorkerRouterCondition;
+class ServiceWorkerRouterCondition;
 
 // TODO(crbug.com/1490445): set this value by discussing in spec proposal.
 static constexpr int kServiceWorkerRouterConditionMaxRecursionDepth = 10;
@@ -55,51 +55,98 @@ struct ServiceWorkerRouterRunningStatusCondition {
   }
 };
 
-struct ServiceWorkerRouterConditionObject {
-  std::vector<ServiceWorkerRouterCondition> conditions;
-
-  bool operator==(const ServiceWorkerRouterConditionObject& other) const;
-};
 struct ServiceWorkerRouterOrCondition {
-  std::vector<ServiceWorkerRouterConditionObject> objects;
+  std::vector<ServiceWorkerRouterCondition> conditions;
 
   bool operator==(const ServiceWorkerRouterOrCondition& other) const;
 };
 
 // TODO(crbug.com/1371756): implement other conditions in the proposal.
-// TODO(crbug.com/1456599): migrate to absl::variant if possible.
-struct BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
-  // Type of conditions.
-  enum class Type {
-    // URLPattern is used as a condition.
-    kUrlPattern,
-    // Request condition.
-    kRequest,
-    // Running status condition.
-    kRunningStatus,
-    // Or condition
-    kOr,
-  };
-  Type type;
+class BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
+  // We use aggregated getter/setter in this class in order to emit errors on
+  // the callers when other conditions are added in the future
+ public:
+  using MemberRef =
+      std::tuple<absl::optional<SafeUrlPattern>&,
+                 absl::optional<ServiceWorkerRouterRequestCondition>&,
+                 absl::optional<ServiceWorkerRouterRunningStatusCondition>&,
+                 absl::optional<ServiceWorkerRouterOrCondition>&>;
+  using MemberConstRef = std::tuple<
+      const absl::optional<SafeUrlPattern>&,
+      const absl::optional<ServiceWorkerRouterRequestCondition>&,
+      const absl::optional<ServiceWorkerRouterRunningStatusCondition>&,
+      const absl::optional<ServiceWorkerRouterOrCondition>&>;
 
-  // URLPattern to be used for matching.
-  // This field is valid if `type` is `kUrlPattern`.
-  absl::optional<SafeUrlPattern> url_pattern;
+  ServiceWorkerRouterCondition() = default;
+  ServiceWorkerRouterCondition(const ServiceWorkerRouterCondition&) = default;
+  ServiceWorkerRouterCondition& operator=(const ServiceWorkerRouterCondition&) =
+      default;
+  ServiceWorkerRouterCondition(ServiceWorkerRouterCondition&&) = default;
+  ServiceWorkerRouterCondition& operator=(ServiceWorkerRouterCondition&&) =
+      default;
 
-  // Request to be used for matching.
-  // This field is valid if `type` is `kRequest`.
-  absl::optional<ServiceWorkerRouterRequestCondition> request;
+  ServiceWorkerRouterCondition(
+      const absl::optional<SafeUrlPattern>& url_pattern,
+      const absl::optional<ServiceWorkerRouterRequestCondition>& request,
+      const absl::optional<ServiceWorkerRouterRunningStatusCondition>&
+          running_status,
+      const absl::optional<ServiceWorkerRouterOrCondition>& or_condition)
+      : url_pattern_(url_pattern),
+        request_(request),
+        running_status_(running_status),
+        or_condition_(or_condition) {}
 
-  // Running status to be used for matching.
-  // This field is valid if `type` is `kRunningStatus`.
-  absl::optional<ServiceWorkerRouterRunningStatusCondition> running_status;
+  // Returns tuple: suggest using structured bindings on the caller side.
+  MemberRef get() {
+    return {url_pattern_, request_, running_status_, or_condition_};
+  }
+  MemberConstRef get() const {
+    return {url_pattern_, request_, running_status_, or_condition_};
+  }
 
-  // `Or` condition to be used for matching
-  // This field is valid if `type` is `kOr`
-  // We need `_condition` suffix to avoid conflict with reserved keywords in C++
-  absl::optional<ServiceWorkerRouterOrCondition> or_condition;
+  bool IsEmpty() const {
+    return !(url_pattern_ || request_ || running_status_ || or_condition_);
+  }
+
+  bool IsOrConditionExclusive() const {
+    return or_condition_.has_value() !=
+           (url_pattern_ || request_ || running_status_);
+  }
+
+  bool IsValid() const { return !IsEmpty() && IsOrConditionExclusive(); }
 
   bool operator==(const ServiceWorkerRouterCondition& other) const;
+
+  static ServiceWorkerRouterCondition WithUrlPattern(
+      const SafeUrlPattern& url_pattern) {
+    return {url_pattern, absl::nullopt, absl::nullopt, absl::nullopt};
+  }
+  static ServiceWorkerRouterCondition WithRequest(
+      const ServiceWorkerRouterRequestCondition& request) {
+    return {absl::nullopt, request, absl::nullopt, absl::nullopt};
+  }
+  static ServiceWorkerRouterCondition WithRunningStatus(
+      const ServiceWorkerRouterRunningStatusCondition& running_status) {
+    return {absl::nullopt, absl::nullopt, running_status, absl::nullopt};
+  }
+  static ServiceWorkerRouterCondition WithOrCondition(
+      const ServiceWorkerRouterOrCondition& or_condition) {
+    return {absl::nullopt, absl::nullopt, absl::nullopt, or_condition};
+  }
+
+ private:
+  // URLPattern to be used for matching.
+  absl::optional<SafeUrlPattern> url_pattern_;
+
+  // Request to be used for matching.
+  absl::optional<ServiceWorkerRouterRequestCondition> request_;
+
+  // Running status to be used for matching.
+  absl::optional<ServiceWorkerRouterRunningStatusCondition> running_status_;
+
+  // `Or` condition to be used for matching
+  // We need `_condition` suffix to avoid conflict with reserved keywords in C++
+  absl::optional<ServiceWorkerRouterOrCondition> or_condition_;
 };
 
 // Network source structure.
@@ -165,15 +212,15 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
 // This represents a ServiceWorker static routing API's router rule.
 // It represents each route.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterRule {
-  // There can be a list of conditions, and expected to be evaluated
-  // from front to back.
-  std::vector<ServiceWorkerRouterCondition> conditions;
+  // A rule can have one condition object. A condition object may have several
+  // different conditions.
+  ServiceWorkerRouterCondition condition;
   // There can be a list of sources, and expected to be routed from
   // front to back.
   std::vector<ServiceWorkerRouterSource> sources;
 
   bool operator==(const ServiceWorkerRouterRule& other) const {
-    return conditions == other.conditions && sources == other.sources;
+    return condition == other.condition && sources == other.sources;
   }
 };
 
