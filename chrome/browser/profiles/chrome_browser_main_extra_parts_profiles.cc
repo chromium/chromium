@@ -938,7 +938,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   PhotosServiceFactory::GetInstance();
   PinnedTabServiceFactory::GetInstance();
-  PinnedToolbarActionsModelFactory::GetInstance();
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    PinnedToolbarActionsModelFactory::GetInstance();
+  }
 #endif
   PlatformNotificationServiceFactory::GetInstance();
 #if BUILDFLAG(ENABLE_PLUGINS)
