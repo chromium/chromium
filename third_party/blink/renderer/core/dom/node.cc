@@ -2829,9 +2829,10 @@ void Node::UpdateHadKeyboardEvent(const Event& event) {
   if (GetLayoutObject()) {
     InvalidateIfHasEffectiveAppearance();
 
-    auto* this_node = DynamicTo<ContainerNode>(this);
-    if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled() && this_node)
-      this_node->FocusVisibleStateChanged();
+    auto* this_element = DynamicTo<Element>(this);
+    if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled() && this_element) {
+      this_element->FocusVisibleStateChanged();
+    }
   }
 }
 
@@ -2934,12 +2935,6 @@ HTMLSlotElement* Node::assignedSlotForBinding() {
       return AssignedSlot();
   }
   return nullptr;
-}
-
-void Node::SetFocused(bool flag, mojom::blink::FocusType focus_type) {
-  if (focus_type == mojom::blink::FocusType::kMouse)
-    GetDocument().SetHadKeyboardEvent(false);
-  GetDocument().UserActionElements().SetFocused(this, flag);
 }
 
 void Node::SetHasFocusWithin(bool flag) {

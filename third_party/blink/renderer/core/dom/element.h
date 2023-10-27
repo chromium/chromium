@@ -804,6 +804,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void Focus();
   void Focus(const FocusOptions*);
 
+  virtual void SetFocused(bool received, mojom::blink::FocusType);
+  void SetHasFocusWithinUpToAncestor(bool, Element* ancestor);
+  void FocusStateChanged();
+  void FocusVisibleStateChanged();
+  void FocusWithinStateChanged();
+  void SetDragged(bool) override;
+
   void UpdateSelectionOnFocus(SelectionBehaviorOnFocus);
   // This function is called after SetFocused(true) before dispatching 'focus'
   // event, or is called just after a layout after changing <input> type.

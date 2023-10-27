@@ -5861,6 +5861,99 @@ void Element::Focus(const FocusParams& params) {
   }
 }
 
+void Element::SetFocused(bool received, mojom::blink::FocusType focus_type) {
+  // Recurse up author shadow trees to mark shadow hosts if it matches :focus.
+  // TODO(kochi): Handle UA shadows which marks multiple nodes as focused such
+  // as <input type="date"> the same way as author shadow.
+  if (ShadowRoot* root = ContainingShadowRoot()) {
+    if (!root->IsUserAgent()) {
+      OwnerShadowHost()->SetFocused(received, focus_type);
+    }
+  }
+
+  if (IsFocused() == received) {
+    return;
+  }
+
+  if (focus_type == mojom::blink::FocusType::kMouse) {
+    GetDocument().SetHadKeyboardEvent(false);
+  }
+  GetDocument().UserActionElements().SetFocused(this, received);
+
+  FocusStateChanged();
+
+  if (GetLayoutObject() || received) {
+    return;
+  }
+
+  // If :focus sets display: none, we lose focus but still need to recalc our
+  // style.
+  if (!ChildrenOrSiblingsAffectedByFocus()) {
+    SetNeedsStyleRecalc(kLocalStyleChange,
+                        StyleChangeReasonForTracing::CreateWithExtraData(
+                            style_change_reason::kPseudoClass,
+                            style_change_extra_data::g_focus));
+  }
+  PseudoStateChanged(CSSSelector::kPseudoFocus);
+
+  if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
+    if (!ChildrenOrSiblingsAffectedByFocusVisible()) {
+      SetNeedsStyleRecalc(kLocalStyleChange,
+                          StyleChangeReasonForTracing::CreateWithExtraData(
+                              style_change_reason::kPseudoClass,
+                              style_change_extra_data::g_focus_visible));
+    }
+    PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
+  }
+
+  if (!ChildrenOrSiblingsAffectedByFocusWithin()) {
+    SetNeedsStyleRecalc(kLocalStyleChange,
+                        StyleChangeReasonForTracing::CreateWithExtraData(
+                            style_change_reason::kPseudoClass,
+                            style_change_extra_data::g_focus_within));
+  }
+  PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
+}
+
+void Element::SetDragged(bool new_value) {
+  if (new_value == IsDragged()) {
+    return;
+  }
+
+  Node::SetDragged(new_value);
+
+  // If :-webkit-drag sets display: none we lose our dragging but still need
+  // to recalc our style.
+  if (!GetLayoutObject()) {
+    if (new_value) {
+      return;
+    }
+    if (ChildrenOrSiblingsAffectedByDrag()) {
+      PseudoStateChanged(CSSSelector::kPseudoDrag);
+    } else {
+      SetNeedsStyleRecalc(kLocalStyleChange,
+                          StyleChangeReasonForTracing::CreateWithExtraData(
+                              style_change_reason::kPseudoClass,
+                              style_change_extra_data::g_drag));
+    }
+    return;
+  }
+
+  if (GetComputedStyle()->AffectedByDrag()) {
+    StyleChangeType change_type =
+        GetComputedStyle()->HasPseudoElementStyle(kPseudoIdFirstLetter)
+            ? kSubtreeStyleChange
+            : kLocalStyleChange;
+    SetNeedsStyleRecalc(change_type,
+                        StyleChangeReasonForTracing::CreateWithExtraData(
+                            style_change_reason::kPseudoClass,
+                            style_change_extra_data::g_drag));
+  }
+  if (ChildrenOrSiblingsAffectedByDrag()) {
+    PseudoStateChanged(CSSSelector::kPseudoDrag);
+  }
+}
+
 void Element::UpdateSelectionOnFocus(
     SelectionBehaviorOnFocus selection_behavior) {
   UpdateSelectionOnFocus(selection_behavior, FocusOptions::Create());
@@ -6092,6 +6185,69 @@ bool Element::IsAutofocusable() const {
   // https://svgwg.org/svg2-draft/struct.html#autofocusattribute
   return (IsHTMLElement() || IsSVGElement()) &&
          FastHasAttribute(html_names::kAutofocusAttr);
+}
+
+// This is used by FrameSelection to denote when the active-state of the page
+// has changed independent of the focused element changing.
+void Element::FocusStateChanged() {
+  // If we're just changing the window's active state and the focused node has
+  // no layoutObject we can just ignore the state change.
+  if (!GetLayoutObject()) {
+    return;
+  }
+
+  StyleChangeType change_type =
+      GetComputedStyle()->HasPseudoElementStyle(kPseudoIdFirstLetter)
+          ? kSubtreeStyleChange
+          : kLocalStyleChange;
+  SetNeedsStyleRecalc(
+      change_type,
+      StyleChangeReasonForTracing::CreateWithExtraData(
+          style_change_reason::kPseudoClass, style_change_extra_data::g_focus));
+
+  PseudoStateChanged(CSSSelector::kPseudoFocus);
+
+  InvalidateIfHasEffectiveAppearance();
+  FocusVisibleStateChanged();
+  FocusWithinStateChanged();
+}
+
+void Element::FocusVisibleStateChanged() {
+  if (!RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
+    return;
+  }
+  StyleChangeType change_type =
+      GetComputedStyle()->HasPseudoElementStyle(kPseudoIdFirstLetter)
+          ? kSubtreeStyleChange
+          : kLocalStyleChange;
+  SetNeedsStyleRecalc(change_type,
+                      StyleChangeReasonForTracing::CreateWithExtraData(
+                          style_change_reason::kPseudoClass,
+                          style_change_extra_data::g_focus_visible));
+
+  PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
+}
+
+void Element::FocusWithinStateChanged() {
+  if (GetComputedStyle() && GetComputedStyle()->AffectedByFocusWithin()) {
+    StyleChangeType change_type =
+        GetComputedStyle()->HasPseudoElementStyle(kPseudoIdFirstLetter)
+            ? kSubtreeStyleChange
+            : kLocalStyleChange;
+    SetNeedsStyleRecalc(change_type,
+                        StyleChangeReasonForTracing::CreateWithExtraData(
+                            style_change_reason::kPseudoClass,
+                            style_change_extra_data::g_focus_within));
+  }
+  PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
+}
+
+void Element::SetHasFocusWithinUpToAncestor(bool flag, Element* ancestor) {
+  for (Element* element = this; element && element != ancestor;
+       element = FlatTreeTraversal::ParentElement(*element)) {
+    element->SetHasFocusWithin(flag);
+    element->FocusWithinStateChanged();
+  }
 }
 
 bool Element::IsClickableControl(Node* node) {

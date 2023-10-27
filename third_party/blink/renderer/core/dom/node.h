@@ -621,7 +621,6 @@ class CORE_EXPORT Node : public EventTarget {
 
   void SetIsLink(bool f);
 
-  virtual void SetFocused(bool flag, mojom::blink::FocusType);
   void SetHasFocusWithin(bool flag);
   virtual void SetDragged(bool flag);
 

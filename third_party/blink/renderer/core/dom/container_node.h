@@ -161,12 +161,7 @@ class CORE_EXPORT ContainerNode : public Node {
   void AttachLayoutTree(AttachContext&) override;
   void DetachLayoutTree(bool performing_reattach) override;
   PhysicalRect BoundingBox() const final;
-  void SetFocused(bool, mojom::blink::FocusType) override;
-  void SetHasFocusWithinUpToAncestor(bool, Node* ancestor);
-  void FocusStateChanged();
-  void FocusVisibleStateChanged();
-  void FocusWithinStateChanged();
-  void SetDragged(bool) override;
+
   void RemovedFrom(ContainerNode& insertion_point) override;
 
   bool ChildrenOrSiblingsAffectedByFocus() const {

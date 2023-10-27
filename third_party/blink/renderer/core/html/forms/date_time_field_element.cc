@@ -153,7 +153,7 @@ void DateTimeFieldElement::SetFocused(bool value,
     }
   }
 
-  ContainerNode::SetFocused(value, focus_type);
+  Element::SetFocused(value, focus_type);
 }
 
 void DateTimeFieldElement::FocusOnNextField() {

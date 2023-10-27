@@ -5215,11 +5215,12 @@ bool Document::SetFocusedElement(Element* new_focused_element,
   Element* old_focused_element = focused_element_;
   focused_element_ = nullptr;
 
-  Node* ancestor = (old_focused_element && old_focused_element->isConnected() &&
-                    new_focused_element)
-                       ? FlatTreeTraversal::CommonAncestor(*old_focused_element,
-                                                           *new_focused_element)
-                       : nullptr;
+  Element* ancestor =
+      (old_focused_element && old_focused_element->isConnected() &&
+       new_focused_element)
+          ? DynamicTo<Element>(FlatTreeTraversal::CommonAncestor(
+                *old_focused_element, *new_focused_element))
+          : nullptr;
 
   // Remove focus from the existing focus node (if any)
   if (old_focused_element) {
