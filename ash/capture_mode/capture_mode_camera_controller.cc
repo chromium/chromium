@@ -25,6 +25,7 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -250,7 +251,7 @@ void UpdateFloatingPanelBoundsIfNeeded(aura::Window* root_window) {
   for (aura::Window* pip_window : pip_window_container->children()) {
     auto* pip_window_state = WindowState::Get(pip_window);
     if (pip_window_state->IsPip())
-      pip_window_state->UpdatePipBounds();
+      Shell::Get()->pip_controller()->UpdatePipBounds();
   }
 }
 
