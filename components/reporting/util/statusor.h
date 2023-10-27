@@ -61,7 +61,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "components/reporting/util/status.h"

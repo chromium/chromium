@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "components/reporting/util/file.h"
+#include "components/reporting/util/status.h"
 
 namespace reporting {
 
