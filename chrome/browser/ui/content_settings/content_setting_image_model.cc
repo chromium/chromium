@@ -274,7 +274,8 @@ struct ContentSettingsImageDetails {
 
 const ContentSettingsImageDetails kImageDetails[] = {
     {ContentSettingsType::COOKIES, vector_icons::kCookieIcon,
-     IDS_BLOCKED_COOKIES_MESSAGE, 0, IDS_ACCESSED_COOKIES_MESSAGE},
+     IDS_BLOCKED_ON_DEVICE_SITE_DATA_MESSAGE, 0,
+     IDS_ACCESSED_ON_DEVICE_SITE_DATA_MESSAGE},
     {ContentSettingsType::IMAGES, vector_icons::kPhotoIcon,
      IDS_BLOCKED_IMAGES_MESSAGE, 0, 0},
     {ContentSettingsType::JAVASCRIPT, vector_icons::kCodeIcon,

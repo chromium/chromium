@@ -3664,17 +3664,17 @@ are declared in tools/grit/grit_rule.gni.
         Always block multiple automatic downloads on <ph name="HOST">$1<ex>example.com</ex></ph>
       </message>
 
-      <message name="IDS_BLOCKED_COOKIES_TITLE" desc="Short title of the bubble showing that a page was blocked from using cookies.">
-        Cookies blocked
+      <message name="IDS_BLOCKED_ON_DEVICE_SITE_DATA_TITLE" desc="Short title of the bubble showing that a page was blocked from saving site data on-device.">
+        On-device site data not allowed
       </message>
-      <message name="IDS_ACCESSED_COOKIES_TITLE" desc="Short title of the bubble showing that a page wrote cookies or other site data.">
-        Cookies set
+      <message name="IDS_ACCESSED_ON_DEVICE_SITE_DATA_TITLE" desc="Short title of the bubble showing that a page saves site data while saving all site data is blocked.">
+        On-device site data allowed
       </message>
-      <message name="IDS_BLOCKED_COOKIES_MESSAGE" desc="Tooltip and bubble message text when a page is not allowed to write cookies or other site data.">
-        This page was prevented from setting cookies.
+      <message name="IDS_BLOCKED_ON_DEVICE_SITE_DATA_MESSAGE" desc="Tooltip and bubble message text when a page is blocked from saving site data on-device.">
+        This site isn't allowed to save data on your device.
       </message>
-      <message name="IDS_ACCESSED_COOKIES_MESSAGE" desc="Tooltip and bubble info header text when a page wrote cookies or other site data.">
-        This page set cookies.
+      <message name="IDS_ACCESSED_ON_DEVICE_SITE_DATA_MESSAGE" desc="Tooltip and bubble info header text when a page saves site data while saving all site data is blocked.">
+        This site is allowed to save data on your device.
       </message>
       <message name="IDS_BLOCKED_COOKIES_INFO" desc="Info link to a dialog showing the blocked/allowed cookies, displayed in bubble when a page tries to write cookies or other site data.">
         Show cookies and other site data...
@@ -3685,20 +3685,20 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_BLOCKED_IMAGES_MESSAGE" desc="Tooltip and bubble info header text when a page is not allowed to display images.">
         Images were blocked on this page.
       </message>
-      <message name="IDS_BLOCKED_COOKIES_UNBLOCK" desc="Radio button choice to unblock a site from setting cookies, displayed in bubble when a page tries to set cookies.">
-        Always allow <ph name="HOST">$1<ex>mail.google.com</ex></ph> to set cookies
+      <message name="IDS_BLOCKED_ON_DEVICE_SITE_DATA_UNBLOCK" desc="Radio button choice to unblock a site from saving data on-device, displayed in bubble when a page tries to save data.">
+        Allow site to save data
       </message>
       <message name="IDS_BLOCKED_IMAGES_UNBLOCK" desc="Radio button choice to unblock a site from showing images, displayed in bubble when a page tries to display images.">
         Always allow <ph name="HOST">$1<ex>mail.google.com</ex></ph> to show images
       </message>
-      <message name="IDS_BLOCKED_COOKIES_NO_ACTION" desc="Radio button choice to continue blocking a site from setting cookies, displayed in bubble when a page tries to set cookies.">
-        Continue blocking cookies
+      <message name="IDS_BLOCKED_ON_DEVICE_SITE_DATA_NO_ACTION" desc="Radio button choice to continue blocking a site from saving data on device, displayed in bubble when a page tries to save data.">
+        Don't allow site to save data
       </message>
-      <message name="IDS_ALLOWED_COOKIES_NO_ACTION" desc="Radio button choice to keep allowing a site to set the cookies, displayed in bubble when a page tries to set cookies.">
-        Continue allowing cookies
+      <message name="IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION" desc="Radio button choice to keep allowing a site to save site data, displayed in bubble when a page tries to save site data.">
+        Allow site to save data
       </message>
-      <message name="IDS_ALLOWED_COOKIES_BLOCK" desc="Radio button choice to block a site to set the cookies, displayed in bubble when a page tries to set cookies.">
-        Always block cookies on <ph name="HOST">$1<ex>mail.google.com</ex></ph>
+      <message name="IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK" desc="Radio button choice to block a site to save site data, displayed in bubble when a page tries to save site data.">
+        Don't allow site to save data
       </message>
       <message name="IDS_BLOCKED_IMAGES_NO_ACTION" desc="Radio button choice to continue blocking a site from showing images, displayed in bubble when a page tries to display images.">
         Continue blocking images
