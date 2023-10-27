@@ -122,19 +122,33 @@ class InstallServiceWorkItemTest : public ::testing::Test {
     }
 
     // Check IID registration.
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_LOCAL_MACHINE, kIidPSRegPath, KEY_READ));
-    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
-    EXPECT_EQ(L"{00020424-0000-0000-C000-000000000046}", value);
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      EXPECT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, IID_REGISTRY_PATH,
+                                        KEY_READ | key_flag));
+      EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
+      EXPECT_EQ(L"Interface {0F9A0C1C-A94A-4C0A-93C7-81330526AC7B}", value);
 
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_LOCAL_MACHINE, kIidTLBRegPath, KEY_READ));
-    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
-    EXPECT_EQ(base::win::WStringFromGUID(kIid), value);
-    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"Version", &value));
-    EXPECT_EQ(L"1.0", value);
+      EXPECT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, kIidPSRegPath,
+                                        KEY_READ | key_flag));
+      EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
+      EXPECT_EQ(L"{00020424-0000-0000-C000-000000000046}", value);
+
+      EXPECT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, kIidTLBRegPath,
+                                        KEY_READ | key_flag));
+      EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
+      EXPECT_EQ(base::win::WStringFromGUID(kIid), value);
+      EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"Version", &value));
+      EXPECT_EQ(L"1.0", value);
+    }
 
     // Check TypeLib registration.
+    EXPECT_EQ(
+        ERROR_SUCCESS,
+        key.Open(HKEY_LOCAL_MACHINE, TYPELIB_REGISTRY_PATH L"\\1.0", KEY_READ));
+    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
+    EXPECT_EQ(L"TypeLib for Interface {0F9A0C1C-A94A-4C0A-93C7-81330526AC7B}",
+              value);
+
     EXPECT_EQ(ERROR_SUCCESS,
               key.Open(HKEY_LOCAL_MACHINE, kTypeLibWin32RegPath, KEY_READ));
     EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
@@ -154,8 +168,11 @@ class InstallServiceWorkItemTest : public ::testing::Test {
               key.Open(HKEY_LOCAL_MACHINE, kClsidRegPath, KEY_READ));
     EXPECT_EQ(ERROR_FILE_NOT_FOUND,
               key.Open(HKEY_LOCAL_MACHINE, kAppidRegPath, KEY_READ));
-    EXPECT_EQ(ERROR_FILE_NOT_FOUND,
-              key.Open(HKEY_LOCAL_MACHINE, IID_REGISTRY_PATH, KEY_READ));
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      EXPECT_EQ(
+          ERROR_FILE_NOT_FOUND,
+          key.Open(HKEY_LOCAL_MACHINE, IID_REGISTRY_PATH, KEY_READ | key_flag));
+    }
     EXPECT_EQ(ERROR_FILE_NOT_FOUND,
               key.Open(HKEY_LOCAL_MACHINE, TYPELIB_REGISTRY_PATH, KEY_READ));
   }

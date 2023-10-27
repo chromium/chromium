@@ -226,52 +226,47 @@ bool InstallServiceWorkItemImpl::DoComRegistration() {
   for (const auto& iid : iids_) {
     const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
     const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
+    const std::wstring iid_string = base::win::WStringFromGUID(iid);
 
-    // Registering the Ole Automation marshaler with the CLSID
-    // {00020424-0000-0000-C000-000000000046} as the proxy/stub for the
-    // interface.
-    com_registration_work_items_->AddCreateRegKeyWorkItem(
-        HKEY_LOCAL_MACHINE, iid_reg_path, WorkItem::kWow64Default);
-    com_registration_work_items_->AddCreateRegKeyWorkItem(
-        HKEY_LOCAL_MACHINE, iid_reg_path + L"\\ProxyStubClsid32",
-        WorkItem::kWow64Default);
-    com_registration_work_items_->AddSetRegValueWorkItem(
-        HKEY_LOCAL_MACHINE, iid_reg_path + L"\\ProxyStubClsid32",
-        WorkItem::kWow64Default, L"", L"{00020424-0000-0000-C000-000000000046}",
-        true);
-    com_registration_work_items_->AddCreateRegKeyWorkItem(
-        HKEY_LOCAL_MACHINE, iid_reg_path + L"\\TypeLib",
-        WorkItem::kWow64Default);
-    com_registration_work_items_->AddSetRegValueWorkItem(
-        HKEY_LOCAL_MACHINE, iid_reg_path + L"\\TypeLib",
-        WorkItem::kWow64Default, L"", base::win::WStringFromGUID(iid), true);
-    com_registration_work_items_->AddSetRegValueWorkItem(
-        HKEY_LOCAL_MACHINE, iid_reg_path + L"\\TypeLib",
-        WorkItem::kWow64Default, L"Version", L"1.0", true);
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      // Registering the Ole Automation marshaler with the CLSID
+      // {00020424-0000-0000-C000-000000000046} as the proxy/stub for the
+      // interface.
+      {
+        const std::wstring path = iid_reg_path + L"\\ProxyStubClsid32";
+        com_registration_work_items_->AddCreateRegKeyWorkItem(
+            HKEY_LOCAL_MACHINE, path, key_flag);
+        com_registration_work_items_->AddSetRegValueWorkItem(
+            HKEY_LOCAL_MACHINE, path, key_flag, L"",
+            L"{00020424-0000-0000-C000-000000000046}", true);
+      }
+      {
+        const std::wstring path = iid_reg_path + L"\\TypeLib";
+        com_registration_work_items_->AddCreateRegKeyWorkItem(
+            HKEY_LOCAL_MACHINE, path, key_flag);
+        com_registration_work_items_->AddSetRegValueWorkItem(
+            HKEY_LOCAL_MACHINE, path, key_flag, L"", iid_string, true);
+        com_registration_work_items_->AddSetRegValueWorkItem(
+            HKEY_LOCAL_MACHINE, path, key_flag, L"Version", L"1.0", true);
+      }
+      com_registration_work_items_->AddSetRegValueWorkItem(
+          HKEY_LOCAL_MACHINE, iid_reg_path, key_flag, L"",
+          base::StrCat({L"Interface ", iid_string}), true);
+    }
 
     // The TypeLib registration for the Ole Automation marshaler.
-    com_registration_work_items_->AddCreateRegKeyWorkItem(
-        HKEY_LOCAL_MACHINE, typelib_reg_path, WorkItem::kWow64Default);
-    com_registration_work_items_->AddCreateRegKeyWorkItem(
+    for (const auto& path : {typelib_reg_path + L"\\1.0\\0\\win32",
+                             typelib_reg_path + L"\\1.0\\0\\win64"}) {
+      com_registration_work_items_->AddCreateRegKeyWorkItem(
+          HKEY_LOCAL_MACHINE, path, WorkItem::kWow64Default);
+      com_registration_work_items_->AddSetRegValueWorkItem(
+          HKEY_LOCAL_MACHINE, path, WorkItem::kWow64Default, L"",
+          service_cmd_line_.GetProgram().value(), true);
+    }
+    com_registration_work_items_->AddSetRegValueWorkItem(
         HKEY_LOCAL_MACHINE, typelib_reg_path + L"\\1.0",
-        WorkItem::kWow64Default);
-    com_registration_work_items_->AddCreateRegKeyWorkItem(
-        HKEY_LOCAL_MACHINE, typelib_reg_path + L"\\1.0\\0",
-        WorkItem::kWow64Default);
-    com_registration_work_items_->AddCreateRegKeyWorkItem(
-        HKEY_LOCAL_MACHINE, typelib_reg_path + L"\\1.0\\0\\win32",
-        WorkItem::kWow64Default);
-    com_registration_work_items_->AddSetRegValueWorkItem(
-        HKEY_LOCAL_MACHINE, typelib_reg_path + L"\\1.0\\0\\win32",
-        WorkItem::kWow64Default, L"", service_cmd_line_.GetProgram().value(),
-        true);
-    com_registration_work_items_->AddCreateRegKeyWorkItem(
-        HKEY_LOCAL_MACHINE, typelib_reg_path + L"\\1.0\\0\\win64",
-        WorkItem::kWow64Default);
-    com_registration_work_items_->AddSetRegValueWorkItem(
-        HKEY_LOCAL_MACHINE, typelib_reg_path + L"\\1.0\\0\\win64",
-        WorkItem::kWow64Default, L"", service_cmd_line_.GetProgram().value(),
-        true);
+        WorkItem::kWow64Default, L"",
+        base::StrCat({L"TypeLib for Interface ", iid_string}), true);
   }
 
   return com_registration_work_items_->Do();
@@ -328,8 +323,14 @@ bool InstallServiceWorkItemImpl::DeleteServiceImpl() {
   }
 
   for (const auto& iid : iids_) {
-    for (const auto& reg_path :
-         {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
+    {
+      const std::wstring reg_path = GetComIidRegistryPath(iid);
+      for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+        installer::DeleteRegistryKey(HKEY_LOCAL_MACHINE, reg_path, key_flag);
+      }
+    }
+    {
+      const std::wstring reg_path = GetComTypeLibRegistryPath(iid);
       installer::DeleteRegistryKey(HKEY_LOCAL_MACHINE, reg_path,
                                    WorkItem::kWow64Default);
     }
