@@ -75,7 +75,7 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
 
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   // Give time for NTP to be fully loaded so all elements are accessible.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1.0));
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
