@@ -596,6 +596,12 @@ input[type="password" i]::-internal-input-suggested.reveal-password {
     -webkit-text-security: none;
 }
 
+input[type="password" i]::-internal-input-suggested.fade-out-password {
+    width: fit-content;
+    -webkit-mask: linear-gradient(to right, #000 50%, #0000);
+    mask: linear-gradient(to right, #000 50%, #0000);
+}
+
 input[type="password" i]::-internal-reveal {
   width: 1.3em;
   height: 1.3em;

@@ -1209,6 +1209,13 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
     } else {
       placeholder->classList().Remove(reveal);
     }
+
+    const AtomicString fade_out("fade-out-password");
+    if (should_show_strong_password_label_) {
+      placeholder->classList().Add(fade_out);
+    } else {
+      placeholder->classList().Remove(fade_out);
+    }
   }
 
   SetNeedsStyleRecalc(
