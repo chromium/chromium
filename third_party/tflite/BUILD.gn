@@ -480,6 +480,7 @@ tflite_static_library("tflite_kernels") {
     "src/tensorflow/lite/kernels/split_v.cc",
     "src/tensorflow/lite/kernels/squared_difference.cc",
     "src/tensorflow/lite/kernels/squeeze.cc",
+    "src/tensorflow/lite/kernels/stablehlo_gather.cc",
     "src/tensorflow/lite/kernels/stablehlo_scatter.cc",
     "src/tensorflow/lite/kernels/strided_slice.cc",
     "src/tensorflow/lite/kernels/sub.cc",
