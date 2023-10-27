@@ -5966,6 +5966,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_PASSWORD_GENERATION_BOTTOM_SHEET_USE_PASSWORD_BUTTON" desc="Appears on the button, which reflects the user agreement to user the generated strong password.">
         Use password
       </message>
+      <message name="IDS_PASSWORD_GENERATION_BOTTOM_SHEET_USE_PASSWORD_BUTTON_CONTENT" desc="The string is announced by the TalkBack service, when the field containing the generated password is focused.">
+        Use password <ph name="PASSWORD">%1$s</ph>
+      </message>
       <message name="IDS_PASSWORD_GENERATION_BOTTOM_SHEET_DISMISS_BUTTON" desc="Appears on the button, which reflects that the user has rejected the proposed generated password and decided to continue with creating their own password.">
         Create my own
       </message>

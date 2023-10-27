@@ -34,11 +34,6 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
         ImageView sheetHeaderImage = mContent.findViewById(R.id.touch_to_fill_sheet_header_image);
         sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
                 context, PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
-        // TODO (crbug.com/1421753): Use real user account here instead of the fake one.
-        TextView sheetSubtitle = mContent.findViewById(R.id.touch_to_fill_sheet_subtitle);
-        sheetSubtitle.setText(
-                String.format(context.getString(R.string.password_generation_bottom_sheet_subtitle),
-                        "elisa.becket@gmail.com"));
         mPasswordView = mContent.findViewById(R.id.password);
     }
 
@@ -55,10 +50,18 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
     void setGeneratedPassword(String generatedPassword) {
         mPasswordView.setTypeface(Typeface.MONOSPACE);
         mPasswordView.setText(generatedPassword);
+        mPasswordView.setContentDescription(
+                String.format(
+                        mContext.getString(
+                                R.string
+                                        .password_generation_bottom_sheet_use_password_button_content),
+                        generatedPassword));
     }
 
     void setPasswordAcceptedCallback(Callback<String> callback) {
         Button passwordAcceptedButton = mContent.findViewById(R.id.use_password_button);
+        mPasswordView.setOnClickListener(
+                (v) -> callback.onResult(mPasswordView.getText().toString()));
         passwordAcceptedButton.setOnClickListener(
                 (v) -> callback.onResult(mPasswordView.getText().toString()));
     }
