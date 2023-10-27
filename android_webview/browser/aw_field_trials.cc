@@ -11,6 +11,7 @@
 #include "components/metrics/persistent_histograms.h"
 #include "net/base/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/android/ui_android_features.h"
 #include "ui/gl/gl_features.h"
 
 namespace {
@@ -73,6 +74,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disable the passthrough on WebView.
   aw_feature_overrides.DisableFeature(
       ::features::kDefaultPassthroughCommandDecoder);
+
+  // HDR does not support webview yet. See crbug.com/1493153 for an explanation.
+  aw_feature_overrides.DisableFeature(ui::kAndroidHDR);
 
   aw_feature_overrides.RegisterOverrides(feature_list);
 }
