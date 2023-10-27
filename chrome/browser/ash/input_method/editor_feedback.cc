@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/system/sys_info.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,12 +35,6 @@ absl::optional<std::string> GetSignedInUserEmail(Profile* profile) {
       .email;
 }
 
-void RedactFeedbackData(scoped_refptr<feedback::FeedbackData> feedback_data) {
-  redaction::RedactionTool redactor(nullptr);
-  redactor.EnableCreditCardRedaction(true);
-  feedback_data->RedactDescription(redactor);
-}
-
 std::string GetChromeVersion() {
   return chrome::GetVersionString(chrome::WithExtendedStable(true));
 }
@@ -48,6 +43,26 @@ std::string GetOsVersion() {
   std::string version;
   base::SysInfo::GetLsbReleaseValue("CHROMEOS_RELEASE_VERSION", &version);
   return version;
+}
+
+scoped_refptr<feedback::FeedbackData> RedactFeedbackData(
+    scoped_refptr<feedback::FeedbackData> feedback_data) {
+  redaction::RedactionTool redactor(nullptr);
+  redactor.EnableCreditCardRedaction(true);
+  feedback_data->RedactDescription(redactor);
+  return feedback_data;
+}
+
+void SendFeedback(scoped_refptr<feedback::FeedbackData> feedback_data) {
+  feedback_data->OnFeedbackPageDataComplete();
+}
+
+void RedactThenSendFeedback(
+    scoped_refptr<feedback::FeedbackData> feedback_data) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&RedactFeedbackData, feedback_data),
+      base::BindOnce(&SendFeedback));
 }
 
 }  // namespace
@@ -69,9 +84,7 @@ bool SendEditorFeedback(Profile* profile, std::string_view description) {
   }
   feedback_data->AddLog("CHROME VERSION", GetChromeVersion());
   feedback_data->AddLog("CHROMEOS_RELEASE_VERSION", GetOsVersion());
-  RedactFeedbackData(feedback_data);
-  feedback_data->OnFeedbackPageDataComplete();
+  RedactThenSendFeedback(feedback_data);
   return true;
 }
-
 }  // namespace ash::input_method
