@@ -483,6 +483,7 @@ js_library("oobe_reset") {
     "//ash/webui/common/resources:util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js" ]
   extra_deps = [ ":web_components" ]
 }
 

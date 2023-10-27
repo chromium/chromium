@@ -9,7 +9,7 @@
 import '//resources/js/action_link.js';
 import '../../components/throbber_notice.js';
 
-import {announceAccessibleMessage, ensureTransitionEndEvent} from '//resources/ash/common/util.js';
+import {ensureTransitionEndEvent} from '//resources/ash/common/util.js';
 import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
