@@ -360,7 +360,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     image->SetStyleInternal(nullptr);
     return image;
   } else if (element->GetPseudoId() == kPseudoIdMarker) {
-    const Node* parent = element->parentNode();
+    const Element* parent = element->parentElement();
     if (parent->GetComputedStyle()->MarkerShouldBeInside(*parent)) {
       return MakeGarbageCollected<LayoutInsideListMarker>(element);
     }

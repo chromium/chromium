@@ -775,7 +775,7 @@ class ComputedStyle final : public ComputedStyleBase {
   // Returns true if ::marker should be rendered inline.
   // In some cases, it should be inline even if `list-style-position` property
   // value is `outside`.
-  bool MarkerShouldBeInside(const Node& parent_node) const;
+  bool MarkerShouldBeInside(const Element& parent) const;
 
   // quotes
   bool QuotesDataEquivalent(const ComputedStyle&) const;

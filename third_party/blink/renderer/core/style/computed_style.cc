@@ -2503,14 +2503,14 @@ const AtomicString& ComputedStyle::ListStyleStringValue() const {
   return ListStyleType()->GetStringValue();
 }
 
-bool ComputedStyle::MarkerShouldBeInside(const Node& parent_node) const {
+bool ComputedStyle::MarkerShouldBeInside(const Element& parent) const {
   // https://w3c.github.io/csswg-drafts/css-lists/#list-style-position-outside
   // > If the list item is an inline box: this value is equivalent to inside.
   if (Display() == EDisplay::kInlineListItem) {
     return true;
   }
   return ListStylePosition() == EListStylePosition::kInside ||
-         (IsA<HTMLLIElement>(parent_node) && !IsInsideListElement());
+         (IsA<HTMLLIElement>(parent) && !IsInsideListElement());
 }
 
 absl::optional<blink::Color> ComputedStyle::AccentColorResolved() const {
