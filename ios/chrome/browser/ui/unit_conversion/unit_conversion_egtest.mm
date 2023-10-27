@@ -155,7 +155,8 @@ id<GREYMatcher> UnitButtonWithLabel(NSString* label) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(TargetUnitFieldMatcher(),
                                           grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_textFieldValue(@"35200.000000")];
+      assertWithMatcher:grey_textFieldValue([NSString
+                            localizedStringWithFormat:@"%lf", 35200.0])];
 }
 
 // Checks that source unit value change is handled correctly.

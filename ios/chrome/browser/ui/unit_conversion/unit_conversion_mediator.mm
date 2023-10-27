@@ -89,6 +89,7 @@
 // Convert a string to a NSNumber*, returns nil if not valid.
 - (NSNumber*)numberFromString:(NSString*)string {
   NSNumberFormatter* numberFormatter = [[NSNumberFormatter alloc] init];
+  numberFormatter.locale = [NSLocale currentLocale];
   numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
   return [numberFormatter numberFromString:string];
 }
