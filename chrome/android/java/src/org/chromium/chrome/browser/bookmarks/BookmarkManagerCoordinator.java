@@ -81,11 +81,31 @@ public class BookmarkManagerCoordinator
 
         @Override
         public boolean onFailedToRecycleView(@NonNull ViewHolder holder) {
+            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                // The view has transient state, which is probably because there's an outstanding
+                // fade animation. Theoretically we could clear it and let the RecyclerView continue
+                // normally, but it seems sometimes this is called after bind, and the transient
+                // state is really just the fade in animation of the new content. For more details
+                // see https://crbug.com/1496181. Instead, return true to tell the RecyclerView to
+                // reuse the view regardless. The view binding code should be robust enough to
+                // handle an in progress animation anyway.
+                return true;
+            } else {
+                return super.onFailedToRecycleView(holder);
+            }
+        }
+
+        @Override
+        public void onViewRecycled(ViewHolder holder) {
             if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
                     && holder.itemView instanceof CancelableAnimator cancelable) {
+                // Try to eagerly clean up any in progress animations if there are anything. This
+                // should reduce the amount of transient state the view has, which could get in the
+                // way of view recycling. This approach is likely not strictly necessary, but no
+                // point to run animations after a view is recycled anyway.
                 cancelable.cancelAnimation();
             }
-            return super.onFailedToRecycleView(holder);
+            super.onViewRecycled(holder);
         }
     }
 
