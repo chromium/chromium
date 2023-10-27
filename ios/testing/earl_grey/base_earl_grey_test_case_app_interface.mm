@@ -31,6 +31,16 @@
   }
 }
 
++ (void)disableFastAnimation {
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UIWindowScene* windowScene =
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
+    for (UIWindow* window in windowScene.windows) {
+      [[window layer] setSpeed:1];
+    }
+  }
+}
+
 + (BOOL)swizzledInputUIOOP {
   return NO;
 }
