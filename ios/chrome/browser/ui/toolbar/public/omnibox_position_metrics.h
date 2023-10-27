@@ -9,6 +9,10 @@
 // This is used to measure the population for each omnibox position.
 extern const char kOmniboxSteadyStatePositionAtStartup[];
 
+// Logs the selected steady state (unfocused) omnibox position when starting the
+// app. This only logged when the position is user selected.
+extern const char kOmniboxSteadyStatePositionAtStartupSelected[];
+
 // Enum for the IOS.Omnibox.SteadyStatePosition histogram.
 // Keep in sync with "OmniboxPositionType"
 // in src/tools/metrics/histograms/enums.xml.

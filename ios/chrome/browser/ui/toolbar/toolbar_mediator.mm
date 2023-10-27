@@ -460,6 +460,11 @@ BOOL ShouldSwitchOmniboxToBottom(
                                            : OmniboxPositionType::kTop;
     base::UmaHistogramEnumeration(kOmniboxSteadyStatePositionAtStartup,
                                   positionType);
+
+    if (self.originalPrefService->GetUserPrefValue(prefs::kBottomOmnibox)) {
+      base::UmaHistogramEnumeration(
+          kOmniboxSteadyStatePositionAtStartupSelected, positionType);
+    }
   });
 }
 
