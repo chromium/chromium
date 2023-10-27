@@ -194,14 +194,17 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 - (void)autofillAlertConfirmed:(BOOL)value {
   _syncService->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kAutofill, value);
-  // When the auto fill data type is updated, the autocomplete wallet
-  // should be updated too. Autocomplete wallet should not be enabled
-  // when auto fill data type disabled. This behaviour not be
-  // implemented in the UI code. This code can be removed once
-  // either of crbug.com/937234 (move logic to infra layers) or
-  // crbug.com/1435431 (remove the coupling) is fixed.
-  _syncService->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPayments, value);
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSyncDecoupleAddressPaymentSettings)) {
+    // When the auto fill data type is updated, the autocomplete wallet
+    // should be updated too. Autocomplete wallet should not be enabled
+    // when auto fill data type disabled. This behaviour not be
+    // implemented in the UI code. This code can be removed once
+    // either of crbug.com/937234 (move logic to infra layers) or
+    // crbug.com/1435431 (remove the coupling) is fixed.
+    _syncService->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPayments, value);
+  }
 }
 
 #pragma mark - Loads sync data type section
@@ -383,7 +386,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
     // kPayments can only be selected if kAutofill is also selected.
     // TODO(crbug.com/1435431): Remove this coupling.
-    if (dataType == syncer::UserSelectableType::kPayments &&
+    if (!base::FeatureList::IsEnabled(
+            syncer::kSyncDecoupleAddressPaymentSettings) &&
+        dataType == syncer::UserSelectableType::kPayments &&
         !_syncService->GetUserSettings()->GetSelectedTypes().Has(
             syncer::UserSelectableType::kAutofill)) {
       isEnabled = false;
@@ -1176,7 +1181,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
         _syncService->GetUserSettings()->SetSelectedType(dataType, value);
 
-        if (dataType == syncer::UserSelectableType::kAutofill) {
+        if (!base::FeatureList::IsEnabled(
+                syncer::kSyncDecoupleAddressPaymentSettings) &&
+            dataType == syncer::UserSelectableType::kAutofill) {
           // When the auto fill data type is updated, the autocomplete wallet
           // should be updated too. Autocomplete wallet should not be enabled
           // when auto fill data type disabled. This behaviour not be
