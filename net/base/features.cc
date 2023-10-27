@@ -468,10 +468,6 @@ BASE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder,
              "SpdyHeadersToHttpResponseUseBuilder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSpdyHeadersToHttpResponseVerifyCorrectness,
-             "SpdyHeadersToHttpResponseVerifyCorrectness",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kReceiveEcn, "ReceiveEcn", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/634470): Remove this feature flag in January 2024 if the new
