@@ -8,6 +8,7 @@
 
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/nonembedded/component_updater/aw_component_installer_policy_shim.h"
+#include "android_webview/nonembedded/component_updater/installer_policies/aw_package_names_allowlist_component_installer_policy.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
@@ -72,6 +73,9 @@ void RegisterComponentsForUpdate(
                 [](const std::string& raw_commitments) { NOTREACHED(); })),
         register_callback, barrier_closure);
   }
+
+  RegisterWebViewAppsPackageNamesAllowlistComponent(register_callback,
+                                                    barrier_closure);
 }
 
 }  // namespace android_webview
