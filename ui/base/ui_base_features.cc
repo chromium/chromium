@@ -270,7 +270,7 @@ bool IsUsingWMPointerForTouch() {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// This feature supercedes kNewShortcutMapping.
+// This feature supersedes kNewShortcutMapping.
 BASE_FEATURE(kImprovedKeyboardShortcuts,
              "ImprovedKeyboardShortcuts",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -456,12 +456,28 @@ bool IsRawDrawUsingMSAA() {
   return kIsRawDrawUsingMSAA.Get();
 }
 
+BASE_FEATURE(kVariableRefreshRateAvailable,
+             "VariableRefreshRateAvailable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableVariableRefreshRate,
              "EnableVariableRefreshRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// This param indicates whether to ignore the VRR availability flag. It is set
+// to false by Finch for non-forced groups.
+const base::FeatureParam<bool> kVrrIgnoreAvailability{
+    &kEnableVariableRefreshRate, /*name=*/"ignore-availability",
+    /*default_value=*/true};
 bool IsVariableRefreshRateEnabled() {
-  return base::FeatureList::IsEnabled(kEnableVariableRefreshRate) ||
-         base::FeatureList::IsEnabled(kEnableVariableRefreshRateAlwaysOn);
+  if (base::FeatureList::IsEnabled(kEnableVariableRefreshRateAlwaysOn)) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(kEnableVariableRefreshRate)) {
+    return kVrrIgnoreAvailability.Get() ||
+           base::FeatureList::IsEnabled(kVariableRefreshRateAvailable);
+  }
+
+  return false;
 }
 BASE_FEATURE(kEnableVariableRefreshRateAlwaysOn,
              "EnableVariableRefreshRateAlwaysOn",
