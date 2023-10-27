@@ -2980,6 +2980,11 @@ const char kReduceAcceptLanguageDescription[] =
     "Reduce the amount of information available in the Accept-Language request "
     "header. See https://github.com/Tanych/accept-language for more info.";
 
+const char kResetShortcutCustomizationsName[] =
+    "Reset all shortcut customizations";
+const char kResetShortcutCustomizationsDescription[] =
+    "Resests all shortcut customizations on startup.";
+
 const char kRestrictGamepadAccessName[] = "Restrict gamepad access";
 const char kRestrictGamepadAccessDescription[] =
     "Enables Permissions Policy and Secure Context restrictions on the Gamepad "

@@ -8406,6 +8406,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingManager)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"reset-shortcut-customizations",
+     flag_descriptions::kResetShortcutCustomizationsName,
+     flag_descriptions::kResetShortcutCustomizationsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kResetShortcutCustomizations)},
     {"shimless-rma-os-update", flag_descriptions::kShimlessRMAOsUpdateName,
      flag_descriptions::kShimlessRMAOsUpdateDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kShimlessRMAOsUpdate)},

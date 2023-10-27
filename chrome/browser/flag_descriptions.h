@@ -2176,6 +2176,9 @@ extern const char kUseMultiPlaneFormatForSoftwareVideoDescription[];
 extern const char kReduceAcceptLanguageName[];
 extern const char kReduceAcceptLanguageDescription[];
 
+extern const char kResetShortcutCustomizationsName[];
+extern const char kResetShortcutCustomizationsDescription[];
+
 extern const char kSkipServiceWorkerFetchHandlerName[];
 extern const char kSkipServiceWorkerFetchHandlerDescription[];
 

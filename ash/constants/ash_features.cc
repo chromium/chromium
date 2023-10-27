@@ -2315,6 +2315,11 @@ BASE_FEATURE(kRemoveStalePolicyPinnedAppsFromShelf,
              "RemoveStalePolicyPinnedAppsFromShelf",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, will reset all shortcut customizations on startup.
+BASE_FEATURE(kResetShortcutCustomizations,
+             "ResetShortcutCustomizations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables ChromeOS scalable IPH.
 BASE_FEATURE(kScalableIph, "ScalableIph", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -4030,6 +4035,10 @@ bool IsRenderArcNotificationsByChromeEnabled() {
 
 bool IsRemoveStalePolicyPinnedAppsFromShelfEnabled() {
   return base::FeatureList::IsEnabled(kRemoveStalePolicyPinnedAppsFromShelf);
+}
+
+bool IsResetShortcutCustomizationsEnabled() {
+  return base::FeatureList::IsEnabled(kResetShortcutCustomizations);
 }
 
 bool IsSameAppWindowCycleEnabled() {
