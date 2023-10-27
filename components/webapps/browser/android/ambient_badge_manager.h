@@ -115,7 +115,7 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
   void MaybeShowAmbientBadgeLegacy();
 
   // Uses the segmentation APIs to decide showing the install ambient badge
-  void MaybeShowAmbientBadgeSmart(const InstallableData& data);
+  void MaybeShowAmbientBadgeSmart();
 
   void OnGotClassificationResult(
       const segmentation_platform::ClassificationResult& result);

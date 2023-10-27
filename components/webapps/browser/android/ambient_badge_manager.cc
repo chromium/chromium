@@ -37,6 +37,7 @@ namespace {
 InstallableParams ParamsToPerformWorkerCheck() {
   InstallableParams params;
   params.has_worker = true;
+  params.wait_for_worker = true;
   return params;
 }
 
@@ -79,11 +80,7 @@ void AmbientBadgeManager::MaybeShow(
   UpdateState(State::kActive);
 
   if (base::FeatureList::IsEnabled(features::kInstallPromptSegmentation)) {
-    InstallableParams params = ParamsToPerformWorkerCheck();
-    params.wait_for_worker = false;
-    PerformWorkerCheckForAmbientBadge(
-        params, base::BindOnce(&AmbientBadgeManager::MaybeShowAmbientBadgeSmart,
-                               weak_factory_.GetWeakPtr()));
+    MaybeShowAmbientBadgeSmart();
   } else {
     MaybeShowAmbientBadgeLegacy();
   }
@@ -155,7 +152,6 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeLegacy() {
       AppBannerSettingsHelper::WasBannerRecentlyIgnored(
           web_contents_.get(), validated_url_, app_identifier_,
           AppBannerManager::GetCurrentTime())) {
-    LOG(ERROR) << "block";
     UpdateState(State::kBlocked);
     return;
   }
@@ -169,11 +165,10 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeLegacy() {
   // already passed.
   if (a2hs_params_->app_type == AddToHomescreenParams::AppType::WEBAPK &&
       !passed_worker_check_) {
-    InstallableParams params = ParamsToPerformWorkerCheck();
-    params.wait_for_worker = true;
     PerformWorkerCheckForAmbientBadge(
-        params, base::BindOnce(&AmbientBadgeManager::OnWorkerCheckResult,
-                               weak_factory_.GetWeakPtr()));
+        ParamsToPerformWorkerCheck(),
+        base::BindOnce(&AmbientBadgeManager::OnWorkerCheckResult,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -225,10 +220,10 @@ void AmbientBadgeManager::OnWorkerCheckResult(const InstallableData& data) {
   }
 }
 
-void AmbientBadgeManager::MaybeShowAmbientBadgeSmart(
-    const InstallableData& data) {
-  if (data.errors.empty()) {
-    passed_worker_check_ = true;
+void AmbientBadgeManager::MaybeShowAmbientBadgeSmart() {
+  if (ShouldMessageBeBlockedByGuardrail()) {
+    UpdateState(State::kBlocked);
+    return;
   }
 
   if (!segmentation_platform_service_) {
@@ -270,11 +265,7 @@ void AmbientBadgeManager::OnGotClassificationResult(
   if (!result.ordered_labels.empty() &&
       result.ordered_labels[0] ==
           MLInstallabilityPromoter::kShowInstallPromptLabel) {
-    if (ShouldMessageBeBlockedByGuardrail()) {
-      UpdateState(State::kBlocked);
-    } else {
       ShowAmbientBadge();
-    }
   }
 }
 

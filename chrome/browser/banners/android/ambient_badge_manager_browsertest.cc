@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest,
 
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest, BlockedByGuardrail) {
   EXPECT_CALL(mock_segmentation_service_, GetClassificationResult(_, _, _, _))
-      .Times(testing::Exactly(3))
+      .Times(testing::Exactly(2))
       .WillRepeatedly(RunOnceCallback<3>(GetClassificationResult(
           MLInstallabilityPromoter::kShowInstallPromptLabel)));
 
