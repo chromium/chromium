@@ -54,10 +54,11 @@ TEST(PixelBufferTransfererTest, CanCopyYuvsAndVerifyColor) {
   // Destination buffer: A same-sized YUVS buffer.
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> destination =
       PixelBufferPool::Create(kPixelFormat, kWidth, kHeight, 1)->CreateBuffer();
-  EXPECT_TRUE(transferer.TransferImage(source->pixel_buffer, destination));
+  EXPECT_TRUE(
+      transferer.TransferImage(source->pixel_buffer.get(), destination.get()));
   // Verify the result is the same color.
-  EXPECT_TRUE(YuvsIOSurfaceIsSingleColor(CVPixelBufferGetIOSurface(destination),
-                                         kColorR, kColorG, kColorB));
+  EXPECT_TRUE(YuvsIOSurfaceIsSingleColor(
+      CVPixelBufferGetIOSurface(destination.get()), kColorR, kColorG, kColorB));
 }
 
 #if defined(ARCH_CPU_ARM64)
@@ -83,10 +84,11 @@ TEST(PixelBufferTransfererTest, MAYBE_CanScaleYuvsAndVerifyColor) {
       PixelBufferPool::Create(kPixelFormat, kDestinationWidth,
                               kDestinationHeight, 1)
           ->CreateBuffer();
-  EXPECT_TRUE(transferer.TransferImage(source->pixel_buffer, destination));
+  EXPECT_TRUE(
+      transferer.TransferImage(source->pixel_buffer.get(), destination.get()));
   // Verify the result is the same color.
-  EXPECT_TRUE(YuvsIOSurfaceIsSingleColor(CVPixelBufferGetIOSurface(destination),
-                                         kColorR, kColorG, kColorB));
+  EXPECT_TRUE(YuvsIOSurfaceIsSingleColor(
+      CVPixelBufferGetIOSurface(destination.get()), kColorR, kColorG, kColorB));
 }
 
 TEST(PixelBufferTransfererTest, CanScaleYuvsAndVerifyCheckerPattern) {
@@ -110,12 +112,13 @@ TEST(PixelBufferTransfererTest, CanScaleYuvsAndVerifyCheckerPattern) {
       PixelBufferPool::Create(kPixelFormatYuvs, kDestinationWidth,
                               kDestinationHeight, 1)
           ->CreateBuffer();
-  EXPECT_TRUE(transferer.TransferImage(source->pixel_buffer, destination));
+  EXPECT_TRUE(
+      transferer.TransferImage(source->pixel_buffer.get(), destination.get()));
   // Verify the result has the same number of checker tiles.
   auto [num_tiles_across_x, num_tiles_across_y] =
       GetCheckerPatternNumTilesAccross(
           CreateArgbBufferFromYuvsIOSurface(
-              CVPixelBufferGetIOSurface(destination)),
+              CVPixelBufferGetIOSurface(destination.get())),
           kDestinationWidth, kDestinationHeight);
   EXPECT_EQ(num_tiles_across_x, kSourceNumTilesAcross);
   EXPECT_EQ(num_tiles_across_y, kSourceNumTilesAcross);
@@ -151,12 +154,13 @@ TEST(PixelBufferTransfererTest, MAYBE_CanStretchYuvsAndVerifyCheckerPattern) {
       PixelBufferPool::Create(kPixelFormatYuvs, kDestinationWidth,
                               kDestinationHeight, 1)
           ->CreateBuffer();
-  EXPECT_TRUE(transferer.TransferImage(source->pixel_buffer, destination));
+  EXPECT_TRUE(
+      transferer.TransferImage(source->pixel_buffer.get(), destination.get()));
   // Verify the result has the same number of checker tiles.
   auto [num_tiles_across_x, num_tiles_across_y] =
       GetCheckerPatternNumTilesAccross(
           CreateArgbBufferFromYuvsIOSurface(
-              CVPixelBufferGetIOSurface(destination)),
+              CVPixelBufferGetIOSurface(destination.get())),
           kDestinationWidth, kDestinationHeight);
   EXPECT_EQ(num_tiles_across_x, kSourceNumTilesAcross);
   EXPECT_EQ(num_tiles_across_y, kSourceNumTilesAcross);
@@ -185,10 +189,11 @@ TEST(PixelBufferTransfererTest, MAYBE_CanStretchYuvsAndVerifyColor) {
       PixelBufferPool::Create(kPixelFormat, kDestinationWidth,
                               kDestinationHeight, 1)
           ->CreateBuffer();
-  EXPECT_TRUE(transferer.TransferImage(source->pixel_buffer, destination));
+  EXPECT_TRUE(
+      transferer.TransferImage(source->pixel_buffer.get(), destination.get()));
   // Verify the result is the same color.
-  EXPECT_TRUE(YuvsIOSurfaceIsSingleColor(CVPixelBufferGetIOSurface(destination),
-                                         kColorR, kColorG, kColorB));
+  EXPECT_TRUE(YuvsIOSurfaceIsSingleColor(
+      CVPixelBufferGetIOSurface(destination.get()), kColorR, kColorG, kColorB));
 }
 
 TEST(PixelBufferTransfererTest, CanConvertAndStretchSimultaneouslyYuvsToNv12) {
@@ -208,7 +213,8 @@ TEST(PixelBufferTransfererTest, CanConvertAndStretchSimultaneouslyYuvsToNv12) {
       PixelBufferPool::Create(kDestinationPixelFormat, kDestinationWidth,
                               kDestinationHeight, 1)
           ->CreateBuffer();
-  EXPECT_TRUE(transferer.TransferImage(source->pixel_buffer, destination));
+  EXPECT_TRUE(
+      transferer.TransferImage(source->pixel_buffer.get(), destination.get()));
 }
 
 class PixelBufferTransfererParameterizedTest
@@ -241,8 +247,8 @@ TEST_P(PixelBufferTransfererParameterizedTest,
     pixel_buffer_from =
         PixelBufferPool::Create(pixel_format_from, kWidth, kHeight, 1)
             ->CreateBuffer();
-    transferer.TransferImage(original_yuvs_buffer->pixel_buffer,
-                             pixel_buffer_from);
+    transferer.TransferImage(original_yuvs_buffer->pixel_buffer.get(),
+                             pixel_buffer_from.get());
   }
   ASSERT_TRUE(pixel_buffer_from);
 
@@ -250,7 +256,8 @@ TEST_P(PixelBufferTransfererParameterizedTest,
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer_to =
       PixelBufferPool::Create(pixel_format_to, kWidth, kHeight, 1)
           ->CreateBuffer();
-  EXPECT_TRUE(transferer.TransferImage(pixel_buffer_from, pixel_buffer_to));
+  EXPECT_TRUE(
+      transferer.TransferImage(pixel_buffer_from.get(), pixel_buffer_to.get()));
 
   // We always convert back to YUVS because this is the only format that the
   // testing utilities can convert to/from RGB.
@@ -262,13 +269,14 @@ TEST_P(PixelBufferTransfererParameterizedTest,
     final_yuvs_buffer =
         PixelBufferPool::Create(kPixelFormatYuvs, kWidth, kHeight, 1)
             ->CreateBuffer();
-    transferer.TransferImage(pixel_buffer_to, final_yuvs_buffer);
+    transferer.TransferImage(pixel_buffer_to.get(), final_yuvs_buffer.get());
   }
   ASSERT_TRUE(final_yuvs_buffer);
   // Verify that after our "conversion dance" we end up with the same color that
   // we started with.
   EXPECT_TRUE(YuvsIOSurfaceIsSingleColor(
-      CVPixelBufferGetIOSurface(final_yuvs_buffer), kColorR, kColorG, kColorB));
+      CVPixelBufferGetIOSurface(final_yuvs_buffer.get()), kColorR, kColorG,
+      kColorB));
 }
 
 INSTANTIATE_TEST_SUITE_P(

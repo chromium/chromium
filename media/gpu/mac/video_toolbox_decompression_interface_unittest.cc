@@ -175,7 +175,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, Construct) {}
 
 TEST_F(VideoToolboxDecompressionInterfaceTest, Decode) {
   auto format = CreateFormat();
-  auto sample = CreateSample(format);
+  auto sample = CreateSample(format.get());
   auto metadata = CreateMetadata(0);
 
   video_toolbox_.Decode(sample, std::move(metadata));
@@ -196,7 +196,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, Decode) {
 
 TEST_F(VideoToolboxDecompressionInterfaceTest, CreateFailure) {
   auto format = CreateFormat();
-  auto sample = CreateSample(format);
+  auto sample = CreateSample(format.get());
   auto metadata = CreateMetadata(0);
 
   decompression_session_->can_create = false;
@@ -215,8 +215,8 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, CreateFailure) {
 TEST_F(VideoToolboxDecompressionInterfaceTest, CompatibleFormatChange) {
   auto format0 = CreateFormat();
   auto format1 = CreateFormat();
-  auto sample0 = CreateSample(format0);
-  auto sample1 = CreateSample(format1);
+  auto sample0 = CreateSample(format0.get());
+  auto sample1 = CreateSample(format1.get());
   auto metadata0 = CreateMetadata(0);
   auto metadata1 = CreateMetadata(1);
 
@@ -242,8 +242,8 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, CompatibleFormatChange) {
 TEST_F(VideoToolboxDecompressionInterfaceTest, IncompatibleFormatChange) {
   auto format0 = CreateFormat();
   auto format1 = CreateFormat();
-  auto sample0 = CreateSample(format0);
-  auto sample1 = CreateSample(format1);
+  auto sample0 = CreateSample(format0.get());
+  auto sample1 = CreateSample(format1.get());
   auto metadata0 = CreateMetadata(0);
   auto metadata1 = CreateMetadata(1);
 
@@ -274,7 +274,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, IncompatibleFormatChange) {
 
 TEST_F(VideoToolboxDecompressionInterfaceTest, DecodeError_Early) {
   auto format = CreateFormat();
-  auto sample = CreateSample(format);
+  auto sample = CreateSample(format.get());
   auto metadata = CreateMetadata(0);
 
   decompression_session_->can_decode_frame = false;
@@ -292,7 +292,7 @@ TEST_F(VideoToolboxDecompressionInterfaceTest, DecodeError_Early) {
 
 TEST_F(VideoToolboxDecompressionInterfaceTest, DecodeError_Late) {
   auto format = CreateFormat();
-  auto sample = CreateSample(format);
+  auto sample = CreateSample(format.get());
   auto metadata = CreateMetadata(0);
 
   video_toolbox_.Decode(sample, std::move(metadata));

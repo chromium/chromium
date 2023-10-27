@@ -741,7 +741,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
   }
 
   // Only support NV12 IOSurfaces.
-  const OSType cv_pixel_format = IOSurfaceGetPixelFormat(io_surface);
+  const OSType cv_pixel_format = IOSurfaceGetPixelFormat(io_surface.get());
   if (cv_pixel_format != kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
     DLOG(ERROR) << "Invalid (non-NV12) pixel format.";
     return nullptr;
@@ -749,12 +749,12 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
   const VideoPixelFormat pixel_format = PIXEL_FORMAT_NV12;
 
   // Retrieve the layout parameters for |io_surface_|.
-  const size_t num_planes = IOSurfaceGetPlaneCount(io_surface);
-  const gfx::Size size(IOSurfaceGetWidth(io_surface),
-                       IOSurfaceGetHeight(io_surface));
+  const size_t num_planes = IOSurfaceGetPlaneCount(io_surface.get());
+  const gfx::Size size(IOSurfaceGetWidth(io_surface.get()),
+                       IOSurfaceGetHeight(io_surface.get()));
   std::vector<int32_t> strides;
   for (size_t i = 0; i < num_planes; ++i)
-    strides.push_back(IOSurfaceGetBytesPerRowOfPlane(io_surface, i));
+    strides.push_back(IOSurfaceGetBytesPerRowOfPlane(io_surface.get(), i));
   absl::optional<VideoFrameLayout> layout =
       media::VideoFrameLayout::CreateWithStrides(pixel_format, size, strides);
   if (!layout) {
@@ -771,21 +771,21 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
   // Lock the IOSurface for CPU read access. After the VideoFrame is created,
   // add a destruction callback to unlock the IOSurface.
   kern_return_t lock_result =
-      IOSurfaceLock(io_surface, kIOSurfaceLockReadOnly, nullptr);
+      IOSurfaceLock(io_surface.get(), kIOSurfaceLockReadOnly, nullptr);
   if (lock_result != kIOReturnSuccess) {
     DLOG(ERROR) << "Failed to lock IOSurface.";
     return nullptr;
   }
   auto unlock_lambda =
       [](base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface) {
-        IOSurfaceUnlock(io_surface, kIOSurfaceLockReadOnly, nullptr);
+        IOSurfaceUnlock(io_surface.get(), kIOSurfaceLockReadOnly, nullptr);
       };
 
   scoped_refptr<VideoFrame> frame =
       new VideoFrame(*layout, storage_type, visible_rect, size, timestamp);
   for (size_t i = 0; i < num_planes; ++i) {
     frame->data_[i] = reinterpret_cast<uint8_t*>(
-        IOSurfaceGetBaseAddressOfPlane(io_surface, i));
+        IOSurfaceGetBaseAddressOfPlane(io_surface.get(), i));
   }
   frame->AddDestructionObserver(
       base::BindOnce(unlock_lambda, std::move(io_surface)));

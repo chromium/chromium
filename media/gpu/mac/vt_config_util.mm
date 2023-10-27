@@ -137,10 +137,10 @@ CFStringRef GetMatrix(media::VideoColorSpace::MatrixID matrix_id) {
 void SetContentLightLevelInfo(
     NSMutableDictionary<NSString*, id>* extensions,
     const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
-  SetDictionaryValue(extensions,
-                     kCMFormatDescriptionExtension_ContentLightLevelInfo,
-                     base::apple::CFToNSPtrCast(
-                         gfx::GenerateContentLightLevelInfo(hdr_metadata)));
+  SetDictionaryValue(
+      extensions, kCMFormatDescriptionExtension_ContentLightLevelInfo,
+      base::apple::CFToNSPtrCast(
+          gfx::GenerateContentLightLevelInfo(hdr_metadata).get()));
 }
 
 void SetColorVolumeMetadata(
@@ -149,7 +149,7 @@ void SetColorVolumeMetadata(
   SetDictionaryValue(
       extensions, kCMFormatDescriptionExtension_MasteringDisplayColorVolume,
       base::apple::CFToNSPtrCast(
-          gfx::GenerateMasteringDisplayColorVolume(hdr_metadata)));
+          gfx::GenerateMasteringDisplayColorVolume(hdr_metadata).get()));
 }
 
 void SetVp9CodecConfigurationBox(NSMutableDictionary<NSString*, id>* extensions,

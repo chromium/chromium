@@ -188,7 +188,8 @@ class SCKAudioInputStreamTest : public PlatformTest {
 
     base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer;
     CMAudioSampleBufferCreateReadyWithPacketDescriptions(
-        kCFAllocatorDefault, block_buffer, format_description, kFramesPerBuffer,
+        kCFAllocatorDefault, block_buffer.get(), format_description.get(),
+        kFramesPerBuffer,
         CMTimeMakeWithSeconds(
             base::TimeTicks::Now().since_origin().InMicrosecondsF(), 1000000),
         NULL, sample_buffer.InitializeInto());
@@ -206,7 +207,7 @@ class SCKAudioInputStreamTest : public PlatformTest {
         // |stream| is not needed.
         SCStream* stream = nil;
         [stream_output stream:stream
-            didOutputSampleBuffer:CreateStereoAudioSampleBuffer(buffer)
+            didOutputSampleBuffer:CreateStereoAudioSampleBuffer(buffer).get()
                            ofType:SCStreamOutputTypeAudio];
       }
     }

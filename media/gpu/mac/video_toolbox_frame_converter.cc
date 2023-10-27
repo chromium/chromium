@@ -156,19 +156,19 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
-  const gfx::Size coded_size(CVPixelBufferGetWidth(image),
-                             CVPixelBufferGetHeight(image));
-  const gfx::Rect visible_rect(CVImageBufferGetCleanRect(image));
+  const gfx::Size coded_size(CVPixelBufferGetWidth(image.get()),
+                             CVPixelBufferGetHeight(image.get()));
+  const gfx::Rect visible_rect(CVImageBufferGetCleanRect(image.get()));
   const gfx::Size natural_size =
       metadata->aspect_ratio.GetNaturalSize(visible_rect);
 
   gfx::GpuMemoryBufferHandle handle;
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  handle.io_surface.reset(CVPixelBufferGetIOSurface(image),
+  handle.io_surface.reset(CVPixelBufferGetIOSurface(image.get()),
                           base::scoped_policy::RETAIN);
 
-  OSType pixel_format = IOSurfaceGetPixelFormat(handle.io_surface);
+  OSType pixel_format = IOSurfaceGetPixelFormat(handle.io_surface.get());
   absl::optional<viz::SharedImageFormat> format =
       PixelFormatToImageFormat(pixel_format);
   if (!format) {
@@ -194,7 +194,7 @@ void VideoToolboxFrameConverter::Convert(
 
   // Extract IOSurface webgpu compatible attribute before image is moved.
   const bool is_webgpu_compatible =
-      IOSurfaceIsWebGPUCompatible(CVPixelBufferGetIOSurface(image));
+      IOSurfaceIsWebGPUCompatible(CVPixelBufferGetIOSurface(image.get()));
 
   GLenum target = texture_rectangle_ ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
 

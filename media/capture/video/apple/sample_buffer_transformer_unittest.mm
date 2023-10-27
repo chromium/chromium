@@ -141,8 +141,8 @@ base::apple::ScopedCFTypeRef<CVPixelBufferRef> CreatePixelBuffer(
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer =
       PixelBufferPool::Create(pixel_format, width, height, 1)->CreateBuffer();
   PixelBufferTransferer transferer;
-  bool success =
-      transferer.TransferImage(yuvs_buffer->pixel_buffer, pixel_buffer);
+  bool success = transferer.TransferImage(yuvs_buffer->pixel_buffer.get(),
+                                          pixel_buffer.get());
   DCHECK(success);
   return pixel_buffer;
 }
@@ -278,22 +278,22 @@ base::apple::ScopedCFTypeRef<CMSampleBufferRef> CreateSampleBuffer(
                             iosurfaceless_pixel_buffer.InitializeInto());
     DCHECK_EQ(create_buffer_result, kCVReturnSuccess);
     PixelBufferTransferer transferer;
-    bool success =
-        transferer.TransferImage(pixel_buffer, iosurfaceless_pixel_buffer);
+    bool success = transferer.TransferImage(pixel_buffer.get(),
+                                            iosurfaceless_pixel_buffer.get());
     DCHECK(success);
-    DCHECK(!CVPixelBufferGetIOSurface(iosurfaceless_pixel_buffer));
+    DCHECK(!CVPixelBufferGetIOSurface(iosurfaceless_pixel_buffer.get()));
     pixel_buffer = iosurfaceless_pixel_buffer;
 
     if (padding > 0) {
       pixel_buffer =
-          AddPadding(pixel_buffer, pixel_format, width, height, padding);
+          AddPadding(pixel_buffer.get(), pixel_format, width, height, padding);
     }
   }
 
   // Wrap the pixel buffer in a sample buffer.
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format_description;
   OSStatus status = CMVideoFormatDescriptionCreateForImageBuffer(
-      nil, pixel_buffer, format_description.InitializeInto());
+      nil, pixel_buffer.get(), format_description.InitializeInto());
   DCHECK(status == noErr);
 
   // Dummy information to make CMSampleBufferCreateForImageBuffer() happy.
@@ -305,8 +305,8 @@ base::apple::ScopedCFTypeRef<CMSampleBufferRef> CreateSampleBuffer(
 
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer;
   status = CMSampleBufferCreateForImageBuffer(
-      nil, pixel_buffer, YES, nil, nullptr, format_description, &timing_info,
-      sample_buffer.InitializeInto());
+      nil, pixel_buffer.get(), YES, nil, nullptr, format_description.get(),
+      &timing_info, sample_buffer.InitializeInto());
   DCHECK(status == noErr);
   return sample_buffer;
 }
@@ -344,9 +344,9 @@ base::apple::ScopedCFTypeRef<CMSampleBufferRef> CreateMjpegSampleBuffer(
       CMTimeMake(33 * NSEC_PER_MSEC, CMTimeScale(NSEC_PER_SEC));  // 30 fps
 
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer;
-  status = CMSampleBufferCreateReady(nil, data_buffer, format_description, 1, 1,
-                                     &timing_info, 1, &kExampleJpegDataSize,
-                                     sample_buffer.InitializeInto());
+  status = CMSampleBufferCreateReady(
+      nil, data_buffer.get(), format_description.get(), 1, 1, &timing_info, 1,
+      &kExampleJpegDataSize, sample_buffer.InitializeInto());
   DCHECK(status == noErr);
   return sample_buffer;
 }
@@ -395,7 +395,7 @@ TEST_P(SampleBufferTransformerPixelTransferTest,
       gfx::Size(kFullResolutionWidth, kFullResolutionHeight),
       /*rotation_angle*/ 90, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> roatated_pixel_buffer =
       transformer->Rotate(output_pixel_buffer);
   EXPECT_TRUE(CVPixelBufferGetIOSurface(roatated_pixel_buffer));
@@ -420,13 +420,15 @@ TEST_P(SampleBufferTransformerPixelTransferTest, CanConvertFullScale) {
       output_pixel_format,
       gfx::Size(kFullResolutionWidth, kFullResolutionHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
-  EXPECT_EQ(kFullResolutionWidth, CVPixelBufferGetWidth(output_pixel_buffer));
-  EXPECT_EQ(kFullResolutionHeight, CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer.get()));
+  EXPECT_EQ(kFullResolutionWidth,
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
+  EXPECT_EQ(kFullResolutionHeight,
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 TEST_P(SampleBufferTransformerPixelTransferTest, CanConvertAndScaleDown) {
@@ -443,15 +445,15 @@ TEST_P(SampleBufferTransformerPixelTransferTest, CanConvertAndScaleDown) {
       output_pixel_format,
       gfx::Size(kScaledDownResolutionWidth, kScaledDownResolutionHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionWidth,
-            CVPixelBufferGetWidth(output_pixel_buffer));
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionHeight,
-            CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 TEST_P(SampleBufferTransformerPixelTransferTest,
@@ -469,15 +471,15 @@ TEST_P(SampleBufferTransformerPixelTransferTest,
       output_pixel_format,
       gfx::Size(kScaledDownResolutionWidth, kScaledDownResolutionHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionWidth,
-            CVPixelBufferGetWidth(output_pixel_buffer));
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionHeight,
-            CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 TEST_P(SampleBufferTransformerPixelTransferTest,
@@ -494,13 +496,15 @@ TEST_P(SampleBufferTransformerPixelTransferTest,
       output_pixel_format,
       gfx::Size(kFullResolutionWidth, kFullResolutionHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
-  EXPECT_EQ(kFullResolutionWidth, CVPixelBufferGetWidth(output_pixel_buffer));
-  EXPECT_EQ(kFullResolutionHeight, CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer.get()));
+  EXPECT_EQ(kFullResolutionWidth,
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
+  EXPECT_EQ(kFullResolutionHeight,
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 TEST_P(SampleBufferTransformerPixelTransferTest,
@@ -517,15 +521,15 @@ TEST_P(SampleBufferTransformerPixelTransferTest,
       output_pixel_format,
       gfx::Size(kScaledDownResolutionWidth, kScaledDownResolutionHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionWidth,
-            CVPixelBufferGetWidth(output_pixel_buffer));
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionHeight,
-            CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 INSTANTIATE_TEST_SUITE_P(SampleBufferTransformerTest,
@@ -551,13 +555,15 @@ TEST_P(SampleBufferTransformerLibyuvTest, CanConvertFullScale) {
       SampleBufferTransformer::Transformer::kLibyuv, output_pixel_format,
       gfx::Size(kFullResolutionWidth, kFullResolutionHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
-  EXPECT_EQ(kFullResolutionWidth, CVPixelBufferGetWidth(output_pixel_buffer));
-  EXPECT_EQ(kFullResolutionHeight, CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer.get()));
+  EXPECT_EQ(kFullResolutionWidth,
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
+  EXPECT_EQ(kFullResolutionHeight,
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 TEST_P(SampleBufferTransformerLibyuvTest, CanConvertAndScaleDown) {
@@ -573,15 +579,15 @@ TEST_P(SampleBufferTransformerLibyuvTest, CanConvertAndScaleDown) {
       SampleBufferTransformer::Transformer::kLibyuv, output_pixel_format,
       gfx::Size(kScaledDownResolutionWidth, kScaledDownResolutionHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionWidth,
-            CVPixelBufferGetWidth(output_pixel_buffer));
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionHeight,
-            CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 TEST_P(SampleBufferTransformerLibyuvTest, CanConvertWithPaddingFullScale) {
@@ -596,13 +602,15 @@ TEST_P(SampleBufferTransformerLibyuvTest, CanConvertWithPaddingFullScale) {
       SampleBufferTransformer::Transformer::kLibyuv, output_pixel_format,
       gfx::Size(kFullResolutionWidth, kFullResolutionHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
-  EXPECT_EQ(kFullResolutionWidth, CVPixelBufferGetWidth(output_pixel_buffer));
-  EXPECT_EQ(kFullResolutionHeight, CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer.get()));
+  EXPECT_EQ(kFullResolutionWidth,
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
+  EXPECT_EQ(kFullResolutionHeight,
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 TEST_P(SampleBufferTransformerLibyuvTest, CanConvertAndScaleWithPadding) {
@@ -617,15 +625,15 @@ TEST_P(SampleBufferTransformerLibyuvTest, CanConvertAndScaleWithPadding) {
       SampleBufferTransformer::Transformer::kLibyuv, output_pixel_format,
       gfx::Size(kScaledDownResolutionWidth, kScaledDownResolutionHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionWidth,
-            CVPixelBufferGetWidth(output_pixel_buffer));
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionHeight,
-            CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 TEST_P(SampleBufferTransformerLibyuvTest,
@@ -642,15 +650,15 @@ TEST_P(SampleBufferTransformerLibyuvTest,
       SampleBufferTransformer::Transformer::kLibyuv, output_pixel_format,
       gfx::Size(kScaledDownResolutionWidth, kScaledDownResolutionHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionWidth,
-            CVPixelBufferGetWidth(output_pixel_buffer));
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
   EXPECT_EQ(kScaledDownResolutionHeight,
-            CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 INSTANTIATE_TEST_SUITE_P(SampleBufferTransformerTest,
@@ -674,12 +682,14 @@ TEST_P(SampleBufferTransformerMjpegTest, CanConvertFullScale) {
       SampleBufferTransformer::Transformer::kLibyuv, output_pixel_format,
       gfx::Size(kExampleJpegWidth, kExampleJpegHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
-  EXPECT_EQ(kExampleJpegWidth, CVPixelBufferGetWidth(output_pixel_buffer));
-  EXPECT_EQ(kExampleJpegHeight, CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+  EXPECT_EQ(kExampleJpegWidth,
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
+  EXPECT_EQ(kExampleJpegHeight,
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 #if defined(ARCH_CPU_ARM64)
@@ -700,14 +710,14 @@ TEST_P(SampleBufferTransformerMjpegTest, MAYBE_CanConvertAndScaleDown) {
       gfx::Size(kExampleJpegScaledDownWidth, kExampleJpegScaledDownHeight), 0,
       1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
 
   EXPECT_EQ(kExampleJpegScaledDownWidth,
-            CVPixelBufferGetWidth(output_pixel_buffer));
+            CVPixelBufferGetWidth(output_pixel_buffer.get()));
   EXPECT_EQ(kExampleJpegScaledDownHeight,
-            CVPixelBufferGetHeight(output_pixel_buffer));
-  EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+            CVPixelBufferGetHeight(output_pixel_buffer.get()));
+  EXPECT_TRUE(PixelBufferIsSingleColor(output_pixel_buffer.get(), kColorR,
+                                       kColorG, kColorB));
 }
 
 TEST_P(SampleBufferTransformerMjpegTest,
@@ -722,7 +732,7 @@ TEST_P(SampleBufferTransformerMjpegTest,
       SampleBufferTransformer::Transformer::kLibyuv, output_pixel_format,
       gfx::Size(kExampleJpegWidth, kExampleJpegHeight), 0, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
-      transformer->Transform(input_sample_buffer);
+      transformer->Transform(input_sample_buffer.get());
   EXPECT_FALSE(output_pixel_buffer);
 }
 
@@ -741,16 +751,16 @@ TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
       kColorG, kColorB, PixelBufferType::kIoSurfaceMissing);
 
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample0),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample0), 0);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample0.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample0.get()), 0);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_buffer =
-      transformer->Transform(sample0);
+      transformer->Transform(sample0.get());
 
   EXPECT_EQ(gfx::Size(kFullResolutionWidth, kFullResolutionHeight),
             transformer->destination_size());
-  EXPECT_EQ(kFullResolutionWidth, CVPixelBufferGetWidth(output_buffer));
-  EXPECT_EQ(kFullResolutionHeight, CVPixelBufferGetHeight(output_buffer));
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer));
+  EXPECT_EQ(kFullResolutionWidth, CVPixelBufferGetWidth(output_buffer.get()));
+  EXPECT_EQ(kFullResolutionHeight, CVPixelBufferGetHeight(output_buffer.get()));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer.get()));
   // Because sample0 has no underlying IOSurface, it should not be returned from
   // the transformer.
   EXPECT_NE(output_buffer.get(), CMSampleBufferGetImageBuffer(sample0.get()));
@@ -760,15 +770,17 @@ TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
       kColorR, kColorG, kColorB, PixelBufferType::kIoSurfaceBacked);
 
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample1),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample1), 0);
-  output_buffer = transformer->Transform(sample1);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample1.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample1.get()), 0);
+  output_buffer = transformer->Transform(sample1.get());
 
   EXPECT_EQ(gfx::Size(kScaledDownResolutionWidth, kScaledDownResolutionHeight),
             transformer->destination_size());
-  EXPECT_EQ(kScaledDownResolutionWidth, CVPixelBufferGetWidth(output_buffer));
-  EXPECT_EQ(kScaledDownResolutionHeight, CVPixelBufferGetHeight(output_buffer));
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer));
+  EXPECT_EQ(kScaledDownResolutionWidth,
+            CVPixelBufferGetWidth(output_buffer.get()));
+  EXPECT_EQ(kScaledDownResolutionHeight,
+            CVPixelBufferGetHeight(output_buffer.get()));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer.get()));
   // Because sample1 does have an IOSurface, it can be returned directly.
   EXPECT_EQ(output_buffer.get(), CMSampleBufferGetImageBuffer(sample1.get()));
 }
@@ -783,7 +795,7 @@ TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample0 = CreateSampleBuffer(
       kPixelFormatNv12, kFullResolutionWidth, kFullResolutionHeight, kColorR,
       kColorG, kColorB, PixelBufferType::kIoSurfaceMissing);
-  CVPixelBufferRef pixel0 = CMSampleBufferGetImageBuffer(sample0);
+  CVPixelBufferRef pixel0 = CMSampleBufferGetImageBuffer(sample0.get());
   ASSERT_TRUE(pixel0);
 
   transformer->Reconfigure(
@@ -794,9 +806,9 @@ TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
 
   EXPECT_EQ(gfx::Size(kFullResolutionWidth, kFullResolutionHeight),
             transformer->destination_size());
-  EXPECT_EQ(kFullResolutionWidth, CVPixelBufferGetWidth(output_buffer));
-  EXPECT_EQ(kFullResolutionHeight, CVPixelBufferGetHeight(output_buffer));
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer));
+  EXPECT_EQ(kFullResolutionWidth, CVPixelBufferGetWidth(output_buffer.get()));
+  EXPECT_EQ(kFullResolutionHeight, CVPixelBufferGetHeight(output_buffer.get()));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer.get()));
   // Because pixel0 has no underlying IOSurface, it should not be returned from
   // the transformer.
   EXPECT_NE(output_buffer.get(), pixel0);
@@ -804,7 +816,7 @@ TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample1 = CreateSampleBuffer(
       kPixelFormatNv12, kScaledDownResolutionWidth, kScaledDownResolutionHeight,
       kColorR, kColorG, kColorB, PixelBufferType::kIoSurfaceBacked);
-  CVPixelBufferRef pixel1 = CMSampleBufferGetImageBuffer(sample1);
+  CVPixelBufferRef pixel1 = CMSampleBufferGetImageBuffer(sample1.get());
   ASSERT_TRUE(pixel1);
 
   transformer->Reconfigure(
@@ -814,9 +826,11 @@ TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
 
   EXPECT_EQ(gfx::Size(kScaledDownResolutionWidth, kScaledDownResolutionHeight),
             transformer->destination_size());
-  EXPECT_EQ(kScaledDownResolutionWidth, CVPixelBufferGetWidth(output_buffer));
-  EXPECT_EQ(kScaledDownResolutionHeight, CVPixelBufferGetHeight(output_buffer));
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer));
+  EXPECT_EQ(kScaledDownResolutionWidth,
+            CVPixelBufferGetWidth(output_buffer.get()));
+  EXPECT_EQ(kScaledDownResolutionHeight,
+            CVPixelBufferGetHeight(output_buffer.get()));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer.get()));
   // Because pixel1 does have an IOSurface, it can be returned directly.
   EXPECT_EQ(output_buffer.get(), pixel1);
 }
@@ -830,7 +844,8 @@ TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
       CreateSampleBuffer(kPixelFormatNv12, kFullResolutionWidth,
                          kFullResolutionHeight, kColorR, kColorG, kColorB,
                          PixelBufferType::kIoSurfaceBacked);
-  CVPixelBufferRef pixel_buffer = CMSampleBufferGetImageBuffer(sample_buffer);
+  CVPixelBufferRef pixel_buffer =
+      CMSampleBufferGetImageBuffer(sample_buffer.get());
   ASSERT_TRUE(pixel_buffer);
 
   transformer->Reconfigure(
@@ -840,11 +855,13 @@ TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_buffer =
       transformer->Transform(pixel_buffer);
 
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer));
-  EXPECT_EQ(kScaledDownResolutionWidth, CVPixelBufferGetWidth(output_buffer));
-  EXPECT_EQ(kScaledDownResolutionHeight, CVPixelBufferGetHeight(output_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer.get()));
+  EXPECT_EQ(kScaledDownResolutionWidth,
+            CVPixelBufferGetWidth(output_buffer.get()));
+  EXPECT_EQ(kScaledDownResolutionHeight,
+            CVPixelBufferGetHeight(output_buffer.get()));
   EXPECT_TRUE(
-      PixelBufferIsSingleColor(output_buffer, kColorR, kColorG, kColorB));
+      PixelBufferIsSingleColor(output_buffer.get(), kColorR, kColorG, kColorB));
 }
 
 TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
@@ -856,55 +873,60 @@ TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
       kPixelFormatNv12, kScaledDownResolutionWidth, kScaledDownResolutionHeight,
       kColorR, kColorG, kColorB, PixelBufferType::kIoSurfaceBacked);
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample), 0);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample.get()), 0);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_buffer =
-      transformer->Transform(sample);
+      transformer->Transform(sample.get());
   EXPECT_EQ(kPixelFormatNv12, transformer->destination_pixel_format());
-  EXPECT_EQ(kPixelFormatNv12,
-            IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer)));
+  EXPECT_EQ(
+      kPixelFormatNv12,
+      IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer.get())));
 
   sample = CreateSampleBuffer(kPixelFormatUyvy, kScaledDownResolutionWidth,
                               kScaledDownResolutionHeight, kColorR, kColorG,
                               kColorB, PixelBufferType::kIoSurfaceBacked);
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample), 0);
-  output_buffer = transformer->Transform(sample);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample.get()), 0);
+  output_buffer = transformer->Transform(sample.get());
   EXPECT_EQ(kPixelFormatNv12, transformer->destination_pixel_format());
-  EXPECT_EQ(kPixelFormatNv12,
-            IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer)));
+  EXPECT_EQ(
+      kPixelFormatNv12,
+      IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer.get())));
 
   sample = CreateSampleBuffer(kPixelFormatYuy2, kScaledDownResolutionWidth,
                               kScaledDownResolutionHeight, kColorR, kColorG,
                               kColorB, PixelBufferType::kIoSurfaceBacked);
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample), 0);
-  output_buffer = transformer->Transform(sample);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample.get()), 0);
+  output_buffer = transformer->Transform(sample.get());
   EXPECT_EQ(kPixelFormatNv12, transformer->destination_pixel_format());
-  EXPECT_EQ(kPixelFormatNv12,
-            IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer)));
+  EXPECT_EQ(
+      kPixelFormatNv12,
+      IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer.get())));
 
   sample = CreateSampleBuffer(kPixelFormatI420, kScaledDownResolutionWidth,
                               kScaledDownResolutionHeight, kColorR, kColorG,
                               kColorB, PixelBufferType::kIoSurfaceBacked);
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample), 0);
-  output_buffer = transformer->Transform(sample);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample.get()), 0);
+  output_buffer = transformer->Transform(sample.get());
   EXPECT_EQ(kPixelFormatNv12, transformer->destination_pixel_format());
-  EXPECT_EQ(kPixelFormatNv12,
-            IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer)));
+  EXPECT_EQ(
+      kPixelFormatNv12,
+      IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer.get())));
 
   sample = CreateExampleMjpegSampleBuffer();
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample), 0);
-  output_buffer = transformer->Transform(sample);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample.get()), 0);
+  output_buffer = transformer->Transform(sample.get());
   EXPECT_EQ(kPixelFormatNv12, transformer->destination_pixel_format());
-  EXPECT_EQ(kPixelFormatNv12,
-            IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer)));
+  EXPECT_EQ(
+      kPixelFormatNv12,
+      IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer.get())));
 }
 
 TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
@@ -916,55 +938,55 @@ TEST(SampleBufferTransformerBestTransformerForNv12OutputTest,
       kPixelFormatNv12, kScaledDownResolutionWidth, kScaledDownResolutionHeight,
       kColorR, kColorG, kColorB, PixelBufferType::kIoSurfaceBacked);
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample), 0);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample.get()), 0);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> output_buffer =
-      transformer->Transform(sample);
+      transformer->Transform(sample.get());
   EXPECT_EQ(SampleBufferTransformer::Transformer::kPixelBufferTransfer,
             transformer->transformer());
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer.get()));
 
   sample = CreateSampleBuffer(kPixelFormatUyvy, kScaledDownResolutionWidth,
                               kScaledDownResolutionHeight, kColorR, kColorG,
                               kColorB, PixelBufferType::kIoSurfaceBacked);
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample), 0);
-  output_buffer = transformer->Transform(sample);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample.get()), 0);
+  output_buffer = transformer->Transform(sample.get());
   EXPECT_EQ(SampleBufferTransformer::Transformer::kPixelBufferTransfer,
             transformer->transformer());
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer.get()));
 
   sample = CreateSampleBuffer(kPixelFormatYuy2, kScaledDownResolutionWidth,
                               kScaledDownResolutionHeight, kColorR, kColorG,
                               kColorB, PixelBufferType::kIoSurfaceBacked);
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample), 0);
-  output_buffer = transformer->Transform(sample);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample.get()), 0);
+  output_buffer = transformer->Transform(sample.get());
   EXPECT_EQ(SampleBufferTransformer::Transformer::kPixelBufferTransfer,
             transformer->transformer());
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer.get()));
 
   sample = CreateSampleBuffer(kPixelFormatI420, kScaledDownResolutionWidth,
                               kScaledDownResolutionHeight, kColorR, kColorG,
                               kColorB, PixelBufferType::kIoSurfaceBacked);
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample), 0);
-  output_buffer = transformer->Transform(sample);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample.get()), 0);
+  output_buffer = transformer->Transform(sample.get());
   EXPECT_EQ(SampleBufferTransformer::Transformer::kPixelBufferTransfer,
             transformer->transformer());
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer.get()));
 
   sample = CreateExampleMjpegSampleBuffer();
   transformer->Reconfigure(
-      SampleBufferTransformer::GetBestTransformerForNv12Output(sample),
-      kPixelFormatNv12, media::GetSampleBufferSize(sample), 0);
-  output_buffer = transformer->Transform(sample);
+      SampleBufferTransformer::GetBestTransformerForNv12Output(sample.get()),
+      kPixelFormatNv12, media::GetSampleBufferSize(sample.get()), 0);
+  output_buffer = transformer->Transform(sample.get());
   EXPECT_EQ(SampleBufferTransformer::Transformer::kLibyuv,
             transformer->transformer());
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(output_buffer.get()));
 }
 
 }  // namespace media

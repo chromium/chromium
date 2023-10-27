@@ -64,7 +64,7 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeRaw) {
   accelerator_->OutputPicture(pic);
 
   // Verify `sample`.
-  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample);
+  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample.get());
   std::vector<uint8_t> data(CMBlockBufferGetDataLength(buf));
   CMBlockBufferCopyDataBytes(buf, 0, CMBlockBufferGetDataLength(buf),
                              data.data());
@@ -100,7 +100,7 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeSuperframe) {
   accelerator_->OutputPicture(pic2);
 
   // Verify `sample`.
-  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample);
+  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample.get());
   std::vector<uint8_t> data(CMBlockBufferGetDataLength(buf));
   CMBlockBufferCopyDataBytes(buf, 0, CMBlockBufferGetDataLength(buf),
                              data.data());

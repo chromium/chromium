@@ -176,10 +176,12 @@ base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
   if (!image_config.get())
     return image_config;
 
-  CFDictionarySetValue(image_config, kCVPixelBufferPixelFormatTypeKey,
-                       cf_pixel_format);
-  CFDictionarySetValue(image_config, kCVPixelBufferWidthKey, cf_width);
-  CFDictionarySetValue(image_config, kCVPixelBufferHeightKey, cf_height);
+  CFDictionarySetValue(image_config.get(), kCVPixelBufferPixelFormatTypeKey,
+                       cf_pixel_format.get());
+  CFDictionarySetValue(image_config.get(), kCVPixelBufferWidthKey,
+                       cf_width.get());
+  CFDictionarySetValue(image_config.get(), kCVPixelBufferHeightKey,
+                       cf_height.get());
 
   return image_config;
 }
@@ -274,7 +276,7 @@ base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatVP9(
 
   OSStatus status = CMVideoFormatDescriptionCreate(
       kCFAllocatorDefault, kCMVideoCodecType_VP9, coded_size.width(),
-      coded_size.height(), format_config, format.InitializeInto());
+      coded_size.height(), format_config.get(), format.InitializeInto());
   OSSTATUS_DLOG_IF(WARNING, status != noErr, status)
       << "CMVideoFormatDescriptionCreate()";
   return format;
@@ -305,11 +307,11 @@ bool CreateVideoToolboxSession(
   // iOS is always hardware-accelerate while on mac, decoder configuration
   // handling is necessary.
   CFDictionarySetValue(
-      decoder_config,
+      decoder_config.get(),
       kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder,
       kCFBooleanTrue);
   CFDictionarySetValue(
-      decoder_config,
+      decoder_config.get(),
       kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
       require_hardware ? kCFBooleanTrue : kCFBooleanFalse);
 #endif
@@ -330,10 +332,10 @@ bool CreateVideoToolboxSession(
 
   OSStatus status = VTDecompressionSessionCreate(
       kCFAllocatorDefault,
-      format,          // video_format_description
-      decoder_config,  // video_decoder_specification
-      image_config,    // destination_image_buffer_attributes
-      callback,        // output_callback
+      format,                // video_format_description
+      decoder_config.get(),  // video_decoder_specification
+      image_config.get(),    // destination_image_buffer_attributes
+      callback,              // output_callback
       session->InitializeInto());
   if (status != noErr) {
     OSSTATUS_DLOG(WARNING, status) << "VTDecompressionSessionCreate()";
@@ -559,7 +561,8 @@ bool VTVideoDecodeAccelerator::OnMemoryDump(
     uint64_t total_size = 0;
     for (const auto& it : base::GetUnderlyingContainer(task_queue_)) {
       if (it.frame.get() && it.frame->image) {
-        IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(it.frame->image);
+        IOSurfaceRef io_surface =
+            CVPixelBufferGetIOSurface(it.frame->image.get());
         if (io_surface) {
           ++total_count;
           total_size += IOSurfaceGetAllocSize(io_surface);
@@ -584,7 +587,7 @@ bool VTVideoDecodeAccelerator::OnMemoryDump(
     uint64_t total_size = 0;
     for (const auto& it : base::GetUnderlyingContainer(reorder_queue_)) {
       if (it.get() && it->image) {
-        IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(it->image);
+        IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(it->image.get());
         if (io_surface) {
           ++total_count;
           total_size += IOSurfaceGetAllocSize(io_surface);
@@ -650,7 +653,8 @@ bool VTVideoDecodeAccelerator::FinishDelayedFrames() {
   DVLOG(3) << __func__;
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
   if (session_) {
-    OSStatus status = VTDecompressionSessionWaitForAsynchronousFrames(session_);
+    OSStatus status =
+        VTDecompressionSessionWaitForAsynchronousFrames(session_.get());
     output_count_for_cra_rasl_workaround_ = 0;
     if (status) {
       NOTIFY_STATUS("VTDecompressionSessionWaitForAsynchronousFrames()", status,
@@ -722,8 +726,9 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
   const bool is_hbd = config_.profile == VP9PROFILE_PROFILE2 ||
                       config_.profile == HEVCPROFILE_MAIN10 ||
                       config_.profile == HEVCPROFILE_REXT;
-  if (!CreateVideoToolboxSession(format_, require_hardware, is_hbd, has_alpha_,
-                                 &callback_, &session_, &configured_size_)) {
+  if (!CreateVideoToolboxSession(format_.get(), require_hardware, is_hbd,
+                                 has_alpha_, &callback_, &session_,
+                                 &configured_size_)) {
     NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
     return false;
   }
@@ -732,11 +737,11 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
   bool using_hardware = false;
   base::apple::ScopedCFTypeRef<CFBooleanRef> cf_using_hardware;
   if (VTSessionCopyProperty(
-          session_,
+          session_.get(),
           // kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder
           CFSTR("UsingHardwareAcceleratedVideoDecoder"), kCFAllocatorDefault,
           cf_using_hardware.InitializeInto()) == 0) {
-    using_hardware = CFBooleanGetValue(cf_using_hardware);
+    using_hardware = CFBooleanGetValue(cf_using_hardware.get());
   }
   UMA_HISTOGRAM_BOOLEAN("Media.VTVDA.HardwareAccelerated", using_hardware);
 
@@ -797,15 +802,16 @@ void VTVideoDecodeAccelerator::DecodeTaskVp9(
 
   // Package the data in a CMSampleBuffer.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
-  OSStatus status = CMSampleBufferCreateReady(kCFAllocatorDefault,
-                                              data,     // data_buffer
-                                              format_,  // format_description
-                                              1,        // num_samples
-                                              0,  // num_sample_timing_entries
-                                              nullptr,  // &sample_timing_array
-                                              0,  // num_sample_size_entries
-                                              nullptr,  // &sample_size_array
-                                              sample.InitializeInto());
+  OSStatus status =
+      CMSampleBufferCreateReady(kCFAllocatorDefault,
+                                data.get(),     // data_buffer
+                                format_.get(),  // format_description
+                                1,              // num_samples
+                                0,              // num_sample_timing_entries
+                                nullptr,        // &sample_timing_array
+                                0,              // num_sample_size_entries
+                                nullptr,        // &sample_size_array
+                                sample.InitializeInto());
   if (status) {
     NOTIFY_STATUS("CMSampleBufferCreate()", status, SFT_PLATFORM_ERROR);
     return;
@@ -819,8 +825,8 @@ void VTVideoDecodeAccelerator::DecodeTaskVp9(
   VTDecodeFrameFlags decode_flags =
       kVTDecodeFrame_EnableAsynchronousDecompression;
   status = VTDecompressionSessionDecodeFrame(
-      session_,
-      sample,                          // sample_buffer
+      session_.get(),
+      sample.get(),                    // sample_buffer
       decode_flags,                    // decode_flags
       reinterpret_cast<void*>(frame),  // source_frame_refcon
       nullptr);                        // &info_flags_out
@@ -1147,7 +1153,7 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   // Make sure that the memory is actually allocated.
   // CMBlockBufferReplaceDataBytes() is documented to do this, but prints a
   // message each time starting in Mac OS X 10.10.
-  status = CMBlockBufferAssureBlockMemory(data);
+  status = CMBlockBufferAssureBlockMemory(data.get());
   if (status) {
     NOTIFY_STATUS("CMBlockBufferAssureBlockMemory()", status,
                   SFT_PLATFORM_ERROR);
@@ -1159,15 +1165,15 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   for (size_t i = 0; i < nalus.size(); i++) {
     H264NALU& nalu_ref = nalus[i];
     uint32_t header = base::HostToNet32(static_cast<uint32_t>(nalu_ref.size));
-    status =
-        CMBlockBufferReplaceDataBytes(&header, data, offset, kNALUHeaderLength);
+    status = CMBlockBufferReplaceDataBytes(&header, data.get(), offset,
+                                           kNALUHeaderLength);
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
                     SFT_PLATFORM_ERROR);
       return;
     }
     offset += kNALUHeaderLength;
-    status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data, offset,
+    status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data.get(), offset,
                                            nalu_ref.size);
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
@@ -1180,16 +1186,16 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   // Package the data in a CMSampleBuffer.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   status = CMSampleBufferCreate(kCFAllocatorDefault,
-                                data,        // data_buffer
-                                true,        // data_ready
-                                nullptr,     // make_data_ready_callback
-                                nullptr,     // make_data_ready_refcon
-                                format_,     // format_description
-                                1,           // num_samples
-                                0,           // num_sample_timing_entries
-                                nullptr,     // &sample_timing_array
-                                1,           // num_sample_size_entries
-                                &data_size,  // &sample_size_array
+                                data.get(),     // data_buffer
+                                true,           // data_ready
+                                nullptr,        // make_data_ready_callback
+                                nullptr,        // make_data_ready_refcon
+                                format_.get(),  // format_description
+                                1,              // num_samples
+                                0,              // num_sample_timing_entries
+                                nullptr,        // &sample_timing_array
+                                1,              // num_sample_size_entries
+                                &data_size,     // &sample_size_array
                                 sample.InitializeInto());
   if (status) {
     NOTIFY_STATUS("CMSampleBufferCreate()", status, SFT_PLATFORM_ERROR);
@@ -1204,8 +1210,8 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   VTDecodeFrameFlags decode_flags =
       kVTDecodeFrame_EnableAsynchronousDecompression;
   status = VTDecompressionSessionDecodeFrame(
-      session_,
-      sample,                          // sample_buffer
+      session_.get(),
+      sample.get(),                    // sample_buffer
       decode_flags,                    // decode_flags
       reinterpret_cast<void*>(frame),  // source_frame_refcon
       nullptr);                        // &info_flags_out
@@ -1725,7 +1731,7 @@ void VTVideoDecodeAccelerator::FlushTask(TaskType type) {
   if (type == TASK_DESTROY) {
     if (session_) {
       // Destroy the decoding session before returning from the decoder thread.
-      VTDecompressionSessionInvalidate(session_);
+      VTDecompressionSessionInvalidate(session_.get());
       session_.reset();
     }
 
@@ -2069,11 +2075,11 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     // from the color tag which is more expressive than the VP9 bitstream.
     color_space = config_.container_color_space.ToGfxColorSpace();
     if (!color_space.IsValid()) {
-      color_space = GetImageBufferColorSpace(frame.image);
+      color_space = GetImageBufferColorSpace(frame.image.get());
     }
   } else {
     // Otherwise prefer the frame color space.
-    color_space = GetImageBufferColorSpace(frame.image);
+    color_space = GetImageBufferColorSpace(frame.image.get());
     if (!color_space.IsValid()) {
       color_space = config_.container_color_space.ToGfxColorSpace();
     }
@@ -2120,7 +2126,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     gfx::GpuMemoryBufferHandle handle;
     handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
     handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-    handle.io_surface.reset(CVPixelBufferGetIOSurface(frame.image),
+    handle.io_surface.reset(CVPixelBufferGetIOSurface(frame.image.get()),
                             base::scoped_policy::RETAIN);
 
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
@@ -2191,7 +2197,8 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
                                     plane);
   }
 
-  if (IOSurfaceIsWebGPUCompatible(CVPixelBufferGetIOSurface(frame.image))) {
+  if (IOSurfaceIsWebGPUCompatible(
+          CVPixelBufferGetIOSurface(frame.image.get()))) {
     picture.set_is_webgpu_compatible(true);
   }
 

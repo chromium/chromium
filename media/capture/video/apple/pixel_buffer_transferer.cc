@@ -22,7 +22,7 @@ bool PixelBufferTransferer::TransferImage(CVPixelBufferRef source,
                                           CVPixelBufferRef destination) {
   DCHECK(source);
   DCHECK(destination);
-  OSStatus error = VTPixelTransferSessionTransferImage(transfer_session_,
+  OSStatus error = VTPixelTransferSessionTransferImage(transfer_session_.get(),
                                                        source, destination);
   if (error == kVTPixelTransferNotSupportedErr) {
     // This source/destination transfer operation is not supported.
@@ -34,7 +34,7 @@ bool PixelBufferTransferer::TransferImage(CVPixelBufferRef source,
 }
 
 PixelBufferTransferer::~PixelBufferTransferer() {
-  VTPixelTransferSessionInvalidate(transfer_session_);
+  VTPixelTransferSessionInvalidate(transfer_session_.get());
 }
 
 }  // namespace media

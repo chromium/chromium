@@ -123,7 +123,7 @@ bool VP9SuperFrameBitstreamFilter::AllocateCombinedBlock(size_t total_size) {
     return false;
   }
 
-  status = CMBlockBufferAssureBlockMemory(data_);
+  status = CMBlockBufferAssureBlockMemory(data_.get());
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferAssureBlockMemory failed.";
     return false;
@@ -134,8 +134,8 @@ bool VP9SuperFrameBitstreamFilter::AllocateCombinedBlock(size_t total_size) {
 
 bool VP9SuperFrameBitstreamFilter::MergeBuffer(const DecoderBuffer& buffer,
                                                size_t offset) {
-  OSStatus status = CMBlockBufferReplaceDataBytes(buffer.data(), data_, offset,
-                                                  buffer.data_size());
+  OSStatus status = CMBlockBufferReplaceDataBytes(buffer.data(), data_.get(),
+                                                  offset, buffer.data_size());
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferReplaceDataBytes failed.";
     return false;
@@ -198,8 +198,8 @@ bool VP9SuperFrameBitstreamFilter::BuildSuperFrame() {
   DCHECK_EQ(trailer_offset, trailer_size - 1);
   trailer[trailer_offset] = marker;
 
-  OSStatus status =
-      CMBlockBufferReplaceDataBytes(trailer.get(), data_, offset, trailer_size);
+  OSStatus status = CMBlockBufferReplaceDataBytes(trailer.get(), data_.get(),
+                                                  offset, trailer_size);
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferReplaceDataBytes failed.";
     return false;

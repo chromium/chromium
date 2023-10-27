@@ -1061,8 +1061,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 #endif
 
     const media::VideoCaptureFormat captureFormat(
-        gfx::Size(CVPixelBufferGetWidth(final_pixel_buffer),
-                  CVPixelBufferGetHeight(final_pixel_buffer)),
+        gfx::Size(CVPixelBufferGetWidth(final_pixel_buffer.get()),
+                  CVPixelBufferGetHeight(final_pixel_buffer.get())),
         _frameRate, media::PIXEL_FORMAT_NV12);
     // When the |pixelBuffer| is the result of a conversion (not camera
     // pass-through) then it originates from a CVPixelBufferPool and the color
@@ -1074,7 +1074,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     // TODO(hbos): Investigate how to successfully parse and/or configure the
     // color space correctly. The implications of this hack is not fully
     // understood.
-    [self processPixelBufferNV12IOSurface:final_pixel_buffer
+    [self processPixelBufferNV12IOSurface:final_pixel_buffer.get()
                             captureFormat:captureFormat
                                colorSpace:kColorSpaceRec709Apple
                                 timestamp:timestamp];

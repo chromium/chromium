@@ -51,7 +51,7 @@
 }
 
 - (CMFormatDescriptionRef)formatDescription {
-  return _formatDescription;
+  return _formatDescription.get();
 }
 
 - (NSArray<AVFrameRateRange*>*)videoSupportedFrameRateRanges {

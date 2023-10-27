@@ -206,10 +206,10 @@ bool PixelBufferIsSingleColor(CVPixelBufferRef pixel_buffer,
             ->CreateBuffer();
     PixelBufferTransferer transferer;
     bool transfer_success =
-        transferer.TransferImage(pixel_buffer, yuvs_pixel_buffer);
+        transferer.TransferImage(pixel_buffer, yuvs_pixel_buffer.get());
     DCHECK(transfer_success);
   }
-  IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(yuvs_pixel_buffer);
+  IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(yuvs_pixel_buffer.get());
   DCHECK(io_surface);
   return YuvsIOSurfaceIsSingleColor(io_surface, r, g, b);
 }

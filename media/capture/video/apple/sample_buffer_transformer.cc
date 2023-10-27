@@ -555,7 +555,7 @@ SampleBufferTransformer::Transform(CVPixelBufferRef pixel_buffer) {
     return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   // Do pixel transfer or libyuv conversion + rescale.
-  TransformPixelBuffer(pixel_buffer, destination_pixel_buffer);
+  TransformPixelBuffer(pixel_buffer, destination_pixel_buffer.get());
   return destination_pixel_buffer;
 }
 
@@ -577,7 +577,7 @@ SampleBufferTransformer::Transform(CMSampleBufferRef sample_buffer) {
     return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   // Sample buffer path - it's MJPEG. Do libyuv conversion + rescale.
-  if (!TransformSampleBuffer(sample_buffer, destination_pixel_buffer)) {
+  if (!TransformSampleBuffer(sample_buffer, destination_pixel_buffer.get())) {
     LOG(ERROR) << "Failed to transform sample buffer.";
     return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }

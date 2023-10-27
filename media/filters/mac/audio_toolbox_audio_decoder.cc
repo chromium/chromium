@@ -176,7 +176,7 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   // |input_data|. See media::AudioConverter for a similar mechanism.
   UInt32 num_frames = output_bus_->frames();
   auto result = AudioConverterFillComplexBuffer(
-      decoder_, ProvideInputCallback, &input_data, &num_frames,
+      decoder_.get(), ProvideInputCallback, &input_data, &num_frames,
       output_buffer_list_.get(), nullptr);
 
   if (result == kNoMoreDataError && !num_frames) {
@@ -210,7 +210,7 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 void AudioToolboxAudioDecoder::Reset(base::OnceClosure reset_cb) {
   // This could fail, but ResetCB has no error reporting mechanism, so just let
   // a subsequent decode call fail.
-  const auto result = AudioConverterReset(decoder_);
+  const auto result = AudioConverterReset(decoder_.get());
   OSSTATUS_DLOG_IF(WARNING, result != noErr, result)
       << "AudioConverterReset() failed";
   discard_helper_->Reset(discard_helper_->decoder_delay());
@@ -303,7 +303,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
     // Get the decoder's output channel layout.
     UInt32 size;
     result = AudioConverterGetPropertyInfo(
-        decoder_, kAudioConverterOutputChannelLayout, &size, NULL);
+        decoder_.get(), kAudioConverterOutputChannelLayout, &size, NULL);
     if (result != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
           << "AudioConverterGetPropertyInfo() failed";
@@ -311,9 +311,9 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
     }
 
     ScopedAudioChannelLayout output_layout(size);
-    result =
-        AudioConverterGetProperty(decoder_, kAudioConverterOutputChannelLayout,
-                                  &size, output_layout.layout());
+    result = AudioConverterGetProperty(decoder_.get(),
+                                       kAudioConverterOutputChannelLayout,
+                                       &size, output_layout.layout());
     if (result != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
           << "AudioConverterGetProperty() failed";
@@ -345,7 +345,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
   auto ordered_layout =
       ChannelLayoutToAudioChannelLayout(channel_layout_, channel_count_);
   result = AudioConverterSetProperty(
-      decoder_, kAudioConverterOutputChannelLayout,
+      decoder_.get(), kAudioConverterOutputChannelLayout,
       ordered_layout->layout_size(), ordered_layout->layout());
   if (result != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
@@ -356,8 +356,8 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
   if (config.codec() == AudioCodec::kAAC) {
     // Instill the magic!
     result = AudioConverterSetProperty(
-        decoder_, kAudioConverterDecompressionMagicCookie, magic_cookie.size(),
-        magic_cookie.data());
+        decoder_.get(), kAudioConverterDecompressionMagicCookie,
+        magic_cookie.size(), magic_cookie.data());
     if (result != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
           << "AudioConverterSetProperty() failed";
@@ -369,7 +369,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
     // so limit this to xHE-AAC only.
     const Float32 kDefaultLoudness = -16.0;
     result = AudioConverterSetProperty(
-        decoder_, kAudioCodecPropertyProgramTargetLevel,
+        decoder_.get(), kAudioCodecPropertyProgramTargetLevel,
         sizeof(kDefaultLoudness), &kDefaultLoudness);
     if (result != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
@@ -381,7 +381,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
     // appear to be a key name available for this yet.
     // Values: 0=none, night=1, noisy=2, limited=3
     const UInt32 kDefaultEffectType = 3;
-    result = AudioConverterSetProperty(decoder_, 0x64726370 /* "drcp" */,
+    result = AudioConverterSetProperty(decoder_.get(), 0x64726370 /* "drcp" */,
                                        sizeof(kDefaultEffectType),
                                        &kDefaultEffectType);
     if (result != noErr) {

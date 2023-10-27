@@ -84,7 +84,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeOne) {
   accelerator_->SubmitDecode(pic);
 
   // Verify sample.
-  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample);
+  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample.get());
   std::vector<uint8_t> data(CMBlockBufferGetDataLength(buf));
   CMBlockBufferCopyDataBytes(buf, 0, CMBlockBufferGetDataLength(buf),
                              data.data());
@@ -134,8 +134,8 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo) {
   accelerator_->SubmitDecode(pic1);
 
   // The two samples should have the same configuration.
-  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0),
-            CMSampleBufferGetFormatDescription(sample1));
+  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
 TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_Reset) {
@@ -178,8 +178,8 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_Reset) {
   accelerator_->SubmitDecode(pic1);
 
   // The two samples should have different configurations.
-  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0),
-            CMSampleBufferGetFormatDescription(sample1));
+  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
 TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_ConfigChange) {
@@ -219,8 +219,8 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_ConfigChange) {
   accelerator_->SubmitDecode(pic1);
 
   // The two samples should have different configurations.
-  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0),
-            CMSampleBufferGetFormatDescription(sample1));
+  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
 }  // namespace media

@@ -142,11 +142,11 @@ static AudioDeviceID FindFirstOutputSubdevice(
   }
 
   AudioDeviceID output_subdevice_id = kAudioObjectUnknown;
-  DCHECK_EQ(CFGetTypeID(subdevices), CFArrayGetTypeID());
-  const CFIndex count = CFArrayGetCount(subdevices);
+  DCHECK_EQ(CFGetTypeID(subdevices.get()), CFArrayGetTypeID());
+  const CFIndex count = CFArrayGetCount(subdevices.get());
   for (CFIndex i = 0; i != count; ++i) {
-    CFStringRef value =
-        base::apple::CFCast<CFStringRef>(CFArrayGetValueAtIndex(subdevices, i));
+    CFStringRef value = base::apple::CFCast<CFStringRef>(
+        CFArrayGetValueAtIndex(subdevices.get(), i));
     if (value) {
       std::string uid = base::SysCFStringRefToUTF8(value);
       output_subdevice_id = AudioManagerMac::GetAudioDeviceIdByUId(false, uid);
