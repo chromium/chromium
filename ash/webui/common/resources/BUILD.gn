@@ -113,6 +113,8 @@ non_web_component_files = [
   "cr_scrollable_behavior.js",
   "event_target.js",
   "event_tracker.js",
+  "fake_method_resolver.js",
+  "fake_observables.js",
   "focus_row_js.js",
   "focus_row_behavior.js",
   "focus_without_ink_js.js",
@@ -291,8 +293,6 @@ generate_grd("build_html_css_wrapper_files_grdp") {
 
 generate_grd("build_grd") {
   input_files = [
-    "fake_method_resolver.js",
-    "fake_observables.js",
     "keyboard_layouts.js",
 
     # Test runner used by file manager tests, webui_resource_browsertest.cc, and

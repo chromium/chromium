@@ -2,21 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
+import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './input_device_settings_shared.css.js';
 import '../settings_shared.css.js';
 
+import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ButtonRemapping, KeyEvent} from './input_device_settings_types.js';
+import {ButtonRemapping, KeyEvent, ShortcutInputProviderInterface} from './input_device_settings_types.js';
 import {keyEventsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './key_combination_input_dialog.html.js';
+import {getShortcutInputProvider} from './shortcut_input_mojo_interface_provider.js';
 
 /**
  * @fileoverview
@@ -28,14 +32,16 @@ import {getTemplate} from './key_combination_input_dialog.html.js';
 export interface KeyCombinationInputDialogElement {
   $: {
     keyCombinationInputDialog: CrDialogElement,
+    shortcutInput: ShortcutInputElement,
   };
 }
 
 export type ShortcutInputCompleteEvent = CustomEvent<{keyEvent: KeyEvent}>;
+export type ShortcutInputCaptureStateEvent = CustomEvent<{capturing: boolean}>;
 
 declare global {
   interface HTMLElementEventMap {
-    'shortcut-input-complete': ShortcutInputCompleteEvent;
+    'shortcut-input-event': ShortcutInputCompleteEvent;
   }
 }
 
@@ -69,6 +75,14 @@ export class KeyCombinationInputDialogElement extends
         type: Boolean,
         value: false,
       },
+
+      isCapturing: {
+        type: Boolean,
+      },
+
+      inputKeyEvent: {
+        type: Object,
+      },
     };
   }
 
@@ -81,21 +95,24 @@ export class KeyCombinationInputDialogElement extends
   buttonRemappingList: ButtonRemapping[];
   remappingIndex: number;
   isOpen: boolean;
+  shortcutInput: ShortcutInputElement;
+  inputKeyEvent: KeyEvent|undefined;
+  isCapturing: boolean = false;
   private buttonRemapping_: ButtonRemapping;
-  private inputKeyEvent_: KeyEvent;
+  private eventTracker_: EventTracker = new EventTracker();
 
   override connectedCallback(): void {
     super.connectedCallback();
-
-    this.addEventListener(
-        'shortcut-input-complete', this.onShortcutInputComplete_);
+    this.eventTracker_.add(
+        this, 'shortcut-input-event', this.onShortcutInputEvent_);
+    this.eventTracker_.add(
+        this, 'shortcut-input-capture-state', this.onShortcutInputUpdate_);
+    this.shortcutInput = this.$.shortcutInput;
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-
-    this.removeEventListener(
-        'shortcut-input-complete', this.onShortcutInputComplete_);
+    this.eventTracker_.removeAll();
   }
 
   /**
@@ -114,12 +131,22 @@ export class KeyCombinationInputDialogElement extends
     const keyCombinationInputDialog = this.$.keyCombinationInputDialog;
     keyCombinationInputDialog.showModal();
     this.isOpen = keyCombinationInputDialog.open;
+
+    this.shortcutInput.reset();
+    this.shortcutInput.startObserving();
   }
 
   close(): void {
     const keyCombinationInputDialog = this.$.keyCombinationInputDialog;
     keyCombinationInputDialog.close();
     this.isOpen = keyCombinationInputDialog.open;
+
+    this.shortcutInput.reset();
+    this.shortcutInput.stopObserving();
+  }
+
+  getShortcutProvider(): ShortcutInputProviderInterface {
+    return getShortcutInputProvider();
   }
 
   private cancelDialogClicked_(): void {
@@ -127,13 +154,13 @@ export class KeyCombinationInputDialogElement extends
   }
 
   private saveDialogClicked_(): void {
-    if (!this.inputKeyEvent_) {
+    if (!this.inputKeyEvent) {
       return;
     }
     const prevKeyEvent: KeyEvent|undefined =
         this.buttonRemapping_.remappingAction?.keyEvent;
     if (!prevKeyEvent ||
-        !keyEventsAreEqual(this.inputKeyEvent_, prevKeyEvent!)) {
+        !keyEventsAreEqual(this.inputKeyEvent, prevKeyEvent!)) {
       this.set(
           `buttonRemappingList.${this.remappingIndex}`,
           this.getUpdatedButtonRemapping_());
@@ -153,7 +180,7 @@ export class KeyCombinationInputDialogElement extends
     return {
       ...this.buttonRemapping_,
       remappingAction: {
-        keyEvent: this.inputKeyEvent_,
+        keyEvent: this.inputKeyEvent,
       },
     };
   }
@@ -161,8 +188,27 @@ export class KeyCombinationInputDialogElement extends
   /**
    * Listens for ShortcutInputCompleteEvent to store users' input keyEvent.
    */
-  private onShortcutInputComplete_(e: ShortcutInputCompleteEvent): void {
-    this.inputKeyEvent_ = e.detail.keyEvent;
+  private onShortcutInputEvent_(e: ShortcutInputCompleteEvent): void {
+    this.inputKeyEvent = e.detail.keyEvent;
+    this.shortcutInput.stopObserving();
+  }
+
+  private onShortcutInputUpdate_(e: ShortcutInputCaptureStateEvent): void {
+    this.isCapturing = e.detail.capturing;
+  }
+
+  private onEditButtonClicked_(): void {
+    this.inputKeyEvent = undefined;
+    this.shortcutInput.reset();
+    this.shortcutInput.startObserving();
+  }
+
+  private shouldDisableSaveButton_(): boolean {
+    return this.inputKeyEvent === undefined;
+  }
+
+  private shouldShowEditButton_(): boolean {
+    return !this.isCapturing;
   }
 }
 

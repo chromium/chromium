@@ -3536,6 +3536,7 @@ static_library("ui") {
       "//ash/webui/camera_app_ui",
       "//ash/webui/color_internals",
       "//ash/webui/common:chrome_os_webui_config",
+      "//ash/webui/common:shortcut_input_key_strings",
       "//ash/webui/common:trusted_types_util",
       "//ash/webui/common/backend",
       "//ash/webui/common/mojom",

@@ -90,7 +90,7 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
   'Power': 'power',
   'PrintScreen': 'screenshot',
   'PrivacyScreenToggle': 'electronic-privacy-screen',
-  'Settings': 'settings',
+  'Settings': 'settings-icon',
   'Standby': 'lock',
   'ZoomToggle': 'fullscreen',
 };

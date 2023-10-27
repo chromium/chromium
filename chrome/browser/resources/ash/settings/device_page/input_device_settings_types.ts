@@ -8,6 +8,7 @@ import * as ExtendedFkeysModifierTypes from '../mojom-webui/extended_fkeys_modif
 import * as InputDeviceSettingsTypes from '../mojom-webui/input_device_settings.mojom-webui.js';
 import * as InputDeviceSettingsProviderTypes from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import * as ModifierKeyTypes from '../mojom-webui/modifier_key.mojom-webui.js';
+import * as ShortcutInputProviderTypes from '../mojom-webui/shortcut_input_provider.mojom-webui.js';
 import * as SimulateRightClickModifierTypes from '../mojom-webui/simulate_right_click_modifier.mojom-webui.js';
 import * as SixPackShortcutModifierTypes from '../mojom-webui/six_pack_shortcut_modifier.mojom-webui.js';
 
@@ -200,3 +201,6 @@ interface FakeInputDeviceSettingsProviderInterface extends
 export type InputDeviceSettingsProviderInterface = Required<
     InputDeviceSettingsProviderTypes.InputDeviceSettingsProviderInterface>&
     Partial<FakeInputDeviceSettingsProviderInterface>;
+
+export type ShortcutInputProviderInterface =
+    ShortcutInputProviderTypes.ShortcutInputProviderInterface;

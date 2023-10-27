@@ -56,7 +56,7 @@ suite('<key-combination-input-dialog>', () => {
     const saveButton: CrButtonElement|null =
         dialog.shadowRoot!.querySelector('#saveButton');
     assertTrue(!!saveButton);
-    dialog.set('inputKeyEvent_', {
+    dialog.set('inputKeyEvent', {
       vkey: Vkey.kKeyK,
       domCode: 1,
       domKey: 1,
@@ -68,7 +68,7 @@ suite('<key-combination-input-dialog>', () => {
     assertEquals(buttonRemappingChangedEventCount, 1);
   });
 
-  test('Dialog listens for shortcut-input-complete event', async () => {
+  test('Dialog listens for shortcut-input-event event', async () => {
     await initializeDialog();
 
     const updatedKeyEvent: KeyEvent = {
@@ -79,10 +79,10 @@ suite('<key-combination-input-dialog>', () => {
       keyDisplay: 't',
     };
 
-    // Verify that the dialog's inputKeyEvent_ is empty and not equals to
+    // Verify that the dialog's inputKeyEvent is empty and not equals to
     // the updatedKeyEvent.
-    assertTrue(!dialog.get('inputKeyEvent_'));
-    dialog.dispatchEvent(new CustomEvent('shortcut-input-complete', {
+    assertTrue(!dialog.get('inputKeyEvent'));
+    dialog.dispatchEvent(new CustomEvent('shortcut-input-event', {
       bubbles: true,
       composed: true,
       detail: {
@@ -90,8 +90,8 @@ suite('<key-combination-input-dialog>', () => {
       },
     }));
 
-    // Verify that the dialog's inputKeyEvent_ has changed to updatedKeyEvent.
+    // Verify that the dialog's inputKeyEvent has changed to updatedKeyEvent.
     await flushTasks();
-    assertDeepEquals(dialog.get('inputKeyEvent_'), updatedKeyEvent);
+    assertDeepEquals(dialog.get('inputKeyEvent'), updatedKeyEvent);
   });
 });

@@ -23,6 +23,7 @@ import './os_reset_page/os_reset_page.js';
 import './device_page/customize_mouse_buttons_subpage.js';
 import './device_page/customize_pen_buttons_subpage.js';
 import './device_page/customize_tablet_buttons_subpage.js';
+import './device_page/shortcut_input_mojo_interface_provider.js';
 import './internet_page/apn_subpage.js';
 import './internet_page/hotspot_subpage.js';
 import './internet_page/internet_detail_subpage.js';

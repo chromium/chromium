@@ -1,4 +1,13 @@
 <style include="settings-shared input-device-settings-shared">
+    #shortcut-input-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  #shortcut-input-container:focus {
+    outline: none;
+  }
 </style>
 <cr-dialog id="keyCombinationInputDialog">
   <div slot="title">$i18n{keyCombinationDialogTitle}</div>
@@ -7,7 +16,20 @@
       <!-- Display button remapping name for placeholder only. -->
       [[buttonRemapping_.name]]
     </div>
-    <button on-click="onButtonClicked_">button</button>
+    <div id="shortcut-input-container" class="flex-row" tabindex="-1">
+      <shortcut-input id="shortcutInput"
+          shortcut-input-provider="[[getShortcutProvider()]]"
+          show-separator="true">
+      </shortcut-input>
+      <template is="dom-if" if="[[shouldShowEditButton_(isCapturing)]]">
+        <div class="edit-icon-container">
+          <cr-icon-button class="edit-button"
+              iron-icon="os-settings:edit"
+              on-click="onEditButtonClicked_">
+          </cr-icon-button>
+        </div>
+      </template>
+    </div>
   </div>
   <div slot="button-container">
     <div>
@@ -18,7 +40,8 @@
     </div>
     <div>
       <cr-button id="saveButton" class="action-button"
-          on-click="saveDialogClicked_">
+          on-click="saveDialogClicked_"
+          disabled$="[[shouldDisableSaveButton_(inputKeyEvent)]]">
         $i18n{buttonRemappingDialogSaveLabel}
       </cr-button>
     </div>

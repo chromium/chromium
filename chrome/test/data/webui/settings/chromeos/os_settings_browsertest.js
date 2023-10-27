@@ -300,7 +300,12 @@ TEST_F(
  ],
  [
    'DevicePageKeyCombinationInputDialog',
-   'device_page/key_combination_input_dialog_test.js'
+   'device_page/key_combination_input_dialog_test.js', {
+     enabled: [
+       'ash::features::kPeripheralCustomization',
+       'ash::features::kInputDeviceSettingsSplit'
+     ]
+   }
  ],
  [
    'DevicePageKeyboardSixPackKeyRow',

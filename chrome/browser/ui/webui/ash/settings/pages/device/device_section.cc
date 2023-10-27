@@ -10,6 +10,7 @@
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
+#include "ash/webui/common/shortcut_input_key_strings.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -1736,6 +1737,7 @@ void DeviceSection::AddCustomizeButtonsPageStrings(
       {"noRemappingOptionLabel", IDS_SETTINGS_NO_REMAPPING_OPTION_LABEL},
   };
   html_source->AddLocalizedStrings(kCustomizeButtonsPageStrings);
+  ash::common::AddShortcutInputKeyStrings(html_source);
 }
 
 void DeviceSection::AddDeviceDisplayStrings(
