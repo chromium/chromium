@@ -16,12 +16,13 @@
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
-namespace {
+namespace privacy_sandbox {
 
 using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
 
@@ -424,6 +425,52 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
   EXPECT_FALSE(onboarding_service()->ShouldShowOnboardingNotice());
 }
 
+// Profile marked Onboarded and Ack, then onboarding prefs reset, then profile
+// marked eligible again. Shouldn't show the notice again, but will be
+// considered onboarded.
+IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
+                       TreatsAsShownIfPreviouslyDismissed) {
+  // Setup
+  onboarding_service()->channel_ = version_info::Channel::CANARY;
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+  WaitForFeatureEngagement(browser());
+
+  // Action Onboarding and ack the user
+  onboarding_service()->MaybeMarkEligible();
+  browser()->window()->Activate();
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(), https_server_.GetURL("a.test", "/empty.html"), 1,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Notice should be showing at this point.
+  EXPECT_TRUE(IsOnboardingPromoActive(browser()));
+  // Ack the notice.
+  PressPromoButton(browser(), PromoButton::kNonDefault);
+
+  // Then reset the user prefs.
+  onboarding_service()->MaybeResetOnboardingPrefs();
+  // Then mark as eligible again
+  onboarding_service()->MaybeMarkEligible();
+
+  EXPECT_EQ(onboarding_service()->GetOnboardingStatus(),
+            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+                kEligible);
+
+  // Navigates to any page.
+  browser()->window()->Activate();
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(), https_server_.GetURL("a.test", "/empty.html"), 1,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Verification - Notice not shown again, but the profile is onboarded.
+  EXPECT_FALSE(IsOnboardingPromoActive(browser()));
+  EXPECT_FALSE(onboarding_service()->ShouldShowOnboardingNotice());
+  EXPECT_EQ(onboarding_service()->GetOnboardingStatus(),
+            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+                kOnboarded);
+}
+
 // Observation
 
 // Profile is ineligible. Notice Service is not observing tab changes.
@@ -655,4 +702,4 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
   EXPECT_FALSE(IsOffboardingPromoActive(browser()));
 }
 
-}  // namespace
+}  // namespace privacy_sandbox

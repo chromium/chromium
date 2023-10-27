@@ -94,6 +94,7 @@ class TrackingProtectionNoticeService
         base::Time showed_when,
         user_education::FeaturePromoController* promo_controller);
 
+    bool WasPromoPreviouslyDismissed(Browser* browser);
     bool IsPromoShowing(Browser* browser);
     bool MaybeShowPromo(Browser* browser);
     void HidePromo(Browser* browser);
