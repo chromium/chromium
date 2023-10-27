@@ -12,6 +12,7 @@
 #include "components/google/core/common/google_switches.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/safe_search_api/safe_search_util.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -19,19 +20,32 @@
 
 namespace {
 
-class YouTubeRestrictionsBrowserTest : public MixinBasedInProcessBrowserTest {
+using FilterWebsites = base::StrongAlias<class FilterWebsitesTag, bool>;
+
+class YouTubeRestrictionsBrowserTest
+    : public MixinBasedInProcessBrowserTest,
+      public ::testing::WithParamInterface<FilterWebsites> {
  protected:
   YouTubeRestrictionsBrowserTest() {
     // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
-    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+    https_upgrades_feature_.InitAndDisableFeature(features::kHttpsUpgrades);
+
+    if (FilterWebsitesEnabled()) {
+      filter_websites_feature_.InitAndEnableFeature(
+          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+    } else {
+      filter_websites_feature_.InitAndDisableFeature(
+          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+    }
   }
-  ~YouTubeRestrictionsBrowserTest() override { feature_list_.Reset(); }
+  ~YouTubeRestrictionsBrowserTest() override {
+    filter_websites_feature_.Reset();
+    https_upgrades_feature_.Reset();
+  }
 
   MOCK_METHOD(void, InterceptYoutubeRestrictHeader, (std::string value));
   MOCK_METHOD(void, InterceptRequest, ());
-
-  net::EmbeddedTestServer youtube_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
@@ -69,24 +83,33 @@ class YouTubeRestrictionsBrowserTest : public MixinBasedInProcessBrowserTest {
     command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
   }
 
-  base::test::ScopedFeatureList feature_list_;
+  bool FilterWebsitesEnabled() const { return GetParam().value(); }
+
+  base::test::ScopedFeatureList https_upgrades_feature_;
+  base::test::ScopedFeatureList filter_websites_feature_;
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
       {.sign_in_mode =
            supervised_user::SupervisionMixin::SignInMode::kSupervised}};
+  net::EmbeddedTestServer youtube_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 // TODO(https://crbug.com/1494241): Add more test coverage.
 // TODO(https://crbug.com/1496850): Fix test failure on Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_RestrictionHeaderIsNotSent DISABLED_RestrictionHeaderIsNotSent
 #else
 #define MAYBE_RestrictionHeaderIsNotSent RestrictionHeaderIsNotSent
 #endif
-IN_PROC_BROWSER_TEST_F(YouTubeRestrictionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(YouTubeRestrictionsBrowserTest,
                        MAYBE_RestrictionHeaderIsNotSent) {
+  if (FilterWebsitesEnabled()) {
+    supervision_mixin_.api_mock_setup_mixin()
+        .api_mock()
+        .QueueAllowedUrlClassification();
+  }
+
   GURL youtube_url(youtube_server_.GetURL("youtube.com", "/empty.html"));
 
   EXPECT_CALL(*this, InterceptRequest())
@@ -95,5 +118,24 @@ IN_PROC_BROWSER_TEST_F(YouTubeRestrictionsBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), youtube_url));
 }
+
+// Instead of /0, /1... print human-readable description of the test.
+std::string PrettyPrintTestCaseName(
+    const ::testing::TestParamInfo<FilterWebsites>& info) {
+  std::stringstream ss;
+  if (info.param) {
+    ss << "FilterWebsites";
+  } else {
+    ss << "NoFilterWebsites";
+  }
+
+  return ss.str();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         YouTubeRestrictionsBrowserTest,
+                         ::testing::Values(FilterWebsites(true),
+                                           FilterWebsites(false)),
+                         &PrettyPrintTestCaseName);
 
 }  // namespace
