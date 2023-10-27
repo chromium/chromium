@@ -100,6 +100,7 @@ class IdpTestServer {
     std::string accounts_endpoint_url;
     std::string client_metadata_endpoint_url;
     std::string id_assertion_endpoint_url;
+    std::string login_url;
     std::map<std::string,
              base::RepeatingCallback<std::unique_ptr<HttpResponse>(
                  const HttpRequest&)>>
@@ -170,7 +171,8 @@ class IdpTestServer {
     std::string content = ConvertToJsonDictionary(
         {{"accounts_endpoint", details.accounts_endpoint_url},
          {"client_metadata_endpoint", details.client_metadata_endpoint_url},
-         {"id_assertion_endpoint", details.id_assertion_endpoint_url}});
+         {"id_assertion_endpoint", details.id_assertion_endpoint_url},
+         {"login_url", details.login_url}});
     response.set_code(details.status_code);
     response.set_content(content);
     response.set_content_type(details.content_type);
@@ -296,8 +298,13 @@ class WebIdBrowserTest : public ContentBrowserTest {
     std::string client_metadata_endpoint_url =
         "/fedcm/client_metadata_endpoint.json";
     std::string id_assertion_endpoint_url = "/fedcm/id_assertion_endpoint.json";
-    return {net::HTTP_OK, kTestContentType, accounts_endpoint_url,
-            client_metadata_endpoint_url, id_assertion_endpoint_url};
+    std::string login_url = "/fedcm/login.html";
+    return {net::HTTP_OK,
+            kTestContentType,
+            accounts_endpoint_url,
+            client_metadata_endpoint_url,
+            id_assertion_endpoint_url,
+            login_url};
   }
 
   IdpTestServer* idp_server() { return idp_server_.get(); }

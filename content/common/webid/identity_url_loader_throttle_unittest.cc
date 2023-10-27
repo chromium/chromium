@@ -46,7 +46,8 @@ class IdentityUrlLoaderThrottleTestParameterized
 
 TEST_F(IdentityUrlLoaderThrottleTest, DisabledByKillSwitch) {
   base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmIdpSigninStatusMetrics);
+  list.InitWithFeatures({}, {features::kFedCmIdpSigninStatusMetrics,
+                             features::kFedCmIdpSigninStatusEnabled});
 
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
       MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());

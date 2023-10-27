@@ -288,24 +288,9 @@ std::string GetConsoleErrorMessageFromResult(
 
 FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
                                                 const url::Origin& idp_origin) {
-  RuntimeFeatureStateDocumentData* rfs_document_data =
-      RuntimeFeatureStateDocumentData::GetForCurrentDocument(&host);
-  // Should not be null as this gets initialized when the host gets created.
-  DCHECK(rfs_document_data);
-  std::vector<url::Origin> third_party_origins = {idp_origin};
-  // This includes origin trials.
-  bool runtime_enabled =
-      rfs_document_data->runtime_feature_state_read_context()
-          .IsFedCmIdpSigninStatusEnabled() ||
-      rfs_document_data->runtime_feature_state_read_context()
-          .IsFedCmIdpSigninStatusEnabledForThirdParty(
-              host.GetLastCommittedOrigin(), third_party_origins);
-
-  FedCmIdpSigninStatusMode flag_mode = GetFedCmIdpSigninStatusFlag();
-  if (flag_mode == FedCmIdpSigninStatusMode::METRICS_ONLY && runtime_enabled) {
-    return FedCmIdpSigninStatusMode::ENABLED;
-  }
-  return flag_mode;
+  // TODO(crbug.com/1487668): Remove this function in favor of
+  // GetFedCmIdpSigninStatusFlag.
+  return GetFedCmIdpSigninStatusFlag();
 }
 
 std::string FormatUrlWithDomain(const GURL& url, bool for_display) {

@@ -65,11 +65,12 @@ interface HTMLMediaElement : HTMLElement
 # share API (crbug.com/765923), custom scheme handlers (crbug.com/589502),
 # media session API (crbug.com/925997), Web Serial API (crbug.com/1164036),
 # WebXr API (crbug.com/1012899), WebHID API (crbug.com/1164125), Web
-# Bluetooth API (crbug.com/1100993), and WebUSB API (crbug.com/933055) are
-# not supported in webview.
+# Bluetooth API (crbug.com/1100993), WebUSB API (crbug.com/933055) and
+# the Login Status API (crbug.com/1340252) are not supported in webview.
 interface Navigator
     getter bluetooth                   # crbug.com/1100993
     getter hid                         # crbug.com/1164125
+    getter login                       # crbug.com/1340252
     getter mediaSession                # crbug.com/925997
     getter permissions                 # crbug.com/490120
     getter presentation                # crbug.com/521319
@@ -238,6 +239,7 @@ interface FontData
 # FedCM API is not implemented on WebView. crbug.com/1340252
 interface IdentityCredential : Credential
 interface IdentityProvider
+interface NavigatorLogin
 
 # Document Picture-in-Picture is not implemented in WebView (or Android).
 interface DocumentPictureInPicture : EventTarget

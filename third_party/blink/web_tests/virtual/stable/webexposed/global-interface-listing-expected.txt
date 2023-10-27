@@ -4659,6 +4659,7 @@ interface IdentityCredential : Credential
     getter token
     method constructor
 interface IdentityProvider
+    static method close
     static method getUserInfo
     attribute @@toStringTag
     method constructor
@@ -5668,6 +5669,7 @@ interface Navigator
     getter language
     getter languages
     getter locks
+    getter login
     getter managed
     getter maxTouchPoints
     getter mediaCapabilities
@@ -5714,6 +5716,10 @@ interface Navigator
     method unregisterProtocolHandler
     method vibrate
     method webkitGetUserMedia
+interface NavigatorLogin
+    attribute @@toStringTag
+    method constructor
+    method setStatus
 interface NavigatorManagedData : EventTarget
     attribute @@toStringTag
     getter onmanagedconfigurationchange

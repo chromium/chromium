@@ -64,6 +64,7 @@ constexpr char kProviderUrlFull[] = "https://idp.example/fedcm.json";
 constexpr char kTopFrameUrl[] = "https://top-frame.example/";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
+constexpr char kLoginUrl[] = "https://idp.example/login";
 constexpr char kClientId[] = "client_id_123";
 constexpr char kNonce[] = "nonce123";
 constexpr char kAccountId[] = "1234";
@@ -101,9 +102,12 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     endpoints.token = GURL(kTokenEndpoint);
     endpoints.accounts = GURL(kAccountsEndpoint);
 
+    IdentityProviderMetadata idp_metadata;
+    idp_metadata.idp_login_url = GURL(kLoginUrl);
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,
-                                  endpoints, IdentityProviderMetadata()));
+                                  endpoints, idp_metadata));
   }
 
   void SendAccountsRequest(const GURL& accounts_url,

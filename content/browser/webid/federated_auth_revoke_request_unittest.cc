@@ -49,6 +49,7 @@ constexpr char kProviderUrl[] = "https://idp.example/fedcm.json";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kRevokeEndpoint[] = "https://idp.example/revoke";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
+constexpr char kLoginUrl[] = "https://idp.example/login";
 constexpr char kClientId[] = "client_id_123";
 
 // Not used?
@@ -143,6 +144,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = GURL(kProviderUrl);
+    idp_metadata.idp_login_url = GURL(kLoginUrl);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), config_.config_fetch_status,

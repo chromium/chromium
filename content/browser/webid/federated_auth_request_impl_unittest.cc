@@ -1454,6 +1454,10 @@ TEST_F(FederatedAuthRequestImplTest, MissingAccountsEndpoint) {
 
 // Test that request does not fail if config is missing an IDP login URL.
 TEST_F(FederatedAuthRequestImplTest, MissingLoginURL) {
+  // Login URL is only optional when the signin status API is disabled.
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCmIdpSigninStatusEnabled);
+
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.idp_login_url = "";
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
@@ -2588,6 +2592,10 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, DisabledWhenThirdPartyCookiesBlocked) {
+  // We only disable FedCM when the signin status API is disabled.
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCmIdpSigninStatusEnabled);
+
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED);
@@ -3818,7 +3826,8 @@ TEST_F(FederatedAuthRequestImplTest,
 // accounts endpoint.
 TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusMetricsModeStaysSignedout) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusMetrics);
+  list.InitWithFeatures({features::kFedCmIdpSigninStatusMetrics},
+                        {features::kFedCmIdpSigninStatusEnabled});
 
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
@@ -3853,7 +3862,8 @@ TEST_F(
 TEST_F(FederatedAuthRequestImplTest,
        IdpSigninStatusMetricsModeTransitionsToSignedoutWhenNoAccounts) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusMetrics);
+  list.InitWithFeatures({features::kFedCmIdpSigninStatusMetrics},
+                        {features::kFedCmIdpSigninStatusEnabled});
 
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
