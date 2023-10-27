@@ -65,8 +65,6 @@ void QuickStartScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE);
   builder->Add("quickStartWifiTransferSubtitle",
                IDS_LOGIN_QUICK_START_WIFI_TRANSFER_SUBTITLE);
-  builder->Add("quickStartNetworkNeededSubtitle",
-               IDS_LOGIN_QUICK_START_NETWORK_NEEDED_SUBTITLE);
   builder->Add("quickStartStartAfterResumeTitle",
                IDS_LOGIN_QUICK_START_RESUME_AFTER_REBOOT_TITLE);
   builder->Add("quickStartStartAfterResumeSubtitle",

@@ -49,6 +49,9 @@ void NetworkScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE);
   builder->Add("networkScreenQuickStartTransferWifiSubtitle",
                IDS_LOGIN_QUICK_START_WIFI_TRANSFER_SUBTITLE);
+  builder->AddF("quickStartNetworkNeededSubtitle",
+                IDS_LOGIN_QUICK_START_NETWORK_NEEDED_SUBTITLE,
+                ui::GetChromeOSDeviceName());
 
   ui::network_element::AddLocalizedValuesToBuilder(builder);
   cellular_setup::AddLocalizedValuesToBuilder(builder);

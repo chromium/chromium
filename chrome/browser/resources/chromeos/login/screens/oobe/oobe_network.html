@@ -12,7 +12,7 @@
     [[i18nDynamic(locale, 'networkSectionTitle')]]
   </h1>
   <div slot="subtitle" id="subtitleText">
-    [[getSubtitleMessage_(locale, errorMessage_)]]
+    [[getSubtitleMessage_(locale, errorMessage_, useQuickStartSubtitle_)]]
   </div>
   <div slot="content" class="layout vertical">
     <network-select-login id="networkSelectLogin"
@@ -46,7 +46,7 @@
   <iron-icon slot="icon" icon="oobe-20:quick-start-wifi">
   </iron-icon>
   <!-- TODO(b/300389592): Add a WiFi name to subtitle -->
-  <div slot="bottom-buttons">
+  <div slot="cancel-button">
     <oobe-text-button id="cancelButton" on-click="onCancelClicked_"
         text-key="cancelButton">
     </oobe-text-button>

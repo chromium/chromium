@@ -28,10 +28,13 @@ found in the LICENSE file.
     </oobe-cr-lottie>
   </div>
   <!-- Cancel button -->
-  <div slot="bottom-buttons" hidden="[[!canCancel]]"
+  <div slot="bottom-buttons"
       class="flex layout horizontal end-justified">
-    <oobe-text-button id="cancelButton" on-click="cancel"
-        text-key="cancelButton">
-    </oobe-text-button>
+    <!-- Optional custom cancel button, otherwise the default below is used. -->
+    <slot name="cancel-button">
+      <oobe-text-button id="cancelButton" on-click="cancel"
+          text-key="cancelButton" hidden="[[!canCancel]]">
+      </oobe-text-button>
+    </slot>
   </div>
 </oobe-adaptive-dialog>

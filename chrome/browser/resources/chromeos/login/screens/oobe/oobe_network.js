@@ -67,6 +67,7 @@ NetworkScreenBase.$;
  * Data that is passed to the screen during onBeforeShow.
  * @typedef {{
  *   ssid: (string|undefined),
+ *   useQuickStartSubtitle: (boolean|undefined),
  * }}
  */
 let NetworkScreenData;
@@ -128,9 +129,17 @@ class NetworkScreen extends NetworkScreenBase {
         value: false,
       },
 
+      // SSID (WiFi Network Name) used during the QuickStart step.
       ssid: {
         type: String,
         value: '',
+      },
+
+      // Whether the QuickStart subtitle should be shown while showing the
+      // network list
+      useQuickStartSubtitle_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -163,6 +172,9 @@ class NetworkScreen extends NetworkScreenBase {
       this.setUIStep(NetworkScreenStates.QUICK_START_CONNECTING);
       return;
     }
+
+    this.useQuickStartSubtitle_ = data && 'useQuickStartSubtitle' in data &&
+      data['useQuickStartSubtitle'];
 
     this.setUIStep(NetworkScreenStates.DEFAULT);
     this.enableWifiScans_ = true;
@@ -209,6 +221,11 @@ class NetworkScreen extends NetworkScreenBase {
     if (errorMessage) {
       return errorMessage;
     }
+
+    if (this.useQuickStartSubtitle_) {
+      return this.i18n('quickStartNetworkNeededSubtitle');
+    }
+
     return this.i18n('networkSectionSubtitle');
   }
 

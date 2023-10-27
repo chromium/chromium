@@ -140,6 +140,7 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
       const std::string& message);
 
   void ExitQuickStartFlow();
+  void ShowStepsWhenQuickStartOngoing();
 
   // Skip this screen or automatically continue if the device is connected to
   // Ethernet for the first time in this session.
