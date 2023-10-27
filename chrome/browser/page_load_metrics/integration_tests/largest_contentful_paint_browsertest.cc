@@ -1440,8 +1440,8 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
       web_exposed_lcp2, epsilon);
 }
 
-// TODO(1495363): Flaky on ChromeOS LSAN/ASAN builder
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(1495363): Flaky on ChromeOS LSAN/ASAN and Linux builders
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_LCPBreakdownTimings_DetachedWindow DISABLED_LCPBreakdownTimings_DetachedWindow
 #else
 #define MAYBE_LCPBreakdownTimings_DetachedWindow LCPBreakdownTimings_DetachedWindow
