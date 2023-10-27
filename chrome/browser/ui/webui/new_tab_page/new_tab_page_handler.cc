@@ -40,6 +40,9 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -880,23 +883,32 @@ void NewTabPageHandler::MaybeShowFeaturePromo(
     return;
   }
 
-  if (iph_feature == new_tab_page::mojom::IphFeature::kCustomizeChrome) {
-    if (features::IsChromeRefresh2023() &&
-        features::IsChromeWebuiRefresh2023()) {
-      feature_promo_helper_->MaybeShowFeaturePromo(
-          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-          web_contents_.get());
-    } else {
-      const auto customize_chrome_button_open_count =
-          profile_->GetPrefs()->GetInteger(
-              prefs::kNtpCustomizeChromeButtonOpenCount);
-
-      if (customize_chrome_button_open_count == 0) {
+  switch (iph_feature) {
+    case new_tab_page::mojom::IphFeature::kCustomizeChrome: {
+      if (features::IsChromeRefresh2023() &&
+          features::IsChromeWebuiRefresh2023()) {
         feature_promo_helper_->MaybeShowFeaturePromo(
-            feature_engagement::kIPHDesktopCustomizeChromeFeature,
+            feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
             web_contents_.get());
+      } else {
+        const auto customize_chrome_button_open_count =
+            profile_->GetPrefs()->GetInteger(
+                prefs::kNtpCustomizeChromeButtonOpenCount);
+
+        if (customize_chrome_button_open_count == 0) {
+          feature_promo_helper_->MaybeShowFeaturePromo(
+              feature_engagement::kIPHDesktopCustomizeChromeFeature,
+              web_contents_.get());
+        }
       }
-    }
+    } break;
+    case new_tab_page::mojom::IphFeature::kCustomizeModules: {
+      feature_promo_helper_->MaybeShowFeaturePromo(
+          feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature,
+          web_contents_.get());
+    } break;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -1096,6 +1108,14 @@ void NewTabPageHandler::OnDoodleShared(
 
 void NewTabPageHandler::OnPromoLinkClicked() {
   LogEvent(NTP_MIDDLE_SLOT_PROMO_LINK_CLICKED);
+}
+
+void NewTabPageHandler::OnModulesUsed() {
+  auto* tab = web_contents_.get();
+  feature_promo_helper_->RecordFeatureUsage(
+      feature_engagement::events::kDesktopNTPModuleUsed, tab);
+  feature_promo_helper_->CloseFeaturePromo(
+      feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature, tab);
 }
 
 void NewTabPageHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {

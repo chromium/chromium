@@ -70,7 +70,8 @@ export class ModuleHeaderElementV2 extends I18nMixin
 
   private onMenuButtonClick_(e: Event) {
     e.stopPropagation();
-    this.dispatchEvent(new Event('menu-button-click', {bubbles: true}));
+    this.dispatchEvent(
+        new Event('menu-button-click', {bubbles: true, composed: true}));
   }
 
   private showDivider_(index: number): boolean {

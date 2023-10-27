@@ -58,7 +58,6 @@ export class HistoryClustersHeaderElementV2 extends ElementBase {
   }
 
   private onMenuButtonClick_(e: Event) {
-    e.stopPropagation();
     const moduleHeader = this.shadowRoot!.querySelector<ModuleHeaderElementV2>(
         'ntp-module-header-v2')!;
     moduleHeader.showAt(e);

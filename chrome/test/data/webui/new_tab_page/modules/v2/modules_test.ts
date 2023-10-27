@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Module, ModuleDescriptor, ModuleRegistry, ModulesV2Element, ModuleWrapperElement, NamedWidth, SUPPORTED_MODULE_WIDTHS} from 'chrome://new-tab-page/lazy_load.js';
+import {Module, MODULE_CUSTOMIZE_ELEMENT_ID, ModuleDescriptor, ModuleRegistry, ModulesV2Element, ModuleWrapperElement, NamedWidth, SUPPORTED_MODULE_WIDTHS} from 'chrome://new-tab-page/lazy_load.js';
 import {NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -253,6 +253,60 @@ suite('NewTabPageModulesModulesV2Test', () => {
         assertEquals(
             0, metrics.count('NewTabPage.Modules.LoadedWith.bar', 'bar'));
       });
+
+  test('help bubble can correctly find anchor elements', async () => {
+    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+    handler.setResultFor('getModulesIdNames', {
+      data: [
+        {id: fooDescriptor.id, name: fooDescriptor.id},
+      ],
+    });
+
+    const modulesElement = await createModulesElement(
+        [
+          {
+            descriptor: fooDescriptor,
+            elements: [createElement()],
+          },
+        ],
+        true, SAMPLE_SCREEN_WIDTH);
+
+    assertDeepEquals(
+        modulesElement.getSortedAnchorStatusesForTesting(),
+        [
+          [MODULE_CUSTOMIZE_ELEMENT_ID, true],
+        ],
+    );
+  });
+
+  test('module use events trigger onModulesUsed handler function', async () => {
+    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+    handler.setResultFor('getModulesIdNames', {
+      data: [
+        {id: fooDescriptor.id, name: fooDescriptor.id},
+      ],
+    });
+
+    const modulesElement = await createModulesElement(
+        [
+          {
+            descriptor: fooDescriptor,
+            elements: [createElement()],
+          },
+        ],
+        true, SAMPLE_SCREEN_WIDTH);
+    assertEquals(1, handler.getCallCount('getModulesIdNames'));
+
+    const moduleWrapper =
+        modulesElement.shadowRoot!.querySelector('ntp-module-wrapper');
+    assertTrue(!!moduleWrapper);
+    const moduleEl = moduleWrapper.shadowRoot!.querySelector('#moduleElement');
+    assertTrue(!!moduleEl);
+    moduleEl.dispatchEvent(
+        new Event('menu-button-click', {bubbles: true, composed: true}));
+    moduleEl.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
+    assertEquals(2, handler.getCallCount('onModulesUsed'));
+  });
 
   test('modules maxium instance count works correctly', async () => {
     const SAMPLE_MAX_MODULE_INSTANCE_COUNT = 2;

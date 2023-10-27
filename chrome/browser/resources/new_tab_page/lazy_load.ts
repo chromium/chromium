@@ -58,5 +58,5 @@ export {HistoryClustersProxyImpl as HistoryClustersProxyImplV2} from './modules/
 export {historyClustersDescriptor as historyClustersV2Descriptor, HistoryClustersModuleElement as HistoryClustersV2ModuleElement} from './modules/v2/history_clusters/module.js';
 export {VisitTileModuleElement} from './modules/v2/history_clusters/visit_tile.js';
 export {ModuleHeaderElementV2} from './modules/v2/module_header.js';
-export {DismissModuleInstanceEvent, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
+export {DismissModuleInstanceEvent, MODULE_CUSTOMIZE_ELEMENT_ID, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

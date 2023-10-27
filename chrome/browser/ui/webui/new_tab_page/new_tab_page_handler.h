@@ -148,6 +148,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                       const std::string& doodle_id,
                       const absl::optional<std::string>& share_id) override;
   void OnPromoLinkClicked() override;
+  void OnModulesUsed() override;
 
  private:
   // ui::NativeThemeObserver:
