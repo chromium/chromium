@@ -100,11 +100,15 @@ class ChromiumDepGraph {
         com_google_guava_guava: new PropertyOverride(
             url: 'https://github.com/google/guava',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
+            licenseName: 'Apache 2.0',
+            // Both -jre and -android versions are listed. Filter to only the -jre ones.
+            versionFilter: '-jre'),
         com_google_guava_guava_android: new PropertyOverride(
             url: 'https://github.com/google/guava',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
+            licenseName: 'Apache 2.0',
+            // Both -jre and -android versions are listed. Filter to only the -android ones.
+            versionFilter: '-android'),
         com_google_guava_listenablefuture: new PropertyOverride(
             url: 'https://github.com/google/guava',
             // Avoid resolving to 9999 version, which  is empty.
@@ -241,10 +245,6 @@ class ChromiumDepGraph {
             licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_shadows_framework: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
-            licenseName: 'MIT'),
-        org_robolectric_shadows_multidex: new PropertyOverride(exclude: true),
-        org_robolectric_shadows_playservices: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
         org_robolectric_shadows_versioning: new PropertyOverride(
@@ -415,21 +415,22 @@ class ChromiumDepGraph {
             dep.testOnly = false
         }
 
-        PROPERTY_OVERRIDES.each { id, fallbackProperties ->
+        PROPERTY_OVERRIDES.each { id, overrides ->
             DependencyDescription dep = dependencies.get(id)
             if (dep) {
                 // Null-check is required since isShipped is a boolean. This
                 // check must come after all the deps are resolved instead of in
                 // customizeDep, since otherwise it gets overwritten.
-                if (fallbackProperties?.isShipped != null) {
-                    dep.isShipped = fallbackProperties.isShipped
+                if (overrides?.isShipped != null) {
+                    dep.isShipped = overrides.isShipped
                 }
                 // if overrideLatest is truey, set it recursively on the dep and
                 // all its children. This makes it easier to manage since you do
                 // not have to set it on a whole set of old deps.
-                if (fallbackProperties?.overrideLatest) {
+                if (overrides?.overrideLatest) {
                     recursivelyOverrideLatestVersion(dep)
                 }
+                dep.versionFilter = overrides.versionFilter
             } else {
                 logger.warn('PROPERTY_OVERRIDES has stale dep: ' + id)
             }
@@ -605,7 +606,7 @@ class ChromiumDepGraph {
         ))
     }
 
-    private void customizeLicenses(DependencyDescription dep, PropertyOverride fallbackProperties) {
+    private void customizeLicenses(DependencyDescription dep, PropertyOverride overrides) {
         for (LicenseSpec license : dep.licenses) {
             if (!license.url) {
                 continue
@@ -626,17 +627,17 @@ class ChromiumDepGraph {
                 path: 'licenses/Android_SDK_License-December_9_2016.txt'))
         }
 
-        if (fallbackProperties) {
-            if (fallbackProperties.licenseName) {
+        if (overrides) {
+            if (overrides.licenseName) {
                 dep.licenses.clear()
                 LicenseSpec license = new LicenseSpec(
-                    name : fallbackProperties.licenseName,
-                    path: fallbackProperties.licensePath,
-                    url: fallbackProperties.licenseUrl,
+                    name : overrides.licenseName,
+                    path: overrides.licensePath,
+                    url: overrides.licenseUrl,
                 )
                 dep.licenses.add(license)
             } else {
-                if (fallbackProperties.licensePath || fallbackProperties.licenseUrl) {
+                if (overrides.licensePath || overrides.licenseUrl) {
                     throw new IllegalStateException('PropertyOverride must specify "licenseName" if either ' +
                                                     '"licensePath" or "licenseUrl" is specified.')
                 }
@@ -653,20 +654,20 @@ class ChromiumDepGraph {
             dep.url = dep.url ?: 'https://firebase.google.com'
         }
 
-        PropertyOverride fallbackProperties = PROPERTY_OVERRIDES.get(dep.id)
-        if (fallbackProperties) {
-            logger.debug("Using fallback properties for $dep.id")
+        PropertyOverride overrides = PROPERTY_OVERRIDES.get(dep.id)
+        if (overrides) {
+            logger.debug("Using override properties for $dep.id")
             dep.with {
-                description = fallbackProperties.description ?: description
-                url = fallbackProperties.url ?: url
-                cipdSuffix = fallbackProperties.cipdSuffix ?: cipdSuffix
-                cpePrefix = fallbackProperties.cpePrefix ?: cpePrefix
+                description = overrides.description ?: description
+                url = overrides.url ?: url
+                cipdSuffix = overrides.cipdSuffix ?: cipdSuffix
+                cpePrefix = overrides.cpePrefix ?: cpePrefix
                 // Boolean properties require explicit null checks instead of only when truish.
-                if (fallbackProperties.generateTarget != null) {
-                    generateTarget = fallbackProperties.generateTarget
+                if (overrides.generateTarget != null) {
+                    generateTarget = overrides.generateTarget
                 }
-                if (fallbackProperties.exclude != null) {
-                    exclude = fallbackProperties.exclude
+                if (overrides.exclude != null) {
+                    exclude = overrides.exclude
                 }
             }
         }
@@ -677,7 +678,7 @@ class ChromiumDepGraph {
                 dep.exclude = true
             }
         } else {
-            customizeLicenses(dep, fallbackProperties)
+            customizeLicenses(dep, overrides)
         }
 
         return dep
@@ -834,6 +835,8 @@ class ChromiumDepGraph {
         // be, instead of the latest available, the resolved version by gradle
         // in this run.
         Boolean overrideLatest
+        // When set, consider only versions that contain this string.
+        String versionFilter
 
     }
 
@@ -856,9 +859,8 @@ class ChromiumDepGraph {
         Boolean exclude
         // Set to false to skip creation of BUILD.gn target.
         Boolean generateTarget
-        // Set to override the 3pp fetch script returing the latest version and
-        // instead forcibly return the version required by gradle.
         Boolean overrideLatest
+        String versionFilter
 
     }
 

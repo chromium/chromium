@@ -174,8 +174,6 @@ dependencies {
     // robolectric dependencies.
     testCompile "org.robolectric:robolectric:${robolectricVersion}"
     testCompile "org.robolectric:utils:${robolectricVersion}"
-    // TODO(crbug.comA1484130): Remove entry once CIPD is populated.
-    testCompile "org.robolectric:shadows-versioning:4.11-beta-2"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
