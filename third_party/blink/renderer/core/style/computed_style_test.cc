@@ -2013,4 +2013,30 @@ TEST_F(ComputedStyleTest, MaskRepeat) {
   ASSERT_EQ("repeat-y", computed_value->CssText());
 }
 
+TEST_F(ComputedStyleTest, MaskMode) {
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  const ComputedStyle* initial =
+      document.GetStyleResolver().InitialStyleForElement();
+
+  StyleResolverState state(document, *document.documentElement(),
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(initial));
+
+  state.SetStyle(*initial);
+
+  auto* mode_style_value = CSSIdentifierValue::Create(CSSValueID::kAlpha);
+
+  To<Longhand>(GetCSSPropertyMaskMode())
+      .ApplyValue(state, *mode_style_value, CSSProperty::ValueMode::kNormal);
+  const ComputedStyle* style = state.TakeStyle();
+  auto* computed_value = To<Longhand>(GetCSSPropertyMaskMode())
+                             .CSSValueFromComputedStyleInternal(
+                                 *style, nullptr /* layout_object */,
+                                 false /* allow_visited_style */);
+  ASSERT_TRUE(computed_value);
+  ASSERT_EQ("alpha", computed_value->CssText());
+}
+
 }  // namespace blink

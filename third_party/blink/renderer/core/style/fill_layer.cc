@@ -65,11 +65,13 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
       blend_mode_(static_cast<unsigned>(FillLayer::InitialFillBlendMode(type))),
       background_x_origin_(static_cast<unsigned>(BackgroundEdgeOrigin::kLeft)),
       background_y_origin_(static_cast<unsigned>(BackgroundEdgeOrigin::kTop)),
+      mask_mode_(static_cast<unsigned>(FillLayer::InitialFillMaskMode(type))),
       image_set_(use_initial_values),
       attachment_set_(use_initial_values),
       clip_set_(use_initial_values),
       origin_set_(use_initial_values),
       repeat_set_(use_initial_values),
+      mask_mode_set_(use_initial_values),
       pos_x_set_(use_initial_values),
       pos_y_set_(use_initial_values),
       background_x_origin_set_(false),
@@ -103,11 +105,13 @@ FillLayer::FillLayer(const FillLayer& o)
       blend_mode_(o.blend_mode_),
       background_x_origin_(o.background_x_origin_),
       background_y_origin_(o.background_y_origin_),
+      mask_mode_(o.mask_mode_),
       image_set_(o.image_set_),
       attachment_set_(o.attachment_set_),
       clip_set_(o.clip_set_),
       origin_set_(o.origin_set_),
       repeat_set_(o.repeat_set_),
+      mask_mode_set_(o.mask_mode_set_),
       pos_x_set_(o.pos_x_set_),
       pos_y_set_(o.pos_y_set_),
       background_x_origin_set_(o.background_x_origin_set_),
@@ -140,6 +144,7 @@ FillLayer& FillLayer::operator=(const FillLayer& o) {
   position_y_ = o.position_y_;
   background_x_origin_ = o.background_x_origin_;
   background_y_origin_ = o.background_y_origin_;
+  mask_mode_ = o.mask_mode_;
   background_x_origin_set_ = o.background_x_origin_set_;
   background_y_origin_set_ = o.background_y_origin_set_;
   size_length_ = o.size_length_;
@@ -158,6 +163,7 @@ FillLayer& FillLayer::operator=(const FillLayer& o) {
   blend_mode_set_ = o.blend_mode_set_;
   origin_set_ = o.origin_set_;
   repeat_set_ = o.repeat_set_;
+  mask_mode_set_ = o.mask_mode_set_;
   pos_x_set_ = o.pos_x_set_;
   pos_y_set_ = o.pos_y_set_;
 
@@ -173,8 +179,8 @@ bool FillLayer::LayerPropertiesEqual(const FillLayer& o) const {
          position_x_ == o.position_x_ && position_y_ == o.position_y_ &&
          background_x_origin_ == o.background_x_origin_ &&
          background_y_origin_ == o.background_y_origin_ &&
-         attachment_ == o.attachment_ && clip_ == o.clip_ &&
-         compositing_operator_ == o.compositing_operator_ &&
+         mask_mode_ == o.mask_mode_ && attachment_ == o.attachment_ &&
+         clip_ == o.clip_ && compositing_operator_ == o.compositing_operator_ &&
          blend_mode_ == o.blend_mode_ && origin_ == o.origin_ &&
          repeat_ == o.repeat_ && size_type_ == o.size_type_ &&
          size_length_ == o.size_length_ && type_ == o.type_;
@@ -325,6 +331,19 @@ void FillLayer::FillUnsetProperties() {
     for (FillLayer* pattern = this; curr; curr = curr->Next()) {
       curr->size_type_ = pattern->size_type_;
       curr->size_length_ = pattern->size_length_;
+      pattern = pattern->Next();
+      if (pattern == curr || !pattern) {
+        pattern = this;
+      }
+    }
+  }
+
+  for (curr = this; curr && curr->IsMaskModeSet(); curr = curr->Next()) {
+  }
+  if (curr && curr != this) {
+    // We need to fill in the remaining values with the pattern specified.
+    for (FillLayer* pattern = this; curr; curr = curr->Next()) {
+      curr->mask_mode_ = pattern->mask_mode_;
       pattern = pattern->Next();
       if (pattern == curr || !pattern) {
         pattern = this;

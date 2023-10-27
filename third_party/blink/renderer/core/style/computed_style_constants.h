@@ -223,7 +223,7 @@ enum class EFillRepeat : unsigned {
   kSpaceFill
 };
 
-enum class EFillMode : unsigned { kAlpha, kLuminance, kMatchSource };
+enum class EFillMaskMode : unsigned { kAlpha, kLuminance, kMatchSource };
 
 enum class EFillLayerType : unsigned { kBackground, kMask };
 

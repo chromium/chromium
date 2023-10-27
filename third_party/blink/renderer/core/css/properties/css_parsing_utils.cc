@@ -4131,6 +4131,11 @@ CSSValue* ConsumePrefixedMaskComposite(CSSParserTokenRange& range) {
   return ConsumeIdentRange(range, CSSValueID::kClear, CSSValueID::kPlusLighter);
 }
 
+CSSValue* ConsumeMaskMode(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kAlpha, CSSValueID::kLuminance,
+                      CSSValueID::kMatchSource>(range);
+}
+
 CSSPrimitiveValue* ConsumeLengthOrPercentCountNegative(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -4317,6 +4322,8 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
       return ConsumeRepeatStyleValue(range);
     case CSSPropertyID::kMaskComposite:
       return ConsumeMaskComposite(range);
+    case CSSPropertyID::kMaskMode:
+      return ConsumeMaskMode(range);
     default:
       return nullptr;
   };

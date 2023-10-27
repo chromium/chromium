@@ -5764,7 +5764,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_template: "mask_layer",
       style_builder_template_args: {
-        fill_type: "Mode",
+        fill_type: "MaskMode",
       },
       runtime_flag: "CSSMaskingInterop",
     },
@@ -7508,7 +7508,7 @@
       longhands: [
         "mask-image", "-webkit-mask-position-x",
         "-webkit-mask-position-y", "mask-size", "mask-repeat", "mask-origin",
-        "mask-clip", "mask-composite"
+        "mask-clip", "mask-composite", "mask-mode"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSMaskingInterop",

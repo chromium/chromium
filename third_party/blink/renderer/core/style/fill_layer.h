@@ -86,8 +86,10 @@ class CORE_EXPORT FillLayer {
   EFillBox Clip() const { return static_cast<EFillBox>(clip_); }
   EFillBox Origin() const { return static_cast<EFillBox>(origin_); }
   const FillRepeat& Repeat() const { return repeat_; }
-  EFillMode Mode() const { return EFillMode::kAlpha; }
-  CompositingOperator CompositingOperator() const {
+  EFillMaskMode MaskMode() const {
+    return static_cast<EFillMaskMode>(mask_mode_);
+  }
+  enum CompositingOperator CompositingOperator() const {
     return static_cast<enum CompositingOperator>(compositing_operator_);
   }
   CompositeOperator Composite() const;
@@ -113,9 +115,7 @@ class CORE_EXPORT FillLayer {
   bool IsClipSet() const { return clip_set_; }
   bool IsOriginSet() const { return origin_set_; }
   bool IsRepeatSet() const { return repeat_set_; }
-
-  // TODO(crbug.com/1490704) Implement to support mask mode
-  bool IsModeSet() const { return false; }
+  bool IsMaskModeSet() const { return mask_mode_set_; }
   bool IsCompositingOperatorSet() const { return compositing_operator_set_; }
 
   bool IsBlendModeSet() const { return blend_mode_set_; }
@@ -166,8 +166,9 @@ class CORE_EXPORT FillLayer {
     repeat_ = r;
     repeat_set_ = true;
   }
-  void SetMode(const EFillMode& m) {
-    // TODO(crbug.com/1490704) Implement to support mask mode
+  void SetMaskMode(const EFillMaskMode& m) {
+    mask_mode_ = static_cast<unsigned>(m);
+    mask_mode_set_ = true;
   }
   void SetCompositingOperator(enum CompositingOperator c) {
     compositing_operator_ = static_cast<unsigned>(c);
@@ -201,8 +202,7 @@ class CORE_EXPORT FillLayer {
   void ClearClip() { clip_set_ = false; }
   void ClearOrigin() { origin_set_ = false; }
   void ClearRepeat() { repeat_set_ = false; }
-  // TODO(crbug.com/1490704) Implement to support mask mode
-  void ClearMode() {}
+  void ClearMaskMode() { mask_mode_set_ = false; }
   void ClearCompositingOperator() { compositing_operator_set_ = false; }
   void ClearBlendMode() { blend_mode_set_ = false; }
   void ClearSize() {
@@ -276,9 +276,8 @@ class CORE_EXPORT FillLayer {
   static FillRepeat InitialFillRepeat(EFillLayerType) {
     return {EFillRepeat::kRepeatFill, EFillRepeat::kRepeatFill};
   }
-  static EFillMode InitialFillMode(EFillLayerType) {
-    // TODO(crbug.com/1490704) Implement to support mask mode
-    return EFillMode::kAlpha;
+  static EFillMaskMode InitialFillMaskMode(EFillLayerType) {
+    return EFillMaskMode::kMatchSource;
   }
   static enum CompositingOperator InitialFillCompositingOperator(
       EFillLayerType) {
@@ -336,11 +335,13 @@ class CORE_EXPORT FillLayer {
   unsigned blend_mode_ : 5;            // BlendMode
   unsigned background_x_origin_ : 2;   // BackgroundEdgeOrigin
   unsigned background_y_origin_ : 2;   // BackgroundEdgeOrigin
+  unsigned mask_mode_ : 2;             // EFillMaskMode
   unsigned image_set_ : 1;
   unsigned attachment_set_ : 1;
   unsigned clip_set_ : 1;
   unsigned origin_set_ : 1;
   unsigned repeat_set_ : 1;
+  unsigned mask_mode_set_ : 1;
   unsigned pos_x_set_ : 1;
   unsigned pos_y_set_ : 1;
   unsigned background_x_origin_set_ : 1;

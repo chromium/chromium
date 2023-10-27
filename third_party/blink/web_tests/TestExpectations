@@ -498,8 +498,6 @@ crbug.com/910537 external/wpt/svg/painting/marker-005.svg [ Failure ]
 crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-001.svg [ Failure ]
 crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-002.svg [ Failure ]
 
-crbug.com/1418401 external/wpt/css/css-masking/mask-shorthand-subproperties-reset.html [ Failure ]
-
 # Need to support remote SVG mask references.
 crbug.com/1496470 external/wpt/css/css-masking/mask-image/mask-image-url-remote-mask.html [ Failure ]
 crbug.com/1496470 external/wpt/css/css-masking/mask-image/mask-image-1c.html [ Failure ]
@@ -1448,7 +1446,6 @@ crbug.com/1350475 external/wpt/css/css-pseudo/highlight-currentcolor-painting-te
 crbug.com/1351020 [ Mac ] external/wpt/compat/webkit-text-fill-color-property-002.html [ Failure ]
 
 crbug.com/1205953 external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
-crbug.com/1207788 external/wpt/css/css-will-change/will-change-stacking-context-mask-1.html [ Failure ]
 
 # lab color space not yet implemented
 # color() function not implemented

@@ -186,10 +186,20 @@ void CSSToStyleMap::MapFillRepeat(StyleResolverState&,
   }
 }
 
-void CSSToStyleMap::MapFillMode(StyleResolverState&,
-                                FillLayer* layer,
-                                const CSSValue& value) {
-  // TODO(crbug.com/1490704) Implement to support mask mode
+void CSSToStyleMap::MapFillMaskMode(StyleResolverState&,
+                                    FillLayer* layer,
+                                    const CSSValue& value) {
+  if (value.IsInitialValue()) {
+    layer->SetMaskMode(FillLayer::InitialFillMaskMode(layer->GetType()));
+    return;
+  }
+
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value) {
+    return;
+  }
+
+  layer->SetMaskMode(identifier_value->ConvertTo<EFillMaskMode>());
 }
 
 void CSSToStyleMap::MapFillSize(StyleResolverState& state,

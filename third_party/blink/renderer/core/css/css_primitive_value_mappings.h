@@ -516,9 +516,42 @@ inline EFillRepeat CSSIdentifierValue::ConvertTo() const {
     default:
       break;
   }
-
   NOTREACHED();
   return EFillRepeat::kRepeatFill;
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(EFillMaskMode e)
+    : CSSValue(kIdentifierClass) {
+  switch (e) {
+    case EFillMaskMode::kAlpha:
+      value_id_ = CSSValueID::kAlpha;
+      break;
+    case EFillMaskMode::kLuminance:
+      value_id_ = CSSValueID::kLuminance;
+      break;
+    case EFillMaskMode::kMatchSource:
+      value_id_ = CSSValueID::kMatchSource;
+      break;
+    default:
+      NOTREACHED();
+      value_id_ = CSSValueID::kMatchSource;
+  }
+}
+
+template <>
+inline EFillMaskMode CSSIdentifierValue::ConvertTo() const {
+  switch (value_id_) {
+    case CSSValueID::kAlpha:
+      return EFillMaskMode::kAlpha;
+    case CSSValueID::kLuminance:
+      return EFillMaskMode::kLuminance;
+    case CSSValueID::kMatchSource:
+      return EFillMaskMode::kMatchSource;
+    default:
+      NOTREACHED();
+      return EFillMaskMode::kMatchSource;
+  }
 }
 
 template <>

@@ -100,7 +100,7 @@ bool FillLayersEqual(const FillLayer& a_layers, const FillLayer& b_layers) {
         }
         break;
       case CSSPropertyID::kMaskMode:
-        if (a_layer->Mode() != b_layer->Mode()) {
+        if (a_layer->MaskMode() != b_layer->MaskMode()) {
           return false;
         }
         break;

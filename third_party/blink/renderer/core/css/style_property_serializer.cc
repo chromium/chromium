@@ -1728,6 +1728,13 @@ String StylePropertySerializer::GetLayeredShorthandValue(
               omit_value = true;
             }
           }
+        } else if (property->IDEquals(CSSPropertyID::kMaskMode)) {
+          if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+            if (To<CSSIdentifierValue>(ident)->GetValueID() ==
+                CSSValueID::kMatchSource) {
+              omit_value = true;
+            }
+          }
         }
         // TODO(pdr): Omit default values for mask properties.
       }

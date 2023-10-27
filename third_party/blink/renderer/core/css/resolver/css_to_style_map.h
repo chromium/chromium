@@ -57,8 +57,8 @@ class CSSToStyleMap {
   static void MapFillOrigin(StyleResolverState&, FillLayer*, const CSSValue&);
   static void MapFillImage(StyleResolverState&, FillLayer*, const CSSValue&);
   static void MapFillRepeat(StyleResolverState&, FillLayer*, const CSSValue&);
+  static void MapFillMaskMode(StyleResolverState&, FillLayer*, const CSSValue&);
   static void MapFillSize(StyleResolverState&, FillLayer*, const CSSValue&);
-  static void MapFillMode(StyleResolverState&, FillLayer*, const CSSValue&);
   static void MapFillPositionX(StyleResolverState&,
                                FillLayer*,
                                const CSSValue&);

@@ -363,6 +363,14 @@ const CSSValue* ComputedStyleUtils::RepeatStyle(const FillLayer* curr_layer) {
   return list;
 }
 
+const CSSValue* ComputedStyleUtils::MaskMode(const FillLayer* curr_layer) {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (; curr_layer; curr_layer = curr_layer->Next()) {
+    list->Append(*CSSIdentifierValue::Create(curr_layer->MaskMode()));
+  }
+  return list;
+}
+
 const CSSValueList* ComputedStyleUtils::ValuesForBackgroundShorthand(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
@@ -488,7 +496,10 @@ const CSSValueList* ComputedStyleUtils::ValuesForMaskShorthand(
       list->Append(*CSSIdentifierValue::Create(layer->CompositingOperator()));
     }
     // <masking-mode>
-    // TODO(crbug.com/1490704): Emit mask-mode here.
+    if (layer->MaskMode() !=
+        FillLayer::InitialFillMaskMode(EFillLayerType::kMask)) {
+      list->Append(*CSSIdentifierValue::Create(layer->MaskMode()));
+    }
 
     if (list->length()) {
       result->Append(*list);

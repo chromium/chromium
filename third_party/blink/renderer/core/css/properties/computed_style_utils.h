@@ -73,6 +73,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                                         const FillLayer&,
                                                         const ComputedStyle&);
   static const CSSValue* ValueForFillRepeat(const FillLayer* curr_layer);
+  static const CSSValue* MaskMode(const FillLayer* curr_layer);
   static const CSSValue* RepeatStyle(const FillLayer* curr_layer);
   static const CSSValueList* ValuesForBackgroundShorthand(
       const ComputedStyle&,

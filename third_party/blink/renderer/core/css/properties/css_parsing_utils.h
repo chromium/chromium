@@ -355,6 +355,7 @@ CSSValue* ConsumeBackgroundBox(CSSParserTokenRange&);
 CSSValue* ConsumeBackgroundBoxOrText(CSSParserTokenRange&);
 CSSValue* ConsumeMaskComposite(CSSParserTokenRange&);
 CSSValue* ConsumePrefixedMaskComposite(CSSParserTokenRange&);
+CSSValue* ConsumeMaskMode(CSSParserTokenRange&);
 bool ConsumeBackgroundPosition(CSSParserTokenRange&,
                                const CSSParserContext&,
                                UnitlessQuirk,
