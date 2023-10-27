@@ -225,6 +225,7 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
   // before filling.
   if (selection.id().empty()) {
     GetDriver()->ApplyFieldAction(mojom::ActionPersistence::kFill,
+                                  mojom::TextReplacement::kReplaceAll,
                                   focused_field_id, selection.text_to_fill());
     return;
   }
@@ -348,6 +349,7 @@ void CreditCardAccessoryControllerImpl::OnCreditCardFetched(
   DCHECK(GetDriver());
 
   GetDriver()->ApplyFieldAction(mojom::ActionPersistence::kFill,
+                                mojom::TextReplacement::kReplaceAll,
                                 last_focused_field_id_, credit_card->number());
   last_focused_field_id_ = {};
 }

@@ -266,10 +266,12 @@ class AutofillDriverRouter {
   void ApplyFieldAction(
       AutofillDriver* source,
       mojom::ActionPersistence action_persistence,
+      mojom::TextReplacement text_replacement,
       const FieldGlobalId& field,
       const std::u16string& value,
       void (*callback)(AutofillDriver* target,
                        mojom::ActionPersistence action_persistence,
+                       mojom::TextReplacement text_replacement,
                        const FieldRendererId& field,
                        const std::u16string& value));
   using BrowserFormHandler = AutofillDriver::BrowserFormHandler;

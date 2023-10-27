@@ -369,6 +369,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kFieldByFieldFilling:
     case PopupItemId::kFillExistingPlusAddress:
       manager_->driver().ApplyFieldAction(mojom::ActionPersistence::kPreview,
+                                          mojom::TextReplacement::kReplaceAll,
                                           query_field_.global_id(),
                                           suggestion.main_text.value);
       break;
@@ -436,6 +437,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         const bool had_value_before_filling =
             !autofill_trigger_field->value.empty();
         manager_->driver().ApplyFieldAction(mojom::ActionPersistence::kFill,
+                                            mojom::TextReplacement::kReplaceAll,
                                             query_field_.global_id(),
                                             suggestion.main_text.value);
         autofill_trigger_field->is_autofilled = true;
@@ -453,7 +455,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       // User selected an IBAN suggestion, and we should fill the unmasked IBAN
       // value.
       manager_->driver().ApplyFieldAction(
-          mojom::ActionPersistence::kFill, query_field_.global_id(),
+          mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+          query_field_.global_id(),
           suggestion.GetPayload<Suggestion::ValueToFill>().value());
       manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
                                                 suggestion.popup_item_id,
@@ -500,9 +503,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kMerchantPromoCodeEntry:
       // User selected an Autocomplete or Merchant Promo Code field, so we fill
       // directly.
-      manager_->driver().ApplyFieldAction(mojom::ActionPersistence::kFill,
-                                          query_field_.global_id(),
-                                          suggestion.main_text.value);
+      manager_->driver().ApplyFieldAction(
+          mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+          query_field_.global_id(), suggestion.main_text.value);
       manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
                                                 suggestion.popup_item_id,
                                                 query_form_, query_field_);
@@ -534,9 +537,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
           plus_addresses::PlusAddressMetrics::
               PlusAddressAutofillSuggestionEvent::kExistingPlusAddressChosen);
-      manager_->driver().ApplyFieldAction(mojom::ActionPersistence::kFill,
-                                          query_field_.global_id(),
-                                          suggestion.main_text.value);
+      manager_->driver().ApplyFieldAction(
+          mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+          query_field_.global_id(), suggestion.main_text.value);
       break;
     case PopupItemId::kCreateNewPlusAddress: {
       plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
@@ -547,7 +550,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
              const std::string& plus_address) {
             if (manager) {
               manager->driver().ApplyFieldAction(
-                  mojom::ActionPersistence::kFill, field,
+                  mojom::ActionPersistence::kFill,
+                  mojom::TextReplacement::kReplaceAll, field,
                   base::UTF8ToUTF16(plus_address));
             }
           },
@@ -565,7 +569,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                const std::u16string& text) {
               if (manager) {
                 manager->driver().ApplyFieldAction(
-                    mojom::ActionPersistence::kFill, field, text);
+                    mojom::ActionPersistence::kFill,
+                    mojom::TextReplacement::kReplaceSelection, field, text);
               }
             },
             manager_->GetWeakPtr(), query_field_.global_id());

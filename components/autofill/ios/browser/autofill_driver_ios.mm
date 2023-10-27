@@ -110,6 +110,7 @@ std::vector<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
 
 void AutofillDriverIOS::ApplyFieldAction(
     mojom::ActionPersistence action_persistence,
+    mojom::TextReplacement text_replacement,
     const FieldGlobalId& field,
     const std::u16string& value) {
   // For now, only support filling.

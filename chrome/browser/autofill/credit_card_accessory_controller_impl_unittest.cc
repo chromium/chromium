@@ -80,6 +80,7 @@ class MockAutofillDriver : public TestContentAutofillDriver {
   MOCK_METHOD(void,
               ApplyFieldAction,
               (mojom::ActionPersistence action_persistence,
+               mojom::TextReplacement text_replacement,
                const FieldGlobalId& field,
                const std::u16string&),
               (override));
@@ -312,7 +313,8 @@ TEST_P(CreditCardAccessoryControllerCardUnmaskTest, CardUnmask) {
                          .renderer_id = FieldRendererId(123)};
 
   EXPECT_CALL(autofill_driver(),
-              ApplyFieldAction(mojom::ActionPersistence::kFill, field_id,
+              ApplyFieldAction(mojom::ActionPersistence::kFill,
+                               mojom::TextReplacement::kReplaceAll, field_id,
                                card.number()));
 
   controller()->OnFillingTriggered(field_id, field);

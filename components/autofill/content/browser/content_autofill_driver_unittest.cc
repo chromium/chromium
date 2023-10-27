@@ -198,8 +198,11 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   void ApplyFieldAction(mojom::ActionPersistence action_persistence,
+                        mojom::TextReplacement text_replacement,
                         FieldRendererId field,
                         const std::u16string& value) override {
+    CHECK_EQ(text_replacement, mojom::TextReplacement::kReplaceAll)
+        << "FakeAutofillAgent only supports kReplaceAll";
     value_renderer_id_ = field;
     switch (action_persistence) {
       case mojom::ActionPersistence::kPreview:
@@ -841,8 +844,9 @@ TEST_F(ContentAutofillDriverTestWithAddressForm, ApplyFieldAction_Fill) {
 
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
-  driver().browser_events().ApplyFieldAction(mojom::ActionPersistence::kFill,
-                                             field, input_value);
+  driver().browser_events().ApplyFieldAction(
+      mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+      field, input_value);
   run_loop.RunUntilIdle();
 
   EXPECT_EQ(input_value, agent().GetString16FillFieldWithValue(field));
@@ -854,8 +858,9 @@ TEST_F(ContentAutofillDriverTestWithAddressForm, ApplyFieldAction_Preview) {
 
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
-  driver().browser_events().ApplyFieldAction(mojom::ActionPersistence::kPreview,
-                                             field, input_value);
+  driver().browser_events().ApplyFieldAction(
+      mojom::ActionPersistence::kPreview, mojom::TextReplacement::kReplaceAll,
+      field, input_value);
   run_loop.RunUntilIdle();
 
   EXPECT_EQ(input_value, agent().GetString16PreviewFieldWithValue(field));

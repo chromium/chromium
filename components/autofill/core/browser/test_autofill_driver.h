@@ -63,6 +63,7 @@ class TestAutofillDriverTemplate : public T {
   bool CanShowAutofillUi() const override { return true; }
   bool RendererIsAvailable() override { return true; }
   void ApplyFieldAction(mojom::ActionPersistence action_persistence,
+                        mojom::TextReplacement text_replacement,
                         const FieldGlobalId& field,
                         const std::u16string& value) override {}
   void HandleParsedForms(const std::vector<FormData>& forms) override {}

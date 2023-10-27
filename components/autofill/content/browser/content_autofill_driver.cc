@@ -248,18 +248,20 @@ std::vector<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
 
 void ContentAutofillDriver::ApplyFieldAction(
     mojom::ActionPersistence action_persistence,
+    mojom::TextReplacement text_replacement,
     const FieldGlobalId& field,
     const std::u16string& value) {
   router().ApplyFieldAction(
-      this, action_persistence, field, value,
+      this, action_persistence, text_replacement, field, value,
       [](autofill::AutofillDriver* target,
          mojom::ActionPersistence action_persistence,
-         const FieldRendererId& field, const std::u16string& value) {
+         mojom::TextReplacement text_replacement, const FieldRendererId& field,
+         const std::u16string& value) {
         if (!cast(target)->RendererIsAvailable()) {
           return;
         }
-        cast(target)->GetAutofillAgent()->ApplyFieldAction(action_persistence,
-                                                           field, value);
+        cast(target)->GetAutofillAgent()->ApplyFieldAction(
+            action_persistence, text_replacement, field, value);
       });
 }
 

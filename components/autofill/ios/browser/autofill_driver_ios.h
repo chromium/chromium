@@ -62,6 +62,7 @@ class AutofillDriverIOS : public AutofillDriver,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override;
   void ApplyFieldAction(mojom::ActionPersistence action_persistence,
+                        mojom::TextReplacement text_replacement,
                         const FieldGlobalId& field,
                         const std::u16string& value) override;
   void ExtractForm(

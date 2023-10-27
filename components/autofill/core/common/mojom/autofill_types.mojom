@@ -500,7 +500,7 @@ enum AutofillState {
 };
 
 // Represents whether an autofill action, which is an operation that changes a
-// form, will persist (kFill) or will be cleared later (kPreview)
+// form, will persist (kFill) or will be cleared later (kPreview).
 enum ActionPersistence {
   kFill,     // The action is filled.
   kPreview,  // The action is previewed and will be cleared afterwards.
@@ -510,6 +510,12 @@ enum ActionPersistence {
 enum ActionType {
   kFill,  // Autofill should fill the form.
   kUndo,  // Autofill should undo some previous fill operation on the form.
+};
+
+// Indicates which part of a text field's value Autofill replaces.
+enum TextReplacement {
+  kReplaceAll,        // Replace the field's current value.
+  kReplaceSelection,  // Replace only the currently selected text.
 };
 
 // Describes which action triggered Autofill suggestions. This has implications

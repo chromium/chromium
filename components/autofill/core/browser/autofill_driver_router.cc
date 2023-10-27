@@ -440,14 +440,17 @@ std::vector<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
 void AutofillDriverRouter::ApplyFieldAction(
     AutofillDriver* source,
     mojom::ActionPersistence action_persistence,
+    mojom::TextReplacement text_replacement,
     const FieldGlobalId& field,
     const std::u16string& value,
     void (*callback)(AutofillDriver* target,
                      mojom::ActionPersistence action_persistence,
+                     mojom::TextReplacement text_replacement,
                      const FieldRendererId& field,
                      const std::u16string& value)) {
   if (auto* target = DriverOfFrame(field.frame_token)) {
-    callback(target, action_persistence, field.renderer_id, value);
+    callback(target, action_persistence, text_replacement, field.renderer_id,
+             value);
   }
 }
 

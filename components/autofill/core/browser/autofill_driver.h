@@ -165,6 +165,7 @@ class AutofillDriver {
 
   // Tells the renderer to set the node text.
   virtual void ApplyFieldAction(mojom::ActionPersistence action_persistence,
+                                mojom::TextReplacement text_replacement,
                                 const FieldGlobalId& field_id,
                                 const std::u16string& value) = 0;
 

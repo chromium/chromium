@@ -21,7 +21,8 @@ void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
                           const std::u16string& text) {
   if (manager) {
     manager->driver().ApplyFieldAction(
-        autofill::mojom::ActionPersistence::kFill, field, text);
+        autofill::mojom::ActionPersistence::kFill,
+        autofill::mojom::TextReplacement::kReplaceSelection, field, text);
   }
 }
 

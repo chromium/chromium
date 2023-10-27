@@ -109,6 +109,7 @@ class AutofillAgent : public content::RenderFrameObserver,
                        mojom::ActionPersistence action_persistence,
                        const FormData& form) override;
   void ApplyFieldAction(mojom::ActionPersistence action_persistence,
+                        mojom::TextReplacement text_replacement,
                         FieldRendererId field_id,
                         const std::u16string& value) override;
   void ExtractForm(FormRendererId form,
@@ -309,7 +310,7 @@ class AutofillAgent : public content::RenderFrameObserver,
                                   const std::u16string& suggested_value);
 
   // Set `element` to display the given `value`.
-  void DoFillFieldWithValue(const std::u16string& value,
+  void DoFillFieldWithValue(std::u16string_view value,
                             blink::WebFormControlElement& element,
                             blink::WebAutofillState autofill_state);
 

@@ -134,6 +134,7 @@ class MockAutofillDriver : public TestAutofillDriver {
   MOCK_METHOD(void,
               ApplyFieldAction,
               (mojom::ActionPersistence,
+               mojom::TextReplacement,
                const FieldGlobalId&,
                const std::u16string&),
               (override));
@@ -928,6 +929,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
   EXPECT_CALL(
       *autofill_driver_,
       ApplyFieldAction(mojom::ActionPersistence::kPreview,
+                       mojom::TextReplacement::kReplaceAll,
                        queried_form_triggering_field_id_, masked_iban_value));
   external_delegate_->DidSelectSuggestion(suggestions[0],
                                           kDefaultTriggerSource);
@@ -936,6 +938,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
   EXPECT_CALL(
       *autofill_driver_,
       ApplyFieldAction(mojom::ActionPersistence::kFill,
+                       mojom::TextReplacement::kReplaceAll,
                        queried_form_triggering_field_id_, unmasked_iban_value));
   external_delegate_->DidAcceptSuggestion(suggestions[0], 0,
                                           kDefaultTriggerSource);
@@ -964,6 +967,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(
       *autofill_driver_,
       ApplyFieldAction(mojom::ActionPersistence::kPreview,
+                       mojom::TextReplacement::kReplaceAll,
                        queried_form_triggering_field_id_, promo_code_value));
   external_delegate_->DidSelectSuggestion(suggestions[0],
                                           kDefaultTriggerSource);
@@ -972,6 +976,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(
       *autofill_driver_,
       ApplyFieldAction(mojom::ActionPersistence::kFill,
+                       mojom::TextReplacement::kReplaceAll,
                        queried_form_triggering_field_id_, promo_code_value));
 
   external_delegate_->DidAcceptSuggestion(suggestions[0], 0,
@@ -1017,6 +1022,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm());
   EXPECT_CALL(*autofill_driver_,
               ApplyFieldAction(mojom::ActionPersistence::kPreview,
+                               mojom::TextReplacement::kReplaceAll,
                                queried_form_triggering_field_id_,
                                std::u16string(u"baz foo")));
   external_delegate_->DidSelectSuggestion(
@@ -1333,6 +1339,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(
       *autofill_driver_,
       ApplyFieldAction(mojom::ActionPersistence::kPreview,
+                       mojom::TextReplacement::kReplaceAll,
                        queried_form_triggering_field_id_, plus_address));
   external_delegate_->DidSelectSuggestion(suggestions[0],
                                           kDefaultTriggerSource);
@@ -1341,6 +1348,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(
       *autofill_driver_,
       ApplyFieldAction(mojom::ActionPersistence::kFill,
+                       mojom::TextReplacement::kReplaceAll,
                        queried_form_triggering_field_id_, plus_address));
   external_delegate_->DidAcceptSuggestion(suggestions[0], /*position=*/0,
                                           kDefaultTriggerSource);
@@ -1390,6 +1398,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   // empty text of the suggestion).
   EXPECT_CALL(*autofill_driver_,
               ApplyFieldAction(mojom::ActionPersistence::kFill,
+                               mojom::TextReplacement::kReplaceAll,
                                queried_form_triggering_field_id_,
                                kMockPlusAddressForCreationCallback));
   external_delegate_->DidAcceptSuggestion(suggestions[0], /*position=*/0,
@@ -1435,6 +1444,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateOpensComposeAndFills) {
   EXPECT_CALL(
       *autofill_driver_,
       ApplyFieldAction(mojom::ActionPersistence::kFill,
+                       mojom::TextReplacement::kReplaceSelection,
                        queried_form_triggering_field_id_, kComposeResponse));
   std::move(callback).Run(kComposeResponse);
 }
@@ -1609,6 +1619,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   std::u16string dummy_autocomplete_string(u"autocomplete");
   EXPECT_CALL(*autofill_driver_,
               ApplyFieldAction(mojom::ActionPersistence::kFill,
+                               mojom::TextReplacement::kReplaceAll,
                                queried_form_triggering_field_id_,
                                dummy_autocomplete_string));
   EXPECT_CALL(*autofill_client_.GetMockAutocompleteHistoryManager(),
@@ -1633,6 +1644,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   std::u16string dummy_promo_code_string(u"merchant promo");
   EXPECT_CALL(*autofill_driver_,
               ApplyFieldAction(mojom::ActionPersistence::kFill,
+                               mojom::TextReplacement::kReplaceAll,
                                queried_form_triggering_field_id_,
                                dummy_promo_code_string));
   EXPECT_CALL(
@@ -1657,6 +1669,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(
       *autofill_driver_,
       ApplyFieldAction(mojom::ActionPersistence::kFill,
+                       mojom::TextReplacement::kReplaceAll,
                        queried_form_triggering_field_id_, unmasked_iban_value));
   EXPECT_CALL(*autofill_client_.GetMockIbanManager(),
               OnSingleFieldSuggestionSelected(masked_iban_value,
@@ -1681,6 +1694,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   const std::u16string dummy_field_by_field_string = u"field by field";
   EXPECT_CALL(*autofill_driver_,
               ApplyFieldAction(mojom::ActionPersistence::kFill,
+                               mojom::TextReplacement::kReplaceAll,
                                queried_form_triggering_field_id_,
                                dummy_field_by_field_string));
 

@@ -760,29 +760,55 @@ void AutofillAgent::TriggerSuggestions(
 
 void AutofillAgent::ApplyFieldAction(
     mojom::ActionPersistence action_persistence,
+    mojom::TextReplacement text_replacement,
     FieldRendererId field_id,
     const std::u16string& value) {
+  if (!unsafe_render_frame()) {
+    return;
+  }
+
   // TODO(crbug.com/1427131): Look up `field_id` rather than using
   // `last_queried_element_` once
   // blink::features::kAutofillUseDomNodeIdForRendererId is enabled.
-  if (!last_queried_element_.IsNull() &&
-      field_id == form_util::GetFieldRendererId(last_queried_element_) &&
-      form_util::IsTextAreaElementOrTextInput(last_queried_element_)) {
-    DCHECK(MaybeWasOwnedByFrame(last_queried_element_, unsafe_render_frame()));
+  WebFormControlElement form_control = last_queried_element_;
+  if (!form_control.IsNull() &&
+      field_id == form_util::GetFieldRendererId(form_control) &&
+      form_util::IsTextAreaElementOrTextInput(form_control)) {
+    DCHECK(MaybeWasOwnedByFrame(form_control, unsafe_render_frame()));
     ClearPreviewedForm();
     switch (action_persistence) {
       case mojom::ActionPersistence::kPreview:
-        query_node_autofill_state_ = last_queried_element_.GetAutofillState();
-        last_queried_element_.SetSuggestedValue(
-            blink::WebString::FromUTF16(value));
-        form_util::PreviewSuggestion(
-            last_queried_element_.SuggestedValue().Utf16(),
-            last_queried_element_.Value().Utf16(), &last_queried_element_);
-        previewed_elements_.push_back(last_queried_element_);
+        switch (text_replacement) {
+          case mojom::TextReplacement::kReplaceSelection:
+            NOTIMPLEMENTED()
+                << "Previewing replacement of selection is not implemented";
+            break;
+          case mojom::TextReplacement::kReplaceAll:
+            query_node_autofill_state_ = form_control.GetAutofillState();
+            form_control.SetSuggestedValue(blink::WebString::FromUTF16(value));
+            form_util::PreviewSuggestion(form_control.SuggestedValue().Utf16(),
+                                         form_control.Value().Utf16(),
+                                         &form_control);
+            previewed_elements_.push_back(form_control);
+            break;
+        }
         break;
       case mojom::ActionPersistence::kFill:
-        DoFillFieldWithValue(value, last_queried_element_,
-                             WebAutofillState::kAutofilled);
+        switch (text_replacement) {
+          case mojom::TextReplacement::kReplaceSelection: {
+            // TODO(crbug.com/1490373): Replace the selection in
+            // contenteditables.
+            NOTIMPLEMENTED()
+                << "Replacing the selection of form controls with '" << value
+                << "' isn't implemented yet";
+            break;
+          }
+          case mojom::TextReplacement::kReplaceAll: {
+            DoFillFieldWithValue(value, form_control,
+                                 WebAutofillState::kAutofilled);
+            break;
+          }
+        }
         break;
     }
     return;
@@ -791,9 +817,18 @@ void AutofillAgent::ApplyFieldAction(
   if (WebElement content_editable =
           form_util::FindContentEditableByRendererId(field_id);
       !content_editable.IsNull()) {
-    // TODO(crbug.com/1490373): Preview and fill the contenteditable.
-    DVLOG(1) << "Previewing and filling contenteditable with value '" << value
-             << "' isn't implemented yet";
+    switch (action_persistence) {
+      case mojom::ActionPersistence::kPreview:
+        NOTIMPLEMENTED()
+            << "Previewing replacement of selection is not implemented";
+        break;
+      case mojom::ActionPersistence::kFill:
+        // TODO(crbug.com/1490373): Preview and fill the contenteditable.
+        NOTIMPLEMENTED()
+            << "Previewing and filling contenteditable with value '" << value
+            << "' isn't implemented yet";
+        break;
+    }
   }
 }
 
@@ -1041,7 +1076,7 @@ void AutofillAgent::QueryAutofillSuggestions(
   }
 }
 
-void AutofillAgent::DoFillFieldWithValue(const std::u16string& value,
+void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,
                                          blink::WebFormControlElement& element,
                                          WebAutofillState autofill_state) {
   DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));

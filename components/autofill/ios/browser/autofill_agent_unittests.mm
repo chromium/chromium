@@ -233,8 +233,10 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
   autofill::AutofillDriverIOS* main_frame_driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
           &fake_web_state_, fake_web_frames_manager_->GetMainWebFrame());
-  main_frame_driver->ApplyFieldAction(autofill::mojom::ActionPersistence::kFill,
-                                      field.global_id(), u"mattwashere");
+  main_frame_driver->ApplyFieldAction(
+      autofill::mojom::ActionPersistence::kFill,
+      autofill::mojom::TextReplacement::kReplaceAll, field.global_id(),
+      u"mattwashere");
 
   fake_web_state_.WasShown();
   EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"unique_renderer_id\":"
@@ -264,7 +266,8 @@ TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
           &fake_web_state_, fake_web_frames_manager_->GetMainWebFrame());
   // Preview is not currently supported; no JS should be run.
   main_frame_driver->ApplyFieldAction(
-      autofill::mojom::ActionPersistence::kPreview, field.global_id(),
+      autofill::mojom::ActionPersistence::kPreview,
+      autofill::mojom::TextReplacement::kReplaceAll, field.global_id(),
       u"mattwashere");
 
   fake_web_state_.WasShown();
