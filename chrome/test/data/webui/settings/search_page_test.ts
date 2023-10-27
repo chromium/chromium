@@ -10,6 +10,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {SettingsSearchEngineListDialogElement, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SettingsSearchPageElement, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 
 import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 
@@ -136,9 +137,11 @@ suite('SearchPageTests', function() {
 suite('SearchPageTestsWithSearchEngineChoiceUiEnabled', function() {
   let page: SettingsSearchPageElement;
   let browserProxy: TestSearchEnginesBrowserProxy;
+  let metrics: MetricsTracker;
 
   setup(function() {
     loadTimeData.overrideValues({searchEngineChoiceSettingsUi: true});
+    metrics = fakeMetricsPrivate();
     browserProxy = new TestSearchEnginesBrowserProxy();
     browserProxy.setSearchEnginesInfo(generateSearchEngineInfo());
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
@@ -167,6 +170,8 @@ suite('SearchPageTestsWithSearchEngineChoiceUiEnabled', function() {
     const openSearchEngineListButton =
         page.shadowRoot!.querySelector<HTMLButtonElement>('#openDialogButton')!;
     openSearchEngineListButton.click();
+    assertEquals(metrics.count('ChooseDefaultSearchEngine'), 1);
+
     await flushTasks();
 
     const searchEngineListDialog =

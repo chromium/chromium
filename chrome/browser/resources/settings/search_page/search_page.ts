@@ -146,6 +146,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private onOpenDialogButtonClick_() {
     assert(this.searchEngineChoiceSettingsUi_);
     this.showSearchEngineListDialog_ = true;
+    chrome.metricsPrivate.recordUserAction('ChooseDefaultSearchEngine');
   }
 
   private onSearchEngineListDialogClose_() {

@@ -5891,6 +5891,16 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ChooseDefaultSearchEngine">
+  <owner>jyammine@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <description>
+    Action indicating that the user clicked on the &quot;Change&quot; button in
+    the search settings page to view the search engines list dialog and choose a
+    default search engine.
+  </description>
+</action>
+
 <action name="ChromeColors_ColorApplied">
   <obsolete>Deprecated as of 12/2019.</obsolete>
   <owner>gayane@chromium.org</owner>
@@ -9085,8 +9095,12 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="EditSearchEngines">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <description>
+    Action indicating that the user navigated to the search engines settings
+    page.
+  </description>
 </action>
 
 <action name="EmailPageLocation">
