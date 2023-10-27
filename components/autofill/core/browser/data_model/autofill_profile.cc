@@ -224,8 +224,8 @@ void GetFieldsForDistinguishingProfiles(
 
 }  // namespace
 
-AutofillProfile::AutofillProfile()
-    : AutofillProfile(Source::kLocalOrSyncable) {}
+AutofillProfile::AutofillProfile(AddressCountryCode country_code)
+    : AutofillProfile(Source::kLocalOrSyncable, country_code) {}
 
 AutofillProfile::AutofillProfile(const std::string& guid,
                                  Source source,
@@ -246,9 +246,12 @@ AutofillProfile::AutofillProfile(Source source, AddressCountryCode country_code)
                       country_code) {}
 
 // TODO(crbug.com/1177366): Remove this constructor.
-AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
+AutofillProfile::AutofillProfile(RecordType type,
+                                 const std::string& server_id,
+                                 AddressCountryCode country_code)
     : guid_(""),  // Server profiles are identified by a `server_id_`.
       phone_number_(this),
+      address_(country_code),
       server_id_(server_id),
       record_type_(type),
       has_converted_(false),
@@ -258,7 +261,9 @@ AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
 }
 
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
-    : phone_number_(this), token_quality_(this) {
+    : phone_number_(this),
+      address_(profile.GetAddress()),
+      token_quality_(this) {
   operator=(profile);
 }
 
@@ -741,7 +746,7 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
   EmailInfo email;
   CompanyInfo company;
   PhoneNumber phone_number(this);
-  Address address;
+  Address address(profile.GetAddressCountryCode());
   Birthdate birthdate;
 
   DVLOG(1) << "Merging profiles:\nSource = " << profile << "\nDest = " << *this;

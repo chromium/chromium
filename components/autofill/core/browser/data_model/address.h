@@ -19,7 +19,6 @@ namespace autofill {
 // A form group that stores address information.
 class Address : public FormGroup {
  public:
-  Address();
   explicit Address(AddressCountryCode country_code);
   ~Address() override;
 

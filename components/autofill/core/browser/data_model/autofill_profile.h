@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/birthdate.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
@@ -64,20 +65,27 @@ class AutofillProfile : public AutofillDataModel {
   // The values used to represent Autofill in the `initial_creator_id()` and
   // `last_modifier_id()`.
   static constexpr int kInitialCreatorOrModifierChrome = 70073;
-
-  AutofillProfile();
+  // TODO(crbug.com/1464568): Make the country parameter non-optional.
+  explicit AutofillProfile(
+      AddressCountryCode country_code =
+          i18n_model_definition::kLegacyHierarchyCountryCode);
   explicit AutofillProfile(
       const std::string& guid,
       Source source = Source::kLocalOrSyncable,
-      AddressCountryCode country_code = AddressCountryCode(""));
+      AddressCountryCode country_code =
+          i18n_model_definition::kLegacyHierarchyCountryCode);
   explicit AutofillProfile(
       Source source,
-      AddressCountryCode country_code = AddressCountryCode(""));
+      AddressCountryCode country_code =
+          i18n_model_definition::kLegacyHierarchyCountryCode);
 
   // Server profile constructor. The type must be SERVER_PROFILE (this serves
   // to differentiate this constructor). |server_id| can be empty. If empty,
   // callers should invoke GenerateServerProfileIdentifier after setting data.
-  AutofillProfile(RecordType type, const std::string& server_id);
+  AutofillProfile(RecordType type,
+                  const std::string& server_id,
+                  AddressCountryCode country_code =
+                      i18n_model_definition::kLegacyHierarchyCountryCode);
 
   AutofillProfile(const AutofillProfile& profile);
   ~AutofillProfile() override;

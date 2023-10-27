@@ -10,11 +10,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using autofill::i18n_model_definition::kLegacyHierarchyCountryCode;
 using base::ASCIIToUTF16;
 
 namespace autofill {
@@ -24,7 +26,7 @@ class AddressTest : public testing::Test {};
 // Test that country data can be properly returned as either a country code or a
 // localized country name.
 TEST_F(AddressTest, GetCountry) {
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
   // Make sure that nothing breaks when the country code is missing.
@@ -52,7 +54,7 @@ TEST_F(AddressTest, GetCountry) {
 // Test that country data can be properly returned as either a country code or a
 // full country name that can even be localized.
 TEST_F(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
   // Create an autofill type from HtmlFieldType::kCountryCode.
@@ -100,7 +102,7 @@ TEST_F(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
 
 // Test that we properly detect country codes appropriate for each country.
 TEST_F(AddressTest, SetCountry) {
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
   // Test basic conversion.
@@ -166,7 +168,7 @@ TEST_F(AddressTest, SetCountry) {
 
 // Test setting and getting the new structured address tokens
 TEST_F(AddressTest, StructuredAddressTokens) {
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
 
   // Set the address tokens.
   address.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"StreetName");
@@ -181,7 +183,7 @@ TEST_F(AddressTest, StructuredAddressTokens) {
 
 // Test that we properly match typed values to stored country data.
 TEST_F(AddressTest, IsCountry) {
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
   const char* const kValidMatches[] = {"United States", "USA", "US",
@@ -215,7 +217,7 @@ TEST_F(AddressTest, GetStreetAddress) {
   const AutofillType type = AutofillType(ADDRESS_HOME_STREET_ADDRESS);
 
   // Address has no address lines.
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
@@ -276,7 +278,7 @@ TEST_F(AddressTest, GetStreetAddress) {
 // than N lines does not result in an address with blank lines at the end.
 TEST_F(AddressTest, GetStreetAddressAfterOverwritingLongAddressWithShorterOne) {
   // Start with an address that has two lines.
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
   address.SetRawInfo(ADDRESS_HOME_LINE2, u"Apt. 42");
 
@@ -299,7 +301,7 @@ TEST_F(AddressTest, SetRawStreetAddress) {
       u"Apt. 42\n"
       u"(The one with the blue door)";
 
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
 
@@ -332,7 +334,7 @@ TEST_F(AddressTest, SetStreetAddress) {
   const AutofillType type = AutofillType(ADDRESS_HOME_STREET_ADDRESS);
 
   // Start with a non-empty address.
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
   address.SetRawInfo(ADDRESS_HOME_LINE2, u"Apt. 42");
   address.SetRawInfo(ADDRESS_HOME_LINE3, u"and a half");
@@ -368,7 +370,7 @@ TEST_F(AddressTest, SetStreetAddress) {
 // ADDRESS_HOME_STREET_ADDRESS if the data has any interior blank lines.
 TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithInteriorBlankLines) {
   // Start with a non-empty address.
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
   address.SetRawInfo(ADDRESS_HOME_LINE2, u"Apt. 42");
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
@@ -391,7 +393,7 @@ TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithInteriorBlankLines) {
 // ADDRESS_HOME_STREET_ADDRESS if the data has any leading blank lines.
 TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithLeadingBlankLines) {
   // Start with a non-empty address.
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
   address.SetRawInfo(ADDRESS_HOME_LINE2, u"Apt. 42");
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
@@ -414,7 +416,7 @@ TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithLeadingBlankLines) {
 // ADDRESS_HOME_STREET_ADDRESS if the data has any trailing blank lines.
 TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithTrailingBlankLines) {
   // Start with a non-empty address.
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
   address.SetRawInfo(ADDRESS_HOME_LINE2, u"Apt. 42");
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
@@ -436,8 +438,8 @@ TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithTrailingBlankLines) {
 // Verifies that the merging-related methods for structured addresses are
 // implemented correctly. This is not a test of the merging logic itself.
 TEST_F(AddressTest, TestMergeStructuredAddresses) {
-  Address address1;
-  Address address2;
+  Address address1(kLegacyHierarchyCountryCode);
+  Address address2(kLegacyHierarchyCountryCode);
 
   // Two empty addresses are mergeable by default.
   EXPECT_TRUE(address1.IsStructuredAddressMergeable(address2));
@@ -462,7 +464,7 @@ TEST_F(AddressTest, TestMergeStructuredAddresses) {
 
   // With a second incompatible ZIP code the addresses are not mergeable
   // anymore.
-  Address address3;
+  Address address3(kLegacyHierarchyCountryCode);
   address3.SetRawInfo(ADDRESS_HOME_ZIP, u"67890");
   EXPECT_FALSE(address1.IsStructuredAddressMergeable(address3));
 }
@@ -471,8 +473,8 @@ TEST_F(AddressTest, TestMergeStructuredAddresses) {
 // country information, it is used as their common country during comparison and
 // for rewriting rules.
 TEST_F(AddressTest, TestMergeStructuredAddressesMissingCountry) {
-  Address address1;
-  Address address2;
+  Address address1(kLegacyHierarchyCountryCode);
+  Address address2(kLegacyHierarchyCountryCode);
 
   address1.SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
   address1.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
@@ -495,7 +497,7 @@ TEST_F(AddressTest, TestMergeStructuredAddressesMissingCountry) {
 // Tests the retrieval of the structured address.
 TEST_F(AddressTest, TestGettingTheStructuredAddress) {
   // Create the address and set a test value.
-  Address address1;
+  Address address1(kLegacyHierarchyCountryCode);
   address1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
 
   // Get the structured address and verify that it has the same test value set.
@@ -506,7 +508,7 @@ TEST_F(AddressTest, TestGettingTheStructuredAddress) {
 // For structured address, test that the structured information is wiped
 // correctly when the unstructured street address changes.
 TEST_F(AddressTest, ResetStructuredTokens) {
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   // Set a structured address line and call the finalization routine.
   address.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
                                            u"Erika-Mann-Str 12",
@@ -567,7 +569,7 @@ class I18nAddressTest : public testing::Test {
 };
 
 TEST_F(I18nAddressTest, IsLegacyAddress) {
-  Address address;
+  Address address(kLegacyHierarchyCountryCode);
   EXPECT_TRUE(address.IsLegacyAddress());
 
   Address address_br(AddressCountryCode("BR"));
@@ -576,12 +578,12 @@ TEST_F(I18nAddressTest, IsLegacyAddress) {
   Address address_mx(AddressCountryCode("MX"));
   EXPECT_FALSE(address_mx.IsLegacyAddress());
 
-  Address i18_copy;
+  Address i18_copy(kLegacyHierarchyCountryCode);
   // The legacy address should adopt the non legacy one.
   i18_copy = address_mx;
   EXPECT_FALSE(i18_copy.IsLegacyAddress());
 
-  Address legacy_copy;
+  Address legacy_copy(kLegacyHierarchyCountryCode);
   legacy_copy = address;
   EXPECT_TRUE(legacy_copy.IsLegacyAddress());
 }

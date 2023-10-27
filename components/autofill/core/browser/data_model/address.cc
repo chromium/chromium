@@ -32,8 +32,6 @@
 
 namespace autofill {
 
-Address::Address() : Address(AddressCountryCode("")) {}
-
 Address::Address(AddressCountryCode country_code)
     : structured_address_(
           i18n_model_definition::CreateAddressComponentModel(country_code)),
