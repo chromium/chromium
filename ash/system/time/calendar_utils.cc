@@ -4,10 +4,8 @@
 
 #include "ash/system/time/calendar_utils.h"
 
-#include <map>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -17,11 +15,9 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/icu/source/i18n/unicode/gregocal.h"
 #include "ui/views/layout/table_layout.h"
 
 namespace ash {
@@ -176,17 +172,10 @@ std::u16string FormatTwentyFourHourClockTimeInterval(
 }
 
 void SetUpWeekColumns(views::TableLayout* layout) {
-  if (!features::IsCalendarJellyEnabled()) {
-    layout->AddPaddingColumn(views::TableLayout::kFixedSize, kColumnSetPadding);
-  }
   for (int i = 0; i < calendar_utils::kDateInOneWeek; ++i) {
     layout->AddColumn(views::LayoutAlignment::kStretch,
                       views::LayoutAlignment::kStretch, 1.0f,
                       views::TableLayout::ColumnSize::kFixed, 0, 0);
-    if (!features::IsCalendarJellyEnabled()) {
-      layout->AddPaddingColumn(views::TableLayout::kFixedSize,
-                               kColumnSetPadding);
-    }
   }
 }
 

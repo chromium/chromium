@@ -4,11 +4,9 @@
 
 #include "ash/system/time/calendar_month_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
@@ -17,16 +15,13 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
@@ -46,24 +41,16 @@ constexpr int kBorderLineThickness = 2;
 // The radius used to draw the border.
 constexpr float kBorderRadius = 21.f;
 
-// The default radius used to draw rounded today's circle.
-constexpr float kTodayRoundedRadius = 22.f;
+// The radius used to draw "today's" date cell view border and background .
+constexpr float kTodayBorderRadius = 100.f;
 
-// The radius used to draw rounded today's circle when focused.
-constexpr float kTodayFocusedRoundedRadius = 18.f;
-
-// The radius used to draw "today's" date cell view border and background with
-// `kCalendarJelly` enabled.
-constexpr float kTodayBorderRadiusJelly = 100.f;
-
-// The insets used to draw "today's" date cell view with `kCalendarJelly`
-// enabled.
-constexpr float kTodayRoundedBackgroundHorizontalInsetJelly = 8.f;
-constexpr float kTodayRoundedBackgroundVerticalInsetJelly = 0.f;
-constexpr float kTodayRoundedBackgroundHorizontalFocusedInsetJelly =
-    kTodayRoundedBackgroundHorizontalInsetJelly + kBorderLineThickness + 2.f;
-constexpr float kTodayRoundedBackgroundVerticalFocusedInsetJelly =
-    kTodayRoundedBackgroundVerticalInsetJelly + kBorderLineThickness + 2.f;
+// The insets used to draw "today's" date cell view.
+constexpr float kTodayRoundedBackgroundHorizontalInset = 8.f;
+constexpr float kTodayRoundedBackgroundVerticalInset = 0.f;
+constexpr float kTodayRoundedBackgroundHorizontalFocusedInset =
+    kTodayRoundedBackgroundHorizontalInset + kBorderLineThickness + 2.f;
+constexpr float kTodayRoundedBackgroundVerticalFocusedInset =
+    kTodayRoundedBackgroundVerticalInset + kBorderLineThickness + 2.f;
 
 // Radius of the small dot displayed on a CalendarDateCellView if events are
 // present for that day.
@@ -114,19 +101,15 @@ CalendarDateCellView::CalendarDateCellView(
       time_difference_(time_difference),
       calendar_view_controller_(calendar_view_controller) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  SetBorder(views::CreateEmptyBorder(features::IsCalendarJellyEnabled()
-                                         ? calendar_utils::kDateCellInsetsJelly
-                                         : calendar_utils::kDateCellInsets));
+  SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
   label()->SetElideBehavior(gfx::NO_ELIDE);
   label()->SetSubpixelRenderingEnabled(false);
-  if (features::IsCalendarJellyEnabled()) {
-    if (is_today_) {
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
-                                            *label());
-    } else {
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody1,
-                                            *label());
-    }
+  if (is_today_) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
+                                          *label());
+  } else {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody1,
+                                          *label());
   }
   views::FocusRing::Remove(this);
 
@@ -149,13 +132,8 @@ void CalendarDateCellView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   // Gray-out the date that is not in the current month.
-  if (features::IsCalendarJellyEnabled()) {
-    SetEnabledTextColorIds(grayed_out_ ? cros_tokens::kCrosSysOnSurfaceVariant
-                                       : cros_tokens::kCrosSysOnSurface);
-  } else {
-    SetEnabledTextColors(grayed_out_ ? calendar_utils::GetDisabledTextColor()
-                                     : calendar_utils::GetPrimaryTextColor());
-  }
+  SetEnabledTextColorIds(grayed_out_ ? cros_tokens::kCrosSysOnSurfaceVariant
+                                     : cros_tokens::kCrosSysOnSurface);
 }
 
 // Draws the background for this date. Note that this includes not only the
@@ -170,99 +148,59 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   const gfx::Rect content = GetContentsBounds();
   const gfx::SizeF local_bounds = gfx::SizeF(GetLocalBounds().size());
 
-  if (features::IsCalendarJellyEnabled()) {
-    const SkColor border_color =
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysFocusRing);
-    cc::PaintFlags highlight_border;
-    highlight_border.setColor(border_color);
-    highlight_border.setAntiAlias(true);
-    highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
-    highlight_border.setStrokeWidth(kBorderLineThickness);
-
-    if (is_today_) {
-      gfx::RectF background_rect(local_bounds);
-
-      const SkColor bg_color = GetColorProvider()->GetColor(
-          cros_tokens::kCrosSysSystemPrimaryContainer);
-      cc::PaintFlags highlight_background;
-      highlight_background.setColor(bg_color);
-      highlight_background.setStyle(cc::PaintFlags::kFill_Style);
-      highlight_background.setAntiAlias(true);
-
-      // If the today view is focused, we draw a border around the background
-      // and inset the background a couple of pixels to leave 2dp of space
-      // between.
-      // Else we just draw the background full size with no border.
-      if (views::View::HasFocus()) {
-        gfx::RectF border_rect(local_bounds);
-        const int half_stroke_thickness = kBorderLineThickness / 2;
-        border_rect.Inset(
-            gfx::InsetsF::VH(half_stroke_thickness,
-                             kTodayRoundedBackgroundHorizontalInsetJelly));
-        canvas->DrawRoundRect(border_rect, kTodayBorderRadiusJelly,
-                              highlight_border);
-
-        background_rect.Inset(gfx::InsetsF::VH(
-            kTodayRoundedBackgroundVerticalFocusedInsetJelly,
-            kTodayRoundedBackgroundHorizontalFocusedInsetJelly));
-        canvas->DrawRoundRect(background_rect, kTodayBorderRadiusJelly,
-                              highlight_background);
-
-        return;
-      }
-
-      background_rect.Inset(
-          gfx::InsetsF::VH(kTodayRoundedBackgroundVerticalInsetJelly,
-                           kTodayRoundedBackgroundHorizontalInsetJelly));
-      canvas->DrawRoundRect(background_rect, kTodayBorderRadiusJelly,
-                            highlight_background);
-
-      return;
-    }
-
-    // If !today and view is focused or selected, draw a circle around the view.
-    if (views::View::HasFocus() || is_selected_) {
-      const gfx::Point center(
-          (content.width() + calendar_utils::kDateHorizontalPaddingJelly * 2) /
-              2,
-          (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
-      canvas->DrawCircle(center, kBorderRadius, highlight_border);
-    }
-
-    return;
-  }
-
-  // Pre-jelly code.
-  const AshColorProvider* color_provider = AshColorProvider::Get();
-  const SkColor bg_color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
-  const SkColor border_color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor);
-
-  const gfx::Point center(
-      (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
-      (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
-
-  if (views::View::HasFocus()) {
-    cc::PaintFlags highlight_border;
-    highlight_border.setColor(border_color);
-    highlight_border.setAntiAlias(true);
-    highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
-    highlight_border.setStrokeWidth(kBorderLineThickness);
-
-    canvas->DrawCircle(center, kBorderRadius, highlight_border);
-  }
+  const SkColor border_color =
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysFocusRing);
+  cc::PaintFlags highlight_border;
+  highlight_border.setColor(border_color);
+  highlight_border.setAntiAlias(true);
+  highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
+  highlight_border.setStrokeWidth(kBorderLineThickness);
 
   if (is_today_) {
+    gfx::RectF background_rect(local_bounds);
+
+    const SkColor bg_color = GetColorProvider()->GetColor(
+        cros_tokens::kCrosSysSystemPrimaryContainer);
     cc::PaintFlags highlight_background;
     highlight_background.setColor(bg_color);
     highlight_background.setStyle(cc::PaintFlags::kFill_Style);
     highlight_background.setAntiAlias(true);
 
-    canvas->DrawCircle(center,
-                       views::View::HasFocus() ? kTodayFocusedRoundedRadius
-                                               : kTodayRoundedRadius,
-                       highlight_background);
+    // If the today view is focused, we draw a border around the background
+    // and inset the background a couple of pixels to leave 2dp of space
+    // between.
+    // Else we just draw the background full size with no border.
+    if (views::View::HasFocus()) {
+      gfx::RectF border_rect(local_bounds);
+      const int half_stroke_thickness = kBorderLineThickness / 2;
+      border_rect.Inset(gfx::InsetsF::VH(
+          half_stroke_thickness, kTodayRoundedBackgroundHorizontalInset));
+      canvas->DrawRoundRect(border_rect, kTodayBorderRadius, highlight_border);
+
+      background_rect.Inset(
+          gfx::InsetsF::VH(kTodayRoundedBackgroundVerticalFocusedInset,
+                           kTodayRoundedBackgroundHorizontalFocusedInset));
+      canvas->DrawRoundRect(background_rect, kTodayBorderRadius,
+                            highlight_background);
+
+      return;
+    }
+
+    background_rect.Inset(
+        gfx::InsetsF::VH(kTodayRoundedBackgroundVerticalInset,
+                         kTodayRoundedBackgroundHorizontalInset));
+    canvas->DrawRoundRect(background_rect, kTodayBorderRadius,
+                          highlight_background);
+
+    return;
+  }
+
+  // If !today and view is focused or selected, draw a circle around the view.
+  if (views::View::HasFocus() || is_selected_) {
+    const gfx::Point center(
+        (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
+        (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
+    canvas->DrawCircle(center, kBorderRadius, highlight_border);
   }
 }
 
@@ -383,26 +321,9 @@ void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
     return;
   }
 
-  if (features::IsCalendarJellyEnabled()) {
-    SetEnabledTextColorIds(is_today_
-                               ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                               : cros_tokens::kCrosSysOnSurface);
-  } else {
-    const AshColorProvider* color_provider = AshColorProvider::Get();
-    if (is_today_) {
-      const SkColor text_color = color_provider->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
-      SetEnabledTextColors(text_color);
-    } else if (is_selected_) {
-      SetEnabledTextColors(color_provider->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorProminent));
-    } else {
-      SkColor text_color = grayed_out_ ? calendar_utils::GetSecondaryTextColor()
-                                       : calendar_utils::GetPrimaryTextColor();
-      SetEnabledTextColors(text_color);
-    }
-  }
-
+  SetEnabledTextColorIds(is_today_
+                             ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                             : cros_tokens::kCrosSysOnSurface);
   MaybeDrawEventsIndicator(canvas);
 }
 
@@ -421,10 +342,7 @@ void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
 
 gfx::Point CalendarDateCellView::GetEventsPresentIndicatorCenterPosition() {
   const gfx::Rect content = GetContentsBounds();
-  const int horizontal_padding =
-      (features::IsCalendarJellyEnabled()
-           ? calendar_utils::kDateHorizontalPaddingJelly
-           : calendar_utils::kDateHorizontalPadding);
+  const int horizontal_padding = calendar_utils::kDateHorizontalPadding;
   return gfx::Point((content.width() + horizontal_padding * 2) / 2,
                     content.height() + calendar_utils::kDateVerticalPadding +
                         kGapBetweenDateAndIndicator);
@@ -442,13 +360,9 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   }
 
   const auto* color_provider = GetColorProvider();
-  const SkColor jelly_color = color_provider->GetColor(
+  const SkColor indicator_color = color_provider->GetColor(
       is_today_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                 : cros_tokens::kCrosSysOnSurface);
-  const SkColor indicator_color =
-      features::IsCalendarJellyEnabled() ? jelly_color
-      : is_today_ ? color_provider->GetColor(kColorAshShieldAndBase90)
-                  : color_provider->GetColor(ui::kColorAshFocusRing);
 
   const float indicator_radius = is_selected_ ? kEventsPresentRoundedRadius * 2
                                               : kEventsPresentRoundedRadius;

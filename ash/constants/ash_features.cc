@@ -353,9 +353,6 @@ BASE_FEATURE(kBorealisWebUIInstaller,
              "BorealisWebUIInstaller",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable or disable calendar jelly.
-BASE_FEATURE(kCalendarJelly, "CalendarJelly", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the camera effects are supported by hardware.
 // Note that this feature can be overridden by login_manager based on
 // whether a per-board build sets the USE camera_feature_effects flag.
@@ -3094,10 +3091,6 @@ bool IsBatterySaverAlwaysOn() {
 
 bool IsBluetoothQualityReportEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothQualityReport);
-}
-
-bool IsCalendarJellyEnabled() {
-  return base::FeatureList::IsEnabled(kCalendarJelly);
 }
 
 bool IsCaptureModeAudioMixingEnabled() {

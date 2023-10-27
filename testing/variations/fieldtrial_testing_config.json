@@ -3368,21 +3368,6 @@
             ]
         }
     ],
-    "ChromeOSCalendarJellyExperiments": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CalendarJelly"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSHWVBREncoding": [
         {
             "platforms": [

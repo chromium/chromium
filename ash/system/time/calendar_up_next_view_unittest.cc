@@ -7,7 +7,7 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/time/calendar_event_list_item_view_jelly.h"
+#include "ash/system/time/calendar_event_list_item_view.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_constants.h"
@@ -555,7 +555,7 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
   auto* first_item = GetContentsView()->children()[0];
   ASSERT_TRUE(first_item);
   EXPECT_EQ(first_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemViewJelly",
+  EXPECT_STREQ("CalendarEventListItemView",
                focus_manager->GetFocusedView()->GetClassName());
 
   // Next, the "Join" button should be focused.
@@ -568,7 +568,7 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
   auto* second_item = GetContentsView()->children()[1];
   ASSERT_TRUE(second_item);
   EXPECT_EQ(second_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemViewJelly",
+  EXPECT_STREQ("CalendarEventListItemView",
                focus_manager->GetFocusedView()->GetClassName());
 
   // Next, the second event list item view "Join" button should be focused.
@@ -589,7 +589,7 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
   // Going back again, the second event list item view should be focused.
   PressShiftTab();
   EXPECT_EQ(second_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemViewJelly",
+  EXPECT_STREQ("CalendarEventListItemView",
                focus_manager->GetFocusedView()->GetClassName());
 }
 
@@ -611,7 +611,7 @@ TEST_F(CalendarUpNextViewTest, ShouldPreserveFocusAfterRefreshEvent) {
   auto* first_item = GetContentsView()->children()[0];
   ASSERT_TRUE(first_item);
   EXPECT_EQ(first_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemViewJelly",
+  EXPECT_STREQ("CalendarEventListItemView",
                focus_manager->GetFocusedView()->GetClassName());
 
   up_next_view()->RefreshEvents();
@@ -619,7 +619,7 @@ TEST_F(CalendarUpNextViewTest, ShouldPreserveFocusAfterRefreshEvent) {
   // After refresh the events, the first event list item view should still be
   // focused.
   EXPECT_EQ(first_item, focus_manager->GetFocusedView());
-  EXPECT_STREQ("CalendarEventListItemViewJelly",
+  EXPECT_STREQ("CalendarEventListItemView",
                focus_manager->GetFocusedView()->GetClassName());
 }
 

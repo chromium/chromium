@@ -13,9 +13,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 
 namespace ash {
@@ -44,9 +42,6 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures(
-        {chromeos::features::kJelly, features::kCalendarJelly}, {});
     AshTestBase::SetUp();
 
     controller_ = std::make_unique<CalendarViewController>();
@@ -114,7 +109,6 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
   raw_ptr<CalendarUpNextView, DanglingUntriaged | ExperimentalAsh>
       up_next_view_ = nullptr;
   std::unique_ptr<CalendarViewController> controller_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 TEST_F(CalendarUpNextViewPixelTest,

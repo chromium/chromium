@@ -3288,9 +3288,6 @@ extern const char kBluetoothFlossIsAvailabilityCheckNeededDescription[];
 extern const char kBluetoothUseLLPrivacyName[];
 extern const char kBluetoothUseLLPrivacyDescription[];
 
-extern const char kCalendarJellyName[];
-extern const char kCalendarJellyDescription[];
-
 extern const char kCaptureModeAudioMixingName[];
 extern const char kCaptureModeAudioMixingDescription[];
 

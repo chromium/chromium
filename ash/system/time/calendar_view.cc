@@ -8,10 +8,7 @@
 #include <string>
 
 #include "ash/bubble/bubble_utils.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
-#include "ash/public/cpp/ash_view_ids.h"
-#include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -37,10 +34,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -49,12 +43,8 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/layer_type.h"
-#include "ui/compositor/paint_recorder.h"
-#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -68,8 +58,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/table_layout.h"
-#include "ui/views/style/typography.h"
-#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -82,23 +70,19 @@ constexpr int kContentVerticalPadding = 20;
 constexpr int kContentHorizontalPadding = 20;
 constexpr int kMonthVerticalPadding = 10;
 constexpr int kLabelVerticalPadding = 10;
-constexpr int kLabelTextInBetweenPadding = 10;
-constexpr int kLabelTextInBetweenPaddingJelly = 4;
-constexpr int kWeekRowHorizontalPadding =
+constexpr int kLabelTextInBetweenPadding = 4;
+const int kWeekRowHorizontalPadding =
     kContentHorizontalPadding - calendar_utils::kDateHorizontalPadding;
-const int kWeekRowHorizontalPaddingJelly =
-    kContentHorizontalPadding - calendar_utils::kDateHorizontalPaddingJelly;
-constexpr int kExpandedCalendarPadding = 11;
-constexpr int kExpandedCalendarPaddingJelly = 10;
+constexpr int kExpandedCalendarPadding = 10;
 constexpr int kChevronPadding = calendar_utils::kColumnSetPadding - 1;
-constexpr int kChevronPaddingJelly = 16;
+constexpr int kChevronInBetweenPadding = 16;
 constexpr int kMonthHeaderLabelTopPadding = 14;
 constexpr int kMonthHeaderLabelBottomPadding = 2;
 constexpr int kEventListViewHorizontalOffset = 1;
 constexpr int kUpNextAnimationYOffset = 20;
 // Adds a gap between the bottom visible row in the scrollview and the top of
 // the event list view when open.
-constexpr int kCalendarEventListViewOpenMarginJelly = 8;
+constexpr int kCalendarEventListViewOpenMargin = 8;
 
 // The offset for `month_label_` to make it align with `month_header`.
 constexpr int kMonthLabelPaddingOffset = -1;
@@ -209,9 +193,7 @@ std::unique_ptr<views::Label> CreateHeaderView(const std::u16string& month) {
 }
 
 std::unique_ptr<views::Label> CreateHeaderYearView(const std::u16string& year) {
-  const int label_padding = features::IsCalendarJellyEnabled()
-                                ? kLabelTextInBetweenPaddingJelly
-                                : kLabelTextInBetweenPadding;
+  const int label_padding = kLabelTextInBetweenPadding;
 
   return views::Builder<views::Label>(
              bubble_utils::CreateLabel(TypographyToken::kCrosDisplay7, year,
@@ -224,8 +206,7 @@ std::unique_ptr<views::Label> CreateHeaderYearView(const std::u16string& year) {
 }
 
 int GetExpandedCalendarPadding() {
-  return features::IsCalendarJellyEnabled() ? kExpandedCalendarPaddingJelly
-                                            : kExpandedCalendarPadding;
+  return kExpandedCalendarPadding;
 }
 
 // The overridden `Label` view used in `CalendarView`.
@@ -257,22 +238,16 @@ class MonthHeaderView : public views::View {
 
     for (const std::u16string& week_day :
          DateHelper::GetInstance()->week_titles()) {
-      auto label = features::IsCalendarJellyEnabled()
-                       ? views::Builder<views::Label>(
-                             bubble_utils::CreateLabel(
-                                 TypographyToken::kCrosButton1, week_day,
-                                 cros_tokens::kCrosSysOnSurface))
-                             .Build()
-                       : std::make_unique<CalendarLabel>(week_day);
+      auto label =
+          views::Builder<views::Label>(
+              bubble_utils::CreateLabel(TypographyToken::kCrosButton1, week_day,
+                                        cros_tokens::kCrosSysOnSurface))
+              .Build();
       label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
       label->SetBorder((views::CreateEmptyBorder(
           gfx::Insets::VH(calendar_utils::kDateVerticalPadding, 0))));
       label->SetElideBehavior(gfx::NO_ELIDE);
       label->SetSubpixelRenderingEnabled(false);
-      if (!features::IsCalendarJellyEnabled()) {
-        label->SetFontList(views::TypographyProvider::Get().GetFont(
-            CONTEXT_CALENDAR_DATE, views::style::STYLE_EMPHASIZED));
-      }
 
       AddChildView(std::move(label));
     }
@@ -327,15 +302,6 @@ class CalendarView::MonthHeaderLabelView : public views::View {
   MonthHeaderLabelView(const MonthHeaderLabelView&) = delete;
   MonthHeaderLabelView& operator=(const MonthHeaderLabelView&) = delete;
   ~MonthHeaderLabelView() override = default;
-
-  // views::View:
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-
-    if (!features::IsCalendarJellyEnabled()) {
-      month_label_->SetEnabledColor(calendar_utils::GetPrimaryTextColor());
-    }
-  }
 
  private:
   // The name of the month.
@@ -420,15 +386,6 @@ CalendarHeaderView::CalendarHeaderView(const std::u16string& month,
 
 CalendarHeaderView::~CalendarHeaderView() = default;
 
-void CalendarHeaderView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  if (!features::IsCalendarJellyEnabled()) {
-    header_->SetEnabledColor(calendar_utils::GetPrimaryTextColor());
-    header_year_->SetEnabledColor(calendar_utils::GetSecondaryTextColor());
-  }
-}
-
 void CalendarHeaderView::UpdateHeaders(const std::u16string& month,
                                        const std::u16string& year) {
   header_->SetText(month);
@@ -512,19 +469,14 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   tri_view->AddView(TriView::Container::START, header_container);
 
   auto* button_container = new views::View();
-  const int horizontal_padding = features::IsCalendarJellyEnabled()
-                                     ? kWeekRowHorizontalPaddingJelly
-                                     : kWeekRowHorizontalPadding;
+  const int horizontal_padding = kWeekRowHorizontalPadding;
   views::BoxLayout* button_container_layout =
       button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
   button_container_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
   // Aligns button with the calendar dates in the `TableLayout`.
-  button_container_layout->set_between_child_spacing(
-      features::IsCalendarJellyEnabled()
-          ? kChevronPaddingJelly
-          : horizontal_padding + kChevronPadding);
+  button_container_layout->set_between_child_spacing(kChevronInBetweenPadding);
 
   up_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
@@ -2073,8 +2025,7 @@ void CalendarView::SetCalendarSlidingSurfaceBounds(bool event_list_view_open) {
 }
 
 void CalendarView::MaybeShowUpNextView() {
-  if (!features::IsCalendarJellyEnabled() ||
-      calendar_view_controller_->UpcomingEvents().empty()) {
+  if (calendar_view_controller_->UpcomingEvents().empty()) {
     RemoveUpNextView();
     return;
   }
@@ -2255,10 +2206,8 @@ void CalendarView::OnAnimateScrollByOffsetComplete(int offset) {
 }
 
 int CalendarView::GetSingleVisibleRowHeight() {
-  return features::IsCalendarJellyEnabled()
-             ? calendar_view_controller_->row_height() +
-                   kCalendarEventListViewOpenMarginJelly
-             : calendar_view_controller_->row_height();
+  return calendar_view_controller_->row_height() +
+         kCalendarEventListViewOpenMargin;
 }
 
 BEGIN_METADATA(CalendarView, GlanceableTrayChildBubble)

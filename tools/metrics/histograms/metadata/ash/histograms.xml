@@ -1262,6 +1262,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Calendar.EventListView.EventDisplayedCount" units="int"
     expires_after="2024-09-04">
+  <obsolete>
+    This metric was originally recording pre CalendarJelly data. Replaced with
+    Ash.Calendar.EventListViewJelly.EventDisplayedCount after the CalendarJelly
+    launch.
+  </obsolete>
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -1289,10 +1294,10 @@ chromium-metrics-reviews@google.com.
   <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
-    (For Jelly Calendar) Records the number of currently visible events shown to
-    the user when the Calendar Event List view displays in one day. i.e. the
-    user opens the sys tray calendar, clicks on a date cell and sees 2 events,
-    this metric will track a count of 2.
+    Records the number of currently visible events shown to the user when the
+    Calendar Event List view displays in one day. i.e. the user opens the sys
+    tray calendar, clicks on a date cell and sees 2 events, this metric will
+    track a count of 2.
   </summary>
 </histogram>
 

@@ -4338,9 +4338,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"bluetooth-use-llprivacy", flag_descriptions::kBluetoothUseLLPrivacyName,
      flag_descriptions::kBluetoothUseLLPrivacyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(bluez::features::kLinkLayerPrivacy)},
-    {"calendar-jelly", flag_descriptions::kCalendarJellyName,
-     flag_descriptions::kCalendarJellyDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kCalendarJelly)},
     {"cellular-bypass-esim-installation-connectivity-check",
      flag_descriptions::kCellularBypassESimInstallationConnectivityCheckName,
      flag_descriptions::

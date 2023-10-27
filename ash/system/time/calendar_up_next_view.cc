@@ -8,22 +8,19 @@
 #include <memory>
 
 #include "ash/bubble/bubble_utils.h"
-#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
-#include "ash/system/time/calendar_event_list_item_view_jelly.h"
+#include "ash/system/time/calendar_event_list_item_view.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_up_next_view_background_painter.h"
 #include "ash/system/time/calendar_utils.h"
-#include "ash/system/tray/tray_constants.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
-#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
@@ -305,8 +302,8 @@ void CalendarUpNextView::UpdateEvents(
   // Single events are displayed filling the whole width of the tray.
   if (events.size() == 1) {
     const auto event = events.back();
-    auto* child_view = content_view_->AddChildView(
-        std::make_unique<CalendarEventListItemViewJelly>(
+    auto* child_view =
+        content_view_->AddChildView(std::make_unique<CalendarEventListItemView>(
             calendar_view_controller_,
             SelectedDateParams{now, selected_date_midnight,
                                selected_date_midnight_utc},
@@ -337,20 +334,19 @@ void CalendarUpNextView::UpdateEvents(
   const int events_size = events.size();
   for (auto it = events.begin(); it != events.end(); ++it) {
     const int event_index = std::distance(events.begin(), it) + 1;
-    content_view_->AddChildView(
-        std::make_unique<CalendarEventListItemViewJelly>(
-            calendar_view_controller_,
-            SelectedDateParams{now, selected_date_midnight,
-                               selected_date_midnight_utc},
-            /*event=*/*it,
-            /*ui_params=*/
-            UIParams{/*round_top_corners=*/true, /*round_bottom_corners=*/true,
-                     /*is_up_next_event_list_item=*/true,
-                     /*show_event_list_dot=*/false,
-                     /*fixed_width=*/kLabelCappedWidth},
-            /*event_list_item_index=*/
-            EventListItemIndex{/*item_index=*/event_index,
-                               /*total_count_of_events=*/events_size}));
+    content_view_->AddChildView(std::make_unique<CalendarEventListItemView>(
+        calendar_view_controller_,
+        SelectedDateParams{now, selected_date_midnight,
+                           selected_date_midnight_utc},
+        /*event=*/*it,
+        /*ui_params=*/
+        UIParams{/*round_top_corners=*/true, /*round_bottom_corners=*/true,
+                 /*is_up_next_event_list_item=*/true,
+                 /*show_event_list_dot=*/false,
+                 /*fixed_width=*/kLabelCappedWidth},
+        /*event_list_item_index=*/
+        EventListItemIndex{/*item_index=*/event_index,
+                           /*total_count_of_events=*/events_size}));
   }
 
   // Show scroll buttons if we have multiple events.

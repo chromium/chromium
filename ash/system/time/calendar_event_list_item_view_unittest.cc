@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/time/calendar_event_list_item_view_jelly.h"
+#include "ash/system/time/calendar_event_list_item_view.h"
 
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "ui/compositor/layer.h"
@@ -31,14 +30,14 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
 
 }  // namespace
 
-class CalendarViewEventListItemViewJellyTest : public AshTestBase {
+class CalendarViewEventListItemViewTest : public AshTestBase {
  public:
-  CalendarViewEventListItemViewJellyTest() = default;
-  CalendarViewEventListItemViewJellyTest(
-      const CalendarViewEventListItemViewJellyTest&) = delete;
-  CalendarViewEventListItemViewJellyTest& operator=(
-      const CalendarViewEventListItemViewJellyTest&) = delete;
-  ~CalendarViewEventListItemViewJellyTest() override = default;
+  CalendarViewEventListItemViewTest() = default;
+  CalendarViewEventListItemViewTest(
+      const CalendarViewEventListItemViewTest&) = delete;
+  CalendarViewEventListItemViewTest& operator=(
+      const CalendarViewEventListItemViewTest&) = delete;
+  ~CalendarViewEventListItemViewTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -46,7 +45,7 @@ class CalendarViewEventListItemViewJellyTest : public AshTestBase {
   }
 
   void TearDown() override {
-    event_list_item_view_jelly_.reset();
+    event_list_item_view_.reset();
     controller_.reset();
     AshTestBase::TearDown();
   }
@@ -54,11 +53,11 @@ class CalendarViewEventListItemViewJellyTest : public AshTestBase {
   void CreateEventListItemView(base::Time date,
                                google_apis::calendar::CalendarEvent* event,
                                UIParams ui_params = {}) {
-    event_list_item_view_jelly_.reset();
+    event_list_item_view_.reset();
     controller_->UpdateMonth(date);
     controller_->selected_date_ = date;
-    event_list_item_view_jelly_ =
-        std::make_unique<CalendarEventListItemViewJelly>(
+    event_list_item_view_ =
+        std::make_unique<CalendarEventListItemView>(
             controller_.get(),
             SelectedDateParams{controller_->selected_date().value(),
                                controller_->selected_date_midnight(),
@@ -75,37 +74,36 @@ class CalendarViewEventListItemViewJellyTest : public AshTestBase {
 
   const views::Label* GetSummaryLabel() {
     return static_cast<views::Label*>(
-        event_list_item_view_jelly_->GetViewByID(kSummaryLabelID));
+        event_list_item_view_->GetViewByID(kSummaryLabelID));
   }
 
   const views::Label* GetTimeLabel() {
     return static_cast<views::Label*>(
-        event_list_item_view_jelly_->GetViewByID(kTimeLabelID));
+        event_list_item_view_->GetViewByID(kTimeLabelID));
   }
 
   const views::View* GetEventListItemDot() {
     return static_cast<views::View*>(
-        event_list_item_view_jelly_->GetViewByID(kEventListItemDotID));
+        event_list_item_view_->GetViewByID(kEventListItemDotID));
   }
 
   const views::Button* GetJoinButton() {
     return static_cast<views::Button*>(
-        event_list_item_view_jelly_->GetViewByID(kJoinButtonID));
+        event_list_item_view_->GetViewByID(kJoinButtonID));
   }
 
   CalendarViewController* controller() { return controller_.get(); }
 
-  CalendarEventListItemViewJelly* event_list_item_view() {
-    return event_list_item_view_jelly_.get();
+  CalendarEventListItemView* event_list_item_view() {
+    return event_list_item_view_.get();
   }
 
  private:
-  std::unique_ptr<CalendarEventListItemViewJelly> event_list_item_view_jelly_;
+  std::unique_ptr<CalendarEventListItemView> event_list_item_view_;
   std::unique_ptr<CalendarViewController> controller_;
-  base::test::ScopedFeatureList features_;
 };
 
-TEST_F(CalendarViewEventListItemViewJellyTest,
+TEST_F(CalendarViewEventListItemViewTest,
        ShouldShowCorrectLabels_GivenAOneHourEvent) {
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT+2");
   calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone("GMT+2");
@@ -134,7 +132,7 @@ TEST_F(CalendarViewEventListItemViewJellyTest,
       event_list_item_view()->GetAccessibleName());
 }
 
-TEST_F(CalendarViewEventListItemViewJellyTest,
+TEST_F(CalendarViewEventListItemViewTest,
        EventListViewItemTopRoundedCorners) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
@@ -152,7 +150,7 @@ TEST_F(CalendarViewEventListItemViewJellyTest,
             background_layer->rounded_corner_radii());
 }
 
-TEST_F(CalendarViewEventListItemViewJellyTest,
+TEST_F(CalendarViewEventListItemViewTest,
        EventListViewItemBottomRoundedCorners) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
@@ -171,7 +169,7 @@ TEST_F(CalendarViewEventListItemViewJellyTest,
             background_layer->rounded_corner_radii());
 }
 
-TEST_F(CalendarViewEventListItemViewJellyTest,
+TEST_F(CalendarViewEventListItemViewTest,
        EventListViewItemAllRoundedCorners) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
@@ -190,7 +188,7 @@ TEST_F(CalendarViewEventListItemViewJellyTest,
             background_layer->rounded_corner_radii());
 }
 
-TEST_F(CalendarViewEventListItemViewJellyTest, UpNextViewItemRoundedCorners) {
+TEST_F(CalendarViewEventListItemViewTest, UpNextViewItemRoundedCorners) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
   SetSelectedDateInController(date);
@@ -209,7 +207,7 @@ TEST_F(CalendarViewEventListItemViewJellyTest, UpNextViewItemRoundedCorners) {
             background_layer->rounded_corner_radii());
 }
 
-TEST_F(CalendarViewEventListItemViewJellyTest, FixedLabelWidth) {
+TEST_F(CalendarViewEventListItemViewTest, FixedLabelWidth) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
   SetSelectedDateInController(date);
@@ -236,7 +234,7 @@ TEST_F(CalendarViewEventListItemViewJellyTest, FixedLabelWidth) {
   EXPECT_EQ(fixed_width, GetSummaryLabel()->width());
 }
 
-TEST_F(CalendarViewEventListItemViewJellyTest,
+TEST_F(CalendarViewEventListItemViewTest,
        ShouldShowAndHideEventListItemDot) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
@@ -266,7 +264,7 @@ TEST_F(CalendarViewEventListItemViewJellyTest,
   EXPECT_TRUE(GetEventListItemDot());
 }
 
-TEST_F(CalendarViewEventListItemViewJellyTest,
+TEST_F(CalendarViewEventListItemViewTest,
        ShouldShowJoinMeetingButton_WhenConferenceDataUrlExists) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
@@ -281,7 +279,7 @@ TEST_F(CalendarViewEventListItemViewJellyTest,
   EXPECT_TRUE(GetJoinButton());
 }
 
-TEST_F(CalendarViewEventListItemViewJellyTest,
+TEST_F(CalendarViewEventListItemViewTest,
        ShouldHideJoinMeetingButton_WhenConferenceDataUrlDoesNotExist) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));

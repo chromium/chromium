@@ -5689,10 +5689,6 @@ const char kBluetoothUseLLPrivacyDescription[] =
     "Enable address resolution offloading to Bluetooth Controller if "
     "supported. Modifying this flag will cause Bluetooth Controller to reset.";
 
-const char kCalendarJellyName[] = "Enable Calendar Jelly features";
-const char kCalendarJellyDescription[] =
-    "Enables Jelly changes for the sys tray Calendar views.";
-
 const char kCaptureModeAudioMixingName[] =
     "Enable screen capture advanced audio settings";
 const char kCaptureModeAudioMixingDescription[] =

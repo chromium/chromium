@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/shell.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_up_next_view.h"
@@ -22,9 +21,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/compositor/compositor_animation_observer.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 
@@ -54,9 +51,6 @@ class CalendarHeaderView : public views::View {
   CalendarHeaderView(const CalendarHeaderView& other) = delete;
   CalendarHeaderView& operator=(const CalendarHeaderView& other) = delete;
   ~CalendarHeaderView() override;
-
-  // views::View:
-  void OnThemeChanged() override;
 
   // Updates the month and year labels.
   void UpdateHeaders(const std::u16string& month, const std::u16string& year);

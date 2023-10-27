@@ -39,7 +39,6 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -2292,12 +2291,6 @@ class CalendarViewWithJellyEnabledTest : public CalendarViewTest {
       const CalendarViewWithJellyEnabledTest&) = delete;
   ~CalendarViewWithJellyEnabledTest() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures({features::kCalendarJelly}, {});
-    CalendarViewTest::SetUp();
-  }
-
   // Assumes current time is "18 Nov 2021 10:00 GMT".
   std::unique_ptr<google_apis::calendar::EventList>
   CreateMockEventListWithEventStartTimeMoreThanTwoHoursAway() {
@@ -2351,9 +2344,6 @@ class CalendarViewWithJellyEnabledTest : public CalendarViewTest {
         calendar_utils::GetStartOfMonthUTC(date),
         google_apis::ApiErrorCode::HTTP_SUCCESS, event_list.get());
   }
-
- private:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 TEST_F(CalendarViewWithJellyEnabledTest,
@@ -2891,13 +2881,6 @@ class CalendarViewAnimationWithJellyEnabledTest
       const CalendarViewAnimationWithJellyEnabledTest&) = delete;
   ~CalendarViewAnimationWithJellyEnabledTest() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures(
-        {features::kCalendarJelly, chromeos::features::kJelly}, {});
-    CalendarViewAnimationTest::SetUp();
-  }
-
   std::unique_ptr<google_apis::calendar::EventList> CreateUpcomingEvents(
       base::Time date) {
     const auto start_time = date + base::Minutes(5);
@@ -2917,9 +2900,6 @@ class CalendarViewAnimationWithJellyEnabledTest
         calendar_utils::GetStartOfMonthUTC(date),
         google_apis::ApiErrorCode::HTTP_SUCCESS, event_list.get());
   }
-
- private:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 TEST_F(CalendarViewAnimationWithJellyEnabledTest,
