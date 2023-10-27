@@ -344,6 +344,7 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
 
   source->AddString("browser_version",
                     std::string(version_info::GetVersionNumber()));
+  source->AddString("os_version", base::SysInfo::OperatingSystemVersion());
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {

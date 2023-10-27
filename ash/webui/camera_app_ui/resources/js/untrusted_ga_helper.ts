@@ -351,7 +351,6 @@ function sendGaEvent({baseEvent, dimensions}: SendGaEventParams): void {
     ...gaBaseDimensions,
     ...dimensions,
     [GaMetricDimension.DEVICE_PIXEL_RATIO, getDevicePixelRatio()],
-    [GaMetricDimension.OS_VERSION, getOsVersion()],
     [GaMetricDimension.SCHEMA_VERSION, SCHEMA_VERSION],
   ];
   for (const [key, value] of mergedDimensions) {
@@ -390,7 +389,6 @@ function sendGa4Event({
     ...eventParams,
     [Ga4MetricDimension.DEVICE_PIXEL_RATIO]: getDevicePixelRatio(),
     [Ga4MetricDimension.LANGUAGE]: navigator.language,
-    [Ga4MetricDimension.OS_VERSION]: getOsVersion(),
     [Ga4MetricDimension.SCHEMA_VERSION]: SCHEMA_VERSION,
     [Ga4MetricDimension.SCREEN_RESOLUTION]: getScreenResolution(),
     // Set '1' here as it's enough for GA4 to generate the metrics for n-day
@@ -440,10 +438,6 @@ function setGa4Enabled(enabled: boolean): void {
 
 function getDevicePixelRatio() {
   return window.devicePixelRatio.toFixed(2);
-}
-
-function getOsVersion() {
-  return navigator.appVersion.match(/CrOS\s+\S+\s+([\d.]+)/)?.[1] ?? '';
 }
 
 function getScreenResolution() {

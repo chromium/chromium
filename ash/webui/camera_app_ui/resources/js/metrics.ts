@@ -131,6 +131,7 @@ export async function initMetrics(): Promise<void> {
     const baseDimensions = new Map([
       [GaMetricDimension.BOARD, board],
       [GaMetricDimension.IS_TEST_IMAGE, boolToIntString(isTestImage)],
+      [GaMetricDimension.OS_VERSION, loadTimeData.getOsVersion()],
     ]);
 
     const clientId = localStorage.getString(LocalStorageKey.GA_USER_ID);
@@ -151,6 +152,7 @@ export async function initMetrics(): Promise<void> {
       [Ga4MetricDimension.BOARD]: board,
       [Ga4MetricDimension.IS_TEST_IMAGE]: boolToIntString(isTestImage),
       [Ga4MetricDimension.BROWSER_VERSION]: loadTimeData.getBrowserVersion(),
+      [Ga4MetricDimension.OS_VERSION]: loadTimeData.getOsVersion(),
     };
 
     const clientId = localStorage.getString(LocalStorageKey.GA4_CLIENT_ID);
