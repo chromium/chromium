@@ -480,11 +480,19 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                               Element& removed_element,
                                               Element& after_element);
   void ScheduleNthPseudoInvalidations(ContainerNode&);
-  void ApplyRuleSetInvalidation(TreeScope&,
-                                ContainerNode&,
-                                SelectorFilter&,
-                                const HeapHashSet<Member<RuleSet>>&,
-                                InvalidationScope = kInvalidateCurrentScope);
+  void ApplyRuleSetInvalidationForTreeScope(
+      TreeScope&,
+      ContainerNode&,
+      SelectorFilter&,
+      const HeapHashSet<Member<RuleSet>>&,
+      InvalidationScope = kInvalidateCurrentScope);
+  void ApplyRuleSetInvalidationForSubtree(TreeScope&,
+                                          Element&,
+                                          SelectorFilter&,
+                                          const HeapHashSet<Member<RuleSet>>&,
+                                          InvalidationScope,
+                                          bool invalidate_slotted,
+                                          bool invalidate_part);
   void ScheduleCustomElementInvalidations(HashSet<AtomicString> tag_names);
   void ScheduleInvalidationsForHasPseudoAffectedByInsertion(
       Element* parent,

@@ -2148,7 +2148,7 @@ bool StyleEngine::HasViewportDependentPropertyRegistrations() {
 // is already marked for subtree recalc, we don't need to go below it. Also,
 // if invalidation_scope says so, or if we have rules pertaining to UA shadows,
 // we may need to descend into child TreeScopes.
-void StyleEngine::ApplyRuleSetInvalidation(
+void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
     TreeScope& tree_scope,
     ContainerNode& node,
     SelectorFilter& selector_filter,
@@ -2193,60 +2193,63 @@ void StyleEngine::ApplyRuleSetInvalidation(
     }
   }
 
-  Node* stay_within = &node;
-  Element* element = ElementTraversal::FirstChild(*stay_within);
-  while (element) {
-    if (invalidate_part && element->hasAttribute(html_names::kPartAttr)) {
-      // It's too complicated to try to handle ::part() precisely.
-      // If we have any ::part() rules, and the element has a [part]
-      // attribute, just invalidate it.
-      element->SetNeedsStyleRecalc(kLocalStyleChange,
-                                   StyleChangeReasonForTracing::Create(
-                                       style_change_reason::kStyleInvalidator));
-    } else {
-      ApplyRuleSetInvalidationForElement(tree_scope, *element, selector_filter,
-                                         rule_sets,
-                                         /*is_shadow_host=*/false);
+  for (Element& child : ElementTraversal::ChildrenOf(node)) {
+    ApplyRuleSetInvalidationForSubtree(tree_scope, child, selector_filter,
+                                       rule_sets, invalidation_scope,
+                                       invalidate_slotted, invalidate_part);
+  }
+}
+
+void StyleEngine::ApplyRuleSetInvalidationForSubtree(
+    TreeScope& tree_scope,
+    Element& element,
+    SelectorFilter& selector_filter,
+    const HeapHashSet<Member<RuleSet>>& rule_sets,
+    InvalidationScope invalidation_scope,
+    bool invalidate_slotted,
+    bool invalidate_part) {
+  if (invalidate_part && element.hasAttribute(html_names::kPartAttr)) {
+    // It's too complicated to try to handle ::part() precisely.
+    // If we have any ::part() rules, and the element has a [part]
+    // attribute, just invalidate it.
+    element.SetNeedsStyleRecalc(kLocalStyleChange,
+                                StyleChangeReasonForTracing::Create(
+                                    style_change_reason::kStyleInvalidator));
+  } else {
+    ApplyRuleSetInvalidationForElement(tree_scope, element, selector_filter,
+                                       rule_sets,
+                                       /*is_shadow_host=*/false);
+  }
+
+  auto* html_slot_element = DynamicTo<HTMLSlotElement>(element);
+  if (html_slot_element && invalidate_slotted) {
+    InvalidateSlottedElements(*html_slot_element);
+  }
+
+  if (invalidation_scope == kInvalidateAllScopes) {
+    if (ShadowRoot* shadow_root = element.GetShadowRoot()) {
+      ApplyRuleSetInvalidationForTreeScope(tree_scope, shadow_root->RootNode(),
+                                           selector_filter, rule_sets,
+                                           kInvalidateAllScopes);
     }
-    auto* html_slot_element = DynamicTo<HTMLSlotElement>(element);
-    if (html_slot_element && invalidate_slotted) {
-      InvalidateSlottedElements(*html_slot_element);
+  }
+
+  // Skip traversal of the subtree if we're going to update the entire subtree
+  // anyway.
+  const bool traverse_children =
+      (element.GetStyleChangeType() < kSubtreeStyleChange &&
+       element.GetComputedStyle());
+
+  if (traverse_children) {
+    selector_filter.PushParent(element);
+
+    for (Element& child : ElementTraversal::ChildrenOf(element)) {
+      ApplyRuleSetInvalidationForSubtree(tree_scope, child, selector_filter,
+                                         rule_sets, invalidation_scope,
+                                         invalidate_slotted, invalidate_part);
     }
 
-    if (invalidation_scope == kInvalidateAllScopes) {
-      if (ShadowRoot* shadow_root = element->GetShadowRoot()) {
-        ApplyRuleSetInvalidation(tree_scope, shadow_root->RootNode(),
-                                 selector_filter, rule_sets,
-                                 kInvalidateAllScopes);
-      }
-    }
-
-    // Find the next element in preorder traversal, skipping subtrees if we
-    // are going to update the entire subtree anyway. This is similar to
-    // ElementTraversal::Next() or ...::NextSkippingChildren(),
-    // except that it also updates SelectorFilter.
-    const bool traverse_children =
-        (element->GetStyleChangeType() < kSubtreeStyleChange &&
-         element->GetComputedStyle());
-
-    Element* first_child =
-        traverse_children ? ElementTraversal::FirstChild(*element) : nullptr;
-    if (first_child) {
-      selector_filter.PushParent(*element);
-      element = first_child;
-    } else {
-      // Traverse upwards if needed, until we find something
-      // with siblings (or the root node where we started).
-      while (element != stay_within &&
-             ElementTraversal::NextSibling(*element) == nullptr) {
-        element = ElementTraversal::FirstAncestor(*element);
-        if (element == nullptr) {
-          return;
-        }
-        selector_filter.PopParent(*element);
-      }
-      element = ElementTraversal::NextSibling(*element);
-    }
+    selector_filter.PopParent(element);
   }
 }
 
@@ -2422,8 +2425,9 @@ void StyleEngine::InvalidateForRuleSetChanges(
 
   SelectorFilter selector_filter;
   selector_filter.PushAllParentsOf(tree_scope);
-  ApplyRuleSetInvalidation(tree_scope, tree_scope.RootNode(), selector_filter,
-                           changed_rule_sets, invalidation_scope);
+  ApplyRuleSetInvalidationForTreeScope(tree_scope, tree_scope.RootNode(),
+                                       selector_filter, changed_rule_sets,
+                                       invalidation_scope);
 }
 
 void StyleEngine::InvalidateInitialData() {

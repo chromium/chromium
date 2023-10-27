@@ -166,8 +166,8 @@ void StyleEngineTest::ApplyRuleSetInvalidation(TreeScope& tree_scope,
   rule_sets.insert(&rule_set);
   SelectorFilter selector_filter;
   selector_filter.PushAllParentsOf(tree_scope);
-  GetStyleEngine().ApplyRuleSetInvalidation(tree_scope, tree_scope.RootNode(),
-                                            selector_filter, rule_sets);
+  GetStyleEngine().ApplyRuleSetInvalidationForTreeScope(
+      tree_scope, tree_scope.RootNode(), selector_filter, rule_sets);
 }
 
 TEST_F(StyleEngineTest, DocumentDirtyAfterInject) {
