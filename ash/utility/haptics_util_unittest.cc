@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/utility/haptics_util.h"
+#include "chromeos/utils/haptics_util.h"
 
 #include <vector>
 
@@ -54,7 +54,7 @@ TEST_F(HapticsUtilTest, HapticFeedbackBasic) {
   for (HapticTouchpadEffect effect : effects) {
     for (HapticTouchpadEffectStrength strength : strengths) {
       for (int count = 0; count < 16; count++) {
-        haptics_util::PlayHapticTouchpadEffect(effect, strength);
+        chromeos::haptics_util::PlayHapticTouchpadEffect(effect, strength);
         EXPECT_EQ(count + 1,
                   input_controller->GetSentHapticCount(effect, strength));
       }

@@ -13,7 +13,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/utility/haptics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
@@ -24,6 +23,7 @@
 #include "ash/wm/window_util.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -653,7 +653,7 @@ void SplitViewDragIndicators::SetWindowDraggingState(
         !overview_controller->overview_session()
              ->window_drag_controller()
              ->is_touch_dragging()) {
-      haptics_util::PlayHapticTouchpadEffect(
+      chromeos::haptics_util::PlayHapticTouchpadEffect(
           ui::HapticTouchpadEffect::kSnap,
           ui::HapticTouchpadEffectStrength::kMedium);
     }

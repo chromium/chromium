@@ -43,7 +43,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/user_education/user_education_class_properties.h"
-#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -63,6 +62,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
+#include "chromeos/utils/haptics_util.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -1619,7 +1619,7 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
         drag_view_->GetIconImage().size());
 
     if (pointer == MOUSE) {
-      haptics_util::PlayHapticTouchpadEffect(
+      chromeos::haptics_util::PlayHapticTouchpadEffect(
           ui::HapticTouchpadEffect::kTick,
           ui::HapticTouchpadEffectStrength::kMedium);
     }

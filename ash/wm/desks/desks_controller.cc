@@ -22,7 +22,6 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_animation_impl.h"
@@ -66,6 +65,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/utils/haptics_util.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
@@ -867,7 +867,7 @@ bool DesksController::ActivateAdjacentDesk(bool going_left,
   } else {
     // Fire a haptic event if necessary.
     if (source == DesksSwitchSource::kDeskSwitchTouchpad) {
-      haptics_util::PlayHapticTouchpadEffect(
+      chromeos::haptics_util::PlayHapticTouchpadEffect(
           ui::HapticTouchpadEffect::kKnock,
           ui::HapticTouchpadEffectStrength::kMedium);
     }

@@ -4,19 +4,19 @@
 
 #include "ash/utility/haptics_tracking_test_input_controller.h"
 
-#include "ash/utility/haptics_util.h"
 #include "base/notreached.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
 
 HapticsTrackingTestInputController::HapticsTrackingTestInputController() {
-  haptics_util::SetInputControllerForTesting(this);
+  chromeos::haptics_util::SetInputControllerForTesting(this);
 }
 
 HapticsTrackingTestInputController::~HapticsTrackingTestInputController() {
-  haptics_util::SetInputControllerForTesting(nullptr);
+  chromeos::haptics_util::SetInputControllerForTesting(nullptr);
 }
 
 bool HapticsTrackingTestInputController::HasMouse() {

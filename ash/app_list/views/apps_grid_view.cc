@@ -38,7 +38,6 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/utility/haptics_util.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -49,6 +48,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -596,7 +596,7 @@ void AppsGridView::TryStartDragAndDropHostDrag(Pointer pointer) {
     StartDragAndDropHostDrag();
 
     if (pointer == MOUSE) {
-      haptics_util::PlayHapticTouchpadEffect(
+      chromeos::haptics_util::PlayHapticTouchpadEffect(
           ui::HapticTouchpadEffect::kTick,
           ui::HapticTouchpadEffectStrength::kMedium);
     }

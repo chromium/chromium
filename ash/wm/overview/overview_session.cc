@@ -17,7 +17,6 @@
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
-#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
@@ -53,6 +52,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
@@ -650,7 +650,7 @@ void OverviewSession::InitiateDrag(OverviewItemBase* item,
 
   // Fire a haptic event if necessary.
   if (!is_touch_dragging) {
-    haptics_util::PlayHapticTouchpadEffect(
+    chromeos::haptics_util::PlayHapticTouchpadEffect(
         ui::HapticTouchpadEffect::kTick,
         ui::HapticTouchpadEffectStrength::kMedium);
   }

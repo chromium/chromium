@@ -16,7 +16,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
-#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_mini_view_animations.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -42,6 +41,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -1405,7 +1405,7 @@ void DeskBarViewBase::StartDragDesk(DeskMiniView* mini_view,
 
   // Fire a haptic event if necessary.
   if (is_mouse_dragging) {
-    haptics_util::PlayHapticTouchpadEffect(
+    chromeos::haptics_util::PlayHapticTouchpadEffect(
         ui::HapticTouchpadEffect::kTick,
         ui::HapticTouchpadEffectStrength::kMedium);
   }

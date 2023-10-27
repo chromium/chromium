@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/utility/haptics_util.h"
+#include "chromeos/utils/haptics_util.h"
+
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 
-namespace ash {
-
-namespace haptics_util {
+namespace chromeos::haptics_util {
 
 namespace {
 
@@ -38,5 +37,4 @@ void PlayHapticToggleEffect(bool on,
                            strength);
 }
 
-}  // namespace haptics_util
-}  // namespace ash
+}  // namespace chromeos::haptics_util

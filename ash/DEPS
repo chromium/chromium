@@ -108,6 +108,7 @@ include_rules = [
   "+chromeos/services/power/public",
   "+chromeos/strings",
   "+chromeos/ui",
+  "+chromeos/utils",
 
   # ui/base/idle depends on SessionManagerClient so disallow it.
   "-ui/base/idle",

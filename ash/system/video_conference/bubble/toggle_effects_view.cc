@@ -18,12 +18,12 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_utils.h"
-#include "ash/utility/haptics_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -246,7 +246,7 @@ void ToggleEffectsButton::OnButtonClicked(const ui::Event& event) {
       video_conference_utils::GetEffectHistogramNameForClick(effect_id_),
       toggled_);
 
-  haptics_util::PlayHapticToggleEffect(
+  chromeos::haptics_util::PlayHapticToggleEffect(
       !toggled_, ui::HapticTouchpadEffectStrength::kMedium);
 
   UpdateColorsAndBackground();
