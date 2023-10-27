@@ -842,18 +842,12 @@ void RunGroupsTest(ChromeVariationsConfigurationTest* test,
 }
 
 TEST_F(ChromeVariationsConfigurationTest, ParseGroupsItem) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
   RunGroupsTest(this, &configuration_, {&kChromeTestFeatureFoo},
                 {&kChromeTestGroupOne}, kChromeTestGroupOne.name,
                 {kChromeTestGroupOne.name}, true /* is_valid */);
 }
 
 TEST_F(ChromeVariationsConfigurationTest, ParseGroupsMultiple) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
   RunGroupsTest(this, &configuration_, {&kChromeTestFeatureFoo},
                 {&kChromeTestGroupOne, &kChromeTestGroupTwo},
                 "test_group_one,test_group_two",
@@ -862,27 +856,18 @@ TEST_F(ChromeVariationsConfigurationTest, ParseGroupsMultiple) {
 }
 
 TEST_F(ChromeVariationsConfigurationTest, ParseGroupsEmpty) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
   RunGroupsTest(this, &configuration_, {&kChromeTestFeatureFoo},
                 {&kChromeTestGroupOne}, "", std::vector<std::string>(),
                 false /* is_valid */);
 }
 
 TEST_F(ChromeVariationsConfigurationTest, ParseGroupsOnlySeparator) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
   RunGroupsTest(this, &configuration_, {&kChromeTestFeatureFoo},
                 {&kChromeTestGroupOne}, ",", std::vector<std::string>(),
                 false /* is_valid */);
 }
 
 TEST_F(ChromeVariationsConfigurationTest, ParseGroupsUnknownGroup) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
   RunGroupsTest(this, &configuration_, {&kChromeTestFeatureFoo},
                 {&kChromeTestGroupOne}, "random", std::vector<std::string>(),
                 false /* is_valid */);
@@ -890,10 +875,7 @@ TEST_F(ChromeVariationsConfigurationTest, ParseGroupsUnknownGroup) {
 
 TEST_F(ChromeVariationsConfigurationTest,
        ParseGroupsCombinationKnownAndUnknownGroups) {
-  base::test::ScopedFeatureList scoped_feature_list;
   base::HistogramTester histogram_tester;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
   RunGroupsTest(this, &configuration_, {&kChromeTestFeatureFoo},
                 {&kChromeTestGroupOne}, "test_group_one,random",
                 {kChromeTestGroupOne.name}, true /* is_valid */);
@@ -901,15 +883,6 @@ TEST_F(ChromeVariationsConfigurationTest,
       kConfigParseEventName,
       static_cast<int>(stats::ConfigParsingEvent::FAILURE_GROUPS_UNKNOWN_GROUP),
       1);
-}
-
-TEST_F(ChromeVariationsConfigurationTest, ParseGroupsFlagDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({} /* enabled_features */,
-                                       {kIPHGroups} /* disabled_features */);
-  RunGroupsTest(this, &configuration_, {&kChromeTestFeatureFoo},
-                {&kChromeTestGroupOne}, kChromeTestGroupOne.name,
-                std::vector<std::string>(), true /* is_valid */);
 }
 
 TEST_F(ChromeVariationsConfigurationTest, WhitespaceIsValid) {
@@ -1584,8 +1557,7 @@ TEST_F(ChromeVariationsConfigurationTest,
        DisabledGroupShouldHaveInvalidConfig) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {kIPHGroups} /* enabled_features */,
-      {kChromeTestGroupOne} /* disabled_features */);
+      {} /* enabled_features */, {kChromeTestGroupOne} /* disabled_features */);
 
   base::HistogramTester histogram_tester;
   FeatureVector features;
@@ -1602,10 +1574,6 @@ TEST_F(ChromeVariationsConfigurationTest,
 }
 
 TEST_F(ChromeVariationsConfigurationTest, ParseSingleGroup) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   std::map<std::string, std::string> group_one_params;
   group_one_params["event_trigger"] =
       "name:opened_chrome_home;comparator:any;window:0;storage:360";
@@ -1643,10 +1611,6 @@ TEST_F(ChromeVariationsConfigurationTest, ParseSingleGroup) {
 }
 
 TEST_F(ChromeVariationsConfigurationTest, EmptyGroupIsInvalid) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   std::map<std::string, std::string> group_one_params;
   SetFeatureParams(kChromeTestGroupOne, group_one_params);
 
@@ -1668,10 +1632,6 @@ TEST_F(ChromeVariationsConfigurationTest, EmptyGroupIsInvalid) {
 }
 
 TEST_F(ChromeVariationsConfigurationTest, GroupOnlyTriggerIsValid) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   std::map<std::string, std::string> group_one_params;
   group_one_params["event_trigger"] =
       "name:et;comparator:any;window:0;storage:360";
@@ -1696,10 +1656,6 @@ TEST_F(ChromeVariationsConfigurationTest, GroupOnlyTriggerIsValid) {
 }
 
 TEST_F(ChromeVariationsConfigurationTest, GroupIgnoresInvalidConfigKeys) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   base::HistogramTester histogram_tester;
   std::map<std::string, std::string> group_one_params;
   group_one_params["event_trigger"] =
@@ -1729,10 +1685,6 @@ TEST_F(ChromeVariationsConfigurationTest, GroupIgnoresInvalidConfigKeys) {
 
 TEST_F(ChromeVariationsConfigurationTest,
        GroupInvalidSessionRateCausesInvalidConfig) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   std::map<std::string, std::string> group_one_params;
   group_one_params["event_used"] =
       "name:eu;comparator:any;window:1;storage:360";
@@ -1760,10 +1712,6 @@ TEST_F(ChromeVariationsConfigurationTest,
 
 TEST_F(ChromeVariationsConfigurationTest,
        GroupInvalidTriggerCausesInvalidConfig) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   std::map<std::string, std::string> group_one_params;
   group_one_params["event_1"] = "name:eu;comparator:any;window:0;storage:360";
   group_one_params["event_trigger"] = "bogus value";
@@ -1793,10 +1741,6 @@ TEST_F(ChromeVariationsConfigurationTest,
 
 TEST_F(ChromeVariationsConfigurationTest,
        GroupInvalidEventConfigCausesInvalidConfig) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   std::map<std::string, std::string> group_one_params;
   group_one_params["event_used"] =
       "name:eu;comparator:any;window:0;storage:360";
@@ -1814,10 +1758,6 @@ TEST_F(ChromeVariationsConfigurationTest,
 }
 
 TEST_F(ChromeVariationsConfigurationTest, GroupMultipleEventsWithSameName) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   std::map<std::string, std::string> group_one_params;
   group_one_params["event_trigger"] =
       "name:foo;comparator:<1;window:21;storage:31";
@@ -1846,10 +1786,6 @@ TEST_F(ChromeVariationsConfigurationTest, GroupMultipleEventsWithSameName) {
 }
 
 TEST_F(ChromeVariationsConfigurationTest, ParseMultipleGroups) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   std::map<std::string, std::string> group_one_params;
   group_one_params["event_trigger"] =
       "name:foo_trigger;comparator:<1;window:21;storage:31";
@@ -1917,10 +1853,6 @@ TEST_F(ChromeVariationsConfigurationTest, ParseMultipleGroups) {
 }
 
 TEST_F(ChromeVariationsConfigurationTest, CheckedInGroupConfigIsReadable) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitWithFeatureState(kIPHDummyGroup, true);
   base::HistogramTester histogram_tester;
@@ -1946,8 +1878,7 @@ TEST_F(ChromeVariationsConfigurationTest,
        CheckedInGroupConfigButDisabledGroupIsInvalid) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {kIPHGroups} /* enabled_features */,
-      {kIPHDummyGroup} /* disabled_features */);
+      {} /* enabled_features */, {kIPHDummyGroup} /* disabled_features */);
   base::HistogramTester histogram_tester;
   FeatureVector features;
   GroupVector groups = {&kIPHDummyGroup};
@@ -1965,10 +1896,6 @@ TEST_F(ChromeVariationsConfigurationTest,
 }
 
 TEST_F(ChromeVariationsConfigurationTest, NonExistingGroupConfigIsInvalid) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   base::HistogramTester histogram_tester;
   FeatureVector features;
   GroupVector groups = {&kIPHDummyGroup};
@@ -1988,9 +1915,6 @@ TEST_F(ChromeVariationsConfigurationTest, NonExistingGroupConfigIsInvalid) {
 TEST_F(ChromeVariationsConfigurationTest,
        ParseExpandsBlockedByGroupNameIntoFeatures) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{kIPHGroups},
-                                       /*disabled_features=*/{});
-
   base::HistogramTester histogram_tester;
   std::map<std::string, std::string> foo_params;
   foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
@@ -2026,10 +1950,6 @@ TEST_F(ChromeVariationsConfigurationTest,
 
 TEST_F(ChromeVariationsConfigurationTest,
        ParseExpandsBlockedByEmptyGroupIntoEmptyList) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{kIPHGroups},
-                                       /*disabled_features=*/{});
-
   base::HistogramTester histogram_tester;
   std::map<std::string, std::string> foo_params;
   foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
@@ -2058,10 +1978,6 @@ TEST_F(ChromeVariationsConfigurationTest,
 
 TEST_F(ChromeVariationsConfigurationTest,
        ParseExpandsBlockedByGroupAndFeature) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{kIPHGroups},
-                                       /*disabled_features=*/{});
-
   base::HistogramTester histogram_tester;
   std::map<std::string, std::string> foo_params;
   foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
@@ -2102,10 +2018,6 @@ TEST_F(ChromeVariationsConfigurationTest,
 }
 
 TEST_F(ChromeVariationsConfigurationTest, ParseExpandsBlockedByMultipleGroups) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{kIPHGroups},
-                                       /*disabled_features=*/{});
-
   base::HistogramTester histogram_tester;
   std::map<std::string, std::string> foo_params;
   foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
@@ -2148,10 +2060,6 @@ TEST_F(ChromeVariationsConfigurationTest, ParseExpandsBlockedByMultipleGroups) {
 
 TEST_F(ChromeVariationsConfigurationTest,
        ParseExpandsBlockedByFeatureAppearsMultipleTimes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{kIPHGroups},
-                                       /*disabled_features=*/{});
-
   base::HistogramTester histogram_tester;
   std::map<std::string, std::string> foo_params;
   foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
@@ -2190,10 +2098,6 @@ TEST_F(ChromeVariationsConfigurationTest,
 
 TEST_F(ChromeVariationsConfigurationTest,
        ParseExpandsSessionRateImpactGroupNameIntoFeatures) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   base::HistogramTester histogram_tester;
   std::map<std::string, std::string> foo_params;
   foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
@@ -2229,10 +2133,6 @@ TEST_F(ChromeVariationsConfigurationTest,
 
 TEST_F(ChromeVariationsConfigurationTest,
        ParseExpandsSessionRateEmptyGroupIntoEmptyList) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kIPHGroups} /* enabled_features */,
-                                       {} /* disabled_features */);
-
   base::HistogramTester histogram_tester;
   std::map<std::string, std::string> foo_params;
   foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";

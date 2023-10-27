@@ -8737,7 +8737,6 @@
                 {
                     "name": "Enabled_CanaryDevBeta",
                     "enable_features": [
-                        "IPHGroups",
                         "PromosManagerUsesFET"
                     ]
                 }

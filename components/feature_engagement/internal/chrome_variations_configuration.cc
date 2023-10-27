@@ -83,10 +83,6 @@ void ChromeVariationsConfiguration::LoadConfigs(
     LoadFeatureConfig(*feature, configuration_providers, features, groups);
   }
 
-  if (!base::FeatureList::IsEnabled(kIPHGroups)) {
-    return;
-  }
-
   ExpandGroupNamesInFeatures(groups);
 
   for (auto* group : groups) {

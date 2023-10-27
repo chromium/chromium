@@ -26,9 +26,7 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    if (base::FeatureList::IsEnabled(kIPHGroups)) {
-      config->groups.push_back(kiOSFullscreenPromosGroup.name);
-    }
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used =
         EventConfig("app_store_promo_used", Comparator(EQUAL, 0), 365, 365);
     config->trigger =
@@ -42,9 +40,7 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    if (base::FeatureList::IsEnabled(kIPHGroups)) {
-      config->groups.push_back(kiOSFullscreenPromosGroup.name);
-    }
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used =
         EventConfig("whats_new_promo_used", Comparator(ANY, 0), 365, 365);
     // What's New promo should be trigger no more than once a month.
@@ -59,10 +55,7 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    if (base::FeatureList::IsEnabled(kIPHGroups)) {
-      config->groups.push_back(kiOSFullscreenPromosGroup.name);
-    }
-
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used =
         EventConfig("default_browser_promo_used", Comparator(ANY, 0), 365, 365);
     if (base::FeatureList::IsEnabled(kDefaultBrowserEligibilitySlidingWindow)) {
@@ -95,9 +88,7 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    if (base::FeatureList::IsEnabled(kIPHGroups)) {
-      config->groups.push_back(kiOSFullscreenPromosGroup.name);
-    }
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used = EventConfig("credential_provider_extension_promo_used",
                                Comparator(ANY, 0), 365, 365);
     config->trigger = EventConfig("credential_provider_extension_promo_trigger",
