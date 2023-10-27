@@ -35,7 +35,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/data_transfer_policy/mock_data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -58,6 +57,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 
 using message_center::Notification;
 using message_center::NotificationHeaderView;
@@ -445,22 +445,25 @@ class AshNotificationViewTest : public AshNotificationViewTestBase {
  public:
   AshNotificationViewTest()
       : AshNotificationViewTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    // TODO(b/293647571): Remove this feature disablement when the crash has
-    // been fixed.
-    scoped_features_.InitAndDisableFeature(chromeos::features::kJelly);
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // AshNotificationViewTestBase:
   void SetUp() override {
     AshNotificationViewTestBase::SetUp();
     auto notification = CreateTestNotification();
-    notification_view_ = std::make_unique<AshNotificationView>(
+    auto notification_view = std::make_unique<AshNotificationView>(
         *notification, /*is_popup=*/false);
+    notification_view_ = notification_view.get();
+    test_widget_ = CreateFramelessTestWidget();
+    test_widget_->SetContentsView(std::move(notification_view));
+    test_widget_->SetSize({400, 100});
+    test_widget_->Show();
   }
 
   void TearDown() override {
-    notification_view_.reset();
+    // Drop the pointer before it's freed by the Widget.
+    notification_view_ = nullptr;
+    test_widget_.reset();
     AshTestBase::TearDown();
   }
 
@@ -473,9 +476,11 @@ class AshNotificationViewTest : public AshNotificationViewTestBase {
 
   AshNotificationView* notification_view() { return notification_view_.get(); }
 
+  views::Widget* test_widget() { return test_widget_.get(); }
+
  private:
-  base::test::ScopedFeatureList scoped_features_;
-  std::unique_ptr<AshNotificationView> notification_view_;
+  raw_ptr<AshNotificationView> notification_view_;
+  std::unique_ptr<views::Widget> test_widget_;
 };
 
 TEST_F(AshNotificationViewTest, UpdateViewsOrderingTest) {
@@ -814,8 +819,10 @@ TEST_F(AshNotificationViewTest, SnoozeButtonVisibility) {
 }
 
 TEST_F(AshNotificationViewTest, AppIconAndExpandButtonAlignment) {
-  auto notification = CreateTestNotification();
+  auto notification = CreateTestNotification(/*has_image=*/true);
   notification_view()->UpdateWithNotification(*notification);
+  ASSERT_GT(notification_view()->width(), 0);
+  ASSERT_GT(notification_view()->height(), 0);
 
   // Make sure that app icon and expand button is vertically aligned in
   // collapsed mode.
@@ -823,13 +830,20 @@ TEST_F(AshNotificationViewTest, AppIconAndExpandButtonAlignment) {
   EXPECT_EQ(GetAppIconView(notification_view())->GetBoundsInScreen().y(),
             GetExpandButton(notification_view())->GetBoundsInScreen().y());
 
-  // Make sure that app icon, expand button, and also header row is vertically
-  // aligned in expanded mode.
+  // Make sure that app icon, expand button, and header row are top-aligned
+  // (have the same y anchor) in expanded mode.
   notification_view()->SetExpanded(true);
+
+  // Need to run layout after expand or the header is not sized correctly.
+  views::test::RunScheduledLayout(test_widget());
+
+  ASSERT_GT(GetHeaderRow(notification_view())->bounds().height(), 0);
+  ASSERT_TRUE(GetHeaderRow(notification_view())->GetVisible());
+
   EXPECT_EQ(GetAppIconView(notification_view())->GetBoundsInScreen().y(),
             GetExpandButton(notification_view())->GetBoundsInScreen().y());
-  EXPECT_EQ(GetAppIconView(notification_view())->GetBoundsInScreen().y(),
-            GetHeaderRow(notification_view())->GetBoundsInScreen().y());
+  EXPECT_EQ(GetAppIconView(notification_view())->bounds().y(),
+            GetHeaderRow(notification_view())->bounds().y());
 }
 
 TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {
