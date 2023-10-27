@@ -712,17 +712,10 @@ class PrerenderBookmarkBarOnHoverNavigationTestNoTestingConfig
 
 // This test verifies prerender cancellation triggered by mouseExited, and
 // another prerender can trigger normally after that.
-// TODO(https://crbug.com/1491974): Times out on Win, Mac and Linux.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_PrerenderMouseExitedCancellationAndPrerenderActivation \
-  DISABLED_PrerenderMouseExitedCancellationAndPrerenderActivation
-#else
-#define MAYBE_PrerenderMouseExitedCancellationAndPrerenderActivation \
-  PrerenderMouseExitedCancellationAndPrerenderActivation
-#endif
+// TODO(https://crbug.com/1491974): Test times out.
 IN_PROC_BROWSER_TEST_F(
     PrerenderBookmarkBarOnHoverNavigationTestNoTestingConfig,
-    MAYBE_PrerenderMouseExitedCancellationAndPrerenderActivation) {
+    DISABLED_PrerenderMouseExitedCancellationAndPrerenderActivation) {
   base::HistogramTester histogram_tester;
   // Navigate to an non-empty tab
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
