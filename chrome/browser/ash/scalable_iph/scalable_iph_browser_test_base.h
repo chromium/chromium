@@ -114,10 +114,6 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   // tracker.
   bool enable_mock_tracker_ = true;
 
-  // Set false in the constructor to not enforce scalable IPH set-up.
-  // If `enable_scalable_iph_` is set to false, this should also be false.
-  bool setup_scalable_iph_ = true;
-
  private:
   static void SetTestingFactories(bool enable_mock_tracker,
                                   content::BrowserContext* browser_context);
