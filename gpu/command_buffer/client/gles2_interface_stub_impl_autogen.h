@@ -1121,9 +1121,6 @@ void GLES2InterfaceStub::FramebufferTextureMultiviewOVR(
     GLint /* baseViewIndex */,
     GLsizei /* numViews */) {}
 void GLES2InterfaceStub::MaxShaderCompilerThreadsKHR(GLuint /* count */) {}
-void GLES2InterfaceStub::TexImage2DSharedImageCHROMIUM(
-    GLuint /* texture */,
-    const GLbyte* /* mailbox */) {}
 GLuint GLES2InterfaceStub::CreateAndTexStorage2DSharedImageCHROMIUM(
     const GLbyte* /* mailbox */) {
   return 0;

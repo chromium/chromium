@@ -1155,9 +1155,6 @@ void FramebufferTextureMultiviewOVR(GLenum target,
 
 void MaxShaderCompilerThreadsKHR(GLuint count) override;
 
-void TexImage2DSharedImageCHROMIUM(GLuint texture,
-                                   const GLbyte* mailbox) override;
-
 GLuint CreateAndTexStorage2DSharedImageCHROMIUM(const GLbyte* mailbox) override;
 
 void BeginSharedImageAccessDirectCHROMIUM(GLuint texture, GLenum mode) override;

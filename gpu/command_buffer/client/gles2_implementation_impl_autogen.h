@@ -3486,20 +3486,6 @@ void GLES2Implementation::MaxShaderCompilerThreadsKHR(GLuint count) {
   CheckGLError();
 }
 
-void GLES2Implementation::TexImage2DSharedImageCHROMIUM(GLuint texture,
-                                                        const GLbyte* mailbox) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glTexImage2DSharedImageCHROMIUM("
-                     << texture << ", " << static_cast<const void*>(mailbox)
-                     << ")");
-  uint32_t count = 16;
-  for (uint32_t ii = 0; ii < count; ++ii) {
-    GPU_CLIENT_LOG("value[" << ii << "]: " << mailbox[ii]);
-  }
-  helper_->TexImage2DSharedImageCHROMIUMImmediate(texture, mailbox);
-  CheckGLError();
-}
-
 void GLES2Implementation::BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
                                                                GLenum mode) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();

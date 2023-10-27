@@ -1116,8 +1116,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   void DoCreateAndConsumeTextureINTERNAL(GLuint client_id,
                                          const volatile GLbyte* key);
-  void DoTexImage2DSharedImageCHROMIUM(GLuint client_id,
-                                       const volatile GLbyte* mailbox);
   void DoCreateAndTexStorage2DSharedImageINTERNAL(
       GLuint client_id,
       const volatile GLbyte* mailbox);
@@ -17188,55 +17186,6 @@ void GLES2DecoderImpl::DoCreateAndConsumeTextureINTERNAL(
   }
 
   texture_ref = texture_manager()->Consume(client_id, texture);
-}
-
-void GLES2DecoderImpl::DoTexImage2DSharedImageCHROMIUM(
-    GLuint client_id,
-    const volatile GLbyte* mailbox_data) {
-  TRACE_EVENT2("gpu", "GLES2DecoderImpl::DoTexImage2DSharedImageCHROMIUM",
-               "context", logger_.GetLogPrefix(), "mailbox[0]",
-               static_cast<unsigned char>(mailbox_data[0]));
-  Mailbox mailbox = Mailbox::FromVolatile(
-      *reinterpret_cast<const volatile Mailbox*>(mailbox_data));
-  DLOG_IF(ERROR, !mailbox.Verify())
-      << "DoTexImage2DSharedImageCHROMIUM was passed an invalid "
-         "mailbox.";
-  if (!client_id) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "DoTexImage2DSharedImageCHROMIUM",
-                       "invalid client id");
-    return;
-  }
-
-  std::unique_ptr<GLTextureImageRepresentation> shared_image =
-      group_->shared_image_representation_factory()->ProduceGLTexture(mailbox);
-
-  if (!shared_image) {
-    // Mailbox missing, generate a texture.
-    bool result = GenTexturesHelper(1, &client_id);
-    DCHECK(result);
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "DoTexImage2DSharedImageCHROMIUM",
-                       "invalid mailbox name");
-    return;
-  }
-
-  Texture* texture = shared_image->GetTexture();
-  if (texture->target() != GL_TEXTURE_2D) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "DoTexImage2DSharedImageCHROMIUM",
-                       "invalid texture target.");
-    return;
-  }
-
-  // Ensure that `client_id` is mapped to `shared_image`.
-  texture_manager()->RemoveTexture(client_id);
-  auto* texture_ref =
-      texture_manager()->ConsumeSharedImage(client_id, std::move(shared_image));
-
-  // If `client_id` is currently bound to `target` in any texture units, the
-  // binding was done when `client_id` did not necessarily map to
-  // `texture->service_id()`. Update any such binding so that
-  // `texture->service_id()` (which `client_id` now maps to) is now bound in the
-  // relevant texture unit(s).
-  UpdateTextureBinding(texture->target(), client_id, texture_ref);
 }
 
 void GLES2DecoderImpl::DoCreateAndTexStorage2DSharedImageINTERNAL(

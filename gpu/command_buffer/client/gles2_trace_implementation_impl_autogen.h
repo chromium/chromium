@@ -2384,14 +2384,6 @@ void GLES2TraceImplementation::MaxShaderCompilerThreadsKHR(GLuint count) {
   gl_->MaxShaderCompilerThreadsKHR(count);
 }
 
-void GLES2TraceImplementation::TexImage2DSharedImageCHROMIUM(
-    GLuint texture,
-    const GLbyte* mailbox) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "GLES2Trace::TexImage2DSharedImageCHROMIUM");
-  gl_->TexImage2DSharedImageCHROMIUM(texture, mailbox);
-}
-
 GLuint GLES2TraceImplementation::CreateAndTexStorage2DSharedImageCHROMIUM(
     const GLbyte* mailbox) {
   TRACE_EVENT_BINARY_EFFICIENT0(

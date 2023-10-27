@@ -374,7 +374,6 @@ GL_APICALL void         GL_APIENTRY glFramebufferTextureMultiviewOVR (GLenum tar
 GL_APICALL void         GL_APIENTRY glMaxShaderCompilerThreadsKHR (GLuint count);
 
 // Extension CHROMIUM_shared_image
-GL_APICALL void       GL_APIENTRY glTexImage2DSharedImageCHROMIUM (GLuint texture, const GLbyte* mailbox);
 GL_APICALL GLuint       GL_APIENTRY glCreateAndTexStorage2DSharedImageCHROMIUM (const GLbyte* mailbox);
 GL_APICALL void         GL_APIENTRY glCreateAndTexStorage2DSharedImageINTERNAL (GLuint texture, const GLbyte* mailbox);
 GL_APICALL void         GL_APIENTRY glBeginSharedImageAccessDirectCHROMIUM (GLuint texture, GLenumSharedImageAccessMode mode);

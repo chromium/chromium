@@ -15456,47 +15456,6 @@ static_assert(offsetof(MaxShaderCompilerThreadsKHR, header) == 0,
 static_assert(offsetof(MaxShaderCompilerThreadsKHR, count) == 4,
               "offset of MaxShaderCompilerThreadsKHR count should be 4");
 
-struct TexImage2DSharedImageCHROMIUMImmediate {
-  typedef TexImage2DSharedImageCHROMIUMImmediate ValueType;
-  static const CommandId kCmdId = kTexImage2DSharedImageCHROMIUMImmediate;
-  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
-
-  static uint32_t ComputeDataSize() {
-    return static_cast<uint32_t>(sizeof(GLbyte) * 16);
-  }
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
-  }
-
-  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
-
-  void Init(GLuint _texture, const GLbyte* _mailbox) {
-    SetHeader();
-    texture = _texture;
-    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
-  }
-
-  void* Set(void* cmd, GLuint _texture, const GLbyte* _mailbox) {
-    static_cast<ValueType*>(cmd)->Init(_texture, _mailbox);
-    const uint32_t size = ComputeSize();
-    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t texture;
-};
-
-static_assert(sizeof(TexImage2DSharedImageCHROMIUMImmediate) == 8,
-              "size of TexImage2DSharedImageCHROMIUMImmediate should be 8");
-static_assert(
-    offsetof(TexImage2DSharedImageCHROMIUMImmediate, header) == 0,
-    "offset of TexImage2DSharedImageCHROMIUMImmediate header should be 0");
-static_assert(
-    offsetof(TexImage2DSharedImageCHROMIUMImmediate, texture) == 4,
-    "offset of TexImage2DSharedImageCHROMIUMImmediate texture should be 4");
-
 struct CreateAndTexStorage2DSharedImageINTERNALImmediate {
   typedef CreateAndTexStorage2DSharedImageINTERNALImmediate ValueType;
   static const CommandId kCmdId =

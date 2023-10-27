@@ -3136,18 +3136,6 @@ void MaxShaderCompilerThreadsKHR(GLuint count) {
   }
 }
 
-void TexImage2DSharedImageCHROMIUMImmediate(GLuint texture,
-                                            const GLbyte* mailbox) {
-  const uint32_t size =
-      gles2::cmds::TexImage2DSharedImageCHROMIUMImmediate::ComputeSize();
-  gles2::cmds::TexImage2DSharedImageCHROMIUMImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          gles2::cmds::TexImage2DSharedImageCHROMIUMImmediate>(size);
-  if (c) {
-    c->Init(texture, mailbox);
-  }
-}
-
 void CreateAndTexStorage2DSharedImageINTERNALImmediate(GLuint texture,
                                                        const GLbyte* mailbox) {
   const uint32_t size = gles2::cmds::

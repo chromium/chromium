@@ -1049,8 +1049,6 @@ error::Error DoInitializeDiscardableTextureCHROMIUM(
     ServiceDiscardableHandle&& discardable_handle);
 error::Error DoUnlockDiscardableTextureCHROMIUM(GLuint texture_id);
 error::Error DoLockDiscardableTextureCHROMIUM(GLuint texture_id);
-error::Error DoTexImage2DSharedImageCHROMIUM(GLuint client_id,
-                                             const volatile GLbyte* mailbox);
 error::Error DoCreateAndTexStorage2DSharedImageINTERNAL(
     GLuint client_id,
     const volatile GLbyte* mailbox);
