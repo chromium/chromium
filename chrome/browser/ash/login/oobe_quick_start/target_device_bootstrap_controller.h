@@ -40,6 +40,7 @@ class TargetDeviceBootstrapController
     PIN_VERIFICATION,
     CONNECTED,
     REQUESTING_WIFI_CREDENTIALS,
+    EMPTY_WIFI_CREDENTIALS_RECEIVED,
     WIFI_CREDENTIALS_RECEIVED,
     REQUESTING_GOOGLE_ACCOUNT_INFO,
     GOOGLE_ACCOUNT_INFO_RECEIVED,
@@ -51,7 +52,6 @@ class TargetDeviceBootstrapController
     START_ADVERTISING_FAILED,
     CONNECTION_REJECTED,
     CONNECTION_CLOSED,
-    WIFI_CREDENTIALS_NOT_RECEIVED,
     USER_VERIFICATION_FAILED,
     GAIA_ASSERTION_NOT_RECEIVED,
     FETCHING_CHALLENGE_BYTES_FAILED,
@@ -151,6 +151,9 @@ class TargetDeviceBootstrapController
   // Initiates the actual account transfer via a cryptographic handshake between
   // the two devices in conjunction with Google servers.
   void AttemptGoogleAccountTransfer();
+
+  // Called when the flow is aborted due to an error, or cancelled by the user.
+  void Cleanup();
 
  private:
   friend class TargetDeviceBootstrapControllerTest;

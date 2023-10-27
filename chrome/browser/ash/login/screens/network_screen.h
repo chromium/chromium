@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
+#include "chrome/browser/ash/login/quickstart_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
@@ -31,7 +32,9 @@ class NetworkStateHelper;
 }
 
 // Controls network selection screen shown during OOBE.
-class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
+class NetworkScreen : public BaseScreen,
+                      public NetworkStateHandlerObserver,
+                      public quick_start::QuickStartController::UiDelegate {
  public:
   using TView = NetworkScreenView;
 
@@ -85,6 +88,10 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   // NetworkStateHandlerObserver:
   void NetworkConnectionStateChanged(const NetworkState* network) override;
   void DefaultNetworkChanged(const NetworkState* network) override;
+
+  // quick_start::QuickStartController::UiDelegate:
+  void OnUiUpdateRequested(
+      quick_start::QuickStartController::UiState state) final;
 
   // Subscribes NetworkScreen to the network change notification, forces refresh
   // of current network state.

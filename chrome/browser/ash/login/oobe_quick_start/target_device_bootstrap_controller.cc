@@ -97,9 +97,6 @@ void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
         TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported);
   CHECK_EQ(status_.step, Step::NONE);
 
-  // No pending requests.
-  CHECK(!weak_ptr_factory_.HasWeakPtrs());
-
   bool use_pin_authentication =
       accessibility_manager_wrapper_->IsSpokenFeedbackEnabled();
 
@@ -301,16 +298,15 @@ void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
 void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
     absl::optional<mojom::WifiCredentials> credentials) {
   CHECK_EQ(status_.step, Step::REQUESTING_WIFI_CREDENTIALS);
-  if (!credentials.has_value()) {
-    status_.step = Step::ERROR;
-    status_.payload = ErrorCode::WIFI_CREDENTIALS_NOT_RECEIVED;
-    NotifyObservers();
-    return;
+
+  if (credentials.has_value()) {
+    status_.step = Step::WIFI_CREDENTIALS_RECEIVED;
+    status_.wifi_credentials = credentials.value();
+  } else {
+    status_.step = Step::EMPTY_WIFI_CREDENTIALS_RECEIVED;
   }
 
-  status_.step = Step::WIFI_CREDENTIALS_RECEIVED;
   status_.payload.emplace<absl::monostate>();
-  status_.wifi_credentials = credentials.value();
   NotifyObservers();
 
   // Record successful wifi credentials transfer. Failures will be
@@ -354,6 +350,11 @@ void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
   auth_broker_->FetchChallengeBytes(
       base::BindOnce(&TargetDeviceBootstrapController::OnChallengeBytesReceived,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TargetDeviceBootstrapController::Cleanup() {
+  status_ = Status();
+  CleanupIfNeeded();
 }
 
 void TargetDeviceBootstrapController::OnChallengeBytesReceived(
@@ -434,6 +435,9 @@ std::ostream& operator<<(std::ostream& stream,
     case TargetDeviceBootstrapController::Step::WIFI_CREDENTIALS_RECEIVED:
       stream << "[wifi credentials received]";
       break;
+    case TargetDeviceBootstrapController::Step::EMPTY_WIFI_CREDENTIALS_RECEIVED:
+      stream << "[empty wifi credentials received]";
+      break;
     case TargetDeviceBootstrapController::Step::REQUESTING_GOOGLE_ACCOUNT_INFO:
       stream << "[requesting google account info]";
       break;
@@ -447,6 +451,35 @@ std::ostream& operator<<(std::ostream& stream,
     case TargetDeviceBootstrapController::Step::
         TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
       stream << "[transferred Google account details]";
+      break;
+  }
+
+  return stream;
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const TargetDeviceBootstrapController::ErrorCode& error_code) {
+  switch (error_code) {
+    case TargetDeviceBootstrapController::ErrorCode::START_ADVERTISING_FAILED:
+      stream << "[start advertising failed]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::CONNECTION_REJECTED:
+      stream << "[connection rejected]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::CONNECTION_CLOSED:
+      stream << "[connection closed]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::USER_VERIFICATION_FAILED:
+      stream << "[user verification failed]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::
+        GAIA_ASSERTION_NOT_RECEIVED:
+      stream << "[Gaia assertion not received]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::
+        FETCHING_CHALLENGE_BYTES_FAILED:
+      stream << "[fetching Challenge Bytes failed]";
       break;
   }
 

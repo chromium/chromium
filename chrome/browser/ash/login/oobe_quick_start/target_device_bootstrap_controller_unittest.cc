@@ -456,9 +456,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->GetFakeConnection()
       ->SendWifiCredentials(absl::nullopt);
 
-  EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
-  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
-            ErrorCode::WIFI_CREDENTIALS_NOT_RECEIVED);
+  EXPECT_EQ(fake_observer_->last_status.step,
+            Step::EMPTY_WIFI_CREDENTIALS_RECEIVED);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
