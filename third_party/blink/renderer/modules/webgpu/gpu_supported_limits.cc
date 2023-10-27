@@ -16,6 +16,7 @@
   X(maxTextureDimension3D)                     \
   X(maxTextureArrayLayers)                     \
   X(maxBindGroups)                             \
+  X(maxBindGroupsPlusVertexBuffers)            \
   X(maxBindingsPerBindGroup)                   \
   X(maxDynamicUniformBuffersPerPipelineLayout) \
   X(maxDynamicStorageBuffersPerPipelineLayout) \

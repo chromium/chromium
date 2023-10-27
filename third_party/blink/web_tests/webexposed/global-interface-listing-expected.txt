@@ -3170,6 +3170,7 @@ interface GPUSupportedFeatures
 interface GPUSupportedLimits
     attribute @@toStringTag
     getter maxBindGroups
+    getter maxBindGroupsPlusVertexBuffers
     getter maxBindingsPerBindGroup
     getter maxBufferSize
     getter maxColorAttachmentBytesPerSample
