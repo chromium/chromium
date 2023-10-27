@@ -1091,12 +1091,12 @@ FileSystemAccessManagerImpl::CreateDirectoryHandle(
       result.InitWithNewPipeAndPassReceiver());
   return result;
 }
-scoped_refptr<FileSystemAccessLockManager::LockHandle>
-FileSystemAccessManagerImpl::TakeLock(
+void FileSystemAccessManagerImpl::TakeLock(
     const storage::FileSystemURL& url,
-    FileSystemAccessLockManager::LockType lock_type) {
+    FileSystemAccessLockManager::LockType lock_type,
+    FileSystemAccessLockManager::TakeLockCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return lock_manager_->TakeLock(url, lock_type);
+  lock_manager_->TakeLock(url, lock_type, std::move(callback));
 }
 bool FileSystemAccessManagerImpl::IsContentious(
     const storage::FileSystemURL& url,

@@ -188,11 +188,12 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
                         const storage::FileSystemURL& url,
                         const SharedHandleState& handle_state);
 
-  // Attempts to take a lock of `lock_type` on `url`. Returns a handle to the
-  // lock if successful. The lock is released when there are no handles to it.
-  scoped_refptr<FileSystemAccessLockManager::LockHandle> TakeLock(
-      const storage::FileSystemURL& url,
-      FileSystemAccessLockManager::LockType lock_type);
+  // Attempts to take a lock of `lock_type` on `url`. Passes a handle of the
+  // lock to `callback` if successful. The lock is released when there are no
+  // handles to it.
+  void TakeLock(const storage::FileSystemURL& url,
+                FileSystemAccessLockManager::LockType lock_type,
+                FileSystemAccessLockManager::TakeLockCallback callback);
 
   // Returns true if there is not an existing lock on `url` that is contentious
   // with `lock_type`.

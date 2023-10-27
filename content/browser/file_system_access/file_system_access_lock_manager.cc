@@ -192,13 +192,13 @@ bool FileSystemAccessLockManager::IsContentiousImpl(
   return existing_lock && existing_lock->IsContentious(lock_type);
 }
 
-scoped_refptr<LockHandle> FileSystemAccessLockManager::TakeLock(
-    const storage::FileSystemURL& url,
-    LockType lock_type) {
+void FileSystemAccessLockManager::TakeLock(const storage::FileSystemURL& url,
+                                           LockType lock_type,
+                                           TakeLockCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   EntryLocator entry_locator = EntryLocator::FromFileSystemURL(url);
-  return TakeLockImpl(entry_locator, lock_type);
+  std::move(callback).Run(TakeLockImpl(entry_locator, lock_type));
 }
 
 scoped_refptr<LockHandle> FileSystemAccessLockManager::TakeLockImpl(

@@ -265,7 +265,17 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
       break;
   }
 
-  auto lock = manager()->TakeLock(url(), lock_type);
+  manager()->TakeLock(
+      url(), lock_type,
+      base::BindOnce(&FileSystemAccessFileHandleImpl::DidTakeAccessHandleLock,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void FileSystemAccessFileHandleImpl::DidTakeAccessHandleLock(
+    OpenAccessHandleCallback callback,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!lock) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
@@ -541,7 +551,26 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
           ? manager()->GetWFSSiloedLockType()
           : manager()->GetExclusiveLockType();
 
-  auto lock = manager()->TakeLock(url(), lock_type);
+  manager()->TakeLock(
+      url(), lock_type,
+      base::BindOnce(&FileSystemAccessFileHandleImpl::StartCreateSwapFile,
+                     weak_factory_.GetWeakPtr(), 0, keep_existing_data,
+                     auto_close, std::move(callback)));
+}
+
+void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
+    int start_count,
+    bool keep_existing_data,
+    bool auto_close,
+    CreateFileWriterCallback callback,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(start_count >= 0);
+  DCHECK(max_swap_files_ >= 0);
+
+  // We should not have gotten any farther than zero without a lock on the file.
+  CHECK(start_count == 0 || lock);
+
   if (!lock) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
@@ -550,21 +579,6 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
     return;
   }
 
-  StartCreateSwapFile(
-      /*count=*/0, keep_existing_data, auto_close, std::move(lock),
-      std::move(callback));
-}
-
-void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
-    int count,
-    bool keep_existing_data,
-    bool auto_close,
-    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
-    CreateFileWriterCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(count >= 0);
-  DCHECK(max_swap_files_ >= 0);
-
   if (GetWritePermissionStatus() != blink::mojom::PermissionStatus::GRANTED) {
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kPermissionDenied),
@@ -572,41 +586,55 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
     return;
   }
 
-  auto swap_name = url().virtual_path().BaseName().AddExtensionASCII(".crswap");
+  for (int count = start_count; count < max_swap_files_; count++) {
+    auto swap_name =
+        url().virtual_path().BaseName().AddExtensionASCII(".crswap");
 
-  if (count >= max_swap_files_) {
-    DLOG(ERROR) << "Error Creating Swap File, count: " << count
-                << " exceeds max unique files of: " << max_swap_files_
-                << " base path: " << swap_name;
-    std::move(callback).Run(file_system_access_error::FromStatus(
-                                FileSystemAccessStatus::kOperationFailed,
-                                "Failed to create swap file."),
-                            mojo::NullRemote());
-    return;
+    if (count > 0) {
+      swap_name = swap_name.InsertBeforeExtensionASCII(
+          base::StringPrintf(".%d", count));
+    }
+
+    // First attempt to just create the swap file in the same directory (and
+    // file system) as this file.
+    absl::optional<base::SafeBaseName> opt_swap_name =
+        base::SafeBaseName::Create(swap_name);
+    CHECK(opt_swap_name.has_value());
+    storage::FileSystemURL swap_url = url().CreateSibling(*opt_swap_name);
+    CHECK(swap_url.is_valid());
+
+    // Check if this swap file is not in use. If it isn't, take a lock on it.
+    if (!manager()->IsContentious(swap_url,
+                                  manager()->GetExclusiveLockType())) {
+      manager()->TakeLock(
+          swap_url, manager()->GetExclusiveLockType(),
+          base::BindOnce(&FileSystemAccessFileHandleImpl::DidTakeSwapLock,
+                         weak_factory_.GetWeakPtr(), count, swap_url,
+                         keep_existing_data, auto_close, std::move(lock),
+                         std::move(callback)));
+      return;
+    }
   }
 
-  if (count > 0) {
-    swap_name =
-        swap_name.InsertBeforeExtensionASCII(base::StringPrintf(".%d", count));
-  }
+  DLOG(ERROR) << "Error Creating Swap File, exceeded max unique files of: "
+              << max_swap_files_
+              << " base name: " << url().virtual_path().BaseName();
+  std::move(callback).Run(file_system_access_error::FromStatus(
+                              FileSystemAccessStatus::kOperationFailed,
+                              "Failed to create swap file."),
+                          mojo::NullRemote());
+}
 
-  // First attempt to just create the swap file in the same directory (and file
-  // system) as this file.
-  absl::optional<base::SafeBaseName> opt_swap_name =
-      base::SafeBaseName::Create(swap_name);
-  CHECK(opt_swap_name.has_value());
-  storage::FileSystemURL swap_url = url().CreateSibling(*opt_swap_name);
-  CHECK(swap_url.is_valid());
-
-  // Check if this swap file is not in use. If it isn't, take a lock on it.
-  if (manager()->IsContentious(swap_url, manager()->GetExclusiveLockType())) {
-    StartCreateSwapFile(count + 1, keep_existing_data, auto_close,
-                        std::move(lock), std::move(callback));
-    return;
-  }
-
-  auto swap_lock =
-      manager()->TakeLock(swap_url, manager()->GetExclusiveLockType());
+void FileSystemAccessFileHandleImpl::DidTakeSwapLock(
+    int count,
+    const storage::FileSystemURL& swap_url,
+    bool keep_existing_data,
+    bool auto_close,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
+    CreateFileWriterCallback callback,
+    scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(lock);
 
   // Taking `swap_lock` should succeed since we checked for contention ahead of
   // time.
@@ -658,7 +686,7 @@ void FileSystemAccessFileHandleImpl::DidCheckSwapFileExists(
   if (result != base::File::FILE_ERROR_NOT_FOUND) {
     // File already exists. We need to find an unused filename.
     StartCreateSwapFile(count + 1, /*keep_existing_data=*/true, auto_close,
-                        std::move(lock), std::move(callback));
+                        std::move(callback), std::move(lock));
     return;
   }
 
@@ -748,7 +776,7 @@ void FileSystemAccessFileHandleImpl::DidCloneSwapFile(
     // created between the FileExists check and the clone attempt. Attempt to
     // find another unused filename.
     StartCreateSwapFile(count + 1, /*keep_existing_data=*/true, auto_close,
-                        std::move(lock), std::move(callback));
+                        std::move(callback), std::move(lock));
     return;
   }
 
@@ -785,7 +813,7 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
   if (result == base::File::FILE_ERROR_EXISTS) {
     // Creation attempt failed. We need to find an unused filename.
     StartCreateSwapFile(count + 1, keep_existing_data, auto_close,
-                        std::move(lock), std::move(callback));
+                        std::move(callback), std::move(lock));
     return;
   }
 

@@ -31,7 +31,15 @@ class Lock;
 // data. It is owned by the FileSystemAccessManagerImpl.
 class CONTENT_EXPORT FileSystemAccessLockManager {
  public:
+  class LockHandle;
+
   using PassKey = base::PassKey<FileSystemAccessLockManager>;
+
+  // This type represents a locking type used to prevent other locking types
+  // from acquiring a lock.
+  using LockType = base::IdType32<class LockTypeTag>;
+
+  using TakeLockCallback = base::OnceCallback<void(scoped_refptr<LockHandle>)>;
 
   enum class EntryPathType {
     // A path on the local file system. Files with these paths can be operated
@@ -64,10 +72,6 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
     // Non-null iff `type` is kSandboxed.
     const absl::optional<storage::BucketLocator> bucket_locator;
   };
-
-  // This type represents a locking type used to prevent other locking types
-  // from acquiring a lock.
-  using LockType = base::IdType32<class LockTypeTag>;
 
   // A handle to a `Lock` passed to the frame that holds the lock. The `Lock` is
   // kept alive as long as `LockHandle` is kept alive.
@@ -104,10 +108,12 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   FileSystemAccessLockManager& operator=(FileSystemAccessLockManager const&) =
       delete;
 
-  // Attempts to take a lock of `lock_type` on `url`. Returns a handle to the
-  // lock if successful. The lock is released when there are no handles to it.
-  scoped_refptr<LockHandle> TakeLock(const storage::FileSystemURL& url,
-                                     LockType lock_type);
+  // Attempts to take a lock of `lock_type` on `url`. Passes a handle of the
+  // lock to `callback` if successful. The lock is released when there are no
+  // handles to it.
+  void TakeLock(const storage::FileSystemURL& url,
+                LockType lock_type,
+                TakeLockCallback callback);
 
   // Returns true if there is not an existing lock on `url` that is contentious
   // with `lock_type`.

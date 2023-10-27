@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -392,9 +393,28 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
 
   // The file can only be moved if we can acquire exclusive locks to both the
   // source and destination URLs.
-  std::vector<scoped_refptr<LockHandle>> locks;
-  auto source_lock =
-      manager()->TakeLock(url(), manager()->GetExclusiveLockType());
+  CHECK(dest_url != url());
+  auto barrier_callback = base::BarrierCallback<scoped_refptr<LockHandle>>(
+      2, base::BindOnce(&FileSystemAccessHandleBase::DidTakeMoveLocks,
+                        AsWeakPtr(), dest_url, has_transient_user_activation,
+                        has_write_access, std::move(callback)));
+  manager()->TakeLock(url(), manager()->GetExclusiveLockType(),
+                      barrier_callback);
+  manager()->TakeLock(dest_url, manager()->GetExclusiveLockType(),
+                      barrier_callback);
+}
+
+void FileSystemAccessHandleBase::DidTakeMoveLocks(
+    storage::FileSystemURL dest_url,
+    bool has_transient_user_activation,
+    bool has_write_access,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+    std::vector<scoped_refptr<LockHandle>> locks) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const auto& source_lock = locks[0];
+  const auto& dest_lock = locks[1];
+
   if (!source_lock) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError,
@@ -403,12 +423,6 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
              ". A FileSystemHandle cannot be moved while it is locked."})));
     return;
   }
-  locks.emplace_back(std::move(source_lock));
-
-  // Acquire an exclusive lock to the destination URL.
-  DCHECK(dest_url != url());
-  auto dest_lock =
-      manager()->TakeLock(dest_url, manager()->GetExclusiveLockType());
   if (!dest_lock) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError,
@@ -418,8 +432,6 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
                       "which is locked."})));
     return;
   }
-  locks.emplace_back(std::move(dest_lock));
-
   // Only allow overwriting moves if we have write access to the destination or
   // its parent.
   if (has_write_access &&
@@ -535,7 +547,18 @@ void FileSystemAccessHandleBase::DoRemove(
 
   // A locked file cannot be removed. Acquire a lock and release it after the
   // remove operation completes.
-  auto lock = manager()->TakeLock(url, manager()->GetExclusiveLockType());
+  manager()->TakeLock(
+      url, manager()->GetExclusiveLockType(),
+      base::BindOnce(&FileSystemAccessHandleBase::DidTakeRemoveLock,
+                     AsWeakPtr(), url, recurse, std::move(callback)));
+}
+
+void FileSystemAccessHandleBase::DidTakeRemoveLock(
+    const storage::FileSystemURL& url,
+    bool recurse,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+    scoped_refptr<LockHandle> lock) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!lock) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));

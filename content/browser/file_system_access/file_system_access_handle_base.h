@@ -99,6 +99,11 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
                 bool recurse,
                 base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                     callback);
+  void DidTakeRemoveLock(
+      const storage::FileSystemURL& url,
+      bool recurse,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock);
 
   // Implementation for the GetCloudIdentifiers method in the
   // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
@@ -140,6 +145,13 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       bool has_transient_user_activation,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
           callback);
+  void DidTakeMoveLocks(
+      storage::FileSystemURL dest_url,
+      bool has_transient_user_activation,
+      bool has_write_access,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+      std::vector<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+          locks);
   // Only called if the move operation is not allowed to overwrite the target.
   void ConfirmMoveWillNotOverwriteDestination(
       const bool has_write_access,

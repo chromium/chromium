@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -107,6 +108,16 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
             /*read_grant=*/read ? allow_grant_ : deny_grant_,
             /*write_grant=*/write ? allow_grant_ : deny_grant_));
     return handle;
+  }
+
+  scoped_refptr<FileSystemAccessLockManager::LockHandle> TakeLockSync(
+      const storage::FileSystemURL& url,
+      FileSystemAccessLockManager::LockType lock_type) {
+    base::test::TestFuture<
+        scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+        future;
+    manager_->TakeLock(url, lock_type, future.GetCallback());
+    return future.Take();
   }
 
  protected:
@@ -406,7 +417,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     EXPECT_FALSE(base::PathExists(file));
     // The lock acquired during the operation should be released by the time the
     // callback runs.
-    EXPECT_TRUE(manager_->TakeLock(file_url, exclusive_lock_type));
+    EXPECT_TRUE(TakeLockSync(file_url, exclusive_lock_type));
   }
 
   // Acquire an exclusive lock on a file before removing to simulate when the
@@ -416,7 +427,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     auto base_name = storage::FilePathToString(file.BaseName());
     EXPECT_EQ(handle->GetChildURL(base_name, &file_url)->file_error,
               base::File::Error::FILE_OK);
-    auto lock = manager_->TakeLock(file_url, exclusive_lock_type);
+    auto lock = TakeLockSync(file_url, exclusive_lock_type);
     EXPECT_TRUE(lock);
 
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
@@ -435,7 +446,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     auto base_name = storage::FilePathToString(file.BaseName());
     EXPECT_EQ(handle->GetChildURL(base_name, &file_url)->file_error,
               base::File::Error::FILE_OK);
-    auto lock = manager_->TakeLock(file_url, wfs_siloed_lock_type);
+    auto lock = TakeLockSync(file_url, wfs_siloed_lock_type);
     ASSERT_TRUE(lock);
     EXPECT_TRUE(lock->type() == wfs_siloed_lock_type);
 
