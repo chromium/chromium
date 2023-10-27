@@ -1169,7 +1169,7 @@ TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
   ASSERT_TRUE(locker->GetDisplayLockContext());
   EXPECT_TRUE(locker->GetDisplayLockContext()->IsLocked());
 
-  EXPECT_TRUE(locker->firstChild()->GetComputedStyle())
+  EXPECT_TRUE(locker->firstElementChild()->GetComputedStyle())
       << "The #locker element does not get content-visibility:hidden on the "
          "first pass over its children during the lifecycle update because we "
          "do not have the container laid out at that point. This is not a spec "

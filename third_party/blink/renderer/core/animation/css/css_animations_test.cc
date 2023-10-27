@@ -212,7 +212,7 @@ TEST_P(CSSAnimationsTest, CompositedBackgroundColorSnapshot) {
   ASSERT_TRUE(element);
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(element->GetComputedStyle());
-  ASSERT_TRUE(element->parentNode());
+  ASSERT_TRUE(element->parentElement());
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentCompositableAnimation());
 
   ElementAnimations* animations = element->GetElementAnimations();
@@ -224,7 +224,7 @@ TEST_P(CSSAnimationsTest, CompositedBackgroundColorSnapshot) {
   CSSAnimationUpdate update;
   CSSAnimations::CalculateCompositorAnimationUpdate(
       update, *element, *element, element->ComputedStyleRef(),
-      element->parentNode()->GetComputedStyle(),
+      element->parentElement()->GetComputedStyle(),
       /* was_window_resized */ false, /* force update */ false);
 
   ASSERT_EQ(1u, update.UpdatedCompositorKeyframes().size());

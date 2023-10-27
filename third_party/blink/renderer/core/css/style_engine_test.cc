@@ -1160,7 +1160,7 @@ TEST_F(StyleEngineTest, VisitedExplicitInheritanceMatchedPropertiesCache) {
   const ComputedStyle* style = span->GetComputedStyle();
   EXPECT_FALSE(style->ChildHasExplicitInheritance());
 
-  style = span->firstChild()->GetComputedStyle();
+  style = span->firstElementChild()->GetComputedStyle();
 
   ComputedStyleBuilder builder(*style);
   EXPECT_TRUE(MatchedPropertiesCache::IsStyleCacheable(builder));
@@ -2772,7 +2772,7 @@ TEST_F(StyleEngineTest, EnsuredComputedStyleRecalc) {
 
   Element* computed = GetDocument().getElementById(AtomicString("computed"));
   Element* span_outer = GetDocument().getElementById(AtomicString("span"));
-  Node* span_inner = span_outer->firstChild();
+  Element* span_inner = span_outer->firstElementChild();
 
   // Initially all null in display:none subtree.
   EXPECT_FALSE(computed->GetComputedStyle());
