@@ -11,8 +11,6 @@
 
 namespace device {
 
-#pragma pack(push, 4)
-
 // This structure is intentionally POD and fixed size so that it can be stored
 // in shared memory between hardware polling threads and the rest of the
 // browser.
@@ -23,8 +21,6 @@ class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepads {
   // Gamepad data for N separate gamepad devices.
   Gamepad items[kItemsLengthCap];
 };
-
-#pragma pack(pop)
 
 }  // namespace device
 
