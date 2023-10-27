@@ -739,8 +739,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)loadParcelTrackingPage:(GURL)parcelTrackingURL {
   [self.NTPMetricsDelegate parcelTrackingOpened];
-  [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
-                                           kParcelTracking];
+  ContentSuggestionsModuleType type =
+      [_parcelTrackingItems count] > 2
+          ? ContentSuggestionsModuleType::kParcelTrackingSeeMore
+          : ContentSuggestionsModuleType::kParcelTracking;
+  [self logMagicStackEngagementForType:type];
   UrlLoadingBrowserAgent::FromBrowser(self.browser)
       ->Load(UrlLoadParams::InCurrentTab(parcelTrackingURL));
 }
