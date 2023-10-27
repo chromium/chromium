@@ -191,6 +191,11 @@ BASE_DECLARE_FEATURE(kChromeOsPasskeys);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnScreenReaderMode);
 
+// Update the minimum, maximum, and default timeout values for webauthn requests
+// to be more generous and meet https://www.w3.org/TR/WCAG21/#enough-time.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAccessibleTimeouts);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

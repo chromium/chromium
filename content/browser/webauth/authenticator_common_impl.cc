@@ -12,6 +12,7 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -209,21 +210,29 @@ bool AddTransportsFromCertificate(
 base::TimeDelta AdjustTimeout(absl::optional<base::TimeDelta> timeout,
                               RenderFrameHost* render_frame_host) {
   // Time to wait for an authenticator to successfully complete an operation.
-  static constexpr base::TimeDelta kAdjustedTimeoutLower = base::Seconds(10);
-  static constexpr base::TimeDelta kAdjustedTimeoutUpper = base::Minutes(10);
-
+  base::TimeDelta adjusted_timeout_lower;
+  base::TimeDelta adjusted_timeout_upper;
+  if (base::FeatureList::IsEnabled(device::kWebAuthnAccessibleTimeouts)) {
+    adjusted_timeout_lower = base::Minutes(3);
+    adjusted_timeout_upper = base::Hours(20);
+  } else {
+    adjusted_timeout_lower = base::Seconds(10);
+    adjusted_timeout_upper = base::Minutes(10);
+  }
   if (!timeout) {
-    return kAdjustedTimeoutUpper;
+    return adjusted_timeout_upper;
   }
   const bool testing_api_enabled =
       AuthenticatorEnvironment::GetInstance()->IsVirtualAuthenticatorEnabledFor(
           static_cast<RenderFrameHostImpl*>(render_frame_host)
-              ->frame_tree_node());
+              ->frame_tree_node()) ||
+      AuthenticatorEnvironment::GetInstance()
+          ->MaybeGetDiscoveryFactoryTestOverride();
   if (testing_api_enabled) {
     return *timeout;
   }
-  return std::max(kAdjustedTimeoutLower,
-                  std::min(kAdjustedTimeoutUpper, *timeout));
+  return std::max(adjusted_timeout_lower,
+                  std::min(adjusted_timeout_upper, *timeout));
 }
 
 bool UsesDiscoverableCreds(const device::MakeCredentialOptions& options) {
