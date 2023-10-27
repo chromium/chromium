@@ -21,6 +21,7 @@
 #include "chrome/services/sharing/nearby/nearby_shared_remotes.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
@@ -31,6 +32,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/src/connections/implementation/service_controller_router.h"
+#include "third_party/nearby/src/presence/presence_device.h"
 
 namespace nearby::connections {
 
@@ -118,6 +120,12 @@ class NearbyConnections : public mojom::NearbyConnections {
                            base::File input_file,
                            base::File output_file,
                            RegisterPayloadFileCallback callback) override;
+  void RequestConnectionV3(
+      const std::string& service_id,
+      ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
+      mojom::ConnectionOptionsPtr connection_options,
+      mojo::PendingRemote<mojom::ConnectionListenerV3> listener,
+      RequestConnectionCallback callback) override;
 
   // Returns the file associated with |payload_id| for InputFile.
   base::File ExtractInputFile(int64_t payload_id);

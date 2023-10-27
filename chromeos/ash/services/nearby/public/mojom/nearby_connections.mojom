@@ -5,6 +5,7 @@
 module nearby.connections.mojom;
 
 import "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom";
+import "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 
@@ -98,6 +99,17 @@ interface PayloadListener {
   //               the transfer.
   OnPayloadTransferUpdate(string endpoint_id, PayloadTransferUpdate update);
 };
+
+// Listener for lifecycle events associated with a connection to a remote
+// device. Methods in this interface are called from utility process, and is
+// used by the browser process to listen for connection status associated with
+// remote devices.
+//
+// This should stay aligned with ConnectionListenerV3 defined at:
+// //third_party/nearby/src/connections/v3/listeners.h
+//
+// TODO(b/308178927): Introduce functions when callback implementation begins.
+interface ConnectionListenerV3 {};
 
 // Main interface to control the NearbyConnections library. Implemented in a
 // sandboxed process. This interface is used by the browser process to connect
@@ -353,5 +365,40 @@ interface NearbyConnections {
                       int64 payload_id,
                       mojo_base.mojom.ReadOnlyFile input_file,
                       mojo_base.mojom.File output_file)
+      => (Status status);
+
+  //******************************* V3 *******************************
+  // NOTE: Do NOT mix with the V1 APIs above, this might result in undefined
+  // behavior!
+
+  // Sends a request to connect to a remote device.
+  //
+  // service_id         - Service ID used to discover the device.
+  // remote_device      - The remote device to which a connection request will
+  //                      be sent.
+  // connection_options - Connection options for the new connection if both
+  //                      sides accept.
+  // listener           - An interface notified when the remote device sends
+  //                      a response to the connection request.
+  // Possible return values include:
+  // TODO(b/307319934): Clean up Status values to no longer reference endpoints
+  // when the V3 API migration occurs.
+  //   Status::kSuccess if the connection request was accepted.
+  //   Status::kAlreadyConnectedToEndpoint if the app already has a connection
+  //       to the specified device.
+  //   Status::kBluetoothError if we failed to connect because of an issue with
+  //       Bluetooth.
+  //   Status::kWifiLanError if we failed to connect because of an issue with
+  //       Wi-Fi.
+  //   Status::kError if we failed to connect for any other reason.
+  //
+  // TODO(b/306188252): This API will initially only be used by Nearby Presence
+  // client applications, and therefore uses a PresenceDevice type for its
+  // `remote_device` argument. This will eventually be replaced with the
+  // NearbyDevice type to allow use by Nearby Connections/non-Presence clients.
+  RequestConnectionV3(string service_id,
+                      ash.nearby.presence.mojom.PresenceDevice remote_device,
+                      ConnectionOptions connection_options,
+                      pending_remote<ConnectionListenerV3> listener)
       => (Status status);
 };

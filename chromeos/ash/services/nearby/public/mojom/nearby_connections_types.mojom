@@ -298,3 +298,23 @@ enum LogSeverity {
   kError = 2,
   kFatal = 3,
 };
+
+// Information about a connection to determine if this is the correct device
+// to connect to. These fields should never be empty.
+struct InitialConnectionInfoV3 {
+  // 4-digit authentication code shown to user derived by UKEY2.
+  string authentication_digits;
+
+  // Raw 32-byte authentication token derived by UKEY2.
+  string raw_authentication_token;
+
+  // Specifies if the connection is incoming or outgoing.
+  bool is_incoming_connection = false;
+};
+
+// Used to indicate the new connection quality when upgrading to a new medium
+// e.g. BT -> WiFi direct.
+struct BandwidthInfo {
+  BandwidthQuality quality;
+  Medium medium;
+};
