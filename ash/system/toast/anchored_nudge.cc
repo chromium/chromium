@@ -60,8 +60,8 @@ void AdjustWorkAreaBoundsForHotseatState(const HotseatWidget* hotseat_widget,
 
 }  // namespace
 
-AnchoredNudge::AnchoredNudge(const AnchoredNudgeData& nudge_data)
-    : views::BubbleDialogDelegateView(nudge_data.anchor_view,
+AnchoredNudge::AnchoredNudge(AnchoredNudgeData& nudge_data)
+    : views::BubbleDialogDelegateView(nudge_data.GetAnchorView(),
                                       nudge_data.arrow,
                                       views::BubbleBorder::NO_SHADOW),
       id_(nudge_data.id),

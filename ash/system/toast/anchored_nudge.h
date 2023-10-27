@@ -44,7 +44,7 @@ class ASH_EXPORT AnchoredNudge : public display::DisplayObserver,
  public:
   METADATA_HEADER(AnchoredNudge);
 
-  explicit AnchoredNudge(const AnchoredNudgeData& nudge_data);
+  explicit AnchoredNudge(AnchoredNudgeData& nudge_data);
   AnchoredNudge(const AnchoredNudge&) = delete;
   AnchoredNudge& operator=(const AnchoredNudge&) = delete;
   ~AnchoredNudge() override;

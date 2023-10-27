@@ -83,7 +83,7 @@ void SetupViewCornerRadius(views::View* view, int corner_radius) {
 
 }  // namespace
 
-SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
+SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
   DCHECK(features::IsSystemNudgeV2Enabled());
 
   SetupViewCornerRadius(this, kNudgeCornerRadius);
@@ -111,7 +111,8 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data) {
 
   // Nudges without an anchor view that are not text-only will have a close
   // button that is visible on view hovered.
-  bool has_close_button = !nudge_data.anchor_view && !nudge_is_text_only;
+  const bool has_close_button =
+      !nudge_data.is_anchored() && !nudge_is_text_only;
 
   views::View* image_and_text_container;
   auto image_and_text_container_unique =

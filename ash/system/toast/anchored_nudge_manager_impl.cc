@@ -309,6 +309,15 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
     return;
   }
 
+  views::View* anchor_view = nudge_data.GetAnchorView();
+
+  // Nudges with an anchor view won't show if their `anchor_view` was deleted,
+  // it is not visible or does not have a widget.
+  if (nudge_data.is_anchored() && (!anchor_view || !anchor_view->GetVisible() ||
+                                   !anchor_view->GetWidget())) {
+    return;
+  }
+
   // If `id` is already in use, close the nudge without triggering its hide
   // animation so it can be immediately replaced.
   if (base::Contains(shown_nudges_, id)) {
@@ -316,16 +325,6 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
     if (nudge_widget && !nudge_widget->IsClosed()) {
       // Cache cleanup occurs on nudge's `OnWidgetDestroying()`.
       nudge_widget->CloseNow();
-    }
-  }
-
-  views::View* anchor_view = nudge_data.anchor_view;
-
-  // Nudges with an anchor view won't show if `anchor_view` is not visible or
-  // does not have a widget.
-  if (anchor_view) {
-    if (!anchor_view->GetVisible() || !anchor_view->GetWidget()) {
-      return;
     }
   }
 

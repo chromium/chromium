@@ -30,7 +30,7 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView {
  public:
   METADATA_HEADER(SystemNudgeView);
 
-  SystemNudgeView(const AnchoredNudgeData& nudge_data);
+  SystemNudgeView(AnchoredNudgeData& nudge_data);
   SystemNudgeView(const SystemNudgeView&) = delete;
   SystemNudgeView& operator=(const SystemNudgeView&) = delete;
   ~SystemNudgeView() override;

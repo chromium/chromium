@@ -481,6 +481,29 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_AnchorViewWithoutWidget) {
   EXPECT_FALSE(GetShownNudges()[id]);
 }
 
+// Tests that a nudge is not created if its anchor view was deleted.
+TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_DeletedAnchorView) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto contents_view = std::make_unique<views::View>();
+  auto* anchor_view =
+      contents_view->AddChildView(std::make_unique<views::View>());
+  widget->SetContentsView(contents_view.get());
+
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  // Anchor view exists, the nudge should be created.
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Delete the anchor view, the nudge should not be created.
+  contents_view->RemoveAllChildViews();
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_FALSE(GetShownNudges()[id]);
+}
+
 // Tests that a nudge will not be shown if a `ScopedNudgePause` exists, and even
 // if the `scoped_anchored_nudge_pause` gets destroyed, the nudge is dismissed
 // and will not be saved.

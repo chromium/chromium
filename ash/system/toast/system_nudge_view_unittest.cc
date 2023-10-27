@@ -143,7 +143,7 @@ TEST_F(SystemNudgeViewTest, CloseButton) {
 
   // Test that nudges with an anchor view will not have a close button.
   auto anchor_view = std::make_unique<views::View>();
-  nudge_data.anchor_view = anchor_view.get();
+  nudge_data.SetAnchorView(anchor_view.get());
   widget->SetContentsView(std::make_unique<SystemNudgeView>(nudge_data));
   EXPECT_FALSE(GetCloseButton(widget->GetContentsView()));
 }
