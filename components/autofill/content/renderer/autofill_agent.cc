@@ -1331,7 +1331,7 @@ void AutofillAgent::HandleFocusChangeComplete(
     }
   }
 
-  if (focused_node_was_last_clicked &&
+  if (focused_node_was_last_clicked && !focused_element.IsNull() &&
       base::FeatureList::IsEnabled(features::kAutofillContentEditables)) {
     if (std::optional<FormData> form =
             form_util::FindFormForContentEditable(focused_element)) {
