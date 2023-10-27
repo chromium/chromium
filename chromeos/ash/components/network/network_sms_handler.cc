@@ -85,9 +85,8 @@ class NetworkSmsHandler::NetworkSmsDeviceHandler {
   NetworkSmsDeviceHandler() = default;
   virtual ~NetworkSmsDeviceHandler() = default;
 
-  // Updates the last connected network's GUID for the current device handler.
-  // When this is nullptr, the GUID is reset.
-  virtual void SetLastConnectedNetwork(const NetworkState* state) {}
+  // Updates the last active network's GUID for the current device handler.
+  virtual void SetLastActiveNetwork(const NetworkState* state) {}
 };
 
 class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
@@ -114,7 +113,7 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   void GetMessages();
   void MessageReceived(const base::Value::Dict& dictionary);
   void OnFetchSmsDetailsTimeout(const dbus::ObjectPath& sms_path);
-  void SetLastConnectedNetwork(const NetworkState* state) override;
+  void SetLastActiveNetwork(const NetworkState* state) override;
 
   raw_ptr<NetworkSmsHandler, ExperimentalAsh> host_;
   std::string service_name_;
@@ -124,7 +123,7 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   bool retrieving_messages_ = false;
   std::vector<dbus::ObjectPath> delete_queue_;
   base::circular_deque<dbus::ObjectPath> retrieval_queue_;
-  std::string last_seen_connected_network_guid_;
+  std::string last_active_network_guid_;
   base::WeakPtrFactory<ModemManager1NetworkSmsDeviceHandler> weak_ptr_factory_{
       this};
 };
@@ -305,7 +304,7 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::MessageReceived(
   }
 
   if (features::IsSuppressTextMessagesEnabled()) {
-    new_dictionary.Set(kNetworkGuidKey, last_seen_connected_network_guid_);
+    new_dictionary.Set(kNetworkGuidKey, last_active_network_guid_);
   }
 
   host_->MessageReceived(new_dictionary);
@@ -319,14 +318,14 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
 }
 
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
-    SetLastConnectedNetwork(const NetworkState* network_state) {
+    SetLastActiveNetwork(const NetworkState* network_state) {
   CHECK(features::IsSuppressTextMessagesEnabled());
   if (!network_state) {
     return;
   }
   NET_LOG(DEBUG) << "Updating last seen network to network with GUID: "
                  << network_state->guid();
-  last_seen_connected_network_guid_ = network_state->guid();
+  last_active_network_guid_ = network_state->guid();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -385,6 +384,31 @@ void NetworkSmsHandler::OnPropertyChanged(const std::string& name,
   if (name == shill::kDevicesProperty && value.is_list()) {
     UpdateDevices(value.GetList());
   }
+
+  if (name == shill::kIccidProperty && value.is_string() &&
+      features::IsSuppressTextMessagesEnabled()) {
+    OnActiveDeviceIccidChanged(value.GetString());
+  }
+}
+
+void NetworkSmsHandler::OnActiveDeviceIccidChanged(const std::string& iccid) {
+  CHECK(features::IsSuppressTextMessagesEnabled());
+  if (!device_handler_ || iccid.empty()) {
+    return;
+  }
+  NetworkStateHandler::NetworkStateList active_networks;
+  // We also look at non-active networks, to account for networks that are
+  // disconnected as you can receive text messages on active devices with
+  // disconnected networks.
+  network_state_handler_->GetNetworkListByType(
+      NetworkTypePattern::Cellular(), /*configured_only=*/false,
+      /*visible_only=*/false, /*limit=*/0, &active_networks);
+  for (auto* network : active_networks) {
+    if (network->iccid() == iccid) {
+      device_handler_->SetLastActiveNetwork(network);
+      return;
+    }
+  }
 }
 
 void NetworkSmsHandler::ActiveNetworksChanged(
@@ -392,7 +416,7 @@ void NetworkSmsHandler::ActiveNetworksChanged(
   CHECK(features::IsSuppressTextMessagesEnabled());
   for (const NetworkState* network : active_networks) {
     if (network->type() == shill::kTypeCellular && device_handler_) {
-      device_handler_->SetLastConnectedNetwork(network);
+      device_handler_->SetLastActiveNetwork(network);
       break;
     }
   }
@@ -511,7 +535,10 @@ void NetworkSmsHandler::DevicePropertiesCallback(
       this, *service_name, object_path);
 
   if (features::IsSuppressTextMessagesEnabled()) {
-    device_handler_->SetLastConnectedNetwork(
+    OnActiveDeviceIccidChanged(
+        GetStringOptional(*properties, shill::kIccidProperty)
+            .value_or(std::string()));
+    device_handler_->SetLastActiveNetwork(
         network_state_handler_->ConnectedNetworkByType(
             NetworkTypePattern::Cellular()));
   }
