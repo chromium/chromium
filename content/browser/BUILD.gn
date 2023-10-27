@@ -1150,6 +1150,7 @@ source_set("browser") {
     "interest_group/ad_auction_service_impl.h",
     "interest_group/ad_auction_url_loader_interceptor.cc",
     "interest_group/ad_auction_url_loader_interceptor.h",
+    "interest_group/additional_bid_result.h",
     "interest_group/additional_bids_util.cc",
     "interest_group/additional_bids_util.h",
     "interest_group/auction_metrics_recorder.cc",

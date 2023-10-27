@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -1328,7 +1329,11 @@ MATCHER_P2(HasMetricWithValue, key, matcher, "") {
     *result_listener << "which does not contain " << key;
     return false;
   }
-  return ExplainMatchResult(arg.at(key), matcher, result_listener);
+  if (!ExplainMatchResult(arg.at(key), matcher, result_listener)) {
+    *result_listener << "in which " << key << " is " << arg.at(key);
+    return false;
+  }
+  return true;
 }
 
 MATCHER_P(HasMetric, key, "") {
@@ -1341,7 +1346,8 @@ MATCHER_P(HasMetric, key, "") {
 
 MATCHER_P(DoesNotHaveMetric, key, "") {
   if (arg.contains(key)) {
-    *result_listener << "which unexpectedly contains " << key;
+    *result_listener << "which unexpectedly contains " << key << " with value "
+                     << arg.at(key);
     return false;
   }
   return true;
@@ -1356,7 +1362,7 @@ MATCHER_P2(OnlyHasMetricIf, key, condition, "") {
   } else {
     if (arg.contains(key)) {
       *result_listener << "which unexpectedly contains " << key
-                       << " and shouldn't";
+                       << " with value " << arg.at(key) << " and shouldn't";
       return false;
     }
   }
@@ -1366,7 +1372,8 @@ MATCHER_P2(OnlyHasMetricIf, key, condition, "") {
 MATCHER_P2(HasMetricWithValueOrNotIfNullOpt, key, matcher, "") {
   if (!matcher.has_value()) {
     if (arg.contains(key)) {
-      *result_listener << "which unexpectedly contains " << key;
+      *result_listener << "which unexpectedly contains " << key
+                       << " with value " << arg.at(key);
       return false;
     }
     // Metric has no value and none was expected, which is good.
@@ -1377,7 +1384,11 @@ MATCHER_P2(HasMetricWithValueOrNotIfNullOpt, key, matcher, "") {
     *result_listener << "which does not contain " << key;
     return false;
   }
-  return ExplainMatchResult(arg.at(key), matcher, result_listener);
+  if (!ExplainMatchResult(arg.at(key), matcher, result_listener)) {
+    *result_listener << "in which " << key << " is " << arg.at(key);
+    return false;
+  }
+  return true;
 }
 
 class EventReportingAttestationBrowserClient : public TestContentBrowserClient {
@@ -2201,6 +2212,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     auction_process_manager_ = std::move(mock_auction_process_manager);
   }
 
+  // TODO(orrb): Replace this with a MockAuctionMetricsRecorder.
   ukm::TestUkmRecorder::HumanReadableUkmMetrics GetUkmMetrics() const {
     using Entry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
@@ -2212,6 +2224,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 Entry::kEndToEndLatencyInMillisName,
                 Entry::kLoadInterestGroupPhaseLatencyInMillisName,
                 Entry::kNumInterestGroupsName,
+                Entry::kNumNegativeInterestGroupsName,
                 Entry::kNumOwnersWithInterestGroupsName,
                 Entry::kNumDistinctOwnersWithInterestGroupsName,
                 Entry::kNumSellersWithBiddersName,
@@ -2225,6 +2238,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 /* Properties of the auction metrics */
                 Entry::kKAnonymityBidModeName,
                 Entry::kNumConfigPromisesName,
+                Entry::kNumAuctionsWithConfigPromisesName,
                 /* GenerateBid outcome metrics */
                 Entry::kNumInterestGroupsWithNoBidsName,
                 Entry::kNumInterestGroupsWithOnlyNonKAnonBidName,
@@ -2314,6 +2328,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       return *this;
     }
 
+    MetricsExpectations& SetNumNegativeInterestGroups(int64_t value) {
+      num_negative_interest_groups = value;
+      return *this;
+    }
+
     MetricsExpectations& SetNumOwners(int64_t value) {
       num_owners = value;
       return *this;
@@ -2343,6 +2362,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     MetricsExpectations& SetNumConfigPromises(int64_t value) {
       num_config_promises = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumAuctionsWithConfigPromises(int64_t value) {
+      num_auctions_with_config_promises = value;
       return *this;
     }
 
@@ -2469,11 +2493,13 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     AuctionResult result;
     absl::optional<int64_t> num_interest_groups;
+    absl::optional<int64_t> num_negative_interest_groups;
     absl::optional<int64_t> num_owners;
     absl::optional<int64_t> num_sellers;
     int64_t num_distinct_owners = 0;
     int64_t num_bidder_worklets = 0;
     int64_t num_config_promises = 0;
+    int64_t num_auctions_with_config_promises = 0;
     int64_t num_bids_aborted_by_buyer_cumulative_timeout = 0;
     int64_t num_bids_aborted_by_bidder_worklet_fatal_error = 0;
     int64_t num_bids_filtered_during_interest_group_load = 0;
@@ -2499,7 +2525,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // Check histogram values and UKMs.
   // If `num_interest_groups` or `num_owners` is null, expect the auction to be
   // aborted before the corresponding histograms or UKMs are recorded.
-  void CheckMetrics(MetricsExpectations expectations) {
+  void CheckMetrics(MetricsExpectations expectations,
+                    const base::Location& location = FROM_HERE) {
+    SCOPED_TRACE(location.ToString());
     using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
     ukm::TestUkmRecorder::HumanReadableUkmMetrics ukm_metrics = GetUkmMetrics();
     histogram_tester_->ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
@@ -2520,6 +2548,20 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
           "Ads.InterestGroup.Auction.NumInterestGroups", 0);
       EXPECT_THAT(ukm_metrics,
                   DoesNotHaveMetric(UkmEntry::kNumInterestGroupsName));
+    }
+
+    if (expectations.num_negative_interest_groups.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.NumNegativeInterestGroups",
+          *expectations.num_negative_interest_groups, 1);
+      EXPECT_THAT(ukm_metrics, HasMetricWithValue(
+                                   UkmEntry::kNumNegativeInterestGroupsName,
+                                   expectations.num_negative_interest_groups));
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          "Ads.InterestGroup.Auction.NumNegativeInterestGroups", 0);
+      EXPECT_THAT(ukm_metrics,
+                  DoesNotHaveMetric(UkmEntry::kNumNegativeInterestGroupsName));
     }
 
     if (expectations.num_owners.has_value()) {
@@ -2576,6 +2618,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     EXPECT_THAT(ukm_metrics,
                 HasMetricWithValue(UkmEntry::kNumConfigPromisesName,
                                    expectations.num_config_promises));
+
+    EXPECT_THAT(
+        ukm_metrics,
+        HasMetricWithValue(UkmEntry::kNumAuctionsWithConfigPromisesName,
+                           expectations.num_auctions_with_config_promises));
     EXPECT_THAT(
         ukm_metrics,
         HasMetric(UkmEntry::kLoadInterestGroupPhaseLatencyInMillisName));
@@ -6821,6 +6868,7 @@ TEST_F(AuctionRunnerTest, PromiseAuctionSignals) {
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumBidderWorklets(2)
                    .SetNumConfigPromises(1)
+                   .SetNumAuctionsWithConfigPromises(1)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumInterestGroups(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2)
@@ -8150,6 +8198,7 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
                    // execution time and platform.
                    .SetNumBidsQueuedWaitingForSellerWorklet(-1)
                    .SetNumInterestGroups(2)
+                   .SetNumNegativeInterestGroups(0)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
@@ -8401,6 +8450,7 @@ TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
                    // execution time and platform.
                    .SetNumBidsQueuedWaitingForSellerWorklet(-1)
                    .SetNumInterestGroups(2)
+                   .SetNumNegativeInterestGroups(0)
                    .SetNumOwnersAndDistinctOwners(2)
                    .SetNumSellers(1)
                    .SetNumBidderWorklets(2)
@@ -13236,6 +13286,7 @@ TEST_F(AuctionRunnerTest,
   EXPECT_EQ(absl::nullopt, result_.ad_descriptor);
 
   CheckMetrics(MetricsExpectations(AuctionResult::kNoBids)
+                   .SetNumAuctionsWithConfigPromises(0)
                    .SetNumInterestGroups(2)
                    .SetNumOwnersAndDistinctOwners(1)
                    .SetNumSellers(1)

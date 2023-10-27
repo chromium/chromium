@@ -1748,6 +1748,18 @@ Unknown properties are collapsed to zero. -->
   <int value="7" label="Failed - not usable"/>
 </enum>
 
+<enum name="AdditionalBidResult">
+  <int value="0" label="Sent for Scoring"/>
+  <int value="1" label="Negative Targeted"/>
+  <int value="2" label="Rejected Due to Invalid Base64"/>
+  <int value="3" label="Rejected Due to Signed Bid JSON Parse Error"/>
+  <int value="4" label="Rejected Due to Signed Bid Decode Error"/>
+  <int value="5" label="Rejected Due to JSON Parse Error"/>
+  <int value="6" label="Rejected Due to Decode Error"/>
+  <int value="7" label="Rejected Due to Buyer Not Allowed"/>
+  <int value="8" label="Rejected Due to Currency Mismatch"/>
+</enum>
+
 <enum name="AddressFamily">
   <int value="0" label="Unspecified"/>
   <int value="1" label="IPv4"/>

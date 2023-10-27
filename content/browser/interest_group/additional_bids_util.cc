@@ -22,6 +22,7 @@
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -474,6 +475,10 @@ void AdAuctionNegativeTargeter::AddInterestGroupInfo(
   spot.key = key;
 }
 
+size_t AdAuctionNegativeTargeter::GetNumNegativeInterestGroups() {
+  return negative_interest_groups_.size();
+}
+
 bool AdAuctionNegativeTargeter::ShouldDropDueToNegativeTargeting(
     const url::Origin& buyer,
     const absl::optional<url::Origin>& negative_target_joining_origin,
@@ -481,6 +486,7 @@ bool AdAuctionNegativeTargeter::ShouldDropDueToNegativeTargeting(
     const std::vector<SignedAdditionalBidSignature>& signatures,
     const std::vector<size_t>& valid_signatures,
     const url::Origin& seller,
+    AuctionMetricsRecorder& auction_metrics_recorder,
     std::vector<std::string>& errors_out) {
   if (valid_signatures.size() != signatures.size()) {
     errors_out.push_back(
@@ -504,6 +510,8 @@ bool AdAuctionNegativeTargeter::ShouldDropDueToNegativeTargeting(
     // a matching signature.
     if (!AdditionalBidKeyHasMatchingValidSignature(signatures, valid_signatures,
                                                    negative_info.key)) {
+      auction_metrics_recorder
+          .RecordNegativeInterestGroupIgnoredDueToInvalidSignature();
       errors_out.push_back(base::StrCat(
           {"Warning: Ignoring negative targeting group '", ig_name,
            "' on an additional bid from '", buyer.Serialize(),
@@ -515,6 +523,8 @@ bool AdAuctionNegativeTargeter::ShouldDropDueToNegativeTargeting(
     // Must also have proper joining origin, if applicable.
     if (negative_target_joining_origin.has_value()) {
       if (*negative_target_joining_origin != negative_info.joining_origin) {
+        auction_metrics_recorder
+            .RecordNegativeInterestGroupIgnoredDueToJoiningOriginMismatch();
         errors_out.push_back(base::StrCat(
             {"Warning: Ignoring negative targeting group '", ig_name,
              "' on an additional bid from '", buyer.Serialize(),

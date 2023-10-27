@@ -41,6 +41,7 @@
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
+#include "content/browser/interest_group/additional_bid_result.h"
 #include "content/browser/interest_group/additional_bids_util.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_nonce_manager.h"
@@ -2485,6 +2486,8 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
     return;
   }
 
+  auction_metrics_recorder_->OnConfigPromisesResolved();
+
   for (const auto& buyer_helper : buyer_helpers_) {
     buyer_helper->NotifyConfigPromisesResolved();
   }
@@ -3408,22 +3411,17 @@ void InterestGroupAuction::OnOneLoadCompleted() {
         ++num_sellers_with_bidders;
       }
 
-      UMA_HISTOGRAM_COUNTS_1000("Ads.InterestGroup.Auction.NumInterestGroups",
-                                num_interest_groups);
       auction_metrics_recorder_->SetNumInterestGroups(num_interest_groups);
-
-      UMA_HISTOGRAM_COUNTS_100(
-          "Ads.InterestGroup.Auction.NumOwnersWithInterestGroups",
-          num_owners_with_interest_groups_);
       auction_metrics_recorder_->SetNumOwnersWithInterestGroups(
           num_owners_with_interest_groups_);
-
-      UMA_HISTOGRAM_COUNTS_100(
-          "Ads.InterestGroup.Auction.NumSellersWithBidders",
-          num_sellers_with_bidders);
       auction_metrics_recorder_->SetNumSellersWithBidders(
           num_sellers_with_bidders);
     }
+  }
+
+  if (MayHaveAdditionalBids()) {
+    auction_metrics_recorder_->RecordNegativeInterestGroups(
+        negative_targeter_->GetNumNegativeInterestGroups());
   }
 
   // We generally proceed even if there is seemingly nothing to do since we
@@ -3564,22 +3562,30 @@ void InterestGroupAuction::ScoreQueuedBidsIfReady() {
   DCHECK(unscored_bids_.empty());
 }
 
+void InterestGroupAuction::HandleAdditionalBidError(AdditionalBidResult result,
+                                                    std::string error) {
+  auction_metrics_recorder_->RecordAdditionalBidResult(result);
+  errors_.push_back(std::move(error));
+  OnScoringDependencyDone();
+}
+
 void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (encoded_signed_additional_bids_.empty()) {
     return;
   }
+  decode_additional_bids_start_time_ = base::TimeTicks::Now();
 
+  num_scoring_dependencies_ += encoded_signed_additional_bids_.size();
   for (const auto& encoded_signed_bid : encoded_signed_additional_bids_) {
     std::string signed_additional_bid_data;
     if (!base::Base64Decode(encoded_signed_bid, &signed_additional_bid_data,
                             base::Base64DecodePolicy::kForgiving)) {
-      errors_.push_back(base::StrCat(
-          {"Ignoring signed additional bid on auction with seller '",
-           config_->seller.Serialize(), "' due to invalid base64."}));
+      HandleAdditionalBidError(
+          AdditionalBidResult::kRejectedDueToInvalidBase64,
+          "Unable to base64-decode a signed additional bid.");
       continue;
     }
-    ++num_scoring_dependencies_;
     data_decoder_->ParseJson(
         signed_additional_bid_data,
         base::BindOnce(&InterestGroupAuction::HandleDecodedSignedAdditionalBid,
@@ -3592,18 +3598,19 @@ void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
     data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (!result.has_value()) {
-    errors_.push_back("Unable to parse signed additional bid as JSON: " +
-                      result.error());
-    OnScoringDependencyDone();
+    HandleAdditionalBidError(
+        AdditionalBidResult::kRejectedDueToSignedBidJsonParseError,
+        "Unable to parse signed additional bid as JSON: " + result.error());
     return;
   }
 
   auto maybe_signed_additional_bid =
       DecodeSignedAdditionalBid(std::move(result).value());
   if (!maybe_signed_additional_bid.has_value()) {
-    errors_.push_back("Unable to decode signed additional bid: " +
-                      maybe_signed_additional_bid.error());
-    OnScoringDependencyDone();
+    HandleAdditionalBidError(
+        AdditionalBidResult::kRejectedDueToSignedBidDecodeError,
+        "Unable to decode signed additional bid: " +
+            maybe_signed_additional_bid.error());
     return;
   }
 
@@ -3623,9 +3630,9 @@ void InterestGroupAuction::HandleDecodedAdditionalBid(
     data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (!result.has_value()) {
-    errors_.push_back("Unable to parse additional bid as JSON: " +
-                      result.error());
-    OnScoringDependencyDone();
+    HandleAdditionalBidError(
+        AdditionalBidResult::kRejectedDueToJsonParseError,
+        "Unable to parse additional bid as JSON: " + result.error());
     return;
   }
 
@@ -3637,35 +3644,54 @@ void InterestGroupAuction::HandleDecodedAdditionalBid(
           parent_
               ? base::optional_ref<const url::Origin>(parent_->config_->seller)
               : base::optional_ref<const url::Origin>(absl::nullopt));
-  if (maybe_bid.has_value()) {
-    bool ok = is_interest_group_api_allowed_callback_.Run(
-        ContentBrowserClient::InterestGroupApiOperation::kBuy,
-        maybe_bid->bid_state->bidder->interest_group.owner);
-
-    if (ok && !blink::VerifyAdCurrencyCode(
-                  PerBuyerCurrency(*maybe_bid->bid_state->additional_bid_buyer,
-                                   *config_),
-                  maybe_bid->bid->bid_currency)) {
-      ok = false;
-      errors_.push_back("Rejecting an additionalBid due to currency mismatch.");
-    }
-
-    if (ok && negative_targeter_->ShouldDropDueToNegativeTargeting(
-                  *maybe_bid->bid_state->additional_bid_buyer,
-                  maybe_bid->negative_target_joining_origin,
-                  maybe_bid->negative_target_interest_group_names, signatures,
-                  valid_signatures, config_->seller, errors_)) {
-      ok = false;
-    }
-    if (ok) {
-      bid_states_for_additional_bids_.push_back(
-          std::move(maybe_bid->bid_state));
-      ScoreBidIfReady(std::move(maybe_bid->bid));
-    }
-  } else {
-    errors_.push_back(std::move(maybe_bid).error());
+  if (!maybe_bid.has_value()) {
+    HandleAdditionalBidError(AdditionalBidResult::kRejectedDueToDecodeError,
+                             std::move(maybe_bid).error());
+    return;
   }
 
+  if (!is_interest_group_api_allowed_callback_.Run(
+          ContentBrowserClient::InterestGroupApiOperation::kBuy,
+          maybe_bid->bid_state->bidder->interest_group.owner)) {
+    HandleAdditionalBidError(
+        AdditionalBidResult::kRejectedDueToBuyerNotAllowed,
+        "Rejecting an additionalBid due to operation not allowed for buyer.");
+    return;
+  }
+
+  if (!blink::VerifyAdCurrencyCode(
+          PerBuyerCurrency(*maybe_bid->bid_state->additional_bid_buyer,
+                           *config_),
+          maybe_bid->bid->bid_currency)) {
+    HandleAdditionalBidError(
+        AdditionalBidResult::kRejectedDueToCurrencyMismatch,
+        "Rejecting an additionalBid due to currency mismatch.");
+    return;
+  }
+
+  if (negative_targeter_->ShouldDropDueToNegativeTargeting(
+          *maybe_bid->bid_state->additional_bid_buyer,
+          maybe_bid->negative_target_joining_origin,
+          maybe_bid->negative_target_interest_group_names, signatures,
+          valid_signatures, config_->seller, *auction_metrics_recorder_,
+          errors_)) {
+    // We do *not* call HandleAdditionalBidError at this point because an
+    // additional bid being negative targeted is not an error scenario, so we
+    // don't want to record anything to the errors_.
+    auction_metrics_recorder_->RecordAdditionalBidResult(
+        AdditionalBidResult::kNegativeTargeted);
+    auction_metrics_recorder_->RecordAdditionalBidDecodeLatency(
+        base::TimeTicks::Now() - decode_additional_bids_start_time_);
+    OnScoringDependencyDone();
+    return;
+  }
+
+  auction_metrics_recorder_->RecordAdditionalBidResult(
+      AdditionalBidResult::kSentForScoring);
+  auction_metrics_recorder_->RecordAdditionalBidDecodeLatency(
+      base::TimeTicks::Now() - decode_additional_bids_start_time_);
+  bid_states_for_additional_bids_.push_back(std::move(maybe_bid->bid_state));
+  ScoreBidIfReady(std::move(maybe_bid->bid));
   OnScoringDependencyDone();
 }
 

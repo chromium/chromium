@@ -470,6 +470,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.AdditionalBids.DecodeLatency"
+    units="ms" expires_after="2024-06-20">
+  <owner>orrb@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Latency of each successfully decoded additional bid. This includes
+    additional bids that were suppressed by negative targeting and those that
+    were sent for scoring, but not additional bids that encountered an error
+    during decoding.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.AdditionalBids.Result"
+    enum="AdditionalBidResult" expires_after="2024-06-20">
+  <owner>orrb@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Result of the decoding of each additional bid. This includes both error
+    outcomes - additional bids rejected because, e.g., the base64 from the
+    Ad-Auction-Additional-Bid response header was invalid, or the JSON of the
+    signed additional bid couldn't be parsed - and non-error outcomes -
+    additional bids that were suppressed because of negative targeting, and
+    those that were sent for scoring.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.BidFiltered" enum="Boolean"
     expires_after="2024-06-20">
   <owner>pauljensen@chromium.org</owner>
@@ -479,6 +511,44 @@ chromium-metrics-reviews@google.com.
     priorityVector whose sparse dot product with the browser generated
     prioritySignals was negative, indicating the generateBid() should not be
     invoked.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.ConfigPromises.CriticalPathLatency"
+    units="ms" expires_after="2024-06-20">
+  <owner>orrb@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Time between the start of the BiddingAndScoring phase and when configs
+    promises are resolved. In a single-seller auction, this is only recorded if
+    the auction has config promises; in a multi-seller auction, this is only
+    recorded for component auctions and the top-level auction for those that
+    have config promises. In auctions for which the config promises are resolved
+    before the bidding and auction phase, a critical path latency of zero is
+    recorded. This shows how long additional bids would have had to wait for the
+    config promises to be resolved, since they couldn't be processed until the
+    BiddingAndScoring phase anyway.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.ConfigPromises.Latency" units="ms"
+    expires_after="2024-06-20">
+  <owner>orrb@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Time between the auction start time and when config promises are resolved.
+    In a single-seller auction, this is only recorded if the auction has config
+    promises; in a multi-seller auction, this is only recorded for component
+    auctions and the top-level auction for those that have config promises. This
+    is not the same as how long the auction needed to wait for a config promise,
+    since other work happened simultaneously. That's better captured by
+    Ads.InterestGroup.Auction.ConfigPromises.CriticalPathLatency.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -663,6 +733,27 @@ chromium-metrics-reviews@google.com.
     number whose scripts are successfully loaded or that make bids. Recorded
     after all matching interest groups have been retrieved from storage at the
     start of an auction.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.NumNegativeInterestGroups"
+    units="groups" expires_after="2024-06-20">
+  <owner>orrb@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of a user's negative interest group loaded into a FLEDGE auction.
+    This is the number of negative interest groups matching the auction
+    configuration, not the number used for negative targeting. For a
+    multi-seller auction, this is the total number of negative interest groups
+    loaded across all component auctions, so that the negative interest groups
+    of a buyer that participates in multiple component auctions will be counted
+    multiple times. This is only recorded for auctions that may have additional
+    bids, i.e. those for which the additionalBids promise was provided on the
+    auction config. However, it's recorded whether or not additional bids are
+    eventually provided to the auction.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.

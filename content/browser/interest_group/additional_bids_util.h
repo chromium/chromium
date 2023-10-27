@@ -16,6 +16,7 @@
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -109,6 +110,10 @@ class CONTENT_EXPORT AdAuctionNegativeTargeter {
                             const url::Origin& joining_origin,
                             const blink::InterestGroup::AdditionalBidKey& key);
 
+  // Returns the number of negative interest groups added to this targeter
+  // using AddInterestGroupInfo.
+  size_t GetNumNegativeInterestGroups();
+
   // Returns true if negative targeting applies to a bid.
   //
   // `buyer` is the purported origin of the additional bid.
@@ -135,6 +140,7 @@ class CONTENT_EXPORT AdAuctionNegativeTargeter {
       const std::vector<SignedAdditionalBidSignature>& signatures,
       const std::vector<size_t>& valid_signatures,
       const url::Origin& seller,
+      AuctionMetricsRecorder& auction_metrics_recorder,
       std::vector<std::string>& errors_out);
 
  private:

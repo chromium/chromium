@@ -6805,8 +6805,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
-      "*Worklet error: Ignoring signed additional bid on auction with seller "
-      "'https://a.test:*' due to invalid base64.*");
+      "*Worklet error: Unable to base64-decode a signed additional bid.*");
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,

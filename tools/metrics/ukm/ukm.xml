@@ -821,6 +821,14 @@ be describing additional metrics about the same event.
       can independently filter this based on the value of NumInterestGroups.
     </summary>
   </metric>
+  <metric name="MaxAdditionalBidDecodeLatencyInMillis">
+    <summary>
+      Max latency of the time spent decoding each additional bid. This only
+      includes additional bids that were successfully decoded, so those negative
+      targeted or sent for scoring, and not those that encountered any error
+      while being decoded, e.g. invalid base64, JSON parsing errors, etc.
+    </summary>
+  </metric>
   <metric name="MaxBidForOneInterestGroupLatencyInMillis">
     <summary>
       Aggregated across all components for a multi-seller auctions, this records
@@ -842,6 +850,31 @@ be describing additional metrics about the same event.
       This metric only has a value for entries that represent multi-seller
       auctions, as indicated by a value for the NumSellersWithBidders metric of
       two or greater.
+    </summary>
+  </metric>
+  <metric name="MaxConfigPromisesResolvedCriticalPathLatencyInMillis">
+    <summary>
+      Max latency between the start of the BiddingAndScoring phase and when
+      config promises are resolved. In a single-seller auction, this is only
+      recorded if the auction has config promises; in a multi-seller auction,
+      this is only recorded for component auctions and the top-level auction for
+      those that have config promises. In auctions for which the config promises
+      are resolved before the bidding and auction phase, a critical path latency
+      of zero is recorded. This shows how long additional bids would have had to
+      wait for the config promises to be resolved, since they couldn't be
+      processed until the BiddingAndScoring phase anyway.
+    </summary>
+  </metric>
+  <metric name="MaxConfigPromisesResolvedLatencyInMillis">
+    <summary>
+      Max latency between the auction start time and when config promises are
+      resolved. In a single-seller auction, this is only recorded if the auction
+      has config promises; in a multi-seller auction, this is only recorded for
+      component auctions and the top-level auction for those that have config
+      promises. This is not the same as how long the auction needed to wait for
+      a config promise, since other work happened simultaneously. That's better
+      captured by the GenerateBid critical path metrics and the
+      ConfigPromisesResolved critical path metrics.
     </summary>
   </metric>
   <metric name="MaxGenerateBidCodeReadyLatencyInMillis">
@@ -929,6 +962,14 @@ be describing additional metrics about the same event.
       reprioritize InterestGroups and apply per-buyer group limits.
     </summary>
   </metric>
+  <metric name="MeanAdditionalBidDecodeLatencyInMillis">
+    <summary>
+      Mean latency of the time spent decoding each additional bid. This only
+      includes additional bids that were successfully decoded, so those negative
+      targeted or sent for scoring, and not those that encountered any error
+      while being decoded, e.g. invalid base64, JSON parsing errors, etc.
+    </summary>
+  </metric>
   <metric name="MeanBidForOneInterestGroupLatencyInMillis">
     <summary>
       Aggregated across all components for a multi-seller auctions, this records
@@ -950,6 +991,31 @@ be describing additional metrics about the same event.
       This metric only has a value for entries that represent multi-seller
       auctions, as indicated by a value for the NumSellersWithBidders metric of
       two or greater.
+    </summary>
+  </metric>
+  <metric name="MeanConfigPromisesResolvedCriticalPathLatencyInMillis">
+    <summary>
+      Mean latency between the start of the BiddingAndScoring phase and when
+      config promises are resolved. In a single-seller auction, this is only
+      recorded if the auction has config promises; in a multi-seller auction,
+      this is only recorded for component auctions and the top-level auction for
+      those that have config promises. In auctions for which the config promises
+      are resolved before the bidding and auction phase, a critical path latency
+      of zero is recorded. This shows how long additional bids would have had to
+      wait for the config promises to be resolved, since they couldn't be
+      processed until the BiddingAndScoring phase anyway.
+    </summary>
+  </metric>
+  <metric name="MeanConfigPromisesResolvedLatencyInMillis">
+    <summary>
+      Mean latency between the auction start time and when config promises are
+      resolved. In a single-seller auction, this is only recorded if the auction
+      has config promises; in a multi-seller auction, this is only recorded for
+      component auctions and the top-level auction for those that have config
+      promises. This is not the same as how long the auction needed to wait for
+      a config promise, since other work happened simultaneously. That's better
+      captured by the GenerateBid critical path metrics and the
+      ConfigPromisesResolved critical path metrics.
     </summary>
   </metric>
   <metric name="MeanGenerateBidCodeReadyCriticalPathLatencyInMillis">
@@ -1137,6 +1203,88 @@ be describing additional metrics about the same event.
       became available were blocked waiting on the seller worklet.
     </summary>
   </metric>
+  <metric name="NumAdditionalBidsNegativeTargeted">
+    <summary>
+      Number of additional bids intentionally suppressed because at least one of
+      the additional bid's specified negative interest groups was present. This
+      is not an error condition; this is the intentional behavior of negative
+      targeting. Still so, these additional bids are not scored, and do not
+      participate in the auction.
+    </summary>
+  </metric>
+  <metric name="NumAdditionalBidsRejectedDueToBuyerNotAllowed">
+    <summary>
+      Number of additional bids rejected because the additional bid's owner was
+      not allowed to bid in that auction by IsInterestGroupAPIAllowed. These
+      additional bids are not scored, and do not participate in the auction.
+    </summary>
+  </metric>
+  <metric name="NumAdditionalBidsRejectedDueToCurrencyMismatch">
+    <summary>
+      Number of additional bids rejected because the additional bid specified a
+      currency that didn't match the currency associated with that buyer. These
+      additional bids are not scored, and do not participate in the auction.
+    </summary>
+  </metric>
+  <metric name="NumAdditionalBidsRejectedDueToDecodeError">
+    <summary>
+      Number of additional bids rejected because the additional bid from inside
+      the signed additional bid was not structured as expected (encountered an
+      error in DecodeAdditionalBid). This includes additional bids whose
+      replay-prevention fields - auctionNonce, seller and topLevelSeller - are
+      missing or don't match those of the auction. This also includes additional
+      bids whose owner was not found in the auction's interestGroupBuyers. These
+      additional bids are not scored, and do not participate in the auction.
+    </summary>
+  </metric>
+  <metric name="NumAdditionalBidsRejectedDueToInvalidBase64">
+    <summary>
+      Number of additional bids rejected because the signed additional bid in
+      the Ad-Auction-Additional-Bid response header was not a valid base64
+      string, and so could not be base64-decoded to JSON. These additional bids
+      are not scored, and do not participate in the auction.
+    </summary>
+  </metric>
+  <metric name="NumAdditionalBidsRejectedDueToJsonParseError">
+    <summary>
+      Number of additional bids rejected because the additional bid from inside
+      the signed additional bid was invalid JSON, and so failed to parse. These
+      additional bids are not scored, and do not participate in the auction.
+    </summary>
+  </metric>
+  <metric name="NumAdditionalBidsRejectedDueToSignedBidDecodeError">
+    <summary>
+      Number of additional bids rejected because the signed additional bid JSON
+      was not structured as expected (encountered an error in
+      DecodeSignedAdditionalBid). These additional bids are not scored, and do
+      not participate in the auction.
+    </summary>
+  </metric>
+  <metric name="NumAdditionalBidsRejectedDueToSignedBidJsonParseError">
+    <summary>
+      Number of additional bids rejected because the signed additional bid was
+      invalid JSON, and so failed to parse. These additional bids are not
+      scored, and do not participate in the auction.
+    </summary>
+  </metric>
+  <metric name="NumAdditionalBidsSentForScoring">
+    <summary>
+      Number of additional bids scored. These additional bids participate in the
+      auction alongside other additional bids and bids created by calls to
+      generateBid().
+    </summary>
+  </metric>
+  <metric name="NumAuctionsWithConfigPromises">
+    <summary>
+      In a single-seller auction, this is either zero if the auction doesn't
+      have any config promises or one if it does. This could also be inferred
+      from NumConfigPromises, which would be zero or non-zero respectively in
+      those cases. In a multi-seller auction, this is the number of component
+      auctions that have any config promises, which is different from
+      NumConfigPromises, in that each component auction may independently have
+      any number of config promises.
+    </summary>
+  </metric>
   <metric name="NumBidderWorklets">
     <summary>
       The number of distinct BidderWorklets. Interest groups with the same owner
@@ -1310,6 +1458,42 @@ be describing additional metrics about the same event.
       called twice, once for each of these bids, which has latency and
       performance implications. If the KAnonymityBidMode is None, this metric
       will be 0, because there won't be a separate kAnon bid.
+    </summary>
+  </metric>
+  <metric name="NumNegativeInterestGroups">
+    <summary>
+      Total number of negative targeting interest groups aggregated across all
+      owners and component auctions, equivalent to UMA metric,
+      Ads.InterestGroup.Auction.NumNegativeInterestGroups. This is the number of
+      negative targeting interest groups loaded into the
+      AdAuctionNegativeTargeter, regardless of which of these, if any, are later
+      referenced by additional bids. No value is defined for this metric if the
+      auction may not have additional bids, i.e. the additionalBids promise was
+      not provided on the auction config. However, a value is defined for this
+      metric even if no additional bids are provided to the auction, i.e. no
+      additional bids appear in Ad-Auction-Additional-Bid response headers.
+    </summary>
+  </metric>
+  <metric name="NumNegativeInterestGroupsIgnoredDueToInvalidSignature">
+    <summary>
+      Number of negative interest groups ignored because they had no matching
+      valid signature on the signed additional bid. By ignoring this negative
+      interest group, the additional bid may participate in the auction where
+      the intent was for it be suppressed by negative targeting. This
+      &quot;failing open&quot; ensures that only the owner of the negative
+      interest group, who created the additonalBidKey, is allowed to negatively
+      target the interest group, and that nobody else can learn whether the
+      interest group is present on the device.
+    </summary>
+  </metric>
+  <metric name="NumNegativeInterestGroupsIgnoredDueToJoiningOriginMismatch">
+    <summary>
+      Number of negative interest groups ignored because they had a joining
+      origin different from that specified on the additional bid. By ignoring
+      this negative interest group, the additional bid may participate in the
+      auction where the intent was for it be suppressed by negative targeting.
+      This &quot;failing open&quot; ensures that negative targeting can only use
+      targeting data from a single origin.
     </summary>
   </metric>
   <metric name="NumOwnersWithInterestGroups">
