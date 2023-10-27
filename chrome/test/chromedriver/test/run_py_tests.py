@@ -145,6 +145,9 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTest.testTakeElementScreenshotPartlyVisible',
     'ChromeDriverTest.testTakeLargeElementScreenshot',
     'ChromeDriverSiteIsolation.testCanClickOOPIF',
+    # Flaky: https://crbug.com/1496826.
+    'PureBidiTest.testParallelConnectionIsClosedOnSessionEnd',
+    'PureBidiTest.testSessionCommandInEndedSession',
 ]
 
 _DESKTOP_NEGATIVE_FILTER = [
