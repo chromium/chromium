@@ -774,6 +774,14 @@ BASE_FEATURE(kFencedFramesM119Features,
              "FencedFramesM119Features",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable the new fenced frame-related features in M120. (These are
+// conditionally dependent on other fenced frame-related feature flags being
+// enabled.)
+// * Support leaving interest group from ad components.
+BASE_FEATURE(kFencedFramesM120Features,
+             "FencedFramesM120Features",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // File handling icons. https://crbug.com/1218213
 BASE_FEATURE(kFileHandlingIcons,
              "FileHandlingIcons",

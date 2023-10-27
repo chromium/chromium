@@ -37,6 +37,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/with_feature_override.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -8915,6 +8916,266 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   NavigateFencedFrameAndWait(urn_url, expected_ad_url, shell());
 }
 
+// Test that `LeaveAdInterestGroup()` cannot be invoked without arguments in
+// regular iframes. An error message should be shown.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       ArgumentsRequiredForLeaveGroupInRegularIframe) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  auto filter =
+      [](const content::WebContentsConsoleObserver::Message& message) {
+        return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
+      };
+  console_observer.SetFilter(base::BindRepeating(filter));
+
+  EXPECT_TRUE(ExecJs(iframe, "navigator.leaveAdInterestGroup()"));
+
+  ASSERT_TRUE(console_observer.Wait());
+  ASSERT_FALSE(console_observer.messages().empty());
+  EXPECT_EQ(console_observer.GetMessageAt(0),
+            "Owner and name are required to call LeaveAdInterestGroup outside "
+            "of a fenced frame or an opaque origin iframe.");
+}
+
+// Test that `LeaveAdInterestGroup()` works in urn iframe that is same origin to
+// the interset group owner.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       SameOriginUrnIframeLeaveGroupSucceed) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  url::Origin test_origin = url::Origin::Create(test_url);
+  // The ad url is same origin to the interest group owner.
+  GURL ad_url = https_server_->GetURL("a.test", "/echo?render_cars");
+  ASSERT_TRUE(test_origin.IsSameOriginWith(ad_url));
+
+  AttachInterestGroupObserver();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(
+                              /*owner=*/test_origin,
+                              /*name=*/"cars")
+                              .SetBiddingUrl(https_server_->GetURL(
+                                  "a.test", "/interest_group/bidding_logic.js"))
+                              .SetAds({{{ad_url, /*metadata=*/absl::nullopt}}})
+                              .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$1]
+            })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad_url));
+
+  // InterestGroupAccessObserver should see the join and auction.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {TestInterestGroupObserver::kBid, test_origin, "cars"},
+       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+
+  // Leaving the winning interest group should succeed. Do it by calling
+  // Javascript directly instead of loading a page that does this
+  // to avoid races with logging kBin or kWin.
+  RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  EXPECT_TRUE(ExecJs(iframe, "navigator.leaveAdInterestGroup()"));
+
+  // The leave should be observed.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kLeave, test_origin, "cars"}});
+  EXPECT_TRUE(GetAllInterestGroups().empty());
+}
+
+// Test that `LeaveAdInterestGroup()` fails in urn iframe that is cross origin
+// to the interset group owner.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       CrossOriginUrnIframeLeaveGroupFail) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  url::Origin test_origin = url::Origin::Create(test_url);
+  // The ad url is cross origin to the interest group owner.
+  GURL ad_url = https_server_->GetURL("b.test", "/echo?render_cars");
+  ASSERT_FALSE(test_origin.IsSameOriginWith(ad_url));
+
+  AttachInterestGroupObserver();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(
+                              /*owner=*/test_origin,
+                              /*name=*/"cars")
+                              .SetBiddingUrl(https_server_->GetURL(
+                                  "a.test", "/interest_group/bidding_logic.js"))
+                              .SetAds({{{ad_url, /*metadata=*/absl::nullopt}}})
+                              .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$1]
+            })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad_url));
+
+  // InterestGroupAccessObserver should see the join and auction.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {TestInterestGroupObserver::kBid, test_origin, "cars"},
+       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+
+  // Leaving the winning interest group should fail. Do it by calling Javascript
+  // directly instead of loading a page that does this to avoid races with
+  // logging kBin or kWin.
+  RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  EXPECT_TRUE(ExecJs(iframe, "navigator.leaveAdInterestGroup()"));
+
+  // No leave should be observed.
+  WaitForAccessObserved({});
+  EXPECT_EQ(1u, GetAllInterestGroups().size());
+}
+
+// Load the ad in an urn iframe. Test that `LeaveAdInterestGroup()` works from
+// a nested regular iframe that is same origin to the interset group owner.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       LeaveGroupFromSameOriginNestedIframeSucceed) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  url::Origin test_origin = url::Origin::Create(test_url);
+  // The inner url is same origin to the interest group owner.
+  GURL inner_url = https_server_->GetURL(
+      "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+  ASSERT_TRUE(test_origin.IsSameOriginWith(inner_url));
+
+  // The ad url is cross origin to the interest group owner.
+  GURL ad_url = https_server_->GetURL(
+      "b.test", "/fenced_frames/outer_inner_frame_as_param.html");
+  GURL::Replacements rep;
+  std::string query = "innerFrame=" + base::EscapeUrlEncodedData(
+                                          inner_url.spec(), /*use_plus=*/false);
+  rep.SetQueryStr(query);
+  ad_url = ad_url.ReplaceComponents(rep);
+  ASSERT_FALSE(test_origin.IsSameOriginWith(ad_url));
+
+  AttachInterestGroupObserver();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(
+                              /*owner=*/test_origin,
+                              /*name=*/"cars")
+                              .SetBiddingUrl(https_server_->GetURL(
+                                  "a.test", "/interest_group/bidding_logic.js"))
+                              .SetAds({{{ad_url, /*metadata=*/absl::nullopt}}})
+                              .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$1]
+            })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad_url));
+
+  // InterestGroupAccessObserver should see the join and auction.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {TestInterestGroupObserver::kBid, test_origin, "cars"},
+       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+
+  // Leaving the winning interest group from the nested iframe should succeed.
+  // Do it by calling Javascript directly instead of loading a page that does
+  // this to avoid races with logging kBin or kWin.
+  RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  RenderFrameHost* nested_iframe = ChildFrameAt(iframe, 0);
+  EXPECT_TRUE(ExecJs(nested_iframe, "navigator.leaveAdInterestGroup()"));
+
+  // The leave should be observed.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kLeave, test_origin, "cars"}});
+  EXPECT_TRUE(GetAllInterestGroups().empty());
+}
+
+// Load the ad in an urn iframe. Test that `LeaveAdInterestGroup()` fails from
+// a nested regular iframe that is cross origin to the interset group owner.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       LeaveGroupFromCrossOriginNestedIframeFail) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  url::Origin test_origin = url::Origin::Create(test_url);
+  // The inner url is cross origin to the interest group owner.
+  GURL inner_url = https_server_->GetURL(
+      "b.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+  ASSERT_FALSE(test_origin.IsSameOriginWith(inner_url));
+
+  // The ad url is cross origin to the interest group owner.
+  GURL ad_url = https_server_->GetURL(
+      "b.test", "/fenced_frames/outer_inner_frame_as_param.html");
+  GURL::Replacements rep;
+  std::string query = "innerFrame=" + base::EscapeUrlEncodedData(
+                                          inner_url.spec(), /*use_plus=*/false);
+  rep.SetQueryStr(query);
+  ad_url = ad_url.ReplaceComponents(rep);
+  ASSERT_FALSE(test_origin.IsSameOriginWith(ad_url));
+
+  AttachInterestGroupObserver();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(
+                              /*owner=*/test_origin,
+                              /*name=*/"cars")
+                              .SetBiddingUrl(https_server_->GetURL(
+                                  "a.test", "/interest_group/bidding_logic.js"))
+                              .SetAds({{{ad_url, /*metadata=*/absl::nullopt}}})
+                              .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$1]
+            })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad_url));
+
+  // InterestGroupAccessObserver should see the join and auction.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {TestInterestGroupObserver::kBid, test_origin, "cars"},
+       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+
+  // Leaving the winning interest group from the nested iframe should fail.
+  // Do it by calling Javascript directly instead of loading a page that does
+  // this to avoid races with logging kBin or kWin.
+  RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  RenderFrameHost* nested_iframe = ChildFrameAt(iframe, 0);
+  EXPECT_TRUE(ExecJs(nested_iframe, "navigator.leaveAdInterestGroup()"));
+
+  // No leave should be observed.
+  WaitForAccessObserved({});
+  EXPECT_EQ(1u, GetAllInterestGroups().size());
+}
+
 // Runs two ad auctions with fenced frames enabled. Both auctions should
 // succeed and are then loaded in separate fenced frames. Both auctions try to
 // leave the interest group, but only the one whose ad matches the joining
@@ -10582,30 +10843,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
 
   // Calling navigator.adAuctionComponents on the new frame should fail.
   EXPECT_FALSE(GetAdAuctionComponentsInJS(ad_frame, 1));
-}
-
-// Test with an ad component that tries to leave the group. Verify that leaving
-// the group from within an ad component has no effect
-IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, AdComponentsLeave) {
-  url::Origin test_origin =
-      url::Origin::Create(https_server_->GetURL("a.test", "/"));
-  GURL ad_component_url = https_server_->GetURL(
-      "d.test", "/fenced_frames/ad_that_leaves_interest_group.html");
-  AttachInterestGroupObserver();
-
-  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
-
-  // InterestGroupAccessObserver should see the join and auction, but not the
-  // implicit leave since it was blocked.
-  WaitForAccessObserved(
-      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-       {TestInterestGroupObserver::kBid, test_origin, "cars"},
-       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
-
-  // The ad shouldn't have left the interest group when the component ad was
-  // shown.
-  EXPECT_EQ(1u, GetAllInterestGroups().size());
 }
 
 // Test navigating multiple fenced frames to the same render URL from a single
@@ -15359,6 +15596,85 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
 
   run_loop.Run();
 }
+
+class LeaveAdInterestGroupFromAdComponentBrowserTest
+    : public base::test::WithFeatureOverride,
+      public InterestGroupFencedFrameBrowserTest {
+ public:
+  LeaveAdInterestGroupFromAdComponentBrowserTest()
+      : base::test::WithFeatureOverride(
+            blink::features::kFencedFramesM120Features) {}
+
+  ~LeaveAdInterestGroupFromAdComponentBrowserTest() override = default;
+
+  bool IsLeaveAdInterestGroupFromAdComponentEnabled() { return GetParam(); }
+};
+
+// Before M120: Leaving the interest group an ad component is not supported.
+// M120 and afterwards: Leaving the group from an ad component that is same
+// origin to interest group owner should succeed.
+IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
+                       SameOriginAdComponentsLeaveSucceedFrom120) {
+  url::Origin test_origin =
+      url::Origin::Create(https_server_->GetURL("a.test", "/"));
+  GURL ad_component_url = https_server_->GetURL(
+      "a.test", "/fenced_frames/ad_that_leaves_interest_group.html");
+  AttachInterestGroupObserver();
+
+  // The main frame will have an origin of "a.test".
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
+
+  if (IsLeaveAdInterestGroupFromAdComponentEnabled()) {
+    // InterestGroupAccessObserver should see the join, auction and the leave.
+    WaitForAccessObserved(
+        {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+         {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+         {TestInterestGroupObserver::kBid, test_origin, "cars"},
+         {TestInterestGroupObserver::kWin, test_origin, "cars"},
+         {TestInterestGroupObserver::kLeave, test_origin, "cars"}});
+  } else {
+    // InterestGroupAccessObserver should see the join and auction, but not the
+    // leave.
+    WaitForAccessObserved(
+        {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+         {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+         {TestInterestGroupObserver::kBid, test_origin, "cars"},
+         {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+  }
+
+  // The state of the interest groups depends on the feature toggle.
+  EXPECT_EQ(GetAllInterestGroups().empty(),
+            IsLeaveAdInterestGroupFromAdComponentEnabled());
+}
+
+// Leaving the group from a site that is cross origin to interest group owner
+// should always fail, regardless of whether this is an ad component or not.
+IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
+                       CrossOriginAdComponentsLeaveFail) {
+  url::Origin test_origin =
+      url::Origin::Create(https_server_->GetURL("a.test", "/"));
+  GURL ad_component_url = https_server_->GetURL(
+      "b.test", "/fenced_frames/ad_that_leaves_interest_group.html");
+  AttachInterestGroupObserver();
+
+  // The main frame will have an origin of "a.test".
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
+
+  // InterestGroupAccessObserver should see the join and auction, but not the
+  // implicit leave since it was blocked due to cross origin to the interest
+  // group owner.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {TestInterestGroupObserver::kBid, test_origin, "cars"},
+       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+
+  // The ad should not leave the interest group.
+  EXPECT_EQ(1u, GetAllInterestGroups().size());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    LeaveAdInterestGroupFromAdComponentBrowserTest);
 
 class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
  public:

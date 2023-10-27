@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -202,37 +203,48 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
     return;
   }
 
-  if (!render_frame_host().IsNestedWithinFencedFrame()) {
-    ReportBadMessageAndDeleteThis(
-        "Unexpected request: LeaveInterestGroupForDocument only supported "
-        "within fenced frames");
+  // Get interest group owner and name from the ad auction data, which is part
+  // of the fenced frame properties. Here the fenced frame properties are
+  // obtained from the closest ancestor that has valid fenced frame properties.
+  // This is because both top-level ads and ad components may have ad auction
+  // data.
+  const absl::optional<FencedFrameProperties>& fenced_frame_properties =
+      GetFrame()->frame_tree_node()->GetFencedFrameProperties(
+          FencedFramePropertiesNodeSource::kClosestAncestor);
+
+  // This frame is neither a fenced frame or an urn iframe itself, nor it is
+  // nested within a fenced frame or an urn iframe.
+  if (!fenced_frame_properties.has_value()) {
+    devtools_instrumentation::LogWorkletMessage(
+        *GetFrame(), blink::mojom::ConsoleMessageLevel::kError,
+        "Owner and name are required to call LeaveAdInterestGroup outside of "
+        "a fenced frame or an opaque origin iframe.");
     return;
   }
 
-  // Get interest group owner and name. AdAuctionDocumentData is created as
-  // part of navigation to a mapped URN URL. We need to find the top-level
-  // fenced frame, since only the top-level frame has the document data.
-  RenderFrameHost* rfh = &render_frame_host();
-  while (!rfh->IsFencedFrameRoot()) {
-    rfh = rfh->GetParentOrOuterDocument();
-    if (!rfh) {
-      return;
-    }
-  }
-  AdAuctionDocumentData* auction_data =
-      AdAuctionDocumentData::GetForCurrentDocument(rfh);
-  if (!auction_data) {
+  if (!fenced_frame_properties->ad_auction_data_.has_value()) {
     return;
   }
 
-  if (auction_data->interest_group_owner() != origin()) {
+  if (fenced_frame_properties->is_ad_component_ &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesM120Features)) {
+    // The ability to leave interest group from an ad component is not supported
+    // before M120.
+    return;
+  }
+
+  const blink::FencedFrame::AdAuctionData& auction_data =
+      fenced_frame_properties->ad_auction_data_->GetValueIgnoringVisibility();
+
+  if (auction_data.interest_group_owner != origin()) {
     // The ad page calling LeaveAdInterestGroup is not the owner of the group.
     return;
   }
 
   GetInterestGroupManager().LeaveInterestGroup(
-      blink::InterestGroupKey(auction_data->interest_group_owner(),
-                              auction_data->interest_group_name()),
+      blink::InterestGroupKey(auction_data.interest_group_owner,
+                              auction_data.interest_group_name),
       main_frame_origin_);
 }
 

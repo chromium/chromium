@@ -3092,11 +3092,6 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroupForDocument(
         "May only leaveAdInterestGroup from an https origin.");
     return ScriptPromise();
   }
-  if (!window->GetFrame()->IsInFencedFrameTree()) {
-    exception_state.ThrowTypeError(
-        "owner and name are required outside of a fenced frame.");
-    return ScriptPromise();
-  }
   // The renderer does not have enough information to verify that this document
   // is the result of a FLEDGE auction. The browser will silently ignore
   // this request if this document is not the result of a FLEDGE auction.
