@@ -15,11 +15,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSheetContent.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSurfaceScopeDependencyProviderImpl.java",
-    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaChecker.java",
     "java/src/org/chromium/chrome/browser/page_insights/TapInterceptingLinearLayout.java",
   ]
-
-  srcjar_deps = [ ":jni_headers" ]
 
   deps = [
     ":java_resources",
@@ -59,10 +56,6 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.page_insights"
 }
 
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaChecker.java" ]
-}
-
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/my_activity_icon.xml",
@@ -90,11 +83,9 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsDataLoaderTest.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediatorTest.java",
-    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaCheckerUnitTest.java",
   ]
   deps = [
     ":java",
-    ":jni_headers",
     ":proto_java",
     "//base:base_java",
     "//base:base_java_test_support",

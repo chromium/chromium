@@ -3752,7 +3752,6 @@ group("jni_headers") {
     "//chrome/browser/ui/android/hats/internal:jni_headers",
     "//chrome/browser/ui/android/logo:jni_headers",
     "//chrome/browser/ui/android/omnibox:jni_headers",
-    "//chrome/browser/ui/android/page_insights:jni_headers",
     "//chrome/browser/ui/android/plus_addresses:jni_headers",
     "//chrome/browser/ui/android/toolbar:jni_headers",
     "//chrome/browser/ui/android/webid:jni_headers",
