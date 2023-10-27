@@ -213,9 +213,14 @@ void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
       "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup",
       GetTotalNumberOfModifications());
 
-  // Reset to default first.
-  ResetAllAccelerators();
-  ApplyPrefOverrides();
+  if (features::IsResetShortcutCustomizationsEnabled()) {
+    VLOG(1) << "ResetShortcutCustomizations flag enabled, "
+            << "resetting all shortcuts.";
+    RestoreAllDefaults();
+  } else {
+    ResetAllAccelerators();
+    ApplyPrefOverrides();
+  }
 }
 
 const std::vector<ui::Accelerator>&
