@@ -115,4 +115,14 @@ enum class TabActivationTypes {
   kMaxValue = kContextMenu,
 };
 
+// Enumerates different types of tab failures.
+// KEEP IN SYNC WITH THE TabStripFailureContext ENUM IN
+// tools/metrics/histograms/enums.xml.
+enum class TabFailureContext {
+  // Failed to open a new tab.
+  kNewTabOpen = 0,
+
+  kMaxValue = kNewTabOpen,
+};
+
 #endif  // CHROME_BROWSER_UI_TABS_TAB_ENUMS_H_

@@ -1442,7 +1442,6 @@ void TabStrip::AddSelectionFromAnchorTo(Tab* tab) {
 void TabStrip::CloseTab(Tab* tab, CloseTabSource source) {
   const absl::optional<int> index_to_close =
       tab_container_->GetModelIndexOfFirstNonClosingTab(tab);
-
   if (index_to_close.has_value())
     CloseTabInternal(index_to_close.value(), source);
 }
@@ -1875,10 +1874,16 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
       return;
     }
   }
-
+  const int tab_count = GetTabCount();
   controller_->CreateNewTab();
   if (event.type() == ui::ET_GESTURE_TAP)
     TouchUMA::RecordGestureAction(TouchUMA::kGestureNewTabTap);
+
+  if (GetTabCount() != tab_count + 1) {
+    UMA_HISTOGRAM_ENUMERATION("TabStrip.Failures.Action",
+                              TabFailureContext::kNewTabOpen,
+                              TabFailureContext::kMaxValue);
+  }
 }
 
 bool TabStrip::ShouldHighlightCloseButtonAfterRemove() {
