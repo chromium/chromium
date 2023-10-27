@@ -32,8 +32,9 @@ enum class LegendBlockAlignment {
 inline LegendBlockAlignment ComputeLegendBlockAlignment(
     const ComputedStyle& legend_style,
     const ComputedStyle& fieldset_style) {
-  bool start_auto = legend_style.MarginStartUsing(fieldset_style).IsAuto();
-  bool end_auto = legend_style.MarginEndUsing(fieldset_style).IsAuto();
+  bool start_auto =
+      legend_style.MarginInlineStartUsing(fieldset_style).IsAuto();
+  bool end_auto = legend_style.MarginInlineEndUsing(fieldset_style).IsAuto();
   if (start_auto || end_auto) {
     if (start_auto) {
       return end_auto ? LegendBlockAlignment::kCenter

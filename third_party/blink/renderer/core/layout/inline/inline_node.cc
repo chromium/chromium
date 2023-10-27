@@ -407,11 +407,12 @@ inline bool ShouldBreakShapingBeforeBox(const InlineItem& item) {
 
   // These properties values must break shaping.
   // https://drafts.csswg.org/css-text-3/#boundary-shaping
-  if ((style.MayHavePadding() && !style.PaddingStart().IsZero()) ||
-      (style.MayHaveMargin() && !style.MarginStart().IsZero()) ||
-      style.BorderStartWidth() ||
-      style.VerticalAlign() != EVerticalAlign::kBaseline)
+  if ((style.MayHavePadding() && !style.PaddingInlineStart().IsZero()) ||
+      (style.MayHaveMargin() && !style.MarginInlineStart().IsZero()) ||
+      style.BorderInlineStartWidth() ||
+      style.VerticalAlign() != EVerticalAlign::kBaseline) {
     return true;
+  }
 
   return false;
 }
@@ -424,11 +425,12 @@ inline bool ShouldBreakShapingAfterBox(const InlineItem& item) {
 
   // These properties values must break shaping.
   // https://drafts.csswg.org/css-text-3/#boundary-shaping
-  if ((style.MayHavePadding() && !style.PaddingEnd().IsZero()) ||
-      (style.MayHaveMargin() && !style.MarginEnd().IsZero()) ||
-      style.BorderEndWidth() ||
-      style.VerticalAlign() != EVerticalAlign::kBaseline)
+  if ((style.MayHavePadding() && !style.PaddingInlineEnd().IsZero()) ||
+      (style.MayHaveMargin() && !style.MarginInlineEnd().IsZero()) ||
+      style.BorderInlineEndWidth() ||
+      style.VerticalAlign() != EVerticalAlign::kBaseline) {
     return true;
+  }
 
   return false;
 }

@@ -1435,7 +1435,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
   // margin non-adjoining. This is akin to clearance.
   MarginStrut adjoining_margin_strut(previous_inflow_position->margin_strut);
   adjoining_margin_strut.Append(child_data.margins.block_start,
-                                child_style.HasMarginBeforeQuirk());
+                                child_style.HasMarginBlockStartQuirk());
   LayoutUnit adjoining_bfc_offset_estimate =
       child_data.bfc_offset_estimate.block_offset +
       adjoining_margin_strut.Sum();
@@ -1492,7 +1492,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
     // position if it is adjoining.
     if (!child_margin_got_separated) {
       SetSubtreeModifiedMarginStrutIfNeeded(
-          &child_style.MarginBeforeUsing(Style()));
+          &child_style.MarginBlockStartUsing(Style()));
     }
 
     if (!ResolveBfcBlockOffset(previous_inflow_position,
@@ -1766,8 +1766,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
                                 fragment.InlineSize() -
                                 auto_margins.inline_start;
     } else {
-      if (child_style.MarginStartUsing(style).IsAuto() ||
-          child_style.MarginEndUsing(style).IsAuto()) {
+      if (child_style.MarginInlineStartUsing(style).IsAuto() ||
+          child_style.MarginInlineEndUsing(style).IsAuto()) {
         has_auto_margins = true;
         ResolveInlineAutoMargins(child_style, style,
                                  child_available_inline_size,
@@ -1826,10 +1826,10 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
                                    fragment.InlineSize(),
                                    container_builder_.InlineSize(), direction) -
           BorderScrollbarPadding().inline_start;
-      if (child_style.MarginStartUsing(style).IsAuto()) {
+      if (child_style.MarginInlineStartUsing(style).IsAuto()) {
         resolved_margins.inline_start = inline_offset;
       }
-      if (child_style.MarginEndUsing(style).IsAuto()) {
+      if (child_style.MarginInlineEndUsing(style).IsAuto()) {
         resolved_margins.inline_end = ChildAvailableSize().inline_size -
                                       inline_offset - fragment.InlineSize();
       }
@@ -2069,7 +2069,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   if (self_collapsing_child_had_clearance) {
     MarginStrut margin_strut;
     margin_strut.Append(child_data->margins.block_start,
-                        child.Style().HasMarginBeforeQuirk());
+                        child.Style().HasMarginBlockStartQuirk());
 
     // We only need to relayout if the new margin strut is different to the
     // previous one.
@@ -2315,9 +2315,9 @@ NGInflowChildData NGBlockLayoutAlgorithm::ComputeChildData(
   }
 
   margin_strut.Append(margins.block_start,
-                      child.Style().HasMarginBeforeQuirk());
+                      child.Style().HasMarginBlockStartQuirk());
   if (child.IsBlock())
-    SetSubtreeModifiedMarginStrutIfNeeded(&child.Style().MarginBefore());
+    SetSubtreeModifiedMarginStrutIfNeeded(&child.Style().MarginBlockStart());
 
   BfcOffset child_bfc_offset = {
       ConstraintSpace().GetBfcOffset().line_offset +
@@ -2419,11 +2419,11 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
   // margin. E.g.
   // <ol style="margin-bottom: 20px"></ol>
   bool is_quirky =
-      (is_self_collapsing && child.Style().HasMarginBeforeQuirk()) ||
-      child.Style().HasMarginAfterQuirk();
+      (is_self_collapsing && child.Style().HasMarginBlockStartQuirk()) ||
+      child.Style().HasMarginBlockEndQuirk();
   margin_strut.Append(child_data.margins.block_end, is_quirky);
   if (child.IsBlock())
-    SetSubtreeModifiedMarginStrutIfNeeded(&child.Style().MarginAfter());
+    SetSubtreeModifiedMarginStrutIfNeeded(&child.Style().MarginBlockEnd());
 
   if (UNLIKELY(ConstraintSpace().HasBlockFragmentation())) {
     // If the child broke inside, don't apply any trailing margin, since it's
@@ -2757,8 +2757,8 @@ BoxStrut NGBlockLayoutAlgorithm::CalculateMargins(
   const LayoutUnit available_space = ChildAvailableSize().inline_size;
 
   LayoutUnit text_align_offset;
-  if (child_style.MarginStartUsing(style).IsAuto() ||
-      child_style.MarginEndUsing(style).IsAuto()) {
+  if (child_style.MarginInlineStartUsing(style).IsAuto() ||
+      child_style.MarginInlineEndUsing(style).IsAuto()) {
     // Resolve auto-margins.
     ResolveInlineAutoMargins(child_style, style, available_space,
                              ChildInlineSize(), &margins);
@@ -3115,7 +3115,7 @@ NGBlockLayoutAlgorithm::CalculateQuirkyBodyMarginBlockSum(
     return end_margin_strut.Sum() + block_end_margin;
 
   MarginStrut body_strut = end_margin_strut;
-  body_strut.Append(block_end_margin, Style().HasMarginAfterQuirk());
+  body_strut.Append(block_end_margin, Style().HasMarginBlockEndQuirk());
   return *container_builder_.BfcBlockOffset() -
          ConstraintSpace().GetBfcOffset().block_offset + body_strut.Sum();
 }

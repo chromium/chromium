@@ -76,12 +76,6 @@ class PhysicalToLogical {
     return writing_direction_.IsFlippedBlocks() ? left_ : right_;
   }
 
-  // Legacy logical directions.
-  Value Start() const { return InlineStart(); }
-  Value End() const { return InlineEnd(); }
-  Value Before() const { return BlockStart(); }
-  Value After() const { return BlockEnd(); }
-
  private:
   WritingDirectionMode writing_direction_;
   Value top_;
@@ -225,45 +219,10 @@ class PhysicalToLogicalGetter {
   Value InlineEnd() const { return (object_.*converter_.InlineEnd())(); }
   Value BlockStart() const { return (object_.*converter_.BlockStart())(); }
   Value BlockEnd() const { return (object_.*converter_.BlockEnd())(); }
-  Value Start() const { return (object_.*converter_.Start())(); }
-  Value End() const { return (object_.*converter_.End())(); }
-  Value Before() const { return (object_.*converter_.Before())(); }
-  Value After() const { return (object_.*converter_.After())(); }
 
  private:
   const Object& object_;
   PhysicalToLogical<Getter> converter_;
-};
-
-template <typename Value, typename Object>
-class PhysicalToLogicalSetter {
-  STACK_ALLOCATED();
-
- public:
-  using Setter = void (Object::*)(Value);
-  PhysicalToLogicalSetter(WritingDirectionMode writing_direction,
-                          Object& object,
-                          Setter inline_start_setter,
-                          Setter inline_end_setter,
-                          Setter block_start_setter,
-                          Setter block_end_setter)
-      : object_(object),
-        converter_(writing_direction,
-                   inline_start_setter,
-                   inline_end_setter,
-                   block_start_setter,
-                   block_end_setter) {}
-
-  void SetLeft(Value v) { (object_.*converter_.Left())(v); }
-  void SetRight(Value v) { (object_.*converter_.Right())(v); }
-  void SetTop(Value v) { (object_.*converter_.Top())(v); }
-  void SetBottom(Value v) { (object_.*converter_.Bottom())(v); }
-
- private:
-  Object& object_;
-  // This converter converts logical setters to physical setters which accept
-  // physical values and call the logical setters to set logical values.
-  LogicalToPhysical<Setter> converter_;
 };
 
 template <typename Value, typename Object>
@@ -289,10 +248,6 @@ class LogicalToPhysicalSetter {
   void SetInlineEnd(Value v) { (object_.*converter_.InlineEnd())(v); }
   void SetBlockStart(Value v) { (object_.*converter_.BlockStart())(v); }
   void SetBlockEnd(Value v) { (object_.*converter_.BlockEnd())(v); }
-  void SetStart(Value v) { (object_.*converter_.Start())(v); }
-  void SetEnd(Value v) { (object_.*converter_.End())(v); }
-  void SetBefore(Value v) { (object_.*converter_.Before())(v); }
-  void SetAfter(Value v) { (object_.*converter_.After())(v); }
 
  private:
   Object& object_;

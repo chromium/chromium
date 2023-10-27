@@ -36,11 +36,13 @@ AxisEdge AxisEdgeFromItemPosition(bool is_inline_axis,
   // Auto-margins take precedence over any alignment properties.
   if (item_style.MayHaveMargin() && !is_out_of_flow) {
     const bool is_start_auto =
-        is_inline_axis ? item_style.MarginStartUsing(root_grid_style).IsAuto()
-                       : item_style.MarginBeforeUsing(root_grid_style).IsAuto();
+        is_inline_axis
+            ? item_style.MarginInlineStartUsing(root_grid_style).IsAuto()
+            : item_style.MarginBlockStartUsing(root_grid_style).IsAuto();
     const bool is_end_auto =
-        is_inline_axis ? item_style.MarginEndUsing(root_grid_style).IsAuto()
-                       : item_style.MarginAfterUsing(root_grid_style).IsAuto();
+        is_inline_axis
+            ? item_style.MarginInlineEndUsing(root_grid_style).IsAuto()
+            : item_style.MarginBlockEndUsing(root_grid_style).IsAuto();
 
     // 'auto' margin alignment is always "safe".
     if (is_start_auto || is_end_auto)

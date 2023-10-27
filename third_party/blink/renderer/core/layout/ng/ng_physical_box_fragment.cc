@@ -847,8 +847,8 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
         : container(container),
           style(container.Style()),
           writing_direction(style.GetWritingDirection()),
-          border_inline_start(LayoutUnit(style.BorderStartWidth())),
-          border_block_start(LayoutUnit(style.BorderBeforeWidth())),
+          border_inline_start(LayoutUnit(style.BorderInlineStartWidth())),
+          border_block_start(LayoutUnit(style.BorderBlockStartWidth())),
           height_type(height_type) {
       DCHECK_EQ(&style, container.GetLayoutObject()->Style(
                             container.UsesFirstLineStyle()));
@@ -859,9 +859,10 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
                 container.GetLayoutObject()->HasNonVisibleOverflow());
       if (container.HasNonVisibleOverflow()) {
         const auto* layout_object = To<LayoutBox>(container.GetLayoutObject());
-        padding_strut = BoxStrut(LayoutUnit(), layout_object->PaddingEnd(),
-                                 LayoutUnit(), layout_object->PaddingAfter())
-                            .ConvertToPhysical(writing_direction);
+        padding_strut =
+            BoxStrut(LayoutUnit(), layout_object->PaddingInlineEnd(),
+                     LayoutUnit(), layout_object->PaddingBlockEnd())
+                .ConvertToPhysical(writing_direction);
       }
     }
 

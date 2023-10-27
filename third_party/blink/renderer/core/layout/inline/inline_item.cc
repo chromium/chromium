@@ -31,14 +31,16 @@ ASSERT_SIZE(InlineItem, SameSizeAsInlineItem);
 // of them do so. https://drafts.csswg.org/css2/visuren.html
 bool IsInlineBoxStartEmpty(const ComputedStyle& style,
                            const LayoutObject& layout_object) {
-  if (style.BorderStartWidth() || !style.PaddingStart().IsZero())
+  if (style.BorderInlineStartWidth() || !style.PaddingInlineStart().IsZero()) {
     return false;
+  }
 
   // Non-zero margin can prevent "empty" only in non-quirks mode.
   // https://quirks.spec.whatwg.org/#the-line-height-calculation-quirk
-  if (!style.MarginStart().IsZero() &&
-      !layout_object.GetDocument().InLineHeightQuirksMode())
+  if (!style.MarginInlineStart().IsZero() &&
+      !layout_object.GetDocument().InLineHeightQuirksMode()) {
     return false;
+  }
 
   return true;
 }
@@ -50,14 +52,16 @@ bool IsInlineBoxStartEmpty(const ComputedStyle& style,
 // as non-empty.
 bool IsInlineBoxEndEmpty(const ComputedStyle& style,
                          const LayoutObject& layout_object) {
-  if (style.BorderEndWidth() || !style.PaddingEnd().IsZero())
+  if (style.BorderInlineEndWidth() || !style.PaddingInlineEnd().IsZero()) {
     return false;
+  }
 
   // Non-zero margin can prevent "empty" only in non-quirks mode.
   // https://quirks.spec.whatwg.org/#the-line-height-calculation-quirk
-  if (!style.MarginEnd().IsZero() &&
-      !layout_object.GetDocument().InLineHeightQuirksMode())
+  if (!style.MarginInlineEnd().IsZero() &&
+      !layout_object.GetDocument().InLineHeightQuirksMode()) {
     return false;
+  }
 
   return true;
 }

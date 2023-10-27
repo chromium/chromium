@@ -481,9 +481,10 @@ bool ComputeOutOfFlowInlineDimensions(
       container_writing_direction.GetWritingMode(), style.GetWritingMode());
 
   ComputeMargins(space.PercentageResolutionInlineSizeForParentWritingMode(),
-                 imcb.InlineSize(), style.MarginStart(), style.MarginEnd(),
-                 inline_size, has_auto_inline_inset, is_margin_start_dominant,
-                 is_block_direction, &dimensions->margins.inline_start,
+                 imcb.InlineSize(), style.MarginInlineStart(),
+                 style.MarginInlineEnd(), inline_size, has_auto_inline_inset,
+                 is_margin_start_dominant, is_block_direction,
+                 &dimensions->margins.inline_start,
                  &dimensions->margins.inline_end);
 
   ComputeInsets(space.AvailableSize().inline_size, imcb.inline_start,
@@ -607,9 +608,10 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
       container_writing_direction.GetWritingMode(), style.GetWritingMode());
 
   ComputeMargins(space.PercentageResolutionInlineSizeForParentWritingMode(),
-                 imcb.BlockSize(), style.MarginBefore(), style.MarginAfter(),
-                 block_size, has_auto_block_inset, is_margin_start_dominant,
-                 is_block_direction, &dimensions->margins.block_start,
+                 imcb.BlockSize(), style.MarginBlockStart(),
+                 style.MarginBlockEnd(), block_size, has_auto_block_inset,
+                 is_margin_start_dominant, is_block_direction,
+                 &dimensions->margins.block_start,
                  &dimensions->margins.block_end);
 
   ComputeInsets(space.AvailableSize().block_size, imcb.block_start,

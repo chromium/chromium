@@ -1152,8 +1152,8 @@ BoxStrut ComputeMarginsFor(const NGConstraintSpace& constraint_space,
 namespace {
 
 BoxStrut ComputeBordersInternal(const ComputedStyle& style) {
-  return {style.BorderStartWidth(), style.BorderEndWidth(),
-          style.BorderBeforeWidth(), style.BorderAfterWidth()};
+  return {style.BorderInlineStartWidth(), style.BorderInlineEndWidth(),
+          style.BorderBlockStartWidth(), style.BorderBlockEndWidth()};
 }
 
 }  // namespace
@@ -1209,11 +1209,14 @@ BoxStrut ComputePadding(const NGConstraintSpace& constraint_space,
   LayoutUnit percentage_resolution_size =
       constraint_space.PercentageResolutionInlineSizeForParentWritingMode()
           .ClampIndefiniteToZero();
-  return {
-      MinimumValueForLength(style.PaddingStart(), percentage_resolution_size),
-      MinimumValueForLength(style.PaddingEnd(), percentage_resolution_size),
-      MinimumValueForLength(style.PaddingBefore(), percentage_resolution_size),
-      MinimumValueForLength(style.PaddingAfter(), percentage_resolution_size)};
+  return {MinimumValueForLength(style.PaddingInlineStart(),
+                                percentage_resolution_size),
+          MinimumValueForLength(style.PaddingInlineEnd(),
+                                percentage_resolution_size),
+          MinimumValueForLength(style.PaddingBlockStart(),
+                                percentage_resolution_size),
+          MinimumValueForLength(style.PaddingBlockEnd(),
+                                percentage_resolution_size)};
 }
 
 BoxStrut ComputeScrollbarsForNonAnonymous(const NGBlockNode& node) {
@@ -1231,8 +1234,8 @@ void ResolveInlineAutoMargins(const ComputedStyle& style,
                               BoxStrut* margins) {
   const LayoutUnit used_space = inline_size + margins->InlineSum();
   const LayoutUnit available_space = available_inline_size - used_space;
-  bool is_start_auto = style.MarginStartUsing(container_style).IsAuto();
-  bool is_end_auto = style.MarginEndUsing(container_style).IsAuto();
+  bool is_start_auto = style.MarginInlineStartUsing(container_style).IsAuto();
+  bool is_end_auto = style.MarginInlineEndUsing(container_style).IsAuto();
   if (is_start_auto && is_end_auto) {
     margins->inline_start = (available_space / 2).ClampNegativeToZero();
     margins->inline_end =

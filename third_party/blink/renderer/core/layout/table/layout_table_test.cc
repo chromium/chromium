@@ -113,28 +113,28 @@ TEST_F(LayoutTableTest, CollapsedBorders) {
       "</table>");
 
   auto* table1 = GetTableByElementId("table1");
-  EXPECT_EQ(0, table1->BorderBefore());
-  EXPECT_EQ(4, table1->BorderAfter());
-  EXPECT_EQ(0, table1->BorderStart());
-  EXPECT_EQ(5, table1->BorderEnd());
+  EXPECT_EQ(0, table1->BorderBlockStart());
+  EXPECT_EQ(4, table1->BorderBlockEnd());
+  EXPECT_EQ(0, table1->BorderInlineStart());
+  EXPECT_EQ(5, table1->BorderInlineEnd());
 
   // All cells have hidden border.
   auto* table2 = GetTableByElementId("table2");
-  EXPECT_EQ(0, table2->BorderBefore());
-  EXPECT_EQ(0, table2->BorderAfter());
-  EXPECT_EQ(0, table2->BorderStart());
-  EXPECT_EQ(0, table2->BorderEnd());
+  EXPECT_EQ(0, table2->BorderBlockStart());
+  EXPECT_EQ(0, table2->BorderBlockEnd());
+  EXPECT_EQ(0, table2->BorderInlineStart());
+  EXPECT_EQ(0, table2->BorderInlineEnd());
 
   // Cells have wider borders.
   auto* table3 = GetTableByElementId("table3");
   // Cell E's border-top won.
-  EXPECT_EQ(LayoutUnit(7.5), table3->BorderBefore());
+  EXPECT_EQ(LayoutUnit(7.5), table3->BorderBlockStart());
   // Cell H's border-bottom won.
-  EXPECT_EQ(20, table3->BorderAfter());
+  EXPECT_EQ(20, table3->BorderBlockEnd());
   // Cell G's border-left won.
-  EXPECT_EQ(LayoutUnit(15), table3->BorderStart());
+  EXPECT_EQ(LayoutUnit(15), table3->BorderInlineStart());
   // Cell H's border-right won.
-  EXPECT_EQ(LayoutUnit(20), table3->BorderEnd());
+  EXPECT_EQ(LayoutUnit(20), table3->BorderInlineEnd());
 }
 
 TEST_F(LayoutTableTest, CollapsedBordersWithCol) {
@@ -174,28 +174,28 @@ TEST_F(LayoutTableTest, CollapsedBordersWithCol) {
 
   // Table has hidden border.
   auto* table1 = GetTableByElementId("table1");
-  EXPECT_EQ(0, table1->BorderBefore());
-  EXPECT_EQ(0, table1->BorderAfter());
-  EXPECT_EQ(0, table1->BorderStart());
-  EXPECT_EQ(0, table1->BorderEnd());
+  EXPECT_EQ(0, table1->BorderBlockStart());
+  EXPECT_EQ(0, table1->BorderBlockEnd());
+  EXPECT_EQ(0, table1->BorderInlineStart());
+  EXPECT_EQ(0, table1->BorderInlineEnd());
 
   // All cells have hidden border.
   auto* table2 = GetTableByElementId("table2");
-  EXPECT_EQ(0, table2->BorderBefore());
-  EXPECT_EQ(0, table2->BorderAfter());
-  EXPECT_EQ(0, table2->BorderStart());
-  EXPECT_EQ(0, table2->BorderEnd());
+  EXPECT_EQ(0, table2->BorderBlockStart());
+  EXPECT_EQ(0, table2->BorderBlockEnd());
+  EXPECT_EQ(0, table2->BorderInlineStart());
+  EXPECT_EQ(0, table2->BorderInlineEnd());
 
   // Combined cell and col borders.
   auto* table3 = GetTableByElementId("table3");
   // The second col's border-top won.
-  EXPECT_EQ(10, table3->BorderBefore());
+  EXPECT_EQ(10, table3->BorderBlockStart());
   // The second col's border-bottom won.
-  EXPECT_EQ(10, table3->BorderAfter());
+  EXPECT_EQ(10, table3->BorderBlockEnd());
   // Cell E's border-left won.
-  EXPECT_EQ(6, table3->BorderStart());
+  EXPECT_EQ(6, table3->BorderInlineStart());
   // The second col's border-right won.
-  EXPECT_EQ(10, table3->BorderEnd());
+  EXPECT_EQ(10, table3->BorderInlineEnd());
 }
 
 TEST_F(LayoutTableTest, WidthPercentagesExceedHundred) {
@@ -253,9 +253,9 @@ TEST_F(LayoutTableTest, PaddingWithCollapsedBorder) {
   EXPECT_EQ(0, table->PaddingRight());
   EXPECT_EQ(0, table->PaddingTop());
   EXPECT_EQ(0, table->PaddingBottom());
-  EXPECT_EQ(0, table->PaddingEnd());
-  EXPECT_EQ(0, table->PaddingBefore());
-  EXPECT_EQ(0, table->PaddingAfter());
+  EXPECT_EQ(0, table->PaddingInlineEnd());
+  EXPECT_EQ(0, table->PaddingBlockStart());
+  EXPECT_EQ(0, table->PaddingBlockEnd());
 }
 
 TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {

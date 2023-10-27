@@ -215,17 +215,18 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return ComputedCSSPaddingRight();
   }
 
-  LayoutUnit PaddingBefore() const {
+  // Returns a WritingDirectionMode-aware logical padding value.
+  LayoutUnit PaddingBlockStart() const {
     NOT_DESTROYED();
-    return PhysicalPaddingToLogical().Before();
+    return PhysicalPaddingToLogical().BlockStart();
   }
-  LayoutUnit PaddingAfter() const {
+  LayoutUnit PaddingBlockEnd() const {
     NOT_DESTROYED();
-    return PhysicalPaddingToLogical().After();
+    return PhysicalPaddingToLogical().BlockEnd();
   }
-  LayoutUnit PaddingEnd() const {
+  LayoutUnit PaddingInlineEnd() const {
     NOT_DESTROYED();
-    return PhysicalPaddingToLogical().End();
+    return PhysicalPaddingToLogical().InlineEnd();
   }
 
   virtual LayoutUnit BorderTop() const {
@@ -245,21 +246,22 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return LayoutUnit(StyleRef().BorderRightWidth());
   }
 
-  LayoutUnit BorderBefore() const {
+  // Returns a WritingDirectionMode-aware logical border value.
+  LayoutUnit BorderBlockStart() const {
     NOT_DESTROYED();
-    return PhysicalBorderToLogical().Before();
+    return PhysicalBorderToLogical().BlockStart();
   }
-  LayoutUnit BorderAfter() const {
+  LayoutUnit BorderBlockEnd() const {
     NOT_DESTROYED();
-    return PhysicalBorderToLogical().After();
+    return PhysicalBorderToLogical().BlockEnd();
   }
-  LayoutUnit BorderStart() const {
+  LayoutUnit BorderInlineStart() const {
     NOT_DESTROYED();
-    return PhysicalBorderToLogical().Start();
+    return PhysicalBorderToLogical().InlineStart();
   }
-  LayoutUnit BorderEnd() const {
+  LayoutUnit BorderInlineEnd() const {
     NOT_DESTROYED();
-    return PhysicalBorderToLogical().End();
+    return PhysicalBorderToLogical().InlineEnd();
   }
 
   LayoutUnit BorderWidth() const {
@@ -281,13 +283,14 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return {PaddingTop(), PaddingRight(), PaddingBottom(), PaddingLeft()};
   }
 
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingBefore() const {
+  // Returns a WritingDirectionMode-aware logical border+padding value.
+  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingBlockStart() const {
     NOT_DESTROYED();
-    return BorderBefore() + PaddingBefore();
+    return BorderBlockStart() + PaddingBlockStart();
   }
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingAfter() const {
+  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingBlockEnd() const {
     NOT_DESTROYED();
-    return BorderAfter() + PaddingAfter();
+    return BorderBlockEnd() + PaddingBlockEnd();
   }
 
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingHeight() const {
@@ -301,7 +304,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalHeight() const {
     NOT_DESTROYED();
     return (StyleRef().HasBorder() || StyleRef().MayHavePadding())
-               ? BorderAndPaddingBefore() + BorderAndPaddingAfter()
+               ? BorderAndPaddingBlockStart() + BorderAndPaddingBlockEnd()
                : LayoutUnit();
   }
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalWidth() const {
@@ -323,7 +326,8 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   LayoutUnit PaddingLogicalHeight() const {
     NOT_DESTROYED();
-    return PaddingBefore() + PaddingAfter();
+    const auto logical_padding = PhysicalPaddingToLogical();
+    return logical_padding.BlockStart() + logical_padding.BlockEnd();
   }
 
   virtual LayoutUnit MarginTop() const = 0;
@@ -331,21 +335,24 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   virtual LayoutUnit MarginLeft() const = 0;
   virtual LayoutUnit MarginRight() const = 0;
 
-  LayoutUnit MarginBefore(const ComputedStyle* other_style = nullptr) const {
+  // Returns a WritingDirectionMode-aware logical margin value.
+  LayoutUnit MarginBlockStart(
+      const ComputedStyle* other_style = nullptr) const {
     NOT_DESTROYED();
-    return PhysicalMarginToLogical(other_style).Before();
+    return PhysicalMarginToLogical(other_style).BlockStart();
   }
-  LayoutUnit MarginAfter(const ComputedStyle* other_style = nullptr) const {
+  LayoutUnit MarginBlockEnd(const ComputedStyle* other_style = nullptr) const {
     NOT_DESTROYED();
-    return PhysicalMarginToLogical(other_style).After();
+    return PhysicalMarginToLogical(other_style).BlockEnd();
   }
-  LayoutUnit MarginStart(const ComputedStyle* other_style = nullptr) const {
+  LayoutUnit MarginInlineStart(
+      const ComputedStyle* other_style = nullptr) const {
     NOT_DESTROYED();
-    return PhysicalMarginToLogical(other_style).Start();
+    return PhysicalMarginToLogical(other_style).InlineStart();
   }
-  LayoutUnit MarginEnd(const ComputedStyle* other_style = nullptr) const {
+  LayoutUnit MarginInlineEnd(const ComputedStyle* other_style = nullptr) const {
     NOT_DESTROYED();
-    return PhysicalMarginToLogical(other_style).End();
+    return PhysicalMarginToLogical(other_style).InlineEnd();
   }
 
   DISABLE_CFI_PERF LayoutUnit MarginHeight() const {
@@ -358,11 +365,13 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   }
   DISABLE_CFI_PERF LayoutUnit MarginLogicalHeight() const {
     NOT_DESTROYED();
-    return MarginBefore() + MarginAfter();
+    const auto logical_margin = PhysicalMarginToLogical(nullptr);
+    return logical_margin.BlockStart() + logical_margin.BlockEnd();
   }
   DISABLE_CFI_PERF LayoutUnit MarginLogicalWidth() const {
     NOT_DESTROYED();
-    return MarginStart() + MarginEnd();
+    const auto logical_margin = PhysicalMarginToLogical(nullptr);
+    return logical_margin.InlineStart() + logical_margin.InlineEnd();
   }
 
   PhysicalBoxStrut MarginOutsets() const {

@@ -37,11 +37,12 @@ inline bool InlineLengthMayChange(const ComputedStyle& style,
   // Percentage inline margins will affect the size if the size is unspecified
   // (auto and similar).
   if (is_unspecified && style.MayHaveMargin() &&
-      (style.MarginStart().IsPercentOrCalc() ||
-       style.MarginEnd().IsPercentOrCalc()) &&
+      (style.MarginInlineStart().IsPercentOrCalc() ||
+       style.MarginInlineEnd().IsPercentOrCalc()) &&
       (new_space.PercentageResolutionInlineSize() !=
-       old_space.PercentageResolutionInlineSize()))
+       old_space.PercentageResolutionInlineSize())) {
     return true;
+  }
 
   if (is_unspecified) {
     if (new_space.AvailableSize().inline_size !=

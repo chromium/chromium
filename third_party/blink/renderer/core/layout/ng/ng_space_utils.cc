@@ -58,16 +58,16 @@ void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
   if (parent_style.BoxSizing() == EBoxSizing::kBorderBox) {
     // We're unable to resolve percentages at this point, so make sure we're
     // only dealing with fixed-size values.
-    if (!parent_style.PaddingBefore().IsFixed() ||
-        !parent_style.PaddingAfter().IsFixed()) {
+    if (!parent_style.PaddingBlockStart().IsFixed() ||
+        !parent_style.PaddingBlockEnd().IsFixed()) {
       builder->SetOrthogonalFallbackInlineSize(fallback_size);
       return;
     }
 
-    LayoutUnit border_padding(parent_style.BorderBefore().Width() +
-                              parent_style.BorderAfter().Width() +
-                              parent_style.PaddingBefore().GetFloatValue() +
-                              parent_style.PaddingAfter().GetFloatValue());
+    LayoutUnit border_padding(parent_style.BorderBlockStart().Width() +
+                              parent_style.BorderBlockEnd().Width() +
+                              parent_style.PaddingBlockStart().GetFloatValue() +
+                              parent_style.PaddingBlockEnd().GetFloatValue());
 
     size -= border_padding;
     size = size.ClampNegativeToZero();

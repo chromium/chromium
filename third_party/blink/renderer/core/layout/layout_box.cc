@@ -3150,8 +3150,8 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
     height_result = bounding_box_size.height;
   else
     height_result = bounding_box_size.width;
-  height_result -=
-      (containing_block->BorderBefore() + containing_block->BorderAfter());
+  height_result -= (containing_block->BorderBlockStart() +
+                    containing_block->BorderBlockEnd());
   return height_result;
 }
 

@@ -202,7 +202,7 @@ LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
 // marker's margin-top.
 void UnpositionedListMarker::CheckMargin() const {
   DCHECK(marker_layout_object_);
-  DCHECK(marker_layout_object_->StyleRef().MarginBefore().IsZero());
+  DCHECK(marker_layout_object_->StyleRef().MarginBlockStart().IsZero());
 }
 #endif
 
