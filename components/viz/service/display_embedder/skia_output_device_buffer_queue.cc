@@ -222,8 +222,12 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
 }
 
 SkiaOutputDeviceBufferQueue::~SkiaOutputDeviceBufferQueue() {
-  // TODO(vasilyt): We should not need this when we stop using
-  // GLImageBacking.
+  // GL textures are cached in IOSurfaceImageBacking/OzoneImageBacking and when
+  // overlay representations are destroyed, backing may get destroyed leading
+  // to GL texture destruction. This destruction needs GL context current.
+  // TODO(vasilyt): Eliminate this when neither IOSurfaceImageBacking nor
+  // OzoneImageBacking cache GLTextures and require the GLContext to be current
+  // when they are destroyed.
   if (context_state_->context_lost()) {
     for (auto& overlay : overlays_) {
       overlay.OnContextLost();
@@ -521,8 +525,9 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
 
   bool need_gl_context = false;
 #if BUILDFLAG(IS_APPLE)
-  // TODO(vasilyt): We shouldn't need this after we stop using
-  // GLImageBacking as backing.
+  // GL textures are cached in IOSurfaceImageBacking and when
+  // overlay representations are destroyed, backing may get destroyed leading to
+  // GL texture destruction. This destruction needs GL context current.
   need_gl_context = true;
 #elif BUILDFLAG(IS_OZONE)
   // GL textures are cached in OzoneImageBacking with this workaround and when
