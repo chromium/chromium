@@ -287,7 +287,9 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
       std::make_unique<ScriptInjectionManager>(user_script_set_manager_.get());
   user_script_set_manager_observation_.Observe(user_script_set_manager_.get());
   PopulateSourceMap();
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   WakeEventPage::Get()->Init(RenderThread::Get());
+#endif
   // Ideally this should be done after checking
   // ExtensionAPIEnabledInExtensionServiceWorkers(), but the Dispatcher is
   // created so early that sending an IPC from browser/ process to synchronize
@@ -548,16 +550,18 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   context->set_service_worker_scope(service_worker_scope);
   context->set_service_worker_version_id(service_worker_version_id);
 
+  WorkerThreadDispatcher* worker_dispatcher = WorkerThreadDispatcher::Get();
+  absl::optional<base::UnguessableToken> worker_activation_token =
+      RendererExtensionRegistry::Get()->GetWorkerActivationToken(
+          extension->id());
+
   if (ExtensionsRendererClient::Get()
           ->ExtensionAPIEnabledForServiceWorkerScript(service_worker_scope,
                                                       script_url)) {
-    WorkerThreadDispatcher* worker_dispatcher = WorkerThreadDispatcher::Get();
     std::unique_ptr<IPCMessageSender> ipc_sender =
         IPCMessageSender::CreateWorkerThreadIPCMessageSender(
             worker_dispatcher, context_proxy, service_worker_version_id);
-    base::UnguessableToken worker_activation_token =
-        *RendererExtensionRegistry::Get()->GetWorkerActivationToken(
-            extension->id());
+    CHECK(worker_activation_token.has_value());
     worker_dispatcher->AddWorkerData(
         context_proxy, service_worker_version_id, worker_activation_token,
         context,
@@ -581,10 +585,14 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // TODO(lazyboy): Get rid of RequireGuestViewModules() as this doesn't seem
     // necessary for Extension SW.
     RequireGuestViewModules(context);
-
-    WorkerThreadDispatcher::GetServiceWorkerData()->Init();
+  } else {
+    // For ServiceWorkers that do not have native bindings API attached we
+    // still create the WorkerData as native logging and wake event page
+    // will still be bound below.
+    worker_dispatcher->AddWorkerData(context_proxy, service_worker_version_id,
+                                     worker_activation_token, context, nullptr);
   }
-
+  WorkerThreadDispatcher::GetServiceWorkerData()->Init();
   g_worker_script_context_set.Get().Insert(base::WrapUnique(context));
 
   v8::Isolate* isolate = context->isolate();
@@ -631,7 +639,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
       v8_helpers::ToV8StringUnsafe(
           isolate, BackgroundInfo::GetBackgroundURL(extension).spec()),
       // The wake-event-page native function.
-      WakeEventPage::Get()->GetForContext(context),
+      WakeEventPage::GetForContext(context),
       // The logging module.
       logging->NewInstance(),
   };
@@ -673,7 +681,7 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
   auto* service_worker_data = WorkerThreadDispatcher::GetServiceWorkerData();
   service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
       service_worker_data->context()->GetExtensionID(),
-      service_worker_data->activation_sequence(), service_worker_scope,
+      *service_worker_data->activation_sequence(), service_worker_scope,
       service_worker_version_id, thread_id);
 #endif
 }
@@ -695,17 +703,19 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
     // WorkerThreadDispatcher? If so, we should move the initialization as well.
     ScriptContext* script_context = service_worker_data->context();
     NativeExtensionBindingsSystem* worker_bindings_system =
-        WorkerThreadDispatcher::GetBindingsSystem();
-    worker_bindings_system->WillReleaseScriptContext(script_context);
+        service_worker_data->bindings_system();
+    if (worker_bindings_system) {
+      worker_bindings_system->WillReleaseScriptContext(script_context);
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-    WorkerThreadDispatcher::Get()->DidStopContext(service_worker_scope,
-                                                  service_worker_version_id);
+      WorkerThreadDispatcher::Get()->DidStopContext(service_worker_scope,
+                                                    service_worker_version_id);
 #else
-    service_worker_data->GetServiceWorkerHost()->DidStopServiceWorkerContext(
-        script_context->GetExtensionID(),
-        service_worker_data->activation_sequence(), service_worker_scope,
-        service_worker_version_id, thread_id);
+      service_worker_data->GetServiceWorkerHost()->DidStopServiceWorkerContext(
+          script_context->GetExtensionID(),
+          *service_worker_data->activation_sequence(), service_worker_scope,
+          service_worker_version_id, thread_id);
 #endif
+    }
     // Note: we have to remove the context (and thus perform invalidation on
     // the native handlers) prior to removing the worker data, which destroys
     // the associated bindings system.

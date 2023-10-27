@@ -10,14 +10,20 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/renderer_host.mojom.h"
+#include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/service_worker_data.h"
 #include "extensions/renderer/v8_helpers.h"
+#include "extensions/renderer/worker_thread_dispatcher.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "v8/include/v8-context.h"
@@ -29,8 +35,10 @@ namespace extensions {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 base::LazyInstance<WakeEventPage>::DestructorAtExit g_wake_event_page_instance =
     LAZY_INSTANCE_INITIALIZER;
+#endif
 
 constexpr char kWakeEventPageFunctionName[] = "WakeEventPage";
 
@@ -40,9 +48,14 @@ class WakeEventPage::WakeEventPageNativeHandler
     : public ObjectBackedNativeHandler {
  public:
   // Handles own lifetime.
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   WakeEventPageNativeHandler(ScriptContext* context,
                              const MakeRequestCallback& make_request)
       : ObjectBackedNativeHandler(context), make_request_(make_request) {
+#else
+  WakeEventPageNativeHandler(ScriptContext* context)
+      : ObjectBackedNativeHandler(context) {
+#endif
     // Delete self on invalidation. base::Unretained because by definition this
     // can't be deleted before it's deleted.
     context->AddInvalidationObserver(base::BindOnce(
@@ -83,10 +96,27 @@ class WakeEventPage::WakeEventPageNativeHandler
     const std::string& extension_id = context()->GetExtensionID();
     CHECK(!extension_id.empty());
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
     make_request_.Run(
         extension_id,
         base::BindOnce(&WakeEventPageNativeHandler::OnEventPageIsAwake,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+#else
+    mojom::RendererHost* renderer_host = nullptr;
+    if (context()->IsForServiceWorker()) {
+      renderer_host =
+          WorkerThreadDispatcher::GetServiceWorkerData()->GetRendererHost();
+    } else {
+      content::RenderFrame* frame = context()->GetRenderFrame();
+      CHECK(frame);
+      renderer_host = ExtensionFrameHelper::Get(frame)->GetRendererHost();
+    }
+    CHECK(renderer_host);
+    renderer_host->WakeEventPage(
+        extension_id,
+        base::BindOnce(&WakeEventPageNativeHandler::OnEventPageIsAwake,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+#endif
   }
 
   void OnEventPageIsAwake(v8::Global<v8::Function> callback, bool success) {
@@ -99,10 +129,13 @@ class WakeEventPage::WakeEventPageNativeHandler
                                 std::size(args), args);
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   MakeRequestCallback make_request_;
+#endif
   base::WeakPtrFactory<WakeEventPageNativeHandler> weak_ptr_factory_{this};
 };
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 // static
 WakeEventPage* WakeEventPage::Get() {
   return g_wake_event_page_instance.Pointer();
@@ -116,9 +149,13 @@ void WakeEventPage::Init(content::RenderThread* render_thread) {
   message_filter_ = render_thread->GetSyncMessageFilter();
   render_thread->AddObserver(this);
 }
+#endif
 
+// static
 v8::Local<v8::Function> WakeEventPage::GetForContext(ScriptContext* context) {
-  DCHECK(message_filter_);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  DCHECK(WakeEventPage::Get()->message_filter_);
+#endif
 
   v8::Isolate* isolate = context->isolate();
   v8::EscapableHandleScope handle_scope(isolate);
@@ -136,10 +173,15 @@ v8::Local<v8::Function> WakeEventPage::GetForContext(ScriptContext* context) {
       wake_event_page->IsUndefined()) {
     // Implement this using a NativeHandler, which requires a function name
     // (arbitrary in this case). Handles own lifetime.
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
     WakeEventPageNativeHandler* native_handler = new WakeEventPageNativeHandler(
         context, base::BindRepeating(&WakeEventPage::MakeRequest,
                                      // Safe, owned by a LazyInstance.
-                                     base::Unretained(this)));
+                                     base::Unretained(WakeEventPage::Get())));
+#else
+    WakeEventPageNativeHandler* native_handler =
+        new WakeEventPageNativeHandler(context);
+#endif
     native_handler->Initialize();
 
     // Extract and cache the wake-event-page function from the native handler.
@@ -154,6 +196,7 @@ v8::Local<v8::Function> WakeEventPage::GetForContext(ScriptContext* context) {
   return handle_scope.Escape(wake_event_page.As<v8::Function>());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 WakeEventPage::RequestData::RequestData(int thread_id,
                                         OnResponseCallback on_response)
     : thread_id(thread_id), on_response(std::move(on_response)) {}
@@ -206,5 +249,6 @@ void WakeEventPage::OnWakeEventPageResponse(int request_id, bool success) {
         base::BindOnce(std::move(request_data->on_response), success));
   }
 }
+#endif
 
 }  //  namespace extensions

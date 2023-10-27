@@ -364,7 +364,6 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
       blink::WebServiceWorkerContextProxy* context_proxy,
       int64_t service_worker_version_id)
       : dispatcher_(dispatcher),
-        context_proxy_(context_proxy),
         service_worker_version_id_(service_worker_version_id) {}
 
   WorkerThreadIPCMessageSender(const WorkerThreadIPCMessageSender&) = delete;
@@ -714,19 +713,12 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
   }
 
   mojom::RendererHost* GetRendererHost() {
-    if (!renderer_host_.is_bound()) {
-      context_proxy_->GetRemoteAssociatedInterface(
-          renderer_host_.BindNewEndpointAndPassReceiver());
-    }
-    return renderer_host_.get();
+    return WorkerThreadDispatcher::GetServiceWorkerData()->GetRendererHost();
   }
 
   const raw_ptr<WorkerThreadDispatcher, ExperimentalRenderer> dispatcher_;
-  const raw_ptr<blink::WebServiceWorkerContextProxy, ExperimentalRenderer>
-      context_proxy_;
   const int64_t service_worker_version_id_;
   absl::optional<ExtensionId> extension_id_;
-  mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
 };
 
 }  // namespace

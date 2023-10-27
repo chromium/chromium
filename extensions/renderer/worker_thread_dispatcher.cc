@@ -206,8 +206,9 @@ void WorkerThreadDispatcher::UpdateBindingsOnWorkerThread(
 
   ServiceWorkerData* data = WorkerThreadDispatcher::GetServiceWorkerData();
   // Bail out if the worker was destroyed.
-  if (!data)
+  if (!data || !data->bindings_system()) {
     return;
+  }
   data->bindings_system()->UpdateBindings(
       extension_id, true /* permissions_changed */,
       Dispatcher::GetWorkerScriptContextSet());
@@ -347,8 +348,10 @@ void WorkerThreadDispatcher::OnMessageReceivedOnWorkerThread(
   // If the worker state was already destroyed via
   // Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread, then
   // drop this IPC. See https://crbug.com/1008143 for details.
-  if (!GetServiceWorkerData())
+  ServiceWorkerData* data = GetServiceWorkerData();
+  if (!data || !data->bindings_system()) {
     return;
+  }
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(WorkerThreadDispatcher, message)
@@ -523,7 +526,7 @@ void WorkerThreadDispatcher::OnDispatchOnDisconnect(
 void WorkerThreadDispatcher::AddWorkerData(
     blink::WebServiceWorkerContextProxy* proxy,
     int64_t service_worker_version_id,
-    base::UnguessableToken activation_sequence,
+    const absl::optional<base::UnguessableToken>& activation_sequence,
     ScriptContext* script_context,
     std::unique_ptr<NativeExtensionBindingsSystem> bindings_system) {
   if (!service_worker_data) {
@@ -596,7 +599,7 @@ void WorkerThreadDispatcher::DidStartContext(
                 service_worker_version_id, thread_id);
       },
       service_worker_data->context()->GetExtensionID(),
-      service_worker_data->activation_sequence(), service_worker_scope,
+      *service_worker_data->activation_sequence(), service_worker_scope,
       service_worker_version_id, thread_id));
 }
 
@@ -619,7 +622,7 @@ void WorkerThreadDispatcher::DidStopContext(const GURL& service_worker_scope,
         WorkerThreadDispatcher::Get()->UnbindEventDispatcher(thread_id);
       },
       service_worker_data->context()->GetExtensionID(),
-      service_worker_data->activation_sequence(), service_worker_scope,
+      *service_worker_data->activation_sequence(), service_worker_scope,
       service_worker_version_id, thread_id));
 }
 

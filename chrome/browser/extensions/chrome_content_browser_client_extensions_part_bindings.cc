@@ -66,4 +66,13 @@ void ChromeContentBrowserClientExtensionsPart::
 #endif
 }
 
+void ChromeContentBrowserClientExtensionsPart::
+    ExposeInterfacesToRendererForRenderFrameHost(
+        content::RenderFrameHost& frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  associated_registry.AddInterface<mojom::RendererHost>(
+      base::BindRepeating(&RendererStartupHelper::BindForRenderer,
+                          frame_host.GetProcess()->GetID()));
+}
+
 }  // namespace extensions

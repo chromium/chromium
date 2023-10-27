@@ -52,6 +52,7 @@
 
 #define IPC_MESSAGE_START ExtensionMsgStart
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::CSSOrigin,
                           extensions::mojom::CSSOrigin::kMaxValue)
 
@@ -61,7 +62,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(content::SocketPermissionRequest::OperationType,
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::RunLocation,
                           extensions::mojom::RunLocation::kMaxValue)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::MessagingEndpointType,
                           extensions::mojom::MessagingEndpointType::kMaxValue)
 
@@ -128,7 +128,6 @@ IPC_STRUCT_BEGIN(ExtensionMsg_ExternalConnectionInfo)
   // The render frame routing ID of the webview that initiated the request.
   IPC_STRUCT_MEMBER(int, guest_render_frame_routing_id)
 IPC_STRUCT_END()
-#endif
 
 IPC_STRUCT_TRAITS_BEGIN(content::SocketPermissionRequest)
   IPC_STRUCT_TRAITS_MEMBER(type)
@@ -136,7 +135,6 @@ IPC_STRUCT_TRAITS_BEGIN(content::SocketPermissionRequest)
   IPC_STRUCT_TRAITS_MEMBER(port)
 IPC_STRUCT_TRAITS_END()
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 IPC_STRUCT_TRAITS_BEGIN(extensions::PortContext::FrameContext)
   IPC_STRUCT_TRAITS_MEMBER(routing_id)
 IPC_STRUCT_TRAITS_END()
@@ -151,7 +149,6 @@ IPC_STRUCT_TRAITS_BEGIN(extensions::PortContext)
   IPC_STRUCT_TRAITS_MEMBER(frame)
   IPC_STRUCT_TRAITS_MEMBER(worker)
 IPC_STRUCT_TRAITS_END()
-#endif
 
 IPC_STRUCT_TRAITS_BEGIN(extensions::SocketPermissionEntry)
   IPC_STRUCT_TRAITS_MEMBER(pattern_)
@@ -168,7 +165,6 @@ IPC_STRUCT_TRAITS_BEGIN(extensions::UsbDevicePermissionData)
   IPC_STRUCT_TRAITS_MEMBER(interface_class())
 IPC_STRUCT_TRAITS_END()
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 IPC_STRUCT_TRAITS_BEGIN(extensions::Message)
   IPC_STRUCT_TRAITS_MEMBER(data)
   IPC_STRUCT_TRAITS_MEMBER(format)
@@ -190,7 +186,6 @@ IPC_STRUCT_BEGIN(ExtensionMsg_OnConnectData)
   IPC_STRUCT_MEMBER(ExtensionMsg_ExternalConnectionInfo,
                     external_connection_info)
 IPC_STRUCT_END()
-#endif
 
 // Messages sent from the browser to the renderer:
 
@@ -199,7 +194,6 @@ IPC_MESSAGE_CONTROL2(ExtensionMsg_WakeEventPageResponse,
                      int /* request_id */,
                      bool /* success */)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 // Check whether the Port for extension messaging exists in a frame or a Service
 // Worker. If the port ID is unknown, the frame replies with
 // ExtensionHostMsg_CloseMessagePort.
@@ -291,13 +285,12 @@ IPC_SYNC_MESSAGE_CONTROL1_1(
     std::string /* extension id */,
     extensions::MessageBundle::SubstitutionMap /* message bundle */)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 // Asks the browser to wake the event page of an extension.
 // The browser will reply with ExtensionHostMsg_WakeEventPageResponse.
 IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WakeEventPage,
                      int /* request_id */,
                      std::string /* extension_id */)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 
 // Messages related to Extension Service Worker.
 #undef IPC_MESSAGE_START

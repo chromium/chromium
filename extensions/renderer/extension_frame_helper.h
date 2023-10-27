@@ -16,6 +16,7 @@
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -159,6 +160,7 @@ class ExtensionFrameHelper
   void ScheduleAtDocumentIdle(base::OnceClosure callback);
 
   mojom::LocalFrameHost* GetLocalFrameHost();
+  mojom::RendererHost* GetRendererHost();
 
  private:
   void BindLocalFrame(
@@ -235,6 +237,7 @@ class ExtensionFrameHelper
   bool is_initializing_main_world_script_context_ = false;
 
   mojo::AssociatedRemote<mojom::LocalFrameHost> local_frame_host_remote_;
+  mojo::AssociatedRemote<mojom::RendererHost> renderer_host_remote_;
 
   mojo::AssociatedReceiver<mojom::LocalFrame> local_frame_receiver_{this};
 

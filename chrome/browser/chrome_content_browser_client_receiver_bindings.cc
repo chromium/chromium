@@ -485,6 +485,11 @@ void ChromeContentBrowserClient::
     RegisterAssociatedInterfaceBindersForRenderFrameHost(
         content::RenderFrameHost& render_frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
+  for (auto& ep : extra_parts_) {
+    ep->ExposeInterfacesToRendererForRenderFrameHost(render_frame_host,
+                                                     associated_registry);
+  }
+
   associated_registry.AddInterface<autofill::mojom::AutofillDriver>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,

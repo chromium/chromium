@@ -33,8 +33,8 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   EventRouterFactory::GetInstance();
   ExtensionActionManager::EnsureFactoryBuilt();
   ExtensionFunction::EnsureShutdownNotifierFactoryBuilt();
-  ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt();
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt();
   ExtensionServiceWorkerMessageFilter::EnsureShutdownNotifierFactoryBuilt();
 #endif
   ExtensionPrefsFactory::GetInstance();

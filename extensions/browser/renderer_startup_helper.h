@@ -78,6 +78,8 @@ class RendererStartupHelper : public KeyedService,
                                  const GURL& url,
                                  const std::u16string& url_title,
                                  int32_t call_type) override;
+  void WakeEventPage(const std::string& extension_id,
+                     WakeEventPageCallback callback) override;
 
   // Sends a message to the specified |process| activating the given extension
   // once the process is initialized. OnExtensionLoaded should have already been

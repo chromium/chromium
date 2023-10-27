@@ -14,6 +14,7 @@
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
+#include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/mojom/service_worker.mojom.h"
 #include "extensions/common/mojom/service_worker_host.mojom.h"
 #include "extensions/renderer/v8_schema_registry.h"
@@ -37,7 +38,7 @@ class ServiceWorkerData
   ServiceWorkerData(
       blink::WebServiceWorkerContextProxy* proxy,
       int64_t service_worker_version_id,
-      base::UnguessableToken activation_sequence,
+      const absl::optional<base::UnguessableToken>& activation_sequence,
       ScriptContext* context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
 
@@ -59,7 +60,7 @@ class ServiceWorkerData
   int64_t service_worker_version_id() const {
     return service_worker_version_id_;
   }
-  const base::UnguessableToken& activation_sequence() const {
+  const absl::optional<base::UnguessableToken>& activation_sequence() const {
     return activation_sequence_;
   }
   ScriptContext* context() const { return context_; }
@@ -67,6 +68,8 @@ class ServiceWorkerData
   blink::WebServiceWorkerContextProxy* worker_context_proxy() const {
     return proxy_;
   }
+
+  mojom::RendererHost* GetRendererHost();
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   mojom::ServiceWorkerHost* GetServiceWorkerHost();
@@ -99,11 +102,12 @@ class ServiceWorkerData
 
   blink::WebServiceWorkerContextProxy* proxy_;
   const int64_t service_worker_version_id_;
-  const base::UnguessableToken activation_sequence_;
+  const absl::optional<base::UnguessableToken> activation_sequence_;
   const raw_ptr<ScriptContext, ExperimentalRenderer> context_ = nullptr;
 
   std::unique_ptr<V8SchemaRegistry> v8_schema_registry_;
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;
+  mojo::AssociatedRemote<mojom::RendererHost> renderer_host_;
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   mojo::AssociatedRemote<mojom::ServiceWorkerHost> service_worker_host_;
   mojo::AssociatedReceiver<mojom::EventDispatcher> event_dispatcher_receiver_{

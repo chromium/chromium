@@ -732,15 +732,15 @@ base::AutoReset<const GURL*> ChromeContentBrowserClientExtensionsPart::
 
 void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
-  int id = host->GetID();
   Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
   if (AreExtensionsDisabledForProfile(profile)) {
     return;
   }
 
   host->AddFilter(new ChromeExtensionMessageFilter(profile));
-  host->AddFilter(new ExtensionMessageFilter(id, profile));
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  int id = host->GetID();
+  host->AddFilter(new ExtensionMessageFilter(id, profile));
   host->AddFilter(new ExtensionServiceWorkerMessageFilter(
       id, profile, host->GetStoragePartition()->GetServiceWorkerContext()));
   host->AddFilter(new MessagingAPIMessageFilter(id, profile));

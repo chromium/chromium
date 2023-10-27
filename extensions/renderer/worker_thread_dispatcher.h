@@ -90,7 +90,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   void AddWorkerData(
       blink::WebServiceWorkerContextProxy* proxy,
       int64_t service_worker_version_id,
-      base::UnguessableToken activation_sequence,
+      const absl::optional<base::UnguessableToken>& activation_sequence,
       ScriptContext* script_context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
   void RemoveWorkerData(int64_t service_worker_version_id);

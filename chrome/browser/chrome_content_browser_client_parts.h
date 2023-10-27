@@ -27,6 +27,7 @@ class AssociatedInterfaceRegistry;
 namespace content {
 class BrowserContext;
 class BrowserURLHandler;
+class RenderFrameHost;
 class RenderProcessHost;
 struct ServiceWorkerVersionBaseInfo;
 class SiteInstance;
@@ -93,6 +94,11 @@ class ChromeContentBrowserClientParts {
   // Allows to register browser interfaces exposed to a ServiceWorker.
   virtual void ExposeInterfacesToRendererForServiceWorker(
       const content::ServiceWorkerVersionBaseInfo& service_worker_version_info,
+      blink::AssociatedInterfaceRegistry& associated_registry) {}
+
+  // Allows to register browser interfaces exposed to a RenderFrameHost.
+  virtual void ExposeInterfacesToRendererForRenderFrameHost(
+      content::RenderFrameHost& frame_host,
       blink::AssociatedInterfaceRegistry& associated_registry) {}
 };
 

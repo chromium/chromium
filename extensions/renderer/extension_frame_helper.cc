@@ -21,6 +21,7 @@
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/console.h"
 #include "extensions/renderer/dispatcher.h"
+#include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
@@ -324,6 +325,14 @@ mojom::LocalFrameHost* ExtensionFrameHelper::GetLocalFrameHost() {
         local_frame_host_remote_.BindNewEndpointAndPassReceiver());
   }
   return local_frame_host_remote_.get();
+}
+
+mojom::RendererHost* ExtensionFrameHelper::GetRendererHost() {
+  if (!renderer_host_remote_.is_bound()) {
+    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+        renderer_host_remote_.BindNewEndpointAndPassReceiver());
+  }
+  return renderer_host_remote_.get();
 }
 
 void ExtensionFrameHelper::ReadyToCommitNavigation(

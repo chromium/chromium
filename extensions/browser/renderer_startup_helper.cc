@@ -17,6 +17,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -24,7 +25,10 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/network_permissions_updater.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/service_worker_task_queue.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extensions_client.h"
@@ -447,6 +451,59 @@ void RendererStartupHelper::BindForRenderer(
                                           std::move(receiver), process_id);
 }
 
+void RendererStartupHelper::WakeEventPage(const ExtensionId& extension_id,
+                                          WakeEventPageCallback callback) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  auto* process =
+      content::RenderProcessHost::FromID(receivers_.current_context());
+  if (!process) {
+    return;
+  }
+  bad_message::ReceivedBadMessage(process, bad_message::LEGACY_IPC_MISMATCH);
+  return;
+#else
+  auto* browser_context = GetRendererBrowserContext();
+  if (!browser_context) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  if (!extension) {
+    // Don't kill the renderer, it might just be some context which hasn't
+    // caught up to extension having been uninstalled.
+    std::move(callback).Run(false);
+    return;
+  }
+
+  ProcessManager* process_manager = ProcessManager::Get(browser_context);
+
+  if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
+    // Wake the event page if it's asleep, or immediately repond with success
+    // if it's already awake.
+    if (process_manager->IsEventPageSuspended(extension_id)) {
+      process_manager->WakeEventPage(extension_id, std::move(callback));
+    } else {
+      std::move(callback).Run(true);
+    }
+    return;
+  }
+
+  if (BackgroundInfo::HasPersistentBackgroundPage(extension)) {
+    // No point in trying to wake a persistent background page. If it's open,
+    // immediately return and call it a success. If it's closed, fail.
+    std::move(callback).Run(process_manager->GetBackgroundHostForExtension(
+                                extension_id) != nullptr);
+    return;
+  }
+
+  // The extension has no background page, so there is nothing to wake.
+  std::move(callback).Run(false);
+#endif
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // static
@@ -465,7 +522,7 @@ RendererStartupHelperFactory::RendererStartupHelperFactory()
     : BrowserContextKeyedServiceFactory(
           "RendererStartupHelper",
           BrowserContextDependencyManager::GetInstance()) {
-  // No dependencies on other services.
+  DependsOn(ProcessManagerFactory::GetInstance());
 }
 
 RendererStartupHelperFactory::~RendererStartupHelperFactory() = default;
