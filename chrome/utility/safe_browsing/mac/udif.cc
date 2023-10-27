@@ -467,7 +467,7 @@ bool UDIFParser::ParseBlkx() {
 
   CFErrorRef error = nullptr;
   base::apple::ScopedCFTypeRef<CFPropertyListRef> plist(
-      CFPropertyListCreateWithData(kCFAllocatorDefault, plist_data.get(),
+      CFPropertyListCreateWithData(kCFAllocatorDefault, plist_data,
                                    kCFPropertyListImmutable, nullptr, &error));
 
   CFDictionaryRef plist_dict =
@@ -477,7 +477,7 @@ bool UDIFParser::ParseBlkx() {
     base::apple::ScopedCFTypeRef<CFStringRef> error_string(
         CFErrorCopyDescription(error));
     DLOG(ERROR) << "Failed to parse XML plist: "
-                << base::SysCFStringRefToUTF8(error_string.get());
+                << base::SysCFStringRefToUTF8(error_string);
     return false;
   }
 

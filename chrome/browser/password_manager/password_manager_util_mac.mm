@@ -77,7 +77,7 @@ bool AuthenticateUser(std::u16string prompt_string) {
   // authorization and not prompting the user when future requests are made.
   base::mac::ScopedAuthorizationRef authorization =
       base::mac::GetAuthorizationRightsWithPrompt(
-          &rights, prompt.get(), kAuthorizationFlagDestroyRights);
+          &rights, prompt, kAuthorizationFlagDestroyRights);
   return static_cast<bool>(authorization);
 }
 

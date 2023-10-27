@@ -219,9 +219,8 @@ NSDictionary* ReadManagedPreferencePolicyDictionary() {
     return nil;
   }
 
-  if (CFGetTypeID(policies.get()) != CFDictionaryGetTypeID()) {
+  if (CFGetTypeID(policies) != CFDictionaryGetTypeID())
     return nil;
-  }
 
   return base::apple::CFToNSOwnershipCast((CFDictionaryRef)policies.release());
 }

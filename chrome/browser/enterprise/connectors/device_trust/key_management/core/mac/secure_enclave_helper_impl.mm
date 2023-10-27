@@ -27,7 +27,7 @@ SecureEnclaveHelperImpl::CreateSecureKey(CFDictionaryRef attributes,
   // In the odd chance that the API did not populate `error_ref`, fallback to
   // errSecCoreFoundationUnknown.
   OSStatus status =
-      error_ref ? CFErrorGetCode(error_ref.get()) : errSecCoreFoundationUnknown;
+      error_ref ? CFErrorGetCode(error_ref) : errSecCoreFoundationUnknown;
   if (error) {
     *error = status;
   }

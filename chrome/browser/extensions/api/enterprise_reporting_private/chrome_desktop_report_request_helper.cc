@@ -201,7 +201,7 @@ int32_t ReadEncryptedSecret(std::string* password, bool force_recreate) {
     if (was_auth_error) {
       bool unlocked;
       OSStatus keychain_status =
-          VerifyKeychainForItemUnlocked(item_ref.get(), &unlocked);
+          VerifyKeychainForItemUnlocked(item_ref, &unlocked);
       if (keychain_status != noErr) {
         // Failed to get keychain status.
         return keychain_status;

@@ -79,11 +79,10 @@ bool ClearKeyEventModifiers() {
   for (const auto& known_modifier : kKnownModifiers) {
     if (known_modifier.flag_mask & event_flags) {
       had_modifier = true;
-      CGEventPost(kCGSessionEventTap,
-                  base::apple::ScopedCFTypeRef<CGEventRef>(
-                      CGEventCreateKeyboardEvent(
-                          nullptr, known_modifier.key_code, false))
-                      .get());
+      CGEventPost(
+          kCGSessionEventTap,
+          base::apple::ScopedCFTypeRef<CGEventRef>(CGEventCreateKeyboardEvent(
+              nullptr, known_modifier.key_code, false)));
       LOG(ERROR) << "Modifier " << known_modifier.name
                  << " is hanging down, and may cause problems for any "
                     "subsequent test.";

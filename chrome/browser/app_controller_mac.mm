@@ -275,8 +275,8 @@ void RecordLastRunAppBundlePath() {
       base::SysUTF8ToCFStringRef(app_bundle_path.value());
   CFPreferencesSetAppValue(
       base::apple::NSToCFPtrCast(app_mode::kLastRunAppBundlePathPrefsKey),
-      app_bundle_path_cfstring.get(),
-      base::SysUTF8ToCFStringRef(base::apple::BaseBundleID()).get());
+      app_bundle_path_cfstring,
+      base::SysUTF8ToCFStringRef(base::apple::BaseBundleID()));
 }
 
 bool IsProfileSignedOut(const base::FilePath& profile_path) {
