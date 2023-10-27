@@ -1732,8 +1732,17 @@ def make_v8_set_return_value(cg_context):
                 "${blink_receiver}->contentWindow()->GetFrame()"),
             T("DCHECK(IsA<LocalFrame>(blink_frame));"),
             CxxUnlikelyIfNode(
-                cond=T("UNLIKELY(!blink_frame->IsAttached())"),
+                cond=T("UNLIKELY(!blink_frame->IsAttached() && "
+                       "To<LocalFrame>(blink_frame)"
+                       "->WindowProxyMaybeUninitialized("
+                       "${script_state}->World())->ContextIfInitialized()"
+                       ".IsEmpty())"),
                 body=[
+                    T("""\
+// Don't wrap the return value if its frame is in the process of detaching and
+// has already invalidated its v8::Context, as it is not safe to
+// re-initialize the v8::Context in that state. Return null instead.\
+"""),
                     T("bindings::V8SetReturnValue(${info}, nullptr);"),
                     T("return;")
                 ]),
@@ -1749,6 +1758,7 @@ def make_v8_set_return_value(cg_context):
         ])
         node.accumulate(
             CodeGenAccumulator.require_include_headers([
+                "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h",
                 "third_party/blink/renderer/core/frame/local_frame.h",
             ]))
         return node
