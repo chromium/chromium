@@ -107,8 +107,16 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
             console_observer.messages()[0].log_level);
 }
 
+// Disabled on Linux MSAN due to flakes (crbug.com/1487954).
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_RequestPermissionDispatchResolveEvent \
+  DISABLED_RequestPermissionDispatchResolveEvent
+#else
+#define MAYBE_RequestPermissionDispatchResolveEvent \
+  RequestPermissionDispatchResolveEvent
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
-                       RequestPermissionDispatchResolveEvent) {
+                       MAYBE_RequestPermissionDispatchResolveEvent) {
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
@@ -124,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   }
 }
 
-// Disabled on LInux MSAN due to flakes (crbug.com/1487954).
+// Disabled on Linux MSAN due to flakes (crbug.com/1487954).
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_RequestPermissionDispatchDismissEvent \
   DISABLED_RequestPermissionDispatchDismissEvent
