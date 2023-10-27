@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/omnibox/browser/autocomplete_grouper_groups.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
@@ -107,14 +108,18 @@ void ZpsSection::InitFromMatches(ACMatches& matches) {
 
 AndroidNTPZpsSection::AndroidNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(30,
-                 {
-                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                     {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-                     {10, omnibox::GROUP_MOBILE_QUERY_TILES},
-                     {5, omnibox::GROUP_TRENDS},
-                 },
-                 group_configs) {}
+    : ZpsSection(
+          30,
+          {
+              {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+              {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+              {OmniboxFieldTrial::kQueryTilesShowAboveTrends.Get() ? 10u : 0u,
+               omnibox::GROUP_MOBILE_QUERY_TILES},
+              {5, omnibox::GROUP_TRENDS},
+              {OmniboxFieldTrial::kQueryTilesShowAboveTrends.Get() ? 0u : 10u,
+               omnibox::GROUP_MOBILE_QUERY_TILES},
+          },
+          group_configs) {}
 
 AndroidSRPZpsSection::AndroidSRPZpsSection(
     omnibox::GroupConfigMap& group_configs)

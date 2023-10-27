@@ -15,7 +15,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -726,6 +725,15 @@ constexpr base::FeatureParam<int> kInspireMePsuggestQueries(
     "PersonalizedSuggestQueries",
     20);
 
+constexpr base::FeatureParam<int> kQueryTilesCacheMaxAge(
+    &omnibox::kQueryTilesInZPSOnNTP,
+    "QueryTilesMaxCacheAgeHours",
+    8);
+
+constexpr base::FeatureParam<bool> kQueryTilesShowAboveTrends(
+    &omnibox::kQueryTilesInZPSOnNTP,
+    "QueryTilesShowAboveTrends",
+    true);
 // <- Inspire Me
 // ---------------------------------------------------------
 // Actions In Suggest ->

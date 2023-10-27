@@ -1639,6 +1639,18 @@ constexpr FeatureEntry::FeatureVariation kOmniboxActionsInSuggestVariants[] = {
     {"T8: Directions, Reviews", kOmniboxActionsInSuggestTreatment8,
      std::size(kOmniboxActionsInSuggestTreatment8), "t3366528"},
 };
+
+constexpr FeatureEntry::FeatureParam kOmniboxQueryTilesShowAboveTrends[] = {
+    {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "true"}};
+constexpr FeatureEntry::FeatureParam kOmniboxQueryTilesShowBelowTrends[] = {
+    {OmniboxFieldTrial::kQueryTilesShowAboveTrends.name, "false"}};
+
+constexpr FeatureEntry::FeatureVariation kOmniboxQueryTilesVariations[] = {
+    {"Above Trends", kOmniboxQueryTilesShowAboveTrends,
+     std::size(kOmniboxQueryTilesShowAboveTrends), nullptr},
+    {"Below Trends", kOmniboxQueryTilesShowBelowTrends,
+     std::size(kOmniboxQueryTilesShowBelowTrends), nullptr},
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconFavicons[] = {
@@ -6079,7 +6091,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-query-tiles-in-zps-on-ntp",
      flag_descriptions::kOmniboxQueryTilesInZPSOnNTPName,
      flag_descriptions::kOmniboxQueryTilesInZPSOnNTPDesc, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kQueryTilesInZPSOnNTP)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kQueryTilesInZPSOnNTP,
+                                    kOmniboxQueryTilesVariations,
+                                    "OmniboxQueryTilesInZPSOnNTP")},
 
     {"omnibox-suppress-clipboard-suggestion-after-first-used",
      flag_descriptions::kOmniboxSuppressClipboardSuggestionAfterFirstUsedName,
