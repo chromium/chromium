@@ -1298,7 +1298,7 @@ TEST_F(AutofillTableTest, ClearLocalPaymentMethodsData) {
   EXPECT_TRUE(table_->AddCreditCard(card));
   std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
   EXPECT_EQ(card.cvc(), db_card->cvc());
-  Iban iban = test::GetIban();
+  Iban iban = test::GetLocalIban();
   EXPECT_TRUE(table_->AddLocalIban(iban));
 
   // After calling ClearLocalPaymentMethodsData, the local_stored_cvc,

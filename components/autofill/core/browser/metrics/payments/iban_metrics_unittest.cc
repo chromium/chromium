@@ -31,12 +31,12 @@ TEST_F(IbanMetricsTest, LogStoredIbanMetrics) {
   local_ibans.reserve(5);
 
   // Create 2 in-use IBANs, one with nickname and the other not.
-  Iban iban_in_use_0 = test::GetIban();
+  Iban iban_in_use_0 = test::GetLocalIban();
   iban_in_use_0.set_use_date(one_month_ago);
   iban_in_use_0.set_use_count(10);
   local_ibans.push_back(std::make_unique<Iban>(std::move(iban_in_use_0)));
 
-  Iban iban_in_use_1 = test::GetIban();
+  Iban iban_in_use_1 = test::GetLocalIban();
   iban_in_use_1.set_use_date(one_month_ago);
   iban_in_use_1.set_use_count(10);
   iban_in_use_1.set_nickname(u"My doctor's IBAN");
@@ -44,7 +44,7 @@ TEST_F(IbanMetricsTest, LogStoredIbanMetrics) {
 
   // Create 3 in-disuse IBANs.
   for (int i = 0; i < 3; ++i) {
-    Iban iban_in_disuse = test::GetIban();
+    Iban iban_in_disuse = test::GetLocalIban();
     iban_in_disuse.set_use_date(now - base::Days(200));
     iban_in_disuse.set_use_count(10);
     local_ibans.push_back(std::make_unique<Iban>(std::move(iban_in_disuse)));

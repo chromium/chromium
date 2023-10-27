@@ -3806,7 +3806,7 @@ TEST_P(FormDataImporterTest, SkipAutocompleteUnrecognizedFields) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_P(FormDataImporterTest,
        ProcessIbanImportCandidate_ShouldOfferLocalSave_NewIban) {
-  Iban iban_import_candidate = test::GetIban();
+  Iban iban_import_candidate = test::GetLocalIban();
 
   EXPECT_TRUE(
       form_data_importer().ProcessIbanImportCandidate(iban_import_candidate));

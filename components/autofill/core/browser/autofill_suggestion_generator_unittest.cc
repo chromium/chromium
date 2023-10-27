@@ -2115,7 +2115,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetLocalAndServerIbanSuggestions) {
 
   Iban server_iban1 = test::GetServerIban();
   Iban server_iban2 = test::GetServerIban2();
-  Iban local_iban1 = test::GetIban();
+  Iban local_iban1 = test::GetLocalIban();
 
   std::vector<Suggestion> iban_suggestions =
       AutofillSuggestionGenerator::GetSuggestionsForIbans(

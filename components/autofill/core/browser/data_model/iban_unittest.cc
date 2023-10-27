@@ -43,8 +43,8 @@ void SetPrefixSuffixAndLength(Iban& iban,
 
 TEST(IbanTest, AssignmentOperator) {
   // Creates two IBANs with different parameters.
-  Iban iban_0 = test::GetIban();
-  Iban iban_1 = test::GetIban2();
+  Iban iban_0 = test::GetLocalIban();
+  Iban iban_1 = test::GetLocalIban2();
   iban_1 = iban_0;
 
   EXPECT_EQ(iban_0, iban_1);
@@ -64,7 +64,7 @@ TEST(IbanTest, ConstructServerIban) {
 }
 
 TEST(IbanTest, GetMetadata) {
-  Iban local_iban = test::GetIban();
+  Iban local_iban = test::GetLocalIban();
   local_iban.set_use_count(2);
   local_iban.set_use_date(base::Time::FromSecondsSinceUnixEpoch(25));
   AutofillMetadata local_metadata = local_iban.GetMetadata();
