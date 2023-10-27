@@ -226,13 +226,6 @@ void WebViewAutofillClientIOS::ConfirmExpirationDateFixFlow(
   NOTREACHED();
 }
 
-void WebViewAutofillClientIOS::ConfirmSaveCreditCardLocally(
-    const CreditCard& card,
-    SaveCreditCardOptions options,
-    LocalSaveCardPromptCallback callback) {
-  // No op. ios/web_view does not support local saves of autofill data.
-}
-
 void WebViewAutofillClientIOS::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,

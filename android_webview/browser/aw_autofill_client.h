@@ -114,16 +114,6 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
       const autofill::CreditCard& card,
       base::OnceCallback<void(const std::u16string&, const std::u16string&)>
           callback) override;
-  void ConfirmSaveCreditCardLocally(
-      const autofill::CreditCard& card,
-      SaveCreditCardOptions options,
-      LocalSaveCardPromptCallback callback) override;
-  void ConfirmSaveCreditCardToCloud(
-      const autofill::CreditCard& card,
-      const autofill::LegalMessageLines& legal_message_lines,
-      SaveCreditCardOptions options,
-      UploadSaveCardPromptCallback callback) override;
-  void CreditCardUploadCompleted(bool card_saved) override;
   void ConfirmCreditCardFillAssist(const autofill::CreditCard& card,
                                    base::OnceClosure callback) override;
   void ConfirmSaveAddressProfile(

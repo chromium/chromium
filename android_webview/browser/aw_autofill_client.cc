@@ -199,13 +199,6 @@ void AwAutofillClient::ConfirmExpirationDateFixFlow(
   NOTIMPLEMENTED();
 }
 
-void AwAutofillClient::ConfirmSaveCreditCardLocally(
-    const autofill::CreditCard& card,
-    SaveCreditCardOptions options,
-    LocalSaveCardPromptCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 void AwAutofillClient::ShowEditAddressProfileDialog(
     const autofill::AutofillProfile& profile,
     AddressProfileSavePromptCallback on_user_decision_callback) {
@@ -216,18 +209,6 @@ void AwAutofillClient::ShowDeleteAddressProfileDialog(
     const autofill::AutofillProfile& profile,
     AddressProfileDeleteDialogCallback delete_dialog_callback) {
   NOTREACHED();
-}
-
-void AwAutofillClient::ConfirmSaveCreditCardToCloud(
-    const autofill::CreditCard& card,
-    const autofill::LegalMessageLines& legal_message_lines,
-    SaveCreditCardOptions options,
-    UploadSaveCardPromptCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void AwAutofillClient::CreditCardUploadCompleted(bool card_saved) {
-  NOTIMPLEMENTED();
 }
 
 void AwAutofillClient::ConfirmCreditCardFillAssist(

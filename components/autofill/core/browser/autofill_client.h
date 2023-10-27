@@ -606,7 +606,7 @@ class AutofillClient : public RiskDataLoader {
   // Runs |show_migration_dialog_closure| if the user accepts the card migration
   // offer. This causes the card migration dialog to be shown.
   virtual void ShowLocalCardMigrationDialog(
-      base::OnceClosure show_migration_dialog_closure) = 0;
+      base::OnceClosure show_migration_dialog_closure);
 
   // Shows a dialog with the given |legal_message_lines| and the |user_email|.
   // Runs |start_migrating_cards_callback| if the user would like the selected
@@ -615,7 +615,7 @@ class AutofillClient : public RiskDataLoader {
       const LegalMessageLines& legal_message_lines,
       const std::string& user_email,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      LocalCardMigrationCallback start_migrating_cards_callback) = 0;
+      LocalCardMigrationCallback start_migrating_cards_callback);
 
   // Will show a dialog containing a error message if |has_server_error|
   // is true, or the migration results for cards in
@@ -628,7 +628,7 @@ class AutofillClient : public RiskDataLoader {
       const bool has_server_error,
       const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      MigrationDeleteCardCallback delete_local_card_callback) = 0;
+      MigrationDeleteCardCallback delete_local_card_callback);
 
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
@@ -702,7 +702,7 @@ class AutofillClient : public RiskDataLoader {
   virtual void ConfirmSaveCreditCardLocally(
       const CreditCard& card,
       AutofillClient::SaveCreditCardOptions options,
-      LocalSaveCardPromptCallback callback) = 0;
+      LocalSaveCardPromptCallback callback);
 
   // Runs |callback| once the user makes a decision with respect to the
   // offer-to-save prompt. This includes both the save server card prompt and
@@ -721,13 +721,13 @@ class AutofillClient : public RiskDataLoader {
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
-      UploadSaveCardPromptCallback callback) = 0;
+      UploadSaveCardPromptCallback callback);
 
   // Called after credit card upload is finished. Will show upload result to
   // users. |card_saved| indicates if the card is successfully saved.
   // TODO(crbug.com/932818): This function is overridden in iOS codebase.
   // Ideally should remove it if iOS is not using it to do anything.
-  virtual void CreditCardUploadCompleted(bool card_saved) = 0;
+  virtual void CreditCardUploadCompleted(bool card_saved);
 
   // Will show an infobar to get user consent for Credit Card assistive filling.
   // Will run |callback| on success.
