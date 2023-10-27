@@ -266,6 +266,6 @@ BASE_FEATURE(kWebAssemblyGenericWrapper,
 // https://chromestatus.com/feature/5106389887746048.
 BASE_FEATURE(kWebAssemblyMultipleMemories,
              "WebAssemblyMultipleMemories",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
