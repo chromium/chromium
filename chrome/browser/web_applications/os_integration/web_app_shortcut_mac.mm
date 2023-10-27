@@ -1363,6 +1363,22 @@ bool WebAppShortcutCreator::BuildShortcut(
     LOG(ERROR) << "Failed to copy asan library: " << asan_library_path;
     return false;
   }
+
+  // The address sanitizer runtime must have a valid signature in order for the
+  // containing app bundle to be signed. On Apple Silicon the address sanitizer
+  // runtime library has a linker-generated ad-hoc code signature, but this is
+  // treated as equivalent to being unsigned when signing the containing app
+  // bundle.
+  std::string codesign_output;
+  std::vector<std::string> codesign_argv = {
+      "codesign", "--sign", "-",
+      destination_executable_path.Append(asan_library_path.BaseName()).value()};
+  CHECK(base::GetAppOutputAndError(base::CommandLine(codesign_argv),
+                                   &codesign_output))
+      << "Failed to sign executable at "
+      << destination_executable_path.Append(asan_library_path.BaseName())
+             .value()
+      << ": " << codesign_output;
 #endif
 
   // Copy the Info.plist.
