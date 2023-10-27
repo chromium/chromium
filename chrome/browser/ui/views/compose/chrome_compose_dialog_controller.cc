@@ -25,9 +25,14 @@ namespace chrome {
 std::unique_ptr<compose::ComposeDialogController> ShowComposeDialog(
     content::WebContents& web_contents,
     const gfx::RectF& element_bounds_in_screen) {
+  // The Compose dialog is not anchored to any particular View. Pass the
+  // BrowserView so that it still knows about the Browser window, which is
+  // needed to access the correct ColorProvider for theming.
+  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(
+      chrome::FindBrowserWithTab(&web_contents));
   auto controller =
       std::make_unique<ChromeComposeDialogController>(&web_contents);
-  controller->ShowComposeDialog(nullptr, element_bounds_in_screen);
+  controller->ShowComposeDialog(anchor_view, element_bounds_in_screen);
   return controller;
 }
 
