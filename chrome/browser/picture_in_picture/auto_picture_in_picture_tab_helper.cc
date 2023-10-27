@@ -8,10 +8,12 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_strip_observer_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
@@ -24,6 +26,8 @@ AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
       content::WebContentsUserData<AutoPictureInPictureTabHelper>(
           *web_contents),
       host_content_settings_map_(HostContentSettingsMapFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
+      auto_blocker_(PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
   // `base::Unretained` is safe here since we own `tab_strip_observer_helper_`.
   tab_strip_observer_helper_ =
@@ -217,8 +221,14 @@ bool AutoPictureInPictureTabHelper::IsUsingCameraOrMicrophone() const {
 
 ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {
   GURL url = web_contents()->GetLastCommittedURL();
-  return host_content_settings_map_->GetContentSetting(
+  auto setting = host_content_settings_map_->GetContentSetting(
       url, url, ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
+  if (setting == CONTENT_SETTING_ASK && auto_blocker_ &&
+      auto_blocker_->IsEmbargoed(
+          url, ContentSettingsType::AUTO_PICTURE_IN_PICTURE)) {
+    return CONTENT_SETTING_BLOCK;
+  }
+  return setting;
 }
 
 bool AutoPictureInPictureTabHelper::IsInAutoPictureInPicture() const {

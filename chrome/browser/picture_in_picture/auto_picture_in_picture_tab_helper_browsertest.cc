@@ -18,6 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/navigation_entry.h"
@@ -34,6 +35,8 @@
 
 using media_session::mojom::MediaSessionAction;
 using testing::_;
+using testing::AtLeast;
+using testing::Return;
 
 namespace {
 
@@ -62,6 +65,26 @@ const base::FilePath::CharType kAutopipToggleRegistrationPage[] =
 class MockInputObserver : public content::RenderWidgetHost::InputEventObserver {
  public:
   MOCK_METHOD(void, OnInputEvent, (const blink::WebInputEvent&), (override));
+};
+
+class MockAutoBlocker : public permissions::PermissionDecisionAutoBlockerBase {
+ public:
+  MOCK_METHOD(bool,
+              IsEmbargoed,
+              (const GURL& request_origin, ContentSettingsType permission),
+              (override));
+  MOCK_METHOD(bool,
+              RecordDismissAndEmbargo,
+              (const GURL& url,
+               ContentSettingsType permission,
+               bool dismissed_prompt_was_quiet),
+              (override));
+  MOCK_METHOD(bool,
+              RecordIgnoreAndEmbargo,
+              (const GURL& url,
+               ContentSettingsType permission,
+               bool ignored_prompt_was_quiet),
+              (override));
 };
 
 class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
@@ -778,4 +801,35 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   // If we navigate the tab, it should return false again.
   LoadNotRegisteredPage(browser());
   EXPECT_FALSE(tab_helper->HasAutoPictureInPictureBeenRegistered());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       DoesNotOpenIfEmbargoed) {
+  // Load a page that registers for autopip.
+  LoadCameraMicrophonePage(browser());
+  auto* original_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(original_web_contents);
+
+  // Embargo!
+  MockAutoBlocker auto_blocker;
+  EXPECT_CALL(auto_blocker,
+              IsEmbargoed(_, ContentSettingsType::AUTO_PICTURE_IN_PICTURE))
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(original_web_contents);
+  tab_helper->set_auto_blocker_for_testing(&auto_blocker);
+
+  // Open and switch to a new tab.
+  content::MediaStartStopObserver enter_pip_observer(
+      original_web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+  OpenNewTab(browser());
+
+  // A picture-in-picture window should not automatically open.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  tab_helper->set_auto_blocker_for_testing(nullptr);
 }

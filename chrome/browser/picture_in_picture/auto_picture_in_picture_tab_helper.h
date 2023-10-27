@@ -13,6 +13,10 @@
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
+namespace permissions {
+class PermissionDecisionAutoBlockerBase;
+}  // namespace permissions
+
 class AutoPictureInPictureTabStripObserverHelper;
 class HostContentSettingsMap;
 
@@ -93,6 +97,11 @@ class AutoPictureInPictureTabHelper
   // clears the preconditions until the next time they're met.
   bool AreAutoPictureInPicturePreconditionsMet() const;
 
+  void set_auto_blocker_for_testing(
+      permissions::PermissionDecisionAutoBlockerBase* auto_blocker) {
+    auto_blocker_ = auto_blocker;
+  }
+
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
@@ -120,6 +129,10 @@ class AutoPictureInPictureTabHelper
   // HostContentSettingsMap is tied to the Profile which outlives the
   // WebContents (which we're tied to), so this is safe.
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+
+  // Embargo checker, if enabled.  May be null.
+  raw_ptr<permissions::PermissionDecisionAutoBlockerBase> auto_blocker_ =
+      nullptr;
 
   // Notifies us when our tab either becomes the active tab on its tabstrip or
   // becomes an inactive tab on its tabstrip.
