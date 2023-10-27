@@ -3895,6 +3895,9 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     AXObject* next,
     ax::mojom::blink::NameFrom last_used_name_from,
     ax::mojom::blink::NameFrom name_from) {
+  LayoutObject* next_layout = next->GetLayoutObject();
+  LayoutObject* prev_layout = previous->GetLayoutObject();
+
   // If we're going between two LayoutObjects that are in separate
   // LayoutBoxes, add whitespace if it wasn't there already. Intuitively if
   // you have <span>Hello</span><span>World</span>, those are part of the same
@@ -3902,8 +3905,7 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
   // <div>Hello</div><div>World</div> the strings are in separate boxes so we
   // should return "Hello World".
   // https://www.w3.org/TR/css-display-3/#the-display-properties
-  if (!IsInSameBlockFlow(next->GetLayoutObject(),
-                         previous->GetLayoutObject())) {
+  if (!IsInSameBlockFlow(next_layout, prev_layout)) {
     return true;
   }
 
@@ -3917,8 +3919,10 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
   //    <span style="display:inline-table;">Hello</span><span>World</span>
   // to return "Hello World". See "inner display type" in the CSS Display 3.0
   // spec: https://www.w3.org/TR/css-display-3/#the-display-properties
-  if (next->GetLayoutObject()->IsAtomicInlineLevel() ||
-      previous->GetLayoutObject()->IsAtomicInlineLevel()) {
+  CHECK(next_layout);
+  CHECK(prev_layout);
+  if (next_layout->IsAtomicInlineLevel() ||
+      prev_layout->IsAtomicInlineLevel()) {
     return true;
   }
 
@@ -3980,9 +3984,8 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
   //      LayoutBlockFlow (anonymous)
   //        LayoutText "def" <= next
   // See accessibility/name-calc-aria-hidden.html
-  const auto* next_layout_object = next->GetLayoutObject();
   for (auto* layout_object = previous->GetLayoutObject();
-       layout_object && layout_object != next_layout_object;
+       layout_object && layout_object != next_layout;
        layout_object = layout_object->NextInPreOrder()) {
     if (layout_object->IsBlockInInline())
       return true;
