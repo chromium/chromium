@@ -2759,11 +2759,20 @@ void Document::EnsurePaintLocationDataValidForNode(
 
 void Document::GetPageDescription(uint32_t page_index,
                                   WebPrintPageDescription* description) {
-  GetPageDescription(*StyleForPage(page_index), description);
+  View()->UpdateLifecycleToLayoutClean(DocumentUpdateReason::kUnknown);
+  GetPageDescriptionNoLifecycleUpdate(*StyleForPage(page_index), description);
 }
 
 void Document::GetPageDescription(const ComputedStyle& style,
                                   WebPrintPageDescription* description) {
+  View()->UpdateLifecycleToLayoutClean(DocumentUpdateReason::kUnknown);
+  GetPageDescriptionNoLifecycleUpdate(style, description);
+}
+
+void Document::GetPageDescriptionNoLifecycleUpdate(
+    const ComputedStyle& style,
+    WebPrintPageDescription* description) {
+  DocumentLifecycle::DisallowTransitionScope scope(Lifecycle());
   const WebPrintPageDescription input_description = *description;
 
   switch (style.GetPageSizeType()) {
@@ -3166,6 +3175,14 @@ void Document::AddAXContext(AXContext* context) {
   if (!ax_object_cache_) {
     ax_object_cache_ =
         AXObjectCache::Create(*this, ComputeAXModeFromAXContexts(ax_contexts_));
+    // Invalidate style on the entire document, because accessibility
+    // needs to compute style on all elements, even those in
+    // content-visibility:auto subtrees.
+    if (documentElement()) {
+      documentElement()->SetNeedsStyleRecalc(
+          kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
+                                   style_change_reason::kAccessibility));
+    }
     g_ax_object_cache_count++;
   }
 }

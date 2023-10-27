@@ -2185,11 +2185,11 @@ const AtomicString& Element::computedRole() {
   if (!document.IsActive() || !document.View()) {
     return g_null_atom;
   }
+  AXContext ax_context(document, ui::kAXModeBasic);
   if (document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
     document.View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kJavaScript);
   }
-  AXContext ax_context(document, ui::kAXModeBasic);
   ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedRoleForNode(this);
 }
@@ -2199,11 +2199,11 @@ String Element::computedName() {
   if (!document.IsActive() || !document.View()) {
     return String();
   }
+  AXContext ax_context(document, ui::kAXModeBasic);
   if (document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
     document.View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kJavaScript);
   }
-  AXContext ax_context(document, ui::kAXModeBasic);
   ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedNameForNode(this);
 }
