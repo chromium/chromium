@@ -276,8 +276,8 @@ void OutputPresenterGL::ScheduleOverlayPlane(
       access ? access->GetAHardwareBufferFenceSync() : nullptr;
 #endif
   // TODO(msisov): Once shared image factory allows creating a non backed
-  // images and ScheduleOverlayPlane does not rely on GLImage, remove the if
-  // condition that checks if this is a solid color overlay plane.
+  // images, remove the if condition that checks if this is a solid color
+  // overlay plane.
   //
   // Solid color overlays can be non-backed and are delegated for processing
   // to underlying backend. The only backend that uses them is Wayland - it
