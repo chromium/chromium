@@ -22,6 +22,7 @@
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/browser/service_worker_task_queue_factory.h"
 #include "extensions/browser/updater/update_service_factory.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace extensions {
 
@@ -33,7 +34,9 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   ExtensionActionManager::EnsureFactoryBuilt();
   ExtensionFunction::EnsureShutdownNotifierFactoryBuilt();
   ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt();
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   ExtensionServiceWorkerMessageFilter::EnsureShutdownNotifierFactoryBuilt();
+#endif
   ExtensionPrefsFactory::GetInstance();
   ExtensionPrefsHelperFactory::GetInstance();
   ImageLoaderFactory::GetInstance();

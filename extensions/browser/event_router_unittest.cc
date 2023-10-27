@@ -87,7 +87,10 @@ class MockEventDispatcher : public mojom::EventDispatcher {
 
   // mojom::EventDispatcher:
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
-                     base::Value::List event_args) override {}
+                     base::Value::List event_args,
+                     DispatchEventCallback callback) override {
+    std::move(callback).Run();
+  }
 
  private:
   mojo::AssociatedReceiver<mojom::EventDispatcher> receiver_{this};

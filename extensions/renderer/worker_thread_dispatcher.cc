@@ -457,13 +457,18 @@ void WorkerThreadDispatcher::DispatchEventHelper(
 }
 
 void WorkerThreadDispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
-                                           base::Value::List event_args) {
+                                           base::Value::List event_args,
+                                           DispatchEventCallback callback) {
   DCHECK(!worker_thread_util::IsWorkerThread());
   const int worker_thread_id = params->worker_thread_id;
   PostTaskToWorkerThread(
       worker_thread_id,
       base::BindOnce(&WorkerThreadDispatcher::DispatchEventOnWorkerThread,
                      std::move(params), std::move(event_args)));
+  // Note that this will run right away on the IO thread and the worker thread
+  // will not have processed the event. The browser does not use this callback
+  // when ENABLE_EXTENSIONS_LEGACY_IPC is enabled so this is fine.
+  std::move(callback).Run();
 }
 
 void WorkerThreadDispatcher::OnDispatchOnConnect(

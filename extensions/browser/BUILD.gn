@@ -60,6 +60,7 @@ source_set("core_keyed_service_factories") {
   deps = [
     "//extensions/browser:browser_sources",
     "//extensions/browser/updater",
+    "//extensions/buildflags",
   ]
 }
 

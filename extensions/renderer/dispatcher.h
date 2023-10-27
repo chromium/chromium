@@ -296,7 +296,8 @@ class Dispatcher : public content::RenderThreadObserver,
 
   // mojom::EventDispatcher implementation.
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
-                     base::Value::List event_args) override;
+                     base::Value::List event_args,
+                     DispatchEventCallback callback) override;
 
   // UserScriptSetManager::Observer implementation.
   void OnUserScriptsUpdated(const mojom::HostID& changed_host) override;

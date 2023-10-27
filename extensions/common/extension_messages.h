@@ -228,13 +228,12 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
                     int /* worker_thread_id */,
                     extensions::PortId /* port_id */,
                     std::string /* error_message */)
-#endif
+
 // Messages sent from the renderer to the browser:
 
 // Notify the browser that an event has finished being dispatched.
 IPC_MESSAGE_ROUTED1(ExtensionHostMsg_EventAck, int /* message_id */)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 // Open a channel to all listening contexts owned by the extension with
 // the given ID. This responds asynchronously with ExtensionMsg_AssignPortId.
 // If an error occurred, the opener will be notified asynchronously.
@@ -298,6 +297,8 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WakeEventPage,
                      int /* request_id */,
                      std::string /* extension_id */)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+
 // Messages related to Extension Service Worker.
 #undef IPC_MESSAGE_START
 #define IPC_MESSAGE_START ExtensionWorkerMsgStart
@@ -309,5 +310,6 @@ IPC_MESSAGE_CONTROL4(ExtensionHostMsg_EventAckWorker,
                      int64_t /* service_worker_version_id */,
                      int /* worker_thread_id */,
                      int /* event_id */)
+#endif
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_

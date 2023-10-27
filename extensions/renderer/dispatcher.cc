@@ -1368,7 +1368,8 @@ void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
 #endif
 
 void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
-                               base::Value::List event_args) {
+                               base::Value::List event_args,
+                               DispatchEventCallback callback) {
   CHECK_EQ(params->worker_thread_id, kMainThreadId);
   content::RenderFrame* background_frame =
       ExtensionFrameHelper::GetBackgroundPageFrame(params->extension_id);
@@ -1395,6 +1396,7 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
   DispatchEventHelper(params->extension_id, params->event_name, event_args,
                       std::move(params->filtering_info));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   if (background_frame) {
     // Tell the browser process when an event has been dispatched with a lazy
     // background page active.
@@ -1405,6 +1407,8 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
           background_frame->GetRoutingID(), params->event_id));
     }
   }
+#endif
+  std::move(callback).Run();
 }
 
 void Dispatcher::SetDeveloperMode(bool current_developer_mode) {

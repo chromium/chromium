@@ -15,7 +15,7 @@ import "url/mojom/url.mojom";
 interface EventDispatcher {
     // Sent to the renderer to dispatch an event to a listener.
     DispatchEvent(DispatchEventParams params,
-                  mojo_base.mojom.ListValue event_args);
+                  mojo_base.mojom.ListValue event_args) => ();
 };
 
 struct EventFilteringInfo {

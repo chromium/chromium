@@ -103,7 +103,8 @@ void ServiceWorkerData::Init() {
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
-                                      base::Value::List event_args) {
+                                      base::Value::List event_args,
+                                      DispatchEventCallback callback) {
   ScriptContext* script_context = context();
   // Note |scoped_extension_interaction| requires a HandleScope.
   v8::Isolate* isolate = script_context->isolate();
@@ -118,10 +119,7 @@ void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
   bindings_system()->DispatchEventInContext(params->event_name, event_args,
                                             std::move(params->filtering_info),
                                             context());
-  const int worker_thread_id = content::WorkerThread::GetCurrentId();
-  WorkerThreadDispatcher::Get()->Send(new ExtensionHostMsg_EventAckWorker(
-      context()->GetExtensionID(), service_worker_version_id(),
-      worker_thread_id, params->event_id));
+  std::move(callback).Run();
 }
 
 void ServiceWorkerData::DispatchOnConnect(

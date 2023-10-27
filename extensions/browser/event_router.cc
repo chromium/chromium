@@ -24,6 +24,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api_activity_monitor.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/browser_process_context_data.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/events/lazy_event_dispatcher.h"
@@ -171,7 +172,8 @@ void EventRouter::DispatchExtensionMessage(
     const std::string& event_name,
     base::Value::List event_args,
     UserGestureState user_gesture,
-    mojom::EventFilteringInfoPtr info) {
+    mojom::EventFilteringInfoPtr info,
+    mojom::EventDispatcher::DispatchEventCallback callback) {
   NotifyEventDispatched(browser_context, extension_id, event_name, event_args);
   auto params = mojom::DispatchEventParams::New();
   params->worker_thread_id = worker_thread_id;
@@ -180,12 +182,15 @@ void EventRouter::DispatchExtensionMessage(
   params->event_id = event_id;
   params->is_user_gesture = user_gesture == USER_GESTURE_ENABLED;
   params->filtering_info = std::move(info);
-  RouteDispatchEvent(rph, std::move(params), std::move(event_args));
+  RouteDispatchEvent(rph, std::move(params), std::move(event_args),
+                     std::move(callback));
 }
 
-void EventRouter::RouteDispatchEvent(content::RenderProcessHost* rph,
-                                     mojom::DispatchEventParamsPtr params,
-                                     base::Value::List event_args) {
+void EventRouter::RouteDispatchEvent(
+    content::RenderProcessHost* rph,
+    mojom::DispatchEventParamsPtr params,
+    base::Value::List event_args,
+    mojom::EventDispatcher::DispatchEventCallback callback) {
   CHECK(base::Contains(observed_process_set_, rph));
   int worker_thread_id = params->worker_thread_id;
   mojo::AssociatedRemote<mojom::EventDispatcher>& dispatcher =
@@ -209,7 +214,8 @@ void EventRouter::RouteDispatchEvent(content::RenderProcessHost* rph,
   // The RenderProcessHost might be dead, but if the RenderProcessHost
   // is alive then the dispatcher must be connected.
   CHECK(!rph->IsInitializedAndNotDead() || dispatcher.is_connected());
-  dispatcher->DispatchEvent(std::move(params), std::move(event_args));
+  dispatcher->DispatchEvent(std::move(params), std::move(event_args),
+                            std::move(callback));
 }
 
 // static
@@ -240,6 +246,7 @@ void EventRouter::DispatchEventToSender(
   CHECK(registry);
   const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
+  mojom::EventDispatcher::DispatchEventCallback callback;
   // If this is ever false, we won't log the metric for dispatch_start_time. But
   // this means we aren't dispatching an event to an extension so the metric
   // wouldn't be relevant anyways (e.g. would go to a web page or webUI).
@@ -252,12 +259,34 @@ void EventRouter::DispatchEventToSender(
         service_worker_version_id, EventDispatchSource::kDispatchEventToSender);
     ReportEvent(histogram_value, extension,
                 /*did_enqueue=*/false);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+    callback = base::DoNothing();
+#else
+    if (worker_thread_id == kMainThreadId) {
+      if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
+        callback = base::BindOnce(
+            &EventRouter::DecrementInFlightEventsForRenderFrameHost,
+            weak_factory_.GetWeakPtr(), rph->GetID(), extension_id, event_id);
+      } else {
+        callback = base::DoNothing();
+      }
+    } else {
+      callback =
+          base::BindOnce(&EventRouter::DecrementInFlightEventsForServiceWorker,
+                         weak_factory_.GetWeakPtr(),
+                         WorkerId{extension_id, rph->GetID(),
+                                  service_worker_version_id, worker_thread_id},
+                         event_id);
+    }
+#endif
+  } else {
+    callback = base::DoNothing();
   }
   ObserveProcess(rph);
   DispatchExtensionMessage(rph, worker_thread_id, browser_context, extension_id,
                            event_id, event_name, std::move(event_args),
                            UserGestureState::USER_GESTURE_UNKNOWN,
-                           std::move(info));
+                           std::move(info), std::move(callback));
 }
 
 // static.
@@ -1127,10 +1156,38 @@ void EventRouter::DispatchEventToProcess(
                                  : event.filter_info.Clone();
 
   int event_id = g_extension_event_id.GetNext();
+  mojom::EventDispatcher::DispatchEventCallback callback;
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  callback = base::DoNothing();
+#else
+  // This mirrors the IncrementInFlightEvents below.
+  if (extension) {
+    if (worker_thread_id == kMainThreadId) {
+      if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
+        callback = base::BindOnce(
+            &EventRouter::DecrementInFlightEventsForRenderFrameHost,
+            weak_factory_.GetWeakPtr(), process->GetID(), extension_id,
+            event_id);
+      } else {
+        callback = base::DoNothing();
+      }
+    } else {
+      callback =
+          base::BindOnce(&EventRouter::DecrementInFlightEventsForServiceWorker,
+                         weak_factory_.GetWeakPtr(),
+                         WorkerId{extension_id, process->GetID(),
+                                  service_worker_version_id, worker_thread_id},
+                         event_id);
+    }
+  } else {
+    callback = base::DoNothing();
+  }
+#endif
+
   DispatchExtensionMessage(process, worker_thread_id, listener_context,
                            extension_id, event_id, event.event_name,
                            std::move(event_args_to_use), event.user_gesture,
-                           std::move(filter_info));
+                           std::move(filter_info), std::move(callback));
 
   if (!event.did_dispatch_callback.is_null()) {
     event.did_dispatch_callback.Run(EventTarget{extension_id, process->GetID(),
@@ -1152,6 +1209,49 @@ void EventRouter::DispatchEventToProcess(
                             event.event_name, event.dispatch_start_time,
                             service_worker_version_id,
                             EventDispatchSource::kDispatchEventToProcess);
+  }
+}
+
+void EventRouter::DecrementInFlightEventsForServiceWorker(
+    const WorkerId& worker_id,
+    int event_id) {
+  auto* process = RenderProcessHost::FromID(worker_id.render_process_id);
+  // Check to make sure the rendered process hasn't gone away by the time
+  // we've gotten here. (It's possible it has crashed, etc.) If that's
+  // happened, we don't want to track the expected ACK, since we'll never
+  // get it.
+  if (!process) {
+    return;
+  }
+  const bool worker_stopped = !ProcessManager::Get(process->GetBrowserContext())
+                                   ->HasServiceWorker(worker_id);
+  content::ServiceWorkerContext* service_worker_context =
+      process->GetStoragePartition()->GetServiceWorkerContext();
+  event_ack_data_.DecrementInflightEvent(
+      service_worker_context, process->GetID(), worker_id.version_id, event_id,
+      worker_stopped,
+      base::BindOnce(
+          [](RenderProcessHost* process) {
+            bad_message::ReceivedBadMessage(process,
+                                            bad_message::ESWMF_BAD_EVENT_ACK);
+          },
+          base::Unretained(process)));
+}
+
+void EventRouter::DecrementInFlightEventsForRenderFrameHost(
+    int render_process_host,
+    const ExtensionId& extension_id,
+    int event_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* process = RenderProcessHost::FromID(render_process_host);
+  if (!process) {
+    return;
+  }
+
+  ProcessManager* pm = ProcessManager::Get(process->GetBrowserContext());
+  ExtensionHost* host = pm->GetBackgroundHostForExtension(extension_id);
+  if (host) {
+    host->OnEventAck(event_id);
   }
 }
 

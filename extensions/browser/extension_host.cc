@@ -305,6 +305,7 @@ void ExtensionHost::CloseContents(WebContents* contents) {
   Close();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 bool ExtensionHost::OnMessageReceived(const IPC::Message& message,
                                       content::RenderFrameHost* host) {
   bool handled = true;
@@ -314,6 +315,7 @@ bool ExtensionHost::OnMessageReceived(const IPC::Message& message,
   IPC_END_MESSAGE_MAP()
   return handled;
 }
+#endif
 
 void ExtensionHost::OnEventAck(int event_id) {
   // This should always be true since event acks are only sent by extensions

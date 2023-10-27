@@ -130,8 +130,10 @@ class ExtensionHost : public DeferredStartRenderHost,
   bool ShouldAllowNavigations() const;
 
   // content::WebContentsObserver:
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   bool OnMessageReceived(const IPC::Message& message,
                          content::RenderFrameHost* host) override;
+#endif
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
@@ -172,6 +174,8 @@ class ExtensionHost : public DeferredStartRenderHost,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
+  void OnEventAck(int event_id);
+
  protected:
   // Called each time this ExtensionHost completes a load finishes loading,
   // before any stop-loading notifications or observer methods are called.
@@ -200,7 +204,6 @@ class ExtensionHost : public DeferredStartRenderHost,
   void CreateRendererNow() override;
 
   // Message handlers.
-  void OnEventAck(int event_id);
   void OnIncrementLazyKeepaliveCount();
   void OnDecrementLazyKeepaliveCount();
 
