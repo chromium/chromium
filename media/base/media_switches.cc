@@ -949,7 +949,7 @@ BASE_FEATURE(kLiveCaptionLogFlickerRate,
 // speech recognition results.
 BASE_FEATURE(kLiveCaptionUseGreedyTextStabilizer,
              "LiveCaptionUseGreedyTextStabilizer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use a wait-k approach to reduce flickering when translating partial speech
 // recognition results.
