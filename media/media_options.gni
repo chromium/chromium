@@ -269,6 +269,7 @@ if (is_cast_media_device) {
   _default_mojo_media_services = [
     "cdm",
     "audio_decoder",
+    "audio_encoder",
     "video_decoder",
   ]
   _default_mojo_media_host = "gpu"
