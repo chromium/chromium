@@ -7,13 +7,13 @@
 #include <memory>
 #include <vector>
 
+#include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
@@ -241,7 +241,7 @@ class DateTrayTest
       glanceables_classroom_client_ =
           std::make_unique<TestGlanceablesClassroomClient>();
       fake_glanceables_tasks_client_ =
-          std::make_unique<FakeGlanceablesTasksClient>(base::Time::Now());
+          std::make_unique<api::FakeTasksClient>(base::Time::Now());
       Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
           account_id_,
           GlanceablesController::ClientsRegistration{
@@ -323,7 +323,7 @@ class DateTrayTest
     return glanceables_classroom_client_.get();
   }
 
-  FakeGlanceablesTasksClient* fake_glanceables_tasks_client() {
+  api::FakeTasksClient* fake_glanceables_tasks_client() {
     return fake_glanceables_tasks_client_.get();
   }
 
@@ -349,7 +349,7 @@ class DateTrayTest
   AccountId account_id_ =
       AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
   std::unique_ptr<TestGlanceablesClassroomClient> glanceables_classroom_client_;
-  std::unique_ptr<FakeGlanceablesTasksClient> fake_glanceables_tasks_client_;
+  std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   bool observering_activation_changes_ = false;
 
   // Owned by `widget_`.

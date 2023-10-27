@@ -5,9 +5,9 @@
 #ifndef ASH_SYSTEM_UNIFIED_TASKS_BUBBLE_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_TASKS_BUBBLE_VIEW_H_
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/ash_export.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
@@ -76,7 +76,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceablesTasksViewBase,
   METADATA_HEADER(TasksBubbleView);
 
   TasksBubbleView(DetailedViewDelegate* delegate,
-                  ui::ListModel<GlanceablesTaskList>* task_list);
+                  ui::ListModel<api::TaskList>* task_list);
   TasksBubbleView(const TasksBubbleView&) = delete;
   TasksBubbleView& operator=(const TasksBubbleView&) = delete;
   ~TasksBubbleView() override;
@@ -98,7 +98,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceablesTasksViewBase,
   void UpdateTasksList(const std::string& task_list_id,
                        const std::string& task_list_title,
                        bool initial_update,
-                       ui::ListModel<GlanceablesTask>* tasks);
+                       ui::ListModel<api::Task>* tasks);
 
   // Announces text describing the task list state through a screen
   // reader, using `task_list_combo_box_view_` view accessibility helper.

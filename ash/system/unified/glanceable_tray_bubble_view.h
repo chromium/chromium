@@ -21,12 +21,16 @@ class View;
 }  // namespace views
 
 namespace ash {
+
+namespace api {
+struct TaskList;
+}  // namespace api
+
 class CalendarView;
 class ClassroomBubbleStudentView;
 class ClassroomBubbleTeacherView;
 class DetailedViewDelegate;
 class Shelf;
-struct GlanceablesTaskList;
 
 // The bubble associated with the `GlanceableTrayBubble`. This bubble is the
 // container for the child `tasks` and `classroom` glanceables.
@@ -65,8 +69,7 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   template <typename T>
   void AddClassroomBubbleViewIfNeeded(raw_ptr<T, ExperimentalAsh>* view,
                                       bool is_role_active);
-  void AddTaskBubbleViewIfNeeded(
-      ui::ListModel<GlanceablesTaskList>* task_lists);
+  void AddTaskBubbleViewIfNeeded(ui::ListModel<api::TaskList>* task_lists);
 
   void OnGlanceablesContainerPreferredSizeChanged();
   void OnGlanceablesContainerHeightChanged(int height_delta);

@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/shell.h"
 #include "ash/system/unified/tasks_combobox_model.h"
 #include "ash/test/ash_test_base.h"
@@ -18,14 +18,14 @@
 namespace ash {
 namespace {
 
-std::unique_ptr<ui::ListModel<GlanceablesTaskList>> CreateTaskListsModel() {
-  auto model = std::make_unique<ui::ListModel<GlanceablesTaskList>>();
-  model->Add(std::make_unique<GlanceablesTaskList>("id1", "Task List 1",
-                                                   base::Time::Now()));
-  model->Add(std::make_unique<GlanceablesTaskList>(
+std::unique_ptr<ui::ListModel<api::TaskList>> CreateTaskListsModel() {
+  auto model = std::make_unique<ui::ListModel<api::TaskList>>();
+  model->Add(
+      std::make_unique<api::TaskList>("id1", "Task List 1", base::Time::Now()));
+  model->Add(std::make_unique<api::TaskList>(
       "id2", "Task List 2 (the most recently updated)",
       base::Time::Now() + base::Days(15)));
-  model->Add(std::make_unique<GlanceablesTaskList>(
+  model->Add(std::make_unique<api::TaskList>(
       "id3", "Task List 3", base::Time::Now() + base::Days(1)));
   return model;
 }
@@ -34,7 +34,7 @@ std::unique_ptr<ui::ListModel<GlanceablesTaskList>> CreateTaskListsModel() {
 
 class TasksComboboxModelTest : public AshTestBase {
  public:
-  ui::ListModel<GlanceablesTaskList>* task_list_model() const {
+  ui::ListModel<api::TaskList>* task_list_model() const {
     return task_lists_model_.get();
   }
 
@@ -46,7 +46,7 @@ class TasksComboboxModelTest : public AshTestBase {
         return now;
       },
       nullptr, nullptr};
-  std::unique_ptr<ui::ListModel<GlanceablesTaskList>> task_lists_model_ =
+  std::unique_ptr<ui::ListModel<api::TaskList>> task_lists_model_ =
       CreateTaskListsModel();
 };
 

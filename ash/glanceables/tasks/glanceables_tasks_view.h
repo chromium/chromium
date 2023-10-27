@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/ash_export.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -52,7 +52,7 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   METADATA_HEADER(GlanceablesTasksView);
 
   GlanceablesTasksView(DetailedViewDelegate* delegate,
-                       ui::ListModel<GlanceablesTaskList>* task_list);
+                       ui::ListModel<api::TaskList>* task_list);
   GlanceablesTasksView(const GlanceablesTasksView&) = delete;
   GlanceablesTasksView& operator=(const GlanceablesTasksView&) = delete;
   ~GlanceablesTasksView() override;
@@ -74,7 +74,7 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // Creates a `GlanceablesTaskView` instance with bound callbacks.
   std::unique_ptr<GlanceablesTaskView> CreateTaskView(
       const std::string& task_list_id,
-      const GlanceablesTask* task);
+      const api::Task* task);
 
   // Handles switching between tasks lists.
   void SelectedTasksListChanged();
@@ -82,7 +82,7 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   void UpdateTasksList(const std::string& task_list_id,
                        const std::string& task_list_title,
                        bool initial_update,
-                       ui::ListModel<GlanceablesTask>* tasks);
+                       ui::ListModel<api::Task>* tasks);
 
   // Announces text describing the task list state through a screen
   // reader, using `task_list_combo_box_view_` view accessibility helper.

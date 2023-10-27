@@ -19,7 +19,9 @@ class ImageButton;
 
 namespace ash {
 
-struct GlanceablesTask;
+namespace api {
+struct Task;
+}  // namespace api
 
 // GlanceablesTaskView uses `views::FlexLayout` to show tasks metadata within
 // the `GlanceablesTasksView` or `TasksBubbleView`.
@@ -48,7 +50,7 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
   // Modes of `tasks_title_view_` (simple label or text field).
   enum class TaskTitleViewState { kView, kEdit };
 
-  GlanceablesTaskView(const GlanceablesTask* task,
+  GlanceablesTaskView(const api::Task* task,
                       MarkAsCompletedCallback mark_as_completed_callback,
                       SaveCallback save_callback);
   GlanceablesTaskView(const GlanceablesTaskView&) = delete;

@@ -106,8 +106,8 @@ void GlanceablesKeyedService::RegisterClients() {
       base::Unretained(this));
   classroom_client_ = std::make_unique<GlanceablesClassroomClientImpl>(
       base::DefaultClock::GetInstance(), create_request_sender_callback);
-  tasks_client_ = std::make_unique<GlanceablesTasksClientImpl>(
-      create_request_sender_callback);
+  tasks_client_ =
+      std::make_unique<TasksClientImpl>(create_request_sender_callback);
 
   Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
       account_id_, GlanceablesController::ClientsRegistration{

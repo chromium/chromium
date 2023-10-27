@@ -8,10 +8,10 @@
 #include <string>
 #include <utility>
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -232,7 +232,7 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
 };
 
 GlanceablesTaskView::GlanceablesTaskView(
-    const GlanceablesTask* task,
+    const api::Task* task,
     MarkAsCompletedCallback mark_as_completed_callback,
     SaveCallback save_callback)
     : task_id_(task ? task->id : ""),

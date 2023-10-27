@@ -4,12 +4,12 @@
 
 #include <memory>
 
+#include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/common/test/glanceables_test_new_window_delegate.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
@@ -50,7 +50,7 @@ class TasksBubbleViewTest : public AshTestBase {
     AshTestBase::SetUp();
     SimulateUserLogin(account_id_);
     fake_glanceables_tasks_client_ =
-        std::make_unique<FakeGlanceablesTasksClient>(base::Time::Now());
+        std::make_unique<api::FakeTasksClient>(base::Time::Now());
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
         account_id_, GlanceablesController::ClientsRegistration{
                          .tasks_client = fake_glanceables_tasks_client_.get()});
@@ -111,7 +111,7 @@ class TasksBubbleViewTest : public AshTestBase {
         base::to_underlying(GlanceablesViewId::kProgressBar)));
   }
 
-  FakeGlanceablesTasksClient* tasks_client() const {
+  api::FakeTasksClient* tasks_client() const {
     return fake_glanceables_tasks_client_.get();
   }
 
@@ -126,7 +126,7 @@ class TasksBubbleViewTest : public AshTestBase {
  private:
   base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
   AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
-  std::unique_ptr<FakeGlanceablesTasksClient> fake_glanceables_tasks_client_;
+  std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   const GlanceablesTestNewWindowDelegate new_window_delegate_;
   DetailedViewDelegate detailed_view_delegate_{nullptr};
   raw_ptr<TasksBubbleView> view_;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_CLIENT_H_
-#define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_CLIENT_H_
+#ifndef ASH_API_TASKS_TASKS_CLIENT_H_
+#define ASH_API_TASKS_TASKS_CLIENT_H_
 
 #include <string>
 
@@ -12,18 +12,17 @@
 #include "base/functional/callback_helpers.h"
 #include "ui/base/models/list_model.h"
 
-namespace ash {
+namespace ash::api {
 
-struct GlanceablesTask;
-struct GlanceablesTaskList;
+struct Task;
+struct TaskList;
 
 // Interface for the tasks browser client.
-class ASH_EXPORT GlanceablesTasksClient {
+class ASH_EXPORT TasksClient {
  public:
   using GetTaskListsCallback =
-      base::OnceCallback<void(ui::ListModel<GlanceablesTaskList>* task_lists)>;
-  using GetTasksCallback =
-      base::OnceCallback<void(ui::ListModel<GlanceablesTask>* tasks)>;
+      base::OnceCallback<void(ui::ListModel<TaskList>* task_lists)>;
+  using GetTasksCallback = base::OnceCallback<void(ui::ListModel<Task>* tasks)>;
   using UpdateTaskCallback = base::OnceCallback<void(bool success)>;
   using OnAllPendingCompletedTasksSavedCallback = base::OnceClosure;
 
@@ -59,9 +58,9 @@ class ASH_EXPORT GlanceablesTasksClient {
   virtual void OnGlanceablesBubbleClosed(
       OnAllPendingCompletedTasksSavedCallback callback = base::DoNothing()) = 0;
 
-  virtual ~GlanceablesTasksClient() = default;
+  virtual ~TasksClient() = default;
 };
 
-}  // namespace ash
+}  // namespace ash::api
 
-#endif  // ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_CLIENT_H_
+#endif  // ASH_API_TASKS_TASKS_CLIENT_H_

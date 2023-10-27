@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <string>
 
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/shell.h"
 #include "ash/system/unified/tasks_combobox_model.h"
 #include "base/check.h"
@@ -26,8 +26,7 @@ const char kLastSelectedTaskListTimePref[] =
 
 }  // namespace
 
-TasksComboboxModel::TasksComboboxModel(
-    ui::ListModel<GlanceablesTaskList>* task_lists)
+TasksComboboxModel::TasksComboboxModel(ui::ListModel<api::TaskList>* task_lists)
     : task_lists_(task_lists) {}
 
 TasksComboboxModel::~TasksComboboxModel() = default;
@@ -88,7 +87,7 @@ absl::optional<size_t> TasksComboboxModel::GetDefaultIndex() const {
   return most_recently_updated_task_list_index;
 }
 
-GlanceablesTaskList* TasksComboboxModel::GetTaskListAt(size_t index) const {
+api::TaskList* TasksComboboxModel::GetTaskListAt(size_t index) const {
   return task_lists_->GetItemAt(index);
 }
 

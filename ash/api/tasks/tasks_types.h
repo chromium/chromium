@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_TYPES_H_
-#define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_TYPES_H_
+#ifndef ASH_API_TASKS_TASKS_TYPES_H_
+#define ASH_API_TASKS_TASKS_TYPES_H_
 
 #include <memory>
 #include <string>
@@ -12,19 +12,19 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace ash::api {
 
 // Lightweight TaskList definition to separate API and ash/ui-friendly types.
 // Contains information that describes a single task list. All values are from
 // the API resource
 // https://developers.google.com/tasks/reference/rest/v1/tasklists.
-struct ASH_EXPORT GlanceablesTaskList {
-  GlanceablesTaskList(const std::string& id,
-                      const std::string& title,
-                      const base::Time& updated);
-  GlanceablesTaskList(const GlanceablesTaskList&) = delete;
-  GlanceablesTaskList& operator=(const GlanceablesTaskList&) = delete;
-  ~GlanceablesTaskList();
+struct ASH_EXPORT TaskList {
+  TaskList(const std::string& id,
+           const std::string& title,
+           const base::Time& updated);
+  TaskList(const TaskList&) = delete;
+  TaskList& operator=(const TaskList&) = delete;
+  ~TaskList();
 
   // Task list identifier.
   const std::string id;
@@ -39,17 +39,17 @@ struct ASH_EXPORT GlanceablesTaskList {
 // Lightweight Task definition to separate API and ash/ui-friendly types.
 // All values are from the API resource
 // https://developers.google.com/tasks/reference/rest/v1/tasks.
-struct ASH_EXPORT GlanceablesTask {
-  GlanceablesTask(const std::string& id,
-                  const std::string& title,
-                  bool completed,
-                  const absl::optional<base::Time>& due,
-                  bool has_subtasks,
-                  bool has_email_link,
-                  bool has_notes);
-  GlanceablesTask(const GlanceablesTask&) = delete;
-  GlanceablesTask& operator=(const GlanceablesTask&) = delete;
-  ~GlanceablesTask();
+struct ASH_EXPORT Task {
+  Task(const std::string& id,
+       const std::string& title,
+       bool completed,
+       const absl::optional<base::Time>& due,
+       bool has_subtasks,
+       bool has_email_link,
+       bool has_notes);
+  Task(const Task&) = delete;
+  Task& operator=(const Task&) = delete;
+  ~Task();
 
   // Task identifier.
   const std::string id;
@@ -74,6 +74,6 @@ struct ASH_EXPORT GlanceablesTask {
   const bool has_notes;
 };
 
-}  // namespace ash
+}  // namespace ash::api
 
-#endif  // ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_TYPES_H_
+#endif  // ASH_API_TASKS_TASKS_TYPES_H_

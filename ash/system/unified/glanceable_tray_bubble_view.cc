@@ -7,11 +7,11 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/api/tasks/tasks_client.h"
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/tasks/glanceables_tasks_client.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/shelf/shelf.h"
@@ -311,7 +311,7 @@ void GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded(
 }
 
 void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
-    ui::ListModel<GlanceablesTaskList>* task_lists) {
+    ui::ListModel<api::TaskList>* task_lists) {
   if (task_lists->item_count() == 0) {
     return;
   }

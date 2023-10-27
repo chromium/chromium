@@ -6,8 +6,8 @@
 #include <string>
 #include <tuple>
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
@@ -35,7 +35,7 @@ class GlanceablesTaskViewPixelTest
     base::Time due_date;
     ASSERT_TRUE(base::Time::FromString("2022-12-21T00:00:00.000Z", &due_date));
 
-    task_ = std::make_unique<GlanceablesTask>(
+    task_ = std::make_unique<api::Task>(
         "task-id", "Task title",
         /*completed=*/false,
         has_due_date() ? absl::make_optional(due_date) : absl::nullopt,
@@ -77,7 +77,7 @@ class GlanceablesTaskViewPixelTest
   bool has_notes() const { return std::get<3>(GetParam()); }
 
   base::test::ScopedFeatureList feature_list_{chromeos::features::kJelly};
-  std::unique_ptr<GlanceablesTask> task_;
+  std::unique_ptr<api::Task> task_;
   std::unique_ptr<views::Widget> widget_;
 };
 

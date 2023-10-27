@@ -7,13 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/api/tasks/tasks_client.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
-#include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -94,7 +94,7 @@ std::unique_ptr<views::LabelButton> CreateAddNewTaskButton(
 }  // namespace
 
 TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
-                                 ui::ListModel<GlanceablesTaskList>* task_list)
+                                 ui::ListModel<api::TaskList>* task_list)
     : GlanceablesTasksViewBase(delegate) {
   auto* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -217,7 +217,7 @@ void TasksBubbleView::ScheduleUpdateTasksList(bool initial_update) {
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
   task_list_combo_box_view_->SetAccessibleDescription(u"");
 
-  GlanceablesTaskList* active_task_list = tasks_combobox_model_->GetTaskListAt(
+  api::TaskList* active_task_list = tasks_combobox_model_->GetTaskListAt(
       task_list_combo_box_view_->GetSelectedIndex().value());
   tasks_combobox_model_->SaveLastSelectedTaskList(active_task_list->id);
   Shell::Get()->glanceables_controller()->GetTasksClient()->GetTasks(
@@ -230,7 +230,7 @@ void TasksBubbleView::ScheduleUpdateTasksList(bool initial_update) {
 void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
                                       const std::string& task_list_title,
                                       bool initial_update,
-                                      ui::ListModel<GlanceablesTask>* tasks) {
+                                      ui::ListModel<api::Task>* tasks) {
   if (initial_update) {
     base::UmaHistogramCounts100(
         "Ash.Glanceables.TimeManagement.TasksCountInDefaultTaskList",

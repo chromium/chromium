@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_helpers.h"
@@ -61,10 +61,10 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
     base::Time due;
     EXPECT_TRUE(base::Time::FromString(tc.due.c_str(), &due));
 
-    const auto task = GlanceablesTask(
-        "task-id", "Task title", /*completed=*/false,
-        /*due=*/due,
-        /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false);
+    const auto task = api::Task("task-id", "Task title", /*completed=*/false,
+                                /*due=*/due,
+                                /*has_subtasks=*/false,
+                                /*has_email_link=*/false, /*has_notes=*/false);
     const auto view = GlanceablesTaskView(
         &task, /*mark_as_completed_callback=*/base::DoNothing(),
         /*save_callback=*/base::DoNothing());
@@ -82,10 +82,10 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
   base::test::ScopedFeatureList features{
       features::kGlanceablesTimeManagementStableLaunch};
 
-  const auto task = GlanceablesTask(
-      "task-id", "Task title", /*completed=*/false,
-      /*due=*/absl::nullopt,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false);
+  const auto task = api::Task("task-id", "Task title", /*completed=*/false,
+                              /*due=*/absl::nullopt,
+                              /*has_subtasks=*/false, /*has_email_link=*/false,
+                              /*has_notes=*/false);
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -145,10 +145,10 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
 
 TEST_F(GlanceablesTaskViewTest,
        AppliesStrikeThroughStyleAfterMarkingAsComplete) {
-  const auto task = GlanceablesTask(
-      "task-id", "Task title", /*completed=*/false,
-      /*due=*/absl::nullopt,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false);
+  const auto task = api::Task("task-id", "Task title", /*completed=*/false,
+                              /*due=*/absl::nullopt,
+                              /*has_subtasks=*/false, /*has_email_link=*/false,
+                              /*has_notes=*/false);
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -180,10 +180,10 @@ TEST_F(GlanceablesTaskViewTest,
 }
 
 TEST_F(GlanceablesTaskViewTest, InvokesMarkAsCompletedCallback) {
-  const auto task = GlanceablesTask(
-      "task-id", "Task title", /*completed=*/false,
-      /*due=*/absl::nullopt,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false);
+  const auto task = api::Task("task-id", "Task title", /*completed=*/false,
+                              /*due=*/absl::nullopt,
+                              /*has_subtasks=*/false, /*has_email_link=*/false,
+                              /*has_notes=*/false);
 
   base::test::TestFuture<const std::string&, bool> future;
 
@@ -243,10 +243,10 @@ TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterAdding) {
 }
 
 TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterEditing) {
-  const auto task = GlanceablesTask(
-      "task-id", "Task title", /*completed=*/false,
-      /*due=*/absl::nullopt,
-      /*has_subtasks=*/false, /*has_email_link=*/false, /*has_notes=*/false);
+  const auto task = api::Task("task-id", "Task title", /*completed=*/false,
+                              /*due=*/absl::nullopt,
+                              /*has_subtasks=*/false, /*has_email_link=*/false,
+                              /*has_notes=*/false);
 
   base::test::TestFuture<const std::string&, const std::string&> future;
 

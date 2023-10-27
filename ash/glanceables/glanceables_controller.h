@@ -16,8 +16,11 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+namespace api {
+class TasksClient;
+}  // namespace api
+
 class GlanceablesClassroomClient;
-class GlanceablesTasksClient;
 
 // Root glanceables controller.
 class ASH_EXPORT GlanceablesController : public SessionObserver {
@@ -26,7 +29,7 @@ class ASH_EXPORT GlanceablesController : public SessionObserver {
   struct ClientsRegistration {
     raw_ptr<GlanceablesClassroomClient, DanglingUntriaged | ExperimentalAsh>
         classroom_client = nullptr;
-    raw_ptr<GlanceablesTasksClient, DanglingUntriaged | ExperimentalAsh>
+    raw_ptr<api::TasksClient, DanglingUntriaged | ExperimentalAsh>
         tasks_client = nullptr;
   };
 
@@ -60,7 +63,7 @@ class ASH_EXPORT GlanceablesController : public SessionObserver {
 
   // Returns a tasks client pointer associated with the `active_account_id_`.
   // Could return `nullptr`.
-  GlanceablesTasksClient* GetTasksClient() const;
+  api::TasksClient* GetTasksClient() const;
 
   // Informs registered glanceables clients that the glanceables bubble UI has
   // been closed and logs metrics.
