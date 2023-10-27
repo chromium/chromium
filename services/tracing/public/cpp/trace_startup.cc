@@ -196,8 +196,12 @@ void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {
     convert_to_legacy_json = startup_config->GetOutputFormat() ==
                              TraceStartupConfig::OutputFormat::kLegacyJSON;
   } else if (trace_log->IsEnabled()) {
-    const auto chrome_config =
-        trace_log->GetCurrentTrackEventDataSourceConfig().chrome_config();
+    perfetto::DataSourceConfig data_source_config =
+        trace_log->GetCurrentTrackEventDataSourceConfig();
+    if (data_source_config.has_interceptor_config()) {
+      return;
+    }
+    const auto chrome_config = data_source_config.chrome_config();
     trace_config = base::trace_event::TraceConfig(chrome_config.trace_config());
     privacy_filtering_enabled = chrome_config.privacy_filtering_enabled();
     convert_to_legacy_json = chrome_config.convert_to_legacy_json();
