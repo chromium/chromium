@@ -558,8 +558,8 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/range.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/empty.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/from_coroutine.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/from_fn.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/from_generator.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/once.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/once_with.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/iter/sources/repeat.rs",
@@ -630,10 +630,10 @@ cargo_crate("core") {
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ops/arith.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ops/bit.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ops/control_flow.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ops/coroutine.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ops/deref.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ops/drop.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ops/function.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ops/generator.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ops/index.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ops/index_range.rs",
     "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/ops/mod.rs",
@@ -1075,30 +1075,32 @@ cargo_crate("gimli") {
 }
 cargo_crate("hashbrown") {
   crate_type = "rlib"
-  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/lib.rs"
+  crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/lib.rs"
   sources = [
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/external_trait_impls/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/external_trait_impls/rayon/helpers.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/external_trait_impls/rayon/map.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/external_trait_impls/rayon/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/external_trait_impls/rayon/raw.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/external_trait_impls/rayon/set.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/external_trait_impls/rkyv/hash_map.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/external_trait_impls/rkyv/hash_set.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/external_trait_impls/rkyv/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/external_trait_impls/serde.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/lib.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/macros.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/map.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/raw/alloc.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/raw/bitmask.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/raw/generic.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/raw/mod.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/raw/neon.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/raw/sse2.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/rustc_entry.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/scopeguard.rs",
-    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.0/src/set.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/external_trait_impls/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/external_trait_impls/rayon/helpers.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/external_trait_impls/rayon/map.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/external_trait_impls/rayon/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/external_trait_impls/rayon/raw.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/external_trait_impls/rayon/set.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/external_trait_impls/rayon/table.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/external_trait_impls/rkyv/hash_map.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/external_trait_impls/rkyv/hash_set.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/external_trait_impls/rkyv/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/external_trait_impls/serde.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/lib.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/macros.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/map.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/raw/alloc.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/raw/bitmask.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/raw/generic.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/raw/mod.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/raw/neon.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/raw/sse2.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/rustc_entry.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/scopeguard.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/set.rs",
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/hashbrown-0.14.2/src/table.rs",
   ]
   inputs = []
   no_std = true
@@ -1106,7 +1108,7 @@ cargo_crate("hashbrown") {
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.14.0"
+  cargo_pkg_version = "0.14.2"
   cargo_pkg_authors = "Amanieu d'Antras <amanieu@gmail.com>"
   cargo_pkg_name = "hashbrown"
   cargo_pkg_description = "A Rust port of Google's SwissTable hash map"

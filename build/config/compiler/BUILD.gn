@@ -1876,25 +1876,13 @@ config("default_warnings") {
 
           # TODO(crbug.com/1494809): Evaluate and possibly enable.
           "-Wno-vla-extension",
-        ]
 
-        if (llvm_force_head_revision) {
           # TODO(https://crbug.com/1490607): Fix and re-enable.
-          cflags_cc += [ "-Wno-thread-safety-reference-return" ]
-        }
+          "-Wno-thread-safety-reference-return",
 
-        if (llvm_force_head_revision && is_win) {
           # TODO(crbug.com/1495100): Evaluate and possibly enable.
-          cflags_cc += [ "-Wno-delayed-template-parsing-in-cxx20" ]
-        }
-
-        if (enable_precompiled_headers && !is_win &&
-            !llvm_force_head_revision) {
-          cflags += [
-            # TODO(crbug.com/1486799) Remove in next clang roll.
-            "-Wno-deprecated-include-gch",
-          ]
-        }
+          "-Wno-delayed-template-parsing-in-cxx20",
+        ]
       }
     }
 
