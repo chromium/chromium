@@ -467,7 +467,8 @@ class CupsPrintersManagerImpl
           CupsPrinterStatus::CupsPrinterStatusReason::Reason::
               kPrinterUnreachable,
           CupsPrinterStatus::CupsPrinterStatusReason::Severity::kError);
-      SendPrinterStatus(printer_status, std::move(cb));
+      SendPrinterStatus(printer_status, std::move(cb),
+                        /*notify_observers=*/false);
       return;
     }
 
@@ -486,7 +487,8 @@ class CupsPrintersManagerImpl
                 kPrinterUnreachable,
             CupsPrinterStatus::CupsPrinterStatusReason::Severity::kError);
       }
-      SendPrinterStatus(printer_status, std::move(cb));
+      SendPrinterStatus(printer_status, std::move(cb),
+                        /*notify_observers=*/true);
       return;
     }
 
@@ -499,7 +501,8 @@ class CupsPrintersManagerImpl
       printer_status.AddStatusReason(
           CupsPrinterStatus::CupsPrinterStatusReason::Reason::kUnknownReason,
           CupsPrinterStatus::CupsPrinterStatusReason::Severity::kWarning);
-      SendPrinterStatus(printer_status, std::move(cb));
+      SendPrinterStatus(printer_status, std::move(cb),
+                        /*notify_observers=*/false);
       return;
     }
 
@@ -571,7 +574,8 @@ class CupsPrintersManagerImpl
             CupsPrinterStatus::CupsPrinterStatusReason::Reason::
                 kPrinterUnreachable,
             CupsPrinterStatus::CupsPrinterStatusReason::Severity::kError);
-        SendPrinterStatus(error_printer_status, std::move(cb));
+        SendPrinterStatus(error_printer_status, std::move(cb),
+                          /*notify_observers=*/true);
         break;
       }
       case PrinterQueryResult::kUnknownFailure: {
@@ -582,7 +586,8 @@ class CupsPrintersManagerImpl
         error_printer_status.AddStatusReason(
             CupsPrinterStatus::CupsPrinterStatusReason::Reason::kUnknownReason,
             CupsPrinterStatus::CupsPrinterStatusReason::Severity::kWarning);
-        SendPrinterStatus(error_printer_status, std::move(cb));
+        SendPrinterStatus(error_printer_status, std::move(cb),
+                          /*notify_observers=*/true);
         break;
       }
       case PrinterQueryResult::kSuccess: {
@@ -599,12 +604,9 @@ class CupsPrintersManagerImpl
             PrinterStatusToCupsPrinterStatus(printer_id, printer_status,
                                              auth_info);
 
-        // Save the PrinterStatus so it can be attached along side future
-        // Printer retrievals.
-        printers_.SavePrinterStatus(printer_id, cups_printers_status);
-
         // Send status back to the handler through PrinterStatusCallback.
-        SendPrinterStatus(cups_printers_status, std::move(cb));
+        SendPrinterStatus(cups_printers_status, std::move(cb),
+                          /*notify_observers=*/true);
         break;
       }
     }
@@ -613,9 +615,18 @@ class CupsPrintersManagerImpl
   // Sends the printer status via callback then notifies the local printer
   // observers.
   void SendPrinterStatus(CupsPrinterStatus printer_status,
-                         PrinterStatusCallback cb) {
+                         PrinterStatusCallback cb,
+                         bool notify_observers) {
+    if (notify_observers) {
+      // Save the status so it can be attached with the printer for future
+      // retrievals.
+      const bool is_new_status = printers_.SavePrinterStatus(
+          printer_status.GetPrinterId(), printer_status);
+      if (is_new_status) {
+        NotifyLocalPrinterObservers();
+      }
+    }
     std::move(cb).Run(std::move(printer_status));
-    NotifyLocalPrinterObservers();
   }
 
   void QueryPrinterForAutoConf(
