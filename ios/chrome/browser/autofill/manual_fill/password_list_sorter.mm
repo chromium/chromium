@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_list_sorter.h"
+#import "ios/chrome/browser/autofill/manual_fill/password_list_sorter.h"
 
-#include <algorithm>
+#import <algorithm>
 
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "url/gurl.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
 

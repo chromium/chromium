@@ -4,6 +4,8 @@
 
 source_set("manual_fill") {
   sources = [
+    "password_list_sorter.h",
+    "password_list_sorter.mm",
     "passwords_fetcher.h",
     "passwords_fetcher.mm",
   ]
@@ -22,7 +24,10 @@ source_set("manual_fill") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "passwords_fetcher_unittest.mm" ]
+  sources = [
+    "password_list_sorter_unittest.mm",
+    "passwords_fetcher_unittest.mm",
+  ]
   deps = [
     ":manual_fill",
     "//base/test:test_support",

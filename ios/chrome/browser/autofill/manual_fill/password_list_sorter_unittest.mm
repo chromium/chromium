@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_list_sorter.h"
+#import "ios/chrome/browser/autofill/manual_fill/password_list_sorter.h"
 
-#include <vector>
+#import <vector>
 
-#include "base/strings/utf_string_conversions.h"
-#include "components/password_manager/core/browser/passkey_credential.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 namespace password_manager {
 
@@ -74,7 +74,9 @@ void SortAndCheckPositions(const std::vector<SortEntry>& test_entries) {
 
 }  // namespace
 
-TEST(PasswordListSorterTest, Sorting_DifferentOrigins) {
+class PasswordListSorterTest : public PlatformTest {};
+
+TEST_F(PasswordListSorterTest, Sorting_DifferentOrigins) {
   const std::vector<SortEntry> test_cases = {
       {"http://example-b.com", "user_a", "pwd", nullptr, nullptr, false, 2},
       {"http://example-a.com", "user_a1", "pwd", nullptr, nullptr, false, 0},
@@ -83,7 +85,7 @@ TEST(PasswordListSorterTest, Sorting_DifferentOrigins) {
   SortAndCheckPositions(test_cases);
 }
 
-TEST(PasswordListSorterTest, Sorting_DifferentUsernames) {
+TEST_F(PasswordListSorterTest, Sorting_DifferentUsernames) {
   const std::vector<SortEntry> test_cases = {
       {"http://example.com", "user_a", "pwd", nullptr, nullptr, false, 0},
       {"http://example.com", "user_c", "pwd", nullptr, nullptr, false, 2},
@@ -91,7 +93,7 @@ TEST(PasswordListSorterTest, Sorting_DifferentUsernames) {
   SortAndCheckPositions(test_cases);
 }
 
-TEST(PasswordListSorterTest, Sorting_DifferentPasswords) {
+TEST_F(PasswordListSorterTest, Sorting_DifferentPasswords) {
   const std::vector<SortEntry> test_cases = {
       {"http://example.com", "user_a", "1", nullptr, nullptr, false, 0},
       {"http://example.com", "user_a", "2", nullptr, nullptr, false, 1},
@@ -99,7 +101,7 @@ TEST(PasswordListSorterTest, Sorting_DifferentPasswords) {
   SortAndCheckPositions(test_cases);
 }
 
-TEST(PasswordListSorterTest, Sorting_DifferentSchemes) {
+TEST_F(PasswordListSorterTest, Sorting_DifferentSchemes) {
   const std::vector<SortEntry> test_cases = {
       {"https://example.com", "user", "1", nullptr, nullptr, false, 1},
       {"https://example.com", "user", "1", nullptr, nullptr, false,
@@ -108,7 +110,7 @@ TEST(PasswordListSorterTest, Sorting_DifferentSchemes) {
   SortAndCheckPositions(test_cases);
 }
 
-TEST(PasswordListSorterTest, Sorting_HideDuplicates) {
+TEST_F(PasswordListSorterTest, Sorting_HideDuplicates) {
   const std::vector<SortEntry> test_cases = {
       {"http://example.com", "user_a", "pwd", nullptr, nullptr, false, 0},
       // Different username.
@@ -123,7 +125,7 @@ TEST(PasswordListSorterTest, Sorting_HideDuplicates) {
   SortAndCheckPositions(test_cases);
 }
 
-TEST(PasswordListSorterTest, Sorting_Subdomains) {
+TEST_F(PasswordListSorterTest, Sorting_Subdomains) {
   const std::vector<SortEntry> test_cases = {
       {"http://example.com", "u", "p", nullptr, nullptr, false, 4},
       {"http://b.example.com", "u", "p", nullptr, nullptr, false, 3},
@@ -136,7 +138,7 @@ TEST(PasswordListSorterTest, Sorting_Subdomains) {
   SortAndCheckPositions(test_cases);
 }
 
-TEST(PasswordListSorterTest, Sorting_PasswordExceptions) {
+TEST_F(PasswordListSorterTest, Sorting_PasswordExceptions) {
   const std::vector<SortEntry> test_cases = {
       {"http://example-b.com", nullptr, nullptr, nullptr, nullptr, true, 1},
       {"http://example-a.com", nullptr, nullptr, nullptr, nullptr, true, 0},
@@ -146,7 +148,7 @@ TEST(PasswordListSorterTest, Sorting_PasswordExceptions) {
   SortAndCheckPositions(test_cases);
 }
 
-TEST(PasswordListSorterTest, Sorting_AndroidCredentials) {
+TEST_F(PasswordListSorterTest, Sorting_AndroidCredentials) {
   const std::vector<SortEntry> test_cases = {
       // Regular Web Credential.
       {"https://alpha.example.com", "user", "secret", nullptr, nullptr, false,
@@ -167,7 +169,7 @@ TEST(PasswordListSorterTest, Sorting_AndroidCredentials) {
   SortAndCheckPositions(test_cases);
 }
 
-TEST(PasswordListSorterTest, Sorting_Federations) {
+TEST_F(PasswordListSorterTest, Sorting_Federations) {
   const std::vector<SortEntry> test_cases = {
       {"https://example.com", "user", "secret", nullptr, nullptr, false, 0},
       {"https://example.com", "user", "secret", nullptr, "https://fed1.com",
@@ -177,7 +179,7 @@ TEST(PasswordListSorterTest, Sorting_Federations) {
   SortAndCheckPositions(test_cases);
 }
 
-TEST(PasswordListSorterTest, Sorting_SpecialCharacters) {
+TEST_F(PasswordListSorterTest, Sorting_SpecialCharacters) {
   // URLs with encoded special characters should not cause crash during sorting.
   const std::vector<SortEntry> test_cases = {
       {"https://xn--bea5m6d.com/", "user_a", "pwd", nullptr, nullptr, false, 6},
