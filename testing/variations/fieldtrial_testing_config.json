@@ -4652,6 +4652,21 @@
             ]
         }
     ],
+    "CrOSLateBootVmMemoryManagementService": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootVmMemoryManagementService"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSMglruNoKVMOpt": [
         {
             "platforms": [
