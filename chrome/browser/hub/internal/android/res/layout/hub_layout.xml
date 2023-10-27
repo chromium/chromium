@@ -11,13 +11,10 @@ found in the LICENSE file.
 
   <org.chromium.chrome.browser.hub.HubToolbarView
     android:id="@+id/hub_toolbar"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+    android:layout_height="wrap_content"
+    android:orientation="vertical" />
 
-  <org.chromium.chrome.browser.hub.HubPaneHostView
-    android:id="@+id/hub_pane_host"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+  <include layout="@layout/hub_pane_host_layout" />
 
 </LinearLayout>

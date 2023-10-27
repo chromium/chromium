@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.hub.HubPaneHostView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/hub_pane_host"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <FrameLayout
+    android:id="@+id/pane_frame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+  <org.chromium.ui.widget.ButtonCompat
+    android:id="@+id/action_button"
+    style="@style/FilledButton.Flat"
+    android:layout_width="wrap_content"
+    android:layout_height="56dp"
+    android:layout_gravity="end|bottom"
+    android:layout_margin="16dp"
+    android:drawablePadding="12dp"
+    android:drawableTint="@macro/default_icon_color"
+    android:paddingStart="16dp"
+    android:paddingEnd="20dp"
+    android:singleLine="true"
+    android:visibility="gone"
+    app:buttonColor="@macro/chip_bg_selected_color"
+    app:buttonTextColor="@color/default_text_color_list"
+    app:rippleCornerRadiusBottomEnd="@dimen/hub_button_radius"
+    app:rippleCornerRadiusBottomStart="@dimen/hub_button_radius"
+    app:rippleCornerRadiusTopEnd="@dimen/hub_button_radius"
+    app:rippleCornerRadiusTopStart="@dimen/hub_button_radius"
+    app:verticalInset="0dp" />
+
+</org.chromium.chrome.browser.hub.HubPaneHostView>

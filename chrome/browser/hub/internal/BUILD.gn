@@ -6,7 +6,10 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   resources_package = "org.chromium.chrome.browser.hub"
-  visibility = [ "//chrome/android:*" ]
+  visibility = [
+    ":*",
+    "//chrome/android:*",
+  ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DelegateButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
@@ -46,7 +49,39 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "android/res/layout/hub_layout.xml" ]
+  sources = [
+    "android/res/layout/hub_layout.xml",
+    "android/res/layout/hub_pane_host_layout.xml",
+    "android/res/values/dimens.xml",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  resources_package = "org.chromium.chrome.browser.hub"
+  testonly = true
+  sources = [ "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostViewRenderTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_utils_java",
+  ]
 }
 
 robolectric_library("junit") {
@@ -58,6 +93,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostMediatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostViewUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonDataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactoryImplUnitTest.java",
@@ -75,6 +111,7 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
