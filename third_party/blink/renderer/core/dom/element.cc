@@ -4032,11 +4032,6 @@ TextDirection Element::ParentDirectionality() const {
     return TextDirection::kLtr;
   }
 
-  if (const HTMLSlotElement* slot =
-          ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
-    return ContainingShadowRoot()->host().CachedDirectionality();
-  }
-
   Node* parent = parentNode();
   if (Element* parent_element = DynamicTo<Element>(parent)) {
     return parent_element->CachedDirectionality();
@@ -4077,8 +4072,7 @@ void Element::UpdateDirectionalityAndDescendant(TextDirection direction) {
     Element* element = this;
     do {
       if (element != this &&
-          (ToHTMLSlotElementIfSupportsAssignmentOrNull(element) ||
-           !HTMLElement::ElementInheritsDirectionality(element) ||
+          (!HTMLElement::ElementInheritsDirectionality(element) ||
            element->CachedDirectionality() == direction)) {
         element = ElementTraversal::NextSkippingChildren(*element, this);
         continue;
@@ -4093,15 +4087,6 @@ void Element::UpdateDirectionalityAndDescendant(TextDirection direction) {
             if (HTMLElement::ElementInheritsDirectionality(child_element) &&
                 child_element->CachedDirectionality() != direction) {
               child_element->UpdateDirectionalityAndDescendant(direction);
-            }
-          }
-        }
-        if (shadow_root->HasSlotAssignment()) {
-          for (HTMLSlotElement* slot :
-               shadow_root->GetSlotAssignment().Slots()) {
-            if (HTMLElement::ElementInheritsDirectionality(slot) &&
-                slot->CachedDirectionality() != direction) {
-              slot->UpdateDirectionalityAndDescendant(direction);
             }
           }
         }
@@ -7233,13 +7218,7 @@ AtomicString Element::ComputeInheritedLanguage() const {
       value = document->ContentLanguage();
     }
 
-    const HTMLSlotElement* slot =
-        ToHTMLSlotElementIfSupportsAssignmentOrNull(n);
-    if (slot && RuntimeEnabledFeatures::HTMLLangNewInheritanceEnabled()) {
-      n = &n->ContainingShadowRoot()->host();
-    } else {
-      n = n->ParentOrShadowHostNode();
-    }
+    n = n->ParentOrShadowHostNode();
   } while (n && value.IsNull());
 
   return value;
