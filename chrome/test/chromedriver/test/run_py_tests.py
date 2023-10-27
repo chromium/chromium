@@ -1078,6 +1078,28 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     with self.assertRaises(chromedriver.StaleElementReference):
       self._driver.SwitchToFrame(element)
 
+  def testReturnFrameElement(self):
+    # The test is based on crbug.com/chromedriver/4477.
+    # It asserts the reason for closing the issue with WON'T FIX resolution.
+    # Informal explanation:
+    # Switching between frames is similar to switching between windows.
+    # ChromeDriver changes its focus to the new window / frame object.
+    # All the references outside it are treated as stale.
+    # Formal explantation:
+    # According to https://w3c.github.io/webdriver/#dfn-is-stale
+    # An element is stale if its node document is not the active document
+    # or if it is not connected.
+    # window.frameElement is connected because its shadow-including root is a
+    # document (just some document no matter which).
+    # However its node document is the higher level document, not the active
+    # one. Therefore it must be treated as stale.
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/nested.html'))
+    frame = self._driver.FindElement('tag name', 'iframe')
+    self._driver.SwitchToFrame(frame)
+    with self.assertRaises(chromedriver.StaleElementReference):
+      self._driver.ExecuteScript('return window.frameElement')
+
   def testGetTitle(self):
     script = 'document.title = "title"; return 1;'
     self.assertEqual(1, self._driver.ExecuteScript(script))
