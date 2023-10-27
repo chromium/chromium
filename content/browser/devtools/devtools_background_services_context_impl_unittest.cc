@@ -269,8 +269,17 @@ class DevToolsBackgroundServicesContextTest
   std::unique_ptr<ContentBrowserClient> browser_client_;
 };
 
+// Flaky on Fuchsia.
+// TODO(crbug.com/1492963): Reenable test on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_NothingStoredWithRecordingModeOff \
+  DISABLED_NothingStoredWithRecordingModeOff
+#else
+#define MAYBE_NothingStoredWithRecordingModeOff \
+  NothingStoredWithRecordingModeOff
+#endif
 TEST_F(DevToolsBackgroundServicesContextTest,
-       NothingStoredWithRecordingModeOff) {
+       MAYBE_NothingStoredWithRecordingModeOff) {
   // Initially there are no entries.
   EXPECT_TRUE(GetLoggedBackgroundServiceEvents().empty());
 
