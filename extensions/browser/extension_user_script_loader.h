@@ -206,8 +206,8 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
                                const absl::optional<std::string>& error);
 
   // Checks if the extension has initial dynamic scripts by checking if the
-  // extension has the scripting permission, and if URLPatterns from dynamic
-  // scripts are registered in prefs.
+  // extension has the scripting or user scripts permission, and if URLPatterns
+  // from dynamic scripts are registered in prefs.
   bool HasInitialDynamicScripts(const Extension& extension) const;
 
   // The IDs of dynamically registered scripts (e.g. registered by the

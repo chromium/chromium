@@ -956,8 +956,12 @@ bool ExtensionUserScriptLoader::HasInitialDynamicScripts(
   bool has_scripting_permission =
       extension.permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kScripting);
-  if (!has_scripting_permission)
+  bool has_users_scripts_permission =
+      extension.permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kUserScripts);
+  if (!has_scripting_permission && !has_users_scripts_permission) {
     return false;
+  }
 
   URLPatternSet initial_dynamic_patterns =
       scripting::GetPersistentScriptURLPatterns(browser_context(),
