@@ -604,6 +604,10 @@ extern const char kOverflowMenuCustomizationDescription[];
 extern const char kNTPViewHierarchyRepairName[];
 extern const char kNTPViewHierarchyRepairDescription[];
 
+// Title and description for the flag to possibly remove company entity images.
+extern const char kOmniboxCompanyEntityIconAdjustmentName[];
+extern const char kOmniboxCompanyEntityIconAdjustmentDescription[];
+
 // Title and description for the flag to fetch contextual zero-prefix
 // suggestions on search results page.
 extern const char kOmniboxFocusTriggersSRPZeroSuggestName[];

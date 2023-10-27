@@ -219,6 +219,25 @@ const FeatureEntry::FeatureVariation kOmniboxMaxURLMatchesVariations[] = {
 };
 
 const FeatureEntry::FeatureParam
+    kOmniboxCompanyEntityAdjustmentLeastAggressive[] = {
+        {"OmniboxCompanyEntityAdjustmentGroup", "least-aggressive"}};
+const FeatureEntry::FeatureParam kOmniboxCompanyEntityAdjustmentModerate[] = {
+    {"OmniboxCompanyEntityAdjustmentGroup", "moderate"}};
+const FeatureEntry::FeatureParam
+    kOmniboxCompanyEntityAdjustmentMostAggressive[] = {
+        {"OmniboxCompanyEntityAdjustmentGroup", "most-aggressive"}};
+
+const FeatureEntry::FeatureVariation
+    kOmniboxCompanyEntityAdjustmentVariations[] = {
+        {"Least Aggressive", kOmniboxCompanyEntityAdjustmentLeastAggressive,
+         std::size(kOmniboxCompanyEntityAdjustmentLeastAggressive), nullptr},
+        {"Moderate", kOmniboxCompanyEntityAdjustmentModerate,
+         std::size(kOmniboxCompanyEntityAdjustmentModerate), nullptr},
+        {"Most Aggressive", kOmniboxCompanyEntityAdjustmentMostAggressive,
+         std::size(kOmniboxCompanyEntityAdjustmentMostAggressive), nullptr},
+};
+
+const FeatureEntry::FeatureParam
     kDefaultBrowserVideoConditionsHalfscreenPromo[] = {
         {kDefaultBrowserVideoPromoVariant, kVideoConditionsHalfscreenPromo}};
 const FeatureEntry::FeatureParam
@@ -1606,6 +1625,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"password-sharing", flag_descriptions::kPasswordSharingName,
      flag_descriptions::kPasswordSharingDescription, flags_ui::kOsIos,
      MULTI_VALUE_TYPE(kEnablePasswordSharingChoices)},
+    {"omnibox-company-entity-icon-adjustment",
+     flag_descriptions::kOmniboxCompanyEntityIconAdjustmentName,
+     flag_descriptions::kOmniboxCompanyEntityIconAdjustmentDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kCompanyEntityIconAdjustment,
+                                    kOmniboxCompanyEntityAdjustmentVariations,
+                                    "OmniboxCompanyEntityAdjustment")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

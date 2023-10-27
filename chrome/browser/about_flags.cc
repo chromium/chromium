@@ -6395,8 +6395,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"omnibox-company-entity-icon-adjustment",
      flag_descriptions::kOmniboxCompanyEntityIconAdjustmentName,
-     flag_descriptions::kOmniboxCompanyEntityIconAdjustmentDescription,
-     kOsDesktop,
+     flag_descriptions::kOmniboxCompanyEntityIconAdjustmentDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          omnibox::kCompanyEntityIconAdjustment,
          kOmniboxCompanyEntityIconAdjustmentVariations,
