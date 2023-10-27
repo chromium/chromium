@@ -393,8 +393,8 @@ class FwupdClientImpl : public FwupdClient {
                              dbus::ErrorResponse* error_response) {
     bool success = true;
     if (error_response) {
-      LOG(ERROR) << "Firmware install failed with error: "
-                 << error_response->GetErrorName();
+      LOG(ERROR) << "Firmware install failed with error message: "
+                 << error_response->ToString();
       success = false;
     }
 
