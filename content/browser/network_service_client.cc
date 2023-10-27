@@ -271,7 +271,7 @@ void NetworkServiceClient::OnSSLCertificateError(
     const net::SSLInfo& ssl_info,
     bool fatal,
     OnSSLCertificateErrorCallback response) {
-  std::move(response).Run(net::ERR_INSECURE_RESPONSE);
+  std::move(response).Run(net_error);
 }
 
 void NetworkServiceClient::OnCertificateRequested(
