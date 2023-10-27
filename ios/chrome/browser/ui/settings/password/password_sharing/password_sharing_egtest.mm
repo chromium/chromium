@@ -247,7 +247,8 @@ void SignInAndEnableSync() {
       assertWithMatcher:grey_notNil()];
 }
 
-- (void)testTappingGotItInFamilyPromoInviteMembersView {
+// Disabled due to https://crbug.com/1496889
+- (void)DISABLED_testTappingGotItInFamilyPromoInviteMembersView {
   // Override family status with
   // `FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
