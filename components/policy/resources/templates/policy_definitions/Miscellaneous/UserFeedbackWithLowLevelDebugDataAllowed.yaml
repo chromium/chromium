@@ -10,7 +10,7 @@ example_value:
 - wifi
 features:
   dynamic_refresh: true
-  per_profile: true
+  per_profile: false
   internal_only: true
 items:
 - caption: Allow users to include low level debug data from all device types available below in user feedback
@@ -28,7 +28,7 @@ schema:
     type: string
     enum:
     - wifi
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:120-
 tags: []
 type: string-enum-list
