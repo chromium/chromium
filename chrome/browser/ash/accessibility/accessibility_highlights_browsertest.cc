@@ -10,9 +10,6 @@
 #include "ash/accessibility/ui/accessibility_highlight_layer.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
-#include "base/test/bind.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
@@ -21,10 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -70,8 +65,9 @@ class AccessibilityHighlightsBrowserTest
   }
 
   void OnFocusRingsChanged() {
-    if (focus_ring_waiter_)
+    if (focus_ring_waiter_) {
       std::move(focus_ring_waiter_).Run();
+    }
   }
 
   void WaitForFocusRingsChanged() {
@@ -151,6 +147,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
     WaitForFocusRingsChanged();
     AccessibilityCursorRingLayer* caret_layer =
         controller->caret_layer_for_testing();
+    while (caret_layer == nullptr) {
+      WaitForFocusRingsChanged();
+      caret_layer = controller->caret_layer_for_testing();
+    }
     ASSERT_TRUE(caret_layer);
     gfx::Rect initial_bounds = caret_layer->layer()->GetTargetBounds();
     EXPECT_TRUE(element_bounds.Contains(initial_bounds.CenterPoint()));
@@ -212,6 +212,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
   }
   EXPECT_EQ(bounds.y(), new_bounds.y());
   EXPECT_LT(bounds.x(), new_bounds.x());
+
+  prefs->SetBoolean(prefs::kAccessibilityCaretHighlightEnabled, false);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest, FocusHighlight) {
@@ -267,6 +269,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest, FocusHighlight) {
     }
     EXPECT_TRUE(focus_bounds.Contains(element_bounds));
   }
+
+  prefs->SetBoolean(prefs::kAccessibilityFocusHighlightEnabled, false);
 }
 
 }  // namespace ash

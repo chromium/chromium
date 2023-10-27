@@ -3,6 +3,7 @@
 # For more information, please see //chrome/test/base/chromeos/README.md.
 *Magn*.*
 AccessibilityExtension*
+AccessibilityHighlightsBrowserTest.*
 Autoclick*
 AshTtsApiTest*
 BrowserAppShelfControllerBrowserTest*
@@ -41,22 +42,13 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 # TODO(crbug.com/1478586): Flaky.
 -AutoclickWithAccessibilityServiceTest.ScrollableBoundsPlumbing
 # TODO(accessibility): these are native C++ tests that need investigation.
--TestAsNormalAndGuestUser/SpokenFeedbackTest.LandmarkNavigation*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.NavigateChromeVoxMenu*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.NextGraphic*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.OverviewMode*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfBlockedAppIconBadgeAnnouncement*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfNotificationBadgeAnnouncement*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfPausedAppIconBadgeAnnouncement*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.SpeakingTextUnderMouseForShelfItem*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.TouchExploreSecondaryDisplay*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.ShowFormControlsList*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.ShowHeadingList*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.MoveByCharacterPhoneticSpeechAndHints*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfIconFocusForward*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.FocusShelf*
 -SelectToSpeakTest.ContinuesReadingDuringResize
+-StickyKeysBrowserTest*
 # These tests do not run with the browser and do not need to run with Lacros.
+-AccessibilityCommonTest*
+-AccessibilityPrivateApiTest*
 -MagnificationManagerTest*
 -FullscreenMagnifierControllerTest.MovesContinuouslyWithMouse
 -FullscreenMagnifierControllerTest.MovesWithMouseAtEdge
@@ -65,6 +57,14 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -AccessibilityHighlightsBrowserTest.CursorHighlightAddsFocusRing
 -SelectToSpeakTest.SelectToSpeakDoesNotDismissTrayBubble
 -SelectToSpeakTest.SpeakStatusTray
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.TouchExploreStatusTray*
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfBlockedAppIconBadgeAnnouncement*
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfNotificationBadgeAnnouncement*
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfPausedAppIconBadgeAnnouncement*
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.SpeakingTextUnderMouseForShelfItem*
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.FocusShelf*
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfIconFocusForward*
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.TouchExploreSecondaryDisplay*
 # TODO(crbug/1484723): Flaky
 -BrowserAppShelfControllerBrowserTest.WindowedApps
 -BrowserAppShelfControllerBrowserTest.TabbedApps

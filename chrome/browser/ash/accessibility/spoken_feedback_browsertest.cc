@@ -806,12 +806,19 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShowHeadingList) {
   sm_.ExpectSpeechPattern("Sub-category Heading 3 Menu item 3 of *");
   sm_.Call([this]() { SendKeyPress(ui::VKEY_SPACE); });
   sm_.ExpectSpeech("Sub-category");
-  sm_.Call([this]() {
-    SendKeyPressWithSearch(ui::VKEY_DOWN);
-    SendKeyPressWithSearch(ui::VKEY_DOWN);
-    SendKeyPressWithSearch(ui::VKEY_DOWN);
-    SendKeyPressWithSearch(ui::VKEY_DOWN);
-  });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Sub-category");
+  if (IsLacrosRunning()) {
+    // With Lacros, it takes one more search+down to get out of the sub-category
+    // after having been in the heading menu.
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+    sm_.ExpectSpeech("Sub-category");
+  }
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Text");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Second sub-category");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_DOWN); });
   sm_.ExpectSpeech("Next page Button");
 
   sm_.Replay();
@@ -1060,10 +1067,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, LandmarkNavigation) {
 
   sm_.Call([this]() { SendKeyPress(ui::VKEY_SPACE); });
   sm_.ExpectSpeech("Navigation");
-  sm_.Call([this]() {
-    SendKeyPressWithSearch(ui::VKEY_UP);
-    SendKeyPressWithSearch(ui::VKEY_UP);
-  });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_UP); });
   sm_.ExpectSpeech("after main");
 
   sm_.Replay();
@@ -1083,7 +1087,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
 
   sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
   sm_.ExpectSpeechPattern(
-      "Chrom* - data:text slash html;charset equal utf-8, percent 0A less than "
+      "*window*data:text slash html;charset equal utf-8, percent 0A less than "
       "button autofocus greater than Click me less than slash button greater "
       "than");
   sm_.ExpectSpeechPattern("Press Ctrl plus W to close.");
