@@ -236,6 +236,12 @@ help.
 * **URL spoofing issues**, especially related to RTL or IDNs? See
   [go/url-spoofs](http://go/url-spoofs) for a guide to triaging these.
 * **SQLite bugs** can be assigned to mek@. CC drhsqlite@ for upstream issues.
+* **Fullscreen bugs** the Open Screen team is taking ownership of Full Screen
+  issues, including security bugs. Please assign Full Screen security issues to
+  takumif@chromium.org and cc: atadres@chromium.org, muyaoxu@google.com, and
+  mfoltz@chromium.org. They are also working on holistic solutions to improving
+  the security of fullscreen, so please remember to look for potential
+  duplicates of ongoing work.
 
 Note that **even when you are handing off triage to another team or point of
 contact**, it is your responsibility to ensure that the `Security_Severity` and
