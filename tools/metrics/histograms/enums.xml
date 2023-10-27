@@ -79923,6 +79923,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="Emails do not match"/>
 </enum>
 
+<enum name="OfficeOneDriveType">
+  <int value="0" label="Business"/>
+  <int value="1" label="Personal"/>
+  <int value="2" label="Other"/>
+</enum>
+
 <enum name="OfficeOpenExtensions">
   <int value="0" label="other"/>
   <int value="1" label=".doc"/>

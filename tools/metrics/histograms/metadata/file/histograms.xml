@@ -1078,6 +1078,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.ODFS.DriveType"
+    enum="OfficeOneDriveType" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: type of the user's Drive, according to the Graph
+    API. Recorded on service worker startup.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.ODFS.FileSize.{Direction}" units="KiB"
     expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
