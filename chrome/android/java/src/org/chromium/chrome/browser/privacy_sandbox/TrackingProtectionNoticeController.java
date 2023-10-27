@@ -189,33 +189,29 @@ public class TrackingProtectionNoticeController {
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
                         .with(MessageBannerProperties.ON_DISMISSED, onNoticeDismissed())
-                        .with(MessageBannerProperties.ON_FULLY_VISIBLE, onNoticeShown())
                         .build();
         mMessageDispatcher.enqueueWindowScopedMessage(mMessage, /* highPriority= */ true);
 
-        destroy();
-    }
+        // TODO(b/295927778): Move to the proper ON_SHOWN callback when implemented
+        //  in crbug.com/1491318.
+        logNoticeControllerEvent(NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN);
 
-    private static Callback<Boolean> onNoticeShown() {
-        return (shown) -> {
-            if (shown) {
-                TrackingProtectionBridge.noticeShown(getNoticeType());
-                logNoticeControllerEvent(NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN);
-            }
-        };
+        destroy();
     }
 
     private static Callback<Integer> onNoticeDismissed() {
         return (dismissReason) -> {
             switch (dismissReason) {
                 case DismissReason.GESTURE:
+                    TrackingProtectionBridge.noticeShown(getNoticeType());
                     TrackingProtectionBridge.noticeActionTaken(
                             getNoticeType(), NoticeAction.CLOSED);
                     break;
                 case DismissReason.PRIMARY_ACTION:
                 case DismissReason.SECONDARY_ACTION:
-                    // No need to report these actions: they are already recorded in their
-                    // respective handlers.
+                    // TODO(b/295927778): Move Shown action recording to the proper callback when
+                    // implemented in crbug.com/1491318.
+                    TrackingProtectionBridge.noticeShown(getNoticeType());
                     break;
                 default:
                     TrackingProtectionBridge.noticeActionTaken(getNoticeType(), NoticeAction.OTHER);

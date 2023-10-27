@@ -179,9 +179,6 @@ public final class TrackingProtectionNoticeTest {
                                 NoticeControllerEvent.CONTROLLER_CREATED,
                                 NoticeControllerEvent.ACTIVE_TAB_CHANGED,
                                 NoticeControllerEvent.CONTROLLER_NO_LONGER_OBSERVING,
-                                NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN,
-                                // The same message is removed and then shown again when switching
-                                // tab.
                                 NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN)
                         .build();
 
