@@ -122,7 +122,8 @@ class ToggleEffectsButtonLabel : public views::Label {
         0)));
   }
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds &available_size) const override {
     // TODO(crbug.com/1349528): The size constraint is not passed down from
     // the views tree in the first round of layout, so multiline label might
     // be broken here. We need to explicitly set the size to fix this.

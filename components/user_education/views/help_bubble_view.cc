@@ -627,6 +627,12 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   for (views::Label* label : labels_) {
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetMultiLine(true);
+    // There is a problem with FlexLayout under the current layout, CloseButton
+    // cannot stretch its width to achieve kEnd alignment behavior. Let's
+    // temporarily disable the bounded layout of views::Label. Waiting for
+    // FlexLayout to be fixed.
+    // TODO(crbug.com/1495581): Remove this.
+    label->SetUseLegacyPreferredSize(true);
     label->SetElideBehavior(gfx::NO_ELIDE);
   }
 
