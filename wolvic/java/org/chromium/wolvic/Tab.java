@@ -22,7 +22,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
-@JNINamespace("content")
+@JNINamespace("wolvic")
 public class Tab {
     private ActivityWindowAndroid mWindowAndroid;
     private ContentView mContentView;

@@ -9,14 +9,16 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+#include "wolvic/browser/wolvic_contents.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_browser_client.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using content::WebContents;
 using web_contents_delegate_android::WebContentsDelegateAndroid;
 
-namespace content {
+namespace wolvic {
 
 ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
     JNIEnv* env,
@@ -29,6 +31,9 @@ ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
       WebContents::Create(content::WebContents::CreateParams(
           is_off_the_record ? browser_client->off_the_record_browser_context()
                             : browser_client->browser_context()));
+
+  auto wolvic_contents = std::make_unique<WolvicContents>(web_contents.get());
+  wolvic_contents.release()->Init();
 
   return web_contents.release()->GetJavaWebContents();
 }
@@ -47,4 +52,4 @@ void JNI_Tab_SetWebContentsDelegate(
   web_contents->SetDelegate(web_contents_delegate.get());
 }
 
-}  // namespace content
+}  // namespace wolvic
