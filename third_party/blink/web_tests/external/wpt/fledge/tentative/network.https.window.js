@@ -163,3 +163,98 @@ subsetTest(promise_test, async test => {
   assert_equals(document.cookie, '');
   await deleteAllCookies();
 }, 'decisionLogicURL Set-Cookie.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await setCookie(test);
+
+  await joinGroupAndRunBasicFledgeTestExpectingWinner(
+      test,
+      { uuid: uuid,
+        interestGroupOverrides: {
+          trustedBiddingSignalsURL: TRUSTED_BIDDING_SIGNALS_URL,
+          trustedBiddingSignalsKeys: ['headers'],
+          biddingLogicURL: createBiddingScriptURL({
+              generateBid:
+                  `let headers = trustedBiddingSignals.headers;
+                   function checkHeader(name, value) {
+                     jsonActualValue = JSON.stringify(headers[name]);
+                     if (jsonActualValue !== JSON.stringify([value]))
+                       throw "Unexpected " + name + ": " + jsonActualValue;
+                   }
+                   checkHeader("accept", "application/json");
+                   checkHeader("sec-fetch-dest", "empty");
+                   checkHeader("sec-fetch-mode", "no-cors");
+                   checkHeader("sec-fetch-site", "same-origin");
+                   if (headers.cookie !== undefined)
+                     throw "Unexpected cookie: " + JSON.stringify(headers.cookie);
+                   if (headers.referer !== undefined)
+                     throw "Unexpected referer: " + JSON.stringify(headers.referer);`,
+          })
+        }
+      });
+}, 'trustedBiddingSignalsURL request headers.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await deleteAllCookies();
+
+  await joinGroupAndRunBasicFledgeTestExpectingWinner(
+      test,
+      { uuid: uuid,
+        interestGroupOverrides: { trustedBiddingSignalsURL: SET_COOKIE_URL }
+      });
+
+  assert_equals(document.cookie, '');
+  await deleteAllCookies();
+}, 'trustedBiddingSignalsURL Set-Cookie.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await setCookie(test);
+
+  let renderURL = createRenderURL(uuid, /*script=*/null, /*signalsParam=*/'headers');
+
+  await joinGroupAndRunBasicFledgeTestExpectingWinner(
+      test,
+      { uuid: uuid,
+        interestGroupOverrides: {
+          ads: [{ renderURL: renderURL }]
+        },
+        auctionConfigOverrides: {
+          trustedScoringSignalsURL: TRUSTED_SCORING_SIGNALS_URL,
+          decisionLogicURL: createDecisionScriptURL(uuid,
+            {
+              scoreAd:
+                  `let headers = trustedScoringSignals.renderURL["${renderURL}"];
+                   function checkHeader(name, value) {
+                     jsonActualValue = JSON.stringify(headers[name]);
+                     if (jsonActualValue !== JSON.stringify([value]))
+                       throw "Unexpected " + name + ": " + jsonActualValue;
+                   }
+                   checkHeader("accept", "application/json");
+                   checkHeader("sec-fetch-dest", "empty");
+                   checkHeader("sec-fetch-mode", "no-cors");
+                   checkHeader("sec-fetch-site", "same-origin");
+                   if (headers.cookie !== undefined)
+                     throw "Unexpected cookie: " + JSON.stringify(headers.cookie);
+                   if (headers.referer !== undefined)
+                     throw "Unexpected referer: " + JSON.stringify(headers.referer);`,
+            })
+        }
+      });
+}, 'trustedScoringSignalsURL request headers.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await deleteAllCookies();
+
+  await joinGroupAndRunBasicFledgeTestExpectingWinner(
+      test,
+      { uuid: uuid,
+        auctionConfigOverrides: { trustedScoringSignalsURL: SET_COOKIE_URL }
+      });
+
+  assert_equals(document.cookie, '');
+  await deleteAllCookies();
+}, 'trustedScoringSignalsURL Set-Cookie.');

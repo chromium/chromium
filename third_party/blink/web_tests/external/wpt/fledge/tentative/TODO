@@ -48,10 +48,8 @@ Need tests for (likely not a complete list):
 * Calling FLEDGE APIs (or at least leaveAdInterestGroup() with no args)
     in a non-ad FencedFrame.
 * Test network requests in terms of fetch behavior
-  * No cookies.
-  * No referrer.
   * Redirects not followed.
-  * etc.
+  * Network partition (not yet specced).
 * Test that await is not needed for same-origin interest groups
   * Verify that's still in the spec/explainer first.
 * executionMode
