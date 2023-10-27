@@ -181,9 +181,6 @@ export class DirectoryModel extends EventTarget {
     /** @private @type {string} */
     this.lastSearchQuery_ = '';
 
-    /** @private @type {?FilesAppDirEntry} */
-    this.myFilesEntry_ = null;
-
     /** @private @type {?Record<!VolumeId, !Volume>} */
     this.volumes_ = null;
 
@@ -1285,17 +1282,8 @@ export class DirectoryModel extends EventTarget {
    * @return {FilesAppDirEntry} myFilesEntry
    */
   getMyFiles() {
-    // @ts-ignore: error TS2322: Type 'FilesAppDirEntry | null' is not
-    // assignable to type 'FilesAppDirEntry'.
-    return this.myFilesEntry_;
-  }
-
-  /**
-   * Sets the current MyFilesEntry.
-   * @param {FilesAppDirEntry} myFilesEntry
-   */
-  setMyFiles(myFilesEntry) {
-    this.myFilesEntry_ = myFilesEntry;
+    const {myFilesEntry} = getMyFiles(getStore().getState());
+    return myFilesEntry;
   }
 
   /**
@@ -1323,10 +1311,10 @@ export class DirectoryModel extends EventTarget {
     // available because it returns UI-only entries too, like Linux files and
     // Play files.
     const locationInfo = this.volumeManager_.getLocationInfo(dirEntry);
-    if (locationInfo && this.myFilesEntry_ &&
+    if (locationInfo &&
         locationInfo.rootType === VolumeManagerCommon.RootType.DOWNLOADS &&
         locationInfo.isRootEntry) {
-      dirEntry = this.myFilesEntry_;
+      dirEntry = this.getMyFiles();
     }
 
     // If there is on-going scan, cancel it.

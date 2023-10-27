@@ -47,18 +47,6 @@ export function createFakeDirectoryModel() {
 
       /** @private @type {!FileFilter} */
       this.fileFilter_ = createFakeFileFilter();
-
-      /** @private @type {FilesAppDirEntry} */
-      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-      // 'FilesAppDirEntry'.
-      this.myFiles_ = null;
-    }
-
-    /**
-     * @param {FilesAppDirEntry} myFilesEntry
-     */
-    setMyFiles(myFilesEntry) {
-      this.myFiles_ = myFilesEntry;
     }
 
     /**

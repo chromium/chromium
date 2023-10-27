@@ -1518,10 +1518,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .WithBrowser()
             .NewDirectoryTree()
             .FeatureIds({"screenplay-3337ab4d-3c77-4908-a9ec-e43d2f52cd1f"}),
-        // TODO(b/301342979): enable the test
-        // TestCase("openFileDialogFileListShowContextMenu")
-        //     .WithBrowser()
-        //     .NewDirectoryTree(),
+        TestCase("openFileDialogFileListShowContextMenu")
+            .WithBrowser()
+            .NewDirectoryTree(),
         TestCase("openFileDialogGuestOs").WithBrowser().NewDirectoryTree(),
         TestCase("openFileDialogGuestOs")
             .WithBrowser()

@@ -718,9 +718,6 @@ export class NavigationListModel extends EventTarget {
       myFilesEntry = this.myFilesModel_.entry;
       myFilesModel = this.myFilesModel_;
     }
-    // @ts-ignore: error TS2345: Argument of type 'FilesAppEntry | EntryList |
-    // VolumeEntry' is not assignable to parameter of type 'FilesAppDirEntry'.
-    this.directoryModel_.setMyFiles(myFilesEntry);
     this.navigationItems_.push(myFilesModel);
 
     // Add Android to My Files.
