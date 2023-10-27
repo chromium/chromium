@@ -304,7 +304,7 @@ void OpenXrRenderLoop::ClearPendingFrameInternal() {
 }
 
 bool OpenXrRenderLoop::IsUsingSharedImages() const {
-  return openxr_->IsUsingSharedImages();
+  return graphics_binding_->IsUsingSharedImages();
 }
 
 void OpenXrRenderLoop::SubmitFrame(int16_t frame_index,

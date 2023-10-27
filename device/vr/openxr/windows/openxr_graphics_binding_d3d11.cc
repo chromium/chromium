@@ -116,7 +116,7 @@ XrResult OpenXrGraphicsBindingD3D11::EnumerateSwapchainImages(
   return XR_SUCCESS;
 }
 
-void OpenXrGraphicsBindingD3D11::ClearSwapChainImages() {
+void OpenXrGraphicsBindingD3D11::ClearSwapchainImages() {
   color_swapchain_images_.clear();
 }
 
@@ -264,6 +264,10 @@ bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
   swap_chain_info.d3d11_fence = std::move(d3d11_fence);
 
   return true;
+}
+
+bool OpenXrGraphicsBindingD3D11::ShouldFlipSubmittedImage() {
+  return IsUsingSharedImages();
 }
 
 void OpenXrGraphicsBindingD3D11::OnSwapchainImageSizeChanged() {

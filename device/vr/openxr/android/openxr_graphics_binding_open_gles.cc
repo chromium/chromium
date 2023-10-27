@@ -183,7 +183,7 @@ XrResult OpenXrGraphicsBindingOpenGLES::EnumerateSwapchainImages(
   return XR_SUCCESS;
 }
 
-void OpenXrGraphicsBindingOpenGLES::ClearSwapChainImages() {
+void OpenXrGraphicsBindingOpenGLES::ClearSwapchainImages() {
   color_swapchain_images_.clear();
 }
 
@@ -326,6 +326,10 @@ bool OpenXrGraphicsBindingOpenGLES::WaitOnFence(gfx::GpuFence& gpu_fence) {
   local_fence->ServerWait();
 
   return true;
+}
+
+bool OpenXrGraphicsBindingOpenGLES::ShouldFlipSubmittedImage() {
+  return false;
 }
 
 void OpenXrGraphicsBindingOpenGLES::OnSwapchainImageActivated(
