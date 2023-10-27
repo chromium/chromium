@@ -9,7 +9,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/password_manager/core/browser/reauth_purpose.h"
 
 namespace extensions {
 

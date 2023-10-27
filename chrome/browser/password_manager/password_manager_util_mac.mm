@@ -81,25 +81,4 @@ bool AuthenticateUser(std::u16string prompt_string) {
   return static_cast<bool>(authorization);
 }
 
-std::u16string GetMessageForLoginPrompt(
-    password_manager::ReauthPurpose purpose) {
-  switch (purpose) {
-    case password_manager::ReauthPurpose::VIEW_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-    case password_manager::ReauthPurpose::COPY_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-    case password_manager::ReauthPurpose::EDIT_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-    case password_manager::ReauthPurpose::EXPORT:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-    case password_manager::ReauthPurpose::IMPORT:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
-  }
-}
-
 }  // namespace password_manager_util_mac

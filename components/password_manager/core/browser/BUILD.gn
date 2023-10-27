@@ -152,7 +152,6 @@ static_library("browser") {
     "password_ui_utils.h",
     "possible_username_data.cc",
     "possible_username_data.h",
-    "reauth_purpose.h",
     "store_metrics_reporter.cc",
     "store_metrics_reporter.h",
     "sync_credentials_filter.cc",

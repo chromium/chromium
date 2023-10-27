@@ -23,18 +23,11 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/password_manager/password_manager_util_win.h"
-#elif BUILDFLAG(IS_MAC)
-#include "chrome/browser/password_manager/password_manager_util_mac.h"
-#endif
 
 namespace {
 
@@ -229,11 +222,10 @@ void SaveUpdateBubbleController::ShouldRevealPasswords(
 
   std::u16string message;
 #if BUILDFLAG(IS_MAC)
-  message = password_manager_util_mac::GetMessageForLoginPrompt(
-      password_manager::ReauthPurpose::VIEW_PASSWORD);
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
 #elif BUILDFLAG(IS_WIN)
-  message = password_manager_util_win::GetMessageForLoginPrompt(
-      password_manager::ReauthPurpose::VIEW_PASSWORD);
+  message = l10n_util::GetStringUTF16(IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
 #endif
   // Bind OnUserAuthenticationCompleted() using a weak_ptr such that if the
   // bubble is closed (and controller is destructed) while the reauth flow is

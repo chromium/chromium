@@ -27,7 +27,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
-#include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #include "components/password_manager/core/browser/sync/password_account_storage_settings_watcher.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"

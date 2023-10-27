@@ -46,6 +46,7 @@
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/extensions/api/passwords_private.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -77,14 +78,6 @@
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/password_manager/password_manager_util_win.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/password_manager/password_manager_util_mac.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -130,21 +123,40 @@ extensions::api::passwords_private::ExportProgressStatus ConvertStatus(
       EXPORT_PROGRESS_STATUS_NONE;
 }
 
-password_manager::ReauthPurpose GetReauthPurpose(
+std::u16string GetReauthPurpose(
     extensions::api::passwords_private::PlaintextReason reason) {
+#if BUILDFLAG(IS_MAC)
+
   switch (reason) {
     case extensions::api::passwords_private::PLAINTEXT_REASON_VIEW:
-      return password_manager::ReauthPurpose::VIEW_PASSWORD;
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
     case extensions::api::passwords_private::PLAINTEXT_REASON_COPY:
-      return password_manager::ReauthPurpose::COPY_PASSWORD;
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
     case extensions::api::passwords_private::PLAINTEXT_REASON_EDIT:
-      return password_manager::ReauthPurpose::EDIT_PASSWORD;
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
     case extensions::api::passwords_private::PLAINTEXT_REASON_NONE:
-      break;
+      NOTREACHED_NORETURN();
   }
-
-  NOTREACHED();
-  return password_manager::ReauthPurpose::VIEW_PASSWORD;
+#elif BUILDFLAG(IS_WIN)
+  switch (reason) {
+    case extensions::api::passwords_private::PLAINTEXT_REASON_VIEW:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
+    case extensions::api::passwords_private::PLAINTEXT_REASON_COPY:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT);
+    case extensions::api::passwords_private::PLAINTEXT_REASON_EDIT:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
+    case extensions::api::passwords_private::PLAINTEXT_REASON_NONE:
+      NOTREACHED_NORETURN();
+  }
+#else
+  return std::u16string();
+#endif
 }
 
 password_manager::metrics_util::AccessPasswordInSettingsEvent
@@ -266,17 +278,6 @@ webauthn::PasskeyModel* MaybeGetPasskeyModel(Profile* profile) {
     return PasskeyModelFactory::GetInstance()->GetForProfile(profile);
   }
   return nullptr;
-}
-
-std::u16string ConvertPurposeToMessage(
-    password_manager::ReauthPurpose purpose) {
-#if BUILDFLAG(IS_WIN)
-  return password_manager_util_win::GetMessageForLoginPrompt(purpose);
-#elif BUILDFLAG(IS_MAC)
-  return password_manager_util_mac::GetMessageForLoginPrompt(purpose);
-#else
-  return std::u16string();
-#endif
 }
 
 }  // namespace
@@ -535,7 +536,7 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
     content::WebContents* web_contents) {
   AuthenticateUser(
       web_contents, PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod(),
-      ConvertPurposeToMessage(GetReauthPurpose(reason)),
+      GetReauthPurpose(reason),
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult,
           weak_ptr_factory_.GetWeakPtr(), id, reason, std::move(callback)));
@@ -547,8 +548,7 @@ void PasswordsPrivateDelegateImpl::RequestCredentialsDetails(
     content::WebContents* web_contents) {
   AuthenticateUser(
       web_contents, PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod(),
-      ConvertPurposeToMessage(
-          GetReauthPurpose(api::passwords_private::PLAINTEXT_REASON_VIEW)),
+      GetReauthPurpose(api::passwords_private::PLAINTEXT_REASON_VIEW),
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult,
           weak_ptr_factory_.GetWeakPtr(), ids, std::move(callback),
@@ -767,9 +767,17 @@ void PasswordsPrivateDelegateImpl::ContinueImport(
     return;
   }
 
+  std::u16string message;
+#if BUILDFLAG(IS_MAC)
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+#elif BUILDFLAG(IS_WIN)
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT);
+#endif
+
   AuthenticateUser(
-      web_contents, base::Seconds(0),
-      ConvertPurposeToMessage(password_manager::ReauthPurpose::IMPORT),
+      web_contents, base::Seconds(0), message,
       base::BindOnce(&PasswordsPrivateDelegateImpl::OnImportPasswordsAuthResult,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(results_callback), selected_ids));
@@ -782,9 +790,17 @@ void PasswordsPrivateDelegateImpl::ResetImporter(bool delete_file) {
 void PasswordsPrivateDelegateImpl::ExportPasswords(
     base::OnceCallback<void(const std::string&)> accepted_callback,
     content::WebContents* web_contents) {
+  std::u16string message;
+#if BUILDFLAG(IS_MAC)
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+#elif BUILDFLAG(IS_WIN)
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT);
+#endif
+
   AuthenticateUser(
-      web_contents, base::Seconds(0),
-      ConvertPurposeToMessage(password_manager::ReauthPurpose::EXPORT),
+      web_contents, base::Seconds(0), message,
       base::BindOnce(&PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(accepted_callback), web_contents));

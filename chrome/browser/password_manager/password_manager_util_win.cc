@@ -348,27 +348,6 @@ bool AuthenticateUser(gfx::NativeWindow window,
   return retval;
 }
 
-std::u16string GetMessageForLoginPrompt(
-    password_manager::ReauthPurpose purpose) {
-  switch (purpose) {
-    case password_manager::ReauthPurpose::VIEW_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
-    case password_manager::ReauthPurpose::COPY_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT);
-    case password_manager::ReauthPurpose::EDIT_PASSWORD:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
-    case password_manager::ReauthPurpose::EXPORT:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT);
-    case password_manager::ReauthPurpose::IMPORT:
-      return l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT);
-  }
-}
-
 bool CanAuthenticateWithScreenLock() {
   WCHAR cur_username[CREDUI_MAX_USERNAME_LENGTH + 1] = {};
   DWORD cur_username_length = std::size(cur_username);

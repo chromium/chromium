@@ -11,32 +11,28 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::TestWithParam;
 using ::testing::Values;
-using password_manager::ReauthPurpose;
 
 namespace extensions {
 
 using MockTimeoutCallback =
     base::MockCallback<PasswordAccessAuthTimeoutHandler::TimeoutCallback>;
 
-class PasswordAccessAuthTimeoutHandlerTest
-    : public TestWithParam<std::tuple<ReauthPurpose, bool>> {
+class PasswordAccessAuthTimeoutHandlerTest : public TestWithParam<bool> {
  public:
   PasswordAccessAuthTimeoutHandlerTest() = default;
 
-  ReauthPurpose purpose() { return std::get<0>(GetParam()); }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
   MockTimeoutCallback& timeout_callback() { return timeout_callback_; }
   PasswordAccessAuthTimeoutHandler& handler() { return handler_; }
 
  protected:
   void SetUp() override {
-    if (std::get<1>(GetParam())) {
+    if (GetParam()) {
       feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
     }
     handler_.Init(timeout_callback_.Get());
@@ -73,14 +69,8 @@ TEST_P(PasswordAccessAuthTimeoutHandlerTest, RestartAuthTimer) {
       PasswordAccessAuthTimeoutHandler::GetAuthValidityPeriod());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    PasswordAccessAuthTimeoutHandlerTest,
-    testing::Combine(testing::Values(ReauthPurpose::VIEW_PASSWORD,
-                                     ReauthPurpose::COPY_PASSWORD,
-                                     ReauthPurpose::EDIT_PASSWORD,
-                                     ReauthPurpose::EXPORT,
-                                     ReauthPurpose::IMPORT),
-                     testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(,
+                         PasswordAccessAuthTimeoutHandlerTest,
+                         testing::Bool());
 
 }  // namespace extensions
