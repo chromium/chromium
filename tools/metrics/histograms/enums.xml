@@ -28139,6 +28139,14 @@ Called by update_debug_scenarios.py.-->
       label="GenericIssue::FormInputHasWrongButWellIntendedAutocompleteValueError"/>
   <int value="76" label="StylesheetLoadingIssue::LateImportRule"/>
   <int value="77" label="StylesheetLoadingIssue::RequestFailed"/>
+  <int value="78" label="CorsIssue::PreflightMissingPrivateNetworkAccessId"/>
+  <int value="79" label="CorsIssue::PreflightMissingPrivateNetworkAccessName"/>
+  <int value="80" label="CorsIssue::PrivateNetworkAccessPermissionUnavailable"/>
+  <int value="81" label="CorsIssue::PrivateNetworkAccessPermissionDenied"/>
+  <int value="82" label="CookieIssue::WarnThirdPartyPhaseout::ReadCookie"/>
+  <int value="83" label="CookieIssue::WarnThirdPartyPhaseout::SetCookie"/>
+  <int value="84" label="CookieIssue::ExcludeThirdPartyPhaseout::ReadCookie"/>
+  <int value="85" label="CookieIssue::ExcludeThirdPartyPhaseout::SetCookie"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">
