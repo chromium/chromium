@@ -416,6 +416,69 @@ TEST_F(PeripheralCustomizationEventRewriterTest, MouseWheelDuringObserving) {
             continuation.passthrough_event->AsMouseWheelEvent()->offset());
 }
 
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       MouseEventFlagAppliedOnRelease) {
+  TestEventRewriterContinuation continuation;
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"",
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kDisable)));
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kMiddleClick)));
+
+  ui::KeyEvent key_press_event =
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0);
+  ui::KeyEvent key_release_event =
+      CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_0);
+
+  rewriter_->RewriteEvent(key_press_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  continuation.reset();
+  rewriter_->RewriteEvent(key_release_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+
+  ui::MouseEvent expected_event(
+      ui::ET_MOUSE_RELEASED, gfx::PointF{}, gfx::PointF{}, /*time_stamp=*/{},
+      ui::EF_MIDDLE_MOUSE_BUTTON, ui::EF_MIDDLE_MOUSE_BUTTON);
+  EXPECT_EQ(ConvertToString(expected_event),
+            ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       KeyEventFlagNotAppliedOnRelease) {
+  TestEventRewriterContinuation continuation;
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::VKEY_CONTROL, static_cast<int>(ui::DomCode::CONTROL_LEFT),
+          static_cast<int>(ui::DomKey::CONTROL), ui::EF_CONTROL_DOWN,
+          /*key_display=*/""))));
+
+  ui::KeyEvent key_press_event =
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0);
+  ui::KeyEvent key_release_event =
+      CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_0);
+
+  rewriter_->RewriteEvent(key_press_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  continuation.reset();
+  rewriter_->RewriteEvent(key_release_event,
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+
+  ui::KeyEvent expected_event(ui::ET_KEY_RELEASED, ui::VKEY_CONTROL,
+                              ui::DomCode::CONTROL_LEFT, ui::EF_NONE,
+                              ui::DomKey::CONTROL, /*time_stamp=*/{});
+  EXPECT_EQ(ConvertToString(expected_event),
+            ConvertToString(*continuation.passthrough_event));
+}
+
 class MouseButtonObserverTest
     : public PeripheralCustomizationEventRewriterTest,
       public testing::WithParamInterface<EventRewriterTestData> {};
@@ -1116,8 +1179,8 @@ TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
       CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_0, ui::EF_NONE),
       continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
-  EXPECT_EQ(ConvertToString(
-                CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code, flag)),
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code,
+                                                 ui::EF_NONE)),
             ConvertToString(*continuation.passthrough_event));
 
   continuation.reset();
@@ -1164,8 +1227,8 @@ TEST_P(ModifierRewritingTest, MultiModifierKeyCombo) {
       CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_0, ui::EF_NONE),
       continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
-  EXPECT_EQ(ConvertToString(
-                CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code, flag)),
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code,
+                                                 ui::EF_NONE)),
             ConvertToString(*continuation.passthrough_event));
 
   continuation.reset();
@@ -1215,8 +1278,8 @@ TEST_P(ModifierRewritingTest, MouseEvent) {
       CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_0, ui::EF_NONE),
       continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
-  EXPECT_EQ(ConvertToString(
-                CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code, flag)),
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code,
+                                                 ui::EF_NONE)),
             ConvertToString(*continuation.passthrough_event));
 
   continuation.reset();

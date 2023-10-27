@@ -111,6 +111,25 @@ mojom::KeyEvent GetStaticShortcutAction(mojom::StaticShortcutAction action) {
   return key_event;
 }
 
+int ConvertKeyCodeToFlags(ui::KeyboardCode key_code) {
+  switch (key_code) {
+    case ui::VKEY_LWIN:
+    case ui::VKEY_RWIN:
+      return ui::EF_COMMAND_DOWN;
+    case ui::VKEY_CONTROL:
+      return ui::EF_CONTROL_DOWN;
+    case ui::VKEY_SHIFT:
+    case ui::VKEY_LSHIFT:
+    case ui::VKEY_RSHIFT:
+      return ui::EF_SHIFT_DOWN;
+    case ui::VKEY_MENU:
+    case ui::VKEY_RMENU:
+      return ui::EF_ALT_DOWN;
+    default:
+      return ui::EF_NONE;
+  }
+}
+
 std::unique_ptr<ui::Event> RewriteEventToKeyEvent(
     const ui::Event& event,
     const mojom::KeyEvent& key_event) {
@@ -118,9 +137,17 @@ std::unique_ptr<ui::Event> RewriteEventToKeyEvent(
                                     event.type() == ui::ET_KEY_PRESSED)
                                        ? ui::ET_KEY_PRESSED
                                        : ui::ET_KEY_RELEASED;
+  int flags_to_apply = key_event.modifiers;
+  // Do not apply modifier flags when the key is a modifier and it is a release
+  // event. Modifier keys do not apply their flag on release.
+  if (event_type == ui::ET_KEY_RELEASED &&
+      key_event.modifiers ==
+          static_cast<uint32_t>(ConvertKeyCodeToFlags(key_event.vkey))) {
+    flags_to_apply = ui::EF_NONE;
+  }
   auto rewritten_event = std::make_unique<ui::KeyEvent>(
       event_type, key_event.vkey, static_cast<ui::DomCode>(key_event.dom_code),
-      key_event.modifiers | event.flags(),
+      flags_to_apply | event.flags(),
       static_cast<ui::DomKey>(key_event.dom_key), event.time_stamp());
   rewritten_event->set_source_device_id(event.source_device_id());
   return rewritten_event;
@@ -135,10 +162,11 @@ std::unique_ptr<ui::Event> RewriteEventToMouseButtonEvent(
 
   auto* screen = display::Screen::GetScreen();
   CHECK(screen);
-  const gfx::PointF location = gfx::ScalePoint(
-      gfx::PointF(screen->GetCursorScreenPoint()),
-      screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint())
-          .device_scale_factor());
+  auto display = screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
+  const gfx::PointF location =
+      gfx::ScalePoint(gfx::PointF(screen->GetCursorScreenPoint() -
+                                  display.bounds().origin().OffsetFromOrigin()),
+                      display.device_scale_factor());
 
   const ui::EventType type = (event.type() == ui::ET_MOUSE_PRESSED ||
                               event.type() == ui::ET_KEY_PRESSED)
@@ -217,25 +245,6 @@ mojom::ButtonPtr GetButtonFromMouseEvent(const ui::MouseEvent& mouse_event) {
   }
 
   NOTREACHED_NORETURN();
-}
-
-int ConvertKeyCodeToFlags(ui::KeyboardCode key_code) {
-  switch (key_code) {
-    case ui::VKEY_LWIN:
-    case ui::VKEY_RWIN:
-      return ui::EF_COMMAND_DOWN;
-    case ui::VKEY_CONTROL:
-      return ui::EF_CONTROL_DOWN;
-    case ui::VKEY_SHIFT:
-    case ui::VKEY_LSHIFT:
-    case ui::VKEY_RSHIFT:
-      return ui::EF_SHIFT_DOWN;
-    case ui::VKEY_MENU:
-    case ui::VKEY_RMENU:
-      return ui::EF_ALT_DOWN;
-    default:
-      return ui::EF_NONE;
-  }
 }
 
 int ConvertButtonToFlags(const mojom::Button& button) {
@@ -532,10 +541,17 @@ ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteKeyEvent(
 
   std::unique_ptr<ui::Event> rewritten_event;
   mojom::ButtonPtr button = mojom::Button::NewVkey(key_event.key_code());
+  bool updated_button_map = false;
   if (RewriteEventFromButton(key_event, *button, rewritten_event)) {
     return DiscardEvent(continuation);
   }
-  UpdatePressedButtonMap(std::move(button), key_event, rewritten_event);
+
+  // Update pressed button map now if either there was no rewrite or if its not
+  // a mouse release event.
+  if (!rewritten_event || rewritten_event->type() != ui::ET_MOUSE_RELEASED) {
+    updated_button_map = true;
+    UpdatePressedButtonMap(std::move(button), key_event, rewritten_event);
+  }
 
   if (!rewritten_event) {
     rewritten_event = std::make_unique<ui::KeyEvent>(key_event);
@@ -543,6 +559,11 @@ ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteKeyEvent(
 
   RemoveRemappedModifiers(*rewritten_event);
   ApplyRemappedModifiers(*rewritten_event);
+
+  if (!updated_button_map) {
+    UpdatePressedButtonMap(std::move(button), key_event, rewritten_event);
+  }
+
   return SendEvent(continuation, rewritten_event.get());
 }
 
@@ -552,6 +573,14 @@ void PeripheralCustomizationEventRewriter::UpdatePressedButtonMap(
     const std::unique_ptr<ui::Event>& rewritten_event) {
   DeviceIdButton device_id_button_key =
       DeviceIdButton{original_event.source_device_id(), std::move(button)};
+
+  // If the button is released, the entry must be removed from the map.
+  if (original_event.type() == ui::ET_MOUSE_RELEASED ||
+      original_event.type() == ui::ET_KEY_RELEASED) {
+    device_button_to_flags_.erase(std::move(device_id_button_key));
+    return;
+  }
+
   const int key_event_flags =
       (rewritten_event && rewritten_event->IsKeyEvent())
           ? ConvertKeyCodeToFlags(rewritten_event->AsKeyEvent()->key_code())
@@ -561,17 +590,15 @@ void PeripheralCustomizationEventRewriter::UpdatePressedButtonMap(
           ? rewritten_event->AsMouseEvent()->changed_button_flags()
           : 0;
 
-  // If the button is released, the entry must be removed from the map.
-  if (original_event.type() == ui::ET_MOUSE_RELEASED ||
-      original_event.type() == ui::ET_KEY_RELEASED) {
-    device_button_to_flags_.erase(device_id_button_key);
+  const int combined_flags = key_event_flags | mouse_event_flags;
+  if (!combined_flags) {
     return;
   }
 
   // Add the entry to the map with the flags that must be applied to other
   // events.
   device_button_to_flags_.insert_or_assign(std::move(device_id_button_key),
-                                           key_event_flags | mouse_event_flags);
+                                           combined_flags);
 }
 
 ui::EventDispatchDetails
@@ -600,19 +627,32 @@ PeripheralCustomizationEventRewriter::RewriteMouseEvent(
   }
 
   std::unique_ptr<ui::Event> rewritten_event;
+  mojom::ButtonPtr button;
+  bool updated_button_map = false;
   if (IsMouseButtonEvent(mouse_event) && mouse_event.changed_button_flags()) {
-    mojom::ButtonPtr button = GetButtonFromMouseEvent(mouse_event);
+    button = GetButtonFromMouseEvent(mouse_event);
     if (RewriteEventFromButton(mouse_event, *button, rewritten_event)) {
       return DiscardEvent(continuation);
     }
-    UpdatePressedButtonMap(std::move(button), mouse_event, rewritten_event);
+    // Update pressed button map now if either there was no rewrite or if its
+    // not a mouse release event.
+    if (!rewritten_event || rewritten_event->type() != ui::ET_MOUSE_RELEASED) {
+      updated_button_map = true;
+      UpdatePressedButtonMap(std::move(button), mouse_event, rewritten_event);
+    }
   }
+
   if (!rewritten_event) {
     rewritten_event = CloneEvent(mouse_event);
   }
 
   RemoveRemappedModifiers(*rewritten_event);
   ApplyRemappedModifiers(*rewritten_event);
+
+  if (!updated_button_map) {
+    UpdatePressedButtonMap(std::move(button), mouse_event, rewritten_event);
+  }
+
   return SendEvent(continuation, rewritten_event.get());
 }
 
