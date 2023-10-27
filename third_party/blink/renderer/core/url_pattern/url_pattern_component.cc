@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -239,6 +240,16 @@ Component* Component::Compile(StringView pattern,
     regexp = MakeGarbageCollected<ScriptRegexp>(
         String(regexp_string.data(), regexp_string.size()), case_sensitive,
         MultilineMode::kMultilineDisabled, UnicodeMode::kUnicode);
+
+    // There are some incompatible regexp patterns between "u" and "v". Counting
+    // those cases to measure the potential impact of upgrading to the "v" flag.
+    ScriptRegexp* regexp_v = MakeGarbageCollected<ScriptRegexp>(
+        String(regexp_string.data(), regexp_string.size()), case_sensitive,
+        MultilineMode::kMultilineDisabled, UnicodeMode::kUnicodeSets);
+    base::UmaHistogramBoolean(
+        "Blink.URLPattern.IncompatiblePatternWithUnicodeSetsMode",
+        regexp->IsValid() && !regexp_v->IsValid());
+
     if (!regexp->IsValid()) {
       // The regular expression failed to compile.  This means that some
       // custom regexp group within the pattern is illegal.  Attempt to

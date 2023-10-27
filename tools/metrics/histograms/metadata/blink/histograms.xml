@@ -3723,6 +3723,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.URLPattern.IncompatiblePatternWithUnicodeSetsMode"
+    enum="Boolean" expires_after="2024-01-25">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>jbroman@chromium.org</owner>
+  <summary>
+    Currently the URL Pattern API uses the regular expression engine with the
+    unicode mode (the u flag). This is going to be replaced with the new unicode
+    set mode (the v flag). There are some incompatible patterns between the u
+    flag and the v flag. This histogram measures the inpact of the update,
+    recorded once per constructor.
+  </summary>
+</histogram>
+
 <histogram name="Blink.UseCounter.AnimatedCSSProperties"
     enum="MappedCSSProperties" expires_after="never">
 <!-- expires-never: used by Chrome Platform Status dashboard -->
