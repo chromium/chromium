@@ -175,9 +175,6 @@ ci.builder(
     execution_timeout = 7 * time.hour,
     gn_args = {
         "local": "debug_build",
-        "goma": gn_args.config(
-            configs = ["debug_build", "goma"],
-        ),
         "reclient": gn_args.config(
             configs = ["debug_build", "reclient"],
         ),
