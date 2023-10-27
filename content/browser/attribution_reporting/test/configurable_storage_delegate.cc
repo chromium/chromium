@@ -132,7 +132,8 @@ ConfigurableStorageDelegate::GetRandomizedResponse(
   if (exceeds_channel_capacity_limit_) {
     return base::unexpected(ExceedsChannelCapacityLimit());
   }
-  return RandomizedResponseData(randomized_response_rate_,
+  double channel_capacity = 0;  // Not used by downstream code.
+  return RandomizedResponseData(randomized_response_rate_, channel_capacity,
                                 randomized_response_);
 }
 

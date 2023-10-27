@@ -11,11 +11,21 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/time/time.h"
+#include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/event_report_windows.h"
+#include "components/attribution_reporting/source_type.mojom.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
+namespace {
 
-TEST(CombinatoricsTest, BinomialCoefficient) {
+using ::attribution_reporting::EventReportWindows;
+using ::attribution_reporting::mojom::SourceType;
+
+TEST(PrivacyMathTest, BinomialCoefficient) {
   // Test cases generated via a python program using scipy.special.comb.
   struct {
     int n;
@@ -49,12 +59,13 @@ TEST(CombinatoricsTest, BinomialCoefficient) {
       {100, 5, 75287520},
   };
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(BinomialCoefficient(test_case.n, test_case.k), test_case.expected)
+    EXPECT_EQ(internal::BinomialCoefficient(test_case.n, test_case.k),
+              test_case.expected)
         << "n=" << test_case.n << ", k=" << test_case.k;
   }
 }
 
-TEST(CombinatoricsTest, GetKCombinationAtIndex) {
+TEST(PrivacyMathTest, GetKCombinationAtIndex) {
   // Test cases vetted via an equivalent calculator:
   // https://planetcalc.com/8592/
   struct {
@@ -93,7 +104,7 @@ TEST(CombinatoricsTest, GetKCombinationAtIndex) {
       {2924, 3, {26, 25, 24}},
   };
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(GetKCombinationAtIndex(test_case.index, test_case.k),
+    EXPECT_EQ(internal::GetKCombinationAtIndex(test_case.index, test_case.k),
               test_case.expected)
         << "index=" << test_case.index << ", k=" << test_case.k;
   }
@@ -102,12 +113,13 @@ TEST(CombinatoricsTest, GetKCombinationAtIndex) {
 // Simple stress test to make sure that GetKCombinationAtIndex is returning
 // combinations uniquely indexed by the given index, i.e. there are never any
 // repeats.
-TEST(CombinatoricsTest, GetKCombination_NoRepeats) {
+TEST(PrivacyMathTest, GetKCombination_NoRepeats) {
   for (int k = 1; k < 5; k++) {
     std::set<std::vector<int>> seen_combinations;
     for (int index = 0; index < 3000; index++) {
       EXPECT_TRUE(
-          seen_combinations.insert(GetKCombinationAtIndex(index, k)).second)
+          seen_combinations.insert(internal::GetKCombinationAtIndex(index, k))
+              .second)
           << "index=" << index << ", k=" << k;
     }
   }
@@ -116,28 +128,28 @@ TEST(CombinatoricsTest, GetKCombination_NoRepeats) {
 // The k-combination at a given index is the unique set of k positive integers
 // a_k > a_{k-1} > ... > a_2 > a_1 >= 0 such that
 // `index` = \sum_{i=1}^k {a_i}\choose{i}
-TEST(CombinatoricsTest, GetKCombination_MatchesDefinition) {
+TEST(PrivacyMathTest, GetKCombination_MatchesDefinition) {
   for (int k = 1; k < 5; k++) {
     for (int index = 0; index < 3000; index++) {
-      std::vector<int> combination = GetKCombinationAtIndex(index, k);
+      std::vector<int> combination = internal::GetKCombinationAtIndex(index, k);
       int sum = 0;
       for (int i = 0; i < k; i++) {
-        sum += BinomialCoefficient(combination[i], k - i);
+        sum += internal::BinomialCoefficient(combination[i], k - i);
       }
       EXPECT_EQ(index, sum);
     }
   }
 }
 
-TEST(CombinatoricsTest, GetNumberOfStarsAndBarsSequences) {
-  EXPECT_EQ(3,
-            GetNumberOfStarsAndBarsSequences(/*num_stars=*/1, /*num_bars=*/2));
+TEST(PrivacyMathTest, GetNumberOfStarsAndBarsSequences) {
+  EXPECT_EQ(3, internal::GetNumberOfStarsAndBarsSequences(/*num_stars=*/1,
+                                                          /*num_bars=*/2));
 
-  EXPECT_EQ(2925,
-            GetNumberOfStarsAndBarsSequences(/*num_stars=*/3, /*num_bars=*/24));
+  EXPECT_EQ(2925, internal::GetNumberOfStarsAndBarsSequences(/*num_stars=*/3,
+                                                             /*num_bars=*/24));
 }
 
-TEST(CombinatoricsTest, GetStarIndices) {
+TEST(PrivacyMathTest, GetStarIndices) {
   const struct {
     int num_stars;
     int num_bars;
@@ -149,13 +161,13 @@ TEST(CombinatoricsTest, GetStarIndices) {
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(GetStarIndices(test_case.num_stars, test_case.num_bars,
-                             test_case.sequence_index),
+    EXPECT_EQ(internal::GetStarIndices(test_case.num_stars, test_case.num_bars,
+                                       test_case.sequence_index),
               test_case.expected);
   }
 }
 
-TEST(CombinatoricsTest, GetBarsPrecedingEachStar) {
+TEST(PrivacyMathTest, GetBarsPrecedingEachStar) {
   const struct {
     std::vector<int> star_indices;
     std::vector<int> expected;
@@ -165,14 +177,14 @@ TEST(CombinatoricsTest, GetBarsPrecedingEachStar) {
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(GetBarsPrecedingEachStar(test_case.star_indices),
+    EXPECT_EQ(internal::GetBarsPrecedingEachStar(test_case.star_indices),
               test_case.expected);
   }
 }
 
 // Adapted from
 // https://github.com/WICG/attribution-reporting-api/blob/ab43f8c989cf881ffd7a7f71801b98d649ed164a/flexible-event/privacy.test.ts#L76C1-L82C2
-TEST(CombinatoricsTest, BinaryEntropy) {
+TEST(PrivacyMathTest, BinaryEntropy) {
   const struct {
     double x;
     double expected;
@@ -185,13 +197,13 @@ TEST(CombinatoricsTest, BinaryEntropy) {
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected, BinaryEntropy(test_case.x));
+    EXPECT_EQ(test_case.expected, internal::BinaryEntropy(test_case.x));
   }
 }
 
 // Adapted from
 // https://github.com/WICG/attribution-reporting-api/blob/ab43f8c989cf881ffd7a7f71801b98d649ed164a/flexible-event/privacy.test.ts#L10-L31
-TEST(CombinatoricsTest, GetRandomizedResponseRate) {
+TEST(PrivacyMathTest, GetRandomizedResponseRate) {
   const struct {
     int64_t num_states;
     double epsilon;
@@ -227,7 +239,7 @@ TEST(CombinatoricsTest, GetRandomizedResponseRate) {
 
 // Adapted from
 // https://github.com/WICG/attribution-reporting-api/blob/ab43f8c989cf881ffd7a7f71801b98d649ed164a/flexible-event/privacy.test.ts#L38-L69
-TEST(CombinatoricsTest, ComputeChannelCapacity) {
+TEST(PrivacyMathTest, ComputeChannelCapacity) {
   const struct {
     int64_t num_states;
     double epsilon;
@@ -275,8 +287,172 @@ TEST(CombinatoricsTest, ComputeChannelCapacity) {
         GetRandomizedResponseRate(test_case.num_states, test_case.epsilon);
 
     EXPECT_EQ(test_case.expected,
-              ComputeChannelCapacity(test_case.num_states, rate));
+              internal::ComputeChannelCapacity(test_case.num_states, rate));
   }
 }
 
+TEST(PrivacyMathTest, GetFakeReportsForSequenceIndex) {
+  const struct {
+    SourceType source_type;
+    int sequence_index;
+    std::vector<FakeEventLevelReport> expected;
+  } kTestCases[] = {
+      // Event sources only have 3 output states, so we can enumerate them:
+      {
+          .source_type = SourceType::kEvent,
+          .sequence_index = 0,
+          .expected = {},
+      },
+      {
+          .source_type = SourceType::kEvent,
+          .sequence_index = 1,
+          .expected = {{.trigger_data = 0, .window_index = 0}},
+      },
+      {
+          .source_type = SourceType::kEvent,
+          .sequence_index = 2,
+          .expected = {{.trigger_data = 1, .window_index = 0}},
+      },
+      // Navigation sources have 2925 output states, so pick interesting ones:
+      {
+          .source_type = SourceType::kNavigation,
+          .sequence_index = 0,
+          .expected = {},
+      },
+      {
+          .source_type = SourceType::kNavigation,
+          .sequence_index = 20,
+          .expected = {{.trigger_data = 3, .window_index = 0}},
+      },
+      {
+          .source_type = SourceType::kNavigation,
+          .sequence_index = 41,
+          .expected =
+              {
+                  {.trigger_data = 4, .window_index = 0},
+                  {.trigger_data = 2, .window_index = 0},
+              },
+      },
+      {
+          .source_type = SourceType::kNavigation,
+          .sequence_index = 50,
+          .expected =
+              {
+                  {.trigger_data = 4, .window_index = 0},
+                  {.trigger_data = 4, .window_index = 0},
+              },
+      },
+      {
+          .source_type = SourceType::kNavigation,
+          .sequence_index = 1268,
+          .expected =
+              {
+                  {.trigger_data = 1, .window_index = 2},
+                  {.trigger_data = 6, .window_index = 1},
+                  {.trigger_data = 7, .window_index = 0},
+              },
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    int trigger_data_cardinality =
+        attribution_reporting::DefaultTriggerDataCardinality(
+            test_case.source_type);
+    int max_reports = test_case.source_type == SourceType::kEvent ? 1 : 3;
+    EXPECT_EQ(test_case.expected,
+              internal::GetFakeReportsForSequenceIndex(
+                  trigger_data_cardinality,
+                  *EventReportWindows::FromDefaults(base::Days(30),
+                                                    test_case.source_type),
+                  max_reports, test_case.sequence_index))
+        << test_case.sequence_index;
+  }
+}
+
+void RunRandomFakeReportsTest(const int trigger_data_cardinality,
+                              const EventReportWindows& windows,
+                              const int max_reports,
+                              const int num_samples,
+                              const double tolerance) {
+  base::flat_map<std::vector<FakeEventLevelReport>, int> output_counts;
+  const int64_t num_states =
+      GetNumStates(trigger_data_cardinality, windows, max_reports);
+  for (int i = 0; i < num_samples; i++) {
+    std::vector<FakeEventLevelReport> fake_reports =
+        internal::GetRandomFakeReports(trigger_data_cardinality, windows,
+                                       max_reports, num_states);
+    output_counts[fake_reports]++;
+  }
+
+  // This is the coupon collector problem (see
+  // https://en.wikipedia.org/wiki/Coupon_collector%27s_problem).
+  // For n possible results:
+  //
+  // the expected number of trials needed to see all possible results is equal
+  // to n * Sum_{i = 1,..,n} 1/i.
+  //
+  // The variance of the number of trials is equal to
+  // Sum_{i = 1,.., n} (1 - p_i) / p_i^2,
+  // where p_i = (n - i + 1) / n.
+  //
+  // The probability that t trials are not enough to see all possible results is
+  // at most n^{-t/(n*ln(n)) + 1}.
+  EXPECT_EQ(static_cast<int64_t>(output_counts.size()), num_states);
+
+  // For any of the n possible results, the expected number of times it is seen
+  // is equal to 1/n. Moreover, for any possible result, the probability that it
+  // is seen more than (1+alpha)*t/n times is at most p_high = exp(- D(1/n +
+  // alpha/n || 1/n) * t).
+  //
+  // The probability that it is seen less than (1-alpha)*t/n times is at most
+  // p_low = exp(-D(1/n - alpha/n || 1/n) * t,
+  //
+  // where D( x || y) = x * ln(x/y) + (1-x) * ln( (1-x) / (1-y) ).
+  // See
+  // https://en.wikipedia.org/wiki/Chernoff_bound#Additive_form_(absolute_error)
+  // for details.
+  //
+  // Thus, the probability that the number of occurrences of one of the results
+  // deviates from its expectation by alpha*t/n is at most
+  // n * (p_high + p_low).
+  int expected_counts = num_samples / static_cast<double>(num_states);
+  for (const auto& output_count : output_counts) {
+    const double abs_error = expected_counts * tolerance;
+    EXPECT_NEAR(output_count.second, expected_counts, abs_error);
+  }
+}
+
+TEST(PrivacyMathTest, GetRandomFakeReports_Event_MatchesExpectedDistribution) {
+  // The probability that not all of the 3 states are seen after `num_samples`
+  // trials is at most ~1e-14476, which is 0 for all practical purposes, so the
+  // `expected_num_combinations` check should always pass.
+  //
+  // For the distribution check, the probability of failure with `tolerance` is
+  // at most 1e-9.
+  RunRandomFakeReportsTest(
+      /*trigger_data_cardinality=*/2,
+      *EventReportWindows::FromDefaults(base::Days(30), SourceType::kEvent),
+      /*max_reports=*/1,
+      /*num_samples=*/100'000,
+      /*tolerance=*/0.03);
+}
+
+TEST(PrivacyMathTest,
+     GetRandomFakeReports_Navigation_MatchesExpectedDistribution) {
+  // The probability that not all of the 2925 states are seen after
+  // `num_samples` trials is at most ~1e-19, which is 0 for all practical
+  // purposes, so the `expected_num_combinations` check should always pass.
+  //
+  // For the distribution check, the probability of failure with `tolerance` is
+  // at most .0002.
+  RunRandomFakeReportsTest(
+      /*trigger_data_cardinality=*/8,
+      *EventReportWindows::FromDefaults(base::Days(30),
+                                        SourceType::kNavigation),
+      /*max_reports=*/3,
+      /*num_samples=*/150'000,
+      /*tolerance=*/0.9);
+}
+
+}  // namespace
 }  // namespace content

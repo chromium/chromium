@@ -31,7 +31,6 @@ class TriggerVerification;
 namespace content {
 
 struct AttributionConfig;
-struct FakeEventLevelReport;
 
 enum class AttributionNoiseMode {
   // Various aspects of the API are subject to noise:
@@ -104,38 +103,6 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       base::Time trigger_time,
       absl::optional<base::Time> attributed_source_time) const override;
 
-  // Exposed for testing.
-  int64_t GetNumStates(attribution_reporting::mojom::SourceType,
-                       const attribution_reporting::EventReportWindows&,
-                       int max_event_level_reports) const;
-
-  // Generates fake reports using a random "stars and bars" sequence index of a
-  // possible output of the API.
-  //
-  // Exposed for testing.
-  std::vector<FakeEventLevelReport> GetRandomFakeReports(
-      attribution_reporting::mojom::SourceType,
-      const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports,
-      base::Time source_time,
-      int64_t num_states) const;
-
-  // Generates fake reports from the "stars and bars" sequence index of a
-  // possible output of the API. This output is determined by the following
-  // algorithm:
-  // 1. Find all stars before the first bar. These stars represent suppressed
-  //    reports.
-  // 2. For all other stars, count the number of bars that precede them. Each
-  //    star represents a report where the reporting window and trigger data is
-  //    uniquely determined by that number.
-  //
-  // Exposed for testing.
-  std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
-      attribution_reporting::mojom::SourceType,
-      const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports,
-      base::Time source_time,
-      int64_t random_stars_and_bars_sequence_index) const;
 
  private:
   AttributionStorageDelegateImpl(AttributionNoiseMode noise_mode,

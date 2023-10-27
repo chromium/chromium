@@ -18,7 +18,6 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 class EventReportWindows;
@@ -36,7 +35,6 @@ namespace content {
 
 class AttributionReport;
 class AttributionTrigger;
-class StoredSource;
 
 // Storage delegate that can supplied to extend basic attribution storage
 // functionality like annotating reports. Users and subclasses must NOT assume
@@ -48,34 +46,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   struct OfflineReportDelayConfig {
     base::TimeDelta min;
     base::TimeDelta max;
-  };
-
-
-  // Corresponds to `StoredSource::AttributionLogic` as follows:
-  // `absl::nullopt` -> `StoredSource::AttributionLogic::kTruthfully`
-  // empty vector -> `StoredSource::AttributionLogic::kNever`
-  // non-empty vector -> `StoredSource::AttributionLogic::kFalsely`
-  using RandomizedResponse = absl::optional<std::vector<FakeEventLevelReport>>;
-
-  class CONTENT_EXPORT RandomizedResponseData {
-   public:
-    RandomizedResponseData(double rate, RandomizedResponse);
-
-    ~RandomizedResponseData();
-
-    RandomizedResponseData(const RandomizedResponseData&);
-    RandomizedResponseData& operator=(const RandomizedResponseData&);
-
-    RandomizedResponseData(RandomizedResponseData&&);
-    RandomizedResponseData& operator=(RandomizedResponseData&&);
-
-    double rate() const { return rate_; }
-
-    const RandomizedResponse& response() const { return response_; }
-
-   private:
-    double rate_;
-    RandomizedResponse response_;
   };
 
   struct ExceedsChannelCapacityLimit {};

@@ -10,6 +10,11 @@
 #include <vector>
 
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace attribution_reporting {
+class EventReportWindows;
+}
 
 namespace content {
 
@@ -17,6 +22,64 @@ struct FakeEventLevelReport {
   uint64_t trigger_data;
   int window_index;
 };
+
+// Corresponds to `StoredSource::AttributionLogic` as follows:
+// `absl::nullopt` -> `StoredSource::AttributionLogic::kTruthfully`
+// empty vector -> `StoredSource::AttributionLogic::kNever`
+// non-empty vector -> `StoredSource::AttributionLogic::kFalsely`
+using RandomizedResponse = absl::optional<std::vector<FakeEventLevelReport>>;
+
+class CONTENT_EXPORT RandomizedResponseData {
+ public:
+  RandomizedResponseData(double rate,
+                         double channel_capacity,
+                         RandomizedResponse);
+
+  ~RandomizedResponseData();
+
+  RandomizedResponseData(const RandomizedResponseData&);
+  RandomizedResponseData& operator=(const RandomizedResponseData&);
+
+  RandomizedResponseData(RandomizedResponseData&&);
+  RandomizedResponseData& operator=(RandomizedResponseData&&);
+
+  double rate() const { return rate_; }
+  double channel_capacity() const { return channel_capacity_; }
+
+  const RandomizedResponse& response() const { return response_; }
+
+ private:
+  double rate_;
+  double channel_capacity_;
+  RandomizedResponse response_;
+};
+
+// Returns true with probability r.
+CONTENT_EXPORT bool GenerateWithRate(double r);
+
+// https://wicg.github.io/attribution-reporting-api/#obtain-a-randomized-source-response-pick-rate
+CONTENT_EXPORT double GetRandomizedResponseRate(int64_t num_states,
+                                                double epsilon);
+
+// Returns the number of possible output states for the given API configuration.
+CONTENT_EXPORT int64_t
+GetNumStates(int trigger_data_cardinality,
+             const attribution_reporting::EventReportWindows&,
+             int max_event_level_reports);
+
+// Determines the randomized response flip probability for the given API
+// configuration, and performs randomized response on that otutput space.
+//
+// Returns `absl::nullopt` if the output should be determined truthfully.
+// Otherwise will return a vector of fake reports.
+CONTENT_EXPORT RandomizedResponseData
+DoRandomizedResponse(int trigger_data_cardinality,
+                     const attribution_reporting::EventReportWindows&,
+                     int max_event_level_reports,
+                     double epsilon);
+
+// Exposed for testing purposes.
+namespace internal {
 
 // Computes the binomial coefficient aka (`n` choose `k`).
 // https://en.wikipedia.org/wiki/Binomial_coefficient
@@ -56,10 +119,6 @@ CONTENT_EXPORT std::vector<int> GetStarIndices(int num_stars,
 CONTENT_EXPORT std::vector<int> GetBarsPrecedingEachStar(
     std::vector<int> star_indices);
 
-// https://wicg.github.io/attribution-reporting-api/#obtain-a-randomized-source-response-pick-rate
-CONTENT_EXPORT double GetRandomizedResponseRate(int64_t num_states,
-                                                double epsilon);
-
 // Computes the binary entropy function:
 // https://en.wikipedia.org/wiki/Binary_entropy_function
 CONTENT_EXPORT double BinaryEntropy(double p);
@@ -68,6 +127,30 @@ CONTENT_EXPORT double BinaryEntropy(double p);
 // https://wicg.github.io/attribution-reporting-api/#computing-channel-capacity
 CONTENT_EXPORT double ComputeChannelCapacity(int64_t num_states,
                                              double randomized_response_rate);
+
+// Generates fake reports using a random "stars and bars" sequence index of a
+// possible output of the API.
+CONTENT_EXPORT std::vector<FakeEventLevelReport> GetRandomFakeReports(
+    int trigger_data_cardinality,
+    const attribution_reporting::EventReportWindows&,
+    int max_event_level_reports,
+    int64_t num_states);
+
+// Generates fake reports from the "stars and bars" sequence index of a
+// possible output of the API. This output is determined by the following
+// algorithm:
+// 1. Find all stars before the first bar. These stars represent suppressed
+//    reports.
+// 2. For all other stars, count the number of bars that precede them. Each
+//    star represents a report where the reporting window and trigger data is
+//    uniquely determined by that number.
+CONTENT_EXPORT std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
+    int trigger_data_cardinality,
+    const attribution_reporting::EventReportWindows&,
+    int max_event_level_reports,
+    int64_t random_stars_and_bars_sequence_index);
+
+}  // namespace internal
 
 }  // namespace content
 

@@ -1826,7 +1826,7 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
   const base::Time now = base::Time::Now();
 
   const struct {
-    AttributionStorageDelegate::RandomizedResponse randomized_response;
+    RandomizedResponse randomized_response;
     absl::optional<base::Time> expected;
   } kTestCases[] = {
       {absl::nullopt, absl::nullopt},

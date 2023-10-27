@@ -8,12 +8,90 @@
 
 #include <cmath>
 #include <functional>
+#include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/numerics/checked_math.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "components/attribution_reporting/event_report_windows.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
+
+namespace {
+
+// The max possible number of state combinations given a valid input.
+constexpr int64_t kMaxNumCombinations = 4191844505805495;
+
+}  // namespace
+
+RandomizedResponseData::RandomizedResponseData(double rate,
+                                               double channel_capacity,
+                                               RandomizedResponse response)
+    : rate_(rate),
+      channel_capacity_(channel_capacity),
+      response_(std::move(response)) {
+  DCHECK_GE(rate_, 0);
+  DCHECK_LE(rate_, 1);
+  DCHECK_GE(channel_capacity_, 0);
+}
+
+RandomizedResponseData::~RandomizedResponseData() = default;
+
+RandomizedResponseData::RandomizedResponseData(const RandomizedResponseData&) =
+    default;
+
+RandomizedResponseData& RandomizedResponseData::operator=(
+    const RandomizedResponseData&) = default;
+
+RandomizedResponseData::RandomizedResponseData(RandomizedResponseData&&) =
+    default;
+
+RandomizedResponseData& RandomizedResponseData::operator=(
+    RandomizedResponseData&&) = default;
+
+bool GenerateWithRate(double r) {
+  DCHECK_GE(r, 0);
+  DCHECK_LE(r, 1);
+  return base::RandDouble() < r;
+}
+
+double GetRandomizedResponseRate(int64_t num_states, double epsilon) {
+  DCHECK_GT(num_states, 0);
+  return num_states / (num_states - 1 + std::exp(epsilon));
+}
+
+int64_t GetNumStates(
+    int trigger_data_cardinality,
+    const attribution_reporting::EventReportWindows& event_report_windows,
+    int max_event_level_reports) {
+  return internal::GetNumberOfStarsAndBarsSequences(
+      /*num_stars=*/max_event_level_reports,
+      /*num_bars=*/trigger_data_cardinality *
+          event_report_windows.end_times().size());
+}
+
+RandomizedResponseData DoRandomizedResponse(
+    int trigger_data_cardinality,
+    const attribution_reporting::EventReportWindows& event_report_windows,
+    int max_event_level_reports,
+    double epsilon) {
+  const int64_t num_states = GetNumStates(
+      trigger_data_cardinality, event_report_windows, max_event_level_reports);
+  double rate = GetRandomizedResponseRate(num_states, epsilon);
+  double channel_capacity = internal::ComputeChannelCapacity(num_states, rate);
+  auto fake_reports = GenerateWithRate(rate)
+                          ? absl::make_optional(internal::GetRandomFakeReports(
+                                trigger_data_cardinality, event_report_windows,
+                                max_event_level_reports, num_states))
+                          : absl::nullopt;
+  return RandomizedResponseData(rate, channel_capacity,
+                                std::move(fake_reports));
+}
+
+namespace internal {
 
 int64_t BinomialCoefficient(int n, int k) {
   DCHECK_GE(n, 0);
@@ -84,10 +162,10 @@ std::vector<int> GetKCombinationAtIndex(int64_t combination_index, int k) {
   // maximum a such that (a choose k) <= `combination_index`. Let a_k = a. Use
   // the previous binomial coefficient to compute the next one. Note: possible
   // to speed this up via something other than incremental search.
-  int target = combination_index;
+  int64_t target = combination_index;
   int candidate = k - 1;
-  int binomial_coefficient = 0;       // BinomialCoefficient(candidate, k)
-  int next_binomial_coefficient = 1;  // BinomailCoefficient(candidate + 1, k)
+  int64_t binomial_coefficient = 0;       // BinomialCoefficient(candidate, k)
+  int64_t next_binomial_coefficient = 1;  // BinomialCoefficient(candidate+1, k)
   while (next_binomial_coefficient <= target) {
     candidate++;
     binomial_coefficient = next_binomial_coefficient;
@@ -152,11 +230,6 @@ std::vector<int> GetBarsPrecedingEachStar(std::vector<int> out) {
   return out;
 }
 
-double GetRandomizedResponseRate(int64_t num_states, double epsilon) {
-  DCHECK_GT(num_states, 0);
-  return num_states / (num_states - 1 + std::exp(epsilon));
-}
-
 double BinaryEntropy(double p) {
   if (p == 0 || p == 1) {
     return 0;
@@ -180,5 +253,59 @@ double ComputeChannelCapacity(int64_t num_states,
   double p = randomized_response_rate * (num_states - 1) / num_states;
   return log2(num_states) - BinaryEntropy(p) - p * log2(num_states - 1);
 }
+
+std::vector<FakeEventLevelReport> GetRandomFakeReports(
+    int trigger_data_cardinality,
+    const attribution_reporting::EventReportWindows& event_report_windows,
+    int max_event_level_reports,
+    int64_t num_states) {
+  const int64_t sequence_index =
+      static_cast<int64_t>(base::RandGenerator(num_states));
+  DCHECK_GE(sequence_index, 0);
+  DCHECK_LE(sequence_index, kMaxNumCombinations);
+
+  return GetFakeReportsForSequenceIndex(
+      trigger_data_cardinality, event_report_windows, max_event_level_reports,
+      sequence_index);
+}
+
+std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
+    int trigger_data_cardinality,
+    const attribution_reporting::EventReportWindows& event_report_windows,
+    int max_event_level_reports,
+    int64_t random_stars_and_bars_sequence_index) {
+  const std::vector<int> bars_preceding_each_star =
+      GetBarsPrecedingEachStar(GetStarIndices(
+          /*num_stars=*/max_event_level_reports,
+          /*num_bars=*/trigger_data_cardinality *
+              event_report_windows.end_times().size(),
+          /*sequence_index=*/random_stars_and_bars_sequence_index));
+
+  std::vector<FakeEventLevelReport> fake_reports;
+
+  // an output state is uniquely determined by an ordering of c stars and w*d
+  // bars, where:
+  // w = the number of reporting windows
+  // c = the maximum number of reports for a source
+  // d = the trigger data cardinality for a source
+  for (int num_bars : bars_preceding_each_star) {
+    if (num_bars == 0) {
+      continue;
+    }
+
+    auto result = std::div(num_bars - 1, trigger_data_cardinality);
+
+    const int trigger_data = result.rem;
+    DCHECK_GE(trigger_data, 0);
+    DCHECK_LT(trigger_data, trigger_data_cardinality);
+
+    fake_reports.push_back({.trigger_data = static_cast<uint64_t>(trigger_data),
+                            .window_index = result.quot});
+  }
+  DCHECK_LE(fake_reports.size(), static_cast<size_t>(max_event_level_reports));
+  return fake_reports;
+}
+
+}  // namespace internal
 
 }  // namespace content
