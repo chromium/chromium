@@ -6,13 +6,12 @@
 #define COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_PROVIDER_H_
 
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 
 // A simple `AutocompleteProvider` that does nothing. Useful for creating
 // `AutocompleteMatch`s in tests with specific provider types.
 class FakeAutocompleteProvider : public AutocompleteProvider {
  public:
-  explicit FakeAutocompleteProvider(AutocompleteProviderType type);
+  explicit FakeAutocompleteProvider(Type type);
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
@@ -20,7 +19,7 @@ class FakeAutocompleteProvider : public AutocompleteProvider {
 
   // Used by some tests that create providers ahead of time and later set the
   // specific type needed.
-  void SetType(AutocompleteProviderType type) { type_ = type; }
+  void SetType(Type type) { type_ = type; }
 
   using AutocompleteProvider::done_;
   using AutocompleteProvider::matches_;

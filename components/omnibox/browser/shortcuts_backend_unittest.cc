@@ -18,7 +18,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/shortcuts_constants.h"
 #include "components/omnibox/browser/shortcuts_database.h"
@@ -347,7 +346,8 @@ TEST_F(ShortcutsBackendTest, AddAndUpdateShortcut_ZeroSuggest) {
   EXPECT_FALSE(changed_notified());
 
   scoped_refptr<FakeAutocompleteProvider> zero_suggest_provider =
-      new FakeAutocompleteProvider(AutocompleteProviderType::kZeroSuggest);
+      new FakeAutocompleteProvider(
+          AutocompleteProvider::Type::TYPE_ZERO_SUGGEST);
   AutocompleteMatch zero_suggest_match(
       zero_suggest_provider.get(), 400, true,
       AutocompleteMatchType::TILE_MOST_VISITED_SITE);

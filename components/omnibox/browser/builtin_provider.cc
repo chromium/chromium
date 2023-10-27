@@ -16,7 +16,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/search_engines/template_url_data.h"
@@ -32,7 +31,7 @@ const int BuiltinProvider::kRelevance = 860;
 const int BuiltinProvider::kStarterPackRelevance = 1350;
 
 BuiltinProvider::BuiltinProvider(AutocompleteProviderClient* client)
-    : AutocompleteProvider(AutocompleteProviderType::kBuiltin),
+    : AutocompleteProvider(AutocompleteProvider::TYPE_BUILTIN),
       client_(client) {
   builtins_ = client_->GetBuiltinURLs();
   template_url_service_ = client->GetTemplateURLService();

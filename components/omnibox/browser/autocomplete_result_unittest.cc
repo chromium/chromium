@@ -28,7 +28,6 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
@@ -150,16 +149,16 @@ class AutocompleteResultTest : public testing::Test {
     variations::testing::ClearAllVariationParams();
 
     // Create the list of mock providers. 5 is enough.
+    mock_provider_list_.push_back(new FakeAutocompleteProvider(
+        AutocompleteProvider::Type::TYPE_HISTORY_QUICK));
+    mock_provider_list_.push_back(new FakeAutocompleteProvider(
+        AutocompleteProvider::Type::TYPE_HISTORY_URL));
     mock_provider_list_.push_back(
-        new FakeAutocompleteProvider(AutocompleteProviderType::kHistoryQuick));
-    mock_provider_list_.push_back(
-        new FakeAutocompleteProvider(AutocompleteProviderType::kHistoryUrl));
-    mock_provider_list_.push_back(
-        new FakeAutocompleteProvider(AutocompleteProviderType::kSearch));
-    mock_provider_list_.push_back(
-        new FakeAutocompleteProvider(AutocompleteProviderType::kOnDeviceHead));
-    mock_provider_list_.push_back(
-        new FakeAutocompleteProvider(AutocompleteProviderType::kVerbatimMatch));
+        new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH));
+    mock_provider_list_.push_back(new FakeAutocompleteProvider(
+        AutocompleteProvider::Type::TYPE_ON_DEVICE_HEAD));
+    mock_provider_list_.push_back(new FakeAutocompleteProvider(
+        AutocompleteProvider::Type::TYPE_VERBATIM_MATCH));
 
     for (const auto& provider : mock_provider_list_)
       provider->done_ = false;
@@ -1305,8 +1304,8 @@ TEST_F(AutocompleteResultTest, DemoteOnDeviceSearchSuggestions) {
                          omnibox::SUBTYPE_SUGGEST_2G_LITE};
   matches[2].subtypes = {omnibox::SUBTYPE_OMNIBOX_OTHER,
                          omnibox::SUBTYPE_SUGGEST_2G_LITE};
-  matches[0].provider->type_ = AutocompleteProviderType::kSearch;
-  matches[1].provider->type_ = AutocompleteProviderType::kOnDeviceHead;
+  matches[0].provider->type_ = AutocompleteProvider::TYPE_SEARCH;
+  matches[1].provider->type_ = AutocompleteProvider::TYPE_ON_DEVICE_HEAD;
 
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
@@ -1317,17 +1316,17 @@ TEST_F(AutocompleteResultTest, DemoteOnDeviceSearchSuggestions) {
   result.AppendMatches(matches);
   result.DemoteOnDeviceSearchSuggestions();
   EXPECT_EQ(5UL, result.size());
-  EXPECT_NE(AutocompleteProviderType::kOnDeviceHead,
+  EXPECT_NE(AutocompleteProvider::TYPE_ON_DEVICE_HEAD,
             result.match_at(0)->provider->type());
-  EXPECT_EQ(AutocompleteProviderType::kOnDeviceHead,
+  EXPECT_EQ(AutocompleteProvider::TYPE_ON_DEVICE_HEAD,
             result.match_at(1)->provider->type());
   EXPECT_LT(result.match_at(1)->relevance, result.match_at(0)->relevance);
-  EXPECT_EQ(AutocompleteProviderType::kOnDeviceHead,
+  EXPECT_EQ(AutocompleteProvider::TYPE_ON_DEVICE_HEAD,
             result.match_at(2)->provider->type());
   EXPECT_LT(result.match_at(2)->relevance, result.match_at(0)->relevance);
-  EXPECT_NE(AutocompleteProviderType::kOnDeviceHead,
+  EXPECT_NE(AutocompleteProvider::TYPE_ON_DEVICE_HEAD,
             result.match_at(3)->provider->type());
-  EXPECT_NE(AutocompleteProviderType::kOnDeviceHead,
+  EXPECT_NE(AutocompleteProvider::TYPE_ON_DEVICE_HEAD,
             result.match_at(4)->provider->type());
 }
 
@@ -2425,15 +2424,15 @@ TEST_F(AutocompleteResultTest, DocumentSuggestionsCanMergeButNotToDefault) {
   PopulateAutocompleteMatches(data, std::size(data), &matches);
   matches[0].type = AutocompleteMatchType::DOCUMENT_SUGGESTION;
   static_cast<FakeAutocompleteProvider*>(matches[0].provider)
-      ->SetType(AutocompleteProviderType::kDocument);
+      ->SetType(AutocompleteProvider::Type::TYPE_DOCUMENT);
   matches[1].type = AutocompleteMatchType::HISTORY_URL;
   matches[2].type = AutocompleteMatchType::DOCUMENT_SUGGESTION;
   static_cast<FakeAutocompleteProvider*>(matches[2].provider)
-      ->SetType(AutocompleteProviderType::kDocument);
+      ->SetType(AutocompleteProvider::Type::TYPE_DOCUMENT);
   matches[3].type = AutocompleteMatchType::HISTORY_URL;
   matches[4].type = AutocompleteMatchType::DOCUMENT_SUGGESTION;
   static_cast<FakeAutocompleteProvider*>(matches[4].provider)
-      ->SetType(AutocompleteProviderType::kDocument);
+      ->SetType(AutocompleteProvider::Type::TYPE_DOCUMENT);
   matches[5].type = AutocompleteMatchType::HISTORY_URL;
 
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
@@ -2528,19 +2527,19 @@ TEST_F(AutocompleteResultTest, ClipboardSuggestionOnTopOfSearchSuggestionTest) {
   PopulateAutocompleteMatches(data, std::size(data), &matches);
   matches[0].type = AutocompleteMatchType::SEARCH_SUGGEST;
   static_cast<FakeAutocompleteProvider*>(matches[0].provider)
-      ->SetType(AutocompleteProviderType::kZeroSuggestLocalHistory);
+      ->SetType(AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY);
   matches[1].type = AutocompleteMatchType::SEARCH_SUGGEST;
   static_cast<FakeAutocompleteProvider*>(matches[1].provider)
-      ->SetType(AutocompleteProviderType::kZeroSuggestLocalHistory);
+      ->SetType(AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY);
   matches[2].type = AutocompleteMatchType::SEARCH_SUGGEST;
   static_cast<FakeAutocompleteProvider*>(matches[2].provider)
-      ->SetType(AutocompleteProviderType::kZeroSuggestLocalHistory);
+      ->SetType(AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY);
   matches[3].type = AutocompleteMatchType::SEARCH_SUGGEST;
   static_cast<FakeAutocompleteProvider*>(matches[3].provider)
-      ->SetType(AutocompleteProviderType::kZeroSuggestLocalHistory);
+      ->SetType(AutocompleteProvider::Type::TYPE_ZERO_SUGGEST_LOCAL_HISTORY);
   matches[4].type = AutocompleteMatchType::CLIPBOARD_URL;
   static_cast<FakeAutocompleteProvider*>(matches[4].provider)
-      ->SetType(AutocompleteProviderType::kClipboard);
+      ->SetType(AutocompleteProvider::Type::TYPE_CLIPBOARD);
 
   AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
@@ -3054,7 +3053,7 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
 
 TEST_F(AutocompleteResultTest, Android_TrimOmniboxActions) {
   scoped_refptr<FakeAutocompleteProvider> provider =
-      new FakeAutocompleteProvider(AutocompleteProviderType::kSearch);
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
   using OmniboxActionId::ACTION_IN_SUGGEST;
   using OmniboxActionId::HISTORY_CLUSTERS;
   using OmniboxActionId::PEDAL;
@@ -3237,7 +3236,7 @@ TEST_F(AutocompleteResultTest, Android_TrimOmniboxActions) {
 
 TEST_F(AutocompleteResultTest, Android_UndedupTopSearch) {
   scoped_refptr<FakeAutocompleteProvider> provider =
-      new FakeAutocompleteProvider(AutocompleteProviderType::kSearch);
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
 
   // 4 different matches to cover variety of scenarios.
   // Matches are recognized by their type and actions presence.

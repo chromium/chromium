@@ -9,7 +9,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "third_party/omnibox_proto/types.pb.h"
@@ -32,7 +31,7 @@ constexpr int ConfidenceScoreToSuggestionScore(float confidence_score) {
 }  // namespace
 
 VoiceSuggestProvider::VoiceSuggestProvider(AutocompleteProviderClient* client)
-    : BaseSearchProvider(AutocompleteProviderType::kVoiceSuggest, client) {}
+    : BaseSearchProvider(TYPE_VOICE_SUGGEST, client) {}
 
 VoiceSuggestProvider::~VoiceSuggestProvider() = default;
 

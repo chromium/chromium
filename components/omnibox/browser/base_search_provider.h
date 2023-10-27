@@ -20,7 +20,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
@@ -38,7 +37,7 @@ class SimpleURLLoader;
 // autocomplete providers utilizing its functionality.
 class BaseSearchProvider : public AutocompleteProvider {
  public:
-  BaseSearchProvider(AutocompleteProviderType type,
+  BaseSearchProvider(AutocompleteProvider::Type type,
                      AutocompleteProviderClient* client);
 
   BaseSearchProvider(const BaseSearchProvider&) = delete;

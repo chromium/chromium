@@ -16,15 +16,68 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/url_formatter/url_fixer.h"
 #include "url/gurl.h"
 
-AutocompleteProvider::AutocompleteProvider(AutocompleteProviderType type)
+AutocompleteProvider::AutocompleteProvider(Type type)
     : provider_max_matches_(OmniboxFieldTrial::GetProviderMaxMatches(type)),
       type_(type) {}
+
+// static
+const char* AutocompleteProvider::TypeToString(Type type) {
+  // When creating a new provider, add the provider type to this function and
+  // make sure to also add the appropriate OmniboxProvider variant to the
+  // Omnibox.ProviderTime2 histogram (defined in omnibox/histograms.xml) so that
+  // the run-time metrics associated with the relevant provider can be properly
+  // analyzed.
+  switch (type) {
+    case TYPE_BOOKMARK:
+      return "Bookmark";
+    case TYPE_BUILTIN:
+      return "Builtin";
+    case TYPE_CLIPBOARD:
+      return "Clipboard";
+    case TYPE_DOCUMENT:
+      return "Document";
+    case TYPE_HISTORY_QUICK:
+      return "HistoryQuick";
+    case TYPE_HISTORY_URL:
+      return "HistoryURL";
+    case TYPE_KEYWORD:
+      return "Keyword";
+    case TYPE_ON_DEVICE_HEAD:
+      return "OnDeviceHead";
+    case TYPE_SEARCH:
+      return "Search";
+    case TYPE_SHORTCUTS:
+      return "Shortcuts";
+    case TYPE_ZERO_SUGGEST:
+      return "ZeroSuggest";
+    case TYPE_ZERO_SUGGEST_LOCAL_HISTORY:
+      return "LocalHistoryZeroSuggest";
+    case TYPE_QUERY_TILE:
+      return "QueryTile";
+    case TYPE_MOST_VISITED_SITES:
+      return "MostVisitedSites";
+    case TYPE_VERBATIM_MATCH:
+      return "VerbatimMatch";
+    case TYPE_VOICE_SUGGEST:
+      return "VoiceSuggest";
+    case TYPE_HISTORY_FUZZY:
+      return "HistoryFuzzy";
+    case TYPE_OPEN_TAB:
+      return "OpenTab";
+    case TYPE_HISTORY_CLUSTER_PROVIDER:
+      return "HistoryCluster";
+    case TYPE_CALCULATOR:
+      return "Calculator";
+    default:
+      NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type;
+      return "Unknown";
+  }
+}
 
 void AutocompleteProvider::AddListener(AutocompleteProviderListener* listener) {
   listeners_.push_back(listener);
@@ -46,6 +99,10 @@ void AutocompleteProvider::Stop(bool clear_cached_results,
     matches_.clear();
     suggestion_groups_map_.clear();
   }
+}
+
+const char* AutocompleteProvider::GetName() const {
+  return TypeToString(type_);
 }
 
 // static
@@ -76,6 +133,58 @@ ACMatchClassifications AutocompleteProvider::ClassifyAllMatchesInString(
                                                  classifications);
 }
 
+metrics::OmniboxEventProto_ProviderType
+AutocompleteProvider::AsOmniboxEventProviderType() const {
+  switch (type_) {
+    case TYPE_BOOKMARK:
+      return metrics::OmniboxEventProto::BOOKMARK;
+    case TYPE_BUILTIN:
+      return metrics::OmniboxEventProto::BUILTIN;
+    case TYPE_CLIPBOARD:
+      return metrics::OmniboxEventProto::CLIPBOARD;
+    case TYPE_DOCUMENT:
+      return metrics::OmniboxEventProto::DOCUMENT;
+    case TYPE_HISTORY_QUICK:
+      return metrics::OmniboxEventProto::HISTORY_QUICK;
+    case TYPE_HISTORY_URL:
+      return metrics::OmniboxEventProto::HISTORY_URL;
+    case TYPE_KEYWORD:
+      return metrics::OmniboxEventProto::KEYWORD;
+    case TYPE_ON_DEVICE_HEAD:
+      return metrics::OmniboxEventProto::ON_DEVICE_HEAD;
+    case TYPE_SEARCH:
+      return metrics::OmniboxEventProto::SEARCH;
+    case TYPE_SHORTCUTS:
+      return metrics::OmniboxEventProto::SHORTCUTS;
+    case TYPE_ZERO_SUGGEST:
+      return metrics::OmniboxEventProto::ZERO_SUGGEST;
+    case TYPE_ZERO_SUGGEST_LOCAL_HISTORY:
+      return metrics::OmniboxEventProto::ZERO_SUGGEST_LOCAL_HISTORY;
+    case TYPE_QUERY_TILE:
+      return metrics::OmniboxEventProto::QUERY_TILE;
+    case TYPE_MOST_VISITED_SITES:
+      return metrics::OmniboxEventProto::ZERO_SUGGEST;
+    case TYPE_VERBATIM_MATCH:
+      return metrics::OmniboxEventProto::ZERO_SUGGEST;
+    case TYPE_VOICE_SUGGEST:
+      return metrics::OmniboxEventProto::SEARCH;
+    case TYPE_HISTORY_FUZZY:
+      return metrics::OmniboxEventProto::HISTORY_FUZZY;
+    case TYPE_OPEN_TAB:
+      return metrics::OmniboxEventProto::OPEN_TAB;
+    case TYPE_HISTORY_CLUSTER_PROVIDER:
+      return metrics::OmniboxEventProto::HISTORY_CLUSTER;
+    case TYPE_CALCULATOR:
+      // TODO(manukh): Since there's a high likelihood the calc provider won't
+      //   launch, log as search provider to avoid the adding then deprecating
+      //   the provider in the proto and histograms.
+      return metrics::OmniboxEventProto::SEARCH;
+    default:
+      NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type_;
+      return metrics::OmniboxEventProto::UNKNOWN_PROVIDER;
+  }
+}
+
 void AutocompleteProvider::DeleteMatch(const AutocompleteMatch& match) {
   DLOG(WARNING) << "The AutocompleteProvider '" << GetName()
                 << "' has not implemented DeleteMatch.";
@@ -92,15 +201,6 @@ void AutocompleteProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 
 size_t AutocompleteProvider::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(matches_);
-}
-
-const char* AutocompleteProvider::GetName() const {
-  return AutocompleteProviderTypeToString(type_);
-}
-
-metrics::OmniboxEventProto_ProviderType
-AutocompleteProvider::AsOmniboxEventProviderType() const {
-  return AutocompleteProviderTypeToOmniboxEventProviderType(type_);
 }
 
 AutocompleteProvider::~AutocompleteProvider() {

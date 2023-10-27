@@ -15,8 +15,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
-#include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -33,7 +31,7 @@ class MockAutocompleteController : public AutocompleteController {
  public:
   MockAutocompleteController(
       std::unique_ptr<AutocompleteProviderClient> provider_client,
-      AutocompleteProviderType provider_types)
+      int provider_types)
       : AutocompleteController(std::move(provider_client), provider_types) {}
   ~MockAutocompleteController() override = default;
   MockAutocompleteController(const MockAutocompleteController&) = delete;
@@ -62,7 +60,7 @@ class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
 
     auto controller =
         std::make_unique<testing::NiceMock<MockAutocompleteController>>(
-            std::move(client_), AutocompleteProviderType::kNone);
+            std::move(client_), 0);
     controller_ = controller.get();
     browser()
         ->window()

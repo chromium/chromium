@@ -26,7 +26,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
@@ -323,7 +322,7 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   // contains the current page URL). Ignore these navigations as shortcut
   // suggestions are not provided in zero suggest.
   if (match.provider &&
-      match.provider->type() == AutocompleteProviderType::kZeroSuggest) {
+      match.provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST) {
     return;
   }
 

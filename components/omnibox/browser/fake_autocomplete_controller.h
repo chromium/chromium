@@ -13,7 +13,7 @@ class FakeAutocompleteController : public AutocompleteController {
   FakeAutocompleteController()
       : AutocompleteController(
             std::make_unique<FakeAutocompleteProviderClient>(),
-            AutocompleteProviderType::kNone) {}
+            0) {}
 
   using AutocompleteController::done_;
   using AutocompleteController::input_;

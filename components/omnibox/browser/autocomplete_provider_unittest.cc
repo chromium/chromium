@@ -29,7 +29,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -149,7 +148,7 @@ class TestProvider : public AutocompleteProvider {
                const std::u16string& prefix,
                const std::u16string& match_keyword,
                AutocompleteProviderClient* client)
-      : AutocompleteProvider(AutocompleteProviderType::kSearch),
+      : AutocompleteProvider(AutocompleteProvider::TYPE_SEARCH),
         relevance_(relevance),
         prefix_(prefix),
         match_keyword_(match_keyword),
@@ -424,9 +423,9 @@ class AutocompleteProviderTest : public testing::Test {
   TestingPrefServiceSimple* GetPrefs() { return &pref_service_; }
 
   // Resets the controller with the given |type|. |type| is a bitmap containing
-  // AutocompleteProviderType values that will (potentially, depending on
+  // AutocompleteProvider::Type values that will (potentially, depending on
   // platform, flags, etc.) be instantiated.
-  void ResetControllerWithType(AutocompleteProviderType type);
+  void ResetControllerWithType(int type);
 
   AutocompleteResult result_;
   base::test::TaskEnvironment task_environment_;
@@ -500,7 +499,7 @@ void AutocompleteProviderTest::ResetControllerWithTestProviders(
   providers.push_back(provider2);
 
   // Reset the controller to contain our new providers.
-  ResetControllerWithType(AutocompleteProviderType::kNone);
+  ResetControllerWithType(0);
 
   // We're going to swap the providers vector, but the old vector should be
   // empty so no elements need to be freed at this point.
@@ -537,9 +536,9 @@ void AutocompleteProviderTest::ResetControllerWithKeywordAndSearchProviders() {
       turl_model->Add(std::make_unique<TemplateURL>(data2));
   ASSERT_NE(0, keyword_turl->id());
 
-  ResetControllerWithType(AutocompleteProviderType::kKeyword |
-                          AutocompleteProviderType::kSearch |
-                          AutocompleteProviderType::kZeroSuggest);
+  ResetControllerWithType(AutocompleteProvider::TYPE_KEYWORD |
+                          AutocompleteProvider::TYPE_SEARCH |
+                          AutocompleteProvider::TYPE_ZERO_SUGGEST);
 }
 
 void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
@@ -572,11 +571,10 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
   keyword_turl = turl_model->Add(std::make_unique<TemplateURL>(data));
   ASSERT_NE(0, keyword_turl->id());
 
-  ResetControllerWithType(AutocompleteProviderType::kKeyword);
+  ResetControllerWithType(AutocompleteProvider::TYPE_KEYWORD);
 }
 
-void AutocompleteProviderTest::ResetControllerWithType(
-    AutocompleteProviderType type) {
+void AutocompleteProviderTest::ResetControllerWithType(int type) {
   EXPECT_FALSE(client_owned_);
   controller_ = std::make_unique<AutocompleteController>(
       base::WrapUnique(client_.get()), type);
@@ -720,7 +718,7 @@ void AutocompleteProviderTest::RunExactKeymatchTest(
   // be from SearchProvider.  (It provides all verbatim search matches,
   // keyword or not.)
   RunQuery("k test", allow_exact_keyword_match);
-  EXPECT_EQ(AutocompleteProviderType::kSearch,
+  EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
             controller_->result().default_match()->provider->type());
   EXPECT_EQ(allow_exact_keyword_match
                 ? AutocompleteMatchType::SEARCH_OTHER_ENGINE
@@ -1929,7 +1927,7 @@ class AutocompleteProviderPrefetchTest : public AutocompleteProviderTest {
     RegisterTemplateURL(kTestTemplateURLKeyword,
                         "http://aqs/{searchTerms}/{google:assistedQueryStats}");
     // Create an empty controller.
-    ResetControllerWithType(AutocompleteProviderType::kNone);
+    ResetControllerWithType(0);
     provider_listener_ =
         std::make_unique<TestAutocompleteProviderListener>(controller_.get());
   }

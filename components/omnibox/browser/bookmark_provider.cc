@@ -17,7 +17,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -35,7 +34,7 @@ using bookmarks::BookmarkNode;
 using bookmarks::TitledUrlMatch;
 
 BookmarkProvider::BookmarkProvider(AutocompleteProviderClient* client)
-    : AutocompleteProvider(AutocompleteProviderType::kBookmark),
+    : AutocompleteProvider(AutocompleteProvider::TYPE_BOOKMARK),
       client_(client),
       local_or_syncable_bookmark_model_(
           client ? client_->GetLocalOrSyncableBookmarkModel() : nullptr),

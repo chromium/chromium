@@ -8,16 +8,13 @@
 #include <stddef.h>
 
 #include <map>
-#include <ostream>
 #include <string>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -155,10 +152,37 @@ typedef std::vector<metrics::OmniboxEventProto_ProviderInfo> ProvidersInfo;
 class AutocompleteProvider
     : public base::RefCountedThreadSafe<AutocompleteProvider> {
  public:
-  explicit AutocompleteProvider(AutocompleteProviderType type);
+  // Different AutocompleteProvider implementations.
+  enum Type {
+    TYPE_BOOKMARK = 1 << 0,
+    TYPE_BUILTIN = 1 << 1,
+    TYPE_HISTORY_QUICK = 1 << 2,
+    TYPE_HISTORY_URL = 1 << 3,
+    TYPE_KEYWORD = 1 << 4,
+    TYPE_SEARCH = 1 << 5,
+    TYPE_SHORTCUTS = 1 << 6,
+    TYPE_ZERO_SUGGEST = 1 << 7,
+    TYPE_CLIPBOARD = 1 << 8,
+    TYPE_DOCUMENT = 1 << 9,
+    TYPE_ON_DEVICE_HEAD = 1 << 10,
+    TYPE_ZERO_SUGGEST_LOCAL_HISTORY = 1 << 11,
+    TYPE_QUERY_TILE = 1 << 12,
+    TYPE_MOST_VISITED_SITES = 1 << 13,
+    TYPE_VERBATIM_MATCH = 1 << 14,
+    TYPE_VOICE_SUGGEST = 1 << 15,
+    TYPE_HISTORY_FUZZY = 1 << 16,
+    TYPE_OPEN_TAB = 1 << 17,
+    TYPE_HISTORY_CLUSTER_PROVIDER = 1 << 18,
+    TYPE_CALCULATOR = 1 << 19,
+  };
+
+  explicit AutocompleteProvider(Type type);
 
   AutocompleteProvider(const AutocompleteProvider&) = delete;
   AutocompleteProvider& operator=(const AutocompleteProvider&) = delete;
+
+  // Returns a string describing a particular AutocompleteProvider type.
+  static const char* TypeToString(Type type);
 
   // Used to communicate async matches to consumers (usually the
   // `AutocompleteController`). Consumers invoke `AddListener()` to register
@@ -223,12 +247,17 @@ class AutocompleteProvider
   // function.
   virtual void Stop(bool clear_cached_results, bool due_to_user_inactivity);
 
+  // Returns the enum equivalent to the name of this provider.
+  // TODO(derat): Make metrics use AutocompleteProvider::Type directly, or at
+  // least move this method to the metrics directory.
+  metrics::OmniboxEventProto_ProviderType AsOmniboxEventProviderType() const;
+
   // Called to delete a match and the backing data that produced it.  This
-  // match should not appear again in this or future queries.  This can only
-  // be called for matches the provider marks as deletable.  This should only
-  // be called when no query is running. NOTE: Do NOT call NotifyListeners()
-  // in this method, it is the responsibility of the caller to do so after
-  // calling us.
+  // match should not appear again in this or future queries.  This can only be
+  // called for matches the provider marks as deletable.  This should only be
+  // called when no query is running.
+  // NOTE: Do NOT call NotifyListeners() in this method, it is the
+  // responsibility of the caller to do so after calling us.
   virtual void DeleteMatch(const AutocompleteMatch& match);
 
   // Called to delete an element of a match. This element should not appear
@@ -282,13 +311,10 @@ class AutocompleteProvider
   bool done() const { return done_; }
 
   // Returns this provider's type.
-  AutocompleteProviderType type() const { return type_; }
+  Type type() const { return type_; }
 
   // Returns a string describing this provider's type.
   const char* GetName() const;
-
-  // Returns the enum equivalent to the name of this provider.
-  metrics::OmniboxEventProto_ProviderType AsOmniboxEventProviderType() const;
 
   typedef std::multimap<char16_t, std::u16string> WordMap;
 
@@ -389,7 +415,7 @@ class AutocompleteProvider
   omnibox::GroupConfigMap suggestion_groups_map_{};
   bool done_{true};
 
-  AutocompleteProviderType type_;
+  Type type_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_PROVIDER_H_

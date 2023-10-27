@@ -29,7 +29,6 @@
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -112,34 +111,34 @@ int GetDeduplicationProviderPreferenceScore(
   if (!provider) {
     return 0;
   }
-  const AutocompleteProviderType type = provider->type();
+  const AutocompleteProvider::Type type = provider->type();
 
-  using ProviderPrefMap = base::flat_map<AutocompleteProviderType, int>;
+  using ProviderPrefMap = base::flat_map<AutocompleteProvider::Type, int>;
   static const base::NoDestructor<ProviderPrefMap> provider_prefs({
       // Prefer live document suggestions. We check provider type instead
       // of match type in order to distinguish live suggestions from the
       // document provider from stale suggestions from the shortcuts
       // providers, because the latter omits changing metadata such as last
       // access date.
-      {AutocompleteProviderType::kDocument, 2},
+      {AutocompleteProvider::TYPE_DOCUMENT, 2},
       // Prefer bookmark suggestions, as:
       // 1) Their titles may be explicitly set.
       // 2) They may display enhanced information such as the bookmark
       //    folders path.
-      {AutocompleteProviderType::kBookmark, 1},
+      {AutocompleteProvider::TYPE_BOOKMARK, 1},
       // Prefer non-shorcut matches over shortcuts, the latter of which may
       // have stale or missing URL titles (the latter from what-you-typed
       // matches).
       //
       // If the value here becomes a fixed value, then change `provider_prefs`
       // from a NoDestructor to a FixedFlatMap.
-      {AutocompleteProviderType::kShortcuts,
+      {AutocompleteProvider::TYPE_SHORTCUTS,
        base::FeatureList::IsEnabled(
            omnibox::kPreferNonShortcutMatchesWhenDeduping)
            ? -1
            : 0},
       // Prefer non-fuzzy matches over fuzzy matches.
-      {AutocompleteProviderType::kHistoryFuzzy, -2},
+      {AutocompleteProvider::TYPE_HISTORY_FUZZY, -2},
   });
   const auto it = provider_prefs->find(type);
   return it != provider_prefs->end() ? it->second : 0;
@@ -1286,7 +1285,7 @@ bool AutocompleteMatch::IsVerbatimType() const {
   const bool is_keyword_verbatim_match =
       (type == AutocompleteMatchType::SEARCH_OTHER_ENGINE &&
        provider != nullptr &&
-       provider->type() == AutocompleteProviderType::kSearch);
+       provider->type() == AutocompleteProvider::TYPE_SEARCH);
   return type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED ||
          type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
          is_keyword_verbatim_match;
@@ -1294,14 +1293,15 @@ bool AutocompleteMatch::IsVerbatimType() const {
 
 bool AutocompleteMatch::IsSearchProviderSearchSuggestion() const {
   const bool from_search_provider =
-      (provider && provider->type() == AutocompleteProviderType::kSearch);
+      (provider && provider->type() == AutocompleteProvider::TYPE_SEARCH);
   return from_search_provider &&
          type != AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
 }
 
 bool AutocompleteMatch::IsOnDeviceSearchSuggestion() const {
   const bool from_on_device_provider =
-      (provider && provider->type() == AutocompleteProviderType::kOnDeviceHead);
+      (provider &&
+       provider->type() == AutocompleteProvider::TYPE_ON_DEVICE_HEAD);
   return from_on_device_provider && subtypes.contains(271);
 }
 

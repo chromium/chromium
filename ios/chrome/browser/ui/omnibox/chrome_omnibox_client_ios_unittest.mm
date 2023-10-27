@@ -9,7 +9,6 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/test_tracker.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
-#import "components/omnibox/browser/autocomplete_provider_type.h"
 #import "components/omnibox/browser/fake_autocomplete_provider.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
@@ -156,7 +155,7 @@ TEST_F(ChromeOmniboxClientIOSTest, SuccessfulNavigationAddsShortcut) {
   InitShortcutsBackend();
 
   scoped_refptr<FakeAutocompleteProvider> bookmark_provider =
-      new FakeAutocompleteProvider(AutocompleteProviderType::kBookmark);
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
   AutocompleteMatch bookmark_match(bookmark_provider.get(), 400, true,
                                    AutocompleteMatchType::BOOKMARK_TITLE);
 
@@ -182,7 +181,7 @@ TEST_F(ChromeOmniboxClientIOSTest, UnsuccessfulNavigationDontAddShortcut) {
   InitShortcutsBackend();
 
   scoped_refptr<FakeAutocompleteProvider> bookmark_provider =
-      new FakeAutocompleteProvider(AutocompleteProviderType::kBookmark);
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
   AutocompleteMatch bookmark_match(bookmark_provider.get(), 400, true,
                                    AutocompleteMatchType::BOOKMARK_TITLE);
 

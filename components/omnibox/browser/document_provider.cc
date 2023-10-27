@@ -38,7 +38,6 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -502,7 +501,7 @@ void DocumentProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 
 DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
                                    AutocompleteProviderListener* listener)
-    : AutocompleteProvider(AutocompleteProviderType::kDocument),
+    : AutocompleteProvider(AutocompleteProvider::TYPE_DOCUMENT),
       backoff_for_session_(false),
       client_(client),
       matches_cache_(20) {

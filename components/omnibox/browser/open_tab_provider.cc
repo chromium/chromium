@@ -10,7 +10,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -88,7 +87,7 @@ int Score(const query_parser::QueryNodeVector& input_query_nodes,
 }  // namespace
 
 OpenTabProvider::OpenTabProvider(AutocompleteProviderClient* client)
-    : AutocompleteProvider(AutocompleteProviderType::kOpenTab),
+    : AutocompleteProvider(AutocompleteProvider::TYPE_OPEN_TAB),
       client_(client) {}
 
 OpenTabProvider::~OpenTabProvider() = default;

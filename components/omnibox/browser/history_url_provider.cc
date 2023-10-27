@@ -32,7 +32,6 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/history_provider.h"
@@ -400,7 +399,7 @@ size_t HistoryURLProviderParams::EstimateMemoryUsage() const {
 
 HistoryURLProvider::HistoryURLProvider(AutocompleteProviderClient* client,
                                        AutocompleteProviderListener* listener)
-    : HistoryProvider(AutocompleteProviderType::kHistoryUrl, client),
+    : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_URL, client),
       params_(nullptr),
       search_url_database_(OmniboxFieldTrial::HUPSearchDatabase()) {
   AddListener(listener);

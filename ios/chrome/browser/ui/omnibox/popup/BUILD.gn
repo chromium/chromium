@@ -273,7 +273,6 @@ source_set("eg2_tests") {
   deps = [
     ":popup_accessibility_identifier_constants",
     "//base",
-    "//components/omnibox/browser:autocomplete_provider_type",
     "//components/omnibox/common",
     "//components/strings",
     "//ios/chrome/app/strings:ios_strings_grit",

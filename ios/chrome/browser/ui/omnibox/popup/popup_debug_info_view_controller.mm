@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_view_controller.h"
 #import "components/omnibox/browser/autocomplete_match_type.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
-#import "components/omnibox/browser/autocomplete_provider_type.h"
 #import "components/variations/variations_switches.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
@@ -341,7 +340,7 @@ UITableView* SuggestionsTableView() {
       break;
     case ProviderRow: {
       NSString* provider =
-          base::SysUTF8ToNSString(AutocompleteProviderTypeToString(
+          base::SysUTF8ToNSString(AutocompleteProvider::TypeToString(
               match.autocompleteMatch.provider->type()));
 
       content.text = [NSString stringWithFormat:@"Provider: %@", provider];

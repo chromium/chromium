@@ -13,7 +13,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -40,46 +39,46 @@ void AutocompleteClassifier::Shutdown() {
 }
 
 // static
-AutocompleteProviderType AutocompleteClassifier::DefaultOmniboxProviders() {
-  AutocompleteProviderType optional_query_tiles =
+int AutocompleteClassifier::DefaultOmniboxProviders() {
+  int optional_query_tiles =
       base::FeatureList::IsEnabled(omnibox::kQueryTilesInZPSOnNTP)
-          ? AutocompleteProviderType::kQueryTile
-          : AutocompleteProviderType::kNone;
+          ? AutocompleteProvider::TYPE_QUERY_TILE
+          : 0;
   return optional_query_tiles |
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
          // Custom search engines cannot be used on mobile.
-         AutocompleteProviderType::kKeyword |
-         AutocompleteProviderType::kOpenTab |
+         AutocompleteProvider::TYPE_KEYWORD |
+         AutocompleteProvider::TYPE_OPEN_TAB |
 #else
-         AutocompleteProviderType::kClipboard |
-         AutocompleteProviderType::kMostVisitedSites |
-         AutocompleteProviderType::kVerbatimMatch |
+         AutocompleteProvider::TYPE_CLIPBOARD |
+         AutocompleteProvider::TYPE_MOST_VISITED_SITES |
+         AutocompleteProvider::TYPE_VERBATIM_MATCH |
 #endif
 #if BUILDFLAG(IS_ANDROID)
-         AutocompleteProviderType::kVoiceSuggest |
+         AutocompleteProvider::TYPE_VOICE_SUGGEST |
 #endif
 #if !BUILDFLAG(IS_IOS)
          (history_clusters::GetConfig().is_journeys_enabled_no_locale_check &&
                   history_clusters::GetConfig().omnibox_history_cluster_provider
-              ? AutocompleteProviderType::kHistoryCluster
-              : AutocompleteProviderType::kNone) |
+              ? AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER
+              : 0) |
 #endif
-         AutocompleteProviderType::kZeroSuggest |
-         AutocompleteProviderType::kZeroSuggestLocalHistory |
+         AutocompleteProvider::TYPE_ZERO_SUGGEST |
+         AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY |
          (base::FeatureList::IsEnabled(omnibox::kDocumentProvider)
-              ? AutocompleteProviderType::kDocument
-              : AutocompleteProviderType::kNone) |
+              ? AutocompleteProvider::TYPE_DOCUMENT
+              : 0) |
          (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForAnyMode()
-              ? AutocompleteProviderType::kOnDeviceHead
-              : AutocompleteProviderType::kNone) |
-         AutocompleteProviderType::kBookmark |
-         AutocompleteProviderType::kBuiltin |
-         AutocompleteProviderType::kHistoryQuick |
-         AutocompleteProviderType::kHistoryUrl |
-         AutocompleteProviderType::kSearch |
-         AutocompleteProviderType::kShortcuts |
-         AutocompleteProviderType::kHistoryFuzzy |
-         AutocompleteProviderType::kCalculator;
+              ? AutocompleteProvider::TYPE_ON_DEVICE_HEAD
+              : 0) |
+         AutocompleteProvider::TYPE_BOOKMARK |
+         AutocompleteProvider::TYPE_BUILTIN |
+         AutocompleteProvider::TYPE_HISTORY_QUICK |
+         AutocompleteProvider::TYPE_HISTORY_URL |
+         AutocompleteProvider::TYPE_SEARCH |
+         AutocompleteProvider::TYPE_SHORTCUTS |
+         AutocompleteProvider::TYPE_HISTORY_FUZZY |
+         AutocompleteProvider::TYPE_CALCULATOR;
 }
 
 void AutocompleteClassifier::Classify(

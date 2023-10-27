@@ -20,7 +20,6 @@
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
@@ -86,7 +85,7 @@ std::u16string GetMatchContentsForOnDeviceTailSuggestion(
 
 using OEP = metrics::OmniboxEventProto;
 
-BaseSearchProvider::BaseSearchProvider(AutocompleteProviderType type,
+BaseSearchProvider::BaseSearchProvider(AutocompleteProvider::Type type,
                                        AutocompleteProviderClient* client)
     : AutocompleteProvider(type), client_(client) {}
 

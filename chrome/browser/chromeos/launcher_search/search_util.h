@@ -9,8 +9,6 @@
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 
 class AutocompleteController;
 class FaviconCache;
@@ -23,9 +21,9 @@ class BookmarkModel;
 
 namespace crosapi {
 
-// Returns a bitmask of the `AutocompleteProvider` types to be used by Launcher
+// Returns a bitmask of the AutocompleteProvider types to be used by Launcher
 // search.
-AutocompleteProviderType ProviderTypes();
+int ProviderTypes();
 
 // Returns the UI page transition that corresponds to the given crosapi page
 // transition.

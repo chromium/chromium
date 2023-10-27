@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/jni_headers/AutocompleteMatch_jni.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
@@ -148,7 +147,7 @@ void AutocompleteMatch::UpdateWithClipboardContent(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_callback) {
   DCHECK(provider) << "No provider available";
-  DCHECK(provider->type() == AutocompleteProviderType::kClipboard)
+  DCHECK(provider->type() == AutocompleteProvider::TYPE_CLIPBOARD)
       << "Invalid provider type: " << provider->type();
 
   ClipboardProvider* clipboard_provider =

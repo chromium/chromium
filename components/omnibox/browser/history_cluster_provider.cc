@@ -17,11 +17,11 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
+
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
 HistoryClusterProvider::HistoryClusterProvider(
@@ -30,7 +30,7 @@ HistoryClusterProvider::HistoryClusterProvider(
     AutocompleteProvider* search_provider,
     AutocompleteProvider* history_url_provider,
     AutocompleteProvider* history_quick_provider)
-    : AutocompleteProvider(AutocompleteProviderType::kHistoryCluster),
+    : AutocompleteProvider(AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER),
       client_(client),
       search_provider_(search_provider),
       history_url_provider_(history_url_provider),

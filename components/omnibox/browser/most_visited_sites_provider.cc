@@ -14,7 +14,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
@@ -226,7 +225,7 @@ void MostVisitedSitesProvider::Stop(bool clear_cached_results,
 MostVisitedSitesProvider::MostVisitedSitesProvider(
     AutocompleteProviderClient* client,
     AutocompleteProviderListener* listener)
-    : AutocompleteProvider(AutocompleteProviderType::kMostVisitedSites),
+    : AutocompleteProvider(TYPE_MOST_VISITED_SITES),
       device_form_factor_{ui::GetDeviceFormFactor()},
       client_{client} {
   AddListener(listener);

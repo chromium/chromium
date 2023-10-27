@@ -20,7 +20,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/keyword_extensions_delegate.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/search_provider.h"
@@ -85,7 +84,7 @@ void ScopedEndExtensionKeywordMode::StayInKeywordMode() {
 
 KeywordProvider::KeywordProvider(AutocompleteProviderClient* client,
                                  AutocompleteProviderListener* listener)
-    : AutocompleteProvider(AutocompleteProviderType::kKeyword),
+    : AutocompleteProvider(AutocompleteProvider::TYPE_KEYWORD),
       model_(client->GetTemplateURLService()),
       extensions_delegate_(client->GetKeywordExtensionsDelegate(this)),
       client_(client) {

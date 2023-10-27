@@ -6,10 +6,8 @@
 
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
-#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/omnibox/browser/autocomplete_provider_type.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
@@ -134,13 +132,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   config.additional_args.push_back("--force-fieldtrials=" + bundledConfig +
                                    "/Test");
 
-  // Disable AutocompleteProvider types: `kSearch` and `kOnDeviceHead`.
+  // Disable AutocompleteProvider types: TYPE_SEARCH and TYPE_ON_DEVICE_HEAD.
   config.additional_args.push_back(
       "--force-fieldtrial-params=" + bundledConfig +
-      ".Test:" + "DisableProviders" + "/" +
-      base::NumberToString(
-          static_cast<int>(AutocompleteProviderType::kSearch |
-                           AutocompleteProviderType::kOnDeviceHead)));
+      ".Test:" + "DisableProviders" + "/" + "1056");
 
   return config;
 }
