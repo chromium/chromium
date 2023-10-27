@@ -217,6 +217,9 @@ NSInteger kFeedSymbolPointSize = 17;
 }
 
 - (void)updateForDefaultSearchEngineChanged {
+  if (!self.viewLoaded) {
+    return;
+  }
   if (![self.feedControlDelegate isFollowingFeedAvailable]) {
     [self.titleLabel setText:[self feedHeaderTitleText]];
     [self.titleLabel setNeedsDisplay];
