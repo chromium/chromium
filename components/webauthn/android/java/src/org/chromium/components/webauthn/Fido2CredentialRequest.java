@@ -373,9 +373,17 @@ public class Fido2CredentialRequest
 
             if (getBarrierMode() == Barrier.Mode.BOTH) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.BOTH);
-                mCredManHelper.startPrefetchRequest(context, frameHost, options, callerOriginString,
-                        hasAllowCredentials, maybeClientDataHash, callback,
-                        this::returnErrorAndResetCallback, mBarrier, /*ignoreGpm=*/true);
+                mCredManHelper.startPrefetchRequest(
+                        context,
+                        frameHost,
+                        options,
+                        callerOriginString,
+                        mIsCrossOrigin,
+                        maybeClientDataHash,
+                        callback,
+                        this::returnErrorAndResetCallback,
+                        mBarrier,
+                        /* ignoreGpm= */ true);
             } else {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_FIDO_2_API);
             }
