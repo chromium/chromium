@@ -212,12 +212,34 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tab.ExternalApplicationOpened" enum="ExternalLauncherOption"
     expires_after="2022-08-21">
+  <obsolete>
+    Removed M120. Replaced by Tab.ExternalApplicationOpened.* variants.
+  </obsolete>
   <owner>mrefaat@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
     [iOS] Used on External App launcher Prompt to determine if the user clicked
     open or cancel.
   </summary>
+</histogram>
+
+<histogram name="Tab.ExternalApplicationOpened{Cause}"
+    enum="ExternalLauncherOption" expires_after="2024-10-15">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    [iOS] Used on External App launcher Prompt to determine how the user
+    interacted with the prompt.
+  </summary>
+  <token key="Cause">
+    <variant name=".Failed" summary="External application opening failed."/>
+    <variant name=".FromIncognito" summary="Request from Incognito."/>
+    <variant name=".Generic" summary="Misc request bucket."/>
+    <variant name=".NoUserInteraction"
+        summary="Request without user interaction."/>
+    <variant name=".Repeated"
+        summary="Repeated request to open external application.."/>
+  </token>
 </histogram>
 
 <histogram name="Tab.HasThemeColor" units="BooleanPresent"

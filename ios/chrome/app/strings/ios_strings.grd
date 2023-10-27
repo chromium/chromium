@@ -2023,7 +2023,7 @@ See your search engine’s instructions for deleting your search history, if app
         Open in...
       </message>
       <message name="IDS_IOS_OPEN_IN_ANOTHER_APP" desc="Alert to let the user know that user about to open this page on another application. [Length: 60em] [iOS only]">
-        This page will open in another application.
+        This site is trying to open another application.
       </message>
       <message name="IDS_IOS_OPEN_IN_DOWNLOADS" desc="Label of the button that lets users open downloads folder. [Length: unlimited] [iOS only]">
         Open in Downloads
@@ -5285,16 +5285,25 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
         Keep Editing
       </message>
       <message name="IDS_IOS_ADD_CREDIT_CARD_VIEW_CONTROLLER_DISMISS_ALERT_TITLE" desc="Text displayed on an alert as a title whenever trying to dismiss a presented 'add new credit card view' with pending changes.">
-        Are you sure you want to discard this new card?
+          Are you sure you want to discard this new card?
       </message>
-      <message name="IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP" desc="Alert to let the user know that the website is trying repeatedly to open another application. [iOS only]">
-          This website is repeatedly trying to open another application.
-      </message>
-      <message name="IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP_ALLOW" desc="Text on the button, when tapped will allow opening an external application. [iOS only]">
+      <message name="IDS_IOS_OPEN_ANOTHER_APP_ALLOW" desc="Text on the button, when tapped will allow opening an external application. [iOS only]">
           Allow
       </message>
-      <message name="IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP_BLOCK" desc="Text on the button, when tapped will block opening an external application for this browsing session. [iOS only]">
-          Block
+      <message name="IDS_IOS_OPEN_ANOTHER_APP_BLOCK" desc="Text on the button, when tapped will block opening an external application for this browsing session. [iOS only]">
+          Don't allow
+      </message>
+      <message name="IDS_IOS_OPEN_ANOTHER_APP_FAILED" desc="Alert to let the user know that external app could not be opened. [iOS only]">
+          Something went wrong. The application couldn’t be opened.
+      </message>
+      <message name="IDS_IOS_OPEN_ANOTHER_APP_FAILED_CONFIRM" desc="Button to acknowledge that opening application failed.">
+          Got it
+      </message>
+      <message name="IDS_IOS_OPEN_ANOTHER_APP_FROM_INCOGNITO" desc="Alert to let the user know that the website is trying to open another application from incognito. [iOS only]">
+          This site is trying to open an application.  This will take you out of Incognito.
+      </message>
+      <message name="IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP" desc="Alert to let the user know that the website is trying repeatedly to open another application. [iOS only]">
+          This site is repeatedly trying to open another application.
       </message>
       <message name="IDS_IOS_NAVIGATION_BAR_ADD_BUTTON" desc="Label of the button allowing the user to add a new credit card to the list of their saved credit cards.">
           Add

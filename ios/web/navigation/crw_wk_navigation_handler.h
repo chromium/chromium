@@ -31,6 +31,9 @@ class WKBackForwardListItemHolder;
 // CRWWKNavigationHandler uses this protocol to interact with its owner.
 @protocol CRWWKNavigationHandlerDelegate <CRWWebViewHandlerDelegate>
 
+// Returns whether `action` was user initiated.
+- (BOOL)isUserInitiatedAction:(WKNavigationAction*)action;
+
 // Returns associated certificate verificatio controller.
 - (CRWCertVerificationController*)
     certVerificationControllerForNavigationHandler:

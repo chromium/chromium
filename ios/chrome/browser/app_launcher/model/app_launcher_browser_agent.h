@@ -31,13 +31,13 @@ class AppLauncherBrowserAgent
 
    private:
     // AppLauncherTabHelperDelegate:
-    void LaunchAppForTabHelper(AppLauncherTabHelper* tab_helper,
-                               const GURL& url,
-                               bool link_transition,
-                               base::OnceClosure completion) override;
-    void ShowRepeatedAppLaunchAlert(
+    void LaunchAppForTabHelper(
         AppLauncherTabHelper* tab_helper,
+        const GURL& url,
         base::OnceCallback<void(bool)> completion) override;
+    void ShowAppLaunchAlert(AppLauncherTabHelper* tab_helper,
+                            AppLauncherAlertCause cause,
+                            base::OnceCallback<void(bool)> completion) override;
 
     // Returns the OverlayRequestQueue to use for app launch dialogs from
     // `web_state`.  Returns the queue for `web_state`'s opener if `web_state`

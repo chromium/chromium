@@ -11,6 +11,7 @@
 class AppLauncherTabHelperDelegate;
 @class AppLauncherAbuseDetector;
 class GURL;
+enum class AppLauncherAlertCause;
 
 // A tab helper that handles requests to launch another application.
 class AppLauncherTabHelper
@@ -38,7 +39,8 @@ class AppLauncherTabHelper
   // user with a confirmation dialog to open the application.
   void RequestToLaunchApp(const GURL& url,
                           const GURL& source_page_url,
-                          bool link_transition);
+                          bool link_transition,
+                          bool is_user_initiated);
 
   // web::WebStatePolicyDecider implementation
   void ShouldAllowRequest(
@@ -52,18 +54,31 @@ class AppLauncherTabHelper
   // Constructor for AppLauncherTabHelper. `abuse_detector` provides policy for
   // launching apps.
   AppLauncherTabHelper(web::WebState* web_state,
-                       AppLauncherAbuseDetector* abuse_detector);
+                       AppLauncherAbuseDetector* abuse_detector,
+                       bool incognito);
 
   // Getter for the delegate.
   AppLauncherTabHelperDelegate* delegate() const { return delegate_; }
 
+  // Callback to AppLauncherTabHelperDelegate::LaunchAppForTabHelper when a
+  // prompt was previously shown to the user.
+  // If the launch was not successful, another prompt can be shown.
+  void OnAppLaunchTried(bool success);
+
+  // Called by the delegate when the failure prompt was shown to the user.
+  // `user_allowed` is ignored as there is only one button.
+  void ShowFailureAlertDone(bool user_allowed);
+
   // Resets `is_app_launch_request_pending_` to `false` and call all callbacks
   // waiting for app completion.
-  void AppLaunchCompleted();
+  void OnAppLaunchCompleted(bool success);
+
+  // Triggers an in tab prompt to ask the user if the app launch should proceed.
+  void ShowAppLaunchAlert(AppLauncherAlertCause cause, const GURL& url);
 
   // Called by the delegate once the user has been prompted. If `user_allowed`,
   // then `LaunchAppForTabHelper()` will be called on the delegate.
-  void ShowRepeatedAppLaunchAlertDone(const GURL& url, bool user_allowed);
+  void OnShowAppLaunchAlertDone(const GURL& url, bool user_allowed);
 
   // Holds the necessary data for a call to `RequestToLaunchApp()`. A value for
   // this type can optionally be returned by
@@ -72,6 +87,7 @@ class AppLauncherTabHelper
     GURL url;
     GURL source_page_url;
     bool link_transition;
+    bool has_user_gesture;
   };
   using PolicyDecisionAndOptionalAppLaunchRequest =
       std::pair<web::WebStatePolicyDecider::PolicyDecision,
@@ -89,6 +105,9 @@ class AppLauncherTabHelper
 
   // Used to check for repeated launches and provide policy for launching apps.
   AppLauncherAbuseDetector* abuse_detector_ = nil;
+
+  // Whether this TabHelper is in incognito.
+  bool incognito_ = false;
 
   // Used to launch apps and present UI.
   AppLauncherTabHelperDelegate* delegate_ = nullptr;

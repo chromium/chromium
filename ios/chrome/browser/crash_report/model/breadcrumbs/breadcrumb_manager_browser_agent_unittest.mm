@@ -262,7 +262,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, AppLaunchOverlay) {
       OverlayModality::kWebContentArea);
   queue->AddRequest(OverlayRequest::CreateWithConfig<
                     app_launcher_overlays::AppLaunchConfirmationRequest>(
-      /*is_repeated_request=*/false));
+      app_launcher_overlays::AppLaunchConfirmationRequestCause::kOther));
   queue->CancelAllRequests();
 
   const auto& events = GetEvents();

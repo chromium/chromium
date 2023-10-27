@@ -34,21 +34,46 @@ namespace {
 // application. `user_accepted` should be YES if the user accepted the prompt to
 // launch another application. This call is extracted to a separate function to
 // reduce macro code expansion.
-void RecordUserAcceptedAppLaunchMetric(BOOL user_accepted) {
-  UMA_HISTOGRAM_BOOLEAN("Tab.ExternalApplicationOpened", user_accepted);
+void RecordAppLaunchRequestMetrics(
+    app_launcher_overlays::AppLaunchConfirmationRequestCause cause,
+    BOOL user_accepted) {
+  switch (cause) {
+    case app_launcher_overlays::AppLaunchConfirmationRequestCause::kOther:
+      UMA_HISTOGRAM_BOOLEAN("Tab.ExternalApplicationOpened.Generic",
+                            user_accepted);
+      break;
+    case app_launcher_overlays::AppLaunchConfirmationRequestCause::
+        kRepeatedRequest:
+      UMA_HISTOGRAM_BOOLEAN("Tab.ExternalApplicationOpened.Repeated",
+                            user_accepted);
+      break;
+    case app_launcher_overlays::AppLaunchConfirmationRequestCause::
+        kOpenFromIncognito:
+      UMA_HISTOGRAM_BOOLEAN("Tab.ExternalApplicationOpened.FromIncognito",
+                            user_accepted);
+      break;
+    case app_launcher_overlays::AppLaunchConfirmationRequestCause::
+        kNoUserInteraction:
+      UMA_HISTOGRAM_BOOLEAN("Tab.ExternalApplicationOpened.NoUserInteraction",
+                            user_accepted);
+      break;
+    case app_launcher_overlays::AppLaunchConfirmationRequestCause::
+        kAppLaunchFailed:
+      UMA_HISTOGRAM_BOOLEAN("Tab.ExternalApplicationOpened.Failed",
+                            user_accepted);
+      break;
+  }
 }
 
 // Callback for the app launcher alert overlay.
-void AppLauncherOverlayCallback(base::OnceCallback<void(bool)> completion,
-                                bool repeated_request,
-                                OverlayResponse* response) {
+void AppLauncherOverlayCallback(
+    base::OnceCallback<void(bool)> completion,
+    app_launcher_overlays::AppLaunchConfirmationRequestCause cause,
+    OverlayResponse* response) {
   // Check whether the user has allowed the navigation.
   bool user_accepted = response && response->GetInfo<AllowAppLaunchResponse>();
 
-  // Record the UMA for repeated requests.
-  if (repeated_request) {
-    RecordUserAcceptedAppLaunchMetric(user_accepted);
-  }
+  RecordAppLaunchRequestMetrics(cause, user_accepted);
 
   // Execute the completion with the response.
   DCHECK(!completion.is_null());
@@ -57,17 +82,36 @@ void AppLauncherOverlayCallback(base::OnceCallback<void(bool)> completion,
 
 // Launches the app for `url` if `user_accepted` is true.
 void LaunchExternalApp(const GURL url,
-                       base::OnceClosure completion,
+                       base::OnceCallback<void(bool)> completion,
                        bool user_accepted = true) {
   if (!user_accepted) {
-    std::move(completion).Run();
+    std::move(completion).Run(false);
     return;
   }
-  auto callback = base::IgnoreArgs<BOOL>(std::move(completion));
   [[UIApplication sharedApplication]
                 openURL:net::NSURLWithGURL(url)
                 options:@{}
-      completionHandler:base::CallbackToBlock(std::move(callback))];
+      completionHandler:base::CallbackToBlock(std::move(completion))];
+}
+
+app_launcher_overlays::AppLaunchConfirmationRequestCause
+RequestCauseFromActionCause(AppLauncherAlertCause cause) {
+  switch (cause) {
+    case AppLauncherAlertCause::kOther:
+      return app_launcher_overlays::AppLaunchConfirmationRequestCause::kOther;
+    case AppLauncherAlertCause::kRepeatedLaunchDetected:
+      return app_launcher_overlays::AppLaunchConfirmationRequestCause::
+          kRepeatedRequest;
+    case AppLauncherAlertCause::kOpenFromIncognito:
+      return app_launcher_overlays::AppLaunchConfirmationRequestCause::
+          kOpenFromIncognito;
+    case AppLauncherAlertCause::kNoUserInteraction:
+      return app_launcher_overlays::AppLaunchConfirmationRequestCause::
+          kNoUserInteraction;
+    case AppLauncherAlertCause::kAppLaunchFailed:
+      return app_launcher_overlays::AppLaunchConfirmationRequestCause::
+          kAppLaunchFailed;
+  }
 }
 
 }  // namespace
@@ -95,49 +139,35 @@ AppLauncherBrowserAgent::TabHelperDelegate::~TabHelperDelegate() = default;
 void AppLauncherBrowserAgent::TabHelperDelegate::LaunchAppForTabHelper(
     AppLauncherTabHelper* tab_helper,
     const GURL& url,
-    bool link_transition,
-    base::OnceClosure completion) {
+    base::OnceCallback<void(bool)> completion) {
   // Don't open application if chrome is not active.
   if ([[UIApplication sharedApplication] applicationState] !=
       UIApplicationStateActive) {
-    std::move(completion).Run();
+    std::move(completion).Run(false);
     return;
   }
 
   // Uses a Mailto Handler to open the appropriate app.
   if (url.SchemeIs(url::kMailToScheme)) {
     MailtoHandlerServiceFactory::GetForBrowserState(browser_->GetBrowserState())
-        ->HandleMailtoURL(net::NSURLWithGURL(url), std::move(completion));
+        ->HandleMailtoURL(net::NSURLWithGURL(url),
+                          base::BindOnce(std::move(completion), true));
     return;
   }
 
-  // Show the a dialog for app store launches and external URL navigations that
-  // did not originate from a link tap.
-  bool show_dialog = UrlHasAppStoreScheme(url) || !link_transition;
-  if (show_dialog) {
-    std::unique_ptr<OverlayRequest> request =
-        OverlayRequest::CreateWithConfig<AppLaunchConfirmationRequest>(
-            /*is_repeated_request=*/false);
-    request->GetCallbackManager()->AddCompletionCallback(base::BindOnce(
-        &AppLauncherOverlayCallback,
-        base::BindOnce(&LaunchExternalApp, url, std::move(completion)),
-        /*repeated_request=*/false));
-    GetQueueForAppLaunchDialog(tab_helper->web_state())
-        ->AddRequest(std::move(request));
-  } else {
-    LaunchExternalApp(url, std::move(completion));
-  }
+  LaunchExternalApp(url, std::move(completion));
 }
 
-void AppLauncherBrowserAgent::TabHelperDelegate::ShowRepeatedAppLaunchAlert(
+void AppLauncherBrowserAgent::TabHelperDelegate::ShowAppLaunchAlert(
     AppLauncherTabHelper* tab_helper,
+    AppLauncherAlertCause cause,
     base::OnceCallback<void(bool)> completion) {
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<AppLaunchConfirmationRequest>(
-          /*is_repeated_request=*/true);
+          RequestCauseFromActionCause(cause));
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(&AppLauncherOverlayCallback, std::move(completion),
-                     /*is_repeated_request=*/true));
+                     RequestCauseFromActionCause(cause)));
   GetQueueForAppLaunchDialog(tab_helper->web_state())
       ->AddRequest(std::move(request));
 }

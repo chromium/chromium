@@ -145,12 +145,14 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
       web_state, is_off_the_record,
       commerce::ShoppingServiceFactory::GetForBrowserState(browser_state));
 
-  // Since LensTabHelper listens for a custom scheme, it needs to be
-  // created before AppLauncherTabHelper, which will filter out
-  // unhandled schemes.
-  LensTabHelper::CreateForWebState(web_state);
-  AppLauncherTabHelper::CreateForWebState(
-      web_state, [[AppLauncherAbuseDetector alloc] init]);
+  if (!for_prerender) {
+    // Since LensTabHelper listens for a custom scheme, it needs to be
+    // created before AppLauncherTabHelper, which will filter out
+    // unhandled schemes.
+    LensTabHelper::CreateForWebState(web_state);
+    AppLauncherTabHelper::CreateForWebState(
+        web_state, [[AppLauncherAbuseDetector alloc] init], is_off_the_record);
+  }
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       web_state);
   password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(
