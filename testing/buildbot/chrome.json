@@ -1393,11 +1393,6 @@
       }
     ]
   },
-  "chromeos-jacuzzi-chrome": {
-    "additional_compile_targets": [
-      "chromiumos_preflight"
-    ]
-  },
   "chromeos-jacuzzi-chrome-skylab": {
     "additional_compile_targets": [
       "chrome",

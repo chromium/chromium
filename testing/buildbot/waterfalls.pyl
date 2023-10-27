@@ -115,23 +115,6 @@
         },
         'os_type': 'chromeos'
       },
-      'chromeos-jacuzzi-chrome': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        # TODO(crbug.com/1342987): All DUTs are dead.
-        # 'test_suites': {
-        #  'gtest_tests': 'chromeos_device_gtests',
-        #},
-        'swarming': {
-          'dimensions': {
-            'os': 'ChromeOS',
-            'device_type': 'jacuzzi',
-            'pool': 'chrome.tests',
-          },
-        },
-        'os_type': 'chromeos'
-      },
       'chromeos-jacuzzi-chrome-skylab': {
         'additional_compile_targets': [
           "chrome",
@@ -6714,6 +6697,21 @@
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',
         }
+      },
+      'chromeos-jacuzzi-chrome': {
+        # This builder is obsolete. It will be replaced with chromeos-jacuzzi-chrome-skylab.
+        # TODO(b:303196819): Remove this builder after removing or replacing referring code.
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'swarming': {
+          'dimensions': {
+            'os': 'ChromeOS',
+            'device_type': 'jacuzzi',
+            'pool': 'chrome.tests',
+          },
+        },
+        'os_type': 'chromeos'
       },
       'chromeos-jacuzzi-chrome-dchecks-skylab': {
         'additional_compile_targets': [
