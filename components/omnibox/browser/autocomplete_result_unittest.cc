@@ -49,6 +49,7 @@
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
+#include "ui/base/device_form_factor.h"
 
 using metrics::OmniboxEventProto;
 
@@ -3330,3 +3331,134 @@ TEST_F(AutocompleteResultTest, Android_UndedupTopSearch) {
     }
   }
 }
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(AutocompleteResultTest, IOS_InspireMe) {
+  const auto group1 = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
+  const auto group2 = omnibox::GROUP_TRENDS;
+  TestData data[] = {
+      {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+  };
+  ACMatches matches;
+  PopulateAutocompleteMatches(data, std::size(data), &matches);
+
+  // Suggestion groups have the omnibox::SECTION_DEFAULT and
+  // omnibox::GroupConfig_SideType_DEFAULT_PRIMARY by default.
+  omnibox::GroupConfigMap suggestion_groups_map;
+  suggestion_groups_map[group1];
+  suggestion_groups_map[group2];
+
+  // Set up input for zero-prefix suggestions.
+  AutocompleteInput zero_input(u"", metrics::OmniboxEventProto::NTP,
+                               TestSchemeClassifier());
+  zero_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  {
+    SCOPED_TRACE("Inspire Me Enabled with 0 limit count");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{omnibox::kGroupingFrameworkForZPS, {}},
+         {omnibox::kInspireMe,
+          {{OmniboxFieldTrial::kInspireMePsuggestQueries.name, "2"},
+           {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
+            "0"}}}},
+        {});
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(zero_input, template_url_service_.get(),
+                       triggered_feature_service());
+
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      // Ipads should keep the default config.
+      const std::array<TestData, 3> expected_data{{
+          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      }};
+      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    } else {
+      const std::array<TestData, 2> expected_data{{
+          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      }};
+      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    }
+  }
+
+  {
+    SCOPED_TRACE("Inspire Me Enabled with 1 limit count and 3 psuggest");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{omnibox::kGroupingFrameworkForZPS, {}},
+         {omnibox::kInspireMe,
+          {{OmniboxFieldTrial::kInspireMePsuggestQueries.name, "3"},
+           {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
+            "1"}}}},
+        {});
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(zero_input, template_url_service_.get(),
+                       triggered_feature_service());
+
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      // Ipads should keep the default config.
+      const std::array<TestData, 3> expected_data{{
+          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      }};
+      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    } else {
+      const std::array<TestData, 4> expected_data{{
+          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      }};
+      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    }
+  }
+
+  {
+    SCOPED_TRACE("Inspire Me Enabled with 2 limit count and 3 psuggest");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{omnibox::kGroupingFrameworkForZPS, {}},
+         {omnibox::kInspireMe,
+          {{OmniboxFieldTrial::kInspireMePsuggestQueries.name, "3"},
+           {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
+            "2"}}}},
+        {});
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(zero_input, template_url_service_.get(),
+                       triggered_feature_service());
+
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      // Ipads should keep the default config.
+      const std::array<TestData, 3> expected_data{{
+          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      }};
+      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    } else {
+      const std::array<TestData, 5> expected_data{{
+          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+          {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+          {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
+      }};
+      AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    }
+  }
+}
+#endif
