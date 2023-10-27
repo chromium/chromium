@@ -155,7 +155,6 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(bubble_title));
   bubble_view_->GetContentView()->UpdateContentLabels(
       label_title, l10n_util::GetStringUTF16(label_description));
-  bubble_view_->GetContentView()->SetFeedbackSectionVisibility(true);
   bubble_view_->GetContentView()->SetToggleIsOn(true);
   bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(true));
 }
@@ -181,7 +180,6 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
       l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
       l10n_util::GetStringUTF16(label_description));
-  bubble_view_->GetContentView()->SetFeedbackSectionVisibility(false);
   bubble_view_->GetContentView()->SetToggleIsOn(false);
   bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(false));
 }
@@ -216,6 +214,8 @@ void CookieControlsBubbleViewController::OnStatusChanged(
   switch (enforcement) {
     case CookieControlsEnforcement::kNoEnforcement:
       bubble_view_->GetContentView()->SetContentLabelsVisible(true);
+      bubble_view_->GetContentView()->SetFeedbackSectionVisibility(
+          status == CookieControlsStatus::kDisabledForSite);
       bubble_view_->GetContentView()->SetToggleVisible(true);
       bubble_view_->GetContentView()->SetEnforcedIconVisible(false);
       break;
