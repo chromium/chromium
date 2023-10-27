@@ -112,7 +112,7 @@ class CORE_EXPORT StyleScopeFrame {
   ScopeSet* CalculateSeenImplicitScopes();
 
   Element& element_;
-  StyleScopeFrame* parent_;
+  StyleScopeFrame* parent_ = nullptr;
   HeapHashMap<Member<const StyleScope>, Member<const StyleScopeActivations>>
       data_;
   ScopeSet* seen_implicit_scopes_ = nullptr;

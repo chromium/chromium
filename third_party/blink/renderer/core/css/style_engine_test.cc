@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
+#include "third_party/blink/renderer/core/css/style_scope_frame.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
@@ -166,8 +167,13 @@ void StyleEngineTest::ApplyRuleSetInvalidation(TreeScope& tree_scope,
   rule_sets.insert(&rule_set);
   SelectorFilter selector_filter;
   selector_filter.PushAllParentsOf(tree_scope);
+  StyleScopeFrame style_scope_frame(
+      IsA<ShadowRoot>(tree_scope)
+          ? To<ShadowRoot>(tree_scope).host()
+          : *tree_scope.GetDocument().documentElement());
   GetStyleEngine().ApplyRuleSetInvalidationForTreeScope(
-      tree_scope, tree_scope.RootNode(), selector_filter, rule_sets);
+      tree_scope, tree_scope.RootNode(), selector_filter, style_scope_frame,
+      rule_sets);
 }
 
 TEST_F(StyleEngineTest, DocumentDirtyAfterInject) {

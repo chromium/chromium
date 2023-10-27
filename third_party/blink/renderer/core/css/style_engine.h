@@ -102,6 +102,7 @@ class StyleRuleFontFace;
 class StyleRuleFontPaletteValues;
 class StyleRuleKeyframes;
 class StyleRuleUsageTracker;
+class StyleScopeFrame;
 class StyleSheet;
 class StyleSheetContents;
 class StyleInitialData;
@@ -484,15 +485,18 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       TreeScope&,
       ContainerNode&,
       SelectorFilter&,
+      StyleScopeFrame&,
       const HeapHashSet<Member<RuleSet>>&,
       InvalidationScope = kInvalidateCurrentScope);
-  void ApplyRuleSetInvalidationForSubtree(TreeScope&,
-                                          Element&,
-                                          SelectorFilter&,
-                                          const HeapHashSet<Member<RuleSet>>&,
-                                          InvalidationScope,
-                                          bool invalidate_slotted,
-                                          bool invalidate_part);
+  void ApplyRuleSetInvalidationForSubtree(
+      TreeScope&,
+      Element&,
+      SelectorFilter&,
+      StyleScopeFrame& parent_style_scope_frame,
+      const HeapHashSet<Member<RuleSet>>&,
+      InvalidationScope,
+      bool invalidate_slotted,
+      bool invalidate_part);
   void ScheduleCustomElementInvalidations(HashSet<AtomicString> tag_names);
   void ScheduleInvalidationsForHasPseudoAffectedByInsertion(
       Element* parent,
@@ -761,6 +765,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       const TreeScope& tree_scope,
       Element& element,
       SelectorFilter& selector_filter,
+      StyleScopeFrame& style_scope_frame,
       const HeapHashSet<Member<RuleSet>>& rule_sets,
       bool is_shadow_host);
   void InvalidateSlottedElements(HTMLSlotElement&);

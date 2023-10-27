@@ -1894,6 +1894,7 @@ void StyleEngine::ApplyRuleSetInvalidationForElement(
     const TreeScope& tree_scope,
     Element& element,
     SelectorFilter& selector_filter,
+    StyleScopeFrame& style_scope_frame,
     const HeapHashSet<Member<RuleSet>>& rule_sets,
     bool is_shadow_host) {
   ElementResolveContext element_resolve_context(element);
@@ -1901,8 +1902,10 @@ void StyleEngine::ApplyRuleSetInvalidationForElement(
   EInsideLink inside_link =
       EInsideLink::kNotInsideLink;  // Only used for MatchedProperties, so does
                                     // not matter for us.
-  ElementRuleCollector collector(element_resolve_context,
-                                 StyleRecalcContext::FromAncestors(element),
+  StyleRecalcContext style_recalc_context =
+      StyleRecalcContext::FromAncestors(element);
+  style_recalc_context.style_scope_frame = &style_scope_frame;
+  ElementRuleCollector collector(element_resolve_context, style_recalc_context,
                                  selector_filter, match_result, inside_link);
 
   MatchRequest match_request{&tree_scope.RootNode()};
@@ -2152,6 +2155,7 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
     TreeScope& tree_scope,
     ContainerNode& node,
     SelectorFilter& selector_filter,
+    StyleScopeFrame& style_scope_frame,
     const HeapHashSet<Member<RuleSet>>& rule_sets,
     InvalidationScope invalidation_scope) {
   TRACE_EVENT0("blink,blink_style",
@@ -2162,7 +2166,8 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
   if (auto* shadow_root = DynamicTo<ShadowRoot>(&node)) {
     Element& host = shadow_root->host();
     ApplyRuleSetInvalidationForElement(tree_scope, host, selector_filter,
-                                       rule_sets, /*is_shadow_host=*/true);
+                                       style_scope_frame, rule_sets,
+                                       /*is_shadow_host=*/true);
     if (host.GetStyleChangeType() == kSubtreeStyleChange) {
       return;
     }
@@ -2193,10 +2198,14 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
     }
   }
 
+  // Note that there is no need to meddle with the SelectorFilter
+  // or StyleScopeFrame here: the caller should already have set up
+  // the required state for `node` in both cases.
   for (Element& child : ElementTraversal::ChildrenOf(node)) {
-    ApplyRuleSetInvalidationForSubtree(tree_scope, child, selector_filter,
-                                       rule_sets, invalidation_scope,
-                                       invalidate_slotted, invalidate_part);
+    ApplyRuleSetInvalidationForSubtree(
+        tree_scope, child, selector_filter,
+        /* parent_style_scope_frame */ style_scope_frame, rule_sets,
+        invalidation_scope, invalidate_slotted, invalidate_part);
   }
 }
 
@@ -2204,10 +2213,13 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
     TreeScope& tree_scope,
     Element& element,
     SelectorFilter& selector_filter,
+    StyleScopeFrame& parent_style_scope_frame,
     const HeapHashSet<Member<RuleSet>>& rule_sets,
     InvalidationScope invalidation_scope,
     bool invalidate_slotted,
     bool invalidate_part) {
+  StyleScopeFrame style_scope_frame(element, &parent_style_scope_frame);
+
   if (invalidate_part && element.hasAttribute(html_names::kPartAttr)) {
     // It's too complicated to try to handle ::part() precisely.
     // If we have any ::part() rules, and the element has a [part]
@@ -2217,7 +2229,7 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
                                     style_change_reason::kStyleInvalidator));
   } else {
     ApplyRuleSetInvalidationForElement(tree_scope, element, selector_filter,
-                                       rule_sets,
+                                       style_scope_frame, rule_sets,
                                        /*is_shadow_host=*/false);
   }
 
@@ -2229,8 +2241,8 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
   if (invalidation_scope == kInvalidateAllScopes) {
     if (ShadowRoot* shadow_root = element.GetShadowRoot()) {
       ApplyRuleSetInvalidationForTreeScope(tree_scope, shadow_root->RootNode(),
-                                           selector_filter, rule_sets,
-                                           kInvalidateAllScopes);
+                                           selector_filter, style_scope_frame,
+                                           rule_sets, kInvalidateAllScopes);
     }
   }
 
@@ -2244,9 +2256,10 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
     selector_filter.PushParent(element);
 
     for (Element& child : ElementTraversal::ChildrenOf(element)) {
-      ApplyRuleSetInvalidationForSubtree(tree_scope, child, selector_filter,
-                                         rule_sets, invalidation_scope,
-                                         invalidate_slotted, invalidate_part);
+      ApplyRuleSetInvalidationForSubtree(
+          tree_scope, child, selector_filter,
+          /* parent_style_scope_frame */ style_scope_frame, rule_sets,
+          invalidation_scope, invalidate_slotted, invalidate_part);
     }
 
     selector_filter.PopParent(element);
@@ -2425,9 +2438,24 @@ void StyleEngine::InvalidateForRuleSetChanges(
 
   SelectorFilter selector_filter;
   selector_filter.PushAllParentsOf(tree_scope);
+
+  // Note that unlike the SelectorFilter, there is no need to explicitly
+  // handle the ancestor chain. It's OK to have a "root" StyleScopeFrame
+  // (i.e. a StyleScopeFrame without a parent frame) in the middle of the
+  // tree.
+  //
+  // Note also in the below call to ApplyRuleSetInvalidationForTreeScope,
+  // when `tree_scope` is a ShadowRoot, we have special behavior inside
+  // which invalidates "up" to the shadow *host*. This is why we use the
+  // host (if applicable) as the StyleScopeFrame element here.
+  StyleScopeFrame style_scope_frame(
+      IsA<ShadowRoot>(tree_scope)
+          ? To<ShadowRoot>(tree_scope).host()
+          : *tree_scope.GetDocument().documentElement());
+
   ApplyRuleSetInvalidationForTreeScope(tree_scope, tree_scope.RootNode(),
-                                       selector_filter, changed_rule_sets,
-                                       invalidation_scope);
+                                       selector_filter, style_scope_frame,
+                                       changed_rule_sets, invalidation_scope);
 }
 
 void StyleEngine::InvalidateInitialData() {
