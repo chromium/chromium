@@ -8047,7 +8047,7 @@
                     "name": "Enabled_20231004",
                     "params": {
                         "prob": "0.05",
-                        "survey_cycle_length": "60",
+                        "survey_cycle_length": "7",
                         "survey_start_date_ms": "1693296065000",
                         "trigger_id": "pmx19g6jw0jBnuKU19R0PK8xn3Ge"
                     },
