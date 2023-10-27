@@ -111,7 +111,7 @@ gfx::ImageSkia MaybeRotateImage(const gfx::ImageSkia& image,
         rotation_amount = SkBitmapOperations::RotationAmount::ROTATION_90_CW;
         break;
       default:
-        NOTREACHED();
+        // No action.
         break;
     }
     if (should_rotate) {
