@@ -37,6 +37,8 @@ class PinnedToolbarActionsContainer
 
     void ButtonPressed();
 
+    bool IsActive();
+
     void AddHighlight();
     void ResetHighlight();
 
@@ -70,16 +72,23 @@ class PinnedToolbarActionsContainer
 
  private:
   friend class PinnedSidePanelInteractiveTest;
+  friend class PinnedToolbarActionsContainerTest;
 
   void CreatePinnedActionButtons();
+  actions::ActionItem* GetActionItemFor(const actions::ActionId& id);
+  PinnedActionToolbarButton* AddPopOutButtonFor(const actions::ActionId& id);
+  void RemovePoppedOutButtonFor(const actions::ActionId& id);
   void AddPinnedActionButtonFor(const actions::ActionId& id);
   void RemovePinnedActionButtonFor(const actions::ActionId& id);
   PinnedActionToolbarButton* GetPinnedButtonFor(const actions::ActionId& id);
+  PinnedActionToolbarButton* GetPoppedOutButtonFor(const actions::ActionId& id);
+  void ReorderViews();
   SidePanelCoordinator* GetSidePanelCoordinator();
 
   const raw_ptr<BrowserView> browser_view_;
 
   std::vector<PinnedActionToolbarButton*> pinned_buttons_;
+  std::vector<PinnedActionToolbarButton*> popped_out_buttons_;
   raw_ptr<PinnedToolbarActionsModel> model_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,

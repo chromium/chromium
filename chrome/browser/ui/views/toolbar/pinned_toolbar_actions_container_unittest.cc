@@ -47,16 +47,52 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
         Profile::FromBrowserContext(context));
   }
 
-  std::vector<ToolbarButton*> GetPinnedEntryButtons() {
-    std::vector<ToolbarButton*> result;
+  std::vector<PinnedToolbarActionsContainer::PinnedActionToolbarButton*>
+  GetToolbarButtons() {
+    std::vector<PinnedToolbarActionsContainer::PinnedActionToolbarButton*>
+        result;
     for (views::View* child : browser_view()
                                   ->toolbar()
                                   ->pinned_toolbar_actions_container()
                                   ->children()) {
-      ToolbarButton* button = static_cast<ToolbarButton*>(child);
+      PinnedToolbarActionsContainer::PinnedActionToolbarButton* button =
+          static_cast<
+              PinnedToolbarActionsContainer::PinnedActionToolbarButton*>(child);
       result.push_back(button);
     }
     return result;
+  }
+
+  void CheckIsPoppedOut(actions::ActionId id, bool should_be_popped_out) {
+    auto* container =
+        browser_view()->toolbar()->pinned_toolbar_actions_container();
+    if (should_be_popped_out) {
+      ASSERT_NE(base::ranges::find(
+                    container->popped_out_buttons_, id,
+                    [](auto* button) { return button->GetActionId(); }),
+                container->popped_out_buttons_.end());
+    } else {
+      ASSERT_EQ(base::ranges::find(
+                    container->popped_out_buttons_, id,
+                    [](auto* button) { return button->GetActionId(); }),
+                container->popped_out_buttons_.end());
+    }
+  }
+
+  void CheckIsPinned(actions::ActionId id, bool should_be_pinned) {
+    auto* container =
+        browser_view()->toolbar()->pinned_toolbar_actions_container();
+    if (should_be_pinned) {
+      ASSERT_NE(base::ranges::find(
+                    container->pinned_buttons_, id,
+                    [](auto* button) { return button->GetActionId(); }),
+                container->pinned_buttons_.end());
+    } else {
+      ASSERT_EQ(base::ranges::find(
+                    container->pinned_buttons_, id,
+                    [](auto* button) { return button->GetActionId(); }),
+                container->pinned_buttons_.end());
+    }
   }
 
  private:
@@ -82,11 +118,11 @@ TEST_F(PinnedToolbarActionsContainerTest, PinningAndUnpinning) {
   auto* model = PinnedToolbarActionsModel::Get(profile());
   ASSERT_TRUE(model);
   // Verify there are no pinned buttons.
-  auto pinned_buttons = GetPinnedEntryButtons();
+  auto pinned_buttons = GetToolbarButtons();
   ASSERT_EQ(pinned_buttons.size(), 0u);
   // Verify pinning an action adds a button.
   model->UpdatePinnedState(actions::kActionCut, true);
-  pinned_buttons = GetPinnedEntryButtons();
+  pinned_buttons = GetToolbarButtons();
   ASSERT_EQ(pinned_buttons.size(), 1u);
   // Verify pressing the toolbar button invokes the action.
   ASSERT_EQ(actions::ActionManager::Get()
@@ -100,6 +136,138 @@ TEST_F(PinnedToolbarActionsContainerTest, PinningAndUnpinning) {
             1);
   // Verify unpinning an action removes a button.
   model->UpdatePinnedState(actions::kActionCut, false);
-  pinned_buttons = GetPinnedEntryButtons();
+  pinned_buttons = GetToolbarButtons();
   ASSERT_EQ(pinned_buttons.size(), 0u);
+}
+
+TEST_F(PinnedToolbarActionsContainerTest,
+       UnpinnedToolbarButtonsPoppedOutWhileActive) {
+  const std::u16string kActionTooltipText = u"Test Action";
+  actions::ActionItem* browser_action_item =
+      BrowserActions::FromBrowser(browser_view()->browser())
+          ->root_action_item();
+  auto action_item = actions::ActionItem::Builder()
+                         .SetText(u"Test Action")
+                         .SetTooltipText(kActionTooltipText)
+                         .SetActionId(actions::kActionCut)
+                         .SetVisible(true)
+                         .SetEnabled(true)
+                         .SetInvokeActionCallback(base::DoNothing())
+                         .Build();
+
+  browser_action_item->AddChild(std::move(action_item));
+
+  auto* model = PinnedToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(model);
+  auto* container =
+      browser_view()->toolbar()->pinned_toolbar_actions_container();
+  // Verify there are no pinned buttons.
+  auto toolbar_buttons = GetToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 0u);
+  // Verify activating a button does not pin and adds to popped out buttons.
+  container->UpdateActionState(actions::kActionCut, true);
+  CheckIsPoppedOut(actions::kActionCut, true);
+  CheckIsPinned(actions::kActionCut, false);
+  toolbar_buttons = GetToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 1u);
+  // Verify deactivating a button removes it from popped out buttons.
+  container->UpdateActionState(actions::kActionCut, false);
+  CheckIsPoppedOut(actions::kActionCut, false);
+  CheckIsPinned(actions::kActionCut, false);
+  toolbar_buttons = GetToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 0u);
+}
+
+TEST_F(PinnedToolbarActionsContainerTest,
+       StateChangesBetweenPinnedandUnpinnedWhileActive) {
+  const std::u16string kActionTooltipText = u"Test Action";
+  actions::ActionItem* browser_action_item =
+      BrowserActions::FromBrowser(browser_view()->browser())
+          ->root_action_item();
+  auto action_item = actions::ActionItem::Builder()
+                         .SetText(u"Test Action")
+                         .SetTooltipText(kActionTooltipText)
+                         .SetActionId(actions::kActionCut)
+                         .SetVisible(true)
+                         .SetEnabled(true)
+                         .SetInvokeActionCallback(base::DoNothing())
+                         .Build();
+
+  browser_action_item->AddChild(std::move(action_item));
+
+  auto* model = PinnedToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(model);
+  auto* container =
+      browser_view()->toolbar()->pinned_toolbar_actions_container();
+  // Verify there are no pinned buttons.
+  auto toolbar_buttons = GetToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 0u);
+  // Verify activating a button does not pin and adds to popped out buttons.
+  container->UpdateActionState(actions::kActionCut, true);
+  CheckIsPoppedOut(actions::kActionCut, true);
+  CheckIsPinned(actions::kActionCut, false);
+  toolbar_buttons = GetToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 1u);
+  // Pin active button and verify state.
+  model->UpdatePinnedState(actions::kActionCut, true);
+  CheckIsPoppedOut(actions::kActionCut, false);
+  CheckIsPinned(actions::kActionCut, true);
+  toolbar_buttons = GetToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 1u);
+  // Unpin active button and verify state.
+  model->UpdatePinnedState(actions::kActionCut, false);
+  CheckIsPoppedOut(actions::kActionCut, true);
+  CheckIsPinned(actions::kActionCut, false);
+  toolbar_buttons = GetToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 1u);
+}
+
+TEST_F(PinnedToolbarActionsContainerTest, PoppedOutButtonsAreAfterPinned) {
+  const std::u16string kActionTooltipText = u"Test Action";
+  actions::ActionItem* browser_action_item =
+      BrowserActions::FromBrowser(browser_view()->browser())
+          ->root_action_item();
+  auto cut_action = actions::ActionItem::Builder()
+                        .SetText(u"Test Action")
+                        .SetTooltipText(kActionTooltipText)
+                        .SetActionId(actions::kActionCut)
+                        .SetVisible(true)
+                        .SetEnabled(true)
+                        .SetInvokeActionCallback(base::DoNothing())
+                        .Build();
+  auto copy_action = actions::ActionItem::Builder()
+                         .SetText(u"Test Action")
+                         .SetTooltipText(kActionTooltipText)
+                         .SetActionId(actions::kActionCopy)
+                         .SetVisible(true)
+                         .SetEnabled(true)
+                         .SetInvokeActionCallback(base::DoNothing())
+                         .Build();
+
+  browser_action_item->AddChild(std::move(cut_action));
+  browser_action_item->AddChild(std::move(copy_action));
+
+  auto* model = PinnedToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(model);
+  auto* container =
+      browser_view()->toolbar()->pinned_toolbar_actions_container();
+  // Verify there are no pinned buttons.
+  auto toolbar_buttons = GetToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 0u);
+  // Pin both and verify order matches the order they were added.
+  model->UpdatePinnedState(actions::kActionCut, true);
+  model->UpdatePinnedState(actions::kActionCopy, true);
+  toolbar_buttons = GetToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 2u);
+  ASSERT_EQ(toolbar_buttons[0]->GetActionId(), actions::kActionCut);
+  ASSERT_EQ(toolbar_buttons[1]->GetActionId(), actions::kActionCopy);
+  // Make kActionCut popped out instead of pinned and verify order.
+  container->UpdateActionState(actions::kActionCut, true);
+  model->UpdatePinnedState(actions::kActionCut, false);
+  CheckIsPoppedOut(actions::kActionCut, true);
+  CheckIsPinned(actions::kActionCut, false);
+  toolbar_buttons = GetToolbarButtons();
+  ASSERT_EQ(toolbar_buttons.size(), 2u);
+  ASSERT_EQ(toolbar_buttons[0]->GetActionId(), actions::kActionCopy);
+  ASSERT_EQ(toolbar_buttons[1]->GetActionId(), actions::kActionCut);
 }
