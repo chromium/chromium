@@ -234,6 +234,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError,
           WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
           WebFeature::kPrivateNetworkAccessPreflightWarning,
+          WebFeature::kPrivateNetworkAccessPermissionPrompt,
           WebFeature::kWebBluetoothGetAvailability,
           WebFeature::kCookieHasNotBeenRefreshedIn201To300Days,
           WebFeature::kCookieHasNotBeenRefreshedIn301To350Days,
