@@ -49,7 +49,6 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
 
   void HandleAccept(const base::Value::List& args);
   void HandleCancel(const base::Value::List& args);
-  void HandleGuest(const base::Value::List& args);
   void HandlePageLoaded(const base::Value::List& args);
   void HandleInitializedWithHeight(const base::Value::List& args);
   void HandleChromeSigninPageLoaded(const base::Value::List& args);

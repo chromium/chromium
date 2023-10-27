@@ -99,45 +99,23 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     CoreAccountId account_id,
     const std::u16string& local_profile_name,
     absl::optional<size_t> icon_index,
-    bool use_guest_profile,
     base::OnceCallback<void(Profile*)> callback)
     : source_profile_(source_profile),
       account_id_(account_id),
       callback_(std::move(callback)) {
-  auto initialized_callback =
-      base::BindOnce(&DiceSignedInProfileCreator::OnNewProfileInitialized,
-                     weak_pointer_factory_.GetWeakPtr());
-
-  // Passing the sign-in token to an ephemeral Guest profile is part of the
-  // experiment to surface a Guest mode link in the DiceWebSigninIntercept
-  // and is only used to sign in to the web through account consistency and
-  // does NOT enable sync or any other browser level functionality.
-  // TODO(https://crbug.com/1225171): Revise the comment after Guest mode plans
-  // are finalized.
-  if (use_guest_profile) {
-    // TODO(https://crbug.com/1225171): Re-enabled if ephemeral based Guest mode
-    // is added. Remove the code otherwise.
-    NOTREACHED();
-
-    // Make sure the callback is not called synchronously.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ProfileManager::CreateProfileAsync,
-                       base::Unretained(g_browser_process->profile_manager()),
-                       ProfileManager::GetGuestProfilePath(),
-                       std::move(initialized_callback), base::DoNothing()));
-  } else {
-    ProfileAttributesStorage& storage =
-        g_browser_process->profile_manager()->GetProfileAttributesStorage();
-    if (!icon_index.has_value())
-      icon_index = storage.ChooseAvatarIconIndexForNewProfile();
-    std::u16string name = local_profile_name.empty()
-                              ? storage.ChooseNameForNewProfile(*icon_index)
-                              : local_profile_name;
-    ProfileManager::CreateMultiProfileAsync(name, *icon_index,
-                                            /*is_hidden=*/false,
-                                            std::move(initialized_callback));
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  if (!icon_index.has_value()) {
+    icon_index = storage.ChooseAvatarIconIndexForNewProfile();
   }
+  std::u16string name = local_profile_name.empty()
+                            ? storage.ChooseNameForNewProfile(*icon_index)
+                            : local_profile_name;
+  ProfileManager::CreateMultiProfileAsync(
+      name, *icon_index,
+      /*is_hidden=*/false,
+      base::BindOnce(&DiceSignedInProfileCreator::OnNewProfileInitialized,
+                     weak_pointer_factory_.GetWeakPtr()));
 }
 
 DiceSignedInProfileCreator::DiceSignedInProfileCreator(

@@ -195,17 +195,7 @@
     font-size: 12px;
   }
 
-  #interceptDialog [slot=footer] {
-    background: var(--paper-grey-50);
-    border-top: none;
-    padding: 0;
-  }
-
   @media (prefers-color-scheme: dark) {
-    #interceptDialog [slot=footer] {
-      background: rgb(50, 54, 57);  /* Custom color from Namrata. */
-    }
-
     #headerV2 {
       /* Colors used in svg image file for split header border and box. */
       --split-header-image-border-color-fill: var(--google-grey-700);
@@ -220,16 +210,6 @@
       background: var(--google-grey-800);
       color: var(--google-grey-100);
     }
-  }
-
-  .divider {
-    border-top: var(--cr-separator-line);
-  }
-
-  #footer-description {
-    color: var(--cr-secondary-text-color);
-    padding: 16px;
-    text-align: center;
   }
 </style>
 
@@ -307,13 +287,4 @@
       </cr-button>
     </div>
   </div>
-  <template is="dom-if" if="[[interceptionParameters_.showGuestOption]]"
-      restamp>
-    <div slot="footer">
-      <div class="divider"></div>
-      <div id="footer-description"
-          inner-h-t-m-l="[[guestLink_]]">
-      </div>
-    </div>
-  </template>
 </div>

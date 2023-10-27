@@ -91,9 +91,6 @@ void DiceWebSigninInterceptHandler::RegisterMessages() {
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandleCancel,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "guest", base::BindRepeating(&DiceWebSigninInterceptHandler::HandleGuest,
-                                   base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "pageLoaded",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandlePageLoaded,
                           base::Unretained(this)));
@@ -166,12 +163,6 @@ void DiceWebSigninInterceptHandler::HandleCancel(
     const base::Value::List& args) {
   if (completion_callback_) {
     std::move(completion_callback_).Run(SigninInterceptionUserChoice::kDecline);
-  }
-}
-
-void DiceWebSigninInterceptHandler::HandleGuest(const base::Value::List& args) {
-  if (completion_callback_) {
-    std::move(completion_callback_).Run(SigninInterceptionUserChoice::kGuest);
   }
 }
 
@@ -255,7 +246,6 @@ DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
   parameters.Set("confirmButtonLabel", GetConfirmButtonLabel());
   parameters.Set("cancelButtonLabel", GetCancelButtonLabel());
   parameters.Set("managedDisclaimerText", GetManagedDisclaimerText());
-  parameters.Set("showGuestOption", bubble_parameters_.show_guest_option);
   parameters.Set("interceptedAccount",
                  GetAccountInfoValue(intercepted_account()));
   parameters.Set("primaryAccount", GetAccountInfoValue(primary_account()));

@@ -14115,7 +14115,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Guest (OTR)"/>
   <int value="3" label="System"/>
   <int value="4" label="Other Off The Record"/>
-  <int value="5" label="Guest (Ephemeral) - Deprecated"/>
+  <int value="5" label="Deprecated(10/23): Guest (Ephemeral)"/>
 </enum>
 
 <enum name="BrowserServicesVerificationResult">
@@ -101065,7 +101065,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Declined"/>
   <int value="2" label="Ignored"/>
   <int value="3" label="Not displayed"/>
-  <int value="4" label="Accepted with Guest"/>
+  <int value="4" label="Deprecated(10/23): Accepted with Guest"/>
+  <int value="5" label="Accepted with existing profile"/>
 </enum>
 
 <enum name="SigninInterceptSessionStartupResult">

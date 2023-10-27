@@ -23,7 +23,6 @@ const BASE_PARAMETERS: InterceptionParameters = {
   confirmButtonLabel: 'confirm_label',
   cancelButtonLabel: 'cancel_label',
   managedDisclaimerText: 'managed_disclaimer',
-  showGuestOption: true,
   headerTextColor: 'rgba(255, 255, 255, 1)',
   interceptedProfileColor: 'rgba(255, 0, 0, 1)',
   primaryProfileColor: 'rgba(255, 255, 255, 1)',

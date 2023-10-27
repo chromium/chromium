@@ -217,9 +217,6 @@ void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(
       result = SigninInterceptionResult::kDeclined;
       accepted_ = false;
       break;
-    case SigninInterceptionUserChoice::kGuest:
-      result = SigninInterceptionResult::kAcceptedWithGuest;
-      accepted_ = true;
   }
 
   RecordInterceptionResult(bubble_parameters_, profile_, result);

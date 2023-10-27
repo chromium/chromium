@@ -27,14 +27,12 @@ WebSigninInterceptor::Delegate::BubbleParameters::BubbleParameters(
     AccountInfo intercepted_account,
     AccountInfo primary_account,
     SkColor profile_highlight_color,
-    bool show_guest_option,
     bool show_link_data_option,
     bool show_managed_disclaimer)
     : interception_type(interception_type),
       intercepted_account(intercepted_account),
       primary_account(primary_account),
       profile_highlight_color(profile_highlight_color),
-      show_guest_option(show_guest_option),
       show_link_data_option(show_link_data_option),
       show_managed_disclaimer(show_managed_disclaimer) {}
 

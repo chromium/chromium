@@ -26,7 +26,6 @@ export interface InterceptionParameters {
   primaryProfileColor: string;
   interceptedAccount: AccountInfo;
   primaryAccount: AccountInfo;
-  showGuestOption: boolean;
   useV2Design: boolean;
   showManagedDisclaimer: boolean;
 }
@@ -44,9 +43,6 @@ export interface DiceWebSigninInterceptBrowserProxy {
 
   // Called when the user cancels the interception.
   cancel(): void;
-
-  // Called when user selects Guest mode.
-  guest(): void;
 
   // Called when the page is loaded.
   pageLoaded(): Promise<InterceptionParameters>;
@@ -68,10 +64,6 @@ export class DiceWebSigninInterceptBrowserProxyImpl implements
 
   cancel() {
     chrome.send('cancel');
-  }
-
-  guest() {
-    chrome.send('guest');
   }
 
   pageLoaded() {

@@ -249,7 +249,6 @@ class DiceWebSigninInterceptionBubblePixelTest
             intercepted_account,
             primary_account,
             GetParam().intercepted_profile_color.toSkColor(),
-            /*show_guest_option=*/false,
             /*show_link_data_option=*/false,
             show_managed_disclaimer};
   }

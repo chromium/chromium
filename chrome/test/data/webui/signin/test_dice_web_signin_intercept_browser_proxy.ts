@@ -15,7 +15,6 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
     super([
       'accept',
       'cancel',
-      'guest',
       'pageLoaded',
       'chromeSigninPageLoaded',
       'initializedWithHeight',
@@ -28,7 +27,6 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
       cancelButtonLabel: '',
       confirmButtonLabel: '',
       managedDisclaimerText: '',
-      showGuestOption: false,
       headerTextColor: '',
       interceptedProfileColor: '',
       primaryProfileColor: '',
@@ -61,10 +59,6 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
 
   cancel() {
     this.methodCalled('cancel');
-  }
-
-  guest() {
-    this.methodCalled('guest');
   }
 
   pageLoaded() {

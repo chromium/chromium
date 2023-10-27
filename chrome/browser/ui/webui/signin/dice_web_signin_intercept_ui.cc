@@ -91,8 +91,6 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   };
   source->AddResourcePaths(kResources);
 
-  source->AddLocalizedString("guestLink",
-                             IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_GUEST_LINK);
   // Adding localized strings for the Chrome Signin sub page: /chrome_signin.
   source->AddLocalizedString(
       "chromeSigninTitle",

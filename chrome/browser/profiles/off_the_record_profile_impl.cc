@@ -148,7 +148,6 @@ profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
 
     case profile_metrics::BrowserProfileType::kIncognito:
     case profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile:
-    case profile_metrics::BrowserProfileType::kDeprecatedEphemeralGuest:
       NOTREACHED();
   }
   return profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile;
