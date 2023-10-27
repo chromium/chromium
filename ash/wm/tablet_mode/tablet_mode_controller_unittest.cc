@@ -30,7 +30,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -613,9 +612,6 @@ TEST_F(TabletModeControllerTest, VerticalHingeTest) {
 
 // Test if this case does not crash. See http://crbug.com/462806.
 TEST_F(TabletModeControllerTest, DisplayDisconnectionDuringOverview) {
-  // Do not animate wallpaper on entering overview.
-  OverviewWallpaperController::SetDisableChangeWallpaperForTest(true);
-
   UpdateDisplay("800x600,800x600");
   std::unique_ptr<aura::Window> w1(
       CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100)));
@@ -631,8 +627,6 @@ TEST_F(TabletModeControllerTest, DisplayDisconnectionDuringOverview) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
   EXPECT_EQ(w1->GetRootWindow(), w2->GetRootWindow());
-
-  OverviewWallpaperController::SetDisableChangeWallpaperForTest(false);
 }
 
 // Test that the disabling of the internal display exits tablet mode, and that

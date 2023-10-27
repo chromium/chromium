@@ -456,6 +456,30 @@ SplitViewOverviewSessionExitPoint GetSplitViewOverviewSessionExitPoint(
   return SplitViewOverviewSessionExitPoint::kUnspecified;
 }
 
+// Returns true if any of the items in `grid` covers the entire workspace, false
+// otherwise.
+bool ShouldImmediatelyInitDeskBar(OverviewGrid* grid) {
+  // Always immediately initialize the desk bar when doing app dragging or when
+  // immediately exiting.
+  const OverviewEnterExitType enter_exit_type =
+      grid->overview_session()->enter_exit_overview_type();
+  if (enter_exit_type == OverviewEnterExitType::kImmediateEnter ||
+      enter_exit_type == OverviewEnterExitType::kImmediateEnterWithoutFocus ||
+      enter_exit_type == OverviewEnterExitType::kImmediateExit) {
+    return true;
+  }
+
+  // If one of the windows covers the workspace, we can create the desks bar
+  // immediately.
+  for (const auto& overview_item : grid->window_list()) {
+    if (CanCoverAvailableWorkspace(overview_item->GetWindow())) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 OverviewGrid::OverviewGrid(aura::Window* root_window,
@@ -574,11 +598,14 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
 }
 
 void OverviewGrid::PrepareForOverview() {
-  if (!ShouldAnimateWallpaper(root_window_))
+  if (ShouldImmediatelyInitDeskBar(this)) {
     MaybeInitDesksWidget();
+  }
 
-  for (const auto& window : window_list_)
+  for (const auto& window : window_list_) {
     window->PrepareForOverview();
+  }
+
   SplitViewController::Get(root_window_)->AddObserver(this);
   if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     if (auto* animator = RootWindowController::ForWindow(root_window_)

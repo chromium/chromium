@@ -20,9 +20,6 @@
 #include "ash/shelf/window_scale_animation.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wallpaper/views/wallpaper_view.h"
-#include "ash/wallpaper/views/wallpaper_widget_controller.h"
-#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
@@ -594,31 +591,6 @@ TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window2.get()));
   ExitOverview();
-}
-
-// Test wallpaper should be blurred as in overview, even though overview might
-// not open during dragging.
-TEST_F(DragWindowFromShelfControllerTest, WallpaperBlurDuringDragging) {
-  UpdateDisplay("500x400");
-  const gfx::Rect shelf_bounds = GetShelfBounds();
-  auto window = CreateTestWindow();
-
-  StartDrag(window.get(), shelf_bounds.CenterPoint());
-  Drag(gfx::Point(0, 200), 0.f,
-       DragWindowFromShelfController::kShowOverviewThreshold + 1);
-  OverviewController* overview_controller = OverviewController::Get();
-  EXPECT_FALSE(overview_controller->InOverviewSession());
-  auto* wallpaper_view =
-      RootWindowController::ForWindow(window->GetRootWindow())
-          ->wallpaper_widget_controller()
-          ->wallpaper_view();
-  EXPECT_EQ(wallpaper_view->blur_sigma(),
-            chromeos::features::IsJellyrollEnabled()
-                ? wallpaper_constants::kClear
-                : wallpaper_constants::kOverviewBlur);
-
-  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
-  EXPECT_EQ(wallpaper_view->blur_sigma(), wallpaper_constants::kClear);
 }
 
 // Test overview is hidden during dragging and shown when drag slows down or

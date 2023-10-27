@@ -19,8 +19,6 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wallpaper/views/wallpaper_widget_controller.h"
-#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_metrics.h"
@@ -214,107 +212,6 @@ TEST_F(OverviewControllerTest,
   GetEventGenerator()->PressKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE);
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   resizer->CompleteDrag();
-}
-
-TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  TestOverviewObserver observer(/*should_monitor_animation_state = */ true);
-  // Enter without windows.
-  auto* overview_controller = Shell::Get()->overview_controller();
-  EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(TestOverviewObserver::COMPLETED,
-            observer.starting_animation_state());
-  auto* wallpaper_widget_controller =
-      Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
-
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  // When Jellyroll is enabled, wallpaper blur is removed in overview mode.
-  if (is_jellyroll_enabled) {
-    EXPECT_EQ(wallpaper_widget_controller->GetWallpaperBlur(),
-              wallpaper_constants::kClear);
-    EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
-  } else {
-    EXPECT_GT(wallpaper_widget_controller->GetWallpaperBlur(), 0);
-    EXPECT_TRUE(wallpaper_widget_controller->IsAnimating());
-    wallpaper_widget_controller->StopAnimating();
-  }
-
-  // Exiting overview has no animations until the overview animation is
-  // complete.
-  ExitOverview();
-  EXPECT_FALSE(overview_controller->InOverviewSession());
-  EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.ending_animation_state());
-  EXPECT_EQ(is_jellyroll_enabled ? wallpaper_constants::kClear
-                                 : wallpaper_constants::kOverviewBlur,
-            wallpaper_widget_controller->GetWallpaperBlur());
-  EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
-
-  observer.WaitForEndingAnimationComplete();
-  EXPECT_EQ(TestOverviewObserver::COMPLETED, observer.ending_animation_state());
-  EXPECT_EQ(wallpaper_constants::kClear,
-            wallpaper_widget_controller->GetWallpaperBlur());
-  if (is_jellyroll_enabled) {
-    EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
-  } else {
-    EXPECT_TRUE(wallpaper_widget_controller->IsAnimating());
-  }
-  wallpaper_widget_controller->StopAnimating();
-
-  gfx::Rect bounds(0, 0, 100, 100);
-  std::unique_ptr<aura::Window> window1(
-      CreateTestWindowInShellWithBounds(bounds));
-  std::unique_ptr<aura::Window> window2(
-      CreateTestWindowInShellWithBounds(bounds));
-
-  observer.Reset();
-  ASSERT_EQ(TestOverviewObserver::UNKNOWN, observer.starting_animation_state());
-  ASSERT_EQ(TestOverviewObserver::UNKNOWN, observer.ending_animation_state());
-
-  // Enter with windows.
-  EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.starting_animation_state());
-  EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.ending_animation_state());
-  EXPECT_EQ(wallpaper_constants::kClear,
-            wallpaper_widget_controller->GetWallpaperBlur());
-  EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
-
-  // Exit with windows before starting animation ends.
-  ExitOverview();
-  EXPECT_FALSE(overview_controller->InOverviewSession());
-  EXPECT_EQ(TestOverviewObserver::CANCELED,
-            observer.starting_animation_state());
-  EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.ending_animation_state());
-  // Blur animation never started.
-  EXPECT_EQ(wallpaper_constants::kClear,
-            wallpaper_widget_controller->GetWallpaperBlur());
-  EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
-
-  observer.Reset();
-
-  // Enter again before exit animation ends.
-  EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.starting_animation_state());
-  EXPECT_EQ(TestOverviewObserver::CANCELED, observer.ending_animation_state());
-  // Blur animation will start when animation is completed.
-  EXPECT_EQ(wallpaper_constants::kClear,
-            wallpaper_widget_controller->GetWallpaperBlur());
-  EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
-
-  observer.Reset();
-
-  // Activating window while entering animation should cancel the overview.
-  wm::ActivateWindow(window1.get());
-  EXPECT_FALSE(overview_controller->InOverviewSession());
-  EXPECT_EQ(TestOverviewObserver::CANCELED,
-            observer.starting_animation_state());
-  // Blur animation never started.
-  EXPECT_EQ(wallpaper_constants::kClear,
-            wallpaper_widget_controller->GetWallpaperBlur());
-  EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 }
 
 // TODO(https://crbug.com/1472403): Investigate test flakiness and reenable.
@@ -584,29 +481,6 @@ TEST_F(OverviewControllerTest, OverviewEnterExitAnimationClamshell) {
   WindowState::Get(window.get())->Minimize();
   EnterOverview();
   EXPECT_FALSE(observer.last_animation_was_fade());
-}
-
-TEST_F(OverviewControllerTest, WallpaperAnimationTiming) {
-  const gfx::Rect bounds(200, 200);
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(bounds));
-  WindowState::Get(window.get())->Minimize();
-
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  EnterOverview(OverviewEnterExitType::kFadeInEnter);
-  auto* wallpaper_widget_controller =
-      Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
-  // When Jellyroll is enabled, wallpaper blur is removed in overview mode.
-  if (chromeos::features::IsJellyrollEnabled()) {
-    EXPECT_EQ(wallpaper_widget_controller->GetWallpaperBlur(),
-              wallpaper_constants::kClear);
-    EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
-  } else {
-    EXPECT_GT(wallpaper_widget_controller->GetWallpaperBlur(), 0);
-    EXPECT_TRUE(wallpaper_widget_controller->IsAnimating());
-  }
 }
 
 // Tests that overview session exits cleanly if exit is requested before

@@ -13,8 +13,6 @@ namespace wallpaper_constants {
 
 // Blur sigma used for normal wallpaper.
 constexpr float kClear = 0.f;
-// Blur sigma used in overview mode.
-constexpr float kOverviewBlur = ColorProvider::kBackgroundBlurSigma;
 // Blur sigma in lock/login screen.
 constexpr float kLockLoginBlur = 30.0f;
 // Blur sigma used in oobe.

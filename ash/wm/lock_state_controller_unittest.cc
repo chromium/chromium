@@ -934,10 +934,7 @@ TEST_P(LockStateControllerAnimationTest, CancelShouldResetWallpaperBlur) {
 
   // Enter Overview and verify wallpaper properties.
   EnterOverview();
-  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
-                ? wallpaper_constants::kClear
-                : wallpaper_constants::kOverviewBlur,
-            wallpaper_view->blur_sigma());
+  EXPECT_EQ(wallpaper_constants::kClear, wallpaper_view->blur_sigma());
 
   // Start lock animation and verify wallpaper properties.
   PressLockButton();
@@ -952,10 +949,7 @@ TEST_P(LockStateControllerAnimationTest, CancelShouldResetWallpaperBlur) {
   ExpectUnlockedState("4");
 
   // Verify wallpaper blur are restored to overview's.
-  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
-                ? wallpaper_constants::kClear
-                : wallpaper_constants::kOverviewBlur,
-            wallpaper_view->blur_sigma());
+  EXPECT_EQ(wallpaper_constants::kClear, wallpaper_view->blur_sigma());
 }
 
 INSTANTIATE_TEST_SUITE_P(LockStateControllerAnimation,

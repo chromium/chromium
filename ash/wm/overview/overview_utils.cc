@@ -68,41 +68,6 @@ bool CanCoverAvailableWorkspace(aura::Window* window) {
   return WindowState::Get(window)->IsMaximizedOrFullscreenOrPinned();
 }
 
-bool ShouldAnimateWallpaper(aura::Window* root_window) {
-  // |overview_session| will be null on overview exit because we call this
-  // after the animations are done running. Check the mru window list windows in
-  // this case to see if they cover the workspace.
-  OverviewSession* overview_session =
-      OverviewController::Get()->overview_session();
-  if (overview_session) {
-    // Never animate when doing app dragging or when immediately exiting.
-    const auto enter_exit_type = overview_session->enter_exit_overview_type();
-    if (enter_exit_type == OverviewEnterExitType::kImmediateEnter ||
-        enter_exit_type == OverviewEnterExitType::kImmediateEnterWithoutFocus ||
-        enter_exit_type == OverviewEnterExitType::kImmediateExit) {
-      return false;
-    }
-
-    OverviewGrid* grid = overview_session->GetGridWithRootWindow(root_window);
-    // If one of the windows covers the workspace, we do not need to animate.
-    for (const auto& overview_item : grid->window_list()) {
-      if (CanCoverAvailableWorkspace(overview_item->GetWindow()))
-        return false;
-    }
-
-    return true;
-  }
-
-  auto windows =
-      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
-  for (auto* window : windows) {
-    if (window->GetRootWindow() == root_window &&
-        CanCoverAvailableWorkspace(window))
-      return false;
-  }
-  return true;
-}
-
 void FadeInWidgetToOverview(views::Widget* widget,
                             OverviewAnimationType animation_type,
                             bool observe) {

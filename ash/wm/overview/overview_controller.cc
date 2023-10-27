@@ -20,7 +20,6 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
@@ -103,14 +102,6 @@ OverviewEnterExitType MaybeOverrideEnterExitTypeForHomeScreen(
 OverviewController::OverviewController()
     : occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
       delayed_animation_task_delay_(kTransition) {
-  // If the feature `kJellyroll` is enabled, there's no wallpaper blur in
-  // overview mode, thus we don't need to create `OverviewWallpaperController`
-  // which takes care the the wallpaper blur for overview mode.
-  if (!chromeos::features::IsJellyrollEnabled()) {
-    overview_wallpaper_controller_ =
-        std::make_unique<OverviewWallpaperController>();
-  }
-
   Shell::Get()->activation_client()->AddObserver(this);
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
@@ -118,7 +109,6 @@ OverviewController::OverviewController()
 
 OverviewController::~OverviewController() {
   Shell::Get()->activation_client()->RemoveObserver(this);
-  overview_wallpaper_controller_.reset();
 
   // Destroy widgets that may be still animating if shell shuts down soon after
   // exiting overview mode.
@@ -269,10 +259,6 @@ void OverviewController::RemoveAndDestroyExitAnimationObserver(
   base::EraseIf(delayed_animations_,
                 base::MatchesUniquePtr(animation_observer));
 
-  // If something has been removed and its the last observer, unblur the
-  // wallpaper and let observers know. This function may be called while still
-  // in overview (ie. splitview restores one window but leaves overview active)
-  // so check that |overview_session_| is null before notifying.
   if (!overview_session_ && !previous_empty && delayed_animations_.empty())
     OnEndingAnimationComplete(/*canceled=*/false);
 }
@@ -499,16 +485,6 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
 
     overview_session_->UpdateFrameThrottling();
 
-    // When fading in from home, start animating blur immediately (if animation
-    // is required) - with this transition the item widgets are positioned in
-    // the overview immediately, so delaying blur start until start animations
-    // finish looks janky. If the feature `kJellyroll` is enabled, no need to
-    // set the wallpaper blur.
-    if (!chromeos::features::IsJellyrollEnabled()) {
-      overview_wallpaper_controller_->Blur(
-          /*animate=*/new_type == OverviewEnterExitType::kFadeInEnter);
-    }
-
     // For app dragging, there are no start animations so add a delay to delay
     // animations observing when the start animation ends, such as the shelf,
     // shadow and rounded corners.
@@ -577,19 +553,10 @@ bool OverviewController::CanEndOverview(OverviewEnterExitType type) {
 }
 
 void OverviewController::OnStartingAnimationComplete(bool canceled) {
-  DCHECK(overview_session_);
-
-  // For kFadeInEnter, wallpaper blur is initiated on transition start,
-  // so it doesn't have to be requested again on starting animation end.
-  if (!chromeos::features::IsJellyrollEnabled() && !canceled &&
-      overview_session_->enter_exit_overview_type() !=
-          OverviewEnterExitType::kFadeInEnter) {
-    overview_wallpaper_controller_->Blur(/*animate=*/true);
-  }
+  CHECK(overview_session_);
 
   // Observers should not do anything which may cause overview to quit
   // explicitly (i.e. ToggleOverview()) or implicity (i.e. activation change).
-  DCHECK(overview_session_);
   overview_session_->OnStartingAnimationComplete(canceled,
                                                  should_focus_overview_);
   for (auto& observer : observers_) {
@@ -604,15 +571,8 @@ void OverviewController::OnStartingAnimationComplete(bool canceled) {
 void OverviewController::OnEndingAnimationComplete(bool canceled) {
   for (auto& observer : observers_)
     observer.OnOverviewModeEndingAnimationComplete(canceled);
-  UnpauseOcclusionTracker(occlusion_pause_duration_for_end_);
 
-  // Unblur when animation is completed (or right away if there was no
-  // delayed animation) unless it's canceled, in which case, we should keep
-  // the blur. No need to unblur the wallpaper if the feature `kJellyroll` is
-  // enabled, since it's not blurred on overview started.
-  if (!canceled && !chromeos::features::IsJellyrollEnabled()) {
-    overview_wallpaper_controller_->Unblur();
-  }
+  UnpauseOcclusionTracker(occlusion_pause_duration_for_end_);
 
   // Resume the activation frame state.
   if (!canceled) {

@@ -12,7 +12,7 @@
 namespace ash {
 
 // Handles blur state for wallpaper. ChromeOS Wallpaper may be blurred on
-// login/lock screen, and in window overview mode.
+// lock/login screen.
 class ASH_EXPORT WallpaperBlurManager {
  public:
   WallpaperBlurManager();
@@ -34,9 +34,9 @@ class ASH_EXPORT WallpaperBlurManager {
 
   // When user presses the physical lock button on device, a quick blur
   // animation shows as the device is locking. This animation may show over
-  // other forms of blur like overview mode wallpaper blur. If the user lets go
-  // of the lock button before the device is locked, the animation rolls back
-  // and should restore the prior blur state.
+  // other forms of blur. If the user lets go of the lock button before the
+  // device is locked, the animation rolls back and should restore the prior
+  // blur state.
   void RestoreWallpaperBlurForLockState(float blur,
                                         WallpaperType wallpaper_type);
 

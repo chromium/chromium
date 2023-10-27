@@ -7,12 +7,12 @@
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
-#include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -53,7 +53,7 @@ TabDragDropWindowsHider::TabDragDropWindowsHider(aura::Window* source_window)
   // Blurs the wallpaper background.
   RootWindowController::ForWindow(root_window_)
       ->wallpaper_widget_controller()
-      ->SetWallpaperBlur(wallpaper_constants::kOverviewBlur);
+      ->SetWallpaperBlur(ColorProvider::kBackgroundBlurSigma);
 
   // `root_window_` might became nullptr during drag&drop. See b/276736023 for
   // details.

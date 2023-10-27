@@ -35,10 +35,6 @@ ASH_EXPORT OverviewSession* GetOverviewSession();
 // Returns true if `window` can cover available workspace.
 bool CanCoverAvailableWorkspace(aura::Window* window);
 
-// Returns false if any window with `root_window` covers the entire workspace,
-// true otherwise.
-bool ShouldAnimateWallpaper(aura::Window* root_window);
-
 // Fades `widget` to opacity one with the enter overview settings.
 // Have OverviewController observe this animation as a enter animation if
 // `observe` is true.

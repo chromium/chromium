@@ -18,7 +18,6 @@
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_mini_view_header_view.h"
@@ -190,13 +189,11 @@ void OverviewTestBase::SetUp() {
   shelf_view_test_api_->SetAnimationDuration(base::Milliseconds(1));
   ScopedOverviewTransformWindow::SetImmediateCloseForTests(
       /*immediate=*/true);
-  OverviewWallpaperController::SetDisableChangeWallpaperForTest(true);
   ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
       true);
 }
 
 void OverviewTestBase::TearDown() {
-  OverviewWallpaperController::SetDisableChangeWallpaperForTest(false);
   ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
       false);
   trace_names_.clear();

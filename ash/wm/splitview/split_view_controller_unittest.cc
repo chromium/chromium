@@ -33,8 +33,6 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
-#include "ash/wallpaper/views/wallpaper_widget_controller.h"
-#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/float/float_controller.h"
@@ -726,44 +724,6 @@ TEST_F(SplitViewControllerTest, SnapWindowWithUnresizableSnapProperty) {
   split_view_controller()->SnapWindow(
       window.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_EQ(window->GetBoundsInScreen().width(), 300);
-}
-
-// Tests that in split view with a single overview window, when overview is
-// ended, the wallpaper stays blurred until the window finishes animating.
-TEST_F(SplitViewControllerTest,
-       WallpaperUnblurredAfterLoneOverviewWindowSnapAnimationCompleted) {
-  const gfx::Rect bounds(400, 400);
-  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
-  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
-  ToggleOverview();
-  split_view_controller()->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-
-  WallpaperWidgetController* wallpaper_widget_controller =
-      Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
-
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  // When Jellyroll is enabled, the wallpaper blur is removed in overview mode.
-  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperBlur(),
-            chromeos::features::IsJellyrollEnabled()
-                ? wallpaper_constants::kClear
-                : wallpaper_constants::kOverviewBlur);
-  EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
-
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  ToggleOverview();
-
-  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperBlur(),
-            is_jellyroll_enabled ? wallpaper_constants::kClear
-                                 : wallpaper_constants::kOverviewBlur);
-  EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
-
-  WaitForOverviewExitAnimation();
-  // The wallpaper is unblurred without animation, because the wallpaper is
-  // covered by the windows and the split view divider.
-  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperBlur(), 0);
-  EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 }
 
 // Tests that if split view mode is active when entering overview, the overview
