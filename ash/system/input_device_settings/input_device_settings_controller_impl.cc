@@ -17,6 +17,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/input_device_settings/input_device_duplicate_id_finder.h"
 #include "ash/system/input_device_settings/input_device_key_alias_manager.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
@@ -35,6 +36,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -45,6 +47,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
@@ -229,11 +232,34 @@ bool IsGraphicsTabletPenButton(const mojom::Button& button) {
 void AddButtonToButtonRemappingList(
     const mojom::Button& button,
     std::vector<mojom::ButtonRemappingPtr>& button_remappings) {
-  // TODO(b/286930911): Translate "Button" string to other languages.
+  std::string button_name;
+  // If its a middle click, give it the default middle button name.
+  if (button.is_customizable_button() &&
+      button.get_customizable_button() == mojom::CustomizableButton::kMiddle) {
+    button_name = l10n_util::GetStringUTF8(
+        IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME);
+  } else {
+    // Otherwise, give it the default button name indexed at the number of
+    // non-middle click buttons in `button_remappings` + 1.
+    auto iter =
+        base::ranges::find(button_remappings,
+                           *mojom::Button::NewCustomizableButton(
+                               mojom::CustomizableButton::kMiddle),
+                           [](const mojom::ButtonRemappingPtr& remapping) {
+                             return *remapping->button;
+                           });
+
+    int button_number = button_remappings.size() + 1;
+    if (iter != button_remappings.end()) {
+      --button_number;
+    }
+    button_name = l10n_util::GetStringFUTF8(
+        IDS_SETTINGS_CUSTOMIZATION_OTHER_BUTTON_DEFAULT_NAME,
+        base::NumberToString16(button_number));
+  }
+
   button_remappings.push_back(mojom::ButtonRemapping::New(
-      /*name=*/base::StrCat(
-          {"Button ", base::ToString(button_remappings.size() + 1)}),
-      button.Clone(), /*remapping_action=*/nullptr));
+      std::move(button_name), button.Clone(), /*remapping_action=*/nullptr));
 }
 
 // suppress_meta_fkey_rewrites must never be non-default for internal

@@ -1223,18 +1223,44 @@ TEST_F(InputDeviceSettingsControllerTest, RestoreDefaultKeyboardRemappings) {
 TEST_F(InputDeviceSettingsControllerTest, MouseButtonPressed) {
   ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseUsb});
 
-  mojom::ButtonPtr button =
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle);
-  controller_->OnMouseButtonPressed(kSampleMouseUsb.id, *button);
+  controller_->OnMouseButtonPressed(kSampleMouseUsb.id,
+                                    *mojom::Button::NewCustomizableButton(
+                                        mojom::CustomizableButton::kMiddle));
   EXPECT_EQ(1u, observer_->num_mouse_settings_updated());
   EXPECT_EQ(1u, observer_->num_mouse_buttons_pressed());
 
+  controller_->OnMouseButtonPressed(
+      kSampleMouseUsb.id,
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide));
+  EXPECT_EQ(2u, observer_->num_mouse_settings_updated());
+  EXPECT_EQ(2u, observer_->num_mouse_buttons_pressed());
+
+  controller_->OnMouseButtonPressed(
+      kSampleMouseUsb.id,
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra));
+  EXPECT_EQ(3u, observer_->num_mouse_settings_updated());
+  EXPECT_EQ(3u, observer_->num_mouse_buttons_pressed());
+
   auto* settings = controller_->GetMouseSettings(kSampleMouseUsb.id);
   ASSERT_TRUE(settings);
-  ASSERT_EQ(1u, settings->button_remappings.size());
-  EXPECT_EQ(*button, *settings->button_remappings[0]->button);
-  EXPECT_EQ("Button 1", settings->button_remappings[0]->name);
+  ASSERT_EQ(3u, settings->button_remappings.size());
+  EXPECT_EQ(
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
+      *settings->button_remappings[0]->button);
+  EXPECT_EQ("Middle Button", settings->button_remappings[0]->name);
   EXPECT_EQ(nullptr, settings->button_remappings[0]->remapping_action.get());
+
+  EXPECT_EQ(
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
+      *settings->button_remappings[1]->button);
+  EXPECT_EQ("Other Button 1", settings->button_remappings[1]->name);
+  EXPECT_EQ(nullptr, settings->button_remappings[1]->remapping_action.get());
+
+  EXPECT_EQ(
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra),
+      *settings->button_remappings[2]->button);
+  EXPECT_EQ("Other Button 2", settings->button_remappings[2]->name);
+  EXPECT_EQ(nullptr, settings->button_remappings[2]->remapping_action.get());
 }
 
 TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletButtonPressed) {
@@ -1257,13 +1283,13 @@ TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletButtonPressed) {
   ASSERT_TRUE(settings);
   ASSERT_EQ(1u, settings->pen_button_remappings.size());
   EXPECT_EQ(*pen_button, *settings->pen_button_remappings[0]->button);
-  EXPECT_EQ("Button 1", settings->pen_button_remappings[0]->name);
+  EXPECT_EQ("Other Button 1", settings->pen_button_remappings[0]->name);
   EXPECT_EQ(nullptr,
             settings->pen_button_remappings[0]->remapping_action.get());
 
   ASSERT_EQ(1u, settings->tablet_button_remappings.size());
   EXPECT_EQ(*tablet_button, *settings->tablet_button_remappings[0]->button);
-  EXPECT_EQ("Button 1", settings->tablet_button_remappings[0]->name);
+  EXPECT_EQ("Other Button 1", settings->tablet_button_remappings[0]->name);
   EXPECT_EQ(nullptr,
             settings->tablet_button_remappings[0]->remapping_action.get());
 }
