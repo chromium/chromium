@@ -115,14 +115,21 @@ class SafetyHubHandlerTest : public testing::Test {
   }
 
   void AddNotificationPermissionsForReview() {
-    GURL url = GURL("https://example0.org:443");
     // Set a host to have large number of notifications and keep engagement as
     // NONE.
+    GURL url = GURL("https://example0.org:443");
     hcsm()->SetContentSettingDefaultScope(
         url, GURL(), ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
     auto* notifications_engagement_service =
         NotificationsEngagementServiceFactory::GetForProfile(profile());
     notifications_engagement_service->RecordNotificationDisplayed(url, 35);
+
+    // Trigger the update for changes to be seen.
+    NotificationPermissionsReviewService* service =
+        NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
+    CHECK(service);
+    service->UpdateAsync();
+    RunUntilIdle();
   }
 
   void AddRevokedPermission() {
@@ -292,6 +299,41 @@ class SafetyHubHandlerTest : public testing::Test {
         NOTREACHED()
             << "Unexpected SafetyHubModule for test setup. A proper setup for "
                "the module can be done only for supported modules.\n";
+    }
+  }
+
+  void ValidateEntryPointSubheader(
+      std::string subheader,
+      std::optional<SafetyHubHandler::SafetyHubModule> module = std::nullopt) {
+    // If there is a module provided, expect the module to be in a subheader.
+    // For that, setup the test environment so that the module has a
+    // recommendation.
+    if (module.has_value()) {
+      SetupTestToShowOrHideRecommendationForModule(module.value(), true);
+    }
+
+    // Send a message to handler to get the current state of the subheader.
+    base::Value::List args;
+    args.Append("getSafetyHubEntryPointSubheader");
+    handler()->HandleGetSafetyHubEntryPointSubheader(args);
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+
+    // Check that response from the handler follows the right format.
+    EXPECT_EQ("cr.webUIResponse", data.function_name());
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("getSafetyHubEntryPointSubheader", data.arg1()->GetString());
+    // arg2 is a boolean that is true if the callback is successful.
+    ASSERT_TRUE(data.arg2()->is_bool());
+    ASSERT_TRUE(data.arg2());
+
+    // Validate that the subheader we get is equal to the one we expect.
+    ASSERT_TRUE(data.arg3()->is_string());
+    EXPECT_EQ(subheader, data.arg3()->GetString());
+
+    // If in the beginning of the method the test environment is set for a
+    // module to have a recommendation, reset that back.
+    if (module.has_value()) {
+      SetupTestToShowOrHideRecommendationForModule(module.value(), false);
     }
   }
 
@@ -768,4 +810,131 @@ TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubHasRecommendations) {
 
     ValidateHandleGetSafetyHubHasRecommendations(!recommendedModules.empty());
   }
+}
+
+TEST_F(SafetyHubHandlerTest,
+       HandleGetSafetyHubEntryPointSubheader_NothingToDo) {
+  // Reset unused site permissions data that is set in the test suite setup.
+  SetupTestToShowOrHideRecommendationForModule(
+      SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions, false);
+  ValidateEntryPointSubheader(l10n_util::GetStringUTF8(
+      IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO));
+}
+
+TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubEntryPointSubheader_OneModule) {
+  SetupTestToShowOrHideRecommendationForModule(
+      SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions, false);
+
+  ValidateEntryPointSubheader(
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME),
+      SafetyHubHandler::SafetyHubModule::kPasswords);
+
+  ValidateEntryPointSubheader(
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_VERSION_MODULE_UPPERCASE_NAME),
+      SafetyHubHandler::SafetyHubModule::kVersion);
+
+  ValidateEntryPointSubheader(
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MODULE_NAME),
+      SafetyHubHandler::SafetyHubModule::kSafeBrowsing);
+
+  // TODO(crbug.com/1443466): Add Extensions module.
+
+  ValidateEntryPointSubheader(
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_UPPERCASE_NAME),
+      SafetyHubHandler::SafetyHubModule::kNotifications);
+
+  ValidateEntryPointSubheader(
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_UPPERCASE_NAME),
+      SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions);
+}
+
+TEST_F(SafetyHubHandlerTest,
+       HandleGetSafetyHubEntryPointSubheader_TwoModulesWithPassword) {
+  SetupTestToShowOrHideRecommendationForModule(
+      SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions, false);
+  // Passwords module will always be in a subheader string.
+  SetupTestToShowOrHideRecommendationForModule(
+      SafetyHubHandler::SafetyHubModule::kPasswords, true);
+  std::string expected_subheader = "";
+
+  // The expected subheader should be "Passwords, Chrome update"
+  expected_subheader =
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME) +
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
+      " " +
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_VERSION_MODULE_LOWERCASE_NAME);
+  ValidateEntryPointSubheader(expected_subheader,
+                              SafetyHubHandler::SafetyHubModule::kVersion);
+
+  // The expected subheader should be "Passwords, Safe Browsing"
+  expected_subheader =
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME) +
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
+      " " +
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MODULE_NAME);
+  ValidateEntryPointSubheader(expected_subheader,
+                              SafetyHubHandler::SafetyHubModule::kSafeBrowsing);
+
+  // TODO(crbug.com/1443466): Add Extensions module.
+
+  // The expected subheader should be "Passwords, notifications"
+  expected_subheader =
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME) +
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
+      " " +
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_LOWERCASE_NAME);
+  ValidateEntryPointSubheader(
+      expected_subheader, SafetyHubHandler::SafetyHubModule::kNotifications);
+
+  // The expected subheader should be "Passwords, permissions"
+  expected_subheader =
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME) +
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
+      " " +
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_LOWERCASE_NAME);
+  ValidateEntryPointSubheader(
+      expected_subheader,
+      SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions);
+}
+
+TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubEntryPointSubheader_AllModules) {
+  SetupTestToShowOrHideRecommendationForModule(
+      SafetyHubHandler::SafetyHubModule::kPasswords, true);
+  SetupTestToShowOrHideRecommendationForModule(
+      SafetyHubHandler::SafetyHubModule::kVersion, true);
+  SetupTestToShowOrHideRecommendationForModule(
+      SafetyHubHandler::SafetyHubModule::kSafeBrowsing, true);
+  // TODO(crbug.com/1443466): Add Extensions module.
+  SetupTestToShowOrHideRecommendationForModule(
+      SafetyHubHandler::SafetyHubModule::kNotifications, true);
+
+  // The expected subheader should be "Passwords, Chrome update, Safe Browsing,
+  // notifications, permissions"
+  std::string expected_subheader =
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME) +
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
+      " " +
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_VERSION_MODULE_LOWERCASE_NAME) +
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
+      " " +
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MODULE_NAME) +
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
+      " " +
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_LOWERCASE_NAME) +
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
+      " " +
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_LOWERCASE_NAME);
+  ValidateEntryPointSubheader(expected_subheader);
 }

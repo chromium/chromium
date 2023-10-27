@@ -141,6 +141,24 @@ bool CardHasRecommendations(base::Value::Dict card_data) {
   return card_state == SafetyHubCardState::kWarning ||
          card_state == SafetyHubCardState::kWeak;
 }
+
+void AppendModuleNameToString(std::u16string& str,
+                              int uppercase_id,
+                              int lowercase_id = 0) {
+  if (str.empty()) {
+    str.append(l10n_util::GetStringUTF16(uppercase_id));
+    return;
+  }
+
+  if (lowercase_id == 0) {
+    lowercase_id = uppercase_id;
+  }
+
+  str.append(
+      l10n_util::GetStringUTF16(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR));
+  str.append(u" ");
+  str.append(l10n_util::GetStringUTF16(lowercase_id));
+}
 }  // namespace
 
 SafetyHubHandler::SafetyHubHandler(Profile* profile)
@@ -524,14 +542,54 @@ void SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader(
 
   std::set<SafetyHubModule> modules = GetSafetyHubModulesWithRecommendations();
 
-  // TODO(1443466): Compile string based on active modules.
+  // If there is no module that needs attention, a static string will be used
+  // for the subheader.
+  if (modules.empty()) {
+    ResolveJavascriptCallback(
+        callback_id, base::Value(l10n_util::GetStringUTF16(
+                         IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO)));
+    return;
+  }
 
-  ResolveJavascriptCallback(
-      callback_id,
-      base::Value(modules.empty()
-                      ? l10n_util::GetStringUTF16(
-                            IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO)
-                      : std::u16string(u"Dummy subheader")));
+  // Modules in subheader should be added in the following order: Passwords,
+  // Version, Safe Browsing, Extensions, Notifications, Permissions.
+  std::u16string subheader = u"";
+
+  if (modules.contains(SafetyHubModule::kPasswords)) {
+    AppendModuleNameToString(subheader,
+                             IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME);
+  }
+
+  if (modules.contains(SafetyHubModule::kVersion)) {
+    AppendModuleNameToString(
+        subheader, IDS_SETTINGS_SAFETY_HUB_VERSION_MODULE_UPPERCASE_NAME,
+        IDS_SETTINGS_SAFETY_HUB_VERSION_MODULE_LOWERCASE_NAME);
+  }
+
+  if (modules.contains(SafetyHubModule::kSafeBrowsing)) {
+    AppendModuleNameToString(subheader,
+                             IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MODULE_NAME);
+  }
+
+  if (modules.contains(SafetyHubModule::kExtensions)) {
+    AppendModuleNameToString(
+        subheader, IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MODULE_UPPERCASE_NAME,
+        IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MODULE_LOWERCASE_NAME);
+  }
+
+  if (modules.contains(SafetyHubModule::kNotifications)) {
+    AppendModuleNameToString(
+        subheader, IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_UPPERCASE_NAME,
+        IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_LOWERCASE_NAME);
+  }
+
+  if (modules.contains(SafetyHubModule::kUnusedSitePermissions)) {
+    AppendModuleNameToString(
+        subheader, IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_UPPERCASE_NAME,
+        IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_LOWERCASE_NAME);
+  }
+
+  ResolveJavascriptCallback(callback_id, base::Value(subheader));
 }
 
 std::set<SafetyHubHandler::SafetyHubModule>
