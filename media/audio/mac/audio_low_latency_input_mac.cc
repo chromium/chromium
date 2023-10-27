@@ -1155,30 +1155,10 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
 
 int AUAudioInputStream::HardwareSampleRate() {
   // Determine the default input device's sample-rate.
-  AudioDeviceID device_id = kAudioObjectUnknown;
-  UInt32 info_size = sizeof(device_id);
-
-  AudioObjectPropertyAddress default_input_device_address = {
-      kAudioHardwarePropertyDefaultInputDevice, kAudioObjectPropertyScopeGlobal,
-      kAudioObjectPropertyElementMain};
-  OSStatus result = AudioObjectGetPropertyData(kAudioObjectSystemObject,
-                                               &default_input_device_address, 0,
-                                               0, &info_size, &device_id);
-  if (result != noErr)
-    return 0;
-
-  Float64 nominal_sample_rate;
-  info_size = sizeof(nominal_sample_rate);
-
-  AudioObjectPropertyAddress nominal_sample_rate_address = {
-      kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
-      kAudioObjectPropertyElementMain};
-  result = AudioObjectGetPropertyData(device_id, &nominal_sample_rate_address,
-                                      0, 0, &info_size, &nominal_sample_rate);
-  if (result != noErr)
-    return 0;
-
-  return static_cast<int>(nominal_sample_rate);
+  AudioDeviceID input_device_id = kAudioObjectUnknown;
+  AudioManagerMac::GetDefaultInputDevice(&input_device_id);
+  return static_cast<int>(
+      AudioManagerMac::HardwareSampleRateForDevice(input_device_id));
 }
 
 base::TimeTicks AUAudioInputStream::GetCaptureTime(

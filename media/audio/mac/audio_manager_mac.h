@@ -103,8 +103,8 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
   void StopAmplitudePeakTrace() override;
 
   static int HardwareSampleRateForDevice(AudioDeviceID device_id);
-  static int HardwareSampleRate();
-  static bool GetDefaultOutputDevice(AudioDeviceID* device);
+  static bool GetDefaultInputDevice(AudioDeviceID* input_device);
+  static bool GetDefaultOutputDevice(AudioDeviceID* output_device);
   static AudioDeviceID GetAudioDeviceIdByUId(bool is_input,
                                              const std::string& device_id);
 

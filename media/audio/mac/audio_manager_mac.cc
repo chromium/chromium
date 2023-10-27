@@ -242,8 +242,12 @@ static bool GetDefaultDevice(AudioDeviceID* device, bool input) {
   return true;
 }
 
-bool AudioManagerMac::GetDefaultOutputDevice(AudioDeviceID* device) {
-  return GetDefaultDevice(device, false);
+bool AudioManagerMac::GetDefaultInputDevice(AudioDeviceID* input_device) {
+  return GetDefaultDevice(input_device, true);
+}
+
+bool AudioManagerMac::GetDefaultOutputDevice(AudioDeviceID* output_device) {
+  return GetDefaultDevice(output_device, false);
 }
 
 // Returns the total number of channels on a device; regardless of what the
@@ -659,22 +663,12 @@ int AudioManagerMac::HardwareSampleRateForDevice(AudioDeviceID device_id) {
                                  &info_size, &nominal_sample_rate);
   if (result != noErr) {
     OSSTATUS_DLOG(WARNING, result)
-        << "Could not get default sample rate for device: " << device_id;
-    return 0;
-  }
-
-  return static_cast<int>(nominal_sample_rate);
-}
-
-// static
-int AudioManagerMac::HardwareSampleRate() {
-  // Determine the default output device's sample-rate.
-  AudioDeviceID device_id = kAudioObjectUnknown;
-  if (!GetDefaultOutputDevice(&device_id)) {
+        << "Could not get default sample rate for device: " << device_id
+        << ", returing fallback sample rate " << kFallbackSampleRate;
     return kFallbackSampleRate;
   }
 
-  return HardwareSampleRateForDevice(device_id);
+  return static_cast<int>(nominal_sample_rate);
 }
 
 void AudioManagerMac::GetAudioInputDeviceNames(
@@ -1001,9 +995,9 @@ void AudioManagerMac::InitializeOnAudioThread() {
 
 void AudioManagerMac::HandleDeviceChanges() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  const int new_sample_rate = HardwareSampleRate();
   AudioDeviceID new_output_device;
   GetDefaultOutputDevice(&new_output_device);
+  const int new_sample_rate = HardwareSampleRateForDevice(new_output_device);
 
   if (current_sample_rate_ == new_sample_rate &&
       current_output_device_ == new_output_device) {
