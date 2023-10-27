@@ -302,8 +302,9 @@ INSTANTIATE_TEST_SUITE_P(
                                         DisplayType::kUltraWidth,
                                         DisplayType::kUltraHeight})));
 
+// TODO(https://crbug.com/1490722): This test is failing on Chrome OS.
 // Verifies the notification popup of a full screenshot.
-TEST_P(ScreenCaptureNotificationPixelTest, VerifyPopup) {
+TEST_P(ScreenCaptureNotificationPixelTest, DISABLED_VerifyPopup) {
   // Take a full screenshot then wait for the file path to the saved image.
   ash::CaptureModeController* controller = StartCaptureSession(
       CaptureModeSource::kFullscreen, CaptureModeType::kImage);
