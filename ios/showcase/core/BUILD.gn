@@ -46,7 +46,7 @@ source_set("main_eg2") {
     "//ios/chrome/test/earl_grey:hooks",
 
     # Needed for including ios/chrome/browser/ui.
-    "//ios/chrome/browser/tabs:tabs_internal",
+    "//ios/chrome/browser/tabs/model:tabs_internal",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -63,7 +63,7 @@ source_set("main") {
     "//ios/chrome/browser/ui/settings",
 
     # Needed for including ios/chrome/browser/ui.
-    "//ios/chrome/browser/tabs:tabs_internal",
+    "//ios/chrome/browser/tabs/model:tabs_internal",
   ]
   frameworks = [ "UIKit.framework" ]
 }

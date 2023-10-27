@@ -328,7 +328,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/sync/model:sync_error_browser_agent",
     "//ios/chrome/browser/tab_insertion/model",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/ui/browser_container:ui",
     "//ios/chrome/browser/ui/bubble",

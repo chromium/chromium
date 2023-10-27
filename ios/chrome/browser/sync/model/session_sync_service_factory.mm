@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/sync/model/glue/sync_start_util.h"
 #import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/sessions/ios_chrome_local_session_event_router.h"
-#import "ios/chrome/browser/tabs/ios_synced_window_delegate_getter.h"
+#import "ios/chrome/browser/tabs/model/ios_synced_window_delegate_getter.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/thread/web_thread.h"

@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
-#import "ios/chrome/browser/tabs/tab_pickup/features.h"
+#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/infobars/modals/tab_pickup/infobar_tab_pickup_consumer.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 

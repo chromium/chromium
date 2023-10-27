@@ -5,7 +5,7 @@ include_rules = [
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/history",
   "+ios/chrome/browser/webdata_services/model",
-  "+ios/chrome/browser/tabs",
+  "+ios/chrome/browser/tabs/model",
   "+ios/chrome/browser/favicon",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/voice/model",

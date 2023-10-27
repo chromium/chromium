@@ -34,7 +34,7 @@ source_set("data") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/common/ui/util:image_util",
     "//ios/web/common:user_agent",
     "//ios/web/public",

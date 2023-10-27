@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#import "ios/chrome/browser/tabs/tab_helper_delegate_installer.h"
+#import "ios/chrome/browser/tabs/model/tab_helper_delegate_installer.h"
 
 class OverlayRequestQueue;
 

@@ -88,7 +88,7 @@ source_set("model") {
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/browser/sync/model/glue",
     "//ios/chrome/browser/sync/model/sessions",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/trusted_vault/model",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common",

@@ -21,7 +21,7 @@ source_set("tab_pickup") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/tabs/tab_pickup:features",
+    "//ios/chrome/browser/tabs/model/tab_pickup:features",
     "//ios/chrome/browser/ui/infobars/modals/tab_pickup",
     "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",

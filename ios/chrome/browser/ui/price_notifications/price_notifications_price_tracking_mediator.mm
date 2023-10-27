@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
-#import "ios/chrome/browser/tabs/tab_title_util.h"
+#import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_alert_presenter.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"

@@ -10,7 +10,7 @@
 #include "ios/chrome/browser/sessions/session_restoration_service_impl.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/tabs/features.h"
+#include "ios/chrome/browser/tabs/model/features.h"
 
 // To get access to web::features::kEnableSessionSerializationOptimizations.
 // TODO(crbug.com/1383087): remove once the feature is fully launched.

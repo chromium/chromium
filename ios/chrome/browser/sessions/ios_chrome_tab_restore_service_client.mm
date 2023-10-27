@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h"
+#import "ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h"
 #import "url/gurl.h"
 
 namespace {

@@ -143,7 +143,7 @@ source_set("app_support") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/tabs:tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",
     "//ios/third_party/edo",

@@ -19,7 +19,7 @@ source_set("tab_pickup") {
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/tabs/tab_pickup:features",
+    "//ios/chrome/browser/tabs/model/tab_pickup:features",
     "//ios/chrome/browser/ui/infobars/modals",
     "//ios/chrome/browser/ui/infobars/modals:public",
     "//ios/chrome/common/ui/colors",

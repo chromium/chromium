@@ -36,7 +36,7 @@ source_set("inactive_tabs") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/snapshots/model",
-    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
@@ -60,7 +60,7 @@ source_set("inactive_tabs_ui") {
   ]
   deps = [
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/common/ui/colors",
@@ -88,7 +88,7 @@ source_set("inactive_tabs_button") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
   ]
 }
 
@@ -102,7 +102,7 @@ source_set("inactive_tabs_button_ui") {
     ":inactive_tabs_button_ui_swift",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
@@ -135,7 +135,7 @@ source_set("eg2_tests") {
     ":inactive_tabs_constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/reading_list:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/tabs:tabs_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",

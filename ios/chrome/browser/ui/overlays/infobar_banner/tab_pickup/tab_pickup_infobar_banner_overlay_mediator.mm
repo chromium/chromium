@@ -10,7 +10,7 @@
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_infobar_delegate.h"
+#import "ios/chrome/browser/tabs/model/tab_pickup/tab_pickup_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"

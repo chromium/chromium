@@ -22,7 +22,7 @@ source_set("tabs") {
     "target_frame_cache.h",
     "target_frame_cache.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/tabs" ]
+  public_deps = [ "//ios/chrome/browser/tabs/model" ]
   deps = [
     ":constants",
     "resources:open_new_tab_background",
@@ -119,7 +119,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/web/public",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

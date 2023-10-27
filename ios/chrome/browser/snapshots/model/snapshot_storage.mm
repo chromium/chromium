@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_lru_cache.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_observer.h"
-#import "ios/chrome/browser/tabs/features.h"
+#import "ios/chrome/browser/tabs/model/features.h"
 
 namespace {
 

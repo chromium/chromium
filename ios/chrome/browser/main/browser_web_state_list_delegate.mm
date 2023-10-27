@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
 
-#import "ios/chrome/browser/tabs/tab_helper_util.h"
+#import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 
 BrowserWebStateListDelegate::BrowserWebStateListDelegate() = default;
 

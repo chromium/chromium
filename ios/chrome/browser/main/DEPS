@@ -2,7 +2,7 @@ include_rules = [
   "+ios/chrome/browser/favicon",
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/snapshots/model",
-  "+ios/chrome/browser/tabs/tab_helper_util.h",
+  "+ios/chrome/browser/tabs/model/tab_helper_util.h",
 ]
 
 specific_include_rules = {
@@ -25,11 +25,11 @@ specific_include_rules = {
     "+ios/chrome/browser/sessions/session_service_ios.h",
     "+ios/chrome/browser/snapshots/model/snapshot_browser_agent.h",
     "+ios/chrome/browser/sync/model/sync_error_browser_agent.h",
-    "+ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h",
-    "+ios/chrome/browser/tabs/features.h",
-    "+ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h",
-    "+ios/chrome/browser/tabs/tab_parenting_browser_agent.h",
-    "+ios/chrome/browser/tabs/tab_pickup/tab_pickup_browser_agent.h",
+    "+ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h",
+    "+ios/chrome/browser/tabs/model/features.h",
+    "+ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h",
+    "+ios/chrome/browser/tabs/model/tab_parenting_browser_agent.h",
+    "+ios/chrome/browser/tabs/model/tab_pickup/tab_pickup_browser_agent.h",
     "+ios/chrome/browser/upgrade/model/upgrade_center.h",
     "+ios/chrome/browser/upgrade/model/upgrade_center_browser_agent.h",
     "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",

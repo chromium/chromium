@@ -21,7 +21,7 @@ source_set("pinned_tabs") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/snapshots/model",
-    "//ios/chrome/browser/tabs:features",
+    "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_collection_commands",

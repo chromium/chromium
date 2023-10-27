@@ -17,7 +17,7 @@ source_set("link_preview") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/web/public",

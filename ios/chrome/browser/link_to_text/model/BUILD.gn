@@ -22,7 +22,7 @@ source_set("model") {
     "//components/shared_highlighting/core/common",
     "//components/shared_highlighting/ios",
     "//components/ukm/ios:ukm_url_recorder",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]

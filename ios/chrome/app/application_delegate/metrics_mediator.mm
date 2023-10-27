@@ -42,7 +42,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/metrics.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/metrics.h"
 #import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/app_group/app_group_metrics_mainapp.h"

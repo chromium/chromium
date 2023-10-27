@@ -48,7 +48,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/supervised_user/model",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/web",
     "//ios/web/common:features",
     "//ui/base",

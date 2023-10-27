@@ -19,8 +19,8 @@ source_set("inactive_tabs") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/tabs/inactive_tabs",
-    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
   ]
 }
 
@@ -37,7 +37,7 @@ source_set("inactive_tabs_ui") {
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/tabs:tabs_constants",
     "//ios/chrome/common/ui/colors",
@@ -53,7 +53,7 @@ source_set("eg2_tests") {
     "//base:i18n",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",
