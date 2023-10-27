@@ -42,11 +42,19 @@ public class AwMetricsServiceClient {
         AwMetricsServiceClientJni.get().setOnFinalMetricsCollectedListenerForTesting(listener);
     }
 
+    public static void setAppPackageNameLoggingRuleForTesting(String version, long expiryDateMs) {
+        ThreadUtils.assertOnUiThread();
+        AwMetricsServiceClientJni.get()
+                .setAppPackageNameLoggingRuleForTesting(version, expiryDateMs);
+    }
+
     @NativeMethods
     interface Natives {
         void setHaveMetricsConsent(boolean userConsent, boolean appConsent);
         void setFastStartupForTesting(boolean fastStartupForTesting);
         void setUploadIntervalForTesting(long uploadIntervalMs);
         void setOnFinalMetricsCollectedListenerForTesting(Runnable listener);
+
+        void setAppPackageNameLoggingRuleForTesting(String version, long expiryDateMs);
     }
 }
