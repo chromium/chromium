@@ -851,6 +851,26 @@ void ExpectClean(UpdaterScope scope) {
   ExpectCleanProcesses();
   CheckInstallation(scope, CheckInstallationStatus::kCheckIsNotInstalled,
                     CheckInstallationVersions::kCheckActiveAndSxS);
+
+  // Check that the caches have been removed.
+  const absl::optional<base::FilePath> path = GetCacheBaseDirectory(scope);
+  ASSERT_TRUE(path);
+  EXPECT_TRUE(WaitFor(
+      [&]() { return !base::PathExists(*path); },
+      [&]() { VLOG(0) << "Still waiting for cache removal: " << *path; }))
+      << base::JoinString(
+             [&path]() {
+               std::vector<base::FilePath::StringType> files;
+               base::FileEnumerator(*path, true,
+                                    base::FileEnumerator::FILES |
+                                        base::FileEnumerator::DIRECTORIES)
+                   .ForEach([&files](const base::FilePath& name) {
+                     files.push_back(name.value());
+                   });
+
+               return files;
+             }(),
+             FILE_PATH_LITERAL(","));
 }
 
 void ExpectCandidateUninstalled(UpdaterScope scope) {

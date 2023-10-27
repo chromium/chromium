@@ -116,23 +116,31 @@ void Clean(UpdaterScope scope) {
   EXPECT_TRUE(UninstallSystemdUnits(scope));
 }
 
-void ExpectClean(UpdaterScope scope) {
-  ExpectCleanProcesses();
-
-  absl::optional<base::FilePath> path = GetInstallDirectory(scope);
+// The uninstaller cannot reliably completely remove the installer directory
+// itself, because it uses the prefs file and writes the log file while it
+// is operating. If the provided path exists, it must be a directory with
+// only these residual files present to be considered "clean".
+void ExpectMostlyClean(const absl::optional<base::FilePath>& path) {
   EXPECT_TRUE(path);
-  if (path && base::PathExists(*path)) {
-    // If the path exists, then expect only the log file to be present.
-    int count = CountDirectoryFiles(*path);
-    EXPECT_LE(count, 2);
-    if (count >= 1) {
-      EXPECT_TRUE(base::PathExists(path->AppendASCII("updater.log")));
-    }
-    if (count == 2) {
-      EXPECT_TRUE(base::PathExists(path->AppendASCII("prefs.json")));
-    }
+  if (!path || !base::PathExists(*path)) {
+    return;
   }
 
+  // If the path exists, expect only the log and prefs files to be present.
+  int count = CountDirectoryFiles(*path);
+  EXPECT_LE(count, 2);
+  if (count >= 1) {
+    EXPECT_TRUE(base::PathExists(path->AppendASCII("updater.log")));
+  }
+  if (count == 2) {
+    EXPECT_TRUE(base::PathExists(path->AppendASCII("prefs.json")));
+  }
+}
+
+void ExpectClean(UpdaterScope scope) {
+  ExpectCleanProcesses();
+  ExpectMostlyClean(GetInstallDirectory(scope));
+  ExpectMostlyClean(GetCacheBaseDirectory(scope));
   EXPECT_FALSE(SystemdUnitsInstalled(scope));
 }
 

@@ -97,20 +97,28 @@ void Clean(UpdaterScope scope) {
 
   absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
-  if (path)
+  if (path) {
     EXPECT_TRUE(base::DeletePathRecursively(*path));
+  }
   EXPECT_TRUE(base::DeleteFile(*GetWakeTaskPlistPath(scope)));
 
   path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
-  if (path)
+  if (path) {
     EXPECT_TRUE(base::DeletePathRecursively(*path));
+  }
 
   absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
   EXPECT_TRUE(keystone_path);
-  if (keystone_path)
+  if (keystone_path) {
     EXPECT_TRUE(base::DeletePathRecursively(*keystone_path));
+  }
 
+  absl::optional<base::FilePath> cache_path = GetCacheBaseDirectory(scope);
+  EXPECT_TRUE(cache_path);
+  if (cache_path) {
+    EXPECT_TRUE(base::DeletePathRecursively(*cache_path));
+  }
   EXPECT_TRUE(RemoveWakeJobFromLaunchd(scope));
 
   // Also clean up any other versions of the updater that are around.
@@ -137,6 +145,14 @@ void ExpectClean(UpdaterScope scope) {
   // Files must not exist on the file system.
   EXPECT_FALSE(base::PathExists(*GetWakeTaskPlistPath(scope)));
 
+  // Caches must have been removed. On Mac, this is separate from other
+  // updater directories, so we can reliably remove it completely.
+  absl::optional<base::FilePath> cache_path = GetCacheBaseDirectory(scope);
+  EXPECT_TRUE(cache_path);
+  if (cache_path) {
+    EXPECT_FALSE(base::PathExists(*cache_path));
+  }
+
   absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
   if (path && base::PathExists(*path)) {
@@ -162,9 +178,10 @@ void ExpectClean(UpdaterScope scope) {
   // Keystone must not exist on the file system.
   absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
   EXPECT_TRUE(keystone_path);
-  if (keystone_path)
+  if (keystone_path) {
     EXPECT_FALSE(
         base::PathExists(keystone_path->AppendASCII(KEYSTONE_NAME ".bundle")));
+  }
 }
 
 void ExpectInstalled(UpdaterScope scope) {
