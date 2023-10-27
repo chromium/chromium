@@ -119,3 +119,13 @@ class MacPort(base.Port):
                                'MacOS',
                                self.driver_name(),
                                target=target)
+
+    def default_smoke_test_only(self):
+        # only run platform specific tests on Mac 10.15
+        if self.host.platform.os_version == 'mac10.15':
+           return True
+        return False
+
+    def path_to_smoke_tests_file(self):
+        return self._filesystem.join(self.web_tests_dir(), 'TestLists',
+                                     'MacOld.txt')

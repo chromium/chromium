@@ -336,7 +336,7 @@
           'dimensions': {
             'gpu': None,
           },
-          'shards': 10,
+          'shards': 1,
         },
       },
       'Mac11 Tests': {
@@ -582,7 +582,7 @@
       },
       'mac10.15-blink-rel': {
         'swarming': {
-          'shards': 8,
+          'shards': 1,
           'hard_timeout': 2400,
         },
       },
@@ -683,7 +683,7 @@
           'dimensions': {
             'gpu': None,
           },
-          'shards': 15,
+          'shards': 1,
         },
       },
       'Mac11 Tests': {
