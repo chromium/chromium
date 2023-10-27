@@ -9,6 +9,7 @@ import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, Cus
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -279,6 +280,40 @@ suite('WallpaperSearchTest', () => {
           10, handler.getArgs('setBackgroundToWallpaperSearchResult')[0].high);
       assertEquals(
           1, handler.getArgs('setBackgroundToWallpaperSearchResult')[0].low);
+    });
+
+    test('results reset between search results', async () => {
+      const exampleResults = {
+        results: [{image: '123', id: {high: 10, low: 1}}],
+      };
+      handler.setResultFor(
+          'getWallpaperSearchResults', Promise.resolve(exampleResults));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      // Check that there are tiles.
+      let result = $$(wallpaperSearchElement, '.tile.result');
+      assertTrue(!!result);
+
+      // Create promise resolver so we have time between request and result to
+      // test.
+      const newResultsResolver = new PromiseResolver();
+      handler.setResultFor(
+          'getWallpaperSearchResults', newResultsResolver.promise);
+
+      // Check that the previous tiles disappear after click until promise is
+      // resolved, including the empty tiles.
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+      result = $$(wallpaperSearchElement, '.tile.result, .tile.empty');
+      assertFalse(!!result);
+      newResultsResolver.resolve(exampleResults);
+      await waitAfterNextRender(wallpaperSearchElement);
+      result = $$(wallpaperSearchElement, '.tile.result, .tile.empty');
+      assertTrue(!!result);
     });
 
     test('handles changing submit button text', async () => {
