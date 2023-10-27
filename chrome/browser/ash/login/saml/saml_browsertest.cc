@@ -1104,6 +1104,7 @@ class SAMLPolicyTest : public SamlTestBase {
   void EnableTransferSAMLCookiesPolicy();
   void SetLoginBehaviorPolicyToSAMLInterstitial();
   void SetLoginVideoCaptureAllowedUrls(const std::vector<GURL>& allowed);
+  void SetPolicyToHideUserPods();
   // SSO_profile in device policy blob is responsible for per-OU IdP
   // configuration.
   void SetSSOProfile(const std::string& sso_profile);
@@ -1236,6 +1237,13 @@ void SAMLPolicyTest::SetLoginVideoCaptureAllowedUrls(
   em::ChromeDeviceSettingsProto& proto(*device_policy_update->policy_payload());
   for (const GURL& url : allowed)
     proto.mutable_login_video_capture_allowed_urls()->add_urls(url.spec());
+}
+
+void SAMLPolicyTest::SetPolicyToHideUserPods() {
+  std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+      device_state_.RequestDevicePolicyUpdate();
+  em::ChromeDeviceSettingsProto& proto(*device_policy_update->policy_payload());
+  proto.mutable_show_user_names()->set_show_user_names(false);
 }
 
 void SAMLPolicyTest::SetSSOProfile(const std::string& sso_profile) {
@@ -1700,12 +1708,41 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLockMediaPermission) {
 }
 
 // Tests that we land on 3P IdP page corresponding to sso_profile from the
+// device policy blob during online auth with hidden user pods.
+IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SsoProfileInHiddenUserPodsFlow) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  // Set wrong redirect url for domain-based SAML redirection. This ensures that
+  // for test to finish successfully it should perform redirection based on SSO
+  // profile.
+  const GURL wrong_redirect_url("https://wrong.com");
+  fake_gaia_.fake_gaia()->RegisterSamlDomainRedirectUrl(
+      fake_saml_idp()->GetIdpDomain(), wrong_redirect_url);
+
+  SetLoginBehaviorPolicyToSAMLInterstitial();
+  SetSSOProfile(fake_saml_idp()->GetIdpSsoProfile());
+  SetPolicyToHideUserPods();
+
+  // Wait for online authentication screen to show up.
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kSigninFrameDialog)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(false, kGaiaLoading)->Wait();
+
+  // Expect that we are in the SAML flow.
+  test::OobeJS().ExpectVisiblePath(kSamlNoticeContainer);
+  // Expect email field to be visible on IdP page - this guarantees that we've
+  // navigated to the IdP page based on SSO profile since we've set domain-based
+  // redirection to not work above.
+  SigninFrameJS().ExpectVisible("Email");
+}
+
+// Tests that we land on 3P IdP page corresponding to sso_profile from the
 // device policy blob during "add user" flow.
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SsoProfileInAddNewUserFlow) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 
-  // Set wrong redirect url for domain-based saml redirection. This ensures that
-  // for test to finish successfully it should perform redirection based on sso
+  // Set wrong redirect url for domain-based SAML redirection. This ensures that
+  // for test to finish successfully it should perform redirection based on SSO
   // profile.
   const GURL wrong_redirect_url("https://wrong.com");
   fake_gaia_.fake_gaia()->RegisterSamlDomainRedirectUrl(
@@ -1717,11 +1754,12 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SsoProfileInAddNewUserFlow) {
   // Launch "add user" flow.
   ShowSAMLLoginForm();
 
-  SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
-  SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
-
-  SigninFrameJS().TapOn("Submit");
-  test::WaitForPrimaryUserSessionStart();
+  // Expect that we are in the SAML flow.
+  test::OobeJS().ExpectVisiblePath(kSamlNoticeContainer);
+  // Expect email field to be visible on IdP page - this guarantees that we've
+  // navigated to the IdP page based on SSO profile since we've set domain-based
+  // redirection to not work above.
+  SigninFrameJS().ExpectVisible("Email");
 }
 
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLBlocklistNavigationDisallowed) {
