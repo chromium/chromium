@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isFakeEntry} from '../../common/js/entry_utils.js';
-import {str, util} from '../../common/js/util.js';
+import {getEntryLabel, getRootTypeLabel, str} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
@@ -87,7 +87,7 @@ export class PathComponent {
 
     if (isFakeEntry(entry)) {
       components.push(new PathComponent(
-          util.getEntryLabel(locationInfo, entry), entry.toURL(),
+          getEntryLabel(locationInfo, entry), entry.toURL(),
           /** @type {!FakeEntry} */ (entry)));
       return components;
     }
@@ -128,17 +128,17 @@ export class PathComponent {
         locationInfo.rootType === VolumeManagerCommon.RootType.SHARED_DRIVE) {
       displayRootUrl = replaceRootName(
           displayRootUrl, VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH);
-      components.push(new PathComponent(
-          util.getRootTypeLabel(locationInfo), displayRootUrl));
+      components.push(
+          new PathComponent(getRootTypeLabel(locationInfo), displayRootUrl));
     } else if (
         locationInfo.rootType === VolumeManagerCommon.RootType.COMPUTER) {
       displayRootUrl = replaceRootName(
           displayRootUrl, VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH);
-      components.push(new PathComponent(
-          util.getRootTypeLabel(locationInfo), displayRootUrl));
+      components.push(
+          new PathComponent(getRootTypeLabel(locationInfo), displayRootUrl));
     } else {
-      components.push(new PathComponent(
-          util.getRootTypeLabel(locationInfo), displayRootUrl));
+      components.push(
+          new PathComponent(getRootTypeLabel(locationInfo), displayRootUrl));
     }
 
     // Get relative path to display root (e.g. /root/foo/bar -> foo/bar).

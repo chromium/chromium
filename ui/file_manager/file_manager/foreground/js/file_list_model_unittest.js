@@ -4,7 +4,7 @@
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {str} from '../../common/js/util.js';
+import {str} from '../../common/js/translations.js';
 
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupHeader} from './file_list_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';

@@ -153,7 +153,6 @@ js_library("progress_center_common") {
 
 js_library("recent_date_bucket") {
   deps = [
-    ":util",
     "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/file_manager/file_manager/externs/ts:state",
   ]

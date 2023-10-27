@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
-import {str, strf} from '../../common/js/util.js';
+import {str, strf} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';

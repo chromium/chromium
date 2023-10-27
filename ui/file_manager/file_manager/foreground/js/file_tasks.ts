@@ -16,8 +16,9 @@ import {type AnnotatedTask, annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE
 import {FileType} from '../../common/js/file_type.js';
 import {recordEnum, recordTime} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {bytesToString, str, strf} from '../../common/js/translations.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -615,7 +616,7 @@ export class FileTasks {
     const msg = strf(
         this.entries_.length === 1 ? 'CONFIRM_MOBILE_DATA_USE' :
                                      'CONFIRM_MOBILE_DATA_USE_PLURAL',
-        util.bytesToString(sizeToDownload));
+        bytesToString(sizeToDownload));
     return new Promise(
         (resolve, reject) => this.ui_.confirmDialog.show(msg, resolve, reject));
   }

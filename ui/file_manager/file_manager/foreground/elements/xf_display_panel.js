@@ -4,7 +4,7 @@
 
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {str, strf, util} from '../../common/js/util.js';
+import {str, strf} from '../../common/js/translations.js';
 
 import {PanelItem} from './xf_panel_item.js';
 
@@ -219,8 +219,7 @@ export class DisplayPanel extends HTMLElement {
       }
       // @ts-ignore: error TS2339: Property 'primaryText' does not exist on type
       // 'Element'.
-      summaryPanel.primaryText =
-          util.strf('PERCENT_COMPLETE', total.toFixed(0));
+      summaryPanel.primaryText = strf('PERCENT_COMPLETE', total.toFixed(0));
       // @ts-ignore: error TS2339: Property 'progress' does not exist on type
       // 'Element'.
       summaryPanel.progress = total;
@@ -250,9 +249,8 @@ export class DisplayPanel extends HTMLElement {
       summaryPanel.status = 'failure';
       // @ts-ignore: error TS2339: Property 'primaryText' does not exist on type
       // 'Element'.
-      summaryPanel.primaryText =
-          util.strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors) + ' ' +
-          this.generateWarningMessage_(warnings);
+      summaryPanel.primaryText = strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors) +
+          ' ' + this.generateWarningMessage_(warnings);
       return;
     }
 
@@ -263,8 +261,7 @@ export class DisplayPanel extends HTMLElement {
       summaryPanel.status = 'failure';
       // @ts-ignore: error TS2339: Property 'primaryText' does not exist on type
       // 'Element'.
-      summaryPanel.primaryText =
-          util.strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors);
+      summaryPanel.primaryText = strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors);
       if (warnings > 0) {
         // @ts-ignore: error TS2339: Property 'primaryText' does not exist on
         // type 'Element'.
@@ -291,7 +288,7 @@ export class DisplayPanel extends HTMLElement {
     summaryPanel.status = 'success';
     // @ts-ignore: error TS2339: Property 'primaryText' does not exist on type
     // 'Element'.
-    summaryPanel.primaryText = util.strf('PERCENT_COMPLETE', 100);
+    summaryPanel.primaryText = strf('PERCENT_COMPLETE', 100);
   }
 
   /**

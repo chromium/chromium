@@ -204,6 +204,7 @@ ts_files = [
   "file_manager/common/js/metrics.ts",
   "file_manager/common/js/lru_cache.ts",
   "file_manager/common/js/script_loader.ts",
+  "file_manager/common/js/translations.ts",
   "file_manager/common/js/trash.ts",
   "file_manager/common/js/trusted_script_url_policy_util.ts",
   "file_manager/common/js/tslib_shim.ts",
@@ -365,6 +366,7 @@ ts_test_files = [
   "file_manager/common/js/entry_utils_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
   "file_manager/common/js/lru_cache_unittest.ts",
+  "file_manager/common/js/translations_unittest.ts",
 
   # Containers
   "file_manager/containers/breadcrumb_container_unittest.ts",

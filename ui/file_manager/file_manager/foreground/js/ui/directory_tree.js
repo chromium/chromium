@@ -12,7 +12,8 @@ import {FileType} from '../../../common/js/file_type.js';
 import {isJellyEnabled} from '../../../common/js/flags.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {recordEnum, recordInterval, recordSmallCount, recordUserAction, startInterval} from '../../../common/js/metrics.js';
-import {str, strf, util} from '../../../common/js/util.js';
+import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
+import {util} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../../externs/background/file_operation_manager.js';
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
@@ -474,7 +475,7 @@ export class DirectoryItem extends FilesTreeItem {
       // 'DirectoryItem'.
       const currentElement = this.items[index];
       const label =
-          util.getEntryLabel(
+          getEntryLabel(
               // @ts-ignore: error TS2345: Argument of type 'EntryLocation |
               // null' is not assignable to parameter of type 'EntryLocation'.
               tree.volumeManager_.getLocationInfo(currentEntry),
@@ -1594,7 +1595,7 @@ export class DriveVolumeItem extends VolumeItem {
           }
 
           // Create if it doesn't exist yet.
-          const label = util.getEntryLabel(
+          const label = getEntryLabel(
                             // @ts-ignore: error TS2345: Argument of type
                             // 'EntryLocation | null' is not assignable to
                             // parameter of type 'EntryLocation'.
@@ -1687,7 +1688,7 @@ export class DriveVolumeItem extends VolumeItem {
           }
 
           // Create if it doesn't exist yet.
-          const label = util.getEntryLabel(
+          const label = getEntryLabel(
                             // @ts-ignore: error TS2345: Argument of type
                             // 'EntryLocation | null' is not assignable to
                             // parameter of type 'EntryLocation'.
@@ -1810,7 +1811,7 @@ export class DriveVolumeItem extends VolumeItem {
         this.createComputersGrandRoot_();
       } else {
         const label =
-            util.getEntryLabel(
+            getEntryLabel(
                 // @ts-ignore: error TS2345: Argument of type
                 // 'FileSystemDirectoryEntry | undefined' is not assignable to
                 // parameter of type 'FileSystemEntry | FilesAppEntry'.

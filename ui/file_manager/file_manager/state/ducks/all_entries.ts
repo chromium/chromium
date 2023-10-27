@@ -9,7 +9,8 @@ import {FileType} from '../../common/js/file_type.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {recordInterval, recordSmallCount, startInterval} from '../../common/js/metrics.js';
-import {str, util} from '../../common/js/util.js';
+import {getEntryLabel, str} from '../../common/js/translations.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -250,9 +251,7 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
   const volumeInfo = 'volumeInfo' in entry ? entry.volumeInfo as VolumeInfo :
                                              volumeManager.getVolumeInfo(entry);
   const locationInfo = volumeManager.getLocationInfo(entry);
-  // getEntryLabel() can accept locationInfo=null, but TS doesn't recognize the
-  // type definition in closure, hence the ! here.
-  const label = util.getEntryLabel(locationInfo!, entry);
+  const label = getEntryLabel(locationInfo, entry);
   // For FakeEntry, we need to read from entry.volumeType because it doesn't
   // have volumeInfo in the volume manager.
   const volumeType = 'volumeType' in entry && entry.volumeType ?

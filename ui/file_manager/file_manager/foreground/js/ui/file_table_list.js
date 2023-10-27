@@ -8,7 +8,7 @@ import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled, isInlineSyncStatusEnabled} from '../../../common/js/flags.js';
-import {str, strf, util} from '../../../common/js/util.js';
+import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
@@ -537,7 +537,7 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
   box.className = 'filename-label';
   const fileName = doc.createElement('span');
   fileName.className = 'entry-name';
-  fileName.textContent = util.getEntryLabel(locationInfo, entry);
+  fileName.textContent = getEntryLabel(locationInfo, entry);
   box.appendChild(fileName);
 
   return box;

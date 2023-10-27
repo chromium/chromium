@@ -15,8 +15,9 @@ import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isNewDirectoryTreeEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
+import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash, TrashEntry} from '../../common/js/trash.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {NudgeType} from '../../containers/nudge_container.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
@@ -1233,7 +1234,7 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
                 fileManager.ui.alertDialog.show(
                     strf(
                         'ERROR_CREATING_FOLDER', newName,
-                        util.getFileErrorString(error.name)),
+                        getFileErrorString(error.name)),
                     null, null);
               });
     });

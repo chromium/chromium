@@ -23,7 +23,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {bytesToString, str, strf} from '../../common/js/translations.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {validateExternalDriveName} from '../js/file_rename.js';
@@ -170,7 +170,7 @@ export class FilesFormatDialog extends PolymerElement {
       chrome.fileManagerPrivate.getDirectorySize(
           volumeInfo.displayRoot, (spaceUsed: number) => {
             if (spaceUsed > 0 && volumeInfo === this.volumeInfo_) {
-              this.spaceUsed_ = util.bytesToString(spaceUsed);
+              this.spaceUsed_ = bytesToString(spaceUsed);
             }
             if (window.IN_TEST) {
               this.$['warning-container'].setAttribute('fully-initialized', '');
@@ -203,7 +203,7 @@ export class FilesFormatDialog extends PolymerElement {
               displayRoot, (spaceUsed: number) => {
                 totalSpaceUsed += spaceUsed;
                 if (totalSpaceUsed > 0) {
-                  this.spaceUsed_ = util.bytesToString(totalSpaceUsed);
+                  this.spaceUsed_ = bytesToString(totalSpaceUsed);
                 }
                 resolve();
               });

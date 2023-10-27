@@ -8,7 +8,7 @@
  * @suppress {checkTypes}
  */
 
-import {str, strf} from '../../../../common/js/util.js';
+import {str, strf} from '../../../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
 
 import {getTemplate} from './drive_out_of_organization_space_banner.html.js';

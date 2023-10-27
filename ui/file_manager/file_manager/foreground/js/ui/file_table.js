@@ -10,7 +10,7 @@ import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs, isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {isDlpEnabled, isDriveShortcutsEnabled, isInlineSyncStatusEnabled, isJellyEnabled} from '../../../common/js/flags.js';
-import {str, strf, util} from '../../../common/js/util.js';
+import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FileListModel, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
@@ -1070,9 +1070,8 @@ export class FileTable extends Table {
       return '';
     }
 
-    // @ts-ignore: error TS2531: Object is possibly 'null'.
-    const locationInfo = this.volumeManager_.getLocationInfo(entry);
-    return util.getEntryLabel(locationInfo, entry);
+    const locationInfo = this.volumeManager_?.getLocationInfo(entry) || null;
+    return getEntryLabel(locationInfo, entry);
   }
 
   /**

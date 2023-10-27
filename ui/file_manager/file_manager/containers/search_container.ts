@@ -6,7 +6,7 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 
 import {queryRequiredElement} from '../common/js/dom_utils.js';
 import {recordUserAction} from '../common/js/metrics.js';
-import {str, strf} from '../common/js/util.js';
+import {str, strf} from '../common/js/translations.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {CurrentDirectory, PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';

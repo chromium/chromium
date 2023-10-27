@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {unwrapEntry} from '../../../common/js/entry_utils.js';
-import {str} from '../../../common/js/util.js';
+import {str} from '../../../common/js/translations.js';
 
 import {ConfirmDialog} from './dialogs.js';
 

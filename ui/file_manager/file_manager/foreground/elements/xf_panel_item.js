@@ -8,8 +8,7 @@ import './xf_circular_progress.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// @ts-ignore: error TS6133: 'util' is declared but its value is never read.
-import {str} from '../../common/js/util.js';
+import {str} from '../../common/js/translations.js';
 
 import {DisplayPanel} from './xf_display_panel.js';
 

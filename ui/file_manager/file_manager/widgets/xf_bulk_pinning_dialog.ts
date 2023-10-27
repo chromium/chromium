@@ -7,7 +7,8 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 
 import {calculateBulkPinRequiredSpace} from '../common/js/api.js';
 import {RateLimiter} from '../common/js/async_util.js';
-import {str, strf, util} from '../common/js/util.js';
+import {bytesToString, getCurrentLocaleOrDefault, str, strf} from '../common/js/translations.js';
+import {util} from '../common/js/util.js';
 import {State as AppState} from '../externs/ts/state.js';
 import {getStore} from '../state/store.js';
 
@@ -74,7 +75,7 @@ export class XfBulkPinningDialog extends XfBase {
     } else {
       this.$listingFilesText_.innerText = strf(
           'BULK_PINNING_LISTING_WITH_MULTIPLE_ITEMS',
-          this.listedFiles_.toLocaleString(util.getCurrentLocaleOrDefault()));
+          this.listedFiles_.toLocaleString(getCurrentLocaleOrDefault()));
     }
   }
 
@@ -98,8 +99,8 @@ export class XfBulkPinningDialog extends XfBase {
       this.freeBytes_ = bpp.freeSpaceBytes;
       this.requiredBytes_ = bpp.requiredSpaceBytes;
       this.$readyFooter_.innerText = strf(
-          'BULK_PINNING_SPACE', util.bytesToString(this.requiredBytes_),
-          util.bytesToString(this.freeBytes_));
+          'BULK_PINNING_SPACE', bytesToString(this.requiredBytes_),
+          bytesToString(this.freeBytes_));
     }
 
     if (bpp.stage === BulkPinStage.LISTING_FILES && bpp.listedFiles > 0 &&

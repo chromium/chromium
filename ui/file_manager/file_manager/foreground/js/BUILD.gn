@@ -201,7 +201,6 @@ js_library("crostini_controller") {
     "ui:directory_tree",
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs/background:crostini",
     "//ui/file_manager/file_manager/externs/ts:store",
@@ -366,7 +365,6 @@ js_library("file_list_model") {
     "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:recent_date_bucket",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
@@ -515,7 +513,6 @@ js_library("file_type_filters_controller") {
   deps = [
     ":directory_model",
     "ui:a11y_announce",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:directory_change_event",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
   ]
@@ -564,7 +561,6 @@ js_library("gear_menu_controller") {
     "ui:gear_menu",
     "ui:multi_menu_button",
     "ui:providers_menu",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:directory_change_event",
   ]
@@ -638,7 +634,6 @@ js_library("main_window_component") {
     "ui:file_manager_ui",
     "ui:file_tap_handler",
     "ui:list_container",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:directory_change_event",
     "//ui/file_manager/file_manager/externs:volume_manager",
@@ -695,7 +690,6 @@ js_unittest("navigation_list_model_unittest") {
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
   ]
@@ -703,7 +697,6 @@ js_unittest("navigation_list_model_unittest") {
 
 js_library("path_component") {
   deps = [
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
   ]

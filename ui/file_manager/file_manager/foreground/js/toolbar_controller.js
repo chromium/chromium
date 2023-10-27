@@ -7,7 +7,8 @@ import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js'
 import {queryRequiredElement, queryRequiredExactlyOne} from '../../common/js/dom_utils.js';
 import {isNonModifiable} from '../../common/js/entry_utils.js';
 import {isCrosComponentsEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {str, strf} from '../../common/js/translations.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {State} from '../../externs/ts/state.js';

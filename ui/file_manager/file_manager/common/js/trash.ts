@@ -30,7 +30,7 @@ import {parseTrashInfoFiles, startIOTask} from './api.js';
 import {isDirectoryEntry, isFileEntry} from './entry_utils.js';
 import {FakeEntryImpl} from './files_app_entry_types.js';
 import {recordMediumCount} from './metrics.js';
-import {str} from './util.js';
+import {str} from './translations.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**

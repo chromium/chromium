@@ -5,8 +5,8 @@
 import {AsyncQueue} from '../../common/js/async_util.js';
 import {notifications} from '../../common/js/notifications.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {str} from '../../common/js/translations.js';
 import {getFilesAppIconURL} from '../../common/js/url_constants.js';
-import {str} from '../../common/js/util.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {ProgressCenterPanelInterface} from '../../externs/progress_center_panel.js';
 

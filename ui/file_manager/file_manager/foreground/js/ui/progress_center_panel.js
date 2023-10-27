@@ -5,7 +5,7 @@
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 import {PolicyErrorType, ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
-import {str, strf, util} from '../../../common/js/util.js';
+import {secondsToRemainingTimeString, str, strf} from '../../../common/js/translations.js';
 import {ProgressCenterPanelInterface} from '../../../externs/progress_center_panel.js';
 import {DisplayPanel} from '../../elements/xf_display_panel.js';
 
@@ -442,7 +442,7 @@ export class ProgressCenterPanel {
           '';
     }
 
-    return util.secondsToRemainingTimeString(seconds);
+    return secondsToRemainingTimeString(seconds);
   }
 
   /**

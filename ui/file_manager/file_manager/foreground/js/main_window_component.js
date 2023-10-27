@@ -9,8 +9,8 @@ import {getFocusedTreeItem, getKeyModifiers} from '../../common/js/dom_utils.js'
 import {isRecentRootType, isSameEntry, isTrashEntry} from '../../common/js/entry_utils.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum} from '../../common/js/metrics.js';
+import {getEntryLabel, str} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
-import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -572,7 +572,7 @@ export class MainWindowComponent {
             this.volumeManager_.getLocationInfo(event.newDirEntry);
         // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on
         // type 'Event'.
-        const label = util.getEntryLabel(locationInfo, event.newDirEntry);
+        const label = getEntryLabel(locationInfo, event.newDirEntry);
         document.title = `${str('FILEMANAGER_APP_NAME')} - ${label}`;
       }
     }

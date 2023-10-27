@@ -8,7 +8,7 @@ import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {compareLabel, compareName} from '../../common/js/entry_utils.js';
 import {FileExtensionType, FileType} from '../../common/js/file_type.js';
 import {getRecentDateBucket, getTranslationKeyForDateBucket} from '../../common/js/recent_date_bucket.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {collator, str, strf} from '../../common/js/translations.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -591,7 +591,7 @@ export class FileListModel extends ArrayDataModel {
         // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         FileType.getType(b, properties[1].contentMimeType));
 
-    const result = util.collator.compare(aType, bType);
+    const result = collator.compare(aType, bType);
     return result !== 0 ? result : compareName(a, b);
   }
 

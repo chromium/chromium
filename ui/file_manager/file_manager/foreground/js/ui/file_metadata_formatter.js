@@ -5,7 +5,7 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {strf, util} from '../../../common/js/util.js';
+import {bytesToString, getCurrentLocaleOrDefault, strf} from '../../../common/js/translations.js';
 
 /**
  * Formatter class for file metadatas.
@@ -26,7 +26,7 @@ export class FileMetadataFormatter extends EventTarget {
    * @param {boolean} use12hourClock True if 12 hours clock, False if 24 hours.
    */
   setDateTimeFormat(use12hourClock) {
-    const locale = util.getCurrentLocaleOrDefault();
+    const locale = getCurrentLocaleOrDefault();
     const options = {
       hour: 'numeric',
       minute: 'numeric',
@@ -132,7 +132,7 @@ export class FileMetadataFormatter extends EventTarget {
     } else if (size === 0 && hosted) {
       return '--';
     } else {
-      return util.bytesToString(size, addPrecision ? 1 : 0);
+      return bytesToString(size, addPrecision ? 1 : 0);
     }
   }
 }

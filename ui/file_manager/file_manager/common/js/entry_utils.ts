@@ -14,6 +14,7 @@ import {getStore} from '../../state/store.js';
 import {createDOMError} from './dom_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
 import {isArcVmEnabled, isPluginVmEnabled} from './flags.js';
+import {collator, getEntryLabel} from './translations.js';
 import {util} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
@@ -466,7 +467,7 @@ export function isDescendantEntry(
  */
 export function compareName(
     entry1: Entry|FilesAppEntry, entry2: Entry|FilesAppEntry) {
-  return util.collator.compare(entry1.name, entry2.name);
+  return collator.compare(entry1.name, entry2.name);
 }
 
 /**
@@ -475,9 +476,8 @@ export function compareName(
 export function compareLabel(
     locationInfo: EntryLocation, entry1: Entry|FilesAppEntry,
     entry2: Entry|FilesAppEntry) {
-  return util.collator.compare(
-      util.getEntryLabel(locationInfo, entry1),
-      util.getEntryLabel(locationInfo, entry2));
+  return collator.compare(
+      getEntryLabel(locationInfo, entry1), getEntryLabel(locationInfo, entry2));
 }
 
 /**
@@ -485,7 +485,7 @@ export function compareLabel(
  */
 export function comparePath(
     entry1: Entry|FilesAppEntry, entry2: Entry|FilesAppEntry) {
-  return util.collator.compare(entry1.fullPath, entry2.fullPath);
+  return collator.compare(entry1.fullPath, entry2.fullPath);
 }
 
 /**

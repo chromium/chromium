@@ -10,7 +10,7 @@ import {isInteractiveVolume, isSameEntry} from '../../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
-import {str} from '../../common/js/util.js';
+import {str} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, State, Volume} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';

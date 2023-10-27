@@ -11,7 +11,8 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {getEntry, getParentEntry, moveEntryTo, validatePathNameLength} from '../../common/js/api.js';
 import {createDOMError} from '../../common/js/dom_utils.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {getFileErrorString, str, strf} from '../../common/js/translations.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 
 /**
@@ -212,5 +213,5 @@ function getRenameErrorMessage(error, entry, newName) {
   }
 
   return Error(
-      strf('ERROR_RENAMING', entry.name, util.getFileErrorString(error.name)));
+      strf('ERROR_RENAMING', entry.name, getFileErrorString(error.name)));
 }

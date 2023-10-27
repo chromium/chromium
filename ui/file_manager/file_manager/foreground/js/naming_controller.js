@@ -8,7 +8,8 @@ import {getFile} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {isFakeEntry, isSameEntry} from '../../common/js/entry_utils.js';
-import {strf, UserCanceledError, util} from '../../common/js/util.js';
+import {strf} from '../../common/js/translations.js';
+import {UserCanceledError, util} from '../../common/js/util.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';

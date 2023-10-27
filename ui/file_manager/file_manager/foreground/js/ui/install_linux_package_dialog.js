@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {isJellyEnabled} from '../../../common/js/flags.js';
-import {str} from '../../../common/js/util.js';
+import {str} from '../../../common/js/translations.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 

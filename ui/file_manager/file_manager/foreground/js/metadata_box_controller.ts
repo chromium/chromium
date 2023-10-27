@@ -10,8 +10,8 @@
 
 import {isDirectoryEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
+import {strf} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
-import {util} from '../../common/js/util.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesMetadataBox, RawIfd} from '../elements/files_metadata_box.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
@@ -152,7 +152,7 @@ export class MetadataBoxController {
             const newType = FileType.getType(entry, mimeType);
             if (newType.encrypted) {
               mimeType =
-                  util.strf('METADATA_BOX_ENCRYPTED', newType.originalMimeType);
+                  strf('METADATA_BOX_ENCRYPTED', newType.originalMimeType);
             }
             this.metadataBox.mediaMimeType = mimeType;
             this.metadataBox.metadataRendered('mime');

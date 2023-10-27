@@ -6,7 +6,7 @@ import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {queryRequiredElement} from '../../../common/js/dom_utils.js';
-import {str, strf, util} from '../../../common/js/util.js';
+import {bytesToString, str, strf} from '../../../common/js/translations.js';
 
 import {MenuItem} from './menu_item.js';
 
@@ -160,12 +160,11 @@ export class GearMenu {
             this.volumeSpaceOuterBar_.hidden = false;
 
             this.volumeSpaceInfoLabel_.textContent = strf(
-                'SPACE_AVAILABLE',
-                util.bytesToString(Math.max(0, remainingSize)));
+                'SPACE_AVAILABLE', bytesToString(Math.max(0, remainingSize)));
           } else {
             // User has unlimited individual storage.
             this.volumeSpaceInfoLabel_.textContent =
-                strf('SPACE_USED', util.bytesToString(spaceInfo.usedSize));
+                strf('SPACE_USED', bytesToString(spaceInfo.usedSize));
           }
 
           if (spaceInfo.warningMessage) {

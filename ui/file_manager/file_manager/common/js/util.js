@@ -8,14 +8,8 @@
  * which allows finer-grained control over introducing dependencies.
  */
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-
-import {EntryLocation} from '../../externs/entry_location.js';
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-
 import {promisify} from './api.js';
 import {isDriveFsBulkPinningEnabled} from './flags.js';
-import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
  * Namespace for utility functions.
@@ -48,35 +42,6 @@ util.iconSetToCSSBackgroundImageValue = iconSet => {
 };
 
 /**
- * Mapping table of file error name to i18n localized error name.
- *
- * @const @enum {string}
- */
-util.FileErrorLocalizedName = {
-  'InvalidModificationError': 'FILE_ERROR_INVALID_MODIFICATION',
-  'InvalidStateError': 'FILE_ERROR_INVALID_STATE',
-  'NoModificationAllowedError': 'FILE_ERROR_NO_MODIFICATION_ALLOWED',
-  'NotFoundError': 'FILE_ERROR_NOT_FOUND',
-  'NotReadableError': 'FILE_ERROR_NOT_READABLE',
-  'PathExistsError': 'FILE_ERROR_PATH_EXISTS',
-  'QuotaExceededError': 'FILE_ERROR_QUOTA_EXCEEDED',
-  'SecurityError': 'FILE_ERROR_SECURITY',
-};
-Object.freeze(util.FileErrorLocalizedName);
-
-/**
- * Returns i18n localized error name for file error |name|.
- *
- * @param {?string|undefined} name File error name.
- * @return {string} Translated file error string.
- */
-util.getFileErrorString = name => {
-  // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index type.
-  const error = util.FileErrorLocalizedName[name] || 'FILE_ERROR_GENERIC';
-  return loadTimeData.getString(error);
-};
-
-/**
  * Mapping table for FileError.code style enum to DOMError.name string.
  *
  * @const @enum {string}
@@ -96,86 +61,6 @@ util.FileError = {
 Object.freeze(util.FileError);
 
 /**
- * Convert a number of bytes into a human friendly format, using the correct
- * number separators.
- *
- * @param {number} bytes The number of bytes.
- * @param {number=} addedPrecision The number of precision digits to add.
- * @return {string} Localized string.
- */
-util.bytesToString = (bytes, addedPrecision = 0) => {
-  // Translation identifiers for size units.
-  const UNITS = [
-    'SIZE_BYTES',
-    'SIZE_KB',
-    'SIZE_MB',
-    'SIZE_GB',
-    'SIZE_TB',
-    'SIZE_PB',
-  ];
-
-  // Minimum values for the units above.
-  const STEPS = [
-    0,
-    Math.pow(2, 10),
-    Math.pow(2, 20),
-    Math.pow(2, 30),
-    Math.pow(2, 40),
-    Math.pow(2, 50),
-  ];
-
-  // Rounding with precision.
-  // @ts-ignore: error TS7006: Parameter 'decimals' implicitly has an 'any'
-  // type.
-  const round = (value, decimals) => {
-    const scale = Math.pow(10, decimals);
-    return Math.round(value * scale) / scale;
-  };
-
-  // @ts-ignore: error TS7006: Parameter 'u' implicitly has an 'any' type.
-  const str = (n, u) => {
-    return strf(u, n.toLocaleString());
-  };
-
-  // @ts-ignore: error TS7006: Parameter 'u' implicitly has an 'any' type.
-  const fmt = (s, u) => {
-    const rounded = round(bytes / s, 1 + addedPrecision);
-    return str(rounded, u);
-  };
-
-  // Less than 1KB is displayed like '80 bytes'.
-  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-  if (bytes < STEPS[1]) {
-    return str(bytes, UNITS[0]);
-  }
-
-  // Up to 1MB is displayed as rounded up number of KBs, or with the desired
-  // number of precision digits.
-  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-  if (bytes < STEPS[2]) {
-    const rounded = addedPrecision ?
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        round(bytes / STEPS[1], addedPrecision) :
-        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-        Math.ceil(bytes / STEPS[1]);
-    return str(rounded, UNITS[1]);
-  }
-
-  // This loop index is used outside the loop if it turns out |bytes|
-  // requires the largest unit.
-  let i;
-
-  for (i = 2 /* MB */; i < UNITS.length - 1; i++) {
-    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-    if (bytes < STEPS[i + 1]) {
-      return fmt(STEPS[i], UNITS[i]);
-    }
-  }
-
-  return fmt(STEPS[i], UNITS[i]);
-};
-
-/**
  * Extracts path from filesystem: URL.
  * @param {?string=} url Filesystem URL.
  * @return {?string} The path if it can be parsed, null if it cannot.
@@ -190,44 +75,6 @@ util.extractFilePath = url => {
   }
   return decodeURIComponent(path);
 };
-
-/**
- * Returns a translated string.
- *
- * Wrapper function to make dealing with translated strings more concise.
- * Equivalent to loadTimeData.getString(id).
- *
- * @param {string} id The id of the string to return.
- * @return {string} The translated string.
- */
-export function str(id) {
-  try {
-    return loadTimeData.getString(id);
-  } catch (e) {
-    console.warn('Failed to get string for', id);
-    return id;
-  }
-}
-
-/**
- * Returns a translated string with arguments replaced.
- *
- * Wrapper function to make dealing with translated strings more concise.
- * Equivalent to loadTimeData.getStringF(id, ...).
- *
- * @param {string} id The id of the string to return.
- * @param {...*} var_args The values to replace into the string.
- * @return {string} The translated string with replaced values.
- */
-// @ts-ignore: error TS6133: 'var_args' is declared but its value is never read.
-export function strf(id, var_args) {
-  // @ts-ignore: error TS2345: Argument of type 'IArguments' is not assignable
-  // to parameter of type '[id: string, ...args: (string | number)[]]'.
-  return loadTimeData.getStringF.apply(loadTimeData, arguments);
-}
-
-// Export strf() into the util namespace.
-util.strf = strf;
 
 /**
  * @return {boolean} True if the Files app is running as an open files or a
@@ -267,13 +114,6 @@ util.FileOperationErrorType = {
 Object.freeze(util.FileOperationErrorType);
 
 /**
- * Collator for sorting.
- * @type {Intl.Collator}
- */
-util.collator =
-    new Intl.Collator([], {usage: 'sort', numeric: true, sensitivity: 'base'});
-
-/**
  * The last URL with visitURL().
  * @private @type {string}
  */
@@ -305,15 +145,6 @@ util.getLastVisitedURL = () => {
   // @ts-ignore: error TS7005: Variable 'lastVisitedURL' implicitly has an 'any'
   // type.
   return lastVisitedURL;
-};
-
-/**
- * Returns normalized current locale, or default locale - 'en'.
- * @return {string} Current locale
- */
-util.getCurrentLocaleOrDefault = () => {
-  const locale = str('UI_LOCALE') || 'en';
-  return locale.replace(/_/g, '-');
 };
 
 /**
@@ -371,114 +202,6 @@ util.splitExtension = path => {
   const filename = dotPosition != -1 ? path.substr(0, dotPosition) : path;
   const extension = dotPosition != -1 ? path.substr(dotPosition) : '';
   return [filename, extension];
-};
-
-/**
- * Returns the localized name of the root type.
- * @param {!EntryLocation} locationInfo Location info.
- * @return {string} The localized name.
- */
-util.getRootTypeLabel = locationInfo => {
-  switch (locationInfo.rootType) {
-    case VolumeManagerCommon.RootType.DOWNLOADS:
-      return locationInfo.volumeInfo?.label ?? '';
-    case VolumeManagerCommon.RootType.DRIVE:
-      return str('DRIVE_MY_DRIVE_LABEL');
-    case VolumeManagerCommon.RootType.SHARED_DRIVE:
-    // |locationInfo| points to either the root directory of an individual Team
-    // Drive or sub-directory under it, but not the Shared Drives grand
-    // directory. Every Shared Drive and its sub-directories always have
-    // individual names (locationInfo.hasFixedLabel is false). So
-    // getRootTypeLabel() is used by PathComponent.computeComponentsFromEntry()
-    // to display the ancestor name in the breadcrumb like this:
-    //   Shared Drives > ABC Shared Drive > Folder1
-    //   ^^^^^^^^^^^
-    // By this reason, we return the label of the Shared Drives grand root here.
-    case VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT:
-      return str('DRIVE_SHARED_DRIVES_LABEL');
-    case VolumeManagerCommon.RootType.COMPUTER:
-    case VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT:
-      return str('DRIVE_COMPUTERS_LABEL');
-    case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
-      return str('DRIVE_OFFLINE_COLLECTION_LABEL');
-    case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
-      return str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL');
-    case VolumeManagerCommon.RootType.DRIVE_RECENT:
-      return str('DRIVE_RECENT_COLLECTION_LABEL');
-    case VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT:
-      return str('DRIVE_DIRECTORY_LABEL');
-    case VolumeManagerCommon.RootType.RECENT:
-      return str('RECENT_ROOT_LABEL');
-    case VolumeManagerCommon.RootType.CROSTINI:
-      return str('LINUX_FILES_ROOT_LABEL');
-    case VolumeManagerCommon.RootType.MY_FILES:
-      return str('MY_FILES_ROOT_LABEL');
-    case VolumeManagerCommon.RootType.TRASH:
-      return str('TRASH_ROOT_LABEL');
-    case VolumeManagerCommon.RootType.MEDIA_VIEW:
-      const mediaViewRootType =
-          VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(
-              locationInfo.volumeInfo?.volumeId || '');
-      switch (mediaViewRootType) {
-        case VolumeManagerCommon.MediaViewRootType.IMAGES:
-          return str('MEDIA_VIEW_IMAGES_ROOT_LABEL');
-        case VolumeManagerCommon.MediaViewRootType.VIDEOS:
-          return str('MEDIA_VIEW_VIDEOS_ROOT_LABEL');
-        case VolumeManagerCommon.MediaViewRootType.AUDIO:
-          return str('MEDIA_VIEW_AUDIO_ROOT_LABEL');
-        case VolumeManagerCommon.MediaViewRootType.DOCUMENTS:
-          return str('MEDIA_VIEW_DOCUMENTS_ROOT_LABEL');
-      }
-      console.error('Unsupported media view root type: ' + mediaViewRootType);
-      return locationInfo.volumeInfo?.label ?? '';
-    case VolumeManagerCommon.RootType.ARCHIVE:
-    case VolumeManagerCommon.RootType.REMOVABLE:
-    case VolumeManagerCommon.RootType.MTP:
-    case VolumeManagerCommon.RootType.PROVIDED:
-    case VolumeManagerCommon.RootType.ANDROID_FILES:
-    case VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER:
-    case VolumeManagerCommon.RootType.SMB:
-    case VolumeManagerCommon.RootType.GUEST_OS:
-      return locationInfo.volumeInfo?.label ?? '';
-    default:
-      console.error('Unsupported root type: ' + locationInfo.rootType);
-      return locationInfo.volumeInfo?.label ?? '';
-  }
-};
-
-/**
- * Returns the localized/i18n name of the entry.
- *
- * @param {?EntryLocation} locationInfo
- * @param {!Entry|!FilesAppEntry} entry The entry to be retrieve the name of.
- * @return {string} The localized name.
- */
-util.getEntryLabel = (locationInfo, entry) => {
-  if (locationInfo) {
-    if (locationInfo.hasFixedLabel) {
-      return util.getRootTypeLabel(locationInfo);
-    }
-
-    if (entry.filesystem && entry.filesystem.root === entry) {
-      return util.getRootTypeLabel(locationInfo);
-    }
-  }
-
-  // Special case for MyFiles/Downloads, MyFiles/PvmDefault and MyFiles/Camera.
-  if (locationInfo &&
-      locationInfo.rootType == VolumeManagerCommon.RootType.DOWNLOADS) {
-    if (entry.fullPath == '/Downloads') {
-      return str('DOWNLOADS_DIRECTORY_LABEL');
-    }
-    if (entry.fullPath == '/PvmDefault') {
-      return str('PLUGIN_VM_DIRECTORY_LABEL');
-    }
-    if (entry.fullPath == '/Camera') {
-      return str('CAMERA_DIRECTORY_LABEL');
-    }
-  }
-
-  return entry.name;
 };
 
 /**
@@ -594,16 +317,6 @@ util.isInGuestMode = async () => {
 };
 
 /**
- * Get the locale based week start from the load time data.
- * @returns {number}
- */
-util.getLocaleBasedWeekStart = () => {
-  return loadTimeData.valueExists('WEEK_START_FROM') ?
-      loadTimeData.getInteger('WEEK_START_FROM') :
-      0;
-};
-
-/**
  * A kind of error that represents user electing to cancel an operation. We use
  * this specialization to differentiate between system errors and errors
  * generated through legitimate user actions.
@@ -648,47 +361,6 @@ util.canBulkPinningCloudPanelShow = (stage, pref) => {
   }
 
   return false;
-};
-
-/**
- * Converts seconds into a time remaining string.
- * @param {number} seconds
- * @returns {string}
- */
-util.secondsToRemainingTimeString = (seconds) => {
-  const locale = util.getCurrentLocaleOrDefault();
-  let minutes = Math.ceil(seconds / 60);
-  if (minutes <= 1) {
-    // Less than one minute. Display remaining time in seconds.
-    const formatter = new Intl.NumberFormat(
-        locale, {style: 'unit', unit: 'second', unitDisplay: 'long'});
-    return strf(
-        'TIME_REMAINING_ESTIMATE', formatter.format(Math.ceil(seconds)));
-  }
-
-  const minuteFormatter = new Intl.NumberFormat(
-      locale, {style: 'unit', unit: 'minute', unitDisplay: 'long'});
-
-  const hours = Math.floor(minutes / 60);
-  if (hours == 0) {
-    // Less than one hour. Display remaining time in minutes.
-    return strf('TIME_REMAINING_ESTIMATE', minuteFormatter.format(minutes));
-  }
-
-  minutes -= hours * 60;
-
-  const hourFormatter = new Intl.NumberFormat(
-      locale, {style: 'unit', unit: 'hour', unitDisplay: 'long'});
-
-  if (minutes == 0) {
-    // Hours but no minutes.
-    return strf('TIME_REMAINING_ESTIMATE', hourFormatter.format(hours));
-  }
-
-  // Hours and minutes.
-  return strf(
-      'TIME_REMAINING_ESTIMATE_2', hourFormatter.format(hours),
-      minuteFormatter.format(minutes));
 };
 
 export {util, UserCanceledError};

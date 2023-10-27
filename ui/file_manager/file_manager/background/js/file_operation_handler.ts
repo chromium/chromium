@@ -4,7 +4,8 @@
 
 import {startIOTask} from '../../common/js/api.js';
 import {PolicyErrorType, ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {getFileErrorString, str, strf} from '../../common/js/translations.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {getStore} from '../../state/store.js';
@@ -226,7 +227,7 @@ function getMessageFromProgressEvent(
         return str('DELETE_IN_USE_ERROR');
     }
   }
-  const detail = util.getFileErrorString(event.errorName);
+  const detail = getFileErrorString(event.errorName);
   switch (event.type) {
     case chrome.fileManagerPrivate.IOTaskType.COPY:
       return strf('COPY_FILESYSTEM_ERROR', detail);

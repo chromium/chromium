@@ -11,6 +11,7 @@ import {convertURLsToEntries, entriesToURLs, isFakeEntry, isGuestOs, isNativeEnt
 import {EntryList, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {recordMediumCount} from '../../common/js/metrics.js';
+import {getEntryLabel} from '../../common/js/translations.js';
 import {util} from '../../common/js/util.js';
 import {isNative, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
@@ -651,9 +652,7 @@ export class DirectoryModel extends EventTarget {
     }
 
     const locationInfo = this.volumeManager_.getLocationInfo(dirEntry);
-    // @ts-ignore: error TS2345: Argument of type 'EntryLocation | null' is not
-    // assignable to parameter of type 'EntryLocation'.
-    return util.getEntryLabel(locationInfo, dirEntry);
+    return getEntryLabel(locationInfo, dirEntry);
   }
 
   /**

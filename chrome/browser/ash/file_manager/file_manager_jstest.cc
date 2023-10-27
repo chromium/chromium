@@ -279,6 +279,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ThumbnailModel) {
   RunTestURL("foreground/js/metadata/thumbnail_model_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, TranslationsTest) {
+  RunTestURL("common/js/translations_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, UtilTest) {
   RunTestURL("common/js/util_unittest.js");
 }

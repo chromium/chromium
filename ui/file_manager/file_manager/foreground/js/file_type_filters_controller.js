@@ -5,7 +5,7 @@
 import {createChild} from '../../common/js/dom_utils.js';
 import {isSameEntry} from '../../common/js/entry_utils.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import {str, strf} from '../../common/js/util.js';
+import {str, strf} from '../../common/js/translations.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {State} from '../../externs/ts/state.js';

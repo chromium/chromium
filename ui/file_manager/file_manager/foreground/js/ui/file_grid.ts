@@ -13,7 +13,7 @@ import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {isDriveShortcutsEnabled, isJellyEnabled} from '../../../common/js/flags.js';
-import {str, util} from '../../../common/js/util.js';
+import {getEntryLabel, str} from '../../../common/js/translations.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
 import type {FilesTooltip} from '../../elements/files_tooltip.js';
 import {type FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupValue} from '../file_list_model.js';
@@ -160,7 +160,7 @@ export class FileGrid extends Grid {
     }
 
     const locationInfo = this.volumeManager_!.getLocationInfo(entry);
-    return util.getEntryLabel(locationInfo, entry);
+    return getEntryLabel(locationInfo, entry);
   }
 
   /**
@@ -764,7 +764,7 @@ export class FileGrid extends Grid {
     bottom.appendChild(
         filelist.renderFileNameLabel(li.ownerDocument, entry, locationInfo));
     frame.appendChild(bottom);
-    li.setAttribute('file-name', util.getEntryLabel(locationInfo, entry));
+    li.setAttribute('file-name', getEntryLabel(locationInfo, entry));
 
     if (locationInfo && locationInfo.isDriveBased) {
       const inlineStatus = li.ownerDocument.createElement('xf-inline-status');

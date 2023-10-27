@@ -13,8 +13,8 @@ import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
+import {str} from '../../common/js/translations.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
-import {str} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 

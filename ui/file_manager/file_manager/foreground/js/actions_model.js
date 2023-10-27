@@ -8,7 +8,8 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 
 import {isSameVolume, unwrapEntry} from '../../common/js/entry_utils.js';
 import {recordBoolean} from '../../common/js/metrics.js';
-import {strf, util} from '../../common/js/util.js';
+import {strf} from '../../common/js/translations.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 

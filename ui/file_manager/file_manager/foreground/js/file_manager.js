@@ -27,8 +27,9 @@ import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js'
 import {isDlpEnabled, isDriveFsBulkPinningEnabled, isGuestOsEnabled, isInlineSyncStatusEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
+import {str} from '../../common/js/translations.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
-import {str, util} from '../../common/js/util.js';
+import {util} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {NudgeType} from '../../containers/nudge_container.js';

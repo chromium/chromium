@@ -7,7 +7,8 @@ import {$} from 'chrome://resources/ash/common/util.js';
 
 import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import {str, UserCanceledError, util} from '../../common/js/util.js';
+import {str} from '../../common/js/translations.js';
+import {UserCanceledError, util} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
