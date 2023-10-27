@@ -138,6 +138,8 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                         drawToEdge(ROOT_UI_VIEW_ID, shouldDrawToEdge, tab.getWebContents());
                     }
                 };
+        // TODO(https://crbug.com/1482559#c23) remove this logging by end of '23.
+        Log.i(TAG, "E2E_Up Tab '%s'", tab.getTitle());
     }
 
     /**

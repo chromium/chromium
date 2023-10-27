@@ -124,10 +124,13 @@ void ViewportData::UpdateViewportDescription() {
                    current_viewport_fit ==
                        mojom::blink::ViewportFit::kCoverForcedByUserAgent) {
           UseCounter::Count(document_, WebFeature::kViewportFitCover);
-          // TODO(https://crbug.com/1430288) remove tracking this union of
+          // TODO(https://crbug.com/1482559) remove tracking this union of
           // features after data collected (end of '23)
           UseCounter::Count(document_,
                             WebFeature::kViewportFitCoverOrSafeAreaInsetBottom);
+          // TODO(https://crbug.com/1482559#c23) remove this line by end of
+          // 2023.
+          VLOG(0) << "E2E_Used ViewportFitCover";
         }
       }
     }
