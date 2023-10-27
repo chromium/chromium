@@ -70,6 +70,9 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
       const Continuation continuation) override;
 
   const base::flat_set<int>& mice_to_observe() { return mice_to_observe_; }
+  const base::flat_set<int>& mice_to_observe_key_events() {
+    return mice_to_observe_key_events_;
+  }
   const base::flat_set<int>& graphics_tablets_to_observe() {
     return graphics_tablets_to_observe_;
   }

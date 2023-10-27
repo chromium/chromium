@@ -789,6 +789,28 @@ TEST_F(InputDeviceSettingsControllerTest, BlockMouseKeyEventRewrite) {
             controller_->GetConnectedMice()[0]->customization_restriction);
 }
 
+TEST_F(InputDeviceSettingsControllerTest,
+       BlockMouseKeyEventRewriteRestartObserving) {
+  fake_device_manager_->AddFakeMouse(kSampleCustomizableMouse);
+  EXPECT_EQ(mojom::CustomizationRestriction::kAllowCustomizations,
+            controller_->GetConnectedMice()[0]->customization_restriction);
+
+  controller_->StartObservingButtons(kSampleCustomizableMouse.id);
+  auto* rewriter = Shell::Get()
+                       ->event_rewriter_controller()
+                       ->peripheral_customization_event_rewriter();
+  EXPECT_EQ(1u, rewriter->mice_to_observe().size());
+  EXPECT_EQ(1u, rewriter->mice_to_observe_key_events().size());
+
+  fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal2,
+                                        kKbdTopRowLayout1Tag);
+  EXPECT_EQ(mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            controller_->GetConnectedMice()[0]->customization_restriction);
+
+  EXPECT_EQ(1u, rewriter->mice_to_observe().size());
+  EXPECT_EQ(0u, rewriter->mice_to_observe_key_events().size());
+}
+
 TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
   fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal,
                                         kKbdTopRowLayout1Tag);

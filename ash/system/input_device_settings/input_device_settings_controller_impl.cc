@@ -1418,19 +1418,41 @@ void InputDeviceSettingsControllerImpl::
     return;
   }
 
+  bool changed_restriction = false;
   auto* duplicate_ids =
       duplicate_id_finder_->GetDuplicateDeviceIds(keyboard_id);
   CHECK(duplicate_ids);
   for (const auto& duplicate_id : *duplicate_ids) {
     auto iter = mice_.find(duplicate_id);
     if (iter == mice_.end()) {
-      return;
+      continue;
     }
     auto& mouse = *iter->second;
+
+    if (mouse.customization_restriction ==
+        mojom::CustomizationRestriction::kDisableKeyEventRewrites) {
+      continue;
+    }
+
     mouse.customization_restriction =
         mojom::CustomizationRestriction::kDisableKeyEventRewrites;
+    changed_restriction = true;
     InitializeMouseSettings(&mouse);
     DispatchMouseSettingsChanged(mouse.id);
+  }
+
+  // If the restriction changed for any mouse, refresh the observing to match
+  // the new restriction.
+  if (changed_restriction) {
+    PeripheralCustomizationEventRewriter* rewriter =
+        Shell::Get()
+            ->event_rewriter_controller()
+            ->peripheral_customization_event_rewriter();
+    DeviceId id = *duplicate_ids->begin();
+    if (rewriter->mice_to_observe().contains(id)) {
+      rewriter->StopObserving();
+      StartObservingButtons(id);
+    }
   }
 }
 
@@ -1691,14 +1713,17 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
           ->peripheral_customization_event_rewriter();
   CHECK(rewriter);
   auto* mouse = FindMouse(id);
-  if (mouse && mouse->customization_restriction ==
-                   ash::mojom::CustomizationRestriction::kAllowCustomizations) {
+  if (mouse &&
+      mouse->customization_restriction !=
+          ash::mojom::CustomizationRestriction::kDisallowCustomizations) {
     const auto* duplicate_ids =
         duplicate_id_finder_->GetDuplicateDeviceIds(mouse->id);
     CHECK(duplicate_ids);
     for (const auto& duplicate_id : *duplicate_ids) {
-      rewriter->StartObservingMouse(duplicate_id,
-                                    /*can_rewrite_key_event=*/true);
+      rewriter->StartObservingMouse(
+          duplicate_id,
+          /*can_rewrite_key_event=*/mouse->customization_restriction ==
+              ash::mojom::CustomizationRestriction::kAllowCustomizations);
     }
     return;
   }
