@@ -62,7 +62,7 @@ BASE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege,
 // Added in M114. Not yet enabled by default.
 BASE_FEATURE(kWebAuthnAndroidCredMan,
              "WebAuthenticationAndroidCredMan",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled in M118. Remove in or after M121.
 BASE_FEATURE(kWebAuthnAndroidCredManForHybrid,
