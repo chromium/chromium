@@ -9,7 +9,7 @@ After frame navigate
       </head>
     - <body>
         - <iframe src="resources/iframe-load-event-iframe-2.html" id="myframe" name>
-            - #document
+            - #document (http://127.0.0.1:8000/devtools/elements/resources/iframe-load-event-iframe-2.html)
                 - <html>
                       <head></head>
                     - <body>
