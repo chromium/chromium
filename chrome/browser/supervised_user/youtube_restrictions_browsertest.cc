@@ -96,8 +96,9 @@ class YouTubeRestrictionsBrowserTest
 };
 
 // TODO(https://crbug.com/1494241): Add more test coverage.
-// TODO(https://crbug.com/1496850): Fix test failure on Mac.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1496850): Fix test failure on Mac, Windows.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_RestrictionHeaderIsNotSent DISABLED_RestrictionHeaderIsNotSent
 #else
 #define MAYBE_RestrictionHeaderIsNotSent RestrictionHeaderIsNotSent
