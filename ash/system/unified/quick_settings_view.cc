@@ -7,6 +7,7 @@
 #include <numeric>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/style/pagination_view.h"
 #include "ash/system/media/quick_settings_media_view_container.h"
 #include "ash/system/media/unified_media_controls_container.h"
 #include "ash/system/tray/interacted_by_tap_recorder.h"
@@ -32,7 +33,9 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -41,7 +44,7 @@ namespace ash {
 
 namespace {
 
-constexpr auto kPageIndicatorMargin = gfx::Insets::TLBR(0, 0, 8, 0);
+constexpr auto kPaginationViewMargin = gfx::Insets::TLBR(0, 0, 8, 0);
 constexpr auto kSlidersContainerMargin = gfx::Insets::TLBR(4, 0, 0, 0);
 
 class AccessibilityFocusHelperView : public views::View {
@@ -124,12 +127,20 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
       std::make_unique<QuickSettingsHeader>(controller_));
   feature_tiles_container_ = system_tray_container_->AddChildView(
       std::make_unique<FeatureTilesContainerView>(controller_));
-  page_indicator_view_ =
-      system_tray_container_->AddChildView(std::make_unique<PageIndicatorView>(
-          controller_, /*initially_expanded=*/controller_->model()
-                               ->pagination_model()
-                               ->total_pages() > 1));
-  page_indicator_view_->SetProperty(views::kMarginsKey, kPageIndicatorMargin);
+
+  // Creates a container for `PaginationView`. This is needed to align the view
+  // in the center.
+  auto* pagination_view_container = system_tray_container_->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  pagination_view_container->SetOrientation(
+      views::BoxLayout::Orientation::kHorizontal);
+  pagination_view_container->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  pagination_view_container->SetProperty(views::kMarginsKey,
+                                         kPaginationViewMargin);
+  pagination_view_ =
+      pagination_view_container->AddChildView(std::make_unique<PaginationView>(
+          controller_->model()->pagination_model()));
 
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
     media_view_container_ = system_tray_container_->AddChildView(
@@ -272,7 +283,7 @@ int QuickSettingsView::CalculateHeightForFeatureTilesContainer() {
       media_view_container_ ? media_view_container_->GetExpandedHeight() : 0;
 
   return max_height_ - header_->GetPreferredSize().height() -
-         page_indicator_view_->GetPreferredSize().height() -
+         pagination_view_->GetPreferredSize().height() -
          sliders_container_->GetPreferredSize().height() -
          media_controls_container_height - media_view_container_height -
          footer_->GetPreferredSize().height();
@@ -288,7 +299,7 @@ bool QuickSettingsView::IsDetailedViewShown() const {
 
 void QuickSettingsView::TotalPagesChanged(int previous_page_count,
                                           int new_page_count) {
-  page_indicator_view_->SetVisible(new_page_count > 1);
+  pagination_view_->SetVisible(new_page_count > 1);
 }
 
 void QuickSettingsView::OnGestureEvent(ui::GestureEvent* event) {

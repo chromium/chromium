@@ -8,9 +8,9 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/test/test_cast_config_controller.h"
 #include "ash/shell.h"
+#include "ash/style/pagination_view.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/feature_tiles_container_view.h"
-#include "ash/system/unified/page_indicator_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
@@ -47,11 +47,11 @@ class QuickSettingsViewTest : public AshTestBase {
         ->feature_tiles_container();
   }
 
-  PageIndicatorView* GetPageIndicatorView() {
+  PaginationView* GetPaginationView() {
     return GetPrimaryUnifiedSystemTray()
         ->bubble()
         ->quick_settings_view()
-        ->page_indicator_view_for_test();
+        ->pagination_view_for_test();
   }
 
   PaginationModel* pagination_model() {
@@ -139,11 +139,11 @@ TEST_F(QuickSettingsViewTest, PageIndicatorVisibility) {
 
   // Page indicator is not visible with one page.
   pagination_model()->SetTotalPages(1);
-  EXPECT_FALSE(GetPageIndicatorView()->GetVisible());
+  EXPECT_FALSE(GetPaginationView()->GetVisible());
 
   // Page indicator is visible with two or more pages.
   pagination_model()->SetTotalPages(2);
-  EXPECT_TRUE(GetPageIndicatorView()->GetVisible());
+  EXPECT_TRUE(GetPaginationView()->GetVisible());
 
   tray->CloseBubble();
 }
