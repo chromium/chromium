@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
@@ -59,63 +58,6 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
         super.onViewRecycled(holder);
         if (holder == null || holder.itemView == null) return;
         holder.itemView.setSelected(false);
-    }
-
-    /**
-     * @return Index of the currently highlighted view.
-     */
-    int getSelectedViewIndex() {
-        return mSelectedItem;
-    }
-
-    /**
-     * @return Currently selected view.
-     */
-    @Nullable
-    View getSelectedView() {
-        if (mLayoutManager == null) return null;
-        if (mSelectedItem < 0 || mSelectedItem >= getItemCount()) return null;
-
-        View currentSelectedView = mLayoutManager.findViewByPosition(mSelectedItem);
-        if (currentSelectedView != null) {
-            return currentSelectedView;
-        }
-
-        mSelectedItem = RecyclerView.NO_POSITION;
-        return null;
-    }
-
-    /** Ensures selection is reset to beginning of the list. */
-    void resetSelection() {
-        setSelectedViewIndex(RecyclerView.NO_POSITION);
-    }
-
-    /**
-     * Move focus to another view.
-     *
-     * @param index end index.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public boolean setSelectedViewIndex(int index) {
-        if (mLayoutManager == null) return false;
-        if (index != RecyclerView.NO_POSITION && (index < 0 || index >= getItemCount())) {
-            return false;
-        }
-
-        View previousSelectedView = mLayoutManager.findViewByPosition(mSelectedItem);
-        if (previousSelectedView != null) {
-            previousSelectedView.setSelected(false);
-        }
-
-        mSelectedItem = index;
-        mLayoutManager.scrollToPosition(index);
-
-        View currentSelectedView = mLayoutManager.findViewByPosition(index);
-        if (currentSelectedView != null) {
-            currentSelectedView.setSelected(true);
-        }
-
-        return true;
     }
 
     @Override
