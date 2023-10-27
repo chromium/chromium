@@ -75,6 +75,7 @@ preprocess_if_expr("copy_mojo_ts") {
 
 ts_library("build_ts") {
   deps = [
+    "//third_party/cros-components:cros_components_ts",
     "//third_party/material_web_components:bundle_lit_ts",
     "//third_party/material_web_components:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",

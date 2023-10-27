@@ -23,11 +23,15 @@ def _get_root_relative_path(request_path: str) -> str:
     return os.path.relpath('/', f'/{request_path}')
 
 
-# Replaces all chrome:// reference to /chrome_stub/
+# Replaces all chrome:// reference to /chrome_stub/.
+# Also replaces all //resources/ references to /chrome_stub/resources/, since
+# some imports in cros_component and mwc use // instead of chrome://, but
+# replacing all '//' is too broad.
 def _stub_chrome_url(request_path: str, s: str) -> str:
-    return s.replace(
-        'chrome://',
-        os.path.join(_get_root_relative_path(request_path), 'chrome_stub/'))
+    chrome_stub_path = os.path.join(_get_root_relative_path(request_path),
+                                    'chrome_stub/')
+    return s.replace('chrome://', chrome_stub_path).replace(
+        '//resources/', os.path.join(chrome_stub_path, 'resources/'))
 
 
 class _Route(NamedTuple):
@@ -184,11 +188,19 @@ class RequestHandler:
         request_path: str,
         *,
         root: Optional[str] = None,
-        path: Optional[str] = None,
+        path: Optional[Union[str, Callable[[str], str]]] = None,
         transform: Optional[Callable[[str, str], str]] = None,
     ) -> bytes:
+        def calculate_path():
+            if callable(path):
+                return path(request_path)
+            elif path is not None:
+                return path
+            else:
+                return request_path.lstrip('/')
+
         root = root or self._cca_root
-        path = path or request_path[1:]
+        path = calculate_path()
 
         with open(os.path.join(root, path), "rb") as f:
             content = f.read()
@@ -228,11 +240,13 @@ class RequestHandler:
                 ),
             ),
             _Route(
-                "/chrome_stub/resources/mwc/lit/index.js",
+                re.compile("/chrome_stub/resources/(mwc|cros_components)/.*"),
                 functools.partial(
                     self._handle_static_file,
-                    root=self._gen_dir,
-                    path="ui/webui/resources/tsc/mwc/lit/index.js",
+                    root=os.path.join(self._gen_dir,
+                                      "ui/webui/resources/tsc/"),
+                    path=lambda path: '/'.join(path.split('/')[3:]),
+                    transform=_stub_chrome_url,
                 ),
             ),
             _Route(
