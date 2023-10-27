@@ -501,6 +501,11 @@
       status: "experimental",
     },
     {
+      // crbug.com/880802
+      name: "BlockRubyConsoleMessage",
+      status: "stable",
+    },
+    {
       name: "BrowserVerifiedUserActivationKeyboard",
       base_feature: "none",
       public: true,
