@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] e.style['text-wrap-mode'] = "wrap" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-wrap-mode'] = "nowrap" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-wrap-mode'] = "initial" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-wrap-mode'] = "inherit" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-wrap-mode'] = "unset" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-wrap-mode'] = "revert" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-wrap-mode'] = "revert-layer" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+
