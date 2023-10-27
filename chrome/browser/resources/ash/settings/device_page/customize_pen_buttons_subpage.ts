@@ -21,7 +21,6 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_pen_buttons_subpage.html.js';
-import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {ActionChoice, GraphicsTablet, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
 
@@ -62,6 +61,7 @@ export class SettingsCustomizePenButtonsSubpageElement extends
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
   private previousRoute_: Route|null = null;
+  private isInitialized_: boolean = false;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -103,6 +103,8 @@ export class SettingsCustomizePenButtonsSubpageElement extends
    * query, initializing the page and pref with the graphics tablet data.
    */
   private async initializePen(): Promise<void> {
+    this.isInitialized_ = false;
+
     const tabletId = this.getGraphicsTabletIdFromUrl();
     const searchedGraphicsTablet = this.graphicsTablets.find(
         (graphicsTablet: GraphicsTablet) => graphicsTablet.id === tabletId);
@@ -111,6 +113,7 @@ export class SettingsCustomizePenButtonsSubpageElement extends
         (await this.inputDeviceSettingsProvider_
              .getActionsForGraphicsTabletButtonCustomization())
             ?.options;
+    this.isInitialized_ = true;
   }
 
   private getGraphicsTabletIdFromUrl(): number {
@@ -145,12 +148,12 @@ export class SettingsCustomizePenButtonsSubpageElement extends
   }
 
   onSettingsChanged(): void {
-    // TODO(yyhyyh@): Remove the if-condition after mojo api is done.
-    if (this.inputDeviceSettingsProvider_ instanceof
-        FakeInputDeviceSettingsProvider) {
-      this.inputDeviceSettingsProvider_.setGraphicsTabletSettings(
-          this.selectedTablet!.id, this.selectedTablet!.settings);
+    if (!this.isInitialized_) {
+      return;
     }
+
+    this.inputDeviceSettingsProvider_.setGraphicsTabletSettings(
+        this.selectedTablet!.id, this.selectedTablet!.settings);
   }
 
   private getDescription_(): string {
