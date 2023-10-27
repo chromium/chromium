@@ -43,7 +43,8 @@
     (void (^)(BOOL granted, BOOL promptShown, NSError* error))completionHandler;
 
 // This functions retrieves the authorization and feature-related settings for
-// push notifications.
+// push notifications. This function ensures that the `completionHandler` is
+// executed on the application's main thread.
 + (void)getPermissionSettings:
     (void (^)(UNNotificationSettings* settings))completionHandler;
 

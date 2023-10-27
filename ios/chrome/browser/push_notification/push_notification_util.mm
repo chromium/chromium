@@ -8,6 +8,9 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/metrics/histogram_functions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 
 namespace {
 
@@ -54,11 +57,7 @@ const char kAuthorizationStatusHistogram[] =
             logPermissionSettingsMetrics:settings.authorizationStatus];
 
         if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-          // iOS instructs that registering the device with APNS must be done on
-          // the main thread. Otherwise, a runtime warning is generated.
-          dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
-          });
+          [[UIApplication sharedApplication] registerForRemoteNotifications];
         }
       }];
 }
@@ -83,7 +82,39 @@ const char kAuthorizationStatusHistogram[] =
     (void (^)(UNNotificationSettings* settings))completionHandler {
   UNUserNotificationCenter* center =
       UNUserNotificationCenter.currentNotificationCenter;
-  [center getNotificationSettingsWithCompletionHandler:completionHandler];
+  if (!web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
+    // In some circumstances, like when the application is going through a cold
+    // startup, this function is called before Chrome threads have been
+    // initialized. In this case, the function relies on native infrastructure
+    // to schedule and execute the callback on the main thread.
+    void (^permissionHandler)(UNNotificationSettings*) =
+        ^(UNNotificationSettings* settings) {
+          dispatch_async(dispatch_get_main_queue(), ^{
+            completionHandler(settings);
+          });
+        };
+
+    [center getNotificationSettingsWithCompletionHandler:permissionHandler];
+    return;
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> thread;
+  // To avoid unnecessarily posting callbacks to the UI thread, the current
+  // thread is used if it is suitable for callback execution.
+  if (base::SequencedTaskRunner::HasCurrentDefault()) {
+    thread = base::SequencedTaskRunner::GetCurrentDefault();
+  } else {
+    thread = web::GetUIThreadTaskRunner({});
+  }
+
+  void (^permissionHandler)(UNNotificationSettings*) =
+      ^(UNNotificationSettings* settings) {
+        thread->PostTask(FROM_HERE, base::BindOnce(^{
+                           completionHandler(settings);
+                         }));
+      };
+
+  [center getNotificationSettingsWithCompletionHandler:permissionHandler];
 }
 
 #pragma mark - Private
