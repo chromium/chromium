@@ -336,6 +336,7 @@ try_.compilator_builder(
     branch_selector = branches.selector.LINUX_BRANCHES,
     ssd = True,
     main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.orchestrator_builder(
