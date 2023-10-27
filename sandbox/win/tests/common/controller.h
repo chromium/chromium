@@ -100,20 +100,17 @@ class TestRunner {
 
   ~TestRunner();
 
-  // Adds a rule to the policy. The parameters are the same as the AddRule
-  // function in the sandbox.
-  bool AddRule(SubSystem subsystem,
-               Semantics semantics,
-               const wchar_t* pattern);
-
   // Adds a filesystem rules with the path of a file in system32. The function
   // appends "pattern" to "system32" and then call AddRule. Return true if the
   // function succeeds.
-  bool AddRuleSys32(Semantics semantics, const wchar_t* pattern);
+  bool AddRuleSys32(FileSemantics semantics, const wchar_t* pattern);
 
   // Adds a filesystem rules to the policy. Returns true if the functions
   // succeeds.
-  bool AddFsRule(Semantics semantics, const wchar_t* pattern);
+  bool AllowFileAccess(FileSemantics semantics, const wchar_t* pattern);
+
+  // Adds rules to allow named pipes matching pattern.
+  bool AllowNamedPipes(const wchar_t* pattern);
 
   // Starts a child process in the sandbox and ask it to run |command|. Returns
   // a SboxTestResult. By default, the test runs AFTER_REVERT.

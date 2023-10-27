@@ -9,7 +9,6 @@
 
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/policy_low_level.h"
-#include "sandbox/win/src/sandbox_policy.h"
 
 namespace sandbox {
 
@@ -22,7 +21,6 @@ class NamedPipePolicy {
   // 'semantics' is the desired semantics.
   // 'policy' is the policy generator to which the rules are going to be added.
   static bool GenerateRules(const wchar_t* name,
-                            Semantics semantics,
                             LowLevelPolicy* policy);
 
   // Processes a 'CreateNamedPipeW()' request from the target.

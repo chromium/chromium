@@ -80,8 +80,8 @@ TEST_F(AddressSanitizerTests, TestAddressSanitizer) {
   base::FilePath exe;
   ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &exe));
   base::FilePath pdb_path = exe.DirName().Append(L"*.pdb");
-  ASSERT_TRUE(runner.AddFsRule(Semantics::kFilesAllowReadonly,
-                               pdb_path.value().c_str()));
+  ASSERT_TRUE(runner.AllowFileAccess(FileSemantics::kAllowReadonly,
+                                     pdb_path.value().c_str()));
 
   env_->SetVar("ASAN_OPTIONS", "exitcode=123");
   if (asan_build) {

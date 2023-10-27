@@ -331,8 +331,8 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
 
   runner = enable_mitigation ? RunnerWithMitigation(which_mitigation)
                              : std::make_unique<sandbox::TestRunner>();
-  EXPECT_TRUE(runner->AddFsRule(sandbox::Semantics::kFilesAllowAny,
-                                temp_dll_path.value().c_str()));
+  EXPECT_TRUE(runner->AllowFileAccess(sandbox::FileSemantics::kAllowAny,
+                                      temp_dll_path.value().c_str()));
 
   test = base::StrCat({shared, L" ", base::NumberToWString(MAPVIEWFILE), L" \"",
                        temp_dll_path.value(), L"\""});

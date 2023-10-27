@@ -19,13 +19,7 @@
 namespace sandbox {
 
 bool SignedPolicy::GenerateRules(const wchar_t* name,
-                                 Semantics semantics,
                                  LowLevelPolicy* policy) {
-  // Only support one semantic.
-  if (Semantics::kSignedAllowLoad != semantics) {
-    return false;
-  }
-
   base::FilePath file_path(name);
   auto nt_path_name = GetNtPathFromWin32Path(file_path.DirName().value());
   if (!nt_path_name)

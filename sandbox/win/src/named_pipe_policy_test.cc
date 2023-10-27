@@ -55,8 +55,7 @@ std::unique_ptr<TestRunner> CreatePipeRunner() {
   auto runner = std::make_unique<TestRunner>();
   // TODO(nsylvain): This policy is wrong because "*" is a valid char in a
   // namedpipe name. Here we apply it like a wildcard. http://b/893603
-  runner->AddRule(SubSystem::kNamedPipes, Semantics::kNamedPipesAllowAny,
-                  L"\\\\.\\pipe\\test*");
+  runner->AllowNamedPipes(L"\\\\.\\pipe\\test*");
   return runner;
 }
 
@@ -75,8 +74,7 @@ std::unique_ptr<TestRunner> PipeTraversalRunner() {
   auto runner = std::make_unique<TestRunner>();
   // TODO(nsylvain): This policy is wrong because "*" is a valid char in a
   // namedpipe name. Here we apply it like a wildcard. http://b/893603
-  runner->AddRule(SubSystem::kNamedPipes, Semantics::kNamedPipesAllowAny,
-                  L"\\\\.\\pipe\\test*");
+  runner->AllowNamedPipes(L"\\\\.\\pipe\\test*");
   return runner;
 }
 

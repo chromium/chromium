@@ -66,9 +66,7 @@ bool AudioInitializeConfig(sandbox::TargetConfig* config) {
 
   // The Audio Service process uses a base::SyncSocket for transmitting audio
   // data.
-  result = config->AddRule(sandbox::SubSystem::kNamedPipes,
-                           sandbox::Semantics::kNamedPipesAllowAny,
-                           L"\\\\.\\pipe\\chrome.sync.*");
+  result = config->AllowNamedPipes(L"\\\\.\\pipe\\chrome.sync.*");
   if (result != sandbox::SBOX_ALL_OK) {
     return false;
   }
@@ -152,19 +150,16 @@ bool IconReaderInitializeConfig(sandbox::TargetConfig* config) {
     return false;
 
   // Allow file read. These should match IconLoader::GroupForFilepath().
-  result =
-      config->AddRule(sandbox::SubSystem::kFiles,
-                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.exe");
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
+                                   L"\\??\\*.exe");
   if (result != sandbox::SBOX_ALL_OK)
     return false;
-  result =
-      config->AddRule(sandbox::SubSystem::kFiles,
-                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.dll");
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
+                                   L"\\??\\*.dll");
   if (result != sandbox::SBOX_ALL_OK)
     return false;
-  result =
-      config->AddRule(sandbox::SubSystem::kFiles,
-                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.ico");
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
+                                   L"\\??\\*.ico");
   if (result != sandbox::SBOX_ALL_OK)
     return false;
   return true;
