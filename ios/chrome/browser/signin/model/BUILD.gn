@@ -1,0 +1,74 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "authentication_service.h",
+    "authentication_service_factory.h",
+    "authentication_service_observer.h",
+    "chrome_account_manager_service.h",
+    "chrome_account_manager_service_factory.h",
+    "identity_manager_factory.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/signin" ]
+}
+
+source_set("signin_util") {
+  sources = [ "signin_util.h" ]
+  public_deps = [ "//ios/chrome/browser/signin:signin_util" ]
+}
+
+source_set("capabilities_types") {
+  sources = [
+    "capabilities_dict.h",
+    "capabilities_types.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/signin:capabilities_types" ]
+}
+
+source_set("constants") {
+  sources = [ "constants.h" ]
+  public_deps = [ "//ios/chrome/browser/signin:constants" ]
+}
+
+source_set("system_identity") {
+  sources = [ "system_identity.h" ]
+  public_deps = [ "//ios/chrome/browser/signin:system_identity" ]
+}
+
+source_set("system_identity_manager") {
+  sources = [
+    "refresh_access_token_error.h",
+    "system_identity_interaction_manager.h",
+    "system_identity_manager.h",
+    "system_identity_manager_observer.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/signin:system_identity_manager" ]
+}
+
+source_set("fake_system_identity_manager") {
+  testonly = true
+  sources = [ "fake_system_identity_manager.h" ]
+  public_deps = [ "//ios/chrome/browser/signin:fake_system_identity_manager" ]
+}
+
+source_set("fake_system_identity") {
+  testonly = true
+  sources = [ "fake_system_identity.h" ]
+  public_deps = [ "//ios/chrome/browser/signin:fake_system_identity" ]
+}
+
+source_set("trusted_vault") {
+  sources = [ "trusted_vault_client_backend.h" ]
+  public_deps = [ "//ios/chrome/browser/signin:trusted_vault" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_authentication_service_delegate.h",
+    "identity_test_environment_browser_state_adaptor.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/signin:test_support" ]
+}
