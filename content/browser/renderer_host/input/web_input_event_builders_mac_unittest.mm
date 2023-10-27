@@ -89,8 +89,9 @@ NSEvent* BuildFakeMouseEvent(CGEventType mouse_type,
                              float tilt_y = 0.0,
                              float tangential_pressure = 0.0,
                              NSUInteger button_number = 0) {
-  base::apple::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateMouseEvent(
+  base::apple::ScopedCFTypeRef<CGEventRef> cg_event_ref(CGEventCreateMouseEvent(
       /*source=*/nullptr, mouse_type, location, button));
+  CGEventRef cg_event = cg_event_ref.get();
   CGEventSetIntegerValueField(cg_event, kCGMouseEventSubtype, subtype);
   CGEventSetDoubleValueField(cg_event, kCGTabletEventRotation, rotation);
   CGEventSetDoubleValueField(cg_event, kCGMouseEventPressure, pressure);

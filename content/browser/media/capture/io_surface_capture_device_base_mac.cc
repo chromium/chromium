@@ -57,8 +57,7 @@ void IOSurfaceCaptureDeviceBase::SendLastReceivedIOSurfaceToClient() {
   gfx::GpuMemoryBufferHandle handle;
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  handle.io_surface.reset(last_received_io_surface_,
-                          base::scoped_policy::RETAIN);
+  handle.io_surface = last_received_io_surface_;
 
   const auto now = base::TimeTicks::Now();
   if (first_frame_time_.is_null())

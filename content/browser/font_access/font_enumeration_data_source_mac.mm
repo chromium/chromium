@@ -84,14 +84,14 @@ blink::FontEnumerationTable FontEnumerationDataSourceMac::GetFonts(
             base::apple::NSToCFPtrCast(options)));
 
     base::apple::ScopedCFTypeRef<CFArrayRef> font_descs(
-        CTFontCollectionCreateMatchingFontDescriptors(collection));
+        CTFontCollectionCreateMatchingFontDescriptors(collection.get()));
 
     // Used to filter duplicates.
     std::set<std::string> fonts_seen;
 
-    for (CFIndex i = 0; i < CFArrayGetCount(font_descs); ++i) {
+    for (CFIndex i = 0; i < CFArrayGetCount(font_descs.get()); ++i) {
       CTFontDescriptorRef fd = base::apple::CFCast<CTFontDescriptorRef>(
-          CFArrayGetValueAtIndex(font_descs, i));
+          CFArrayGetValueAtIndex(font_descs.get(), i));
       if (!IsValidFontMac(fd)) {
         // Skip invalid fonts.
         continue;

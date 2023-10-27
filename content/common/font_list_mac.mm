@@ -34,8 +34,8 @@ namespace {
 class FontFamilyResolver {
  public:
   FontFamilyResolver() {
-    DCHECK(mandatory_attributes_ != nullptr);
-    DCHECK(font_descriptor_attributes_ != nullptr);
+    DCHECK(mandatory_attributes_);
+    DCHECK(font_descriptor_attributes_);
   }
   ~FontFamilyResolver() = default;
 
@@ -45,19 +45,19 @@ class FontFamilyResolver {
   // Returns a localized font family name for the given family name.
   base::apple::ScopedCFTypeRef<CFStringRef> CopyLocalizedFamilyName(
       CFStringRef family_name) {
-    DCHECK(family_name != nullptr);
+    DCHECK(family_name);
 
     CFDictionarySetValue(font_descriptor_attributes_.get(),
                          kCTFontFamilyNameAttribute, family_name);
     base::apple::ScopedCFTypeRef<CTFontDescriptorRef> raw_descriptor(
         CTFontDescriptorCreateWithAttributes(
             font_descriptor_attributes_.get()));
-    DCHECK(raw_descriptor != nullptr)
+    DCHECK(raw_descriptor)
         << "CTFontDescriptorCreateWithAttributes returned null";
 
     base::apple::ScopedCFTypeRef<CFArrayRef> normalized_descriptors(
         CTFontDescriptorCreateMatchingFontDescriptors(
-            raw_descriptor, mandatory_attributes_.get()));
+            raw_descriptor.get(), mandatory_attributes_.get()));
     return CopyLocalizedFamilyNameFrom(family_name,
                                        normalized_descriptors.get());
   }
@@ -88,7 +88,7 @@ class FontFamilyResolver {
       base::apple::ScopedCFTypeRef<CFStringRef> descriptor_family_name(
           base::apple::CFCastStrict<CFStringRef>(CTFontDescriptorCopyAttribute(
               descriptor, kCTFontFamilyNameAttribute)));
-      if (CFStringCompare(family_name, descriptor_family_name,
+      if (CFStringCompare(family_name, descriptor_family_name.get(),
                           /*compareOptions=*/0) == kCFCompareEqualTo) {
         return base::apple::ScopedCFTypeRef<CTFontDescriptorRef>(
             descriptor, base::scoped_policy::RETAIN);
@@ -115,7 +115,7 @@ class FontFamilyResolver {
 
     base::apple::ScopedCFTypeRef<CTFontDescriptorRef> descriptor =
         FindFirstWithFamilyName(family_name, descriptors);
-    if (descriptor == nullptr) {
+    if (!descriptor) {
       DLOG(WARNING) << "Will use non-localized family name for font family: "
                     << family_name;
       return base::apple::ScopedCFTypeRef<CFStringRef>(
@@ -124,7 +124,7 @@ class FontFamilyResolver {
 
     base::apple::ScopedCFTypeRef<CFStringRef> localized_family_name(
         base::apple::CFCastStrict<CFStringRef>(
-            CTFontDescriptorCopyLocalizedAttribute(descriptor,
+            CTFontDescriptorCopyLocalizedAttribute(descriptor.get(),
                                                    kCTFontFamilyNameAttribute,
                                                    /*language=*/nullptr)));
     // CTFontDescriptorCopyLocalizedAttribute() is only supposed to return null
@@ -135,7 +135,7 @@ class FontFamilyResolver {
     // FindFirstWithFamilyName() only returns descriptors whose non-localized
     // family name attribute is equal to a given string. Discovery documented in
     // crbug.com/1235090.
-    if (localized_family_name == nullptr) {
+    if (!localized_family_name) {
       DLOG(WARNING) << "Will use non-localized family name for font family: "
                     << family_name;
       return base::apple::ScopedCFTypeRef<CFStringRef>(
@@ -199,10 +199,10 @@ base::Value::List GetFontList_SlowBlocking() {
       base::apple::ScopedCFTypeRef<CFStringRef> cf_normalized_family_name =
           resolver.CopyLocalizedFamilyName(
               base::apple::NSToCFPtrCast(family_name));
-      DCHECK(cf_normalized_family_name != nullptr)
+      DCHECK(cf_normalized_family_name)
           << "FontFamilyResolver::CopyLocalizedFamilyName returned null";
-      family_name_map[base::apple::CFToNSPtrCast(cf_normalized_family_name)] =
-          family_name;
+      family_name_map[base::apple::CFToNSPtrCast(
+          cf_normalized_family_name.get())] = family_name;
     }
 
     // The Apple documentation for CTFontManagerCopyAvailableFontFamilyNames
