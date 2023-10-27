@@ -317,11 +317,25 @@ class OverloadGroup(WithIdentifier):
                 interface1 in interface2.inclusive_inherited_interfaces
                 or interface2 in interface1.inclusive_inherited_interfaces)
         if type1.is_callback_function:
-            return not (type2.is_object or type2.is_callback_function
-                        or is_dictionary_like(type2))
+            if type2.is_object or type2.is_callback_function:
+                return False
+            if not is_dictionary_like(type2):
+                return True
+            # Additional requirements: A callback function that does not have
+            # [LegacyTreatNonObjectAsNull] extended attribute is
+            # distinguishable from a type in the dictionary-like category.
+            return ("LegacyTreatNonObjectAsNull"
+                    not in type1.type_definition_object.extended_attributes)
         if is_dictionary_like(type1):
-            return not (type2.is_object or type2.is_callback_function
-                        or is_dictionary_like(type2))
+            if type2.is_object or is_dictionary_like(type2):
+                return False
+            if not type2.is_callback_function:
+                return True
+            # Additional requirements: A callback function that does not have
+            # [LegacyTreatNonObjectAsNull] extended attribute is
+            # distinguishable from a type in the dictionary-like category.
+            return ("LegacyTreatNonObjectAsNull"
+                    not in type2.type_definition_object.extended_attributes)
         if is_sequence_like(type1):
             return not (type2.is_object or is_sequence_like(type2))
         return False  # Out of the table
