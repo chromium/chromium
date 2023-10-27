@@ -385,6 +385,10 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
                 request.headers.at(net::HttpRequestHeaders::kAuthorization));
     }
 
+    // Make sure only one of API key or access token is sent.
+    EXPECT_EQ(base::Contains(request.headers, "X-Goog-Api-Key"),
+              expected_bearer_access_token_.empty());
+
     optimization_guide::proto::GetHintsRequest hints_request;
     EXPECT_TRUE(hints_request.ParseFromString(request.content));
     EXPECT_FALSE(hints_request.hosts().empty() && hints_request.urls().empty());

@@ -141,6 +141,10 @@ class HintsFetcher {
   // The URL for the remote Optimization Guide Service.
   const GURL optimization_guide_service_url_;
 
+  // The API key used to call the remote Optimization Guide Service when no
+  // access token is present.
+  const std::string optimization_guide_service_api_key_;
+
   // Holds the |URLLoader| for an active hints request.
   std::unique_ptr<network::SimpleURLLoader> active_url_loader_;
 
