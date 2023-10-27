@@ -115,7 +115,7 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   void OnDidQuit();
 
   // Accessors for private data members to be used by subclasses.
-  CFRunLoopRef run_loop() const { return run_loop_; }
+  CFRunLoopRef run_loop() const { return run_loop_.get(); }
   int nesting_level() const { return nesting_level_; }
   int run_nesting_level() const { return run_nesting_level_; }
   bool keep_running() const { return keep_running_; }

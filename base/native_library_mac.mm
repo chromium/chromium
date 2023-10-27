@@ -106,7 +106,7 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
     apple::ScopedCFTypeRef<CFStringRef> symbol_name(CFStringCreateWithCString(
         kCFAllocatorDefault, name, kCFStringEncodingUTF8));
     function_pointer =
-        CFBundleGetFunctionPointerForName(library->bundle, symbol_name);
+        CFBundleGetFunctionPointerForName(library->bundle, symbol_name.get());
   } else {
     function_pointer = dlsym(library->dylib, name);
   }

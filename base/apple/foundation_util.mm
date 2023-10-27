@@ -361,7 +361,7 @@ std::string GetValueFromDictionaryErrorMessage(CFStringRef key,
       CFCopyTypeIDDescription(CFGetTypeID(value)));
   return "Expected value for key " + SysCFStringRefToUTF8(key) + " to be " +
          expected_type + " but it was " +
-         SysCFStringRefToUTF8(actual_type_ref) + " instead";
+         SysCFStringRefToUTF8(actual_type_ref.get()) + " instead";
 }
 
 NSURL* FilePathToNSURL(const FilePath& path) {
@@ -408,7 +408,7 @@ ScopedCFTypeRef<CFURLRef> FilePathToCFURL(const FilePath& path) {
   }
 
   return ScopedCFTypeRef<CFURLRef>(CFURLCreateWithFileSystemPath(
-      kCFAllocatorDefault, path_cfstring, kCFURLPOSIXPathStyle,
+      kCFAllocatorDefault, path_cfstring.get(), kCFURLPOSIXPathStyle,
       /*isDirectory=*/FALSE));
 }
 

@@ -27,7 +27,7 @@ DispatchSourceMach::DispatchSourceMach(const char* name,
                          event_handler) {
   // Since the queue was created above in the delegated constructor, and it was
   // subsequently retained, release it here.
-  dispatch_release(storage_->queue);
+  dispatch_release(storage_->queue.get());
 }
 
 DispatchSourceMach::DispatchSourceMach(dispatch_queue_t queue,
@@ -35,27 +35,28 @@ DispatchSourceMach::DispatchSourceMach(dispatch_queue_t queue,
                                        void (^event_handler)())
     : storage_(std::make_unique<Storage>()) {
   storage_->queue.reset(queue, base::scoped_policy::RETAIN);
-  storage_->source.reset(dispatch_source_create(DISPATCH_SOURCE_TYPE_MACH_RECV,
-                                                port, 0, storage_->queue));
+  storage_->source.reset(dispatch_source_create(
+      DISPATCH_SOURCE_TYPE_MACH_RECV, port, 0, storage_->queue.get()));
   storage_->source_canceled.reset(dispatch_semaphore_create(0));
 
-  dispatch_source_set_event_handler(storage_->source, event_handler);
-  dispatch_source_set_cancel_handler(storage_->source, ^{
-    dispatch_semaphore_signal(storage_->source_canceled);
+  dispatch_source_set_event_handler(storage_->source.get(), event_handler);
+  dispatch_source_set_cancel_handler(storage_->source.get(), ^{
+    dispatch_semaphore_signal(storage_->source_canceled.get());
   });
 }
 
 DispatchSourceMach::~DispatchSourceMach() {
   // Cancel the source and wait for the semaphore to be signaled. This will
   // ensure the source managed by this class is not used after it is freed.
-  dispatch_source_cancel(storage_->source);
+  dispatch_source_cancel(storage_->source.get());
   storage_->source.reset();
 
-  dispatch_semaphore_wait(storage_->source_canceled, DISPATCH_TIME_FOREVER);
+  dispatch_semaphore_wait(storage_->source_canceled.get(),
+                          DISPATCH_TIME_FOREVER);
 }
 
 void DispatchSourceMach::Resume() {
-  dispatch_resume(storage_->source);
+  dispatch_resume(storage_->source.get());
 }
 
 dispatch_queue_t DispatchSourceMach::Queue() const {

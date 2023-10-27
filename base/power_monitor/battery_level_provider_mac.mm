@@ -65,7 +65,7 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
   const base::mac::ScopedIOObject<io_service_t> service(
       IOServiceGetMatchingService(kIOMasterPortDefault,
                                   IOServiceMatching("IOPMPowerSource")));
-  if (service == IO_OBJECT_NULL) {
+  if (!service) {
     // Macs without a battery don't necessarily provide the IOPMPowerSource
     // service (e.g. test bots). Don't report this as an error.
     return MakeBatteryState(/* battery_details=*/{});
@@ -82,7 +82,7 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
   }
 
   absl::optional<bool> battery_installed =
-      GetValueAsBoolean(dict, CFSTR("BatteryInstalled"));
+      GetValueAsBoolean(dict.get(), CFSTR("BatteryInstalled"));
   if (!battery_installed.has_value()) {
     // Failing to access the BatteryInstalled property is unexpected.
     return absl::nullopt;
@@ -94,26 +94,26 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
   }
 
   absl::optional<bool> external_connected =
-      GetValueAsBoolean(dict, CFSTR("ExternalConnected"));
+      GetValueAsBoolean(dict.get(), CFSTR("ExternalConnected"));
   if (!external_connected.has_value()) {
     // Failing to access the ExternalConnected property is unexpected.
     return absl::nullopt;
   }
 
   absl::optional<SInt64> current_capacity =
-      GetValueAsSInt64(dict, CFSTR("AppleRawCurrentCapacity"));
+      GetValueAsSInt64(dict.get(), CFSTR("AppleRawCurrentCapacity"));
   if (!current_capacity.has_value()) {
     return absl::nullopt;
   }
 
   absl::optional<SInt64> max_capacity =
-      GetValueAsSInt64(dict, CFSTR("AppleRawMaxCapacity"));
+      GetValueAsSInt64(dict.get(), CFSTR("AppleRawMaxCapacity"));
   if (!max_capacity.has_value()) {
     return absl::nullopt;
   }
 
   absl::optional<SInt64> voltage_mv =
-      GetValueAsSInt64(dict, CFSTR(kIOPSVoltageKey));
+      GetValueAsSInt64(dict.get(), CFSTR(kIOPSVoltageKey));
   if (!voltage_mv.has_value()) {
     return absl::nullopt;
   }

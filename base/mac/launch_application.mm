@@ -199,7 +199,7 @@ void LaunchApplication(const base::FilePath& app_bundle_path,
 
     _LSOpenURLsWithCompletionHandler(
         base::apple::NSToCFPtrCast(ns_urls ? ns_urls : @[]),
-        apple::FilePathToCFURL(app_bundle_path),
+        apple::FilePathToCFURL(app_bundle_path).get(),
         base::apple::NSToCFPtrCast(GetOpenOptions(options, command_line_args)),
         action_block);
     return;

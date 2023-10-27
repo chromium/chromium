@@ -73,42 +73,46 @@ TEST(FoundationUtilTest, CFCast) {
   EXPECT_TRUE(test_str_mutable);
 
   // Casting the CFTypeRef objects correctly provides the same pointer.
-  EXPECT_EQ(test_array, CFCast<CFArrayRef>(test_array));
-  EXPECT_EQ(test_array_mutable, CFCast<CFArrayRef>(test_array_mutable));
-  EXPECT_EQ(test_bag, CFCast<CFBagRef>(test_bag));
-  EXPECT_EQ(test_bag_mutable, CFCast<CFBagRef>(test_bag_mutable));
+  EXPECT_EQ(test_array.get(), CFCast<CFArrayRef>(test_array.get()));
+  EXPECT_EQ(test_array_mutable.get(),
+            CFCast<CFArrayRef>(test_array_mutable.get()));
+  EXPECT_EQ(test_bag.get(), CFCast<CFBagRef>(test_bag.get()));
+  EXPECT_EQ(test_bag_mutable.get(), CFCast<CFBagRef>(test_bag_mutable.get()));
   EXPECT_EQ(test_bool, CFCast<CFBooleanRef>(test_bool));
-  EXPECT_EQ(test_data, CFCast<CFDataRef>(test_data));
-  EXPECT_EQ(test_data_mutable, CFCast<CFDataRef>(test_data_mutable));
-  EXPECT_EQ(test_date, CFCast<CFDateRef>(test_date));
-  EXPECT_EQ(test_dict, CFCast<CFDictionaryRef>(test_dict));
-  EXPECT_EQ(test_dict_mutable, CFCast<CFDictionaryRef>(test_dict_mutable));
-  EXPECT_EQ(test_number, CFCast<CFNumberRef>(test_number));
+  EXPECT_EQ(test_data.get(), CFCast<CFDataRef>(test_data.get()));
+  EXPECT_EQ(test_data_mutable.get(),
+            CFCast<CFDataRef>(test_data_mutable.get()));
+  EXPECT_EQ(test_date.get(), CFCast<CFDateRef>(test_date.get()));
+  EXPECT_EQ(test_dict.get(), CFCast<CFDictionaryRef>(test_dict.get()));
+  EXPECT_EQ(test_dict_mutable.get(),
+            CFCast<CFDictionaryRef>(test_dict_mutable.get()));
+  EXPECT_EQ(test_number.get(), CFCast<CFNumberRef>(test_number.get()));
   EXPECT_EQ(test_null, CFCast<CFNullRef>(test_null));
-  EXPECT_EQ(test_set, CFCast<CFSetRef>(test_set));
-  EXPECT_EQ(test_set_mutable, CFCast<CFSetRef>(test_set_mutable));
-  EXPECT_EQ(test_str, CFCast<CFStringRef>(test_str));
+  EXPECT_EQ(test_set.get(), CFCast<CFSetRef>(test_set.get()));
+  EXPECT_EQ(test_set_mutable.get(), CFCast<CFSetRef>(test_set_mutable.get()));
+  EXPECT_EQ(test_str.get(), CFCast<CFStringRef>(test_str.get()));
   EXPECT_EQ(test_str_const, CFCast<CFStringRef>(test_str_const));
-  EXPECT_EQ(test_str_mutable, CFCast<CFStringRef>(test_str_mutable));
+  EXPECT_EQ(test_str_mutable.get(),
+            CFCast<CFStringRef>(test_str_mutable.get()));
 
   // When given an incorrect CF cast, provide nullptr.
-  EXPECT_FALSE(CFCast<CFStringRef>(test_array));
-  EXPECT_FALSE(CFCast<CFStringRef>(test_array_mutable));
-  EXPECT_FALSE(CFCast<CFStringRef>(test_bag));
-  EXPECT_FALSE(CFCast<CFSetRef>(test_bag_mutable));
+  EXPECT_FALSE(CFCast<CFStringRef>(test_array.get()));
+  EXPECT_FALSE(CFCast<CFStringRef>(test_array_mutable.get()));
+  EXPECT_FALSE(CFCast<CFStringRef>(test_bag.get()));
+  EXPECT_FALSE(CFCast<CFSetRef>(test_bag_mutable.get()));
   EXPECT_FALSE(CFCast<CFSetRef>(test_bool));
-  EXPECT_FALSE(CFCast<CFNullRef>(test_data));
-  EXPECT_FALSE(CFCast<CFDictionaryRef>(test_data_mutable));
-  EXPECT_FALSE(CFCast<CFDictionaryRef>(test_date));
-  EXPECT_FALSE(CFCast<CFNumberRef>(test_dict));
-  EXPECT_FALSE(CFCast<CFDateRef>(test_dict_mutable));
-  EXPECT_FALSE(CFCast<CFDataRef>(test_number));
+  EXPECT_FALSE(CFCast<CFNullRef>(test_data.get()));
+  EXPECT_FALSE(CFCast<CFDictionaryRef>(test_data_mutable.get()));
+  EXPECT_FALSE(CFCast<CFDictionaryRef>(test_date.get()));
+  EXPECT_FALSE(CFCast<CFNumberRef>(test_dict.get()));
+  EXPECT_FALSE(CFCast<CFDateRef>(test_dict_mutable.get()));
+  EXPECT_FALSE(CFCast<CFDataRef>(test_number.get()));
   EXPECT_FALSE(CFCast<CFDataRef>(test_null));
-  EXPECT_FALSE(CFCast<CFBooleanRef>(test_set));
-  EXPECT_FALSE(CFCast<CFBagRef>(test_set_mutable));
-  EXPECT_FALSE(CFCast<CFBagRef>(test_str));
+  EXPECT_FALSE(CFCast<CFBooleanRef>(test_set.get()));
+  EXPECT_FALSE(CFCast<CFBagRef>(test_set_mutable.get()));
+  EXPECT_FALSE(CFCast<CFBagRef>(test_str.get()));
   EXPECT_FALSE(CFCast<CFArrayRef>(test_str_const));
-  EXPECT_FALSE(CFCast<CFArrayRef>(test_str_mutable));
+  EXPECT_FALSE(CFCast<CFArrayRef>(test_str_mutable.get()));
 
   // Giving a nullptr provides a nullptr.
   EXPECT_FALSE(CFCast<CFArrayRef>(nullptr));
@@ -123,24 +127,29 @@ TEST(FoundationUtilTest, CFCast) {
   EXPECT_FALSE(CFCast<CFStringRef>(nullptr));
 
   // CFCastStrict: correct cast results in correct pointer being returned.
-  EXPECT_EQ(test_array, CFCastStrict<CFArrayRef>(test_array));
-  EXPECT_EQ(test_array_mutable, CFCastStrict<CFArrayRef>(test_array_mutable));
-  EXPECT_EQ(test_bag, CFCastStrict<CFBagRef>(test_bag));
-  EXPECT_EQ(test_bag_mutable, CFCastStrict<CFBagRef>(test_bag_mutable));
+  EXPECT_EQ(test_array.get(), CFCastStrict<CFArrayRef>(test_array.get()));
+  EXPECT_EQ(test_array_mutable.get(),
+            CFCastStrict<CFArrayRef>(test_array_mutable.get()));
+  EXPECT_EQ(test_bag.get(), CFCastStrict<CFBagRef>(test_bag.get()));
+  EXPECT_EQ(test_bag_mutable.get(),
+            CFCastStrict<CFBagRef>(test_bag_mutable.get()));
   EXPECT_EQ(test_bool, CFCastStrict<CFBooleanRef>(test_bool));
-  EXPECT_EQ(test_data, CFCastStrict<CFDataRef>(test_data));
-  EXPECT_EQ(test_data_mutable, CFCastStrict<CFDataRef>(test_data_mutable));
-  EXPECT_EQ(test_date, CFCastStrict<CFDateRef>(test_date));
-  EXPECT_EQ(test_dict, CFCastStrict<CFDictionaryRef>(test_dict));
-  EXPECT_EQ(test_dict_mutable,
-            CFCastStrict<CFDictionaryRef>(test_dict_mutable));
-  EXPECT_EQ(test_number, CFCastStrict<CFNumberRef>(test_number));
+  EXPECT_EQ(test_data.get(), CFCastStrict<CFDataRef>(test_data.get()));
+  EXPECT_EQ(test_data_mutable.get(),
+            CFCastStrict<CFDataRef>(test_data_mutable.get()));
+  EXPECT_EQ(test_date.get(), CFCastStrict<CFDateRef>(test_date.get()));
+  EXPECT_EQ(test_dict.get(), CFCastStrict<CFDictionaryRef>(test_dict.get()));
+  EXPECT_EQ(test_dict_mutable.get(),
+            CFCastStrict<CFDictionaryRef>(test_dict_mutable.get()));
+  EXPECT_EQ(test_number.get(), CFCastStrict<CFNumberRef>(test_number.get()));
   EXPECT_EQ(test_null, CFCastStrict<CFNullRef>(test_null));
-  EXPECT_EQ(test_set, CFCastStrict<CFSetRef>(test_set));
-  EXPECT_EQ(test_set_mutable, CFCastStrict<CFSetRef>(test_set_mutable));
-  EXPECT_EQ(test_str, CFCastStrict<CFStringRef>(test_str));
+  EXPECT_EQ(test_set.get(), CFCastStrict<CFSetRef>(test_set.get()));
+  EXPECT_EQ(test_set_mutable.get(),
+            CFCastStrict<CFSetRef>(test_set_mutable.get()));
+  EXPECT_EQ(test_str.get(), CFCastStrict<CFStringRef>(test_str.get()));
   EXPECT_EQ(test_str_const, CFCastStrict<CFStringRef>(test_str_const));
-  EXPECT_EQ(test_str_mutable, CFCastStrict<CFStringRef>(test_str_mutable));
+  EXPECT_EQ(test_str_mutable.get(),
+            CFCastStrict<CFStringRef>(test_str_mutable.get()));
 
   // CFCastStrict: Giving a nullptr provides a nullptr.
   EXPECT_FALSE(CFCastStrict<CFArrayRef>(nullptr));
@@ -270,7 +279,7 @@ TEST(FoundationUtilTest, GetValueFromDictionary) {
       CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &three));
 
   CFStringRef keys[] = {CFSTR("one"), CFSTR("two"), CFSTR("three")};
-  CFNumberRef values[] = {cf_one, cf_two, cf_three};
+  CFNumberRef values[] = {cf_one.get(), cf_two.get(), cf_three.get()};
 
   static_assert(std::size(keys) == std::size(values),
                 "keys and values arrays must have the same size");
@@ -283,15 +292,17 @@ TEST(FoundationUtilTest, GetValueFromDictionary) {
   // GetValueFromDictionary<>(_, _) should produce the correct
   // expected output.
   EXPECT_EQ(values[0],
-            GetValueFromDictionary<CFNumberRef>(test_dict, CFSTR("one")));
+            GetValueFromDictionary<CFNumberRef>(test_dict.get(), CFSTR("one")));
   EXPECT_EQ(values[1],
-            GetValueFromDictionary<CFNumberRef>(test_dict, CFSTR("two")));
-  EXPECT_EQ(values[2],
-            GetValueFromDictionary<CFNumberRef>(test_dict, CFSTR("three")));
+            GetValueFromDictionary<CFNumberRef>(test_dict.get(), CFSTR("two")));
+  EXPECT_EQ(values[2], GetValueFromDictionary<CFNumberRef>(test_dict.get(),
+                                                           CFSTR("three")));
 
   // Bad input should produce bad output.
-  EXPECT_FALSE(GetValueFromDictionary<CFNumberRef>(test_dict, CFSTR("four")));
-  EXPECT_FALSE(GetValueFromDictionary<CFStringRef>(test_dict, CFSTR("one")));
+  EXPECT_FALSE(
+      GetValueFromDictionary<CFNumberRef>(test_dict.get(), CFSTR("four")));
+  EXPECT_FALSE(
+      GetValueFromDictionary<CFStringRef>(test_dict.get(), CFSTR("one")));
 }
 
 TEST(FoundationUtilTest, FilePathToNSURL) {
@@ -314,7 +325,7 @@ TEST(FoundationUtilTest, NSStringToFilePath) {
 TEST(FoundationUtilTest, FilePathToCFURL) {
   ScopedCFTypeRef<CFURLRef> url(CFURLCreateWithFileSystemPath(
       nullptr, CFSTR("/a/b"), kCFURLPOSIXPathStyle, false));
-  EXPECT_TRUE(CFEqual(url.get(), FilePathToCFURL(FilePath("/a/b"))));
+  EXPECT_TRUE(CFEqual(url.get(), FilePathToCFURL(FilePath("/a/b")).get()));
 }
 
 TEST(FoundationUtilTest, CFRangeToNSRange) {
