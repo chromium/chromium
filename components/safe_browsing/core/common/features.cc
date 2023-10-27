@@ -49,10 +49,6 @@ BASE_FEATURE(kClientSideDetectionTypeForceRequest,
              "ClientSideDetectionTypeForceRequest",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDeepScanningUpdatedUX,
-             "SafeBrowsingDeepScanningUpdatedUX",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDeepScanningEncryptedArchives,
              "SafeBrowsingDeepScanningEncryptedArchives",
              base::FEATURE_DISABLED_BY_DEFAULT);

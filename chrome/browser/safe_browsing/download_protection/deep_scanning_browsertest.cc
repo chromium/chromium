@@ -186,7 +186,6 @@ class DownloadDeepScanningBrowserTestBase
 
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(kDeepScanningUpdatedUX);
     test_sb_factory_ = std::make_unique<TestSafeBrowsingServiceFactory>();
     test_sb_factory_->UseV4LocalDatabaseManager();
     SafeBrowsingService::RegisterFactory(test_sb_factory_.get());

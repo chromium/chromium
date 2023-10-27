@@ -97,7 +97,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"dangerReview", IDS_REVIEW_DOWNLOAD},
 
       // Deep scanning strings.
-      {"deepScannedSafeDesc", IDS_DEEP_SCANNED_SAFE_DESCRIPTION},
       {"deepScannedFailedDesc", IDS_DEEP_SCANNED_FAILED_DESCRIPTION},
       {"deepScannedOpenedDangerousDesc",
        IDS_DEEP_SCANNED_OPENED_DANGEROUS_DESCRIPTION},
@@ -108,6 +107,12 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"blockedTooLargeDesc", IDS_BLOCKED_TOO_LARGE_DESCRIPTION},
       {"blockedPasswordProtectedDesc",
        IDS_BLOCKED_PASSWORD_PROTECTED_DESCRIPTION},
+      {"asyncScanningDownloadDesc", IDS_BLOCK_REASON_DEEP_SCANNING_UPDATED},
+      {"asyncScanningDownloadDescSecond",
+       IDS_BLOCK_REASON_DEEP_SCANNING_SECOND_UPDATED},
+      {"promptForScanningDesc", IDS_BLOCK_REASON_PROMPT_FOR_SCANNING_UPDATED},
+      {"controlDeepScan", IDS_DOWNLOAD_DEEP_SCAN_UPDATED},
+      {"controlBypassDeepScan", IDS_DOWNLOAD_BYPASS_DEEP_SCAN_UPDATED},
 
       // Controls.
       {"controlPause", IDS_DOWNLOAD_LINK_PAUSE},
@@ -137,28 +142,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
        IDS_DOWNLOAD_UNVERIFIED_ICON_ACCESSIBLE_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
-
-  bool update_deep_scanning_ux =
-      base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX);
-  source->AddLocalizedString("asyncScanningDownloadDesc",
-                             update_deep_scanning_ux
-                                 ? IDS_BLOCK_REASON_DEEP_SCANNING_UPDATED
-                                 : IDS_BLOCK_REASON_DEEP_SCANNING);
-  source->AddLocalizedString("asyncScanningDownloadDescSecond",
-                             IDS_BLOCK_REASON_DEEP_SCANNING_SECOND_UPDATED);
-  source->AddLocalizedString("promptForScanningDesc",
-                             update_deep_scanning_ux
-                                 ? IDS_BLOCK_REASON_PROMPT_FOR_SCANNING_UPDATED
-                                 : IDS_BLOCK_REASON_PROMPT_FOR_SCANNING);
-  source->AddLocalizedString("controlDeepScan",
-                             update_deep_scanning_ux
-                                 ? IDS_DOWNLOAD_DEEP_SCAN_UPDATED
-                                 : IDS_DOWNLOAD_DEEP_SCAN);
-  source->AddLocalizedString("controlBypassDeepScan",
-                             update_deep_scanning_ux
-                                 ? IDS_DOWNLOAD_BYPASS_DEEP_SCAN_UPDATED
-                                 : IDS_DOWNLOAD_BYPASS_DEEP_SCAN);
-  source->AddBoolean("updateDeepScanningUX", update_deep_scanning_ux);
 
   // New chrome://downloads icons, colors, strings, etc. to be consistent with
   // download bubble.
@@ -210,13 +193,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
                          !profile->IsChild());
 
   source->AddLocalizedString("inIncognito", IDS_DOWNLOAD_IN_INCOGNITO);
-
-  source->AddBoolean(
-      "allowOpenNow",
-      !enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-           profile)
-           ->DelayUntilVerdict(
-               enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED));
 
   return source;
 }

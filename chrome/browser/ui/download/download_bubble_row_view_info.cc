@@ -284,19 +284,11 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
       has_progress_bar_ = true;
       is_progress_bar_looping_ = true;
-      if (base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
-        has_subpage_ = true;
-        icon_override_ = features::IsChromeRefresh2023()
-                             ? &kDownloadWarningIcon
-                             : &vector_icons::kNotSecureWarningIcon;
-        secondary_color_ = kColorDownloadItemIconWarning;
-      } else {
-        if (!download::DoesDownloadConnectorBlock(model_->profile(),
-                                                  model_->GetURL())) {
-          primary_button_command_ =
-              DownloadCommands::Command::BYPASS_DEEP_SCANNING_AND_OPEN;
-        }
-      }
+      has_subpage_ = true;
+      icon_override_ = features::IsChromeRefresh2023()
+                           ? &kDownloadWarningIcon
+                           : &vector_icons::kNotSecureWarningIcon;
+      secondary_color_ = kColorDownloadItemIconWarning;
       return;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       icon_override_ = features::IsChromeRefresh2023()

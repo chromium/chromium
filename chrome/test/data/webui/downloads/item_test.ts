@@ -393,46 +393,6 @@ suite('item tests', function() {
         assertEquals('true', iconWrapper!.ariaHidden);
       });
 
-  test('open now dropdown button allowed by load time data', async () => {
-    loadTimeData.overrideValues({
-      'allowOpenNow': true,
-      'updateDeepScanningUX': false,
-      'improvedDownloadWarningsUX': true,
-    });
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
-    item.set('data', createDownload({
-               filePath: 'unique1',
-               hideDate: false,
-               state: State.kAsyncScanning,
-             }));
-    flush();
-    item.getMoreActionsButton().click();
-    assertTrue(
-        isVisible(item.shadowRoot!.querySelector<HTMLElement>('#open-now')));
-  });
-
-  test('open now dropdown button forbidden by load time data', async () => {
-    loadTimeData.overrideValues({
-      'allowOpenNow': false,
-      'updateDeepScanningUX': false,
-      'improvedDownloadWarningsUX': true,
-    });
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
-    item.set('data', createDownload({
-               filePath: 'unique1',
-               hideDate: false,
-               state: State.kAsyncScanning,
-             }));
-    flush();
-    item.getMoreActionsButton().click();
-    assertFalse(
-        isVisible(item.shadowRoot!.querySelector<HTMLElement>('#open-now')));
-  });
-
   test('deep scan dropdown buttons shown on correct state', () => {
     loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
     const item = document.createElement('downloads-item');

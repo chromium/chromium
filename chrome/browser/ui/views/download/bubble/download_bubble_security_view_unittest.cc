@@ -518,14 +518,9 @@ TEST_F(DownloadBubbleSecurityViewTest, ProcessButtonClick) {
       security_view_->ProcessButtonClick(DownloadCommands::Command::DISCARD,
                                          /*is_secondary_button=*/false));
 
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(safe_browsing::kDeepScanningUpdatedUX);
-
     EXPECT_FALSE(
         security_view_->ProcessButtonClick(DownloadCommands::Command::DEEP_SCAN,
                                            /*is_secondary_button=*/false));
-  }
 }
 
 TEST_F(DownloadBubbleSecurityViewTest, InitializeAndReset) {

@@ -2187,10 +2187,6 @@ are declared in tools/grit/grit_rule.gni.
          desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it was insecurely delivered.">
         This file can't be downloaded securely
       </message>
-      <message name="IDS_BLOCK_REASON_DEEP_SCANNING"
-        desc="Message shown on chrome://downloads when a download is being scanned">
-        This file is being scanned.
-      </message>
       <message name="IDS_BLOCK_REASON_DEEP_SCANNING_UPDATED"
           desc="Message shown on chrome://downloads when a download is being scanned">
         This file might be a virus or malware. You can send it to Google to check if it's unsafe.
@@ -2202,10 +2198,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_BLOCK_REASON_PROMPT_FOR_SCANNING_UPDATED"
                desc="Message shown to the user on chrome://downloads page to explain that this download is recommended to be scanned.">
         This file might be a virus or malware. You can send it to Google to check if it's unsafe.
-      </message>
-      <message name="IDS_DEEP_SCANNED_SAFE_DESCRIPTION"
-        desc="Message shown to the user on chrome://downloads page to explain this this download was deep scanned, and found to be safe.">
-        Security checks are done
       </message>
       <message name="IDS_DEEP_SCANNED_OPENED_DANGEROUS_DESCRIPTION"
         desc="Message shown to the user on chrome://downloads page to explain this this download was deep scanned, and found to be malicious.">
@@ -2868,10 +2860,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="When a download is finished, let the user know.">
         Done
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE"
-               desc="When a download has finished deep scanning and the result is safe, let the user know.">
-        Done, no issues found
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE_UPDATED"
                desc="When a download has finished deep scanning and the result is safe, let the user know.">
         Scan is done
@@ -3296,10 +3284,6 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <!-- Deep scanning in download bubble -->
-      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT"
-               desc="Prompt for Deep Scanning of a download">
-        Scan before opening
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT_UPDATED"
                desc="Prompt for Deep Scanning of a download">
         Scan for malware

@@ -148,11 +148,7 @@ void ResponseToDownloadCheckResult(
   }
 
   if (dlp_scan_failure || malware_scan_failure) {
-    if (base::FeatureList::IsEnabled(kDeepScanningUpdatedUX)) {
-      *download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
-    } else {
-      *download_result = DownloadCheckResult::UNKNOWN;
-    }
+    *download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
     return;
   }
 
@@ -262,23 +258,6 @@ std::string GetTriggerName(DeepScanningRequest::DeepScanTrigger trigger) {
       return "ConsumerPrompt";
     case DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY:
       return "Policy";
-  }
-}
-
-bool ResultIsRetriable(BinaryUploadService::Result result) {
-  switch (result) {
-    case BinaryUploadService::Result::UNKNOWN:
-    case BinaryUploadService::Result::SUCCESS:
-    case BinaryUploadService::Result::UNAUTHORIZED:
-    case BinaryUploadService::Result::FILE_TOO_LARGE:
-    case BinaryUploadService::Result::FILE_ENCRYPTED:
-    case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
-      return false;
-    case BinaryUploadService::Result::UPLOAD_FAILURE:
-    case BinaryUploadService::Result::TIMEOUT:
-    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
-      return true;
   }
 }
 
@@ -625,21 +604,7 @@ void DeepScanningRequest::OnConsumerScanComplete(
     request_tokens_.push_back(response.request_token());
     ResponseToDownloadCheckResult(response, &download_result);
     LogDeepScanEvent(item_, DeepScanEvent::kScanCompleted);
-  } else if (!base::FeatureList::IsEnabled(kDeepScanningUpdatedUX) &&
-             ResultIsRetriable(result) &&
-             MaybeShowDeepScanFailureModalDialog(
-                 base::BindOnce(&DeepScanningRequest::Start,
-                                weak_ptr_factory_.GetWeakPtr()),
-                 base::BindOnce(&DeepScanningRequest::FinishRequest,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                DownloadCheckResult::UNKNOWN),
-                 base::BindOnce(&DeepScanningRequest::FinishRequest,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                DownloadCheckResult::UNKNOWN),
-                 base::BindOnce(&DeepScanningRequest::OpenDownload,
-                                weak_ptr_factory_.GetWeakPtr()))) {
-    return;
-  } else if (base::FeatureList::IsEnabled(kDeepScanningUpdatedUX)) {
+  } else {
     download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
     LogDeepScanEvent(item_, DeepScanEvent::kScanFailed);
 

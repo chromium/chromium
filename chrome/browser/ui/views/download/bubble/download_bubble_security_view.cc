@@ -327,9 +327,8 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
   }
 
   // TODO(chlily): Implement deep_scanning_link_ as a learn_more_link_.
-  if (danger_type_ == download::DownloadDangerType::
-                          DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING &&
-      base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
+  if (danger_type_ ==
+      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
     std::u16string link_text = l10n_util::GetStringUTF16(
         IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK);
     deep_scanning_link_->SetText(link_text);
@@ -932,7 +931,7 @@ bool DownloadBubbleSecurityView::ProcessDeepScanClick() {
 
   delegate_->ProcessDeepScanPress(content_id_, password);
   bubble_delegate_->SizeToContents();
-  return !base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX);
+  return false;
 }
 
 BEGIN_METADATA(DownloadBubbleSecurityView, views::View)

@@ -312,13 +312,13 @@
       aria-hidden="[[computeIconAriaHidden_(iconAriaLabel_)]]">
     <img class="icon" id="file-icon" alt="" hidden="[[!useFileIcon_]]"
         icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
-        useFileIcon_, updateDeepScanningUx_, improvedDownloadWarningsUx_,
+        useFileIcon_, improvedDownloadWarningsUx_,
         displayType_)]]">
     <iron-icon class="icon" hidden="[[useFileIcon_]]"
         icon$="[[computeIcon_(isDangerous_, data.dangerType, useFileIcon_,
-            updateDeepScanningUx_, improvedDownloadWarningsUx_, displayType_)]]"
+            improvedDownloadWarningsUx_, displayType_)]]"
         icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
-            useFileIcon_, updateDeepScanningUx_, improvedDownloadWarningsUx_,
+            useFileIcon_, improvedDownloadWarningsUx_,
             displayType_)]]"></iron-icon>
   </div>
 
@@ -346,28 +346,26 @@
         description-color$="[[iconAndDescriptionColor_(displayType_,
             improvedDownloadWarningsUx_)]]"
         hidden$="[[!computeDescriptionVisible_(data.*, displayType_,
-            updateDeepScanningUx_, improvedDownloadWarningsUx_)]]">
+            improvedDownloadWarningsUx_)]]">
       [[computeDescription_(
           data.state,
           data.dangerType,
           data.fileName,
           data.progressStatusText,
           displayType_,
-          updateDeepScanningUx_,
           improvedDownloadWarningsUx_)]]
     </div>
 
     <div class="description" role="gridcell"
-        hidden="[[!computeSecondLineVisible_(data.state,
-        updateDeepScanningUx_)]]">
+        hidden="[[!computeSecondLineVisible_(data.state)]]">
       $i18n{asyncScanningDownloadDescSecond}
     </div>
 
     <template is="dom-if" if="[[showProgress_]]">
       <div role="gridcell">
         <paper-progress id="progress"
-            indeterminate="[[isIndeterminate_(data.percent,
-            updateDeepScanningUx_)]]" value="[[data.percent]]">
+            indeterminate="[[isIndeterminate_(data.percent)]]"
+            value="[[data.percent]]">
         </paper-progress>
       </div>
     </template>
@@ -396,14 +394,6 @@
             <cr-button on-click="onPauseOrResumeClick_" id="pauseOrResume"
                 focus-row-control focus-type="pauseOrResume">
               [[pauseOrResumeText_]]
-            </cr-button>
-          </span>
-        </template>
-        <template is="dom-if" if="[[showOpenNow_]]" restamp>
-          <span role="gridcell">
-            <cr-button on-click="onOpenNowClick_" id="openNow"
-                class="action-button" focus-row-control focus-type="open">
-              $i18n{controlOpenNow}
             </cr-button>
           </span>
         </template>
@@ -558,10 +548,6 @@
         <button class="dropdown-item" on-click="onRetryClick_"
             hidden="[[!data.retry]]" id="retry">
           $i18n{controlRetry}
-        </button>
-        <button class="dropdown-item" on-click="onOpenNowClick_"
-            hidden="[[!showOpenNow_]]" id="open-now">
-          $i18n{controlOpenNow}
         </button>
         <button class="dropdown-item" on-click="onDeepScanClick_"
             hidden="[[!showDeepScan_]]" id="deep-scan">
