@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/print_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,6 +54,10 @@ class FakePrintServersProvider : public PrintServersProvider {
     return print_servers_;
   }
 
+  base::WeakPtr<PrintServersProvider> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   void SetPrintServers(absl::optional<std::vector<PrintServer>> print_servers) {
     print_servers_ = print_servers;
     if (observer_) {
@@ -64,6 +69,7 @@ class FakePrintServersProvider : public PrintServersProvider {
  private:
   absl::optional<std::vector<PrintServer>> print_servers_;
   raw_ptr<PrintServersProvider::Observer> observer_ = nullptr;
+  base::WeakPtrFactory<FakePrintServersProvider> weak_ptr_factory_{this};
 };
 
 TEST(PrintServersPolicyProvider, UserAndDevicePrintServersAreProvided) {

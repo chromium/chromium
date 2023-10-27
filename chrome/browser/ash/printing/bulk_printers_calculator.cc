@@ -333,6 +333,10 @@ class BulkPrintersCalculatorImpl : public BulkPrintersCalculator {
     return printers_;
   }
 
+  base::WeakPtr<BulkPrintersCalculator> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // Called on computation completion. |task_data| corresponds to finalized
   // task.
