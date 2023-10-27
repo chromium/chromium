@@ -74,9 +74,15 @@ class NET_EXPORT ProxyChain {
   // proxy chains.
   const ProxyServer& GetProxyServer(size_t chain_index) const;
 
-  // Get the ProxyServers to this chain. This must not be called on invalid
+  // Get the ProxyServers in this chain. This must not be called on invalid
   // proxy chains. An empty vector is returned for direct proxy chains.
   const std::vector<ProxyServer>& proxy_servers() const;
+
+  // Get the ProxyServers in this chain, or `nullopt` if the chain is not valid.
+  const std::optional<std::vector<ProxyServer>>& proxy_servers_if_valid()
+      const {
+    return proxy_server_list_;
+  }
 
   // Get the single ProxyServer equivalent to this chain. This must not be
   // called for multi-proxy chains.

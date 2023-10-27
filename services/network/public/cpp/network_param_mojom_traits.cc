@@ -151,6 +151,22 @@ bool StructTraits<network::mojom::ProxyServerDataView, net::ProxyServer>::Read(
   }
 }
 
+bool StructTraits<network::mojom::ProxyChainDataView, net::ProxyChain>::Read(
+    network::mojom::ProxyChainDataView data,
+    net::ProxyChain* out) {
+  absl::optional<std::vector<net::ProxyServer>> proxy_servers;
+  if (!data.ReadProxyServers(&proxy_servers)) {
+    return false;
+  }
+  if (proxy_servers.has_value()) {
+    *out = net::ProxyChain(std::move(proxy_servers).value());
+    return out->IsValid();
+  } else {
+    *out = net::ProxyChain();
+  }
+  return true;
+}
+
 // static
 bool StructTraits<network::mojom::SSLCertRequestInfoDataView,
                   scoped_refptr<net::SSLCertRequestInfo>>::
