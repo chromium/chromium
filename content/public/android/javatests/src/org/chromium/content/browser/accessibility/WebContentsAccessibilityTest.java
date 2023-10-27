@@ -113,6 +113,7 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Arrays;
@@ -123,12 +124,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Tests for WebContentsAccessibility. Actually tests WebContentsAccessibilityImpl that
- * implements the interface.
+ * Tests for WebContentsAccessibility. Actually tests WebContentsAccessibilityImpl that implements
+ * the interface.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Flaky tests")
 @SuppressLint("VisibleForTests")
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class WebContentsAccessibilityTest {
     // Test output error messages
     private static final String DISABLED_COMBOBOX_ERROR =
