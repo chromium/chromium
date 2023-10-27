@@ -28,11 +28,6 @@ bool FakeScrollbar::IsSolidColor() const {
   return is_solid_color_;
 }
 
-SkColor4f FakeScrollbar::GetSolidColor() const {
-  DCHECK(IsSolidColor());
-  return solid_color_;
-}
-
 bool FakeScrollbar::IsOverlay() const { return is_overlay_; }
 
 bool FakeScrollbar::IsFluentOverlayScrollbarMinimalMode() const {
@@ -123,6 +118,10 @@ gfx::Rect FakeScrollbar::NinePatchThumbAperture() const {
 
 bool FakeScrollbar::IsOpaque() const {
   return !is_overlay_ && is_opaque_;
+}
+
+absl::optional<SkColor4f> FakeScrollbar::ThumbColor() const {
+  return thumb_color_;
 }
 
 }  // namespace cc

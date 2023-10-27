@@ -84,10 +84,10 @@ class ScrollbarAnimationControllerOverlayTest
     scroll_layer_ = AddLayer<LayerImpl>();
     h_scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
         ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
-        kIsLeftSideVerticalScrollbar);
+        kIsLeftSideVerticalScrollbar, absl::nullopt);
     v_scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
         ScrollbarOrientation::kVertical, kThumbThickness, kTrackStart,
-        kIsLeftSideVerticalScrollbar);
+        kIsLeftSideVerticalScrollbar, absl::nullopt);
     SetElementIdsForTesting();
 
     clip_layer_ = root_layer();
@@ -1503,7 +1503,7 @@ class ScrollbarAnimationControllerAndroidTest
     scroll_layer_ = AddLayer<LayerImpl>();
     scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
         orientation(), kThumbThickness, kTrackStart,
-        kIsLeftSideVerticalScrollbar);
+        kIsLeftSideVerticalScrollbar, absl::nullopt);
     SetElementIdsForTesting();
 
     scroll_layer_->SetBounds(gfx::Size(200, 200));

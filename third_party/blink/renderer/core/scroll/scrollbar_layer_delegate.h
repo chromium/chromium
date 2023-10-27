@@ -27,12 +27,12 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
   bool IsLeftSideVerticalScrollbar() const override;
   bool HasThumb() const override;
   bool IsSolidColor() const override;
-  SkColor4f GetSolidColor() const override;
   bool IsOverlay() const override;
   bool IsFluentOverlayScrollbarMinimalMode() const override;
   bool SupportsDragSnapBack() const override;
   bool JumpOnTrackClick() const override;
   bool IsOpaque() const override;
+  absl::optional<SkColor4f> ThumbColor() const override;
 
   // The following rects are all relative to the scrollbar's origin.
   gfx::Rect ThumbRect() const override;

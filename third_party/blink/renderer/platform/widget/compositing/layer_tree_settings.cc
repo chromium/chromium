@@ -537,7 +537,10 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
         &settings.initial_debug_state.slow_down_raster_scale_factor);
   }
 
+  // This is default overlay scrollbar settings for Android and DevTools mobile
+  // emulator. Aura Overlay Scrollbar will override below.
   settings.scrollbar_animator = cc::LayerTreeSettings::ANDROID_OVERLAY;
+  settings.solid_color_scrollbar_color = {0.5f, 0.5f, 0.5f, 0.5f};
 
   InitializeScrollbarFadeAndDelay(settings);
 
@@ -571,7 +574,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     // hide_scrollbars setting because supporting -webkit custom scrollbars is
     // still desired on sublayers.
     settings.scrollbar_animator = cc::LayerTreeSettings::NO_ANIMATOR;
-    // Rendering of scrollbars will be disabled in cc::SolidColorScrollbarLayer.
+    settings.solid_color_scrollbar_color = SkColors::kTransparent;
 
     // Early damage check works in combination with synchronous compositor.
     settings.enable_early_damage_check =

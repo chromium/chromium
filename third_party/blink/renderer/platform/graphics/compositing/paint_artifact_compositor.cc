@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "cc/base/features.h"
-#include "cc/layers/solid_color_scrollbar_layer.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/trees/effect_node.h"
@@ -1316,25 +1315,7 @@ bool PaintArtifactCompositor::SetScrollbarNeedsDisplay(
       return true;
     }
   }
-  // The scrollbar isn't currently composited.
-  return false;
-}
-
-bool PaintArtifactCompositor::SetScrollbarSolidColor(
-    CompositorElementId element_id,
-    SkColor4f color) {
-  for (auto& pending_layer : pending_layers_) {
-    if (pending_layer.GetCompositingType() == PendingLayer::kScrollbarLayer &&
-        pending_layer.CcLayer().element_id() == element_id &&
-        static_cast<cc::ScrollbarLayerBase&>(pending_layer.CcLayer())
-                .GetScrollbarLayerType() ==
-            cc::ScrollbarLayerBase::kSolidColor) {
-      static_cast<cc::SolidColorScrollbarLayer&>(pending_layer.CcLayer())
-          .SetColor(color);
-      return true;
-    }
-  }
-  // The scrollbar isn't currently composited.
+  // The scrollbar isn't correctly composited.
   return false;
 }
 

@@ -66,11 +66,6 @@ bool ScrollbarLayerDelegate::IsSolidColor() const {
   return scrollbar_->GetTheme().IsSolidColor();
 }
 
-SkColor4f ScrollbarLayerDelegate::GetSolidColor() const {
-  return scrollbar_->GetTheme().GetSolidColor(
-      scrollbar_->ScrollbarThumbColor());
-}
-
 bool ScrollbarLayerDelegate::IsOverlay() const {
   return scrollbar_->IsOverlayScrollbar();
 }
@@ -107,6 +102,15 @@ bool ScrollbarLayerDelegate::JumpOnTrackClick() const {
 
 bool ScrollbarLayerDelegate::IsOpaque() const {
   return scrollbar_->IsOpaque();
+}
+
+absl::optional<SkColor4f> ScrollbarLayerDelegate::ThumbColor() const {
+  absl::optional<blink::Color> thumb_color = scrollbar_->ScrollbarThumbColor();
+  if (thumb_color.has_value()) {
+    return thumb_color.value().toSkColor4f();
+  }
+
+  return absl::nullopt;
 }
 
 gfx::Rect ScrollbarLayerDelegate::BackButtonRect() const {

@@ -936,8 +936,7 @@ _CONFIG = [
         ]
     },
     {
-        'paths': ['third_party/blink/renderer/core/frame/visual_viewport.cc',
-                  'third_party/blink/renderer/core/frame/visual_viewport.h'],
+        'paths': ['third_party/blink/renderer/core/frame/visual_viewport.cc'],
         'allowed': [
             'cc::SolidColorScrollbarLayer',
         ],

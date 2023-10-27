@@ -697,20 +697,25 @@ int VisualViewport::ScrollbarThickness() const {
 void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
   DCHECK(IsActiveViewport());
   bool is_horizontal = orientation == kHorizontalScrollbar;
-  scoped_refptr<cc::SolidColorScrollbarLayer>& scrollbar_layer =
+  scoped_refptr<cc::ScrollbarLayerBase>& scrollbar_layer =
       is_horizontal ? scrollbar_layer_horizontal_ : scrollbar_layer_vertical_;
   if (!scrollbar_layer) {
     auto& theme = ScrollbarThemeOverlayMobile::GetInstance();
     float scale = ScaleFromDIP();
     int thumb_thickness = theme.ThumbThickness(scale, CSSScrollbarWidth());
     int scrollbar_margin = theme.ScrollbarMargin(scale, CSSScrollbarWidth());
+    absl::optional<blink::Color> css_thumb_color = CSSScrollbarThumbColor();
+    absl::optional<SkColor4f> thumb_color = absl::nullopt;
+    if (css_thumb_color.has_value()) {
+      thumb_color = css_thumb_color.value().toSkColor4f();
+    }
     cc::ScrollbarOrientation cc_orientation =
         orientation == kHorizontalScrollbar
             ? cc::ScrollbarOrientation::kHorizontal
             : cc::ScrollbarOrientation::kVertical;
     scrollbar_layer = cc::SolidColorScrollbarLayer::Create(
         cc_orientation, thumb_thickness, scrollbar_margin,
-        /*is_left_side_vertical_scrollbar*/ false);
+        /*is_left_side_vertical_scrollbar*/ false, thumb_color);
     scrollbar_layer->SetElementId(GetScrollbarElementId(orientation));
     scrollbar_layer->SetScrollElementId(scroll_layer_->element_id());
     scrollbar_layer->SetIsDrawable(true);
@@ -722,8 +727,6 @@ void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
                       ScrollbarThickness())
           : gfx::Size(ScrollbarThickness(),
                       size_.height() - ScrollbarThickness()));
-
-  UpdateScrollbarColor(*scrollbar_layer);
 }
 
 bool VisualViewport::VisualViewportSuppliesScrollbars() const {
@@ -1213,16 +1216,7 @@ void VisualViewport::UsedColorSchemeChanged() {
 
 void VisualViewport::ScrollbarColorChanged() {
   DCHECK(IsActiveViewport());
-  if (scrollbar_layer_horizontal_) {
-    DCHECK(scrollbar_layer_vertical_);
-    UpdateScrollbarColor(*scrollbar_layer_horizontal_);
-    UpdateScrollbarColor(*scrollbar_layer_vertical_);
-  }
-}
-
-void VisualViewport::UpdateScrollbarColor(cc::SolidColorScrollbarLayer& layer) {
-  auto& theme = ScrollbarThemeOverlayMobile::GetInstance();
-  layer.SetColor(theme.GetSolidColor(CSSScrollbarThumbColor()));
+  InitializeScrollbars();
 }
 
 }  // namespace blink

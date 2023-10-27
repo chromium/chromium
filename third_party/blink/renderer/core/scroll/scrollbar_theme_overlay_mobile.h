@@ -21,8 +21,6 @@ class CORE_EXPORT ScrollbarThemeOverlayMobile : public ScrollbarThemeOverlay {
                   const gfx::Rect&) override;
   bool AllowsHitTest() const override { return false; }
   bool IsSolidColor() const override { return true; }
-  SkColor4f GetSolidColor(
-      const absl::optional<Color>& thumb_color) const override;
   bool UsesNinePatchThumbResource() const override { return false; }
 
  protected:
@@ -34,7 +32,7 @@ class CORE_EXPORT ScrollbarThemeOverlayMobile : public ScrollbarThemeOverlay {
   }
 
  private:
-  Color default_color_;
+  Color color_;
 };
 
 }  // namespace blink
