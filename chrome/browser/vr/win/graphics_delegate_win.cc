@@ -11,30 +11,28 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/ipc/client/gpu_channel_host.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
 namespace vr {
 
 GraphicsDelegateWin::GraphicsDelegateWin() {
   gpu::GpuChannelEstablishFactory* factory =
       content::GetGpuChannelEstablishFactory();
-  scoped_refptr<gpu::GpuChannelHost> host = factory->EstablishGpuChannelSync();
+  gpu_channel_host_ = factory->EstablishGpuChannelSync();
 
   gpu::ContextCreationAttribs attributes;
   attributes.bind_generates_resource = false;
 
   context_provider_ = base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-      host, content::kGpuStreamIdDefault, content::kGpuStreamPriorityUI,
-      gpu::kNullSurfaceHandle, GURL(std::string("chrome://gpu/VrUiWin")),
-      false /* automatic flushes */, false /* support locking */,
-      false /* support grcontext */,
+      gpu_channel_host_, content::kGpuStreamIdDefault,
+      content::kGpuStreamPriorityUI, gpu::kNullSurfaceHandle,
+      GURL(std::string("chrome://gpu/VrUiWin")), false /* automatic flushes */,
+      false /* support locking */, false /* support grcontext */,
       gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
       viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
-  gpu_memory_buffer_manager_ = factory->GetGpuMemoryBufferManager();
 
   if (context_provider_->BindToCurrentSequence() ==
       gpu::ContextResult::kSuccess) {
@@ -117,10 +115,11 @@ void GraphicsDelegateWin::PostRender() {
 }
 
 mojo::PlatformHandle GraphicsDelegateWin::GetTexture() {
-  if (!gpu_memory_buffer_)
+  if (buffer_handle_.is_null()) {
     return {};
+  }
 
-  gfx::GpuMemoryBufferHandle gpu_handle = gpu_memory_buffer_->CloneHandle();
+  gfx::GpuMemoryBufferHandle gpu_handle = buffer_handle_.Clone();
   return mojo::PlatformHandle(std::move(gpu_handle.dxgi_handle));
 }
 
@@ -130,12 +129,8 @@ const gpu::SyncToken& GraphicsDelegateWin::GetSyncToken() {
 
 bool GraphicsDelegateWin::EnsureMemoryBuffer() {
   gfx::Size buffer_size = GetTextureSize();
-  if (gpu_memory_buffer_ && last_size_ == buffer_size) {
+  if (!buffer_handle_.is_null() && last_size_ == buffer_size) {
     return true;
-  }
-
-  if (!gpu_memory_buffer_manager_) {
-    return false;
   }
 
   if (!mailbox_.IsZero()) {
@@ -145,10 +140,15 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer() {
   }
 
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
-  gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-      buffer_size, SinglePlaneSharedImageFormatToBufferFormat(format),
-      gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle, nullptr);
-  if (!gpu_memory_buffer_) {
+
+  {
+    mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow_sync_call;
+
+    gpu_channel_host_->CreateGpuMemoryBuffer(
+        buffer_size, format, gfx::BufferUsage::SCANOUT, &buffer_handle_);
+  }
+
+  if (buffer_handle_.is_null()) {
     return false;
   }
 
@@ -159,7 +159,7 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer() {
       kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2 |
           gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
-      "VRGraphicsDelegate", gpu_memory_buffer_->CloneHandle());
+      "VRGraphicsDelegate", buffer_handle_.Clone());
 
   gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   return true;
@@ -167,7 +167,7 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer() {
 
 void GraphicsDelegateWin::ResetMemoryBuffer() {
   // Stop using a memory buffer if we had an error submitting with it.
-  gpu_memory_buffer_ = nullptr;
+  buffer_handle_ = gfx::GpuMemoryBufferHandle();
 }
 
 void GraphicsDelegateWin::ClearBufferToBlack() {

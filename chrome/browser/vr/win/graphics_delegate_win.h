@@ -10,6 +10,7 @@
 #include "chrome/browser/vr/graphics_delegate.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/gfx/geometry/size.h"
@@ -43,6 +44,7 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   bool EnsureMemoryBuffer();
   void ClearBufferToBlack() override;
 
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_;
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
   raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
   raw_ptr<gpu::SharedImageInterface> sii_ = nullptr;
@@ -50,9 +52,8 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   gpu::Mailbox mailbox_;  // Corresponding to our target GpuMemoryBuffer.
   GLuint dest_texture_id_ = 0;
   GLuint draw_frame_buffer_ = 0;
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
-  raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_ = nullptr;
-  // Sync point after access to |gpu_memory_buffer_| is done.
+  gfx::GpuMemoryBufferHandle buffer_handle_;
+  // Sync point after access to the buffer is done.
   gpu::SyncToken access_done_sync_token_;
 };
 
