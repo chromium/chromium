@@ -660,7 +660,8 @@ class FakeDownloadProtectionService
 
   void CheckClientDownload(
       DownloadItem* download_item,
-      safe_browsing::CheckDownloadRepeatingCallback callback) override {
+      safe_browsing::CheckDownloadRepeatingCallback callback,
+      base::optional_ref<const std::string> password) override {
     DownloadProtectionService::SetDownloadProtectionData(
         download_item, "token", safe_browsing::ClientDownloadResponse::UNCOMMON,
         safe_browsing::ClientDownloadResponse::TailoredVerdict());

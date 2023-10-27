@@ -396,6 +396,7 @@ static_library("safe_browsing") {
         "//extensions/browser",
         "//net",
         "//services/network/public/cpp:cpp",
+        "//third_party/abseil-cpp:absl",
       ]
       if (is_mac) {
         deps += [ "//chrome/common/safe_browsing:disk_image_type_sniffer_mac" ]

@@ -1907,7 +1907,8 @@ class TestDownloadProtectionService
 
   void CheckClientDownload(
       DownloadItem* download_item,
-      safe_browsing::CheckDownloadRepeatingCallback callback) override {
+      safe_browsing::CheckDownloadRepeatingCallback callback,
+      base::optional_ref<const std::string> password) override {
     std::move(callback).Run(MockCheckClientDownload());
   }
   MOCK_METHOD0(MockCheckClientDownload, safe_browsing::DownloadCheckResult());

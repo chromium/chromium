@@ -39,7 +39,8 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
       CheckDownloadRepeatingCallback callback,
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor);
+      scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
+      base::optional_ref<const std::string> password = absl::nullopt);
 
   CheckClientDownloadRequest(const CheckClientDownloadRequest&) = delete;
   CheckClientDownloadRequest& operator=(const CheckClientDownloadRequest&) =
@@ -98,6 +99,7 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
   // The DownloadItem we are checking. Will be NULL if the request has been
   // canceled. Must be accessed only on UI thread.
   raw_ptr<download::DownloadItem> item_;
+  absl::optional<std::string> password_;
   CheckDownloadRepeatingCallback callback_;
 
   // Upload start time used for UMA duration histograms.

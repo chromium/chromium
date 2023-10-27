@@ -89,8 +89,10 @@ class DownloadProtectionService {
   // method must be called on the UI thread, and the callback will also be
   // invoked on the UI thread.  This method must be called once the download
   // is finished and written to disk.
-  virtual void CheckClientDownload(download::DownloadItem* item,
-                                   CheckDownloadRepeatingCallback callback);
+  virtual void CheckClientDownload(
+      download::DownloadItem* item,
+      CheckDownloadRepeatingCallback callback,
+      base::optional_ref<const std::string> password = absl::nullopt);
 
   // Checks the user permissions, then calls |CheckClientDownload| if
   // appropriate. Returns whether we began scanning.
@@ -224,8 +226,11 @@ class DownloadProtectionService {
       enterprise_connectors::AnalysisSettings analysis_settings,
       base::optional_ref<const std::string> password);
 
-  // Helper function for consumer deep scans.
+  // Helper functions for encrypted archive scans.
   static void UploadForConsumerDeepScanning(
+      download::DownloadItem* item,
+      base::optional_ref<const std::string> password);
+  static void CheckDownloadWithLocalDecryption(
       download::DownloadItem* item,
       base::optional_ref<const std::string> password);
 

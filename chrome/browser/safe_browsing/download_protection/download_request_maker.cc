@@ -55,9 +55,15 @@ DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
 }
 
 void SetDownloadItemWarningData(download::DownloadItem* item,
+                                const absl::optional<std::string>& password,
                                 const FileAnalyzer::Results& results) {
   DownloadItemWarningData::SetIsEncryptedArchive(
       item, results.encryption_info.is_encrypted);
+  if (password.has_value()) {
+    DownloadItemWarningData::SetHasIncorrectPassword(
+        item, results.encryption_info.password_status ==
+                  EncryptionInfo::kKnownIncorrect);
+  }
 }
 
 }  // namespace
@@ -66,7 +72,8 @@ void SetDownloadItemWarningData(download::DownloadItem* item,
 std::unique_ptr<DownloadRequestMaker>
 DownloadRequestMaker::CreateFromDownloadItem(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
-    download::DownloadItem* item) {
+    download::DownloadItem* item,
+    base::optional_ref<const std::string> password) {
   std::vector<ClientDownloadRequest::Resource> resources;
   for (size_t i = 0; i < item->GetUrlChain().size(); ++i) {
     ClientDownloadRequest::Resource resource;
@@ -98,10 +105,12 @@ DownloadRequestMaker::CreateFromDownloadItem(
       item->HasUserGesture(),
       static_cast<ReferrerChainData*>(
           item->GetUserData(ReferrerChainData::kDownloadReferrerChainDataKey)),
+      password, DownloadProtectionService::GetDownloadPingToken(item),
       // It's safe to use a raw pointer to `item` here because this class is
       // owned by the CheckClientDownloadRequest, which observes for `item`
       // being destroyed, and deletes this if it is.
-      base::BindOnce(&SetDownloadItemWarningData, item));
+      base::BindOnce(&SetDownloadItemWarningData, item,
+                     password.CopyAsOptional()));
 }
 
 // static
@@ -127,7 +136,8 @@ DownloadRequestMaker::CreateFromFileSystemAccess(
       item.full_path, GetFileSystemAccessDownloadUrl(item.frame_url),
       item.sha256_hash, item.size,
       std::vector<ClientDownloadRequest::Resource>{resource},
-      item.has_user_gesture, referrer_chain_data.get(), base::DoNothing());
+      item.has_user_gesture, referrer_chain_data.get(), absl::nullopt,
+      /*previous_token=*/"", base::DoNothing());
 }
 
 DownloadRequestMaker::DownloadRequestMaker(
@@ -142,6 +152,8 @@ DownloadRequestMaker::DownloadRequestMaker(
     const std::vector<ClientDownloadRequest::Resource>& resources,
     bool is_user_initiated,
     ReferrerChainData* referrer_chain_data,
+    base::optional_ref<const std::string> password,
+    const std::string& previous_token,
     base::OnceCallback<void(const FileAnalyzer::Results&)> on_results_callback)
     : browser_context_(browser_context),
       request_(std::make_unique<ClientDownloadRequest>()),
@@ -149,6 +161,7 @@ DownloadRequestMaker::DownloadRequestMaker(
       tab_urls_(tab_urls),
       target_file_path_(target_file_path),
       full_path_(full_path),
+      password_(password.CopyAsOptional()),
       on_results_callback_(std::move(on_results_callback)) {
   request_->set_url(ShortURLForReporting(source_url));
   request_->mutable_digests()->set_sha256(sha256_hash);
@@ -192,7 +205,7 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
   PopulateTailoredInfo();
 
   file_analyzer_->Start(
-      target_file_path_, full_path_,
+      target_file_path_, full_path_, password_,
       base::BindOnce(&DownloadRequestMaker::OnFileFeatureExtractionDone,
                      weakptr_factory_.GetWeakPtr()));
 }

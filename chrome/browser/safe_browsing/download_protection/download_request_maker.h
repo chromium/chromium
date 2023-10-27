@@ -15,6 +15,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/file_system_access_write_item.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -35,7 +36,8 @@ class DownloadRequestMaker {
 
   static std::unique_ptr<DownloadRequestMaker> CreateFromDownloadItem(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
-      download::DownloadItem* item);
+      download::DownloadItem* item,
+      base::optional_ref<const std::string> password = absl::nullopt);
 
   static std::unique_ptr<DownloadRequestMaker> CreateFromFileSystemAccess(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
@@ -54,6 +56,9 @@ class DownloadRequestMaker {
       const std::vector<ClientDownloadRequest::Resource>& resources,
       bool is_user_initiated,
       ReferrerChainData* referrer_chain_data,
+      base::optional_ref<const std::string> password,
+      // TODO(crbug/1491184): Put `previous_token` in the download ping.
+      const std::string& previous_token,
       base::OnceCallback<void(const FileAnalyzer::Results&)>
           on_results_callback);
 
@@ -95,6 +100,8 @@ class DownloadRequestMaker {
 
   // The current path to the file contents.
   const base::FilePath full_path_;
+
+  const absl::optional<std::string> password_;
 
   // Callback used for handling behavior specific to download items of file
   // system accesses.
