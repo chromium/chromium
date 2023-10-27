@@ -45,7 +45,7 @@ void NoStatePrefetchHandle::OnCancel() {
 bool NoStatePrefetchHandle::IsPrefetching() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return prefetch_data_.get() != nullptr &&
-         !prefetch_data_->contents()->prerendering_has_been_cancelled();
+         !prefetch_data_->contents()->prefetching_has_been_cancelled();
 }
 
 bool NoStatePrefetchHandle::IsFinishedLoading() const {

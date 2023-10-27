@@ -41,7 +41,7 @@ void FakeNoStatePrefetchContents::StartPrerendering(
     content::SessionStorageNamespace* session_storage_namespace,
     base::WeakPtr<content::PreloadingAttempt> preloading_attempt) {
   load_start_time_ = test_no_state_prefetch_manager_->GetCurrentTimeTicks();
-  prerendering_has_started_ = true;
+  prefetching_has_started_ = true;
   test_no_state_prefetch_manager_->FakeNoStatePrefetchContentsStarted(
       -1, route_id_, this);
   NotifyPrefetchStart();
