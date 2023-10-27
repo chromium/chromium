@@ -115,7 +115,12 @@ autofill::AutofillProfile CreateNewAutofillProfile(
     // filtering.
     source = autofill::AutofillProfile::Source::kLocalOrSyncable;
   }
-  return autofill::AutofillProfile(source);
+
+  AddressCountryCode address_country_code =
+      country_code.has_value()
+          ? AddressCountryCode(std::string(*country_code))
+          : autofill::i18n_model_definition::kLegacyHierarchyCountryCode;
+  return autofill::AutofillProfile(source, address_country_code);
 }
 
 }  // namespace
