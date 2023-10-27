@@ -6786,4 +6786,178 @@ TEST_F(StyleEngineTest, UseCountCSSAnchorPositioning) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAnchorPositioning));
 }
 
+TEST_F(StyleEngineTest, UseCountCSSDeclarationAfterNestedRule) {
+  //
+  // The use-counter should not trigger for the following cases:
+  //
+
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    </style>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+      }
+    </style>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+        & {
+          top: 10px;
+        }
+      }
+    </style>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+
+  // Relative selector.
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+        > .a {
+          top: 10px;
+        }
+      }
+    </style>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+
+  // Relaxed nesting.
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+        div {
+          top: 10px;
+        }
+      }
+    </style>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+
+  // Nested group rule.
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+        @media (width) {
+          top: 10px;
+        }
+      }
+    </style>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+
+  // Deep nesting.
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+        .a {
+          .b {
+            left: 10px;
+          }
+        }
+      }
+    </style>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+
+  //
+  // The use-counter should trigger for the following cases:
+  //
+
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+        & {
+          top: 10px;
+        }
+        background-color: red;
+      }
+    </style>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+
+  // Relative selector.
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+        > .a {
+          top: 10px;
+        }
+        background-color: red;
+      }
+    </style>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+
+  // Nested group rule.
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+        @media (width) {
+          top: 10px;
+        }
+        background-color: red;
+      }
+    </style>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+
+  // Relaxed nesting.
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+        span {
+          top: 10px;
+        }
+        background-color: red;
+      }
+    </style>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+
+  // Deep nesting.
+  ClearUseCounter(WebFeature::kCSSDeclarationAfterNestedRule);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        color: green;
+        .a {
+          .b {
+            left: 10px;
+          }
+          top: 10px;
+        }
+      }
+    </style>
+  )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+}
+
 }  // namespace blink

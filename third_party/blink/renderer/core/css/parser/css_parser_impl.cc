@@ -2188,6 +2188,10 @@ void CSSParserImpl::ConsumeDeclarationList(
             DCHECK_EQ(stream.UncheckedPeek().GetType(), kSemicolonToken);
             stream.UncheckedConsume();  // kSemicolonToken
           }
+          if (child_rules && !child_rules->empty()) {
+            // https://github.com/w3c/csswg-drafts/issues/8738
+            context_->Count(WebFeature::kCSSDeclarationAfterNestedRule);
+          }
           break;
         } else if (!RuntimeEnabledFeatures::CSSNestingIdentEnabled() ||
                    stream.UncheckedPeek().GetType() == kSemicolonToken) {
