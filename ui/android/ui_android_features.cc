@@ -5,6 +5,9 @@
 #include "ui/android/ui_android_features.h"
 
 namespace ui {
+
+BASE_FEATURE(kAndroidHDR, "AndroidHDR", base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kConvertTrackpadEventsToMouse,
              "ConvertTrackpadEventsToMouse",
              base::FEATURE_DISABLED_BY_DEFAULT);
