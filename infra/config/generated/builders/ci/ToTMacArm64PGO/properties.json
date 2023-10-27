@@ -1,0 +1,16 @@
+{
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.clang",
+  "perf_dashboard_machine_group": "ChromiumClang",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium.clang"
+  ],
+  "xcode_build_version": "14c18"
+}

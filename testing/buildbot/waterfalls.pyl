@@ -1995,6 +1995,22 @@
           'chromium_builder_asan',
         ],
       },
+      'ToTMacArm64': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'mac_x64',
+        ],
+      },
+      'ToTMacArm64PGO': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'mac_x64',
+        ],
+      },
       # Used on an internal builder.
       'ToTMacOfficial': {
         'mixins': [
@@ -2009,6 +2025,17 @@
         'additional_compile_targets': [
           'all',
         ],
+      },
+      'ToTMacPGO': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'mac_x64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'clang_tot_gtests',
+        },
       },
       'ToTWin': {
         'mixins': [

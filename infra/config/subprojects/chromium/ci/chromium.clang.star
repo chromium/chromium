@@ -85,6 +85,7 @@ def clang_mac_builder(*, name, cores = 12, **kwargs):
             "xcode_build_version": "14c18",
         },
         contact_team_email = "lexan@google.com",
+        description_html = "Builder that builds ToT Clang and uses it to build Chromium",
         **kwargs
     )
 
@@ -1093,6 +1094,30 @@ clang_mac_builder(
         short_name = "asn",
     ),
     execution_timeout = 20 * time.hour,
+)
+
+clang_mac_builder(
+    name = "ToTMacPGO",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT Mac",
+        short_name = "pgo",
+    ),
+)
+
+clang_mac_builder(
+    name = "ToTMacArm64PGO",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT Mac",
+        short_name = "pgo-arm",
+    ),
+)
+
+clang_mac_builder(
+    name = "ToTMacArm64",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT Mac",
+        short_name = "arm",
+    ),
 )
 
 clang_mac_builder(

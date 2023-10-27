@@ -286,8 +286,11 @@
       'ToTMac': 'clang_tot_minimal_symbols_shared_release',
       'ToTMac (dbg)': 'clang_tot_shared_debug',
       'ToTMacASan': 'asan_disable_nacl_clang_tot_minimal_symbols_static_release',
+      'ToTMacArm64': 'clang_tot_minimal_symbols_release_arm64',
+      'ToTMacArm64PGO': 'clang_tot_official_pgo_arm64',
       'ToTMacCoverage': 'clang_tot_coverage_minimal_symbols_release',
       'ToTMacOfficial': 'mac_clang_tot_official',
+      'ToTMacPGO': 'clang_tot_official_pgo_x64',
       'ToTWin': 'clang_tot_minimal_symbols_static_release_x86',
       'ToTWin(dbg)': 'clang_tot_shared_debug_x86',
       'ToTWin(dll)': 'clang_tot_minimal_symbols_shared_release_x86_dcheck',
@@ -2546,6 +2549,10 @@
       'clang_tot', 'full_symbols', 'shared', 'release',
     ],
 
+    'clang_tot_minimal_symbols_release_arm64': [
+      'clang_tot', 'minimal_symbols', 'arm64', 'release',
+    ],
+
     'clang_tot_minimal_symbols_shared_release': [
       'clang_tot', 'minimal_symbols', 'shared', 'release',
     ],
@@ -2576,6 +2583,10 @@
 
     'clang_tot_official_pgo_arm64': [
       'clang_tot', 'official_optimize', 'no_symbols', 'pgo_phase_1', 'arm64',
+    ],
+
+    'clang_tot_official_pgo_x64': [
+      'clang_tot', 'official_optimize', 'no_symbols', 'pgo_phase_1', 'x64',
     ],
 
     'clang_tot_shared_debug': [

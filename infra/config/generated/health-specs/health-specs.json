@@ -573,7 +573,34 @@
           "p50_mins": 20
         }
       },
+      "ToTMacArm64": {
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
+      },
+      "ToTMacArm64PGO": {
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
+      },
       "ToTMacCoverage": {
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
+      },
+      "ToTMacPGO": {
         "build_time": {},
         "infra_fail_rate": {
           "average": 0.05

@@ -26,7 +26,10 @@ ci/ToTLinuxUBSanVptr
 ci/ToTMac
 ci/ToTMac (dbg)
 ci/ToTMacASan
+ci/ToTMacArm64
+ci/ToTMacArm64PGO
 ci/ToTMacCoverage
+ci/ToTMacPGO
 ci/ToTWin
 ci/ToTWin(dbg)
 ci/ToTWin(dll)
