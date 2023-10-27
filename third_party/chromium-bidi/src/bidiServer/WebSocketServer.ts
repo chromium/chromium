@@ -31,8 +31,7 @@ const debugRecv = debug('bidi:server:RECV ◂');
 
 export class WebSocketServer {
   /**
-   *
-   * @param bidiPort port to start ws server on.
+   * @param bidiPort Port to start ws server on.
    * @param channel
    * @param headless
    * @param verbose
@@ -157,7 +156,14 @@ export class WebSocketServer {
         }
 
         const plainCommandData = message.utf8Data;
-        debugRecv(plainCommandData);
+
+        if (debugRecv.enabled) {
+          try {
+            debugRecv(JSON.parse(plainCommandData));
+          } catch {
+            debugRecv(plainCommandData);
+          }
+        }
 
         // Try to parse the message to handle some of BiDi commands.
         let parsedCommandData: {id: number; method: string};
@@ -208,7 +214,13 @@ export class WebSocketServer {
     message: string,
     connection: websocket.connection
   ): Promise<void> {
-    debugSend(message);
+    if (debugSend.enabled) {
+      try {
+        debugSend(JSON.parse(message));
+      } catch {
+        debugSend(message);
+      }
+    }
     connection.sendUTF(message);
     return Promise.resolve();
   }
