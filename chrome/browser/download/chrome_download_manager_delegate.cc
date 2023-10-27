@@ -1340,7 +1340,9 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
           download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT ||
       item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING ||
       item->GetDangerType() ==
-          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING ||
+      item->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING) {
     download::DownloadDangerType danger_type =
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
     switch (result) {
@@ -1404,6 +1406,7 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         break;
       case safe_browsing::DownloadCheckResult::
           PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+        is_pending_scanning = true;
         danger_type =
             download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
         break;

@@ -95,12 +95,12 @@ download::DownloadDangerType ToContentDownloadDangerType(
       return download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE;
     case DownloadDangerType::DEEP_SCANNED_FAILED:
       return download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED;
+    case DownloadDangerType::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+      return download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
     case DownloadDangerType::INVALID:
       NOTREACHED();
       return download::DOWNLOAD_DANGER_TYPE_MAX;
   }
-  NOTREACHED();
-  return download::DOWNLOAD_DANGER_TYPE_MAX;
 }
 
 DownloadDangerType ToHistoryDownloadDangerType(
@@ -148,7 +148,9 @@ DownloadDangerType ToHistoryDownloadDangerType(
       return DownloadDangerType::DANGEROUS_ACCOUNT_COMRPOMISE;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return DownloadDangerType::DEEP_SCANNED_FAILED;
-    default:
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+      return DownloadDangerType::PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
+    case download::DOWNLOAD_DANGER_TYPE_MAX:
       NOTREACHED();
       return DownloadDangerType::INVALID;
   }
