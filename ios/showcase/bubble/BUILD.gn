@@ -6,19 +6,37 @@ source_set("bubble") {
   sources = [
     "sc_bubble_coordinator.h",
     "sc_bubble_coordinator.mm",
+    "sc_side_swipe_bubble_view_controller.h",
+    "sc_side_swipe_bubble_view_controller.mm",
   ]
   deps = [
+    ":constants",
+    "//base",
     "//ios/chrome/browser/ui/bubble",
+    "//ios/chrome/browser/ui/bubble/side_swipe_bubble",
+    "//ios/chrome/common/ui/util",
     "//ios/showcase/common",
   ]
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("constants") {
+  sources = [ "constants.h" ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "sc_bubble_egtest.mm" ]
+  sources = [
+    "sc_bubble_egtest.mm",
+    "sc_side_swipe_bubble_egtest.mm",
+  ]
   deps = [
+    ":constants",
+    "//base/test:test_support",
+    "//ios/chrome/browser/ui/bubble/side_swipe_bubble:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/showcase/test:eg2_test",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]

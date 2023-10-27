@@ -99,6 +99,11 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::kUseCaseKey : @"Bubble",
     },
     @{
+      showcase::kClassForDisplayKey : @"SideSwipeBubbleView",
+      showcase::kClassForInstantiationKey : @"SCSideSwipeBubbleViewController",
+      showcase::kUseCaseKey : @"Side Swipe Bubble",
+    },
+    @{
       showcase::kClassForDisplayKey : @"RecentTabsTableViewController",
       showcase::kClassForInstantiationKey : @"SCDarkThemeRecentTabsCoordinator",
       showcase::kUseCaseKey : @"Dark theme recent tabs",

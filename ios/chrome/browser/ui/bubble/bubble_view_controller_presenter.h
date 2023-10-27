@@ -8,34 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
-#include "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/ui/bubble/bubble_dismissal_reason_type.h"
 
 typedef NS_ENUM(NSInteger, BubbleAlignment);
 typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 typedef NS_ENUM(NSInteger, BubbleViewType);
-
-// Possible types of dismissal reasons.
-// These enums are persisted as histogram entries, so this enum should be
-// treated as append-only and kept in sync with InProductHelpDismissalReason in
-// enums.xml.
-enum class IPHDismissalReasonType {
-  kUnknown = 0,
-  kTimedOut = 1,
-  kOnKeyboardHide = 2,
-  kTappedIPH = 3,
-  // kTappedOutside = 4 // Removed, split into kTappedOutsideIPHAndAnchorView
-  // and kTappedAnchorView.
-  kTappedClose = 5,
-  kTappedSnooze = 6,
-  kTappedOutsideIPHAndAnchorView = 7,
-  kTappedAnchorView = 8,
-  kMaxValue = kTappedAnchorView,
-};
-
-// Used for the bubble's dismissal callback.
-using CallbackWithIPHDismissalReasonType =
-    void (^)(IPHDismissalReasonType IPHDismissalReasonType,
-             feature_engagement::Tracker::SnoozeAction snoozeAction);
 
 @class BubbleViewController;
 
