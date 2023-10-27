@@ -51,7 +51,6 @@ BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
 BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
 BASE_DECLARE_FEATURE(kModelStoreUseRelativePath);
 BASE_DECLARE_FEATURE(kOptimizationGuidePersonalizedFetching);
-BASE_DECLARE_FEATURE(kOptimizationGuideHintsURLKeyedCacheDropFragments);
 BASE_DECLARE_FEATURE(kQueryInMemoryTextEmbeddings);
 BASE_DECLARE_FEATURE(kOptimizationGuidePredictionModelKillswitch);
 BASE_DECLARE_FEATURE(kOptimizationGuideModelExecution);
@@ -350,9 +349,6 @@ bool IsInstallWideModelStoreEnabled();
 // Whether to persist salient image metadata for each visit.
 bool ShouldPersistSalientImageMetadata(const std::string& locale,
                                        const std::string& country_code);
-
-// Whether to drop fragments for the URL-keyed hint cache key.
-bool ShouldDropFragmentsForURLKeyedHintCacheKey();
 
 // Returns whether to query text embeddings coming from history service.
 bool ShouldQueryEmbeddings();

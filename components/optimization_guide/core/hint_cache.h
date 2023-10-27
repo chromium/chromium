@@ -207,9 +207,6 @@ class HintCache {
   // The clock used to determine if hints have expired.
   raw_ptr<const base::Clock> clock_;
 
-  // Whether to drop fragments from URL-keyed cache keys.
-  bool should_drop_fragments_from_url_keyed_cache_key_;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Weak ptr factory to get weak pointer of |this|.
