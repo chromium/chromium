@@ -2887,8 +2887,21 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         =1 {Page added to your reading list in your account, {email}}
         other {Pages added to your reading list in your account, {email}}}
       </message>
+      <message name="IDS_IOS_READING_LIST_SNACKBAR_MESSAGE_FOR_ACCOUNT_WITH_COUNT" desc="This confirmation message is intended to help users understand that pages have been saved to the Reading List that is saved in their Google Account. The confirmation message appears at the bottom of the page after users choose to bulk save pages. The tone should be informative." meaning="The inputted pages have been added to your account's reading list.">
+        {count, plural,
+        =1 {Page added to your reading list in your account, {email}}
+        other {{count} Pages added to your reading list in your account, {email}}}
+      </message>
+      <message name="IDS_IOS_READING_LIST_SNACKBAR_MESSAGE_NO_ACCOUNT_WITH_COUNT" desc="This confirmation message is intended to help users understand that multiple pages have been saved to their Reading List. The confirmation message appears at the bottom of the page after users bulk add reading list items, telling them how many they've added. The tone should be informative.">
+          {count, plural,
+          =1 {Page added to your reading list}
+          other {{count} Pages added to your reading list}}
+      </message>
       <message name="IDS_IOS_READING_LIST_SNACKBAR_UNDO_ACTION" desc="This string is found on a button that removes a page from the Reading List when the user taps it. The button is on a confirmation message that users see when they save a page to the Reading List. This text is a verb and is short for the longer phrase 'undo the addition of this page to my Reading List.' The tone should be informative. Use Apple-style title case. [CHAR_LIMIT=15]" meaning="Undo the action of adding new item to the reading list by removing the newly added item. Use Apple-style title case. [CHAR_LIMIT=15]">
         Undo
+      </message>
+      <message name="IDS_IOS_READING_LIST_SNACKBAR_VIEW_ACTION" desc="This string is found on a button that brings to user to view the Reading List when the user taps it. The button is on a confirmation message that users see when they bulk save pages to the Reading List. This text is a verb and is short for the longer phrase 'view my Reading List.' The tone should be informative. Use Apple-style title case. [CHAR_LIMIT=15]">
+        View
       </message>
       <message name="IDS_IOS_READING_LIST_ENTRY_ACCESSIBILITY_LABEL" desc="Accessibility label for a reading list entry. Summarizes fields in the reading list entry (title, status and url). Read by Text To Speech. Similar to IDS_IOS_READING_LIST_ENTRY_WITH_UPLOAD_STATE_ACCESSIBILITY_LABEL">
         <ph name="TITLE"><ex>Chromium - The Chromium Projects</ex>$1</ph>, <ph name="STATE"><ex>Available offline</ex>$2</ph>, <ph name="URL"><ex>http://www.chromium.org/Home</ex>$3</ph>

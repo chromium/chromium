@@ -2460,6 +2460,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ReadingList.BulkAddURLsCount" units="count"
+    expires_after="2024-08-09">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    The number of URLs a user has successfully added to Chrome Reading List via
+    bulk addition (Siri Shortcut). This count is taken after checking for
+    possibly invalid URLs inputted.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReadingList.ImageTooLargeFailure" units="KB"
     expires_after="2024-06-07">
   <owner>olivierrobin@chromium.org</owner>

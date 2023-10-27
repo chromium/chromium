@@ -13152,6 +13152,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSReadingListItemsAddedInBulk">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Recorded when a user bulk adds reading list items (Siri Shortcut). iOS-only.
+  </description>
+</action>
+
+<action name="IOSReadingListSnackbarViewButtonClicked">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Recorded when a user clicks the &quot;view&quot; button in the snackbar
+    generated from bulk adding reading list items. iOS-only.
+  </description>
+</action>
+
 <action name="IOSRecentTabsCloseWithSwipe">
   <owner>gambard@google.com</owner>
   <owner>sczs@chromium.org</owner>
