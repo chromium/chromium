@@ -22,10 +22,6 @@ constexpr float kOverlayViewOpacity = 0.7f;
 // The time duration for |background_| to fade in.
 constexpr int kFadeInDurationMs = 500;
 
-#if BUILDFLAG(IS_MAC)
-constexpr int kShowBubbleDelayMs = 180;
-#endif
-
 AutoPipSettingOverlayView::AutoPipSettingOverlayView(
     ResultCb result_cb,
     const GURL& origin,
@@ -64,12 +60,11 @@ void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent,
   widget_ = views::BubbleDialogDelegate::CreateBubble(
       std::move(init_.auto_pip_setting_view_));
 
-#if BUILDFLAG(IS_MAC)
+  // Delay showing the bubble, for document pip, until after the scrim animation
+  // completes.
   if (pip_window_type == PipWindowType::kDocumentPip) {
-    // Delay showing the bubble, to prevent showing the permission prompt before
-    // the parent window show animation completes.
     show_timer_->Start(
-        FROM_HERE, base::Milliseconds(kShowBubbleDelayMs),
+        FROM_HERE, base::Milliseconds(kFadeInDurationMs),
         base::BindOnce(
             &views::Widget::ShowInactive,
             // base::Unretained() is safe since the timer is cancelled if the
@@ -78,9 +73,6 @@ void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent,
   } else {
     widget_->ShowInactive();
   }
-#else
-  widget_->ShowInactive();
-#endif
 
   bubble_size_ = widget_->GetWindowBoundsInScreen().size();
   widget_->AddObserver(this);

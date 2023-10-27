@@ -144,9 +144,9 @@ TEST_F(AutoPipSettingOverlayViewTest,
 
 #if BUILDFLAG(IS_MAC)
 // Ensure that bubbles requested for Document Picture-in-Picture windows are
-// shown after an 180Ms delay, on Mac.
+// shown not shown before an 180Ms delay, on Mac.
 TEST_F(AutoPipSettingOverlayViewTest,
-       TestOverlayViewShownWithDelayForDocumentPip) {
+       TestOverlayViewNotShownBeforeDelayForDocumentPip) {
   // Initially bubble should not be shown.
   setting_overlay()->ShowBubble(
       anchor_view_widget()->GetNativeView(),
@@ -154,28 +154,33 @@ TEST_F(AutoPipSettingOverlayViewTest,
   EXPECT_FALSE(
       setting_overlay()->get_view_for_testing()->GetWidget()->IsVisible());
 
-  // Bubble should be shown after an 180Ms delay.
-  task_environment()->FastForwardBy(base::Milliseconds(185));
-  EXPECT_TRUE(
+  // Bubble should not be shown before an 180Ms delay. This is to ensure that
+  // the Mac window animation has completed, before we show the permission
+  // prompt.
+  task_environment()->FastForwardBy(base::Milliseconds(179));
+  EXPECT_FALSE(
       setting_overlay()->get_view_for_testing()->GetWidget()->IsVisible());
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-#if !BUILDFLAG(IS_MAC)
 // Ensure that bubbles requested for Document Picture-in-Picture windows are
-// shown without delay, on all platforms except for Mac.
+// shown after the scrim animation.
 TEST_F(AutoPipSettingOverlayViewTest,
        TestOverlayViewShownWithDelayForDocumentPip) {
   setting_overlay()->ShowBubble(
       anchor_view_widget()->GetNativeView(),
       AutoPipSettingOverlayView::PipWindowType::kDocumentPip);
+  EXPECT_FALSE(
+      setting_overlay()->get_view_for_testing()->GetWidget()->IsVisible());
+
+  // Bubble should be shown after an 500Ms delay.
+  task_environment()->FastForwardBy(base::Milliseconds(505));
   EXPECT_TRUE(
       setting_overlay()->get_view_for_testing()->GetWidget()->IsVisible());
 }
-#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(AutoPipSettingOverlayViewTest,
-       TestOverlayViewShownWithDelayForVideoPip) {
+       TestOverlayViewShownWithoutDelayForVideoPip) {
   // Ensure that bubbles requested for Video Picture-in-Picture windows are
   // shown without delay, regardless of platform.
   setting_overlay()->ShowBubble(
