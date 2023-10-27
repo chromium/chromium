@@ -43,13 +43,14 @@ void MLContextMojo::ValidateAndCreateAsync(ScriptPromiseResolver* resolver,
 }
 
 // static
-MLContext* MLContextMojo::ValidateAndCreateSync(ExceptionState& exception_state,
+MLContext* MLContextMojo::ValidateAndCreateSync(ScriptState* script_state,
+                                                ExceptionState& exception_state,
                                                 MLContextOptions* options,
                                                 ML* ml) {
   auto* context = MakeGarbageCollected<MLContextMojo>(
       options->devicePreference(), options->powerPreference(),
       options->modelFormat(), options->numThreads(), ml);
-  return context->CreateSync(options, exception_state);
+  return context->CreateSync(script_state, options, exception_state);
 }
 
 void MLContextMojo::CreateAsyncImpl(ScriptPromiseResolver* resolver,
@@ -63,12 +64,33 @@ void MLContextMojo::CreateAsyncImpl(ScriptPromiseResolver* resolver,
                     WrapPersistent(resolver)));
 }
 
-MLContext* MLContextMojo::CreateSyncImpl(MLContextOptions* options,
+MLContext* MLContextMojo::CreateSyncImpl(ScriptState* script_state,
+                                         MLContextOptions* options,
                                          ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Support sync create that is only exposed to
-  // dedicated worker.
-  NOTIMPLEMENTED();
-  return nullptr;
+  // Ensures that sync methods are only called from worker threads.
+  CHECK(!IsMainThread());
+  auto options_mojo = webnn::mojom::blink::CreateContextOptions::New();
+  options_mojo->power_preference =
+      ConvertBlinkPowerPreferenceToMojo(options->powerPreference());
+  blink_mojom::CreateContextResultPtr result;
+  if (!GetML()->CreateWebNNContextSync(std::move(options_mojo), &result)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Failed to create WebNN context.");
+    return nullptr;
+  }
+  if (result->is_error()) {
+    const auto& create_context_error = result->get_error();
+    exception_state.ThrowDOMException(ConvertWebNNErrorCodeToDOMExceptionCode(
+                                          create_context_error->error_code),
+                                      create_context_error->error_message);
+    return nullptr;
+  }
+  auto* execution_context = ExecutionContext::From(script_state);
+  // Bind the end point of `WebNNContext` mojo interface in the blink side.
+  remote_context_.Bind(
+      std::move(result->get_context_remote()),
+      execution_context->GetTaskRunner(TaskType::kInternalDefault));
+  return this;
 }
 
 MLContextMojo::MLContextMojo(const V8MLDevicePreference device_preference,

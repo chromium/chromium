@@ -123,9 +123,10 @@ void MLContext::CreateAsync(ScriptPromiseResolver* resolver,
   CreateAsyncImpl(resolver, options);
 }
 
-MLContext* MLContext::CreateSync(MLContextOptions* options,
+MLContext* MLContext::CreateSync(ScriptState* script_state,
+                                 MLContextOptions* options,
                                  ExceptionState& exception_state) {
-  return CreateSyncImpl(options, exception_state);
+  return CreateSyncImpl(script_state, options, exception_state);
 }
 
 void MLContext::CreateAsyncImpl(ScriptPromiseResolver* resolver,
@@ -135,7 +136,8 @@ void MLContext::CreateAsyncImpl(ScriptPromiseResolver* resolver,
   NOTIMPLEMENTED();
 }
 
-MLContext* MLContext::CreateSyncImpl(MLContextOptions* options,
+MLContext* MLContext::CreateSyncImpl(ScriptState* script_state,
+                                     MLContextOptions* options,
                                      ExceptionState& exception_state) {
   // TODO(crbug.com/1273291): Remove when sync creation gets implemented for
   // all context types.

@@ -52,6 +52,16 @@ void ML::CreateWebNNContext(
                                               std::move(callback));
 }
 
+bool ML::CreateWebNNContextSync(
+    webnn::mojom::blink::CreateContextOptionsPtr options,
+    webnn::mojom::blink::CreateContextResultPtr* out_result) {
+  CHECK(!IsMainThread());
+  // Connect to the WebNN Service if needed.
+  EnsureWebNNServiceConnection();
+  return webnn_context_provider_->CreateWebNNContext(std::move(options),
+                                                     out_result);
+}
+
 void ML::Trace(Visitor* visitor) const {
   visitor->Trace(model_loader_service_);
   visitor->Trace(webnn_context_provider_);
@@ -128,7 +138,8 @@ MLContext* ML::createContextSync(ScriptState* script_state,
           webnn::features::kEnableMachineLearningNeuralNetworkService) &&
       (options->devicePreference() == V8MLDevicePreference::Enum::kAuto ||
        options->devicePreference() == V8MLDevicePreference::Enum::kGpu)) {
-    return MLContextMojo::ValidateAndCreateSync(exception_state, options, this);
+    return MLContextMojo::ValidateAndCreateSync(script_state, exception_state,
+                                                options, this);
   }
 #endif
 

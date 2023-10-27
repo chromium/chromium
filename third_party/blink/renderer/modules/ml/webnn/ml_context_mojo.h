@@ -28,7 +28,8 @@ class MODULES_EXPORT MLContextMojo : public MLContext {
                                      MLContextOptions* options,
                                      ML* ml);
 
-  static MLContext* ValidateAndCreateSync(ExceptionState& exception_state,
+  static MLContext* ValidateAndCreateSync(ScriptState* script_state,
+                                          ExceptionState& exception_state,
                                           MLContextOptions* options,
                                           ML* ml);
 
@@ -56,7 +57,11 @@ class MODULES_EXPORT MLContextMojo : public MLContext {
   void CreateAsyncImpl(ScriptPromiseResolver* resolver,
                        MLContextOptions* options) override;
 
-  MLContext* CreateSyncImpl(MLContextOptions* options,
+  // Create `WebNNContext` message pipe with `ML` mojo interface, then
+  // create the context with the hardware accelerated OS machine
+  // learning API in the WebNN Service.
+  MLContext* CreateSyncImpl(ScriptState* script_state,
+                            MLContextOptions* options,
                             ExceptionState& exception_state) override;
 
  private:

@@ -74,6 +74,10 @@ interface WebNNContextProvider {
   // Called by the renderer process to create a message pipe for `MLContext`,
   // the `CreateContextResult` will be `Error` with error messages if the
   // configuration of options isn't supported.
+  //
+  // TODO(crbug.com/1488162): Remove [Sync] if the standards group decides that
+  // the WebNN sync APIs are not required.
+  [Sync]
   CreateWebNNContext(CreateContextOptions options)
       => (CreateContextResult result);
 };

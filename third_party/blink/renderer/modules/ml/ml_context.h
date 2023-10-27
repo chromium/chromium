@@ -83,12 +83,14 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // by a MLContext backend that initializes the context synchronously in the
   // caller's thread. This method is called by ML to implement
   // MLContext.createContextSync() method.
-  MLContext* CreateSync(MLContextOptions* options,
+  MLContext* CreateSync(ScriptState* script_state,
+                        MLContextOptions* options,
                         ExceptionState& exception_state);
 
   // An MLContext backend should implement this method to initialize the
   // platform context synchronously in the caller's thread.
-  virtual MLContext* CreateSyncImpl(MLContextOptions* options,
+  virtual MLContext* CreateSyncImpl(ScriptState* script_state,
+                                    MLContextOptions* options,
                                     ExceptionState& exception_state);
 
  private:
