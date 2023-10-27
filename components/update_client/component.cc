@@ -426,6 +426,8 @@ const char* DownloaderToString(CrxDownloader::DownloadMetrics::Downloader d) {
       return "direct";
     case CrxDownloader::DownloadMetrics::kBits:
       return "bits";
+    case CrxDownloader::DownloadMetrics::kBackgroundMac:
+      return "nsurlsession_background";
     default:
       return "unknown";
   }

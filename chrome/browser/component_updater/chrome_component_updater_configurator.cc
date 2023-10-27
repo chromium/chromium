@@ -91,6 +91,8 @@ class ChromeConfigurator : public update_client::Configurator {
  private:
   friend class base::RefCountedThreadSafe<ChromeConfigurator>;
 
+  absl::optional<base::FilePath> GetBackgroundDownloaderCache() const;
+
   ConfiguratorImpl configurator_impl_;
   raw_ptr<PrefService>
       pref_service_;  // This member is not owned by this class.
@@ -191,8 +193,8 @@ ChromeConfigurator::GetNetworkFetcherFactory() {
 scoped_refptr<update_client::CrxDownloaderFactory>
 ChromeConfigurator::GetCrxDownloaderFactory() {
   if (!crx_downloader_factory_) {
-    crx_downloader_factory_ =
-        update_client::MakeCrxDownloaderFactory(GetNetworkFetcherFactory());
+    crx_downloader_factory_ = update_client::MakeCrxDownloaderFactory(
+        GetNetworkFetcherFactory(), GetBackgroundDownloaderCache());
   }
   return crx_downloader_factory_;
 }
@@ -265,6 +267,16 @@ absl::optional<base::FilePath> ChromeConfigurator::GetCrxCachePath() const {
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
   return result ? absl::optional<base::FilePath>(
                       path.AppendASCII("component_crx_cache"))
+                : absl::nullopt;
+}
+
+// TODO(crbug/1496582): Consolidate the cache path getters.
+absl::optional<base::FilePath>
+ChromeConfigurator::GetBackgroundDownloaderCache() const {
+  base::FilePath path;
+  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
+  return result ? absl::optional<base::FilePath>(
+                      path.AppendASCII("download_cache"))
                 : absl::nullopt;
 }
 
