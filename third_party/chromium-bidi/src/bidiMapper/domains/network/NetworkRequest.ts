@@ -326,6 +326,25 @@ export class NetworkRequest {
     this.#interceptPhase = undefined;
   }
 
+  /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
+  async continueWithAuth(
+    cdpFetchRequestId: Protocol.Fetch.RequestId,
+    response: 'Default' | 'CancelAuth' | 'ProvideCredentials',
+    username?: string,
+    password?: string
+  ) {
+    await this.#cdpTarget.cdpClient.sendCommand('Fetch.continueWithAuth', {
+      requestId: cdpFetchRequestId,
+      authChallengeResponse: {
+        response,
+        username,
+        password,
+      },
+    });
+
+    this.#interceptPhase = undefined;
+  }
+
   /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
   async provideResponse(
     cdpFetchRequestId: Protocol.Fetch.RequestId,

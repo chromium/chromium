@@ -25,7 +25,10 @@ import {
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {assert} from '../../../utils/assert.js';
 
-import {cdpFetchHeadersFromBidiNetworkHeaders} from './NetworkUtils.js';
+import {
+  cdpFetchHeadersFromBidiNetworkHeaders,
+  cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
+} from './NetworkUtils.js';
 import {NetworkStorage} from './NetworkStorage.js';
 
 /** Dispatches Network domain commands. */
@@ -135,17 +138,40 @@ export class NetworkProcessor {
     return {};
   }
 
-  continueWithAuth(params: Network.ContinueWithAuthParameters): EmptyResult {
+  async continueWithAuth(
+    params: Network.ContinueWithAuthParameters
+  ): Promise<EmptyResult> {
     const networkId = params.request;
-    const {phase} = this.#getBlockedRequest(networkId);
+    const {request: fetchId, phase} = this.#getBlockedRequest(networkId);
 
     if (phase !== Network.InterceptPhase.AuthRequired) {
       throw new InvalidArgumentException(
         `Blocked request for network id '${networkId}' is not in 'AuthRequired' phase`
       );
     }
-    // TODO: https://w3c.github.io/webdriver-bidi/#command-network-continueWithAuth
-    // Implement remaining steps 6-8.
+
+    const request = this.#networkStorage.getRequest(networkId);
+    assert(request, `Network request with ID ${networkId} doesn't exist`);
+
+    let username: string | undefined;
+    let password: string | undefined;
+
+    if (params.action === 'provideCredentials') {
+      const {credentials} = params;
+      username = params.credentials.username;
+      password = params.credentials.password;
+
+      assert(
+        credentials.type === 'password',
+        `Credentials type ${credentials.type} must be 'password'`
+      );
+    }
+
+    const response = cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(
+      params.action
+    );
+
+    await request.continueWithAuth(fetchId, response, username, password);
 
     return {};
   }

@@ -216,7 +216,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           this.#parser.parseContinueResponseParams(command.params)
         );
       case 'network.continueWithAuth':
-        return this.#networkProcessor.continueWithAuth(
+        return await this.#networkProcessor.continueWithAuth(
           this.#parser.parseContinueWithAuthParams(command.params)
         );
       case 'network.failRequest':

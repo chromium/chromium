@@ -111,6 +111,87 @@ async def test_continue_with_auth_non_blocked_request(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("credentials", [{}, {
+    "type": "notapassword",
+    "username": "user",
+    "password": "pass"
+}],
+                         ids=["empty", "invalid type value"])
+async def test_continue_with_auth_invalid_credentials(websocket, context_id,
+                                                      auth_required_url,
+                                                      credentials):
+    await subscribe(websocket, [
+        "network.beforeRequestSent", "network.authRequired",
+        "network.responseCompleted"
+    ], [context_id])
+
+    await execute_command(
+        websocket, {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["authRequired"],
+                "urlPatterns": [{
+                    "type": "string",
+                    "pattern": auth_required_url,
+                }, ],
+            },
+        })
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": auth_required_url,
+                "context": context_id,
+                "wait": "complete",
+            }
+        })
+
+    event_response = await wait_for_event(websocket,
+                                          "network.beforeRequestSent")
+    assert event_response == {
+        "method": "network.beforeRequestSent",
+        "params": {
+            "context": context_id,
+            "initiator": {
+                "type": "other",
+            },
+            "isBlocked": False,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": auth_required_url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT,
+            },
+            "timestamp": ANY_TIMESTAMP,
+        },
+        "type": "event",
+    }
+    network_id = event_response["params"]["request"]["request"]
+
+    with pytest.raises(Exception,
+                       match=str({
+                           "error": "invalid argument",
+                           "message": "Invalid input in ."
+                       })):
+        await execute_command(
+            websocket, {
+                "method": "network.continueWithAuth",
+                "params": {
+                    "request": network_id,
+                    "action": "provideCredentials",
+                    "credentials": credentials,
+                },
+            })
+
+
+@pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: Fix this test")
 async def test_continue_with_auth_completes(websocket, context_id,
                                             auth_required_url):

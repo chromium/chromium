@@ -93,3 +93,17 @@ export function cdpFetchHeadersFromBidiNetworkHeaders(
     value: value.value,
   }));
 }
+
+/** Converts from Bidi auth action to CDP auth challenge response. */
+export function cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(
+  action: 'default' | 'cancel' | 'provideCredentials'
+) {
+  switch (action) {
+    case 'default':
+      return 'Default';
+    case 'cancel':
+      return 'CancelAuth';
+    case 'provideCredentials':
+      return 'ProvideCredentials';
+  }
+}
