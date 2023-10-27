@@ -22,6 +22,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -212,6 +213,11 @@ void RendererStartupHelper::InitializeProcess(
     loaded_extensions.push_back(CreateExtensionLoadedParams(
         *ext, true /* include tab permissions*/, renderer_context));
     extension_process_map_[ext->id()].insert(process);
+
+    // Each extension needs to know its user script world configuration.
+    mojom::UserScriptWorldInfoPtr info =
+        util::GetUserScriptWorldInfo(ext->id(), browser_context_);
+    renderer->UpdateUserScriptWorld(std::move(info));
   }
 
   // Activate pending extensions.

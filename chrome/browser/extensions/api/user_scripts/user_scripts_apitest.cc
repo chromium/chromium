@@ -201,6 +201,35 @@ IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest, PersistentScripts) {
   EXPECT_TRUE(result_catcher_.GetNextResult()) << result_catcher_.message();
 }
 
+// Tests that the world configuration of a registered user script is persisted
+// across sessions. The test is run across three sessions.
+IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest,
+                       PRE_PRE_PersistentWorldConfiguration) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("user_scripts/persistent_configure_world"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener_->WaitUntilSatisfied());
+  listener_->Reply(
+      testing::UnitTest::GetInstance()->current_test_info()->name());
+  EXPECT_TRUE(result_catcher_.GetNextResult()) << result_catcher_.message();
+}
+
+IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest,
+                       PRE_PersistentWorldConfiguration) {
+  ASSERT_TRUE(listener_->WaitUntilSatisfied());
+  listener_->Reply(
+      testing::UnitTest::GetInstance()->current_test_info()->name());
+  EXPECT_TRUE(result_catcher_.GetNextResult()) << result_catcher_.message();
+}
+
+IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest,
+                       PersistentWorldConfiguration) {
+  ASSERT_TRUE(listener_->WaitUntilSatisfied());
+  listener_->Reply(
+      testing::UnitTest::GetInstance()->current_test_info()->name());
+  EXPECT_TRUE(result_catcher_.GetNextResult()) << result_catcher_.message();
+}
+
 // A test suite that runs without developer mode enabled.
 class UserScriptsAPITestWithoutDeveloperMode : public UserScriptsAPITest {
  public:

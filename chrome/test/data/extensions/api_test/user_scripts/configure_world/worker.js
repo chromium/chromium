@@ -21,6 +21,7 @@ const sendMessageScript = `(async function() {
          ? {step: 2} : 'unexpected message';
        chrome.runtime.sendMessage(secondMessage);
        }) ();`;
+
 // Script that listens for a message and sends a response.
 const receiveMessageScript = `chrome.runtime.onMessage.addListener(
        (message, sender, sendResponse) => {
@@ -105,8 +106,6 @@ chrome.test.runTests([
     userScripts =
         [{id: 'us2', matches: ['*://*/*'], js: [{code: sendMessageScript}]}];
     chrome.userScripts.register(userScripts);
-    // TODO(crbug.com/1385165): world configuration should be persisted.
-    await chrome.userScripts.configureWorld({messaging: true});
 
     await navigateToRequestedUrl();
   },
@@ -157,7 +156,7 @@ chrome.test.runTests([
           }
         });
 
-    // Register user scripts in the USER_SCRIPT world (default);
+    // Register user scripts in the USER_SCRIPT world (default).
     const userScripts = [
       {
         id: 'us1',
@@ -171,6 +170,6 @@ chrome.test.runTests([
 
     // Navigate to a requested page, where the user scripts should send messages
     // back.
-    await navigateToRequestedUrl()
+    await navigateToRequestedUrl();
   }
 ]);

@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/user_scripts/user_scripts_api.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -17,14 +18,12 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/api/user_scripts.h"
 #include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
-#include "extensions/common/utils/extension_types_utils.h"
 
 namespace extensions {
 
@@ -517,14 +516,12 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(extension());
 
   // TODO(crbug.com/1385165): Retrieve csp, once it is added to API method.
+  absl::optional<std::string> csp = absl::nullopt;
   bool enable_messaging = params->properties.messaging.value_or(false);
 
-  RendererStartupHelperFactory::GetForBrowserContext(browser_context())
-      ->SetUserScriptWorldProperties(*extension(), /*csp=*/absl::nullopt,
-                                     enable_messaging);
+  util::SetUserScriptWorldInfo(*extension(), browser_context(), csp,
+                               enable_messaging);
 
-  // TODO(crbug.com/1385165): Persist `enable_messaging` across sessions. Since
-  // it's not script specific, we can use extension prefs.
   return RespondNow(NoArguments());
 }
 
