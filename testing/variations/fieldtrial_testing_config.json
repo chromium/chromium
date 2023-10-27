@@ -17493,22 +17493,6 @@
             ]
         }
     ],
-    "StructuredMetrics": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "StructuredMetricsService_20230801",
-                    "enable_features": [
-                        "EnableStructuredMetrics",
-                        "EnableStructuredMetricsService"
-                    ]
-                }
-            ]
-        }
-    ],
     "StructuredMetricsExternalMetrics": [
         {
             "platforms": [
@@ -17516,16 +17500,22 @@
             ],
             "experiments": [
                 {
-                    "name": "StructuredMetricsServiceExternalMetrics_100_20231025",
+                    "name": "StructuredMetricsExternalMetrics_100_20231027",
                     "params": {
                         "file_limit": "100"
-                    }
+                    },
+                    "enable_features": [
+                        "EnableStructuredMetrics"
+                    ]
                 },
                 {
-                    "name": "StructuredMetricsServiceExternalMetrics_70_20231025",
+                    "name": "StructuredMetricsExternalMetrics_70_20231027",
                     "params": {
                         "file_limit": "70"
-                    }
+                    },
+                    "enable_features": [
+                        "EnableStructuredMetrics"
+                    ]
                 }
             ]
         }
