@@ -119,12 +119,17 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
   ASSERT_TRUE(second_browser);
   testing::Mock::VerifyAndClearExpectations(&callback);
 
+  // Switch to the second tab, which should trigger the callback.
+  EXPECT_CALL(callback, Run(false));
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
   // Moving the original tab to the second window should make the helper start
   // watching the second browser's tabstrip.
   //
-  // First, move it to the new window in the background, which should trigger
-  // it as being backgrounded.
-  EXPECT_CALL(callback, Run(false));
+  // First, move it to the new window in the foreground, which should trigger
+  // the callback.
+  EXPECT_CALL(callback, Run(true));
   auto* second_browser_initial_web_contents =
       second_browser->tab_strip_model()->GetActiveWebContents();
   auto original_web_contents_tab =
@@ -132,21 +137,55 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
           browser()->tab_strip_model()->GetIndexOfWebContents(
               original_web_contents));
   second_browser->tab_strip_model()->AppendWebContents(
-      std::move(original_web_contents_tab), /*foreground=*/false);
+      std::move(original_web_contents_tab), /*foreground=*/true);
   testing::Mock::VerifyAndClearExpectations(&callback);
 
-  // Then foregrounding it should trigger the callback.
+  // Then backgrounding it should trigger the callback.
+  EXPECT_CALL(callback, Run(false));
+  second_browser->tab_strip_model()->ActivateTabAt(
+      second_browser->tab_strip_model()->GetIndexOfWebContents(
+          second_browser_initial_web_contents));
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // And the same for foregrounding it.
   EXPECT_CALL(callback, Run(true));
   second_browser->tab_strip_model()->ActivateTabAt(
       second_browser->tab_strip_model()->GetIndexOfWebContents(
           original_web_contents));
   testing::Mock::VerifyAndClearExpectations(&callback);
+}
 
-  // And the same for backgrounding it.
-  EXPECT_CALL(callback, Run(false));
-  second_browser->tab_strip_model()->ActivateTabAt(
-      second_browser->tab_strip_model()->GetIndexOfWebContents(
-          second_browser_initial_web_contents));
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,
+                       DoesNotTriggerWhenMovedBetweenTabStrips) {
+  auto* original_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  base::MockCallback<
+      AutoPictureInPictureTabStripObserverHelper::ActivatedChangedCallback>
+      callback;
+  AutoPictureInPictureTabStripObserverHelper helper(original_web_contents,
+                                                    callback.Get());
+  helper.StartObserving();
+
+  // Opening a new tab in the background should not trigger the callback.
+  EXPECT_CALL(callback, Run(_)).Times(0);
+  OpenNewBackgroundTab(browser());
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // Opening a new window should not trigger the callback.
+  EXPECT_CALL(callback, Run(_)).Times(0);
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(second_browser);
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // Now move the tab into the second window while keeping it in the foreground.
+  // This should not trigger the callback.
+  EXPECT_CALL(callback, Run(_)).Times(0);
+  auto original_web_contents_tab =
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(
+          browser()->tab_strip_model()->GetIndexOfWebContents(
+              original_web_contents));
+  second_browser->tab_strip_model()->AppendWebContents(
+      std::move(original_web_contents_tab), /*foreground=*/true);
   testing::Mock::VerifyAndClearExpectations(&callback);
 }
 
