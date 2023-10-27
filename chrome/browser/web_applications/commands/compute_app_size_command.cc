@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/barrier_callback.h"
+#include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -92,8 +93,27 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
     const SiteDataSizeCollector::QuotaStorageUsageInfoList&
         quota_storage_info_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  origin_ =
-      url::Origin::Create(lock_->registrar().GetAppById(app_id_)->start_url());
+  if (!lock_->registrar().IsInstalled(app_id_)) {
+    // (crbug/1480755): This crash is not expected as the app is checked for
+    // validity when the command is evoked in StartWithLock. We are also still
+    // holding the lock so a change to the status of the app throughout is not
+    // expected.
+    NOTREACHED();
+    ReportResultAndDestroy(CommandResult::kFailure);
+    return;
+  }
+
+  GURL gurl = lock_->registrar().GetAppById(app_id_)->start_url();
+  if (!gurl.is_valid()) {
+    // (crbug/1480755): This crash is not expected as the app is checked for
+    // validity when the command is evoked in StartWithLock. We are also still
+    // holding the lock so a change to the status of the app throughout is not
+    // expected.
+    NOTREACHED();
+    ReportResultAndDestroy(CommandResult::kFailure);
+    return;
+  }
+  origin_ = url::Origin::Create(gurl);
 
   // TODO(crbug/1295875): Optimise the computation of the following loop.
   for (const auto& quota_info : quota_storage_info_list) {
