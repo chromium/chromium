@@ -58,6 +58,10 @@ class ComposeEnablingTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     test_profile_ = profile_manager_->CreateTestingProfile("test");
+    scoped_feature_list_.InitWithFeatures(
+        {compose::features::kEnableCompose,
+         compose::features::kEnableComposeNudge},
+        {});
   }
 
   void TearDown() override {
@@ -97,6 +101,7 @@ class ComposeEnablingTest : public testing::Test {
 TEST_F(ComposeEnablingTest, EverythingDisabledTest) {
   MockTranslateLanguageProvider mock_translate_language_provider;
   ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(compose::features::kEnableCompose);
   // We intentionally don't call sign in to make our state not signed in.
   SetMsbbState(false);
@@ -108,6 +113,7 @@ TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
   MockTranslateLanguageProvider mock_translate_language_provider;
   ComposeEnabling compose_enabling(&mock_translate_language_provider);
   // Ensure feature flag is off.
+  scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(compose::features::kEnableCompose);
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
@@ -121,8 +127,6 @@ TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
 TEST_F(ComposeEnablingTest, MsbbDisabledTest) {
   MockTranslateLanguageProvider mock_translate_language_provider;
   ComposeEnabling compose_enabling(&mock_translate_language_provider);
-  // Turn on our chrome feature
-  scoped_feature_list_.InitAndEnableFeature(compose::features::kEnableCompose);
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
   // MSBB turned off.
@@ -134,8 +138,6 @@ TEST_F(ComposeEnablingTest, MsbbDisabledTest) {
 TEST_F(ComposeEnablingTest, NotSignedInTest) {
   MockTranslateLanguageProvider mock_translate_language_provider;
   ComposeEnabling compose_enabling(&mock_translate_language_provider);
-  // Turn on our chrome feature
-  scoped_feature_list_.InitAndEnableFeature(compose::features::kEnableCompose);
   // Turn on MSBB.
   SetMsbbState(true);
   EXPECT_FALSE(compose_enabling.IsEnabled(
@@ -145,8 +147,6 @@ TEST_F(ComposeEnablingTest, NotSignedInTest) {
 TEST_F(ComposeEnablingTest, EverythingEnabledTest) {
   MockTranslateLanguageProvider mock_translate_language_provider;
   ComposeEnabling compose_enabling(&mock_translate_language_provider);
-  // Turn on our chrome feature
-  scoped_feature_list_.InitAndEnableFeature(compose::features::kEnableCompose);
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
   // Turn on MSBB.
@@ -159,7 +159,10 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {
   testing::NiceMock<MockTranslateLanguageProvider>
       mock_translate_language_provider;
   ComposeEnabling compose_enabling(&mock_translate_language_provider);
-  // We intentionally don't enable the feature.
+
+  // We intentionally disable the feature.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(compose::features::kEnableCompose);
 
   // Set the language to something we support. "en" is English.
   translate::testing::MockTranslateClient mock_translate_client(
@@ -216,7 +219,11 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
   testing::NiceMock<MockTranslateLanguageProvider>
       mock_translate_language_provider;
   ComposeEnabling compose_enabling(&mock_translate_language_provider);
-  // We intentionally don't enable the feature.
+
+  // We intentionally disable the feature.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(compose::features::kEnableCompose);
+
   std::string autocomplete_attribute;
   bool has_saved_state = false;
 
@@ -321,4 +328,26 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupAllEnabledTest) {
   EXPECT_TRUE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, test_profile_, &mock_translate_manager,
       has_saved_state));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {compose::features::kEnableCompose},
+      {compose::features::kEnableComposeNudge});
+
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable everything at the profile level.
+  compose_enabling.SetEnabledForTesting();
+
+  // Set the language to something we support.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+
+  EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+      "", test_profile_, &mock_translate_manager,
+      /* has_saved_state= */ false));
 }

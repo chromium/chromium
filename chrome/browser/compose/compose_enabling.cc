@@ -94,6 +94,10 @@ bool ComposeEnabling::ShouldTriggerPopup(
     Profile* profile,
     translate::TranslateManager* translate_manager,
     bool has_saved_state) {
+  if (!base::FeatureList::IsEnabled(compose::features::kEnableComposeNudge)) {
+    return false;
+  }
+
   if (!PageLevelChecks(profile, translate_manager)) {
     return false;
   }
