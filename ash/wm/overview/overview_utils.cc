@@ -253,8 +253,10 @@ gfx::Rect GetGridBoundsInScreen(
     if (auto* split_view_overview_session =
             RootWindowController::ForWindow(target_root)
                 ->split_view_overview_session()) {
-      bounds.Subtract(
-          split_view_overview_session->window()->GetBoundsInScreen());
+      gfx::Rect target_bounds_in_screen(
+          split_view_overview_session->window()->GetTargetBounds());
+      wm::ConvertRectToScreen(target_root, &target_bounds_in_screen);
+      bounds.Subtract(target_bounds_in_screen);
     }
   } else {
     switch (state) {

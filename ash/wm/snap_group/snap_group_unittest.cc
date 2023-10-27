@@ -423,6 +423,58 @@ TEST_F(FasterSplitScreenTest, ResizeAndAutoSnap) {
   EXPECT_EQ(expected_grid_bounds, w2->GetBoundsInScreen());
 }
 
+TEST_F(FasterSplitScreenTest, DragToPartialOverview) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  ToggleOverview();
+  OverviewSession* overview_session =
+      OverviewController::Get()->overview_session();
+  ASSERT_TRUE(overview_session);
+  EXPECT_TRUE(overview_session->IsWindowInOverview(w1.get()));
+  EXPECT_TRUE(overview_session->IsWindowInOverview(w2.get()));
+
+  // Drag `w1` to enter partial overview.
+  DragItemToPoint(GetOverviewItemForWindow(w1.get()), gfx::Point(0, 0),
+                  GetEventGenerator(),
+                  /*by_touch_gestures=*/false, /*drop=*/true);
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  VerifySplitViewOverviewSession(w1.get());
+  EXPECT_TRUE(overview_session->IsWindowInOverview(w2.get()));
+
+  // Select `w2`. Test it snaps.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(GetOverviewItemForWindow(w2.get())
+                              ->GetTransformedBounds()
+                              .CenterPoint()));
+  event_generator->ClickLeftButton();
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+}
+
+TEST_F(FasterSplitScreenTest, MultiDisplay) {
+  UpdateDisplay("800x600,1000x600");
+  display::test::DisplayManagerTestApi display_manager_test(display_manager());
+
+  // Snap `window` on the second display. Test its bounds are updated.
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(gfx::Rect(900, 0, 100, 100)));
+  SnapOneTestWindow(window.get(), chromeos::WindowStateType::kPrimarySnapped);
+  ASSERT_EQ(
+      display_manager_test.GetSecondaryDisplay().id(),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id());
+  const gfx::Rect work_area(
+      display_manager_test.GetSecondaryDisplay().work_area());
+  EXPECT_EQ(gfx::Rect(800, 0, work_area.width() / 2, work_area.height()),
+            window->GetBoundsInScreen());
+  VerifySplitViewOverviewSession(window.get());
+
+  // Disconnect the second display. Test no crash.
+  UpdateDisplay("800x600");
+  base::RunLoop().RunUntilIdle();
+}
+
 // Tests the histograms for the split view overview session exit points are
 // recorded correctly in clamshell.
 TEST_F(FasterSplitScreenTest,

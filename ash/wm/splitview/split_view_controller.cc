@@ -821,14 +821,19 @@ void SplitViewController::AttachSnappingWindow(
           std::make_unique<AutoSnapController>(root_window_);
     }
 
-    if (!IsInTabletMode() && IsInOverviewSession() && !is_flag_enabled) {
-      // Start the clamshell split overview session. It is too late to create
-      // this in `OnOverviewModeStarting()`, since overview will already have
-      // started and we are dragging `window` into split view.
-      // TODO(b/294580642): Move this to SnapGroupController.
-      RootWindowController::ForWindow(window)->StartSplitViewOverviewSession(
-          window, /*action=*/absl::nullopt,
-          /*type=*/absl::nullopt, snap_action_source);
+    if (!IsInTabletMode() && IsInOverviewSession()) {
+      if (auto* root_window_controller =
+              RootWindowController::ForWindow(window);
+          root_window_controller &&
+          !root_window_controller->split_view_overview_session()) {
+        // Start the clamshell split overview session. It is too late to create
+        // this in `OnOverviewModeStarting()`, since overview will already have
+        // started and we are dragging `window` into split view.
+        // TODO(b/294580642): Move this to SnapGroupController.
+        root_window_controller->StartSplitViewOverviewSession(
+            window, /*action=*/absl::nullopt,
+            /*type=*/absl::nullopt, snap_action_source);
+      }
     }
 
     // Get the divider position given by `snap_ratio`, or if there is
