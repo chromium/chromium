@@ -7,18 +7,19 @@ See https://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into gcl.
 """
 
-import imp
+import importlib
 import inspect
 import os
 import re
 
-
 try:
     # pylint: disable=C0103
-    audit_non_blink_usage = imp.load_source(
-        'audit_non_blink_usage',
-        os.path.join(os.path.dirname(inspect.stack()[0][1]),
-                     'tools/blinkpy/presubmit/audit_non_blink_usage.py'))
+    module_name = 'audit_non_blink_usage'
+    module_path = os.path.join(
+        os.path.dirname(inspect.stack()[0][1]),
+        'tools/blinkpy/presubmit/audit_non_blink_usage.py')
+    audit_non_blink_usage = importlib.machinery.SourceFileLoader(
+        module_name, module_path).load_module()
 except IOError:
     # One of the presubmit upload tests tries to exec this script, which
     # doesn't interact so well with the import hack... just ignore the
