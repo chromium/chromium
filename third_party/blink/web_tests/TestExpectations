@@ -6348,8 +6348,6 @@ crbug.com/1404614 [ Mac ] external/wpt/url/url-setters-a-area.window.html?exclud
 # parsing (which generates the warnings) happens twice, once for fast-path and once for existing path.
 crbug.com/1407201 fast/css/pseudo-in-range-invalid-value.html [ Failure Pass ]
 
-crbug.com/1490799 paint/invalidation/compositing/composited-overlay-scrollbars-scrollbar-color-repaint.html [ Failure ]
-
 # Sheriff 2023-01-05
 # fast/dom/Element/scrollTop-scrollLeft-body.html previously also linked with crbug.com/1249176
 crbug.com/1354433 [ Win ] external/wpt/html/browsers/the-window-object/window-properties.https.html [ Failure Pass ]

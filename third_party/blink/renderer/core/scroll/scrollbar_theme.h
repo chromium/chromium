@@ -73,6 +73,10 @@ class CORE_EXPORT ScrollbarTheme {
   }
 
   virtual bool IsSolidColor() const { return false; }
+  virtual SkColor4f GetSolidColor(
+      const absl::optional<Color>& css_thumb_color) const {
+    NOTREACHED_NORETURN();
+  }
   virtual bool UsesOverlayScrollbars() const { return false; }
   virtual bool UsesFluentOverlayScrollbars() const { return false; }
   virtual gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(

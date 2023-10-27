@@ -39,7 +39,7 @@ ScrollbarThemeOverlayMobile::ScrollbarThemeOverlayMobile(int thumb_thickness,
                             scrollbar_margin,
                             thumb_thickness,
                             scrollbar_margin),
-      color_(Color::FromSkColor4f(ScrollbarStyle().color)) {}
+      default_color_(Color::FromSkColor4f(ScrollbarStyle().color)) {}
 
 void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
                                              const Scrollbar& scrollbar,
@@ -55,10 +55,15 @@ void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
                            rect);
 
   const auto* box = scrollbar.GetScrollableArea()->GetLayoutBox();
-  Color color = scrollbar.ScrollbarThumbColor().value_or(color_);
+  Color color = scrollbar.ScrollbarThumbColor().value_or(default_color_);
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       box->StyleRef(), DarkModeFilter::ElementRole::kBackground));
   context.FillRect(rect, color, auto_dark_mode);
+}
+
+SkColor4f ScrollbarThemeOverlayMobile::GetSolidColor(
+    const absl::optional<Color>& thumb_color) const {
+  return thumb_color.value_or(default_color_).toSkColor4f();
 }
 
 }  // namespace blink

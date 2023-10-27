@@ -26,7 +26,7 @@ TEST(SolidColorScrollbarLayerImplTest, Occlusion) {
   SolidColorScrollbarLayerImpl* scrollbar_layer_impl =
       impl.AddLayer<SolidColorScrollbarLayerImpl>(
           orientation, thumb_thickness, track_start,
-          is_left_side_vertical_scrollbar, absl::nullopt);
+          is_left_side_vertical_scrollbar);
   scrollbar_layer_impl->SetBounds(layer_size);
   scrollbar_layer_impl->SetDrawsContent(true);
   scrollbar_layer_impl->SetCurrentPos(25.f);

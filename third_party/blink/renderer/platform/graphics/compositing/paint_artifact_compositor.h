@@ -240,6 +240,10 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // found by `element_id`.
   bool SetScrollbarNeedsDisplay(CompositorElementId element_id);
 
+  // Sets color for solid color scrollbar layer. Returns true if the scrollbar
+  // layer is found by `element_id`.
+  bool SetScrollbarSolidColor(CompositorElementId element_id, SkColor4f color);
+
   bool ShouldAlwaysUpdateOnScroll() const {
     return should_always_update_on_scroll_;
   }
