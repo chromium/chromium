@@ -267,22 +267,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-cronet-arm-rel",
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Builds Cronet for arm in release mode",
-    mirrors = [
-        "ci/android-cronet-arm-rel",
-    ],
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    builderless = not settings.is_main,
-    contact_team_email = "cronet-team@google.com",
-    main_list_view = "try",
-    tryjob = try_.job(),
-)
-
-try_.builder(
     name = "android-cronet-arm64-dbg",
     mirrors = ["ci/android-cronet-arm64-dbg"],
     contact_team_email = "cronet-team@google.com",
@@ -845,6 +829,21 @@ try_.builder(
             "third_party/gvr-android-sdk/.+",
         ],
     ),
+)
+
+try_.builder(
+    name = "android_cronet",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    mirrors = [
+        "ci/android-cronet-arm-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        is_compile_only = True,
+    ),
+    builderless = not settings.is_main,
+    contact_team_email = "cronet-team@google.com",
+    main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.gpu.optional_tests_builder(
