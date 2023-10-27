@@ -1934,12 +1934,13 @@ public class CustomTabActivityTest {
         Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(url), null, null));
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(connection.getHiddenTab(), Matchers.notNullValue());
+                    Criteria.checkThat(
+                            connection.getHiddenTabForTesting(), Matchers.notNullValue());
                 });
         Tab hiddenTab =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return connection.getHiddenTab();
+                            return connection.getHiddenTabForTesting();
                         });
         ChromeTabUtils.waitForTabPageLoaded(hiddenTab, url);
         String actualHeader = webServer.getLastRequest("/ok.html").headerValue("X-CCT-Client-Data");
@@ -2264,12 +2265,13 @@ public class CustomTabActivityTest {
             Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(url), null, null));
             CriteriaHelper.pollUiThread(
                     () -> {
-                        Criteria.checkThat(connection.getHiddenTab(), Matchers.notNullValue());
+                        Criteria.checkThat(
+                                connection.getHiddenTabForTesting(), Matchers.notNullValue());
                     });
             Tab hiddenTab =
                     TestThreadUtils.runOnUiThreadBlocking(
                             () -> {
-                                return connection.getHiddenTab();
+                                return connection.getHiddenTabForTesting();
                             });
             ChromeTabUtils.waitForTabPageLoaded(hiddenTab, url);
         } else {

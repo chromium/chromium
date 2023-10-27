@@ -205,11 +205,6 @@ public class HiddenTabHolder {
         }
     }
 
-    @VisibleForTesting
-    public Tab getHiddenTab() {
-        return mSpeculation != null ? mSpeculation.tab : null;
-    }
-
     /** Cancels the speculation for a given session, or any session if null. */
     void destroyHiddenTab(@Nullable CustomTabsSessionToken session) {
         if (mSpeculation == null) return;
@@ -230,6 +225,10 @@ public class HiddenTabHolder {
     /** Returns whether there currently is a hidden tab. */
     boolean hasHiddenTab() {
         return mSpeculation != null;
+    }
+
+    public Tab getHiddenTabForTesting() {
+        return mSpeculation != null ? mSpeculation.tab : null;
     }
 
     @Nullable SpeculationParams getSpeculationParamsForTesting() {
