@@ -11,10 +11,8 @@
 #include "base/json/values_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/browsing_data/core/features.h"
 #include "components/enterprise/idle/action_type.h"
 #include "components/enterprise/idle/idle_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
@@ -421,12 +419,12 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
   EXPECT_TRUE(pref_value->is_list());
   EXPECT_THAT(pref_value->GetList(),
               testing::ElementsAre(
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                   static_cast<int>(ActionType::kCloseBrowsers),
                   static_cast<int>(ActionType::kShowProfilePicker),
                   static_cast<int>(ActionType::kClearDownloadHistory),
                   static_cast<int>(ActionType::kClearHostedAppData),
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                   static_cast<int>(ActionType::kClearBrowsingHistory),
                   static_cast<int>(ActionType::kClearCookiesAndOtherSiteData),
                   static_cast<int>(ActionType::kClearCachedImagesAndFiles),
@@ -440,7 +438,11 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
   bool enabled;
   ASSERT_TRUE(
       prefs().GetBoolean(syncer::prefs::internal::kSyncPreferences, &enabled));
+#if BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(enabled);
+#else
   EXPECT_FALSE(enabled);
+#endif  // BUILDFLAG(IS_IOS)
   ASSERT_TRUE(
       prefs().GetBoolean(syncer::prefs::internal::kSyncHistory, &enabled));
   EXPECT_FALSE(enabled);

@@ -45,22 +45,6 @@ const char kClearSiteSettingsActionName[] = "clear_site_settings";
 const char kReloadPagesActionName[] = "reload_pages";
 }  // namespace
 
-#if !BUILDFLAG(IS_ANDROID)
-bool AllowsSyncEnabled(const std::string& name) {
-  static const char* kActionsAllowedWithSync[] = {
-      kCloseBrowsersActionName,
-      kShowProfilePickerActionName,
-      kClearDownloadHistoryActionName,
-      kClearCookiesAndOtherSiteDataActionName,
-      kClearCachedImagesAndFilesActionName,
-      kReloadPagesActionName,
-      kClearHostedAppDataActionName};
-  return base::ranges::any_of(
-      base::make_span(kActionsAllowedWithSync),
-      [&name](const char* allowed_action) { return allowed_action == name; });
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 absl::optional<ActionType> NameToActionType(const std::string& name) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (name == kCloseBrowsersActionName) {
