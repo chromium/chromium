@@ -35,6 +35,7 @@ constexpr char kProductSwitch[] = "product";
 constexpr char kBackgroundSwitch[] = "background";
 constexpr char kListAppsSwitch[] = "list-apps";
 constexpr char kListUpdateSwitch[] = "list-update";
+constexpr char kUpdateSwitch[] = "update";
 
 UpdaterScope Scope() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kSystemSwitch)
@@ -50,6 +51,68 @@ UpdateService::Priority Priority() {
 
 std::string Quoted(const std::string& value) {
   return "\"" + value + "\"";
+}
+
+void OnAppStateChanged(const UpdateService::UpdateState& update_state) {
+  switch (update_state.state) {
+    case UpdateService::UpdateState::State::kCheckingForUpdates:
+      std::cout << Quoted(update_state.app_id) << ": checking update... "
+                << std::endl;
+      break;
+
+    case UpdateService::UpdateState::State::kUpdateAvailable:
+      std::cout << Quoted(update_state.app_id)
+                << ": update found, next version = "
+                << update_state.next_version << std::endl;
+      break;
+
+    case UpdateService::UpdateState::State::kDownloading:
+      std::cout << Quoted(update_state.app_id)
+                << ": downloading update, downloaded bytes: "
+                << update_state.downloaded_bytes
+                << ", total: " << update_state.total_bytes << std::endl;
+      break;
+
+    case UpdateService::UpdateState::State::kInstalling:
+      std::cout << Quoted(update_state.app_id)
+                << ": installing update, progress at: "
+                << update_state.install_progress << std::endl;
+      break;
+
+    case UpdateService::UpdateState::State::kUpdated:
+      std::cout << Quoted(update_state.app_id)
+                << ": updated version = " << update_state.next_version
+                << std::endl;
+      break;
+
+    case UpdateService::UpdateState::State::kNoUpdate:
+      std::cout << Quoted(update_state.app_id) << ": is up-to-date."
+                << std::endl;
+      break;
+
+    case UpdateService::UpdateState::State::kUpdateError:
+      std::cout << Quoted(update_state.app_id) << ": update failed"
+                << ", error code: " << update_state.error_code
+                << ", extra code: " << update_state.extra_code1 << std::endl;
+      break;
+
+    default:
+      std::cout << Quoted(update_state.app_id)
+                << ": unexpected update state: " << update_state.state
+                << std::endl;
+      break;
+  }
+}
+
+void OnUpdateComplete(base::OnceCallback<void(int)> cb,
+                      UpdateService::Result result) {
+  if (result == UpdateService::Result::kSuccess) {
+    std::cout << "App update finished successfully." << std::endl;
+    std::move(cb).Run(0);
+  } else {
+    std::cout << "Failed to update app(s), result = " << result << std::endl;
+    std::move(cb).Run(1);
+  }
 }
 
 class AppState : public base::RefCountedThreadSafe<AppState> {
@@ -86,10 +149,12 @@ class UpdaterUtilApp : public App {
   void PrintUsage(const std::string& error_message);
   void ListApps();
   void ListUpdate();
+  void Update();
 
   void FindApp(const std::string& app_id,
                base::OnceCallback<void(scoped_refptr<AppState>)> callback);
   void DoListUpdate(scoped_refptr<AppState> app_state);
+  void DoUpdateApp(scoped_refptr<AppState> app_state);
 
   scoped_refptr<UpdateService> service_proxy_;
   ScopedIPCSupportWrapper ipc_support_;
@@ -105,6 +170,7 @@ void UpdaterUtilApp::PrintUsage(const std::string& error_message) {
             << " [action...] [parameters...]"
             << R"(
     Actions:
+        --update            Update app(s).
         --list-apps         List all registered apps.
         --list-update       List update for an app (skip update install).
     Action parameters:
@@ -200,10 +266,45 @@ void UpdaterUtilApp::DoListUpdate(scoped_refptr<AppState> app_state) {
           app_state, base::BindOnce(&UpdaterUtilApp::Shutdown, this)));
 }
 
+void UpdaterUtilApp::Update() {
+  const std::string app_id =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kProductSwitch);
+  if (app_id.empty()) {
+    service_proxy_->UpdateAll(
+        base::BindRepeating(OnAppStateChanged),
+        base::BindOnce(
+            [](base::OnceCallback<void(int)> cb, UpdateService::Result result) {
+              OnUpdateComplete(std::move(cb), result);
+            },
+            base::BindOnce(&UpdaterUtilApp::Shutdown, this)));
+  } else {
+    FindApp(app_id, base::BindOnce(&UpdaterUtilApp::DoUpdateApp, this));
+  }
+}
+
+void UpdaterUtilApp::DoUpdateApp(scoped_refptr<AppState> app_state) {
+  if (!app_state) {
+    Shutdown(1);
+    return;
+  }
+
+  service_proxy_->Update(
+      app_state->app_id(), /*install_data_index=*/"", Priority(),
+      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      base::BindRepeating(OnAppStateChanged),
+      base::BindOnce(
+          [](base::OnceCallback<void(int)> cb, UpdateService::Result result) {
+            OnUpdateComplete(std::move(cb), result);
+          },
+          base::BindOnce(&UpdaterUtilApp::Shutdown, this)));
+}
+
 void UpdaterUtilApp::FirstTaskRun() {
   const std::map<std::string, void (UpdaterUtilApp::*)()> commands = {
       {kListAppsSwitch, &UpdaterUtilApp::ListApps},
       {kListUpdateSwitch, &UpdaterUtilApp::ListUpdate},
+      {kUpdateSwitch, &UpdaterUtilApp::Update},
   };
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -225,8 +326,6 @@ int UpdaterUtilMain(int argc, char** argv) {
   const base::ScopedClosureRunner shutdown_thread_pool(
       base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
-
-  VLOG(0) << base::CommandLine::ForCurrentProcess()->GetCommandLineString();
   return base::MakeRefCounted<UpdaterUtilApp>()->Run();
 }
 
