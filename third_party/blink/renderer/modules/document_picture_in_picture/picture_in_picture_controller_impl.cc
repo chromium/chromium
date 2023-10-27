@@ -308,6 +308,8 @@ void PictureInPictureControllerImpl::OnExitedPictureInPicture(
         event_type_names::kLeavepictureinpicture,
         WrapPersistent(picture_in_picture_window_.Get())));
 
+    picture_in_picture_window_ = nullptr;
+
     // Register the video frame sink back to the element when the PiP window
     // is closed and if the video is not unset.
     if (element->GetWebMediaPlayer()) {
