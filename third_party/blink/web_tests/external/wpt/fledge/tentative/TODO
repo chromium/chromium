@@ -60,6 +60,7 @@ Need tests for (likely not a complete list):
   * Across scoreAd() / generateBid() calls, and with report calls.
   * In "group-by-origin" execution mode across IGs joined from different
       origins, and between generateBid() and reportWin().
+* Test Content-Type headers allowed in responess for script/wasm/JSON fetches.
 
 If possible:
 * Aggregate reporting.

@@ -12,10 +12,13 @@ from wptserve.utils import isomorphic_decode, isomorphic_encode
 # clean up after themselves, or that are running concurrently, from interfering
 # with other tests.
 #
-# Each uuid has a stash entry with a dictionary with two entries:
+# Each uuid has a stash entry with a dictionary with the following entries:
 #     "trackedRequests" is a list of all observed requested URLs with a
 #         dispatch of "track_get" or "track_post". POSTS are in the format
 #         "<url>, body: <body>".
+#     "trackedHeaders" is an object mapping HTTP header names to lists
+#         of received HTTP header values for a single request with a
+#         dispatch of "track_headers".
 #     "errors" is a list of an errors that occurred.
 #
 # A dispatch of "tracked_data" will return all tracked information associated
@@ -39,7 +42,7 @@ def main(request, response):
     with stash.lock:
         # Take ownership of stashed entry, if any. This removes the entry of the
         # stash.
-        server_state = stash.take(uuid) or {"trackedRequests": [], "errors": []}
+        server_state = stash.take(uuid) or {"trackedRequests": [], "errors": [], "trackedHeaders": None}
 
         # Clear the entire stash. No work to do, since stash entry was already
         # removed.
@@ -80,6 +83,22 @@ def main(request, response):
             else:
                 server_state["trackedRequests"].append(
                     request.url + ", body: " + request.body.decode("utf-8"))
+            stash.put(uuid, server_state)
+            return simple_response(request, response, 200, b"OK", b"")
+
+        # Tracks request headers for a single request.
+        if dispatch == b"track_headers":
+            if server_state["trackedHeaders"] != None:
+                server_state["errors"].append("Second track_headers request received.")
+            else:
+                headers = {}
+                for pair in request.headers.items():
+                    values = []
+                    for value in pair[1]:
+                        values.append(value.decode('ASCII'))
+                    headers[pair[0].decode('ASCII')] = values
+                server_state["trackedHeaders"] = headers
+
             stash.put(uuid, server_state)
             return simple_response(request, response, 200, b"OK", b"")
 
