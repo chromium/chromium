@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {mobileNav} from 'chrome://interstitials/common/resources/interstitial_mobile_nav.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {HIDDEN_CLASS} from './constants.js';
 import {Runner} from './offline.js';
@@ -374,6 +375,9 @@ function onDocumentLoadOrUpdate() {
 }
 
 function onDocumentLoad() {
+  // `loadTimeDataRaw` is injected to the `window` scope from C++.
+  loadTimeData.data = window.loadTimeDataRaw;
+
   // Sets up the proper button layout for the current platform.
   const buttonsDiv = document.getElementById('buttons');
   if (primaryControlOnLeft) {

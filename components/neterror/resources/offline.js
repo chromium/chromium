@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
 import {HIDDEN_CLASS} from './constants.js';
 import {CollisionBox, spriteDefinitionByType} from './offline-sprite-definitions.js';
 
