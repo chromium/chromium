@@ -231,7 +231,7 @@ class ReadAnythingAppController
                           int letter_spacing);
   void SetLanguageForTesting(const std::string& language_code);
 
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;
+  const int render_frame_id_;
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
       page_handler_factory_;

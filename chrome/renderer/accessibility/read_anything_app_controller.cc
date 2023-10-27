@@ -378,9 +378,9 @@ ReadAnythingAppController* ReadAnythingAppController::Install(
 
 ReadAnythingAppController::ReadAnythingAppController(
     content::RenderFrame* render_frame)
-    : render_frame_(render_frame) {
+    : render_frame_id_(render_frame->GetRoutingID()) {
   distiller_ = std::make_unique<AXTreeDistiller>(
-      render_frame_,
+      render_frame,
       base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
                           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -411,12 +411,14 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 }
 
 void ReadAnythingAppController::ExecuteJavaScript(std::string script) {
-  if (!render_frame_) {
+  content::RenderFrame* render_frame =
+      content::RenderFrame::FromRoutingID(render_frame_id_);
+  if (!render_frame) {
     return;
   }
   // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
-  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+  render_frame->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
 void ReadAnythingAppController::OnActiveAXTreeIDChanged(
@@ -941,10 +943,12 @@ void ReadAnythingAppController::OnConnected() {
   page_handler_factory_->CreateUntrustedPageHandler(
       receiver_.BindNewPipeAndPassRemote(),
       page_handler_.BindNewPipeAndPassReceiver());
-  if (!render_frame_) {
+  content::RenderFrame* render_frame =
+      content::RenderFrame::FromRoutingID(render_frame_id_);
+  if (!render_frame) {
     return;
   }
-  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame->GetBrowserInterfaceBroker()->GetInterface(
       std::move(page_handler_factory_receiver));
 }
 
@@ -1201,11 +1205,13 @@ void ReadAnythingAppController::SetDefaultLanguageCode(
 void ReadAnythingAppController::SetContentForTesting(
     v8::Local<v8::Value> v8_snapshot_lite,
     std::vector<ui::AXNodeID> content_node_ids) {
-  if (!render_frame_) {
+  content::RenderFrame* render_frame =
+      content::RenderFrame::FromRoutingID(render_frame_id_);
+  if (!render_frame) {
     return;
   }
   v8::Isolate* isolate =
-      render_frame_->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+      render_frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
   ui::AXTreeUpdate snapshot =
       GetSnapshotFromV8SnapshotLite(isolate, v8_snapshot_lite);
   ui::AXEvent selectionEvent;
