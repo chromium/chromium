@@ -17,8 +17,10 @@
 
 # HOW:
 # By using the bazel aquery command, the script extracts source files and
-# flags from CppCompile actions. These are then put into a configuration that
-# gn will accept.
+# flags from CppCompile actions for each configured architecture. These are
+# then put into a configuration that gn will accept. The source_set's are kept
+# separate for each architecture, with the "xnnpack" source_set selecting the
+# correct dependencies based on "current_cpu".
 #
 # WHY:
 # The biggest difficulty of this process is that gn expects each source's
@@ -83,7 +85,14 @@ config("xnnpack_config") {
     "XNN_ENABLE_SPARSE=1",
     "XNN_LOG_LEVEL=0",
     "XNN_LOG_TO_STDIO=0",
-]
+  ]
+
+  if (current_cpu == "arm64") {
+    defines += [
+      "XNN_ENABLE_ARM_DOTPROD=1",
+      "XNN_ENABLE_ARM_I8MM=1",
+    ]
+  }
 }
 '''.strip()
 
@@ -99,8 +108,7 @@ source_set("xnnpack") {
 %SRCS%
   ]
 
-  deps = [
-%TARGETS%,
+  deps = xnnpack_deps + [
     "//third_party/cpuinfo",
     "//third_party/fp16",
     "//third_party/fxdiv",
@@ -122,8 +130,7 @@ source_set("xnnpack_standalone") {
 %SRCS%
   ]
 
-  deps = [
-%STANDALONE_TARGETS%,
+  deps = xnnpack_standalone_deps + [
     "//third_party/cpuinfo",
     "//third_party/fp16",
     "//third_party/fxdiv",
@@ -350,14 +357,16 @@ SourceSet = collections.namedtuple('SourceSet', ['dir', 'srcs', 'args'],
                                    defaults=['', [], []])
 
 
-def NameForSourceSet(source_set):
+def NameForSourceSet(source_set, arch):
   """
   Returns the name to use for a SourceSet in the gn target.
   """
   if source_set.dir == 'xnnpack':
     return 'xnnpack'
-  if len(source_set.args) == 0:
-    return source_set.dir
+  if not source_set.args:
+    # Note this creates some target redundancy when the source set is the same
+    # between architectures.
+    return f'{source_set.dir}_{arch}'
   return '{dir}_{args}'.format(
       **{
           'dir': source_set.dir,
@@ -480,7 +489,7 @@ def GenerateObjectBuilds(cpu):
   Args:
     cpu: aarch64 or k8
   """
-  logging.info('Querying xnnpack compile commands with bazel...')
+  logging.info(f'Querying xnnpack compile commands for {cpu} with bazel...')
   basename = os.path.basename(_TOOLCHAIN_DIR)
   crosstool_top = f'//tensorflow/lite/{basename}:cc_suite'
   logs = _run_bazel_cmd([
@@ -497,7 +506,18 @@ def GenerateObjectBuilds(cpu):
   logging.info('parsing actions from bazel aquery...')
   obs = []
   aquery_json = json.loads(logs)
+
+  # TODO: b/305060707 - This can be removed when the submodule is updated past:
+  #   2007bc117 BUILD.bazel,:operators: depend on :jit conditionally
+  jit_target_id = -1
+  for target in aquery_json["targets"]:
+    if target["label"] == "@XNNPACK//:jit":
+      jit_target_id = target["id"]
+      break
+
   for action in aquery_json["actions"]:
+    if action["targetId"] == jit_target_id:
+      continue
     ob = _objectbuild_from_bazel_log(action)
     if ob:
       obs.append(ob)
@@ -505,16 +525,20 @@ def GenerateObjectBuilds(cpu):
   return obs
 
 
-def CombineObjectBuildsIntoSourceSets(obs):
+def CombineObjectBuildsIntoSourceSets(obs, arch):
   """
   Combines all the given ObjectBuild's into SourceSet's by combining source
   files whose SourceSet name's (that is their directory and compiler flags)
   match.
+
+  Args:
+    obs: a list of ObjectBuild's
+    arch: CPU architecture, arm64 or x64
   """
   sss = {}
   for ob in obs:
     single = SourceSet(dir=ob.dir, srcs=[ob.src], args=ob.args)
-    name = NameForSourceSet(single)
+    name = NameForSourceSet(single, arch)
     if name not in sss:
       sss[name] = single
     else:
@@ -524,24 +548,64 @@ def CombineObjectBuildsIntoSourceSets(obs):
   xxnpack_ss = sss.pop('xnnpack')
   logging.info('Generated %d sub targets for xnnpack' % len(sss))
   return xxnpack_ss, sorted(list(sss.values()),
-                            key=lambda ss: NameForSourceSet(ss))
+                            key=lambda ss: NameForSourceSet(ss, arch))
 
 
-def MakeTargetSourceSet(ss):
+def MakeTargetSourceSet(ss, arch):
   """
   Generates the BUILD file text for a build target that supports the main
   XNNPACK target, returning it as a string.
+
+  Args:
+    ss: a SourceSet
+    arch: CPU architecture, arm64 or x64
   """
   target = _TARGET_TMPL
   target = target.replace(
       '%ARGS%', ',\n'.join(['    "%s"' % arg for arg in sorted(ss.args)]))
   target = target.replace(
       '%SRCS%', ',\n'.join(['    "%s"' % src for src in sorted(ss.srcs)]))
-  target = target.replace('%TARGET_NAME%', NameForSourceSet(ss))
+  target = target.replace('%TARGET_NAME%', NameForSourceSet(ss, arch))
   return target
 
 
-def MakeXNNPACKSourceSet(ss, other_targets):
+def MakeXNNPACKDepsList(target_sss):
+  """
+  Creates xnnpack_deps[] and xnnpack_standalone_deps[] for each cpu in
+  target_sss. These used by the xnnpack and xnnpack_standalone source_set's to
+  set deps[].
+  """
+  deps_list = ''
+  for cpu, sss in target_sss.items():
+    targets = sorted([NameForSourceSet(ss, cpu) for ss in sss])
+    if (deps_list):
+      deps_list += '} else '
+    # x86-64 and x86 are treated equivalently in XNNPACK's build.
+    if (cpu == 'x64'):
+      deps_list += 'if (current_cpu == "x64" || current_cpu == "x86") {'
+    else:
+      deps_list += f'if (current_cpu == "{cpu}") {{'
+    xnnpack_deps = ',\n'.join(['    ":%s"' % t for t in targets])
+    xnnpack_standalone_deps = ',\n'.join(
+        ['    ":%s_standalone"' % t for t in targets])
+    deps_list += f'''
+  xnnpack_deps = [
+{xnnpack_deps}
+  ]
+
+  xnnpack_standalone_deps = [
+{xnnpack_standalone_deps}
+  ]
+'''
+  deps_list += '} else {\n'
+  deps_list += '  xnnpack_deps = []\n'
+  deps_list += '  xnnpack_standalone_deps = []\n'
+  deps_list += '}'
+
+  return deps_list
+
+
+def MakeXNNPACKSourceSet(ss):
   """
   Generates the BUILD file text for the main XNNPACK build target, given the
   XNNPACK SourceSet and the names of all its supporting targets.
@@ -549,11 +613,6 @@ def MakeXNNPACKSourceSet(ss, other_targets):
   target = _MAIN_TMPL
   target = target.replace(
       '%SRCS%', ',\n'.join(['    "%s"' % src for src in sorted(ss.srcs)]))
-  target = target.replace(
-      '%TARGETS%', ',\n'.join(['    ":%s"' % t for t in sorted(other_targets)]))
-  target = target.replace(
-      '%STANDALONE_TARGETS%',
-      ',\n'.join(['    ":%s_standalone"' % t for t in sorted(other_targets)]))
   return target
 
 
@@ -563,32 +622,60 @@ def main():
   if platform.system() != 'Linux':
     logging.error('This script only supports running under Linux!')
     sys.exit(1)
-  if not os.access(_X86_64_LINUX_GCC, os.X_OK):
-    logging.error(f'{_X86_64_LINUX_GCC} is required!')
-    logging.error('On x86-64 Debian, install gcc.')
+  if not (os.access(_AARCH64_LINUX_GCC, os.X_OK)
+          and os.access(_X86_64_LINUX_GCC, os.X_OK)):
+    logging.error(f'{_AARCH64_LINUX_GCC} and {_X86_64_LINUX_GCC} are required!')
+    logging.error('On x86-64 Debian, install gcc-aarch64-linux-gnu and gcc.')
     sys.exit(1)
 
   CreateToolchainFiles()
 
-  obs = GenerateObjectBuilds('k8')
-  xnnpack_ss, other_sss = CombineObjectBuildsIntoSourceSets(obs)
+  # Create SourceSet's for each target architecture.
+  xnnpack_ss = {}
+  other_sss = {}
+  gn_to_bazel_cpus = {'x64': 'k8', 'arm64': 'aarch64'}
+  for gn_cpu, bazel_cpu in gn_to_bazel_cpus.items():
+    obs = GenerateObjectBuilds(bazel_cpu)
+    xnnpack_ss[gn_cpu], other_sss[gn_cpu] = CombineObjectBuildsIntoSourceSets(
+        obs, gn_cpu)
 
-  sub_targets = []
-  for ss in other_sss:
-    sub_targets.append(MakeTargetSourceSet(ss))
-  xnnpack_target = MakeXNNPACKSourceSet(
-      xnnpack_ss, [NameForSourceSet(ss) for ss in other_sss])
+  # Generate sub-target gn source_set's for each target architecture.
+  sub_targets = {}
+  for gn_cpu, sss in other_sss.items():
+    sub_targets[gn_cpu] = []
+    for ss in sss:
+      sub_targets[gn_cpu].append(MakeTargetSourceSet(ss, gn_cpu))
+  # Create a dependency list containing the source_set's for use by the main
+  # "xnnpack" target.
+  xnnpack_deps = MakeXNNPACKDepsList(other_sss)
+
+  # The sources for the "xnnpack" target are assumed to be the same for each
+  # target architecture.
+  for cpu in xnnpack_ss:
+    if cpu == 'x64': continue
+    assert sorted(xnnpack_ss[cpu].srcs) == sorted(xnnpack_ss['x64'].srcs)
+    assert sorted(xnnpack_ss[cpu].args) == sorted(xnnpack_ss['x64'].args)
+  xnnpack_target = MakeXNNPACKSourceSet(xnnpack_ss['x64'])
 
   out_path = os.path.join(_xnnpack_dir(), 'BUILD.gn')
   logging.info('Writing to ' + out_path)
   with open(out_path, 'w') as f:
     f.write(_HEADER)
-    f.write('\n')
-    f.write(xnnpack_target)
     f.write('\n\n')
-    for target in sub_targets:
-      f.write(target)
-      f.write('\n\n')
+    f.write(xnnpack_deps)
+    f.write('\n\n')
+    f.write(xnnpack_target)
+    f.write('\n')
+    for gn_cpu in sub_targets:
+      # x86-64 and x86 are treated equivalently in XNNPACK's build.
+      if (gn_cpu == 'x64'):
+        f.write('\nif (current_cpu == "x64" || current_cpu == "x86") {\n')
+      else:
+        f.write(f'\nif (current_cpu == "{gn_cpu}") {{\n')
+      for target in sub_targets[gn_cpu]:
+        f.write(target)
+        f.write('\n\n')
+      f.write('}\n')
 
   logging.info('Done! Please run `git cl format`')
 
