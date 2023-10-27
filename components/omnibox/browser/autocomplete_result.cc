@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/intranet_redirector_state.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
@@ -780,7 +781,7 @@ void AutocompleteResult::ConvertOpenTabMatches(
         // The default action for suggestions from the open tab provider in
         // keyword mode is to switch to the open tab so no button is necessary.
         if (!match.from_keyword ||
-            match.provider->type() != AutocompleteProvider::TYPE_OPEN_TAB) {
+            match.provider->type() != AutocompleteProviderType::kOpenTab) {
           match.actions.push_back(
               base::MakeRefCounted<TabSwitchAction>(match.destination_url));
         }

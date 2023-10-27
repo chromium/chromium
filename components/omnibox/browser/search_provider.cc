@@ -32,6 +32,7 @@
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -139,7 +140,7 @@ class SearchProvider::CompareScoredResults {
 
 SearchProvider::SearchProvider(AutocompleteProviderClient* client,
                                AutocompleteProviderListener* listener)
-    : BaseSearchProvider(AutocompleteProvider::TYPE_SEARCH, client),
+    : BaseSearchProvider(AutocompleteProviderType::kSearch, client),
       providers_(client->GetTemplateURLService()),
       answers_cache_(10) {
   AddListener(listener);

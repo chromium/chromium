@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -207,14 +208,14 @@ size_t HUPScoringParams::EstimateMemoryUsage() const {
   return res;
 }
 
-int OmniboxFieldTrial::GetDisabledProviderTypes() {
+AutocompleteProviderType OmniboxFieldTrial::GetDisabledProviderTypes() {
   const std::string& types_string = base::GetFieldTrialParamValue(
       kBundledExperimentFieldTrialName, kDisableProvidersRule);
   int types = 0;
   if (types_string.empty() || !base::StringToInt(types_string, &types)) {
-    return 0;
+    return AutocompleteProviderType::kNone;
   }
-  return types;
+  return static_cast<AutocompleteProviderType>(types);
 }
 
 void OmniboxFieldTrial::GetActiveSuggestFieldTrialHashes(
@@ -289,7 +290,7 @@ void OmniboxFieldTrial::GetDemotionsByType(
 }
 
 size_t OmniboxFieldTrial::GetProviderMaxMatches(
-    AutocompleteProvider::Type provider) {
+    AutocompleteProviderType provider) {
   size_t default_max_matches_per_provider = 3;
 
   std::string param_value;
@@ -319,7 +320,7 @@ size_t OmniboxFieldTrial::GetProviderMaxMatches(
 
       if (kv_pair.first == "*") {
         default_max_matches_per_provider = v;
-      } else if (k == provider) {
+      } else if (k == static_cast<int>(provider)) {
         return v;
       }
     }

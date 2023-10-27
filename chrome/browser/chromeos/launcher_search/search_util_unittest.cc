@@ -11,6 +11,7 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,9 +21,9 @@ namespace crosapi {
 namespace {
 
 TEST(SearchUtilTest, ProviderTypes) {
-  const int types = ProviderTypes();
-  EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
-  EXPECT_TRUE(types & AutocompleteProvider::TYPE_OPEN_TAB);
+  const AutocompleteProviderType types = ProviderTypes();
+  EXPECT_FALSE(!!(types & AutocompleteProviderType::kDocument));
+  EXPECT_TRUE(!!(types & AutocompleteProviderType::kOpenTab));
 }
 
 // Tests result conversion for a default answer result.

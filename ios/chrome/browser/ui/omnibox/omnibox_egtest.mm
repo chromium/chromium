@@ -8,9 +8,11 @@
 #import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
+#import "components/omnibox/browser/autocomplete_provider_type.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -1342,9 +1344,13 @@ void FocusFakebox() {
   config.additional_args.push_back("--force-fieldtrials=" + bundledConfig +
                                    "/Test");
   // Disable all autocomplete providers except the history url provider.
+  int all_providers = (1 << 30) - 1;
   config.additional_args.push_back(
       "--force-fieldtrial-params=" + bundledConfig +
-      ".Test:" + "DisableProviders" + "/" + "524279");
+      ".Test:" + "DisableProviders" + "/" +
+      base::NumberToString(
+          all_providers &
+          static_cast<int>(~AutocompleteProviderType::kHistoryUrl)));
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self populateHistory];

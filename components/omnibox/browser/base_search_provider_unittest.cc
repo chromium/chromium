@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
@@ -72,7 +73,7 @@ class TestBaseSearchProvider : public BaseSearchProvider {
  public:
   typedef BaseSearchProvider::MatchMap MatchMap;
 
-  TestBaseSearchProvider(AutocompleteProvider::Type type,
+  TestBaseSearchProvider(AutocompleteProviderType type,
                          AutocompleteProviderClient* client)
       : BaseSearchProvider(type, client) {}
   TestBaseSearchProvider(const TestBaseSearchProvider&) = delete;
@@ -118,7 +119,7 @@ class BaseSearchProviderTestFixture {
     client_->set_template_url_service(std::move(template_url_service));
 
     provider_ = new NiceMock<TestBaseSearchProvider>(
-        AutocompleteProvider::TYPE_SEARCH, client_.get());
+        AutocompleteProviderType::kSearch, client_.get());
   }
 
   base::test::TaskEnvironment task_environment_;

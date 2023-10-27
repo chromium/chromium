@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
@@ -334,11 +335,11 @@ TEST_F(AutocompleteControllerMetricsTest,
 
 TEST_F(AutocompleteControllerMetricsTest, Provider_SyncAndAsyncCompletion) {
   scoped_refptr<FakeAutocompleteProvider> async_provider_done_sync =
-      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
+      new FakeAutocompleteProvider(AutocompleteProviderType::kBookmark);
   scoped_refptr<FakeAutocompleteProvider> async_provider_done_not_last =
-      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_KEYWORD);
+      new FakeAutocompleteProvider(AutocompleteProviderType::kKeyword);
   scoped_refptr<FakeAutocompleteProvider> async_provider_done_last =
-      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BUILTIN);
+      new FakeAutocompleteProvider(AutocompleteProviderType::kBuiltin);
 
   // Sync update with `async_provider_done_sync` completing.
   metrics_->OnStart();
@@ -377,7 +378,7 @@ TEST_F(AutocompleteControllerMetricsTest, Provider_SyncAndAsyncCompletion) {
 TEST_F(AutocompleteControllerMetricsTest,
        Provider_1ProviderWithMultipleUpdates) {
   scoped_refptr<FakeAutocompleteProvider> provider =
-      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
+      new FakeAutocompleteProvider(AutocompleteProviderType::kBookmark);
 
   // Sync update without completion.
   metrics_->OnStart();
@@ -409,9 +410,9 @@ TEST_F(AutocompleteControllerMetricsTest,
 
 TEST_F(AutocompleteControllerMetricsTest, Provider_Interrupted) {
   scoped_refptr<FakeAutocompleteProvider> provider_started =
-      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
+      new FakeAutocompleteProvider(AutocompleteProviderType::kBookmark);
   scoped_refptr<FakeAutocompleteProvider> provider_not_started =
-      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
+      new FakeAutocompleteProvider(AutocompleteProviderType::kSearch);
 
   controller_.providers_.push_back(provider_started);
   controller_.providers_.push_back(provider_not_started);

@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_model_update_listener.h"
@@ -108,7 +109,7 @@ OnDeviceHeadProvider* OnDeviceHeadProvider::Create(
 OnDeviceHeadProvider::OnDeviceHeadProvider(
     AutocompleteProviderClient* client,
     AutocompleteProviderListener* listener)
-    : AutocompleteProvider(AutocompleteProvider::TYPE_ON_DEVICE_HEAD),
+    : AutocompleteProvider(AutocompleteProviderType::kOnDeviceHead),
       client_(client),
       worker_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT,

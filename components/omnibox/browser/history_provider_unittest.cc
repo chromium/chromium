@@ -9,6 +9,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +19,7 @@ namespace {
 class TestHistoryProvider : public HistoryProvider {
  public:
   explicit TestHistoryProvider(AutocompleteProviderClient* client)
-      : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_QUICK, client) {}
+      : HistoryProvider(AutocompleteProviderType::kHistoryQuick, client) {}
   TestHistoryProvider(const TestHistoryProvider&) = delete;
   TestHistoryProvider& operator=(const TestHistoryProvider&) = delete;
 

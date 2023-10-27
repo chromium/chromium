@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -165,8 +166,7 @@ void LocalHistoryZeroSuggestProvider::DeleteMatch(
 LocalHistoryZeroSuggestProvider::LocalHistoryZeroSuggestProvider(
     AutocompleteProviderClient* client,
     AutocompleteProviderListener* listener)
-    : AutocompleteProvider(
-          AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY),
+    : AutocompleteProvider(AutocompleteProviderType::kZeroSuggestLocalHistory),
       max_matches_(AutocompleteResult::GetMaxMatches(true)),
       client_(client) {
   AddListener(listener);

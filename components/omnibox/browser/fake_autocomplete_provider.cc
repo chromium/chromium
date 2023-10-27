@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 
-FakeAutocompleteProvider::FakeAutocompleteProvider(Type type)
+FakeAutocompleteProvider::FakeAutocompleteProvider(
+    AutocompleteProviderType type)
     : AutocompleteProvider(type) {}
 
 void FakeAutocompleteProvider::Start(const AutocompleteInput& input,

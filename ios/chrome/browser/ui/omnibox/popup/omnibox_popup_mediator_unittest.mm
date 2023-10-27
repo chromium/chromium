@@ -15,6 +15,7 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
+#import "components/omnibox/browser/autocomplete_provider_type.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -122,7 +123,7 @@ class OmniboxPopupMediatorTest : public PlatformTest {
     client->set_template_url_service(std::move(template_url_service));
     auto autocomplete_controller =
         std::make_unique<testing::StrictMock<AutocompleteController>>(
-            std::move(client), 0);
+            std::move(client), AutocompleteProviderType::kNone);
 
     std::unique_ptr<image_fetcher::ImageDataFetcher> mock_image_data_fetcher =
         std::make_unique<MockImageDataFetcher>();

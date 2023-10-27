@@ -11,6 +11,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/search_engines/search_terms_data.h"
@@ -187,16 +188,17 @@ SearchResultPtr CreateBaseResult(const AutocompleteMatch& match,
 
 }  // namespace
 
-int ProviderTypes() {
+AutocompleteProviderType ProviderTypes() {
   // We use all the default providers except for the document provider, which
   // suggests Drive files on enterprise devices. This is disabled to avoid
   // duplication with search results from DriveFS.
-  int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
-                  ~AutocompleteProvider::TYPE_DOCUMENT;
+  AutocompleteProviderType providers =
+      AutocompleteClassifier::DefaultOmniboxProviders() &
+      ~AutocompleteProviderType::kDocument;
 
   // The open tab provider is not included in the default providers, so add it
   // in manually.
-  providers |= AutocompleteProvider::TYPE_OPEN_TAB;
+  providers |= AutocompleteProviderType::kOpenTab;
 
   return providers;
 }

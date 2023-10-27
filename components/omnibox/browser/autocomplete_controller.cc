@@ -44,6 +44,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/bookmark_provider.h"
@@ -210,10 +211,10 @@ std::u16string GetDomain(const AutocompleteMatch& match) {
 void AutocompleteController::ExtendMatchSubtypes(
     const AutocompleteMatch& match,
     base::flat_set<omnibox::SuggestSubtype>* subtypes) {
-  // If provider is TYPE_ZERO_SUGGEST_LOCAL_HISTORY, TYPE_ZERO_SUGGEST, or
-  // TYPE_ON_DEVICE_HEAD, set the subtype accordingly.
+  // If provider is kZeroSuggestLocalHistory, kZeroSuggest, or kOnDeviceHead,
+  // set the subtype accordingly.
   if (match.provider) {
-    if (match.provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST) {
+    if (match.provider->type() == AutocompleteProviderType::kZeroSuggest) {
       // Make sure changes here are reflected in UpdateAssistedQueryStats()
       // below in which the zero-prefix suggestions are counted.
       // We abuse this subtype and use it to for zero-suggest suggestions that
@@ -230,19 +231,18 @@ void AutocompleteController::ExtendMatchSubtypes(
       } else if (match.type == AutocompleteMatchType::TILE_REPEATABLE_QUERY) {
         subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES);
       }
-    } else if (match.provider->type() ==
-               AutocompleteProvider::TYPE_QUERY_TILE) {
+    } else if (match.provider->type() == AutocompleteProviderType::kQueryTile) {
       DCHECK(is_android);
       // QueryTiles are now shown in zero-prefix context on Android.
       subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_QUERY_TILE);
     } else if (match.provider->type() ==
-               AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
+               AutocompleteProviderType::kOnDeviceHead) {
       // This subtype indicates a match from an on-device head provider.
       subtypes->emplace(omnibox::SUBTYPE_SUGGEST_2G_LITE);
       // Make sure changes here are reflected in UpdateAssistedQueryStats()
       // below in which the zero-prefix suggestions are counted.
     } else if (match.provider->type() ==
-               AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY) {
+               AutocompleteProviderType::kZeroSuggestLocalHistory) {
       subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY);
     }
   }
@@ -312,7 +312,7 @@ void AutocompleteController::ExtendMatchSubtypes(
 
 AutocompleteController::AutocompleteController(
     std::unique_ptr<AutocompleteProviderClient> provider_client,
-    int provider_types,
+    AutocompleteProviderType provider_types,
     bool is_cros_launcher,
     bool disable_ml)
     : provider_client_(std::move(provider_client)),
@@ -353,7 +353,7 @@ AutocompleteController::AutocompleteController(
   // TODO(manukh): Move this to `InitializeAsyncProviders()`.
 #if !BUILDFLAG(IS_IOS)
   // HistoryClusters is not enabled on iOS.
-  if (provider_types & AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER &&
+  if (!!(provider_types & AutocompleteProviderType::kHistoryCluster) &&
       history_clusters::IsApplicationLocaleSupportedByJourneys(
           provider_client_->GetApplicationLocale()) &&
       search_provider_ != nullptr && history_url_provider_ != nullptr &&
@@ -798,8 +798,9 @@ void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,
       std::next(result.begin(), begin), std::next(result.begin(), end));
 }
 
-void AutocompleteController::InitializeAsyncProviders(int provider_types) {
-  if (provider_types & AutocompleteProvider::TYPE_SEARCH) {
+void AutocompleteController::InitializeAsyncProviders(
+    AutocompleteProviderType provider_types) {
+  if (!!(provider_types & AutocompleteProviderType::kSearch)) {
     search_provider_ = new SearchProvider(provider_client_.get(), this);
     providers_.push_back(search_provider_.get());
   }
@@ -814,55 +815,56 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
   // doing its thing by the time the `HistoryURLProvider` task runs. (And hope
   // that it completes before `AutocompleteController::Start()` is called the
   // next time.)
-  if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL) {
+  if (!!(provider_types & AutocompleteProviderType::kHistoryUrl)) {
     history_url_provider_ =
         new HistoryURLProvider(provider_client_.get(), this);
     providers_.push_back(history_url_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_DOCUMENT) {
+  if (!!(provider_types & AutocompleteProviderType::kDocument)) {
     document_provider_ = DocumentProvider::Create(provider_client_.get(), this);
     providers_.push_back(document_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
+  if (!!(provider_types & AutocompleteProviderType::kOnDeviceHead)) {
     on_device_head_provider_ =
         OnDeviceHeadProvider::Create(provider_client_.get(), this);
     providers_.push_back(on_device_head_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_CALCULATOR &&
+  if (!!(provider_types & AutocompleteProviderType::kCalculator) &&
       search_provider_ != nullptr) {
     providers_.push_back(
         new CalculatorProvider(provider_client_.get(), this, search_provider_));
   }
 }
 
-void AutocompleteController::InitializeSyncProviders(int provider_types) {
-  if (provider_types & AutocompleteProvider::TYPE_BOOKMARK) {
+void AutocompleteController::InitializeSyncProviders(
+    AutocompleteProviderType provider_types) {
+  if (!!(provider_types & AutocompleteProviderType::kBookmark)) {
     bookmark_provider_ = new BookmarkProvider(provider_client_.get());
     providers_.push_back(bookmark_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_BUILTIN)
+  if (!!(provider_types & AutocompleteProviderType::kBuiltin))
     providers_.push_back(new BuiltinProvider(provider_client_.get()));
-  if (provider_types & AutocompleteProvider::TYPE_HISTORY_QUICK) {
+  if (!!(provider_types & AutocompleteProviderType::kHistoryQuick)) {
     history_quick_provider_ = new HistoryQuickProvider(provider_client_.get());
     providers_.push_back(history_quick_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_KEYWORD) {
+  if (!!(provider_types & AutocompleteProviderType::kKeyword)) {
     keyword_provider_ = new KeywordProvider(provider_client_.get(), this);
     providers_.push_back(keyword_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_SHORTCUTS)
+  if (!!(provider_types & AutocompleteProviderType::kShortcuts))
     providers_.push_back(new ShortcutsProvider(provider_client_.get()));
-  if (provider_types & AutocompleteProvider::TYPE_ZERO_SUGGEST) {
+  if (!!(provider_types & AutocompleteProviderType::kZeroSuggest)) {
     zero_suggest_provider_ =
         ZeroSuggestProvider::Create(provider_client_.get(), this);
     if (zero_suggest_provider_)
       providers_.push_back(zero_suggest_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY) {
+  if (!!(provider_types & AutocompleteProviderType::kZeroSuggestLocalHistory)) {
     providers_.push_back(
         LocalHistoryZeroSuggestProvider::Create(provider_client_.get(), this));
   }
-  if (provider_types & AutocompleteProvider::TYPE_MOST_VISITED_SITES) {
+  if (!!(provider_types & AutocompleteProviderType::kMostVisitedSites)) {
     providers_.push_back(
         new MostVisitedSitesProvider(provider_client_.get(), this));
     // Note: the need for the always-present verbatim match originates from the
@@ -871,7 +873,7 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     providers_.push_back(
         new ZeroSuggestVerbatimMatchProvider(provider_client_.get()));
   }
-  if (provider_types & AutocompleteProvider::TYPE_CLIPBOARD) {
+  if (!!(provider_types & AutocompleteProviderType::kClipboard)) {
 #if !BUILDFLAG(IS_IOS)
     // On iOS, a global ClipboardRecentContent should've been created by now
     // (if enabled).  If none has been created (e.g., we're on a different
@@ -892,17 +894,17 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
       providers_.push_back(clipboard_provider_.get());
     }
   }
-  if (provider_types & AutocompleteProvider::TYPE_QUERY_TILE)
+  if (!!(provider_types & AutocompleteProviderType::kQueryTile))
     providers_.push_back(new QueryTileProvider(provider_client_.get(), this));
-  if (provider_types & AutocompleteProvider::TYPE_VOICE_SUGGEST) {
+  if (!!(provider_types & AutocompleteProviderType::kVoiceSuggest)) {
     voice_suggest_provider_ = new VoiceSuggestProvider(provider_client_.get());
     providers_.push_back(voice_suggest_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_HISTORY_FUZZY) {
+  if (!!(provider_types & AutocompleteProviderType::kHistoryFuzzy)) {
     history_fuzzy_provider_ = new HistoryFuzzyProvider(provider_client_.get());
     providers_.push_back(history_fuzzy_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_OPEN_TAB) {
+  if (!!(provider_types & AutocompleteProviderType::kOpenTab)) {
     open_tab_provider_ = new OpenTabProvider(provider_client_.get());
     providers_.push_back(open_tab_provider_.get());
   }
@@ -1616,24 +1618,24 @@ bool AutocompleteController::ShouldRunProvider(
         // lose the suggestion the keyword chip is attached to otherwise. Search
         // provider suggestions are curbed for starter pack scopes in
         // `SearchProvider::ShouldCurbDefaultSuggestions()`.
-        case AutocompleteProvider::TYPE_SEARCH:
-        case AutocompleteProvider::TYPE_KEYWORD:
+        case AutocompleteProviderType::kSearch:
+        case AutocompleteProviderType::kKeyword:
           return true;
 
         // @Bookmarks starter pack scope - run only the bookmarks provider.
-        case AutocompleteProvider::TYPE_BOOKMARK:
+        case AutocompleteProviderType::kBookmark:
           return (keyword_turl->starter_pack_id() ==
                   TemplateURLStarterPackData::kBookmarks);
 
         // @History starter pack scope - run history quick and history url
         // providers.
-        case AutocompleteProvider::TYPE_HISTORY_QUICK:
-        case AutocompleteProvider::TYPE_HISTORY_URL:
+        case AutocompleteProviderType::kHistoryQuick:
+        case AutocompleteProviderType::kHistoryUrl:
           return (keyword_turl->starter_pack_id() ==
                   TemplateURLStarterPackData::kHistory);
 
         // @Tabs starter pack scope - run the open tab provider.
-        case AutocompleteProvider::TYPE_OPEN_TAB:
+        case AutocompleteProviderType::kOpenTab:
           return (keyword_turl->starter_pack_id() ==
                   TemplateURLStarterPackData::kTabs);
 
@@ -1647,7 +1649,7 @@ bool AutocompleteController::ShouldRunProvider(
   // Open Tab Provider should only be run for @tabs starter pack mode and in the
   // CrOS launcher.  If we reach here, we're not in starter pack mode, so
   // disable the Open Tab Provider unless we're in the CrOS launcher.
-  if (provider->type() == AutocompleteProvider::TYPE_OPEN_TAB &&
+  if (provider->type() == AutocompleteProviderType::kOpenTab &&
       !is_cros_launcher_) {
     return false;
   }

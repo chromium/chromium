@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
@@ -125,9 +126,9 @@ typedef std::vector<std::pair<size_t, double>> NumMatchesScores;
 // ---------------------------------------------------------
 // For any experiment that's part of the bundled omnibox field trial.
 
-// Returns a bitmap containing AutocompleteProvider::Type values
+// Returns a bitmap containing AutocompleteProviderType values
 // that should be disabled in AutocompleteController.
-int GetDisabledProviderTypes();
+AutocompleteProviderType GetDisabledProviderTypes();
 
 // Returns whether the user is in any dynamic field trial where the
 // group has a the prefix |group_prefix|.
@@ -162,7 +163,7 @@ void GetDemotionsByType(
 
 // If the user is in an experiment group that specifies the max results for a
 // particular provider, returns the limit. Otherwise returns the default limit.
-size_t GetProviderMaxMatches(AutocompleteProvider::Type provider);
+size_t GetProviderMaxMatches(AutocompleteProviderType provider);
 
 // Returns whether the feature to limit the number of shown URL matches
 // is enabled.

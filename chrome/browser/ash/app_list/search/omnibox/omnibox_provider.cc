@@ -27,6 +27,8 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -44,13 +46,14 @@ bool IsAnswer(const AutocompleteMatch& match) {
          match.type == AutocompleteMatchType::CALCULATOR;
 }
 
-int ProviderTypes() {
+AutocompleteProviderType ProviderTypes() {
   // We use all the default providers except for the document provider, which
   // suggests Drive files on enterprise devices. This is disabled to avoid
   // duplication with search results from DriveFS.
-  int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
-                  ~AutocompleteProvider::TYPE_DOCUMENT;
-  providers |= AutocompleteProvider::TYPE_OPEN_TAB;
+  AutocompleteProviderType providers =
+      AutocompleteClassifier::DefaultOmniboxProviders() &
+      ~AutocompleteProviderType::kDocument;
+  providers |= AutocompleteProviderType::kOpenTab;
   return providers;
 }
 

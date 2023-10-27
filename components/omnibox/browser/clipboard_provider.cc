@@ -25,6 +25,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/verbatim_match.h"
@@ -132,7 +133,7 @@ void RecordDeletingClipboardSuggestionMetrics(
 ClipboardProvider::ClipboardProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener,
                                      ClipboardRecentContent* clipboard_content)
-    : AutocompleteProvider(AutocompleteProvider::TYPE_CLIPBOARD),
+    : AutocompleteProvider(AutocompleteProviderType::kClipboard),
       client_(client),
       clipboard_content_(clipboard_content),
       current_url_suggested_times_(0) {

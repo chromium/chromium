@@ -522,7 +522,7 @@ void ZeroSuggestProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 
 ZeroSuggestProvider::ZeroSuggestProvider(AutocompleteProviderClient* client,
                                          AutocompleteProviderListener* listener)
-    : BaseSearchProvider(AutocompleteProvider::TYPE_ZERO_SUGGEST, client) {
+    : BaseSearchProvider(AutocompleteProviderType::kZeroSuggest, client) {
   AddListener(listener);
 }
 

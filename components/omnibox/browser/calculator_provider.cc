@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/provider_state_service.h"
 #include "components/omnibox/browser/search_provider.h"
@@ -22,7 +23,7 @@
 CalculatorProvider::CalculatorProvider(AutocompleteProviderClient* client,
                                        AutocompleteProviderListener* listener,
                                        SearchProvider* search_provider)
-    : AutocompleteProvider(AutocompleteProvider::TYPE_CALCULATOR),
+    : AutocompleteProvider(AutocompleteProviderType::kCalculator),
       client_(client),
       search_provider_(search_provider) {
   CHECK(search_provider_);

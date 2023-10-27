@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
@@ -222,14 +223,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SendSuggestions) {
   EXPECT_EQ(u"alpha input", result.match_at(0).fill_into_edit);
   EXPECT_EQ(AutocompleteMatchType::SEARCH_OTHER_ENGINE,
             result.match_at(0).type);
-  EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+  EXPECT_EQ(AutocompleteProviderType::kKeyword,
             result.match_at(0).provider->type());
 
   // First suggestion, complete with rich description.
   {
     EXPECT_EQ(u"alpha", result.match_at(1).keyword);
     EXPECT_EQ(u"alpha input first", result.match_at(1).fill_into_edit);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+    EXPECT_EQ(AutocompleteProviderType::kKeyword,
               result.match_at(1).provider->type());
 
     std::u16string rich_description =
@@ -255,14 +256,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SendSuggestions) {
 
     EXPECT_EQ(u"alpha", result.match_at(2).keyword);
     EXPECT_EQ(u"alpha input second", result.match_at(2).fill_into_edit);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+    EXPECT_EQ(AutocompleteProviderType::kKeyword,
               result.match_at(2).provider->type());
     EXPECT_EQ(simple_description, result.match_at(2).contents);
     VerifyMatchComponents(expected_components, result.match_at(2));
 
     EXPECT_EQ(u"alpha", result.match_at(3).keyword);
     EXPECT_EQ(u"alpha input third", result.match_at(3).fill_into_edit);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+    EXPECT_EQ(AutocompleteProviderType::kKeyword,
               result.match_at(3).provider->type());
     EXPECT_EQ(simple_description, result.match_at(3).contents);
     VerifyMatchComponents(expected_components, result.match_at(3));
@@ -271,7 +272,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SendSuggestions) {
   // Final option, search what you typed.
   AutocompleteMatch match = result.match_at(4);
   EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
-  EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
+  EXPECT_EQ(AutocompleteProviderType::kSearch,
             result.match_at(4).provider->type());
   EXPECT_FALSE(match.deletable);
 }
@@ -405,7 +406,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
   // Second result: incognito-specific.
   EXPECT_EQ(u"alpha", result.match_at(1).keyword);
   EXPECT_EQ(u"alpha input incognito", result.match_at(1).fill_into_edit);
-  EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+  EXPECT_EQ(AutocompleteProviderType::kKeyword,
             result.match_at(1).provider->type());
 
   // Third result: search what you typed.
@@ -546,22 +547,22 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
   ASSERT_EQ(5u, result.size()) << AutocompleteResultAsString(result);
 
   EXPECT_EQ(u"alpha input", result.match_at(0).fill_into_edit);
-  EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+  EXPECT_EQ(AutocompleteProviderType::kKeyword,
             result.match_at(0).provider->type());
   EXPECT_FALSE(result.match_at(0).deletable);
 
   EXPECT_EQ(u"alpha input first", result.match_at(1).fill_into_edit);
-  EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+  EXPECT_EQ(AutocompleteProviderType::kKeyword,
             result.match_at(1).provider->type());
   EXPECT_FALSE(result.match_at(1).deletable);
 
   EXPECT_EQ(u"alpha input second", result.match_at(2).fill_into_edit);
-  EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+  EXPECT_EQ(AutocompleteProviderType::kKeyword,
             result.match_at(2).provider->type());
   EXPECT_TRUE(result.match_at(2).deletable);
 
   EXPECT_EQ(u"alpha input third", result.match_at(3).fill_into_edit);
-  EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+  EXPECT_EQ(AutocompleteProviderType::kKeyword,
             result.match_at(3).provider->type());
   EXPECT_FALSE(result.match_at(3).deletable);
 
@@ -656,15 +657,15 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest,
     ASSERT_EQ(4U, result.size()) << AutocompleteResultAsString(result);
 
     EXPECT_EQ(u"kw d", result.match_at(0).fill_into_edit);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+    EXPECT_EQ(AutocompleteProviderType::kKeyword,
               result.match_at(0).provider->type());
 
     EXPECT_EQ(u"kw d first", result.match_at(1).fill_into_edit);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+    EXPECT_EQ(AutocompleteProviderType::kKeyword,
               result.match_at(1).provider->type());
 
     EXPECT_EQ(u"kw d second", result.match_at(2).fill_into_edit);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+    EXPECT_EQ(AutocompleteProviderType::kKeyword,
               result.match_at(2).provider->type());
 
     EXPECT_EQ(u"kw d", result.match_at(3).fill_into_edit);
@@ -700,7 +701,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest,
               result.match_at(0).type);
 
     EXPECT_EQ(u"kw d", result.match_at(1).fill_into_edit);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+    EXPECT_EQ(AutocompleteProviderType::kKeyword,
               result.match_at(1).provider->type());
   }
 }
@@ -814,7 +815,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SetDefaultSuggestion) {
   {
     const AutocompleteMatch& match = result.match_at(0);
     EXPECT_EQ(AutocompleteMatchType::SEARCH_OTHER_ENGINE, match.type);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD, match.provider->type());
+    EXPECT_EQ(AutocompleteProviderType::kKeyword, match.provider->type());
 
     // The "description" given by the extension is shown as the "contents" in
     // the AutocompleteMatch. The XML-marked string is
@@ -883,16 +884,16 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, PassEmptySuggestions) {
     ASSERT_EQ(3u, result.size()) << AutocompleteResultAsString(result);
 
     EXPECT_EQ(u"alpha d", result.match_at(0).fill_into_edit);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+    EXPECT_EQ(AutocompleteProviderType::kKeyword,
               result.match_at(0).provider->type());
 
     EXPECT_EQ(u"alpha foo", result.match_at(1).fill_into_edit);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+    EXPECT_EQ(AutocompleteProviderType::kKeyword,
               result.match_at(1).provider->type());
 
     AutocompleteMatch match = result.match_at(2);
     EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
-    EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
+    EXPECT_EQ(AutocompleteProviderType::kSearch,
               result.match_at(2).provider->type());
   }
 
@@ -911,12 +912,12 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, PassEmptySuggestions) {
     ASSERT_EQ(2u, result.size()) << AutocompleteResultAsString(result);
 
     EXPECT_EQ(u"alpha ", result.match_at(0).fill_into_edit);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+    EXPECT_EQ(AutocompleteProviderType::kKeyword,
               result.match_at(0).provider->type());
 
     AutocompleteMatch match = result.match_at(1);
     EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
-    EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
+    EXPECT_EQ(AutocompleteProviderType::kSearch,
               result.match_at(1).provider->type());
   }
 }

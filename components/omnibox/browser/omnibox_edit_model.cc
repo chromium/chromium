@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
@@ -2251,7 +2252,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // suggestions in the existing open tab.
   bool is_open_tab_match =
       match.from_keyword &&
-      match.provider->type() == AutocompleteProvider::TYPE_OPEN_TAB;
+      match.provider->type() == AutocompleteProviderType::kOpenTab;
   if (is_open_tab_match) {
     disposition = WindowOpenDisposition::SWITCH_TO_TAB;
   }

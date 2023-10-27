@@ -9,6 +9,8 @@
 #include <string>
 
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
@@ -32,10 +34,10 @@ class AutocompleteClassifier : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  // Bitmap of AutocompleteProvider::Type values describing the default set of
+  // Bitmap of AutocompleteProviderType values describing the default set of
   // providers queried for the omnibox.  Intended to be passed to
   // AutocompleteController().
-  static int DefaultOmniboxProviders();
+  static AutocompleteProviderType DefaultOmniboxProviders();
 
   // Given some string |text| that the user wants to use for navigation,
   // determines how it should be interpreted.

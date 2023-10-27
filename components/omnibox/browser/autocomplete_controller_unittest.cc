@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -58,7 +59,7 @@ class AutocompleteControllerTest : public testing::Test {
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
     controller_ = std::make_unique<AutocompleteController>(
-        std::move(provider_client), 0, false);
+        std::move(provider_client), AutocompleteProviderType::kNone, false);
   }
 
   void set_autocomplete_matches(std::vector<AutocompleteMatch>& matches) {

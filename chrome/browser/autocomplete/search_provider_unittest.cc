@@ -40,6 +40,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
@@ -1081,7 +1082,7 @@ TEST_F(SearchProviderTest, KeywordOrderingAndDescriptions) {
   AutocompleteController controller(
       std::make_unique<TestAutocompleteProviderClient>(
           profile_.get(), &test_url_loader_factory_),
-      AutocompleteProvider::TYPE_SEARCH);
+      AutocompleteProviderType::kSearch);
   AutocompleteInput input(u"k t", metrics::OmniboxEventProto::OTHER,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
   controller.Start(input);

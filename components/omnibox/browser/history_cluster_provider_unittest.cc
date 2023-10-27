@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
@@ -85,11 +86,11 @@ class HistoryClustersProviderTest : public testing::Test,
         history_clusters_service_.get());
 
     search_provider_ =
-        new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
-    history_url_provider_ = new FakeAutocompleteProvider(
-        AutocompleteProvider::Type::TYPE_HISTORY_URL);
-    history_quick_provider_ = new FakeAutocompleteProvider(
-        AutocompleteProvider::Type::TYPE_HISTORY_QUICK);
+        new FakeAutocompleteProvider(AutocompleteProviderType::kSearch);
+    history_url_provider_ =
+        new FakeAutocompleteProvider(AutocompleteProviderType::kHistoryUrl);
+    history_quick_provider_ =
+        new FakeAutocompleteProvider(AutocompleteProviderType::kHistoryQuick);
     provider_ = new HistoryClusterProvider(
         autocomplete_provider_client_.get(), this, search_provider_.get(),
         history_url_provider_.get(), history_quick_provider_.get());

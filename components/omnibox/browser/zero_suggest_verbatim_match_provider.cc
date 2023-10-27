@@ -8,6 +8,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -39,7 +40,8 @@ bool IsVerbatimMatchEligible(
 
 ZeroSuggestVerbatimMatchProvider::ZeroSuggestVerbatimMatchProvider(
     AutocompleteProviderClient* client)
-    : AutocompleteProvider(TYPE_VERBATIM_MATCH), client_(client) {}
+    : AutocompleteProvider(AutocompleteProviderType::kVerbatimMatch),
+      client_(client) {}
 
 ZeroSuggestVerbatimMatchProvider::~ZeroSuggestVerbatimMatchProvider() = default;
 

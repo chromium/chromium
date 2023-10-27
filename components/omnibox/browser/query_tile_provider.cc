@@ -11,6 +11,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/query_tiles/tile_service.h"
@@ -27,7 +28,7 @@ constexpr base::FeatureParam<int> kCacheMaxAge(&omnibox::kQueryTilesInZPSOnNTP,
 
 QueryTileProvider::QueryTileProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener)
-    : AutocompleteProvider(AutocompleteProvider::TYPE_QUERY_TILE),
+    : AutocompleteProvider(AutocompleteProviderType::kQueryTile),
       client_(client) {
   AddListener(listener);
 }

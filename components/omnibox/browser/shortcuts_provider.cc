@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
@@ -181,7 +182,7 @@ ShortcutMatch& ShortcutsProvider::ShortcutMatch::operator=(
     const ShortcutMatch& other) = default;
 
 ShortcutsProvider::ShortcutsProvider(AutocompleteProviderClient* client)
-    : AutocompleteProvider(AutocompleteProvider::TYPE_SHORTCUTS),
+    : AutocompleteProvider(AutocompleteProviderType::kShortcuts),
       client_(client),
       backend_(client_->GetShortcutsBackend()) {
   if (backend_) {

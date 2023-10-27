@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 
 using bookmarks::BookmarkModel;
@@ -45,7 +46,7 @@ ACMatchClassifications HistoryProvider::SpansFromTermMatch(
                              non_match_style);
 }
 
-HistoryProvider::HistoryProvider(AutocompleteProvider::Type type,
+HistoryProvider::HistoryProvider(AutocompleteProviderType type,
                                  AutocompleteProviderClient* client)
     : AutocompleteProvider(type), client_(client) {}
 

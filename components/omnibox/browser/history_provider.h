@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 
 struct AutocompleteMatch;
@@ -30,7 +31,7 @@ class HistoryProvider : public AutocompleteProvider {
                                                    bool is_url);
 
  protected:
-  HistoryProvider(AutocompleteProvider::Type type,
+  HistoryProvider(AutocompleteProviderType type,
                   AutocompleteProviderClient* client);
 
   ~HistoryProvider() override;

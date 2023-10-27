@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/autocomplete_provider_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/bookmark_provider.h"
@@ -109,7 +110,7 @@ class AutocompleteController : public AutocompleteProviderListener,
       const AutocompleteMatch& match,
       base::flat_set<omnibox::SuggestSubtype>* subtypes);
 
-  // `provider_types` is a bitmap containing AutocompleteProvider::Type values
+  // `provider_types` is a bitmap containing AutocompleteProviderType values
   // that will (potentially, depending on platform, flags, etc.) be
   // instantiated. `provider_client` is passed to all those providers, and
   // is used to get access to the template URL service. `disable_ml` forces ML
@@ -117,7 +118,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // chrome://omnibox/ml.
   AutocompleteController(
       std::unique_ptr<AutocompleteProviderClient> provider_client,
-      int provider_types,
+      AutocompleteProviderType provider_types,
       bool is_cros_launcher = false,
       bool disable_ml = false);
   ~AutocompleteController() override;
@@ -298,8 +299,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   // and add them `providers_`. Split into 2 methods to avoid accidentally
   // adding providers in the wrong order (async providers should be added first
   // so that they run first).
-  void InitializeAsyncProviders(int provider_types);
-  void InitializeSyncProviders(int provider_types);
+  void InitializeAsyncProviders(AutocompleteProviderType provider_types);
+  void InitializeSyncProviders(AutocompleteProviderType provider_types);
 
   // Updates |internal_result_| to reflect the current provider state and fires
   // notifications.  If |regenerate_result| then we clear the result
