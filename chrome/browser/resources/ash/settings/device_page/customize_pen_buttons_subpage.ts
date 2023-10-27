@@ -131,9 +131,13 @@ export class SettingsCustomizePenButtonsSubpageElement extends
       return;
     }
 
-    if (!this.hasGraphicsTablets() ||
-        !this.isTabletConnected(this.getGraphicsTabletIdFromUrl())) {
+    if (!this.hasGraphicsTablets()) {
       Router.getInstance().navigateTo(routes.DEVICE);
+      return;
+    }
+
+    if (!this.isTabletConnected(this.getGraphicsTabletIdFromUrl())) {
+      Router.getInstance().navigateTo(routes.GRAPHICS_TABLET);
       return;
     }
     await this.initializePen();

@@ -38,14 +38,29 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('navigate to device page when mouse detached', async () => {
+  test(
+      'navigate to per device mouse subpage when only current mouse detached',
+      async () => {
+        assertEquals(
+            Router.getInstance().currentRoute, routes.CUSTOMIZE_MOUSE_BUTTONS);
+        const mouse: Mouse = page.selectedMouse;
+        assertTrue(!!mouse);
+        assertEquals(mouse.id, fakeMice[0]!.id);
+        // Remove fakeMice[0] from the mouse list.
+        page.mouseList = [fakeMice[1]!];
+        await flushTasks();
+        assertEquals(
+            Router.getInstance().currentRoute, routes.PER_DEVICE_MOUSE);
+      });
+
+  test('navigate to device page when all mouse detached', async () => {
     assertEquals(
         Router.getInstance().currentRoute, routes.CUSTOMIZE_MOUSE_BUTTONS);
     const mouse: Mouse = page.selectedMouse;
     assertTrue(!!mouse);
     assertEquals(mouse.id, fakeMice[0]!.id);
-    // Remove fakeMice[0] from the mouse list.
-    page.mouseList = [fakeMice[1]!];
+    // Remove all mice from the mouse list.
+    page.mouseList = [];
     await flushTasks();
     assertEquals(Router.getInstance().currentRoute, routes.DEVICE);
   });

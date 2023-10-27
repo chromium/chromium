@@ -164,8 +164,13 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       return;
     }
 
-    if (!this.hasMice() || !this.isMouseConnected(this.getMouseIdFromUrl())) {
+    if (!this.hasMice()) {
       Router.getInstance().navigateTo(routes.DEVICE);
+      return;
+    }
+
+    if (!this.isMouseConnected(this.getMouseIdFromUrl())) {
+      Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
       return;
     }
     await this.initializeMouse();
