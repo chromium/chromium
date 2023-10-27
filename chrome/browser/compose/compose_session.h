@@ -76,6 +76,10 @@ class ComposeSession : public compose::mojom::ComposeDialogPageHandler {
   void AcceptComposeResult(
       AcceptComposeResultCallback success_callback) override;
 
+  // Opens the Compose bug reporting page in a new tab when the dialog Thumbs
+  // Down button is clicked. This implementation is designed for Fishfood only.
+  void OpenBugReportingLink() override;
+
   // Non-ComposeDialogPageHandler Methods
 
   // Saves the last OK response state to the undo stack.

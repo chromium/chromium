@@ -18,6 +18,7 @@
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/proto/compose_metadata.pb.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -888,6 +889,25 @@ TEST_F(ChromeComposeClientTest, TestAcceptComposeResultCallback) {
 
   // Check that the original callback from Autofill was called correctly.
   EXPECT_EQ(u"Cucumbers", accept_callback.Take());
+}
+
+TEST_F(ChromeComposeClientTest, ThumbsDownOpensCorrectURL) {
+  GURL bug_url("https://goto.google.com/ccbrfd");
+
+  ShowDialogAndBindMojo();
+
+  ui_test_utils::TabAddedWaiter tab_add_waiter(browser());
+  page_handler()->OpenBugReportingLink();
+
+  // Wait for the resulting new tab to be created.
+  tab_add_waiter.Wait();
+  // Check that the new foreground tab is opened.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  // Check expected URL of the new tab.
+  content::WebContents* new_tab_webcontents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_EQ(bug_url, new_tab_webcontents->GetVisibleURL());
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)

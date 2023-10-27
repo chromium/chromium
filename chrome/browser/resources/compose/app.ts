@@ -246,6 +246,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
+  private onThumbsDown_() {
+    this.apiProxy_.openBugReportingLink();
+  }
+
   private compose_() {
     this.loading_ = true;
     this.response_ = undefined;

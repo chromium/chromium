@@ -25,10 +25,20 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_f.h"
+
+namespace {
+
+const char kComposeBugReportURL[] = "https://goto.google.com/ccbrfd";
+
+}  // namespace
 
 ComposeSession::ComposeSession(
     content::WebContents* web_contents,
@@ -170,6 +180,13 @@ void ComposeSession::Undo(UndoCallback callback) {
   last_ok_state_ = undo_state->Clone();
   undo_state->response->undo_available = !undo_states_.empty();
   std::move(callback).Run(std::move(undo_state));
+}
+
+void ComposeSession::OpenBugReportingLink() {
+  web_contents_->OpenURL(content::OpenURLParams(
+      GURL(kComposeBugReportURL), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      /* is_renderer_initiated= */ false));
 }
 
 void ComposeSession::SaveLastOKStateToUndoStack() {

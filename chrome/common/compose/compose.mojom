@@ -127,6 +127,10 @@ interface ComposeDialogPageHandler {
   // reject/fail, which should not be confused with a null return. In that case,
   // an undoable state may exist, but the call failed due to the broken pipe.
   Undo() => (ComposeState? last_state);
+
+  // Asks the Browser to open a new tab navigated to the Compose bug report
+  // Buganizer.
+  OpenBugReportingLink();
 };
 
 // Interface for calls from Compose dialog JS into the Browser process.

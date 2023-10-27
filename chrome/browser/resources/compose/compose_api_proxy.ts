@@ -10,6 +10,7 @@ export interface ComposeApiProxy {
   closeUi(reason: CloseReason): void;
   compose(style: StyleModifiers, input: string): void;
   getRouter(): ComposeDialogCallbackRouter;
+  openBugReportingLink(): void;
   requestInitialState(): Promise<OpenMetadata>;
   saveWebuiState(state: string): void;
   undo(): Promise<(ComposeState | null)>;
@@ -54,6 +55,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
 
   getRouter() {
     return this.router;
+  }
+
+  openBugReportingLink() {
+    this.composeDialogPageHandler.openBugReportingLink();
   }
 
   requestInitialState(): Promise<OpenMetadata> {

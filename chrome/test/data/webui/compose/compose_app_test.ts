@@ -56,6 +56,8 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     return this.router_;
   }
 
+  openBugReportingLink() {}
+
   requestInitialState(): Promise<OpenMetadata> {
     this.methodCalled('requestInitialState');
     return Promise.resolve({
