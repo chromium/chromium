@@ -30,6 +30,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/common/content_features.h"
@@ -299,6 +300,7 @@ struct CookieDeprecationExperimentEligibilityTestCase {
   content_settings::CookieControlsMode cookie_controls_mode_pref =
       content_settings::CookieControlsMode::kOff;
   ContentSetting cookie_content_setting = ContentSetting::CONTENT_SETTING_ALLOW;
+  bool tracking_protection_3pcd_enabled_pref = false;
   bool privacy_sandbox_eea_notice_acknowledged_pref = false;
   bool privacy_sandbox_row_notice_acknowledged_pref = false;
   absl::optional<base::Time> install_date = kValidInstallDate;
@@ -365,6 +367,13 @@ const CookieDeprecationExperimentEligibilityTestCase
             .expected_eligible = false,
             .expected_current_eligibility =
                 TpcdExperimentEligibility::Reason::k3pCookiesBlocked,
+        },
+        {
+            .tracking_protection_3pcd_enabled_pref = true,
+            .privacy_sandbox_eea_notice_acknowledged_pref = true,
+            .expected_eligible = true,
+            .expected_current_eligibility =
+                TpcdExperimentEligibility::Reason::kEligible,
         },
         {
             .privacy_sandbox_eea_notice_acknowledged_pref = true,
@@ -558,6 +567,8 @@ TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
                       test_case.privacy_sandbox_row_notice_acknowledged_pref);
   prefs()->SetBoolean(prefs::kPrivacySandboxM1EEANoticeAcknowledged,
                       test_case.privacy_sandbox_eea_notice_acknowledged_pref);
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled,
+                      test_case.tracking_protection_3pcd_enabled_pref);
 
   cookie_settings()->SetDefaultCookieSetting(test_case.cookie_content_setting);
 

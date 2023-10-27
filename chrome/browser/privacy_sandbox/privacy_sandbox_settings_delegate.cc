@@ -22,6 +22,7 @@
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -210,12 +211,19 @@ TpcdExperimentEligibility PrivacySandboxSettingsDelegate::
 
   // Whether third-party cookies are blocked.
   if (tpcd::experiment::kExclude3PCBlocked.Get()) {
+    const auto cookie_controls_mode =
+        static_cast<content_settings::CookieControlsMode>(
+            profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode));
+    if (cookie_controls_mode ==
+        content_settings::CookieControlsMode::kBlockThirdParty) {
+      return TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::k3pCookiesBlocked);
+    }
     scoped_refptr<content_settings::CookieSettings> cookie_settings =
         CookieSettingsFactory::GetForProfile(profile_);
     DCHECK(cookie_settings);
-    if (cookie_settings->ShouldBlockThirdPartyCookies() ||
-        cookie_settings->GetDefaultCookieSetting() ==
-            ContentSetting::CONTENT_SETTING_BLOCK) {
+    if (cookie_settings->GetDefaultCookieSetting() ==
+        ContentSetting::CONTENT_SETTING_BLOCK) {
       return TpcdExperimentEligibility(
           TpcdExperimentEligibility::Reason::k3pCookiesBlocked);
     }
