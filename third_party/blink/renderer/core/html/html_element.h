@@ -300,12 +300,12 @@ class CORE_EXPORT HTMLElement : public Element {
   // The default HTMLElement behavior handles popovers, and specific
   // element subclasses - such as HTMLDialogElement - can handle
   // other invocation actions such as showModal. Implementations should return
-  // `true` if they have handled, so that overloads can exit early.
-  // Additionally, implementations should not execute their own behaviour before
-  // calling `HTMLElement::HandleInvokeInternal` as that implementation governs
-  // the logic for global attributes such as `popover`; for example a `<dialog
-  // popover>` should run `popover` invocation steps before `<dialog>`
-  // invocation steps.
+  // `true` if they have handled, so that overrides can exit early.
+  // Additionally, override implementations should not execute their own
+  // behavior before calling `HTMLElement::HandleInvokeInternal` as that
+  // override governs the logic for global attributes such as `popover`;
+  // for example a `<dialog popover>` should run `popover` invocation steps
+  // before `<dialog>` invocation steps.
   // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
   virtual bool HandleInvokeInternal(HTMLElement& invoker, AtomicString& action);
 
