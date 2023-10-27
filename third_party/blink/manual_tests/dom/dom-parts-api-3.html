@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<p>This is the <b>non-</b>AttributePart version of this benchmark.</p>
+<p>This is the AttributePart version of this benchmark.</p>
 <fieldset style="display:flex; border:0" id="controls">
   <div>
     <button id="run_baseline"></button>
@@ -22,7 +22,7 @@
 
 <script type="text/javascript">
 const nRows = 1000;
-const nRuns = 500;
+const nRuns = 200;
 document.querySelector(
   "button#run_baseline"
 ).textContent = `BASELINE: Create ${nRows} rows, ${nRuns} runs`;
@@ -48,11 +48,11 @@ function template(tplStr) {
 }
 const tbodyEl = document.querySelector("tbody");
 const rowTplBaseline = template(
-  `<tr><td class="col-md-1"><?fake-part?> </td><td class="col-md-4"><a href="#"> </a></td><td class="col-md-1"><a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`
+  `<tr><td> </td><td class="col-md-4"><a href="#"> </a></td><td class="col-md-1"><a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`
 );
 // The space at the front of this template works around crbug.com/1490375, and can be removed once that's fixed:
 const rowTplParts = template(
-  ` <tr {{}}><td class="col-md-1"><?node-part?> </td><td class="col-md-4"><a {{}} href="#"> </a></td><td class="col-md-1"><a {{}} href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`
+  ` <tr class={{}}><td class={{}}>{{#}} {{/}}</td><td class="col-md-4"><a {{}} href="#"> </a></td><td class="col-md-1"><a {{}} href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`
 );
 const partRoot = rowTplParts.content.getPartRoot();
 
@@ -82,6 +82,7 @@ function createRowBaseline(i) {
   // step (2): find references to the "interesting" elements
   perfs.push(0); // getParts
   const trEl = tplClone.firstChild;
+  const tdEl = trEl.firstChild;
   const labelTxtNode = trEl.firstChild.firstChild;
   const aEl1 = trEl.firstChild.nextSibling.firstChild;
   const aEl2 = trEl.firstChild.nextSibling.nextSibling.firstChild;
@@ -101,6 +102,7 @@ function createRowBaseline(i) {
   if (i === selected) {
     trEl.classList.add("table-danger");
   }
+  tdEl.classList.add("col-md-1");
   labelTxtNode.nodeValue = "foo " + i;
   next = performance.now();
   perfs.push(next - now); // operations
@@ -115,7 +117,9 @@ function createRowParts(i) {
   // this code is run in the CREATE mode
 
   // step (1): clone template
-  const tplCloneRoot = rowTplParts.content.getPartRoot().clone();
+  const tplCloneRoot = rowTplParts.content
+    .getPartRoot()
+    .clone({ attributeValues: ["col-md-1", i === selected ? "table-danger" : ""] });
   const tplClone = tplCloneRoot.rootContainer
   next = performance.now();
   perfs.push(next - now); // cloning
@@ -127,10 +131,9 @@ function createRowParts(i) {
   perfs.push(next - now); // getParts
   now = next;
 
-  const trEl = parts[0].node;
-  const labelTxtNode = parts[1].node;
-  const aEl1 = parts[2].node;
-  const aEl2 = parts[3].node;
+  const labelTxtNode = parts[0].children[0];
+  const aEl1 = parts[1].node;
+  const aEl2 = parts[2].node;
   next = performance.now();
   perfs.push(next - now); // accessNodes
   now = next;
@@ -143,9 +146,6 @@ function createRowParts(i) {
     console.log("click second");
   });
   // this code is run in the UPDATE mode
-  if (i === selected) {
-    trEl.classList.add('table-danger');
-  }
   labelTxtNode.nodeValue = "foo " + i;
   next = performance.now();
   perfs.push(next - now); // operations
