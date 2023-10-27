@@ -90,8 +90,10 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
   auto cached_groups_it = cached_interest_groups_.find(owner);
   if (cached_groups_it != cached_interest_groups_.end() &&
       cached_groups_it->second.MaybeValid()) {
-    std::move(callback).Run(
-        scoped_refptr<StorageInterestGroups>(cached_groups_it->second.get()));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  scoped_refptr<StorageInterestGroups>(
+                                      cached_groups_it->second.get())));
     return;
   }
 

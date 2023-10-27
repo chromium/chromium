@@ -689,7 +689,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot,
          blink::features::kFledgeClearOriginJoinedAdInterestGroups,
          blink::features::kFencedFramesM119Features,
-         features::kBackForwardCache},
+         features::kBackForwardCache, features::kFledgeUseInterestGroupCache},
         /*disabled_features=*/
         {blink::features::kFencedFrames});
   }
