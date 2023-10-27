@@ -5777,6 +5777,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PER_DEVICE_DISCONNECTED_A11Y_LABEL" desc="The message announced to screen readers when a device is disconnected.">
     <ph name="DEVICE_NAME">$1<ex>Internal Keyboard</ex></ph> has been disconnected
   </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_ALL_GRAPHICS_TABLETS_DISCONNECTED_A11Y_LABEL" translateable="false" desc="The message announced to screen readers when all graphics tablets have been disconnected.">
+    All graphics tablets have been disconnected
+  </message>
   <message name="IDS_SETTINGS_PER_DEVICE_ALL_MICE_DISCONNECTED_A11Y_LABEL" desc="The message announced to screen readers when all mice have been disconnected.">
     All mice have been disconnected
   </message>

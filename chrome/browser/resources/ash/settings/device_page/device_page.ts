@@ -563,6 +563,8 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private graphicsTabletChanged_(): void {
     if ((!this.graphicsTablets || this.graphicsTablets.length === 0) &&
         Router.getInstance().currentRoute === routes.GRAPHICS_TABLET) {
+      getAnnouncerInstance().announce(
+          this.i18n('allGraphicsTabletsDisconnectedA11yLabel'));
       Router.getInstance().navigateTo(routes.DEVICE);
     }
   }

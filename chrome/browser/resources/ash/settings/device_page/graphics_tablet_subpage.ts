@@ -12,22 +12,22 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast, castExists} from '../assert_extras.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './graphics_tablet_subpage.html.js';
 import {GraphicsTablet} from './input_device_settings_types.js';
+import {getDeviceStateChangesToAnnounce} from './input_device_settings_utils.js';
 
 const SettingsGraphicsTabletSubpageElementBase =
-    RouteObserverMixin(I18nMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nMixinInterface & RouteObserverMixinInterface,
-    };
+    RouteObserverMixin(I18nMixin(PolymerElement));
 
 export class SettingsGraphicsTabletSubpageElement extends
     SettingsGraphicsTabletSubpageElementBase {
@@ -43,6 +43,7 @@ export class SettingsGraphicsTabletSubpageElement extends
     return {
       graphicsTablets: {
         type: Array,
+        observer: 'onGraphicsTabletListUpdated',
       },
     };
   }
@@ -53,6 +54,19 @@ export class SettingsGraphicsTabletSubpageElement extends
     // Does not apply to this page.
     if (route !== routes.GRAPHICS_TABLET) {
       return;
+    }
+  }
+
+  private onGraphicsTabletListUpdated(
+      newGraphicsTabletList: GraphicsTablet[],
+      oldGraphicsTabletList: GraphicsTablet[]|undefined): void {
+    if (!oldGraphicsTabletList) {
+      return;
+    }
+    const {msgId, deviceNames} = getDeviceStateChangesToAnnounce(
+        newGraphicsTabletList, oldGraphicsTabletList);
+    for (const deviceName of deviceNames) {
+      getAnnouncerInstance().announce(this.i18n(msgId, deviceName));
     }
   }
 

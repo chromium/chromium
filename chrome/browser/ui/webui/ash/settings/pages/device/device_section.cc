@@ -1586,6 +1586,8 @@ void DeviceSection::AddDevicePointersStrings(
       features::IsAllowScrollSettingsEnabled();
 
   webui::LocalizedString kPointersStrings[] = {
+      {"allGraphicsTabletsDisconnectedA11yLabel",
+       IDS_SETTINGS_PER_DEVICE_ALL_GRAPHICS_TABLETS_DISCONNECTED_A11Y_LABEL},
       {"allMiceDisconnectedA11yLabel",
        IDS_SETTINGS_PER_DEVICE_ALL_MICE_DISCONNECTED_A11Y_LABEL},
       {"allTouchpadsDisconnectedA11yLabel",
