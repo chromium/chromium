@@ -7,9 +7,6 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_consumer.h"
-
-@protocol MagicStackHalfSheetModelDelegate;
 class PrefService;
 
 // Delegate for MagicStackHalfSheetTableViewController actions.
@@ -21,18 +18,16 @@ class PrefService;
 @end
 
 // Presents a module disable customization page for the Magic Stack.
-@interface MagicStackHalfSheetTableViewController
-    : ChromeTableViewController <MagicStackHalfSheetConsumer>
+@interface MagicStackHalfSheetTableViewController : ChromeTableViewController
 
-// Initializer for this class.
-- (instancetype)init;
+// Initializes this class with the appropriate localState.
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Delegate for this ViewController.
 @property(nonatomic, weak) id<MagicStackHalfSheetTableViewControllerDelegate>
     delegate;
-
-// Model delegate for this ViewController.
-@property(nonatomic, weak) id<MagicStackHalfSheetModelDelegate> modelDelegate;
 
 @end
 

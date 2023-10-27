@@ -74,7 +74,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -148,7 +147,6 @@
   // The edit half sheet for toggling all Magic Stack modules.
   MagicStackHalfSheetTableViewController*
       _magicStackHalfSheetTableViewController;
-  MagicStackHalfSheetMediator* _magicStackHalfSheetMediator;
 
   // The parcel list half sheet to see all tracked parcels.
   MagicStackParcelListHalfSheetTableViewController*
@@ -284,8 +282,6 @@
   self.sharingCoordinator = nil;
   [_defaultBrowserPromoCoordinator stop];
   _defaultBrowserPromoCoordinator = nil;
-  [_magicStackHalfSheetMediator disconnect];
-  _magicStackHalfSheetMediator = nil;
   [_magicStackHalfSheetTableViewController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:nil];
@@ -358,15 +354,9 @@
 
 - (void)didTapMagicStackEditButton {
   _magicStackHalfSheetTableViewController =
-      [[MagicStackHalfSheetTableViewController alloc] init];
-
-  _magicStackHalfSheetMediator = [[MagicStackHalfSheetMediator alloc]
-      initWithPrefService:GetApplicationContext()->GetLocalState()];
-  _magicStackHalfSheetMediator.consumer =
-      _magicStackHalfSheetTableViewController;
+      [[MagicStackHalfSheetTableViewController alloc]
+          initWithPrefService:GetApplicationContext()->GetLocalState()];
   _magicStackHalfSheetTableViewController.delegate = self;
-  _magicStackHalfSheetTableViewController.modelDelegate =
-      _magicStackHalfSheetMediator;
 
   UINavigationController* navViewController = [[UINavigationController alloc]
       initWithRootViewController:_magicStackHalfSheetTableViewController];
@@ -412,8 +402,6 @@
 #pragma mark - MagicStackHalfSheetTableViewControllerDelegate
 
 - (void)dismissMagicStackHalfSheet {
-  [_magicStackHalfSheetMediator disconnect];
-  _magicStackHalfSheetMediator = nil;
   [_magicStackHalfSheetTableViewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
