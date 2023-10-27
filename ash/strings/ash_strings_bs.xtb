@@ -29,7 +29,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="109942774857561566">Dosadno mi je</translation>
 <translation id="1104084341931202936">Prikaži postavke pristupačnosti</translation>
 <translation id="1104621072296271835">Uređaji još bolje rade zajedno</translation>
-<translation id="1111021433905331574">Možete promijeniti boju pozadinskog svjetla tastature u Postavkama &gt; <ph name="APP_TITLE" /></translation>
+<translation id="1111021433905331574">Možete promijeniti boju pozadinskog osvjetljenja tastature u Postavkama &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Uključite/isključite prijenos podataka na mobilnoj mreži. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Automatski sakrij policu</translation>
 <translation id="1142002900084379065">Nedavne fotografije</translation>
@@ -1009,7 +1009,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5078796286268621944">Pogrešan PIN</translation>
 <translation id="5083035541015925118">Ctrl i Alt i strelica nagore</translation>
 <translation id="5083553833479578423">Otključajte više funkcija Asistenta.</translation>
-<translation id="5092436659250499817">Uključivane/isključivanje pozadinskog svjetla tastature</translation>
+<translation id="5092436659250499817">Uključivane/isključivanje pozadinskog osvjetljenja tastature</translation>
 <translation id="5094577350232361255">informacije</translation>
 <translation id="509790653408515442">Kada emitirate aplikacije s telefona, one će se prikazati ovdje</translation>
 <translation id="5098537242461068432">Radna površina i prozori su ponovo otvoreni</translation>
@@ -1601,7 +1601,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Ažuriranje lijevog prozora</translation>
 <translation id="7543399541175347147">Linux aplikacije i anonimni prozori trenutno nisu podržani. Druge aplikacije će se sačuvati.</translation>
-<translation id="7544300628205093162">Pozadinsko svjetlo tastature je uključeno</translation>
+<translation id="7544300628205093162">Pozadinsko osvjetljenje tastature je uključeno</translation>
 <translation id="7548434653388805669">Vrijeme je za spavanje</translation>
 <translation id="7551643184018910560">Zakači za policu</translation>
 <translation id="7557816257942363084">Aplikacija <ph name="APP_NAME" /> trenutno koristi vaš mikrofon</translation>
@@ -1729,7 +1729,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8030169304546394654">Nije povezano</translation>
 <translation id="8036504271468642248">Prethodna rečenica</translation>
 <translation id="8042893070933512245">Otvori meni postavki pristupačnosti</translation>
-<translation id="8044457332620420407">Pozadinsko svjetlo tastature je isključeno</translation>
+<translation id="8044457332620420407">Pozadinsko osvjetljenje tastature je isključeno</translation>
 <translation id="8048077032188362328">Administrator je isključio pristupnu tačku.</translation>
 <translation id="8048123526339889627">Postavke Bluetootha</translation>
 <translation id="8051716679295756675">Šablon pod nazivom <ph name="DESK_TEMPLATE_NAME" /> već postoji</translation>
@@ -1882,7 +1882,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8731487213223706745">Završava se u <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Možda neko pokušava ukrasti vaše otkucaje na tastaturi</translation>
-<translation id="8735678380411481005">Boja pozadinskog svjetla tastature</translation>
+<translation id="8735678380411481005">Boja pozadinskog osvjetljenja tastature</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: aktiviranje…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>

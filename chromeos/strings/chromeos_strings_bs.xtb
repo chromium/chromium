@@ -180,7 +180,7 @@
 <translation id="222447520299472966">Morate odabrati najmanje jedan album Umjetničke galerije</translation>
 <translation id="2230005943220647148">Celzijus</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2236746079896696523">Uključivanje/isključivanje pozadinskog svjetla tastature</translation>
+<translation id="2236746079896696523">Uključivanje/isključivanje pozadinskog osvjetljenja tastature</translation>
 <translation id="2240366984605217732">Prekidač za raspored</translation>
 <translation id="225692081236532131">Status aktivacije</translation>
 <translation id="2271469253353559191">Raspored tamnog načina rada</translation>
@@ -555,7 +555,7 @@
 <translation id="527501763019887383">APN je onemogućen.</translation>
 <translation id="5275828089655680674">Ponovo pokreni rutine</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
-<translation id="5286263799730375393">boja pozadinskog svjetla</translation>
+<translation id="5286263799730375393">boja pozadinskog osvjetljenja</translation>
 <translation id="5292579816060236070">Pozadinska slika izlaska sunca</translation>
 <translation id="5294769550414936029">verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Premjesti prozor na radnu površinu</translation>
@@ -746,7 +746,7 @@
 <translation id="6692996468359469499">Primajte informacije u vezi s vašim odabirom</translation>
 <translation id="6704062477274546131">Razrješavanje DNS-a</translation>
 <translation id="6723839937902243910">Uključivanje/isključivanje</translation>
-<translation id="6723847290197874913">Pozadinsko svjetlo tastature</translation>
+<translation id="6723847290197874913">Pozadinsko osvjetljenje tastature</translation>
 <translation id="672609503628871915">Pogledajte šta je novo</translation>
 <translation id="6747215703636344499">Zaustavljeno – izlaz je pun</translation>
 <translation id="6749473226660745022">Fotografije</translation>
@@ -865,7 +865,7 @@
 <translation id="7701040980221191251">Nema</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
-<translation id="7718231387947923843">svjetlo tastature</translation>
+<translation id="7718231387947923843">osvjetljenje tastature</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7747039790905080783">Unaprijed dijeljeni ključ</translation>
 <translation id="7752963721013053477">Od svitanja do sumraka – ekskluzivna verzija</translation>
