@@ -17,6 +17,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/api/user_scripts.h"
@@ -507,6 +508,24 @@ void UserScriptsUpdateFunction::OnUserScriptsUpdated(
     Respond(NoArguments());
   }
   Release();  // Matches the `AddRef()` in `Run()`.
+}
+
+ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
+  absl::optional<api::user_scripts::ConfigureWorld::Params> params(
+      api::user_scripts::ConfigureWorld::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  // TODO(crbug.com/1385165): Retrieve csp, once it is added to API method.
+  bool enable_messaging = params->properties.messaging.value_or(false);
+
+  RendererStartupHelperFactory::GetForBrowserContext(browser_context())
+      ->SetUserScriptWorldProperties(*extension(), /*csp=*/absl::nullopt,
+                                     enable_messaging);
+
+  // TODO(crbug.com/1385165): Persist `enable_messaging` across sessions. Since
+  // it's not script specific, we can use extension prefs.
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

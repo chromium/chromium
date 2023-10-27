@@ -99,6 +99,24 @@ class UserScriptsUpdateFunction : public ExtensionFunction {
   void OnUserScriptsUpdated(const absl::optional<std::string>& error);
 };
 
+class UserScriptsConfigureWorldFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("userScripts.configureWorld",
+                             USERSCRIPTS_CONFIGUREWORLD)
+
+  UserScriptsConfigureWorldFunction() = default;
+  UserScriptsConfigureWorldFunction(const UserScriptsConfigureWorldFunction&) =
+      delete;
+  const UserScriptsConfigureWorldFunction& operator=(
+      const UserScriptsConfigureWorldFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~UserScriptsConfigureWorldFunction() override = default;
+};
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_USER_SCRIPTS_USER_SCRIPTS_API_H_

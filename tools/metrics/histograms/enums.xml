@@ -38176,6 +38176,7 @@ Called by update_extension_histograms.py.-->
   <int value="1836" label="OS_DIAGNOSTICS_CREATEVOLUMEBUTTONROUTINE"/>
   <int value="1837"
       label="OS_DIAGNOSTICS_ISVOLUMEBUTTONROUTINEARGUMENTSUPPORTED"/>
+  <int value="1838" label="USERSCRIPTS_CONFIGUREWORLD"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -74,6 +74,15 @@ namespace userScripts {
     DOMString[]? ids;
   };
 
+  // An object used to update the <code>`USER_SCRIPT`</code> world
+  // configuration.
+  [nodoc] dictionary WorldProperties{
+    // TODO(crbug.com/1385165): Add csp field.
+    // Specifies whether messaging APIs are exposed. The default is
+    // <code>false</code>.
+    boolean? messaging;
+  };
+
   callback RegisterCallback = void();
 
   callback GetScriptsCallback = void(RegisteredUserScript[] scripts);
@@ -81,6 +90,8 @@ namespace userScripts {
   callback UnregisterCallback = void();
 
   callback UpdateCallback = void();
+
+  callback ConfigureWorldCallback = void();
 
   interface Functions {
     // Registers one or more user scripts for this extension.
@@ -119,5 +130,12 @@ namespace userScripts {
     [supportsPromises] static void update(
         RegisteredUserScript[] scripts,
         optional UpdateCallback callback);
+
+    // Configures the <code>`USER_SCRIPT`</code> execution environment.
+    // |properties|: Contains the user script world configuration.
+    // |callback|: Called once world hase been configured.
+    [supportsPromises, nodoc] static void configureWorld(
+        WorldProperties properties,
+        optional ConfigureWorldCallback callback);
   };
 };
