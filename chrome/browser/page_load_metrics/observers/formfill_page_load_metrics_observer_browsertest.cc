@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -54,6 +55,12 @@ class FormfillPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    // The tests generally assume that the page gets deleted after navigation,
+    // triggering metrics recording. Disable back/forward cache to ensure that
+    // pages don't get preserved in the cache.
+    content::DisableBackForwardCacheForTesting(
+        web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   }
 
   void ClearBrowsingData(uint64_t remove_mask) {
