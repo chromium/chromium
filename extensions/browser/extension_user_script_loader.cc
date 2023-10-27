@@ -663,12 +663,21 @@ void ExtensionUserScriptLoader::AddDynamicScripts(
 
   auto scripts_to_add = std::make_unique<UserScriptList>();
   for (const auto& script : *scripts) {
-    // TODO(crbug.com/1496555): This results in an additional copy being
-    // stored in the browser for each of these scripts. Optimize the usage of
-    // inline code.
-    scripts_to_add->push_back(CopyDynamicScriptInfo(*script));
+    // Additionally, only add scripts to the set of active scripts in renderers
+    // (through `AddScripts()`) if the `source` for that script is enabled.
+    if (!base::Contains(disabled_sources_, script->GetSource())) {
+      // TODO(crbug.com/1496555): This results in an additional copy being
+      // stored in the browser for each of these scripts. Optimize the usage of
+      // inline code.
+      scripts_to_add->push_back(CopyDynamicScriptInfo(*script));
+    }
   }
 
+  // Note: the sets of `scripts_to_add` and `scripts` are now deliberately
+  // different. `scripts_to_add` includes the scripts that should be added to
+  // the base `UserScriptLoader`, which then notifies any renderers. `scripts`
+  // contains *all* (that weren't unregistered by the extension) so that they
+  // are properly serialized and stored for future browser sessions.
   AddScripts(
       std::move(scripts_to_add),
       base::BindOnce(&ExtensionUserScriptLoader::OnDynamicScriptsAdded,
@@ -698,6 +707,49 @@ void ExtensionUserScriptLoader::ClearDynamicScripts(
     UserScript::Source source,
     DynamicScriptsModifiedCallback callback) {
   RemoveDynamicScripts(GetDynamicScriptIDs(source), std::move(callback));
+}
+
+void ExtensionUserScriptLoader::SetSourceEnabled(UserScript::Source source,
+                                                 bool enabled) {
+  bool currently_enabled = disabled_sources_.count(source) == 0;
+  if (enabled == currently_enabled) {
+    return;  // Nothing's changed; our work here is done.
+  }
+
+  if (enabled) {
+    // Re-enable any previously-disabled scripts.
+    disabled_sources_.erase(source);
+    auto scripts_to_add = std::make_unique<UserScriptList>();
+    for (const auto& script : loaded_dynamic_scripts_) {
+      if (script->GetSource() == source) {
+        scripts_to_add->push_back(CopyDynamicScriptInfo(*script));
+      }
+    }
+
+    if (scripts_to_add->empty()) {
+      // There were no registered scripts of the given source. Nothing more to
+      // do.
+      return;
+    }
+
+    // Note: This just adds the scripts (which this object already tracked)
+    // back into the base UserScriptLoader, which finishes loading the files (if
+    // necessary) and sends them out to relevant renderers. Because the scripts
+    // are already loaded, we don't need to do anything after adding them (e.g.
+    // no need to re-store them).
+    AddScripts(std::move(scripts_to_add), base::DoNothing());
+  } else {  // Disabling a source.
+    disabled_sources_.insert(source);
+    std::set<std::string> ids = GetDynamicScriptIDs(source);
+    if (ids.empty()) {
+      // No registered scripts with the given source. Nothing more to do.
+      return;
+    }
+
+    // See comment above: no need for any callback here because the stored
+    // scripts are unchanged.
+    RemoveScripts(ids, base::DoNothing());
+  }
 }
 
 void ExtensionUserScriptLoader::UpdateDynamicScripts(

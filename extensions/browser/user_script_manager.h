@@ -49,6 +49,11 @@ class UserScriptManager : public ExtensionRegistryObserver {
 
   WebUIUserScriptLoader* GetUserScriptLoaderForWebUI(const GURL& url);
 
+  // Sets whether scripts of the given `source` should be enabled for
+  // (all) extensions. Does not affect WebUI script loaders.
+  void SetUserScriptSourceEnabledForExtensions(UserScript::Source source,
+                                               bool enabled);
+
  private:
   // ExtensionRegistryObserver implementation.
   void OnExtensionWillBeInstalled(content::BrowserContext* browser_context,

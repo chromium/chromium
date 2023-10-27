@@ -5,8 +5,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -76,6 +78,63 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, UpdateUserScripts) {
 
 IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, ConfigureWorld) {
   ASSERT_TRUE(RunExtensionTest("user_scripts/configure_world")) << message_;
+}
+
+// Tests that registered user scripts are disabled when dev mode is disabled and
+// are re-enabled if dev mode is turned back on.
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest,
+                       UserScriptsAreDisabledWhenDevModeIsDisabled) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("user_scripts/dev_mode_tests"));
+  ASSERT_TRUE(extension);
+
+  // Register a user script and a content script.
+  EXPECT_EQ("success",
+            BackgroundScriptExecutor::ExecuteScript(
+                profile(), extension->id(), "registerUserScripts();",
+                BackgroundScriptExecutor::ResultCapture::kSendScriptResult));
+  EXPECT_EQ("success",
+            BackgroundScriptExecutor::ExecuteScript(
+                profile(), extension->id(), "registerContentScript();",
+                BackgroundScriptExecutor::ResultCapture::kSendScriptResult));
+
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+
+  auto open_new_tab = [this, &url]() {
+    return ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  };
+
+  // Open a new tab.
+  content::RenderFrameHost* new_tab = open_new_tab();
+
+  static constexpr char kGetInjectedScripts[] =
+      R"(const divs = document.body.getElementsByTagName('div');
+         JSON.stringify(Array.from(divs).map(div => div.id).sort());)";
+
+  // Since dev mode is enabled (as part of this test suite's setup), both the
+  // user script and the content script should inject.
+  EXPECT_EQ(R"(["content-script","user-script-code","user-script-file"])",
+            content::EvalJs(new_tab, kGetInjectedScripts));
+
+  // Disable dev mode.
+  util::SetDeveloperModeForProfile(profile(), false);
+
+  // Open a new tab. Now, user scripts should be disabled. However, content
+  // scripts should still inject.
+  new_tab = open_new_tab();
+  EXPECT_EQ(R"(["content-script"])",
+            content::EvalJs(new_tab, kGetInjectedScripts));
+
+  // Re-enable dev mode.
+  util::SetDeveloperModeForProfile(profile(), true);
+
+  // Open a new tab. The user script should inject again.
+  new_tab = open_new_tab();
+  EXPECT_EQ(R"(["content-script","user-script-code","user-script-file"])",
+            content::EvalJs(new_tab, kGetInjectedScripts));
 }
 
 // Base test fixture for tests spanning multiple sessions where a custom arg is

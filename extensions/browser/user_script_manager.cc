@@ -65,6 +65,14 @@ WebUIUserScriptLoader* UserScriptManager::GetUserScriptLoaderForWebUI(
                                              : it->second.get();
 }
 
+void UserScriptManager::SetUserScriptSourceEnabledForExtensions(
+    UserScript::Source source,
+    bool enabled) {
+  for (auto& map_entry : extension_script_loaders_) {
+    map_entry.second->SetSourceEnabled(source, enabled);
+  }
+}
+
 void UserScriptManager::OnExtensionWillBeInstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,

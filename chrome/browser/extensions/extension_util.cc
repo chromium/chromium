@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
@@ -30,6 +31,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_urls.h"
@@ -340,6 +342,19 @@ void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode) {
                           in_developer_mode);
   RendererStartupHelperFactory::GetForBrowserContext(profile)
       ->OnDeveloperModeChanged(in_developer_mode);
+
+  // kDynamicUserScript scripts are allowed if and only if the user is in dev
+  // mode (since they allow raw code execution). Notify the user script manager
+  // to properly enable or disable any scripts.
+  UserScriptManager* user_script_manager =
+      ExtensionSystem::Get(profile)->user_script_manager();
+  if (!user_script_manager) {
+    CHECK_IS_TEST();  // `user_script_manager` can be null in unit tests.
+    return;
+  }
+
+  user_script_manager->SetUserScriptSourceEnabledForExtensions(
+      UserScript::Source::kDynamicUserScript, in_developer_mode);
 }
 
 }  // namespace util

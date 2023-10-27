@@ -1,0 +1,8 @@
+{
+  "name": "Test",
+  "manifest_version": 3,
+  "version": "0.1",
+  "host_permissions": ["http://example.com/*"],
+  "permissions": ["userScripts", "scripting"],
+  "background": {"service_worker": "background.js"}
+}
