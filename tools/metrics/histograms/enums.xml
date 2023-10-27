@@ -39233,6 +39233,8 @@ Called by update_extension_permission.py.-->
   <int value="6" label="Failure: There is no valid Autofill profile."/>
   <int value="7" label="Failure: AutofillProfile setting is disabled."/>
   <int value="8" label="Failure: AutofillCreditCard settings is disabled."/>
+  <int value="9" label="Failure: Unsuported field type."/>
+  <int value="10" label="Failure: Unsuported country."/>
 </enum>
 
 <enum name="FastPairAccountKeyFailure">
