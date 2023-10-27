@@ -13,8 +13,11 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "url/url_canon.h"
 
@@ -86,10 +89,6 @@ void AppendStringOfType(const char16_t* source,
                         SharedCharTypes type,
                         CanonOutput* output);
 
-// Maps the hex numerical values 0x0 to 0xf to the corresponding ASCII digit
-// that will be used to represent it.
-COMPONENT_EXPORT(URL) extern const char kHexCharLookup[0x10];
-
 // This lookup table allows fast conversion between ASCII hex letters and their
 // corresponding numerical value. The 8-bit range is divided up into 8
 // regions of 0x20 characters each. Each of the three character types (numbers,
@@ -135,8 +134,10 @@ char CanonicalSchemeChar(char16_t ch);
 template <typename UINCHAR, typename OUTCHAR>
 inline void AppendEscapedChar(UINCHAR ch, CanonOutputT<OUTCHAR>* output) {
   output->push_back('%');
-  output->push_back(static_cast<OUTCHAR>(kHexCharLookup[(ch >> 4) & 0xf]));
-  output->push_back(static_cast<OUTCHAR>(kHexCharLookup[ch & 0xf]));
+  std::string hex;
+  base::AppendHexEncodedByte(static_cast<uint8_t>(ch), hex);
+  output->push_back(static_cast<OUTCHAR>(hex[0]));
+  output->push_back(static_cast<OUTCHAR>(hex[1]));
 }
 
 // The character we'll substitute for undecodable or invalid characters.

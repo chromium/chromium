@@ -120,21 +120,18 @@ bool StringToDouble(StringPiece16 input, double* output) {
 }
 
 std::string HexEncode(const void* bytes, size_t size) {
-  static const char kHexChars[] = "0123456789ABCDEF";
-
-  // Each input byte creates two output hex characters.
-  std::string ret(size * 2, '\0');
-
-  for (size_t i = 0; i < size; ++i) {
-    char b = reinterpret_cast<const char*>(bytes)[i];
-    ret[(i * 2)] = kHexChars[(b >> 4) & 0xf];
-    ret[(i * 2) + 1] = kHexChars[b & 0xf];
-  }
-  return ret;
+  return HexEncode(span(reinterpret_cast<const uint8_t*>(bytes), size));
 }
 
-std::string HexEncode(base::span<const uint8_t> bytes) {
-  return HexEncode(bytes.data(), bytes.size());
+std::string HexEncode(span<const uint8_t> bytes) {
+  // Each input byte creates two output hex characters.
+  std::string ret;
+  ret.reserve(bytes.size() * 2);
+
+  for (uint8_t byte : bytes) {
+    AppendHexEncodedByte(byte, ret);
+  }
+  return ret;
 }
 
 bool HexStringToInt(StringPiece input, int* output) {
@@ -165,7 +162,7 @@ bool HexStringToString(StringPiece input, std::string* output) {
                                                   std::back_inserter(*output));
 }
 
-bool HexStringToSpan(StringPiece input, base::span<uint8_t> output) {
+bool HexStringToSpan(StringPiece input, span<uint8_t> output) {
   if (input.size() / 2 != output.size())
     return false;
 

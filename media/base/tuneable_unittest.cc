@@ -49,8 +49,7 @@ class TuneableTest : public ::testing::Test {
   // Return the tuneable name for the `x`-th numbered tuneable.
   std::string GetNameForNumberedTuneable(const char* basename, int x) {
     std::string name(basename);
-    name[0] = "0123456789ABCDEF"[x & 15];
-    name[1] = "0123456789ABCDEF"[(x >> 4) & 15];
+    base::AppendHexEncodedByte(static_cast<uint8_t>(x), name);
     return name;
   }
 

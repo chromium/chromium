@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <string_view>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -53,17 +54,6 @@ struct IPAddressCase {
   int expected_num_ipv4_components;
   const char* expected_address_hex;  // Two hex chars per IP address byte.
 };
-
-std::string BytesToHexString(unsigned char bytes[16], int length) {
-  EXPECT_TRUE(length == 0 || length == 4 || length == 16)
-      << "Bad IP address length: " << length;
-  std::string result;
-  for (int i = 0; i < length; ++i) {
-    result.push_back(kHexCharLookup[(bytes[i] >> 4) & 0xf]);
-    result.push_back(kHexCharLookup[bytes[i] & 0xf]);
-  }
-  return result;
-}
 
 struct ReplaceCase {
   const char* base;
@@ -183,7 +173,7 @@ TEST(URLCanonTest, UTF) {
       }
       output.Complete();
       EXPECT_EQ(utf_case.expected_success, success);
-      EXPECT_EQ(std::string(utf_case.output), out_str);
+      EXPECT_EQ(utf_case.output, out_str);
     }
     if (utf_case.input16) {
       out_str.clear();
@@ -199,7 +189,7 @@ TEST(URLCanonTest, UTF) {
       }
       output.Complete();
       EXPECT_EQ(utf_case.expected_success, success);
-      EXPECT_EQ(std::string(utf_case.output), out_str);
+      EXPECT_EQ(utf_case.output, out_str);
     }
 
     if (utf_case.input8 && utf_case.input16 && utf_case.expected_success) {
@@ -252,7 +242,7 @@ TEST(URLCanonTest, Scheme) {
     output1.Complete();
 
     EXPECT_EQ(scheme_case.expected_success, success);
-    EXPECT_EQ(std::string(scheme_case.expected), out_str);
+    EXPECT_EQ(scheme_case.expected, out_str);
     EXPECT_EQ(scheme_case.expected_component.begin, out_comp.begin);
     EXPECT_EQ(scheme_case.expected_component.len, out_comp.len);
 
@@ -267,7 +257,7 @@ TEST(URLCanonTest, Scheme) {
     output2.Complete();
 
     EXPECT_EQ(scheme_case.expected_success, success);
-    EXPECT_EQ(std::string(scheme_case.expected), out_str);
+    EXPECT_EQ(scheme_case.expected, out_str);
     EXPECT_EQ(scheme_case.expected_component.begin, out_comp.begin);
     EXPECT_EQ(scheme_case.expected_component.len, out_comp.len);
   }
@@ -281,7 +271,7 @@ TEST(URLCanonTest, Scheme) {
   EXPECT_FALSE(CanonicalizeScheme("", Component(0, -1), &output, &out_comp));
   output.Complete();
 
-  EXPECT_EQ(std::string(":"), out_str);
+  EXPECT_EQ(":", out_str);
   EXPECT_EQ(0, out_comp.begin);
   EXPECT_EQ(0, out_comp.len);
 }
@@ -621,7 +611,7 @@ TEST_P(URLCanonHostTest, Host) {
 
       EXPECT_EQ(host_case.expected_family != CanonHostInfo::BROKEN, success)
           << "for input: " << host_case.input8;
-      EXPECT_EQ(std::string(host_case.expected), out_str)
+      EXPECT_EQ(host_case.expected, out_str)
           << "for input: " << host_case.input8;
       EXPECT_EQ(host_case.expected_component.begin, out_comp.begin)
           << "for input: " << host_case.input8;
@@ -645,7 +635,7 @@ TEST_P(URLCanonHostTest, Host) {
       output.Complete();
 
       EXPECT_EQ(host_case.expected_family != CanonHostInfo::BROKEN, success);
-      EXPECT_EQ(std::string(host_case.expected), out_str);
+      EXPECT_EQ(host_case.expected, out_str);
       EXPECT_EQ(host_case.expected_component.begin, out_comp.begin);
       EXPECT_EQ(host_case.expected_component.len, out_comp.len);
     }
@@ -666,11 +656,13 @@ TEST_P(URLCanonHostTest, Host) {
       output.Complete();
 
       EXPECT_EQ(host_case.expected_family, host_info.family);
-      EXPECT_EQ(std::string(host_case.expected), out_str);
+      EXPECT_EQ(host_case.expected, out_str);
       EXPECT_EQ(host_case.expected_component.begin, host_info.out_host.begin);
       EXPECT_EQ(host_case.expected_component.len, host_info.out_host.len);
-      EXPECT_EQ(std::string(host_case.expected_address_hex),
-                BytesToHexString(host_info.address, host_info.AddressLength()));
+      EXPECT_EQ(
+          host_case.expected_address_hex,
+          base::HexEncode(host_info.address,
+                          static_cast<size_t>(host_info.AddressLength())));
       if (host_case.expected_family == CanonHostInfo::IPV4) {
         EXPECT_EQ(host_case.expected_num_ipv4_components,
                   host_info.num_ipv4_components);
@@ -692,11 +684,13 @@ TEST_P(URLCanonHostTest, Host) {
       output.Complete();
 
       EXPECT_EQ(host_case.expected_family, host_info.family);
-      EXPECT_EQ(std::string(host_case.expected), out_str);
+      EXPECT_EQ(host_case.expected, out_str);
       EXPECT_EQ(host_case.expected_component.begin, host_info.out_host.begin);
       EXPECT_EQ(host_case.expected_component.len, host_info.out_host.len);
-      EXPECT_EQ(std::string(host_case.expected_address_hex),
-                BytesToHexString(host_info.address, host_info.AddressLength()));
+      EXPECT_EQ(
+          host_case.expected_address_hex,
+          base::HexEncode(host_info.address,
+                          static_cast<size_t>(host_info.AddressLength())));
       if (host_case.expected_family == CanonHostInfo::IPV4) {
         EXPECT_EQ(host_case.expected_num_ipv4_components,
                   host_info.num_ipv4_components);
@@ -874,8 +868,9 @@ TEST(URLCanonTest, IPv4) {
     output1.Complete();
 
     EXPECT_EQ(test_case.expected_family, host_info.family);
-    EXPECT_EQ(std::string(test_case.expected_address_hex),
-              BytesToHexString(host_info.address, host_info.AddressLength()));
+    EXPECT_EQ(test_case.expected_address_hex,
+              base::HexEncode(host_info.address,
+                              static_cast<size_t>(host_info.AddressLength())));
     if (host_info.family == CanonHostInfo::IPV4) {
       EXPECT_STREQ(test_case.expected, out_str1.c_str());
       EXPECT_EQ(test_case.expected_component.begin, host_info.out_host.begin);
@@ -895,8 +890,9 @@ TEST(URLCanonTest, IPv4) {
     output2.Complete();
 
     EXPECT_EQ(test_case.expected_family, host_info.family);
-    EXPECT_EQ(std::string(test_case.expected_address_hex),
-              BytesToHexString(host_info.address, host_info.AddressLength()));
+    EXPECT_EQ(test_case.expected_address_hex,
+              base::HexEncode(host_info.address,
+                              static_cast<size_t>(host_info.AddressLength())));
     if (host_info.family == CanonHostInfo::IPV4) {
       EXPECT_STREQ(test_case.expected, out_str2.c_str());
       EXPECT_EQ(test_case.expected_component.begin, host_info.out_host.begin);
@@ -1076,8 +1072,10 @@ TEST(URLCanonTest, IPv6) {
     output1.Complete();
 
     EXPECT_EQ(cases[i].expected_family, host_info.family);
-    EXPECT_EQ(std::string(cases[i].expected_address_hex),
-              BytesToHexString(host_info.address, host_info.AddressLength())) << "iter " << i << " host " << cases[i].input8;
+    EXPECT_EQ(cases[i].expected_address_hex,
+              base::HexEncode(host_info.address,
+                              static_cast<size_t>(host_info.AddressLength())))
+        << "iter " << i << " host " << cases[i].input8;
     if (host_info.family == CanonHostInfo::IPV6) {
       EXPECT_STREQ(cases[i].expected, out_str1.c_str());
       EXPECT_EQ(cases[i].expected_component.begin,
@@ -1096,8 +1094,9 @@ TEST(URLCanonTest, IPv6) {
     output2.Complete();
 
     EXPECT_EQ(cases[i].expected_family, host_info.family);
-    EXPECT_EQ(std::string(cases[i].expected_address_hex),
-              BytesToHexString(host_info.address, host_info.AddressLength()));
+    EXPECT_EQ(cases[i].expected_address_hex,
+              base::HexEncode(host_info.address,
+                              static_cast<size_t>(host_info.AddressLength())));
     if (host_info.family == CanonHostInfo::IPV6) {
       EXPECT_STREQ(cases[i].expected, out_str2.c_str());
       EXPECT_EQ(cases[i].expected_component.begin, host_info.out_host.begin);
@@ -1205,7 +1204,7 @@ TEST(URLCanonTest, UserInfo) {
     output1.Complete();
 
     EXPECT_EQ(user_info_case.expected_success, success);
-    EXPECT_EQ(std::string(user_info_case.expected), out_str);
+    EXPECT_EQ(user_info_case.expected, out_str);
     EXPECT_EQ(user_info_case.expected_username.begin, out_user.begin);
     EXPECT_EQ(user_info_case.expected_username.len, out_user.len);
     EXPECT_EQ(user_info_case.expected_password.begin, out_pass.begin);
@@ -1225,7 +1224,7 @@ TEST(URLCanonTest, UserInfo) {
     output2.Complete();
 
     EXPECT_EQ(user_info_case.expected_success, success);
-    EXPECT_EQ(std::string(user_info_case.expected), out_str);
+    EXPECT_EQ(user_info_case.expected, out_str);
     EXPECT_EQ(user_info_case.expected_username.begin, out_user.begin);
     EXPECT_EQ(user_info_case.expected_username.len, out_user.len);
     EXPECT_EQ(user_info_case.expected_password.begin, out_pass.begin);
@@ -1267,7 +1266,7 @@ TEST(URLCanonTest, Port) {
     output1.Complete();
 
     EXPECT_EQ(port_case.expected_success, success);
-    EXPECT_EQ(std::string(port_case.expected), out_str);
+    EXPECT_EQ(port_case.expected, out_str);
     EXPECT_EQ(port_case.expected_component.begin, out_comp.begin);
     EXPECT_EQ(port_case.expected_component.len, out_comp.len);
 
@@ -1280,7 +1279,7 @@ TEST(URLCanonTest, Port) {
     output2.Complete();
 
     EXPECT_EQ(port_case.expected_success, success);
-    EXPECT_EQ(std::string(port_case.expected), out_str);
+    EXPECT_EQ(port_case.expected, out_str);
     EXPECT_EQ(port_case.expected_component.begin, out_comp.begin);
     EXPECT_EQ(port_case.expected_component.len, out_comp.len);
   }

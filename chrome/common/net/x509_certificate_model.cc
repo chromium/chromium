@@ -287,8 +287,6 @@ constexpr auto kNameStringHandling =
 std::string ProcessRawBytesWithSeparators(base::span<const unsigned char> data,
                                           char hex_separator,
                                           char line_separator) {
-  static const char kHexChars[] = "0123456789ABCDEF";
-
   // Each input byte creates two output hex characters + a space or newline,
   // except for the last byte.
   std::string ret;
@@ -301,14 +299,9 @@ std::string ProcessRawBytesWithSeparators(base::span<const unsigned char> data,
   ret.reserve(std::max(kMin, data.size() * 3 - 1));
 
   for (size_t i = 0; i < data.size(); ++i) {
-    unsigned char b = data[i];
-    ret.push_back(kHexChars[(b >> 4) & 0xf]);
-    ret.push_back(kHexChars[b & 0xf]);
+    base::AppendHexEncodedByte(data[i], ret);
     if (i + 1 < data.size()) {
-      if ((i + 1) % 16 == 0)
-        ret.push_back(line_separator);
-      else
-        ret.push_back(hex_separator);
+      ret.push_back(((i + 1) % 16) ? hex_separator : line_separator);
     }
   }
   return ret;

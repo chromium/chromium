@@ -24,6 +24,7 @@
 #include <stddef.h>
 
 #include "base/hash/md5.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace {
 
@@ -262,15 +263,10 @@ void MD5Final(MD5Digest* digest, MD5Context* context) {
 }
 
 std::string MD5DigestToBase16(const MD5Digest& digest) {
-  static char const zEncode[] = "0123456789abcdef";
-
   std::string ret;
-  ret.resize(32);
-
-  for (size_t i = 0, j = 0; i < 16; i++, j += 2) {
-    uint8_t a = digest.a[i];
-    ret[j] = zEncode[(a >> 4) & 0xf];
-    ret[j + 1] = zEncode[a & 0xf];
+  ret.reserve(32);
+  for (uint8_t byte : digest.a) {
+    base::AppendHexEncodedByte(byte, ret, false);
   }
   return ret;
 }

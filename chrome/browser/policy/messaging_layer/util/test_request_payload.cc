@@ -10,6 +10,8 @@
 #include <string_view>
 
 #include "base/json/json_reader.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace reporting {
@@ -226,8 +228,7 @@ bool RequestIdMatcher::MatchAndExplain(const base::Value::Dict& arg,
     *listener << "Request ID is empty.";
     return false;
   }
-  if (request_id->find_first_not_of("0123456789abcdefABCDEF") !=
-      std::string::npos) {
+  if (!base::ranges::all_of(*request_id, base::IsHexDigit<char>)) {
     *listener << "Request ID is not a hexadecimal number.";
     return false;
   }

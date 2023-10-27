@@ -28,6 +28,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -58,13 +59,6 @@ namespace updater {
 namespace {
 
 constexpr int64_t kLogRotateAtSize = 1024 * 1024;  // 1 MiB.
-
-const char kHexString[] = "0123456789ABCDEF";
-inline char IntToHex(int i) {
-  CHECK_GE(i, 0) << i << " not a hex value";
-  CHECK_LE(i, 15) << i << " not a hex value";
-  return kHexString[i];
-}
 
 // A fast bit-vector map for ascii characters.
 //
@@ -104,8 +98,7 @@ std::string Escape(base::StringPiece text,
       escaped.push_back('%');
     } else if (charmap.Contains(c)) {
       escaped.push_back('%');
-      escaped.push_back(IntToHex(c >> 4));
-      escaped.push_back(IntToHex(c & 0xf));
+      base::AppendHexEncodedByte(c, escaped);
     } else {
       escaped.push_back(c);
     }
