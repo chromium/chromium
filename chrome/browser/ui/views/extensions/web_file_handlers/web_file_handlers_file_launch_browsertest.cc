@@ -468,19 +468,10 @@ class WebFileHandlersFileLaunchBrowserTest
     return intent;
   }
 
-  // Set channel to the provided argument and clear extension features.
-  void SetChannelAndResetFeatureList(version_info::Channel channel) {
-    extensions::SetCurrentChannel(channel);
-    feature_list_.Reset();
-  }
-
  private:
   extensions::TestExtensionDir extension_dir_;
 
   base::test::ScopedFeatureList feature_list_;
-  // TODO(crbug.com/1448893): Remove channel overrides when available in stable.
-  extensions::ScopedCurrentChannel current_channel_{
-      version_info::Channel::BETA};
 
   // Basic manifest for web file handlers.
   static constexpr char const kManifest[] = R"({
@@ -557,21 +548,9 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest, CallSetConsumer) {
   LaunchExtensionAndCatchResult(*extension);
 }
 
-// Reuse `WebFileHandlersFileLaunchBrowserTest` but make the following changes:
-// * Use stable channel instead of beta.
-// * Remove all extension flags, especially `kExtensionWebFileHandlers`.
-class WebFileHandlersFileLaunchOnStableChannelBrowserTest
-    : public WebFileHandlersFileLaunchBrowserTest {
- public:
-  WebFileHandlersFileLaunchOnStableChannelBrowserTest() {
-    SetChannelAndResetFeatureList(version_info::Channel::STABLE);
-  }
-};
-
 // Verify that the Ash component of this ChromeOS feature is on the stable
 // channel.
-IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchOnStableChannelBrowserTest,
-                       QuickOffice) {
+IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest, QuickOffice) {
   const std::string manifest =
       base::StringPrintf(R"({
     "name": "Test",
@@ -601,8 +580,7 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchOnStableChannelBrowserTest,
 
 // Verify that the Ash component of this ChromeOS feature is on the stable
 // channel.
-IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchOnStableChannelBrowserTest,
-                       DefaultInstalled) {
+IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest, DefaultInstalled) {
   static constexpr char kManifest[] = R"({
     "name": "Test",
     "version": "0.0.1",
@@ -618,9 +596,9 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchOnStableChannelBrowserTest,
   auto* extension = WriteToDirAndLoadDefaultInstalledExtension(kManifest);
   ASSERT_TRUE(extension);
 
-  // Web File Handlers are not supported.
-  ASSERT_FALSE(
-      extensions::WebFileHandlers::SupportsWebFileHandlers(*extension));
+  ASSERT_TRUE(extensions::WebFileHandlers::SupportsWebFileHandlers(*extension));
+  ASSERT_TRUE(
+      extensions::WebFileHandlers::CanBypassPermissionDialog(*extension));
 }
 
 // Verify `{"launch_type": "multiple-clients"}`.
