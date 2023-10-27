@@ -166,7 +166,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       const ash::attestation::TpmChallengeKeyResult& result);
   static void DidGetKeyStores(
       GetKeyStoresCallback callback,
-      std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
+      const std::vector<chromeos::platform_keys::TokenId>
           platform_keys_token_ids,
       chromeos::platform_keys::Status status);
   static void DidSelectClientCertificates(

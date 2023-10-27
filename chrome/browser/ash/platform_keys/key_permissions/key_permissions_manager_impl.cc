@@ -297,7 +297,7 @@ KeyPermissionsManagerImpl::KeyPermissionsManagerImpl(
 KeyPermissionsManagerImpl::~KeyPermissionsManagerImpl() = default;
 
 void KeyPermissionsManagerImpl::OnGotTokens(
-    std::unique_ptr<std::vector<TokenId>> token_ids,
+    const std::vector<TokenId> token_ids,
     Status status) {
   if (status != Status::kSuccess) {
     LOG(ERROR) << "Error while waiting for token to be ready: "
@@ -305,7 +305,7 @@ void KeyPermissionsManagerImpl::OnGotTokens(
     return;
   }
 
-  if (!base::Contains(*token_ids, token_id_)) {
+  if (!base::Contains(token_ids, token_id_)) {
     LOG(ERROR) << "KeyPermissionsManager doesn't have access to token: "
                << static_cast<int>(token_id_);
     return;

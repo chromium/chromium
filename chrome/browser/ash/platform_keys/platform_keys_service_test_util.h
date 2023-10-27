@@ -32,11 +32,10 @@ class StatusWaiter
 // Supports waiting for the result of PlatformKeysService::GetTokens.
 class GetTokensExecutionWaiter
     : public base::test::TestFuture<
-          std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>,
+          std::vector<chromeos::platform_keys::TokenId>,
           chromeos::platform_keys::Status> {
  public:
-  const std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>&
-  token_ids();
+  const std::vector<chromeos::platform_keys::TokenId>& token_ids();
   chromeos::platform_keys::Status status();
 };
 

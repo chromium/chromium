@@ -71,7 +71,7 @@ using RemoveKeyCallback =
 // If the list of available tokens could be successfully retrieved, |token_ids|
 // will contain the token ids. If an error occurs, |token_ids| will be nullptr.
 using GetTokensCallback = base::OnceCallback<void(
-    std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>> token_ids,
+    std::vector<chromeos::platform_keys::TokenId> token_ids,
     chromeos::platform_keys::Status status)>;
 
 // If token ids have been successfully retrieved, two cases are possible then:

@@ -123,11 +123,6 @@ std::vector<uint8_t> CertToBlob(
       cert_buffer, cert_buffer + CRYPTO_BUFFER_len(cert->cert_buffer()));
 }
 
-std::unique_ptr<std::vector<TokenId>> MakeTokenIds(
-    std::initializer_list<TokenId> init_list) {
-  return std::make_unique<std::vector<TokenId>>(init_list);
-}
-
 void AssertBlobEq(const mojom::KeystoreBinaryResultPtr& result,
                   const std::vector<uint8_t>& expected_blob) {
   ASSERT_TRUE(result);
@@ -574,7 +569,7 @@ TEST_F(KeystoreServiceAshTest, BadCertificateGetPublicKeyFail) {
 
 TEST_F(KeystoreServiceAshTest, GetKeyStoresEmptySuccess) {
   EXPECT_CALL(platform_keys_service_, GetTokens)
-      .WillOnce(RunOnceCallback<0>(MakeTokenIds({}), Status::kSuccess));
+      .WillOnce(RunOnceCallback<0>(std::vector<TokenId>({}), Status::kSuccess));
 
   CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
   keystore_service_.GetKeyStores(observer.GetCallback());
@@ -586,8 +581,8 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresEmptySuccess) {
 
 TEST_F(KeystoreServiceAshTest, GetKeyStoresUserSuccess) {
   EXPECT_CALL(platform_keys_service_, GetTokens)
-      .WillOnce(
-          RunOnceCallback<0>(MakeTokenIds({TokenId::kUser}), Status::kSuccess));
+      .WillOnce(RunOnceCallback<0>(std::vector<TokenId>({TokenId::kUser}),
+                                   Status::kSuccess));
 
   CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
   keystore_service_.GetKeyStores(observer.GetCallback());
@@ -600,7 +595,7 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresUserSuccess) {
 
 TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceSuccess) {
   EXPECT_CALL(platform_keys_service_, GetTokens)
-      .WillOnce(RunOnceCallback<0>(MakeTokenIds({TokenId::kSystem}),
+      .WillOnce(RunOnceCallback<0>(std::vector<TokenId>({TokenId::kSystem}),
                                    Status::kSuccess));
 
   CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
@@ -615,7 +610,8 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceSuccess) {
 TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceUserSuccess) {
   EXPECT_CALL(platform_keys_service_, GetTokens)
       .WillOnce(RunOnceCallback<0>(
-          MakeTokenIds({TokenId::kUser, TokenId::kSystem}), Status::kSuccess));
+          std::vector<TokenId>({TokenId::kUser, TokenId::kSystem}),
+          Status::kSuccess));
 
   CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
   keystore_service_.GetKeyStores(observer.GetCallback());
@@ -629,7 +625,8 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceUserSuccess) {
 
 TEST_F(KeystoreServiceAshTest, GetKeyStoresFail) {
   EXPECT_CALL(platform_keys_service_, GetTokens)
-      .WillOnce(RunOnceCallback<0>(MakeTokenIds({}), Status::kErrorInternal));
+      .WillOnce(
+          RunOnceCallback<0>(std::vector<TokenId>({}), Status::kErrorInternal));
 
   CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
   keystore_service_.GetKeyStores(observer.GetCallback());

@@ -152,7 +152,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   void OnArcUsageAllowanceForCorporateKeysChanged(bool allowed) override;
 
   void OnGotTokens(
-      std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>> token_ids,
+      const std::vector<chromeos::platform_keys::TokenId> token_ids,
       chromeos::platform_keys::Status status);
 
   // Updates the permissions of the keys residing on |token_id| in chaps. If
