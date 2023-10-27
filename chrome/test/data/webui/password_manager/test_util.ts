@@ -157,15 +157,20 @@ export function makePasswordManagerPrefs() {
         value: true,
       },
     },
-    // <if expr="is_win or is_macosx">
     password_manager: {
+      // <if expr="is_win or is_macosx">
       biometric_authentication_filling: {
         key: 'password_manager.biometric_authentication_filling',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: true,
       },
+      // </if>
+      password_sharing_enabled: {
+        key: 'password_manager.password_sharing_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
     },
-    // </if>
   };
 }
 

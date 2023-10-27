@@ -282,6 +282,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[password_manager::prefs::kCredentialsEnableAutosignin] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[password_manager::prefs::kPasswordSharingEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[password_manager::prefs::kPasswordLeakDetectionEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)
