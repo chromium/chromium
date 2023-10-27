@@ -67,7 +67,7 @@ source_set("flags") {
     "//ios/chrome/browser/iph_for_new_chrome_user/model",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/ntp/home:features",
-    "//ios/chrome/browser/parcel_tracking:util",
+    "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:constants",
     "//ios/chrome/browser/policy:policy_util",

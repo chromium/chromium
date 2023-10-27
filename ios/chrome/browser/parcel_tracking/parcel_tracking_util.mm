@@ -14,6 +14,7 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -21,10 +22,6 @@
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
-
-BASE_FEATURE(kIOSParcelTracking,
-             "IOSParcelTracking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsIOSParcelTrackingEnabled() {
   return base::FeatureList::IsEnabled(kIOSParcelTracking) &&

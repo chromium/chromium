@@ -6,6 +6,7 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "components/commerce/core/mock_shopping_service.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

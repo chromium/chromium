@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -446,15 +446,36 @@ bool GetStatusForSigninPolicy() {
     TableViewModel* model = self.consumer.tableViewModel;
     [model addSectionWithIdentifier:ParcelTrackingSectionIdentifier];
 
-    TableViewDetailTextItem* parcelTrackingItem =
-        [[TableViewDetailTextItem alloc] initWithType:ParcelTrackingItemType];
+    TableViewDetailIconItem* parcelTrackingItem =
+        [[TableViewDetailIconItem alloc] initWithType:ParcelTrackingItemType];
     parcelTrackingItem.text = l10n_util::GetNSString(
         IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE);
     parcelTrackingItem.accessoryType =
         UITableViewCellAccessoryDisclosureIndicator;
-    parcelTrackingItem.accessibilityTraits = UIAccessibilityTraitButton;
+    parcelTrackingItem.accessibilityTraits |= UIAccessibilityTraitButton;
     [model addItem:parcelTrackingItem
         toSectionWithIdentifier:ParcelTrackingSectionIdentifier];
+
+    IOSParcelTrackingOptInStatus optInStatus =
+        static_cast<IOSParcelTrackingOptInStatus>(
+            self.userPrefService->GetInteger(
+                prefs::kIosParcelTrackingOptInStatus));
+    NSString* currentOptInStatusString = nil;
+    switch (optInStatus) {
+      case IOSParcelTrackingOptInStatus::kAlwaysTrack:
+        currentOptInStatusString = l10n_util::GetNSString(
+            IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTO_TRACK_PACKAGES_ALL);
+        break;
+      case IOSParcelTrackingOptInStatus::kAskToTrack:
+        currentOptInStatusString = l10n_util::GetNSString(
+            IDS_IOS_PARCEL_TRACKING_OPT_IN_TERTIARY_ACTION);
+        break;
+      case IOSParcelTrackingOptInStatus::kNeverTrack:
+        currentOptInStatusString = l10n_util::GetNSString(
+            IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTO_TRACK_PACKAGES_NEVER);
+        break;
+    }
+    parcelTrackingItem.detailText = currentOptInStatusString;
   }
 }
 

@@ -187,6 +187,7 @@ source_set("eg2_tests") {
     "//components/supervised_user/core/common:features",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
