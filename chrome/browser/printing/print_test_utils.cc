@@ -115,7 +115,7 @@ std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
       MakeDefaultPrintSettings(printer_name);
   settings->set_copies(kPrintSettingsCopies + 1);
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  if (features::kEnableOopPrintDriversJobPrint.Get()) {
+  if (features::ShouldPrintJobOop()) {
     // Supply fake data to mimic what might be collected from the system print
     // dialog.  Platform-specific since the fake data still has to be able to
     // pass mojom data validation.

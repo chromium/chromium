@@ -118,7 +118,7 @@ bool PrintViewManager::PrintForSystemDialogNow(
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+  if (printing::features::ShouldPrintJobOop()) {
     // Register this worker so that the service persists as long as the user
     // keeps the system print dialog UI displayed.
     if (!RegisterSystemPrintClient())

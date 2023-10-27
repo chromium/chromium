@@ -426,7 +426,7 @@ void PrintingContextMac::AskUserForSettings(int max_pages,
         InitPrintSettingsFromPrintInfo();
         mojom::ResultCode result = mojom::ResultCode::kSuccess;
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-        if (features::kEnableOopPrintDriversJobPrint.Get()) {
+        if (features::ShouldPrintJobOop()) {
           result = CaptureSystemPrintDialogData(print_info_, settings_.get());
         }
 #endif
@@ -769,7 +769,7 @@ mojom::ResultCode PrintingContextMac::NewDocument(
     return mojom::ResultCode::kSuccess;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  if (features::kEnableOopPrintDriversJobPrint.Get() &&
+  if (features::ShouldPrintJobOop() &&
       !settings_->system_print_dialog_data().empty()) {
     // NOTE: Reset `print_info_` with a copy of `sharedPrintInfo` so as to
     // start with a clean slate.

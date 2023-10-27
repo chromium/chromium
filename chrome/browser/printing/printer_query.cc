@@ -47,7 +47,7 @@ namespace {
 
 bool ShouldPrintingContextSkipSystemCalls() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  return features::kEnableOopPrintDriversJobPrint.Get();
+  return features::ShouldPrintJobOop();
 #else
   return false;
 #endif
@@ -107,8 +107,9 @@ std::unique_ptr<PrinterQuery> PrinterQuery::Create(
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (features::kEnableOopPrintDriversJobPrint.Get())
+  if (features::ShouldPrintJobOop()) {
     return base::WrapUnique(new PrinterQueryOop(rfh_id));
+  }
 #endif
   return base::WrapUnique(new PrinterQuery(rfh_id));
 }

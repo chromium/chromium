@@ -138,7 +138,7 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
     return mojom::ResultCode::kSuccess;
   }
 
-  if (features::kEnableOopPrintDriversJobPrint.Get() &&
+  if (features::ShouldPrintJobOop() &&
       !settings_->system_print_dialog_data().empty()) {
     if (!print_dialog_) {
       CHECK(ui::LinuxUi::instance());

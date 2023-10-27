@@ -23,7 +23,7 @@ namespace printing {
 
 HWND PrintingContextSystemDialogWin::GetWindow() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (features::kEnableOopPrintDriversJobPrint.Get()) {
+  if (features::ShouldPrintJobOop()) {
     // Delving through the view tree to get to root window happens separately
     // in the browser process (i.e., not in `PrintingContextSystemDialogWin`)
     // before sending the identified window owner to the Print Backend service.

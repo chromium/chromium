@@ -32,7 +32,7 @@ namespace {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 bool ShouldPrintingContextSkipSystemCalls() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  return printing::features::kEnableOopPrintDriversJobPrint.Get();
+  return printing::features::ShouldPrintJobOop();
 #else
   return false;
 #endif
