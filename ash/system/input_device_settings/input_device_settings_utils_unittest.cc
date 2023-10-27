@@ -8,6 +8,7 @@
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/test/ash_test_base.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -37,13 +38,21 @@ const mojom::ButtonRemapping button_remapping2(
     mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kLeft),
     /*remapping_action=*/
     mojom::RemappingAction::NewKeyEvent(
-        mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_0, 1, 2, 3)));
+        mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_0,
+                             1,
+                             2,
+                             3,
+                             /*key_display=*/"0")));
 const mojom::ButtonRemapping button_remapping3(
     /*name=*/"test3",
     /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_1),
     /*remapping_action=*/
     mojom::RemappingAction::NewKeyEvent(
-        mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_2, 4, 5, 6)));
+        mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_2,
+                             4,
+                             5,
+                             6,
+                             /*key_display=*/"2")));
 const mojom::ButtonRemapping button_remapping4(
     /*name=*/"test4",
     /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_3),
@@ -110,7 +119,9 @@ TEST(GetLoginScreenButtonRemappingListTest, RetrieveButtonRemappingList) {
   EXPECT_NE(nullptr, valid_button_remapping_list);
 }
 
-TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
+class ButtonRemappingConversionTest : public AshTestBase {};
+
+TEST_F(ButtonRemappingConversionTest, ConvertButtonRemappingToDict) {
   const base::Value::Dict dict1 = ConvertButtonRemappingToDict(
       button_remapping1, mojom::CustomizationRestriction::kAllowCustomizations);
   EXPECT_EQ(button_remapping1.name,
@@ -196,7 +207,8 @@ TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
       dict5.FindInt(prefs::kButtonRemappingStaticShortcutAction));
 }
 
-TEST(ConvertButtonRemappingToDict, MouseCustomizationRestriction) {
+TEST_F(ButtonRemappingConversionTest,
+       ButtonToDictMouseCustomizationRestriction) {
   const base::Value::Dict dict1 = ConvertButtonRemappingToDict(
       button_remapping3,
       mojom::CustomizationRestriction::kDisallowCustomizations);
@@ -208,7 +220,7 @@ TEST(ConvertButtonRemappingToDict, MouseCustomizationRestriction) {
   EXPECT_TRUE(dict2.empty());
 }
 
-TEST(ConvertDictToButtonRemapping, ConvertDictToButtonRemapping) {
+TEST_F(ButtonRemappingConversionTest, ConvertDictToButtonRemapping) {
   // Valid dict with name, customizable button and accelerator action fields.
   base::Value::Dict dict1;
   dict1.Set(prefs::kButtonRemappingName, button_remapping1.name);
@@ -408,7 +420,8 @@ TEST(ConvertDictToButtonRemapping, ConvertDictToButtonRemapping) {
             remapping9->remapping_action->get_static_shortcut_action());
 }
 
-TEST(ConvertDictToButtonRemapping, MouseCustomizationRestriction) {
+TEST_F(ButtonRemappingConversionTest,
+       DictToButtonMouseCustomizationRestriction) {
   // Valid dict with name, vkey and static shortcut action fields.
   base::Value::Dict dict;
   dict.Set(prefs::kButtonRemappingName, button_remapping5.name);
@@ -431,7 +444,7 @@ TEST(ConvertDictToButtonRemapping, MouseCustomizationRestriction) {
   EXPECT_FALSE(remapping2);
 }
 
-TEST(ConvertButtonRemappingArrayToList, ConvertButtonRemappingArrayToList) {
+TEST_F(ButtonRemappingConversionTest, ConvertButtonRemappingArrayToList) {
   std::vector<mojom::ButtonRemappingPtr> remappings;
   remappings.push_back(button_remapping1.Clone());
   remappings.push_back(button_remapping2.Clone());
@@ -505,7 +518,7 @@ TEST(ConvertButtonRemappingArrayToList, ConvertButtonRemappingArrayToList) {
             *dict6.FindString(prefs::kButtonRemappingName));
 }
 
-TEST(ConvertListToButtonRemappingArray, ConvertListToButtonRemappingArray) {
+TEST_F(ButtonRemappingConversionTest, ConvertListToButtonRemappingArray) {
   // Valid dict with name, customizable button and accelerator action fields.
   base::Value::Dict dict1;
   dict1.Set(prefs::kButtonRemappingName, button_remapping1.name);

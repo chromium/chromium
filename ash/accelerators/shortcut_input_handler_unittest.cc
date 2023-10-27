@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/shortcut_input_handler.h"
 
+#include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -33,9 +34,10 @@ class TestObserver : public ShortcutInputHandler::Observer {
 
 }  // namespace
 
-class ShortcutInputHandlerTest : public testing::Test {
+class ShortcutInputHandlerTest : public AshTestBase {
  public:
   void SetUp() override {
+    AshTestBase::SetUp();
     observer_ = std::make_unique<TestObserver>();
     shortcut_input_handler_ = std::make_unique<ShortcutInputHandler>();
     shortcut_input_handler_->AddObserver(observer_.get());
@@ -45,6 +47,7 @@ class ShortcutInputHandlerTest : public testing::Test {
     shortcut_input_handler_->RemoveObserver(observer_.get());
     observer_.reset();
     shortcut_input_handler_.reset();
+    AshTestBase::TearDown();
   }
 
  protected:

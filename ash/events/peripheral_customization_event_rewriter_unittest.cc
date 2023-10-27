@@ -863,7 +863,8 @@ INSTANTIATE_TEST_SUITE_P(
                   ui::VKEY_B,
                   static_cast<int>(ui::DomCode::US_B),
                   static_cast<int>(ui::DomKey::Constant<'b'>::Character),
-                  ui::EF_NONE)},
+                  ui::EF_NONE,
+                  /*key_display=*/"")},
              {CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A),
               CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
                                    ui::VKEY_B,
@@ -876,7 +877,8 @@ INSTANTIATE_TEST_SUITE_P(
                   ui::VKEY_B,
                   static_cast<int>(ui::DomCode::US_B),
                   static_cast<int>(ui::DomKey::Constant<'b'>::Character),
-                  ui::EF_NONE)},
+                  ui::EF_NONE,
+                  /*key_display=*/"")},
              {CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_B),
               CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_B)}},
             // Remap CTRL -> ALT.
@@ -884,7 +886,8 @@ INSTANTIATE_TEST_SUITE_P(
               mojom::KeyEvent(ui::VKEY_MENU,
                               static_cast<int>(ui::DomCode::ALT_LEFT),
                               static_cast<int>(ui::DomKey::ALT),
-                              ui::EF_ALT_DOWN)},
+                              ui::EF_ALT_DOWN,
+                              /*key_display=*/"")},
              {CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
                                    ui::VKEY_CONTROL,
                                    ui::EF_CONTROL_DOWN),
@@ -898,7 +901,8 @@ INSTANTIATE_TEST_SUITE_P(
               mojom::KeyEvent(ui::VKEY_MENU,
                               static_cast<int>(ui::DomCode::ALT_LEFT),
                               static_cast<int>(ui::DomKey::ALT),
-                              ui::EF_ALT_DOWN)},
+                              ui::EF_ALT_DOWN,
+                              /*key_display=*/"")},
              {CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
                                    ui::VKEY_CONTROL,
                                    ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN),
@@ -913,7 +917,8 @@ INSTANTIATE_TEST_SUITE_P(
                   ui::VKEY_B,
                   static_cast<int>(ui::DomCode::US_B),
                   static_cast<int>(ui::DomKey::Constant<'b'>::Character),
-                  ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)},
+                  ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+                  /*key_display=*/"")},
              {CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE),
               CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
                                    ui::VKEY_B,
@@ -928,7 +933,8 @@ INSTANTIATE_TEST_SUITE_P(
                   ui::VKEY_B,
                   static_cast<int>(ui::DomCode::US_B),
                   static_cast<int>(ui::DomKey::Constant<'b'>::Character),
-                  ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)},
+                  ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+                  /*key_display=*/"")},
              {CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                      ui::EF_MIDDLE_MOUSE_BUTTON,
                                      ui::EF_MIDDLE_MOUSE_BUTTON),
@@ -943,7 +949,8 @@ INSTANTIATE_TEST_SUITE_P(
                   ui::VKEY_B,
                   static_cast<int>(ui::DomCode::US_B),
                   static_cast<int>(ui::DomKey::Constant<'b'>::Character),
-                  ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)},
+                  ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+                  /*key_display=*/"")},
              {CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                      ui::EF_MIDDLE_MOUSE_BUTTON |
                                          ui::EF_ALT_DOWN,
@@ -959,7 +966,8 @@ INSTANTIATE_TEST_SUITE_P(
               mojom::KeyEvent(ui::VKEY_LWIN,
                               static_cast<int>(ui::DomCode::META_LEFT),
                               static_cast<int>(ui::DomKey::META),
-                              ui::EF_COMMAND_DOWN)},
+                              ui::EF_COMMAND_DOWN,
+                              /*key_display=*/"")},
              {CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                      ui::EF_BACK_MOUSE_BUTTON,
                                      ui::EF_BACK_MOUSE_BUTTON),
@@ -974,7 +982,8 @@ INSTANTIATE_TEST_SUITE_P(
                   ui::VKEY_B,
                   static_cast<int>(ui::DomCode::US_B),
                   static_cast<int>(ui::DomKey::Constant<'b'>::Character),
-                  ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)},
+                  ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+                  /*key_display=*/"")},
              {CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                      ui::EF_LEFT_MOUSE_BUTTON | ui::EF_ALT_DOWN,
                                      ui::EF_LEFT_MOUSE_BUTTON),
@@ -1082,7 +1091,8 @@ TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
   mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
-          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag))));
+          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag,
+          /*key_display=*/""))));
 
   rewriter_->RewriteEvent(
       CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE),
@@ -1126,7 +1136,8 @@ TEST_P(ModifierRewritingTest, MultiModifierKeyCombo) {
   mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
-          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag))));
+          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag,
+          /*key_display=*/""))));
 
   const ui::EventFlags test_flag =
       flag == ui::EF_COMMAND_DOWN ? ui::EF_SHIFT_DOWN : ui::EF_COMMAND_DOWN;
@@ -1175,7 +1186,8 @@ TEST_P(ModifierRewritingTest, MouseEvent) {
   mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
-          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag))));
+          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag,
+          /*key_display=*/""))));
 
   rewriter_->RewriteEvent(
       CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE),

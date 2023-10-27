@@ -62,48 +62,50 @@ mojom::KeyEvent GetStaticShortcutAction(mojom::StaticShortcutAction action) {
       key_event = mojom::KeyEvent(
           ui::VKEY_C, static_cast<int>(ui::DomCode::US_C),
           static_cast<int>(ui::DomKey::Constant<'c'>::Character),
-          ui::EF_CONTROL_DOWN);
+          ui::EF_CONTROL_DOWN, /*key_display=*/"");
       break;
     case mojom::StaticShortcutAction::kPaste:
       key_event = mojom::KeyEvent(
           ui::VKEY_V, static_cast<int>(ui::DomCode::US_V),
           static_cast<int>(ui::DomKey::Constant<'v'>::Character),
-          ui::EF_CONTROL_DOWN);
+          ui::EF_CONTROL_DOWN, /*key_display=*/"");
       break;
     case mojom::StaticShortcutAction::kUndo:
       key_event = mojom::KeyEvent(
           ui::VKEY_Z, static_cast<int>(ui::DomCode::US_Z),
           static_cast<int>(ui::DomKey::Constant<'z'>::Character),
-          ui::EF_CONTROL_DOWN);
+          ui::EF_CONTROL_DOWN, /*key_display=*/"");
       break;
     case mojom::StaticShortcutAction::kRedo:
       key_event = mojom::KeyEvent(
           ui::VKEY_Z, static_cast<int>(ui::DomCode::US_Z),
           static_cast<int>(ui::DomKey::Constant<'z'>::Character),
-          ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+          ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN, /*key_display=*/"");
       break;
     case mojom::StaticShortcutAction::kZoomIn:
       key_event = mojom::KeyEvent(
           ui::VKEY_OEM_PLUS, static_cast<int>(ui::DomCode::EQUAL),
           static_cast<int>(ui::DomKey::Constant<'='>::Character),
-          ui::EF_CONTROL_DOWN);
+          ui::EF_CONTROL_DOWN, /*key_display=*/"");
       break;
     case mojom::StaticShortcutAction::kZoomOut:
       key_event = mojom::KeyEvent(
           ui::VKEY_OEM_MINUS, static_cast<int>(ui::DomCode::MINUS),
           static_cast<int>(ui::DomKey::Constant<'-'>::Character),
-          ui::EF_CONTROL_DOWN);
+          ui::EF_CONTROL_DOWN, /*key_display=*/"");
       break;
     case mojom::StaticShortcutAction::kPreviousPage:
-      key_event = mojom::KeyEvent(
-          ui::VKEY_BROWSER_BACK, static_cast<int>(ui::DomCode::BROWSER_BACK),
-          static_cast<int>(ui::DomKey::BROWSER_BACK), ui::EF_NONE);
+      key_event = mojom::KeyEvent(ui::VKEY_BROWSER_BACK,
+                                  static_cast<int>(ui::DomCode::BROWSER_BACK),
+                                  static_cast<int>(ui::DomKey::BROWSER_BACK),
+                                  ui::EF_NONE, /*key_display=*/"");
       break;
     case mojom::StaticShortcutAction::kNextPage:
-      key_event = mojom::KeyEvent(
-          ui::VKEY_BROWSER_FORWARD,
-          static_cast<int>(ui::DomCode::BROWSER_FORWARD),
-          static_cast<int>(ui::DomKey::BROWSER_FORWARD), ui::EF_NONE);
+      key_event =
+          mojom::KeyEvent(ui::VKEY_BROWSER_FORWARD,
+                          static_cast<int>(ui::DomCode::BROWSER_FORWARD),
+                          static_cast<int>(ui::DomKey::BROWSER_FORWARD),
+                          ui::EF_NONE, /*key_display=*/"");
       break;
   }
   return key_event;

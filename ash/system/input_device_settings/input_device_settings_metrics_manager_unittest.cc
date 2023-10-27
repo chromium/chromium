@@ -325,10 +325,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMouseSettings) {
       mojom::RemappingAction::NewAcceleratorAction(
           AcceleratorAction::kMediaPlay)));
   mojom::RemappingActionPtr key_event_for_mouse =
-      mojom::RemappingAction::NewKeyEvent(
-          mojom::KeyEvent::New(ui::KeyboardCode::VKEY_M, (int)ui::DomCode::US_M,
-                               (int)ui::DomKey::FromCharacter('M'),
-                               (int)ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN));
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::KeyboardCode::VKEY_M, (int)ui::DomCode::US_M,
+          (int)ui::DomKey::FromCharacter('M'),
+          (int)ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN, /*key_display=*/""));
   mouse.settings->button_remappings.push_back(mojom::ButtonRemapping::New(
       "keyevent", mojom::Button::NewVkey(ui::VKEY_SPACE),
       key_event_for_mouse->Clone()));
@@ -624,10 +624,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
           mojom::RemappingAction::NewStaticShortcutAction(
               mojom::StaticShortcutAction::kCopy)));
   mojom::RemappingActionPtr key_event_for_pen =
-      mojom::RemappingAction::NewKeyEvent(
-          mojom::KeyEvent::New(ui::KeyboardCode::VKEY_B, (int)ui::DomCode::US_B,
-                               (int)ui::DomKey::FromCharacter('B'),
-                               (int)ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN));
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::KeyboardCode::VKEY_B, (int)ui::DomCode::US_B,
+          (int)ui::DomKey::FromCharacter('B'),
+          (int)ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, /*key_display=*/""));
   graphics_tablet.settings->pen_button_remappings.push_back(
       mojom::ButtonRemapping::New("pen-vkey-keyevent",
                                   mojom::Button::NewVkey(ui::VKEY_B),
@@ -647,10 +647,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordGraphicsTabletSettings) {
           mojom::RemappingAction::NewStaticShortcutAction(
               mojom::StaticShortcutAction::kPaste)));
   mojom::RemappingActionPtr key_event_for_tablet =
-      mojom::RemappingAction::NewKeyEvent(
-          mojom::KeyEvent::New(ui::KeyboardCode::VKEY_Z, (int)ui::DomCode::US_Z,
-                               (int)ui::DomKey::FromCharacter('Z'),
-                               (int)ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN));
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::KeyboardCode::VKEY_Z, (int)ui::DomCode::US_Z,
+          (int)ui::DomKey::FromCharacter('Z'),
+          (int)ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, /*key_display=*/""));
   graphics_tablet.settings->tablet_button_remappings.push_back(
       mojom::ButtonRemapping::New("pen-vkey-keyevent",
                                   mojom::Button::NewVkey(ui::VKEY_E),

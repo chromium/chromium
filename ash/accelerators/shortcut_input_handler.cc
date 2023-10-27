@@ -4,7 +4,9 @@
 
 #include "ash/accelerators/shortcut_input_handler.h"
 
+#include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
@@ -23,13 +25,15 @@ ShortcutInputHandler::ShortcutInputHandler() = default;
 ShortcutInputHandler::~ShortcutInputHandler() = default;
 
 void ShortcutInputHandler::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->is_repeat()) {
+  if (event->is_repeat() || observers_.empty()) {
     return;
   }
 
-  mojom::KeyEvent key_event(event->key_code(), static_cast<int>(event->code()),
-                            static_cast<int>(event->GetDomKey()),
-                            event->flags() & kKeyboardModifierFlags);
+  mojom::KeyEvent key_event(
+      event->key_code(), static_cast<int>(event->code()),
+      static_cast<int>(event->GetDomKey()),
+      event->flags() & kKeyboardModifierFlags,
+      base::UTF16ToUTF8(GetKeyDisplay(event->key_code())));
   if (event->type() == ui::ET_KEY_PRESSED) {
     for (auto& observer : observers_) {
       observer.OnShortcutInputEventPressed(key_event);

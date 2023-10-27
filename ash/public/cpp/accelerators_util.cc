@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
@@ -16,11 +17,15 @@
 #include "ui/events/keycodes/dom/dom_codes_array.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/keycodes/dom_us_layout_data.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 
 namespace {
+
+constexpr char kUnidentifiedKeyString[] = "Unidentified";
 
 // Dead keys work by combining two consecutive keystrokes together. The first
 // keystroke does not produce an output character, it acts as a one-shot
@@ -54,6 +59,44 @@ std::u16string GetStringForDeadKey(ui::DomKey dom_key) {
 
   LOG(WARNING) << "No mapping for dead key: " << ch;
   return base::UTF8ToUTF16(ui::KeycodeConverter::DomKeyToKeyString(dom_key));
+}
+
+// This map is for KeyboardCodes that don't return a key_display from
+// `KeycodeToKeyString`. The string values here were arbitrarily chosen
+// based on the VKEY enum name.
+const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
+  static auto key_display_map =
+      base::NoDestructor(base::flat_map<ui::KeyboardCode, std::u16string>({
+          {ui::KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE,
+           u"MicrophoneMuteToggle"},
+          {ui::KeyboardCode::VKEY_KBD_BACKLIGHT_TOGGLE,
+           u"KeyboardBacklightToggle"},
+          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_UP, u"KeyboardBrightnessUp"},
+          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN,
+           u"KeyboardBrightnessDown"},
+          {ui::KeyboardCode::VKEY_SLEEP, u"Sleep"},
+          {ui::KeyboardCode::VKEY_NEW, u"NewTab"},
+          {ui::KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
+           u"PrivacyScreenToggle"},
+          {ui::KeyboardCode::VKEY_ALL_APPLICATIONS, u"ViewAllApps"},
+          {ui::KeyboardCode::VKEY_DICTATE, u"EnableOrToggleDictation"},
+          {ui::KeyboardCode::VKEY_WLAN, u"ToggleWifi"},
+          {ui::KeyboardCode::VKEY_EMOJI_PICKER, u"EmojiPicker"},
+          {ui::KeyboardCode::VKEY_MENU, u"alt"},
+          {ui::KeyboardCode::VKEY_HOME, u"home"},
+          {ui::KeyboardCode::VKEY_END, u"end"},
+          {ui::KeyboardCode::VKEY_DELETE, u"delete"},
+          {ui::KeyboardCode::VKEY_INSERT, u"insert"},
+          {ui::KeyboardCode::VKEY_PRIOR, u"page up"},
+          {ui::KeyboardCode::VKEY_NEXT, u"page down"},
+          {ui::KeyboardCode::VKEY_SPACE, u"space"},
+          {ui::KeyboardCode::VKEY_TAB, u"tab"},
+          {ui::KeyboardCode::VKEY_ESCAPE, u"esc"},
+          {ui::KeyboardCode::VKEY_RETURN, u"enter"},
+          {ui::KeyboardCode::VKEY_BACK, u"backspace"},
+          {ui::KeyboardCode::VKEY_MEDIA_PLAY, u"MediaPlay"},
+      }));
+  return *key_display_map;
 }
 
 }  // namespace
@@ -137,6 +180,38 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
     return key_string;
   }
   return std::u16string();
+}
+
+std::u16string GetKeyDisplay(ui::KeyboardCode key_code) {
+  // If there's an entry for this key_code in our
+  // map, return that entry's value.
+  auto it = GetKeyDisplayMap().find(key_code);
+  if (it != GetKeyDisplayMap().end()) {
+    return it->second;
+  } else {
+    const std::string converted_string =
+        base::UTF16ToUTF8(KeycodeToKeyString(key_code));
+    // If `KeycodeToKeyString` fails to get a proper string, fallback to
+    // the domcode string.
+    if (converted_string == kUnidentifiedKeyString || converted_string == "") {
+      ui::DomCode converted_domcode =
+          ui::UsLayoutKeyboardCodeToDomCode(key_code);
+      if (converted_domcode != ui::DomCode::NONE) {
+        return base::UTF8ToUTF16(
+            ui::KeycodeConverter::DomCodeToCodeString(converted_domcode));
+      }
+
+      // If no DomCode can be mapped, attempt reverse DomKey mappings.
+      for (const auto& domkey_it : ui::kDomKeyToKeyboardCodeMap) {
+        if (domkey_it.key_code == key_code) {
+          return base::UTF8ToUTF16(
+              ui::KeycodeConverter::DomKeyToKeyString(domkey_it.dom_key));
+        }
+      }
+    }
+    // Otherwise, get the key_display from a util function.
+    return KeycodeToKeyString(key_code);
+  }
 }
 
 }  // namespace ash

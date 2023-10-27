@@ -314,6 +314,9 @@ struct KeyEvent {
   uint32 dom_code;
   uint32 dom_key;
   uint32 modifiers;
+
+  // Name of the key to display in the UI.
+  string key_display;
 };
 
 // Represents the button to remap which can be either a virtual key or
