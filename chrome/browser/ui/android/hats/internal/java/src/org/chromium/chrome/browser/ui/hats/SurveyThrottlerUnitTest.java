@@ -21,10 +21,14 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.hats.SurveyThrottler.FilteringResult;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.Calendar;
+
 /** Unit tests for {@link SurveyThrottler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SurveyThrottlerUnitTest {
+    private static final int TEST_YEAR = 2023;
+    private static final int TEST_MONTH = Calendar.JANUARY;
     private static final String TEST_TRIGGER_ID = "foobar";
 
     private SharedPreferences mSurveyMetadata;
@@ -55,7 +59,7 @@ public class SurveyThrottlerUnitTest {
     public void testFirstTimeUser() {
         FirstRunStatus.setFirstRunTriggeredForTesting(true);
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* dayOfYear= */ 1);
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* date= */ 1);
 
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -68,15 +72,14 @@ public class SurveyThrottlerUnitTest {
     @Test
     public void testPromptDisplayedBefore() {
         final String triggerId1 = "triggerId1";
-        int dateOfYear = 1;
-        RiggedSurveyThrottler throttler1 = new RiggedSurveyThrottler(true, dateOfYear, triggerId1);
+        int date = 1;
+        RiggedSurveyThrottler throttler1 = new RiggedSurveyThrottler(true, date, triggerId1);
         Assert.assertTrue("User is selected for survey.", throttler1.canShowSurvey());
         throttler1.recordSurveyPromptDisplayed();
 
         // Try to show the survey in a far enough future.
-        int newDateOfYear = dateOfYear + 100;
-        RiggedSurveyThrottler throttlerNew =
-                new RiggedSurveyThrottler(true, newDateOfYear, triggerId1);
+        int newDate = date + 200;
+        RiggedSurveyThrottler throttlerNew = new RiggedSurveyThrottler(true, newDate, triggerId1);
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Survey.SurveyFilteringResults",
@@ -89,17 +92,15 @@ public class SurveyThrottlerUnitTest {
     public void testPromptDisplayedForOtherTriggerId() {
         final String triggerId1 = "triggerId1";
         final String triggerId2 = "triggerId2";
-        int dateOfYear = 1;
+        int date = 1;
 
         mSurveyMetadata
                 .edit()
-                .putLong(
-                        SurveyMetadata.KEY_PREFIX_DATE_DICE_ROLLED + triggerId1,
-                        System.currentTimeMillis())
+                .putInt(SurveyMetadata.KEY_PREFIX_DATE_DICE_ROLLED + triggerId1, 1)
                 .apply();
 
         RiggedSurveyThrottler throttler2 =
-                new RiggedSurveyThrottler(/* randomlySelected= */ true, dateOfYear, triggerId2);
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, date, triggerId2);
 
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -114,28 +115,103 @@ public class SurveyThrottlerUnitTest {
     public void testPromptRequestedForOtherTriggerId() {
         String triggerId1 = "triggerId1";
         RiggedSurveyThrottler throttler1 =
-                new RiggedSurveyThrottler(
-                        /* randomlySelected= */ false, /* dayOfYear= */ 1, triggerId1);
+                new RiggedSurveyThrottler(/* randomlySelected= */ false, /* date= */ 1, triggerId1);
         Assert.assertFalse("User is not selected for survey.", throttler1.canShowSurvey());
         Assert.assertEquals(
-                "TriggerId should be attempted.", 1, getSurveyLastRequestedDate(triggerId1));
+                "Trigger Id should be attempted.",
+                throttler1.getEncodedDate(),
+                getSurveyLastRequestedDate(triggerId1));
+
+        String triggerId2 = "triggerId2";
+        RiggedSurveyThrottler throttler2 =
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* date= */ 2, triggerId2);
+        Assert.assertTrue(
+                "TriggerId2 is not requested before and should show.", throttler2.canShowSurvey());
+        Assert.assertEquals(
+                "Trigger Id should be attempted.",
+                throttler2.getEncodedDate(),
+                getSurveyLastRequestedDate(triggerId2));
+    }
+
+    @Test
+    public void testOtherPromptShownRecently() {
+        String triggerId1 = "triggerId1";
+        RiggedSurveyThrottler throttler1 =
+                new RiggedSurveyThrottler(
+                        /* randomlySelected= */ true,
+                        /* year= */ 2023,
+                        /* month= */ 0, // Calendar.JANUARY
+                        /* date= */ 1,
+                        newSurveyConfig(triggerId1, false));
+        Assert.assertTrue("User is selected for survey.", throttler1.canShowSurvey());
+        Assert.assertEquals(
+                "Trigger Id should be attempted.",
+                throttler1.getEncodedDate(),
+                getSurveyLastRequestedDate(triggerId1));
+        throttler1.recordSurveyPromptDisplayed();
 
         String triggerId2 = "triggerId2";
         RiggedSurveyThrottler throttler2 =
                 new RiggedSurveyThrottler(
-                        /* randomlySelected= */ true, /* dayOfYear= */ 2, triggerId2);
-        Assert.assertTrue(
-                "TriggerId2 is not requested before and should show.", throttler2.canShowSurvey());
+                        /* randomlySelected= */ true,
+                        /* year= */ 2023,
+                        /* month= */ 0, // Calendar.JANUARY
+                        /* date= */ 2,
+                        newSurveyConfig(triggerId2, false));
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.OTHER_SURVEY_DISPLAYED_RECENTLY)) {
+            Assert.assertFalse(
+                    "Survey can't show since other survey is shown recently.",
+                    throttler2.canShowSurvey());
+        }
+    }
 
+    @Test
+    public void testOtherPromptShownBeyondRequiredWindow() {
+        String triggerId1 = "triggerId1";
+        RiggedSurveyThrottler throttler1 =
+                new RiggedSurveyThrottler(
+                        /* randomlySelected= */ true,
+                        /* year= */ 2023,
+                        /* month= */ 0, // Calendar.JANUARY
+                        /* date= */ 1,
+                        newSurveyConfig(triggerId1, false));
+        Assert.assertTrue("User is selected for survey.", throttler1.canShowSurvey());
         Assert.assertEquals(
-                "TriggerId should be attempted.", 2, getSurveyLastRequestedDate(triggerId2));
+                "TriggerId should be attempted.",
+                throttler1.getEncodedDate(),
+                getSurveyLastRequestedDate(triggerId1));
+
+        // Required window recorded in SurveyThrottler.MIN_DAYS_BETWEEN_ANY_PROMPT_DISPLAYED = 180
+        String triggerId2 = "triggerId2";
+        RiggedSurveyThrottler throttler2 =
+                new RiggedSurveyThrottler(
+                        /* randomlySelected= */ true,
+                        /* year= */ 2023,
+                        /* month= */ 6, // Calendar.JULY
+                        /* date= */ 1,
+                        newSurveyConfig(triggerId2, false));
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.USER_SELECTED_FOR_SURVEY)) {
+            Assert.assertTrue(
+                    "Survey can show since other survey shown past the required 180 days.",
+                    throttler2.canShowSurvey());
+        }
+        Assert.assertEquals(
+                "TriggerId should be attempted.",
+                throttler2.getEncodedDate(),
+                getSurveyLastRequestedDate(triggerId2));
     }
 
     @Test
     public void testEligibilityRolledYesterday() {
-        setSurveyLastRequestedDate(TEST_TRIGGER_ID, 4);
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* dayOfYear= */ 5);
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* date= */ 5);
+        setSurveyLastRequestedDate(TEST_TRIGGER_ID, throttler.getEncodedDate() - 1);
 
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -148,8 +224,8 @@ public class SurveyThrottlerUnitTest {
     @Test
     public void testEligibilityRollingTwiceSameDay() {
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* dayOfYear= */ 5);
-        setSurveyLastRequestedDate(TEST_TRIGGER_ID, 5);
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* date= */ 5);
+        setSurveyLastRequestedDate(TEST_TRIGGER_ID, throttler.getEncodedDate());
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Survey.SurveyFilteringResults",
@@ -161,26 +237,32 @@ public class SurveyThrottlerUnitTest {
     @Test
     public void testEligibilityFirstTimeRollingQualifies() {
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* dayOfYear= */ 5);
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* date= */ 1);
         Assert.assertEquals(
                 "Last requested date do not exist yet.",
                 -1,
                 getSurveyLastRequestedDate(TEST_TRIGGER_ID));
         Assert.assertTrue("Random selection should be true", throttler.canShowSurvey());
-        Assert.assertEquals("Numbers should match", 5, getSurveyLastRequestedDate(TEST_TRIGGER_ID));
+        Assert.assertEquals(
+                "Trigger Id should be attempted.",
+                throttler.getEncodedDate(),
+                getSurveyLastRequestedDate(TEST_TRIGGER_ID));
     }
 
     @Test
     public void testEligibilityFirstTimeRollingDoesNotQualify() {
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/* randomlySelected= */ false, /* dayOfYear= */ 1);
+                new RiggedSurveyThrottler(/* randomlySelected= */ false, /* date= */ 1);
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Survey.SurveyFilteringResults",
                         FilteringResult.ROLLED_NON_ZERO_NUMBER)) {
             Assert.assertFalse("Random selection should be false.", throttler.canShowSurvey());
         }
-        Assert.assertEquals("Numbers should match", 1, getSurveyLastRequestedDate(TEST_TRIGGER_ID));
+        Assert.assertEquals(
+                "Trigger Id should be attempted.",
+                throttler.getEncodedDate(),
+                getSurveyLastRequestedDate(TEST_TRIGGER_ID));
     }
 
     @Test
@@ -188,8 +270,11 @@ public class SurveyThrottlerUnitTest {
         SurveyConfig config = newSurveyConfig(TEST_TRIGGER_ID, true);
         RiggedSurveyThrottler throttler =
                 new RiggedSurveyThrottler(
-                        /* randomlySelected= */ false, /* dayOfYear= */ 1, config);
-
+                        /* randomlySelected= */ false,
+                        /* year= */ 2000,
+                        /* month= */ 1,
+                        /* date= */ 1,
+                        config);
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Survey.SurveyFilteringResults",
@@ -204,7 +289,7 @@ public class SurveyThrottlerUnitTest {
     @CommandLineFlags.Add(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)
     public void testCommandLineForceEnableSurvey() {
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/* randomlySelected= */ false, /* dayOfYear= */ 1);
+                new RiggedSurveyThrottler(/* randomlySelected= */ false, /* date= */ 1);
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Survey.SurveyFilteringResults",
@@ -212,6 +297,32 @@ public class SurveyThrottlerUnitTest {
             Assert.assertTrue(
                     "Survey should be enabled by commandline flag.", throttler.canShowSurvey());
         }
+    }
+
+    @Test
+    public void testEncodeDateImpl() {
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.set(2020, Calendar.JANUARY, 1);
+        int dateJan1st2020 = SurveyThrottler.getEncodedDateImpl(calendar);
+        calendar.set(2020, Calendar.FEBRUARY, 1);
+        int dateFeb1st2020 = SurveyThrottler.getEncodedDateImpl(calendar);
+        Assert.assertEquals(
+                "Date in between encoded dates is wrong.", 31, dateFeb1st2020 - dateJan1st2020);
+
+        calendar.set(2019, Calendar.DECEMBER, 31);
+        int dateDec31th2019 = SurveyThrottler.getEncodedDateImpl(calendar);
+        Assert.assertEquals(
+                "The last date has a gap for non-leap year. This is expected.",
+                2,
+                dateJan1st2020 - dateDec31th2019);
+
+        calendar.set(2020, Calendar.DECEMBER, 31);
+        int dateDec31th2020 = SurveyThrottler.getEncodedDateImpl(calendar);
+        calendar.set(2021, Calendar.JANUARY, 1);
+        int dateJan1st2021 = SurveyThrottler.getEncodedDateImpl(calendar);
+        Assert.assertEquals(
+                "The last date has no gap for leap year.", 1, dateJan1st2021 - dateDec31th2020);
     }
 
     private void setSurveyLastRequestedDate(String triggerId, int value) {
@@ -233,21 +344,23 @@ public class SurveyThrottlerUnitTest {
     /** Test class used to test the rate limiting logic for {@link SurveyThrottler}. */
     private static class RiggedSurveyThrottler extends SurveyThrottler {
         private final boolean mRandomlySelected;
-        private final int mDayOfYear;
+        private final Calendar mCalendar;
 
-        RiggedSurveyThrottler(boolean randomlySelected, int dayOfYear, SurveyConfig config) {
+        RiggedSurveyThrottler(
+                boolean randomlySelected, int year, int month, int date, SurveyConfig config) {
             super(config);
 
             mRandomlySelected = randomlySelected;
-            mDayOfYear = dayOfYear;
+            mCalendar = Calendar.getInstance();
+            mCalendar.set(year, month, date);
         }
 
-        RiggedSurveyThrottler(boolean randomlySelected, int dayOfYear, String triggerId) {
-            this(randomlySelected, dayOfYear, newSurveyConfig(triggerId, false));
+        RiggedSurveyThrottler(boolean randomlySelected, int date, String triggerId) {
+            this(randomlySelected, TEST_YEAR, TEST_MONTH, date, newSurveyConfig(triggerId, false));
         }
 
-        RiggedSurveyThrottler(boolean randomlySelected, int dayOfYear) {
-            this(randomlySelected, dayOfYear, TEST_TRIGGER_ID);
+        RiggedSurveyThrottler(boolean randomlySelected, int date) {
+            this(randomlySelected, date, TEST_TRIGGER_ID);
         }
 
         @Override
@@ -256,8 +369,8 @@ public class SurveyThrottlerUnitTest {
         }
 
         @Override
-        int getDayOfYear() {
-            return mDayOfYear;
+        int getEncodedDate() {
+            return getEncodedDateImpl(mCalendar);
         }
     }
 }

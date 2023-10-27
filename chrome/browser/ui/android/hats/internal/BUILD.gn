@@ -32,6 +32,7 @@ android_library("java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/hats:java",
     "//chrome/browser/ui/android/hats:message_ui_delegate_java",
+    "//components/browser_ui/util/android:java",
     "//components/messages/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",

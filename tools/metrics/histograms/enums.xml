@@ -104855,6 +104855,7 @@ would be helpful to identify which type is being sent.
   <int value="7" label="Survey already exists [removed]"/>
   <int value="8" label="First time user"/>
   <int value="9" label="User prompted survey"/>
+  <int value="10" label="Other survey displayed recently"/>
 </enum>
 
 <enum name="SurveyPresentationStatusCode">
