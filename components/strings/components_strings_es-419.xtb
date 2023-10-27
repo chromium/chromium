@@ -1754,7 +1754,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4644670975240021822">Orden inverso hacia abajo</translation>
 <translation id="4646534391647090355">Ir ahora</translation>
 <translation id="4648262692072505866">El hash debe tener el formato SHA-256.</translation>
-<translation id="4652266463001779298">No permitido</translation>
+<translation id="4652266463001779298">No se permite</translation>
 <translation id="4652440160515225514">Tu organización bloqueó este sitio porque infringe una política.</translation>
 <translation id="4653167719759882810">Fusiones y adquisiciones</translation>
 <translation id="4658638640878098064">Grapa en la esquina superior izquierda</translation>
@@ -2695,7 +2695,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6615297766614333076">Apilador 2</translation>
 <translation id="6624427990725312378">Información de contacto</translation>
 <translation id="6627727261837091711">Mostrar los detalles de la personalización de anuncios</translation>
-<translation id="6628463337424475685"><ph name="ENGINE" /> Búsqueda</translation>
+<translation id="6628463337424475685">Búsqueda de <ph name="ENGINE" /></translation>
 <translation id="6629652037942826935">Viajes de lujo</translation>
 <translation id="6630043285902923878">Buscando dispositivos USB…</translation>
 <translation id="6630388727238334626">Botón Administrar la configuración de Chrome: actívalo para visitar tu configuración de Chrome</translation>

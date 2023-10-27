@@ -250,7 +250,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1187692277738768150">Apabila anda menggunakan dan menyimpan kata laluan ini:</translation>
 <translation id="1187722533808055681">Bangkit daripada melahu</translation>
 <translation id="1188807932851744811">Log belum dimuat naik.</translation>
-<translation id="1190086046506744802">Terlalu besar</translation>
+<translation id="1190086046506744802">Sangat jarang</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Akses fail yang disimpan pada komputer anda}other{Akses # fail yang disimpan pada komputer anda}}</translation>
 <translation id="1190706173655543975">Dasar Aplikasi Microsoft</translation>
 <translation id="119092896208640858">Untuk mengosongkan data semakan imbas daripada peranti ini sahaja dan menyimpannya dalam Akaun Google anda, <ph name="BEGIN_LINK" />log keluar<ph name="END_LINK" />.</translation>
@@ -1244,7 +1244,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1966649499058910679">Serlahkan setiap perkataan seperti yang dituturkan</translation>
 <translation id="1967970931040389207">Hidupkan tempat liputan</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
-<translation id="1969550816138571473">Bersiap sedia</translation>
+<translation id="1969550816138571473">Menyediakan</translation>
 <translation id="1969654639948595766">Log teks WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972313920920745320">Laman yang anda tambahkan akan sentiasa aktif dan memori tidak akan dikosongkan daripada laman tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut tentang memastikan laman tertentu aktif<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Anda akan menyemak imbas dengan lebih pantas kerana kandungan dimuatkan secara proaktif berdasarkan lawatan halaman web semasa anda</translation>
@@ -5722,7 +5722,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Memuatkan apl...</translation>
 <translation id="5590418976913374224">Mainkan bunyi pada permulaan peranti</translation>
-<translation id="5591465468509111843">Terlalu besar</translation>
+<translation id="5591465468509111843">Sangat lebar</translation>
 <translation id="5592595402373377407">Data yang mencukupi belum tersedia lagi.</translation>
 <translation id="5594899180331219722">Pilih fail</translation>
 <translation id="5595307023264033512">Jumlah storan yang digunakan oleh laman: <ph name="TOTAL_USAGE" /></translation>
@@ -6655,7 +6655,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="6370021412472292592">Tidak dapat memuatkan manifes.</translation>
 <translation id="6370551072524410110">Search + Shift + undur ruang</translation>
-<translation id="637135143619858508">Agak besar</translation>
+<translation id="637135143619858508">Jarang</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Cuba Lagi</translation>
 <translation id="6374635887697228982">Dapatkan diskaun?</translation>
@@ -7998,7 +7998,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7477599578899108080">Penggunaan memori tinggi: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Buat Kod QR untuk halaman ini</translation>
 <translation id="7477793887173910789">Kawal muzik, video anda dan banyak lagi</translation>
-<translation id="7478069565037869084">Besar</translation>
+<translation id="7478069565037869084">Lebar</translation>
 <translation id="7478485216301680444">Aplikasi kios tidak dapat dipasang.</translation>
 <translation id="7478658909253570368">Jangan benarkan laman menyambung kepada port bersiri</translation>
 <translation id="7479221278376295180">Ikhtisar Penggunaan Storan</translation>
