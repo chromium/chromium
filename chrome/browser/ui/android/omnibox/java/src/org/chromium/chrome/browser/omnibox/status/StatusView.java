@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
-import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
@@ -106,14 +105,6 @@ public class StatusView extends LinearLayout {
         mSeparatorView = findViewById(R.id.location_bar_verbose_status_separator);
         mStatusExtraSpace = findViewById(R.id.location_bar_verbose_status_extra_space);
 
-        // Configure icon rounding.
-        mIconView.setOutlineProvider(
-                new RoundedCornerOutlineProvider(
-                        getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.omnibox_search_engine_logo_composed_size)));
-        mIconView.setClipToOutline(true);
-
         configureAccessibilityDescriptions();
 
         if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
@@ -121,8 +112,7 @@ public class StatusView extends LinearLayout {
             ViewGroup.LayoutParams params = mIconBackground.getLayoutParams();
             int iconBackgroundSize =
                     getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.omnibox_search_engine_logo_composed_size);
+                            .getDimensionPixelSize(R.dimen.location_bar_status_icon_bg_size_polish);
             params.width = iconBackgroundSize;
             params.height = iconBackgroundSize;
         }

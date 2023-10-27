@@ -18,6 +18,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -67,6 +69,7 @@ public class SearchEngineLogoUtilsUnitTest {
     @Captor ArgumentCaptor<FaviconHelper.FaviconImageCallback> mCallbackCaptor;
     @Mock FaviconHelper mFaviconHelper;
     @Mock TemplateUrlService mTemplateUrlService;
+    @Mock RoundedIconGenerator mRoundedIconGenerator;
     @Mock LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock Resources mResources;
 
@@ -78,6 +81,7 @@ public class SearchEngineLogoUtilsUnitTest {
         mBitmap = Shadow.newInstanceOf(Bitmap.class);
         shadowOf(mBitmap).appendDescription("test");
 
+        doReturn(mBitmap).when(mRoundedIconGenerator).generateIconForText(any());
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(LOGO_URL).when(mTemplateUrlService).getUrlForSearchQuery(any());
         doReturn(true)
@@ -91,6 +95,7 @@ public class SearchEngineLogoUtilsUnitTest {
 
         mSearchEngineLogoUtils = new SearchEngineLogoUtils();
         mSearchEngineLogoUtils.setFaviconHelperForTesting(mFaviconHelper);
+        mSearchEngineLogoUtils.setRoundedIconGeneratorForTesting(mRoundedIconGenerator);
     }
 
     @After
@@ -319,6 +324,27 @@ public class SearchEngineLogoUtilsUnitTest {
         Assert.assertEquals(
                 expected,
                 mSearchEngineLogoUtils.getSearchLoupeResource(BrandedColorScheme.INCOGNITO));
+    }
+
+    @Test
+    public void getMostCommonEdgeColor_allOneColor() {
+        int color = Color.BLUE;
+        Bitmap bitmap = createSolidImage(100, 100, color);
+        assertEquals(color, mSearchEngineLogoUtils.getMostCommonEdgeColor(bitmap));
+    }
+
+    @Test
+    public void getMostCommonEdgeColor_outerInnerColor() {
+        int color = Color.BLUE;
+        Bitmap bitmap = createSolidImageWithDifferentInnerColor(100, 100, color, Color.RED);
+        assertEquals(color, mSearchEngineLogoUtils.getMostCommonEdgeColor(bitmap));
+    }
+
+    @Test
+    public void getMostCommonEdgeColor_slightlyLargerColor() {
+        int color = Color.BLUE;
+        Bitmap bitmap = createSolidImageWithSlighlyLargerEdgeCoverage(100, 100, color, Color.RED);
+        assertEquals(color, mSearchEngineLogoUtils.getMostCommonEdgeColor(bitmap));
     }
 
     @Test

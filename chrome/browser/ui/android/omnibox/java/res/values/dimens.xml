@@ -46,6 +46,7 @@ found in the LICENSE file.
     <dimen name="incognito_badge_lateral_padding">4dp</dimen>
     <dimen name="location_bar_status_icon_width">24dp</dimen>
     <dimen name="location_bar_status_icon_bg_size">32dp</dimen>
+    <dimen name="location_bar_status_icon_bg_size_polish">28dp</dimen>
     <dimen name="location_bar_status_icon_holding_space_size">8dp</dimen>
     <dimen name="location_bar_icon_end_padding_focused">12dp</dimen>
     <dimen name="location_bar_icon_end_padding_focused_smaller">10dp</dimen>
@@ -136,5 +137,4 @@ found in the LICENSE file.
     <dimen name="omnibox_button_highlight_height">32dp</dimen>
     <dimen name="status_view_highlight_size">32dp</dimen>
     <dimen name="location_bar_url_action_padding_small">3dp</dimen>
-    <dimen name="location_bar_status_icon_area_size">32dp</dimen>
 </resources>
