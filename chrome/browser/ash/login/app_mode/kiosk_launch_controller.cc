@@ -387,26 +387,21 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   // browser_data_migrator.h for details.
   BrowserDataMigratorImpl::ClearMigrationStep(g_browser_process->local_state());
 
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
+  const user_manager::User& user =
+      CHECK_DEREF(ProfileHelper::Get()->GetUserByProfile(profile));
 
-  // TODO(b/257210467): Remove the need for CHECK_IS_TEST
-  if (!user) {
-    CHECK_IS_TEST();
-  } else {
-    if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
-            user->GetAccountId(), user->username_hash(),
-            crosapi::browser_util::PolicyInitState::kAfterInit)) {
-      LOG(WARNING) << "Restarting chrome to run profile migration.";
-      return;
-    }
+  if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
+          user.GetAccountId(), user.username_hash(),
+          crosapi::browser_util::PolicyInitState::kAfterInit)) {
+    LOG(WARNING) << "Restarting chrome to run profile migration.";
+    return;
+  }
 
-    if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
-            user->GetAccountId(), user->username_hash(),
-            crosapi::browser_util::PolicyInitState::kAfterInit)) {
-      LOG(WARNING) << "Restarting chrome to run backward profile migration.";
-      return;
-    }
+  if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
+          user.GetAccountId(), user.username_hash(),
+          crosapi::browser_util::PolicyInitState::kAfterInit)) {
+    LOG(WARNING) << "Restarting chrome to run backward profile migration.";
+    return;
   }
 
   // This is needed to trigger input method extensions being loaded.

@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fake_app_launch_splash_screen_handler.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -194,6 +195,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     SetUpKioskAppInAppManager();
 
     extensions::ExtensionServiceTestBase::SetUp();
+
+    LoginFakeUser();
   }
 
   void TearDown() override {
@@ -265,6 +268,11 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   void CleanUpController() { controller().CleanUp(); }
 
+  void LoginFakeUser() {
+    fake_user_manager_->AddWebKioskAppUser(kiosk_app_id().account_id.value());
+    fake_user_manager_->LoginUser(kiosk_app_id().account_id.value());
+  }
+
  private:
   void SetDeviceEnterpriseManaged() {
     cros_settings_test_helper().InstallAttributes()->SetCloudManaged(
@@ -300,6 +308,9 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   std::unique_ptr<base::AutoReset<absl::optional<bool>>>
       can_configure_network_for_testing_;
+
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
 
   std::unique_ptr<base::AutoReset<bool>>
       disable_wait_timer_and_login_operations_for_testing_;
@@ -833,7 +844,8 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     LoginState::Initialize();
     crosapi::IdleServiceAsh::DisableForTesting();
-    profile_ = testing_profile_manager_.CreateTestingProfile("Default");
+    profile_ =
+        testing_profile_manager_.CreateTestingProfile("testing_profile@test");
     crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
     SetUpKioskAppId();
     fake_user_manager_->AddWebKioskAppUser(kiosk_app_id().account_id.value());
@@ -936,10 +948,12 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ScopedTestingLocalState testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   TestingProfileManager testing_profile_manager_{
-      TestingBrowserProcess::GetGlobal()};
+      TestingBrowserProcess::GetGlobal(), &testing_local_state_};
   raw_ptr<Profile, ExperimentalAsh> profile_;
   crosapi::FakeBrowserManager browser_manager_;
 
