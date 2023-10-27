@@ -55,6 +55,12 @@ id<GREYMatcher> SigninScreenPromoMatcher() {
       first_run::kFirstRunSignInScreenAccessibilityIdentifier);
 }
 
+id<GREYMatcher> SigninScreenPromoPrimaryButtonMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
 id<GREYMatcher> SigninScreenPromoSecondaryButtonMatcher() {
   return grey_allOf(
       grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier),
@@ -67,9 +73,7 @@ id<GREYMatcher> SettingsSignInRowMatcher() {
 }
 
 id<GREYMatcher> HistoryOptInPrimaryButtonMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
+  return SigninScreenPromoPrimaryButtonMatcher();
 }
 
 id<GREYMatcher> HistoryOptInPromoMatcher() {

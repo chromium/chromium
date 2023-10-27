@@ -68,8 +68,7 @@ void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
       performAction:grey_tap()];
   if (expect_history_sync) {
     [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       kPromoStylePrimaryActionAccessibilityIdentifier)]
+                   chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
         performAction:grey_tap()];
   }
   [ChromeEarlGreyUI waitForAppToIdle];

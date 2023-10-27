@@ -251,8 +251,7 @@ void CompleteSigninFlow() {
                                             WebSigninPrimaryButtonMatcher()]
         performAction:grey_tap()];
     [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       kPromoStylePrimaryActionAccessibilityIdentifier)]
+                   chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
         performAction:grey_tap()];
   } else {
     [SigninEarlGreyUI tapSigninConfirmationDialog];

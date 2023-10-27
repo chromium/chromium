@@ -132,8 +132,8 @@ void OpenNTPAndBackgroundAndForegroundApp() {
       selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
       assertWithMatcher:grey_notVisible()];
   VerifyHystoryOptInPromoSufficientlyVisible();
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          HistoryOptInPrimaryButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
   [self expectUpgradePromoMetricsAndPreferences];
@@ -181,15 +181,12 @@ void OpenNTPAndBackgroundAndForegroundApp() {
   OpenNTPAndBackgroundAndForegroundApp();
 
   VerifySigninPromoSufficientlyVisible();
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kPromoStylePrimaryActionAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          HistoryOptInPrimaryButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
   [self expectUpgradePromoMetricsAndPreferences];

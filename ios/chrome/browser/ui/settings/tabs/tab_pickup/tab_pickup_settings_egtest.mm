@@ -173,8 +173,8 @@ id<GREYMatcher> TabPickupSettingsSwitchItem(bool is_toggled_on, bool enabled) {
                                           WebSigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                           HistoryOptInPrimaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -229,8 +229,8 @@ id<GREYMatcher> TabPickupSettingsSwitchItem(bool is_toggled_on, bool enabled) {
       performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                           HistoryOptInPrimaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
