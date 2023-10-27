@@ -51,24 +51,28 @@ namespace ash {
 
 namespace {
 
-// Margins between containers in the detailed view.
-constexpr auto kContainerMargins = gfx::Insets::TLBR(2, 0, 0, 0);
+// Margins between containers in the detailed view if the container is connected
+// to the container above it.
+constexpr auto kConnectedContainerMargins = gfx::Insets::TLBR(2, 0, 0, 0);
+
+// Margins between containers in the detailed view if the container is not
+// connected to the container above it.
+constexpr auto kDisconnectedContainerMargins = gfx::Insets::TLBR(8, 0, 0, 0);
 
 // Insets for items within the `toggle_view_`'s `TriView` container.
-constexpr auto kToggleViewInsets = gfx::Insets::VH(13, 24);
+constexpr auto kToggleViewInsets = gfx::Insets::VH(5, 24);
 
-// Margins between children in the `toggle_view_`.
-constexpr int kToggleViewBetweenChildSpacing = 16;
+constexpr auto kToggleViewHeight = 64;
 
 // Timer view constants.
-constexpr auto kTimerViewBorderInsets = gfx::Insets::VH(8, 0);
+constexpr auto kTimerViewBorderInsets = gfx::Insets::TLBR(4, 0, 8, 8);
 constexpr auto kTimerViewHeaderInsets = gfx::Insets::VH(10, 24);
 constexpr auto kTimerSettingViewInsets = gfx::Insets::TLBR(8, 16, 12, 16);
 constexpr int kTimerSettingViewMaxCharacters = 3;
 constexpr int kTimerSettingViewTextHeight = 32;
 constexpr int kTimerSettingViewBetweenChildSpacing = 8;
 constexpr auto kTimerAdjustmentButtonSize = gfx::Size(63, 36);
-constexpr auto kTimerCountdownViewInsets = gfx::Insets::VH(0, 24);
+constexpr auto kTimerCountdownViewInsets = gfx::Insets::TLBR(0, 24, 12, 16);
 
 // Creates an `IconButton` with the formatting needed for the
 // `timer_setting_view_`'s timer adjustment buttons.
@@ -250,9 +254,9 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
   // TODO(b/286931806): remove border inset and add Focus Scene UI.
   scene_view_ =
       scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
-          RoundedContainer::Behavior::kNotRounded));
-  scene_view_->SetBorderInsets(gfx::Insets::VH(100, 0));
-  scene_view_->SetProperty(views::kMarginsKey, kContainerMargins);
+          RoundedContainer::Behavior::kAllRounded));
+  scene_view_->SetBorderInsets(gfx::Insets::VH(83, 0));
+  scene_view_->SetProperty(views::kMarginsKey, kDisconnectedContainerMargins);
 
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   const bool in_focus_session = focus_mode_controller->in_focus_session();
@@ -329,11 +333,13 @@ void FocusModeDetailedView::CreateToggleView() {
   toggle_container->SetBorderInsets(gfx::Insets());
   toggle_view_ = toggle_container->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
+  toggle_view_->SetPreferredSize(gfx::Size(0, kToggleViewHeight));
 
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   const bool in_focus_session = focus_mode_controller->in_focus_session();
   toggle_view_->AddIconAndLabel(
-      ui::ImageModel::FromVectorIcon(kFocusModeLampIcon),
+      ui::ImageModel::FromVectorIcon(kFocusModeLampIcon,
+                                     cros_tokens::kCrosSysOnSurface),
       l10n_util::GetStringUTF16(
           in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL
                            : IDS_ASH_STATUS_TRAY_FOCUS_MODE));
@@ -360,18 +366,15 @@ void FocusModeDetailedView::CreateToggleView() {
               in_focus_session
                   ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON
                   : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON),
-          PillButton::Type::kPrimaryWithoutIcon, /*icon=*/nullptr)
+          PillButton::Type::kPrimaryLargeWithoutIcon, /*icon=*/nullptr)
           .release());
 
-  toggle_view_->SetExpandable(true);
   toggle_view_->SetFocusBehavior(View::FocusBehavior::NEVER);
   toggle_view_->tri_view()->SetInsets(kToggleViewInsets);
   views::BoxLayout* toggle_view_tri_view_layout =
       toggle_view_->tri_view()->box_layout();
   toggle_view_tri_view_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  toggle_view_tri_view_layout->set_between_child_spacing(
-      kToggleViewBetweenChildSpacing);
   toggle_view_tri_view_layout->InvalidateLayout();
 }
 
@@ -379,8 +382,9 @@ void FocusModeDetailedView::CreateTimerView() {
   // Create the timer view container.
   timer_view_container_ =
       scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
-          RoundedContainer::Behavior::kNotRounded));
-  timer_view_container_->SetProperty(views::kMarginsKey, kContainerMargins);
+          RoundedContainer::Behavior::kBottomRounded));
+  timer_view_container_->SetProperty(views::kMarginsKey,
+                                     kConnectedContainerMargins);
   timer_view_container_->SetBorderInsets(kTimerViewBorderInsets);
 
   // Create the timer header.
@@ -512,8 +516,9 @@ void FocusModeDetailedView::UpdateTimerView(bool in_focus_session) {
 void FocusModeDetailedView::CreateDoNotDisturbContainer() {
   do_not_disturb_view_ =
       scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
-          RoundedContainer::Behavior::kBottomRounded));
-  do_not_disturb_view_->SetProperty(views::kMarginsKey, kContainerMargins);
+          RoundedContainer::Behavior::kAllRounded));
+  do_not_disturb_view_->SetProperty(views::kMarginsKey,
+                                    kDisconnectedContainerMargins);
 
   HoverHighlightView* toggle_row = do_not_disturb_view_->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
