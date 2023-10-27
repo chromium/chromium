@@ -162,14 +162,7 @@ base::Value::Dict CreateCapabilities(Session* session,
 
   // Capabilities defined by W3C. Some of these capabilities have different
   // names in legacy mode.
-
-  // TODO (crbug.com/chromedriver/4358) For compatibility reasons the
-  // "browserName" capability for HeadlessShell is "headless chrome". We need
-  // to change this in the future to "chrome-headless-shell" so that it
-  // coincided with the incoming "browserName" capability.
-  caps.Set("browserName", session->chrome->GetBrowserInfo()->is_headless_shell
-                              ? base::ToLowerASCII(kHeadlessShellShortName)
-                              : base::ToLowerASCII(kBrowserShortName));
+  caps.Set("browserName", base::ToLowerASCII(kBrowserShortName));
   caps.Set(session->w3c_compliant ? "browserVersion" : "version",
            session->chrome->GetBrowserInfo()->browser_version);
   std::string os_name = session->chrome->GetOperatingSystemName();
@@ -518,13 +511,8 @@ bool MergeCapabilities(const base::Value::Dict& always_match,
 bool MatchCapabilities(const base::Value::Dict& capabilities) {
   const base::Value* name = capabilities.Find("browserName");
   if (name && !name->is_none()) {
-    if (!name->is_string()) {
+    if (!(name->is_string() && name->GetString() == kBrowserCapabilityName))
       return false;
-    }
-    if (name->GetString() != kBrowserCapabilityName &&
-        name->GetString() != kHeadlessShellCapabilityName) {
-      return false;
-    }
   }
 
   const base::Value::Dict* chrome_options;
