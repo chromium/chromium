@@ -271,7 +271,7 @@ export class SettingsSafetyHubModuleElement extends
       case 'cr:check':
         this.headerIconColor = 'green';
         break;
-      case 'settings:shield-with-heart':
+      case 'cr:security':
         this.headerIconColor = 'blue';
         break;
       default:
