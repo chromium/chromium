@@ -10437,8 +10437,23 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE" desc="The body text for the first run experience of the not started state in the tab organization UI" translateable="false">
         Chrome can help your tabs stay organized and easy to find
       </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON" desc="The label for the button in the not started state of the tab organization UI" translateable="false">
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED" desc="The body text for the not started state in the tab organization UI, when not signed in or signed in but unsynced/sync paused" translateable="false">
+        Turn on sync to let Chrome keep your tabs organized.
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED_HISTORY" desc="The body text for the not started state in the tab organization UI, when history sync is disabled" translateable="false">
+        Turn on History sync in Settings to let Chrome keep your tabs organized.
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON" desc="The label for the button in the not started state of the tab organization UI, when synced" translateable="false">
         Organize tabs
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED" desc="The label for the button in the not started state of the tab organization UI, when not signed in or signed in but unsynced" translateable="false">
+        Turn on sync
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_HISTORY" desc="The label for the button in the not started state of the tab organization UI, when history sync is disabled" translateable="false">
+        Settings
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED" desc="The label for the button in the not started state of the tab organization UI, when sync is paused" translateable="false">
+        Sign in
       </message>
       <message name="IDS_TAB_ORGANIZATION_IN_PROGRESS_TITLE" desc="The header text for the in progress state in the tab organization UI" translateable="false">
         Organizing…
