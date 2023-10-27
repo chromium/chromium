@@ -94,6 +94,7 @@ export function createSampleSearchEngine(override?: Partial<SearchEngine>):
         default: false,
         displayName: 'Google',
         iconURL: 'http://www.google.com/favicon.ico',
+        iconPath: 'images/foo.png',
         id: 0,
         isOmniboxExtension: false,
         keyword: 'google.com',

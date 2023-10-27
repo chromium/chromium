@@ -50,12 +50,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
       /**
        * List of search engines available.
        */
-      searchEngines_: {
-        type: Array,
-        value() {
-          return [];
-        },
-      },
+      searchEngines_: Array,
 
       // Whether the `kSearchEngineChoiceSettingsUi` feature is enabled or not.
       searchEngineChoiceSettingsUi_: {
@@ -66,9 +61,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
       },
 
       // The selected default search engine.
-      // This depends on `searchEngines_` because we want to update the
-      // `defaultSearchEngine_` variable every time the search engine list is
-      // updated.
       defaultSearchEngine_: {
         type: Object,
         computed: 'computeDefaultSearchEngine_(searchEngines_)',
@@ -143,15 +135,12 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 
-  private computeDefaultSearchEngine_(): SearchEngine|null {
+  private computeDefaultSearchEngine_() {
     if (!this.searchEngines_.length || !this.searchEngineChoiceSettingsUi_) {
       return null;
     }
 
-    const defaultSearchEngine =
-        this.searchEngines_.find(searchEngine => searchEngine.default);
-    assert(defaultSearchEngine);
-    return defaultSearchEngine;
+    return this.searchEngines_.find(engine => engine.default)!;
   }
 
   private onOpenDialogButtonClick_() {

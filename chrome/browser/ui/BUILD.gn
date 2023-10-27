@@ -1753,6 +1753,7 @@ static_library("ui") {
       "webui/realbox/realbox_handler.h",
       "webui/sanitized_image_source.cc",
       "webui/sanitized_image_source.h",
+      "webui/search_engine_choice/generated_icon_utils.cc",
       "webui/search_engine_choice/icon_utils.cc",
       "webui/search_engine_choice/icon_utils.h",
       "webui/settings/about_handler.cc",

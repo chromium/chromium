@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"
 #include "chrome/browser/ui/webui/settings/about_handler.h"
 #include "chrome/browser/ui/webui/settings/accessibility_main_handler.h"
 #include "chrome/browser/ui/webui/settings/appearance_handler.h"
@@ -321,6 +322,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           search_engines::ChoicePromo::kAny);
   html_source->AddBoolean("searchEngineChoiceSettingsUi",
                           is_search_engine_choice_settings_ui);
+  if (is_search_engine_choice_settings_ui) {
+    AddGeneratedIconResources(html_source, /*directory=*/"images/");
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(

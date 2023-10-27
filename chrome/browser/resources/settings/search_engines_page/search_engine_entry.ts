@@ -45,7 +45,6 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
 
       showQueryUrl: {type: Boolean, value: false, reflectToAttribute: true},
 
-
       isDefault: {
         reflectToAttribute: true,
         type: Boolean,

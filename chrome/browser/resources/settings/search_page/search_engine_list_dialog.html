@@ -16,7 +16,13 @@
     align-items: center;
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 16px;
+  }
+
+  site-favicon {
+    --site-favicon-border-radius: 4px;
+    --site-favicon-height: 24px;
+    --site-favicon-width: 24px;
   }
 
   #setAsDefaultButton {
@@ -56,7 +62,8 @@
       <template is="dom-repeat" items="[[searchEngines]]">
         <cr-radio-button class="label-first" name="[[item.id]]">
           <div class="search-engine">
-            <site-favicon favicon-url="[[item.iconURL]]" url="[[item.url]]">
+            <site-favicon favicon-url="[[item.iconURL]]" url="[[item.url]]"
+                 icon-path="[[item.iconPath]]">
             </site-favicon>
             [[item.name]]
           </div>

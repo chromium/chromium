@@ -26,6 +26,7 @@ function createSampleOmniboxExtension(): SearchEngine {
     canBeDeactivated: false,
     default: false,
     displayName: 'Omnibox extension displayName',
+    iconPath: 'images/foo.png',
     extension: {
       icon: 'chrome://extension-icon/some-extension-icon',
       id: 'dummyextensionid',

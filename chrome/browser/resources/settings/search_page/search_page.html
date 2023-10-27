@@ -5,7 +5,9 @@
     min-height: var(--cr-section-min-height);
   }
 
-  .cr-row.search-engine {
+  .default-search-engine .cr-row {
+    --cr-section-min-height: 55px;
+    gap: 12px;
     padding: 0;
   }
 
@@ -17,11 +19,10 @@
     margin-inline-end: auto;
   }
 
-  .search-engine {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    gap: 12px;
+  site-favicon {
+    --site-favicon-border-radius: 4px;
+    --site-favicon-height: 24px;
+    --site-favicon-width: 24px;
   }
 
 </style>
@@ -47,10 +48,10 @@
                 prefs.default_search_provider_data.template_url_data]]">
             </cr-policy-pref-indicator>
           </template>
-          <div class="cr-row first search-engine">
-            <site-favicon
-                favicon-url="[[defaultSearchEngine_.iconURL]]"
-                url="[[defaultSearchEngine_.url]]">
+          <div class="cr-row first">
+            <site-favicon favicon-url="[[defaultSearchEngine_.iconURL]]"
+                url="[[defaultSearchEngine_.url]]"
+                icon-path="[[defaultSearchEngine_.iconPath]]">
             </site-favicon>
             <div class="search-engine-name">[[defaultSearchEngine_.name]]</div>
             <cr-button id="openDialogButton"

@@ -36,14 +36,9 @@ std::string GetChoiceListJSON(Profile& profile) {
 
   for (const auto& choice : choices) {
     base::Value::Dict choice_value;
-    // The icon path that's generated in `AddGeneratedIconResources` is of the
-    // format 'keyword'.png while replacing all the '.' and '-' in 'keyword' by
-    // '_'.
-    std::u16string engine_keyword = choice->keyword();
-    std::replace(engine_keyword.begin(), engine_keyword.end(), '.', '_');
-    std::replace(engine_keyword.begin(), engine_keyword.end(), '-', '_');
-    const std::u16string icon_path = u"images/" + engine_keyword + u".png";
 
+    const std::u16string icon_path = GetGeneratedIconPath(
+        choice->keyword(), /*parent_directory_path=*/u"images/");
     choice_value.Set("prepopulate_id", choice->prepopulate_id());
     choice_value.Set("name", choice->short_name());
     choice_value.Set("icon_path", icon_path);

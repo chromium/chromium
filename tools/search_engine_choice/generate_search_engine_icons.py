@@ -282,17 +282,18 @@ def generate_icon_resource_code():
 
 def create_adding_icons_to_source_function():
   """Generates the `AddGeneratedIconResources` in
-  `search_engine_choice/icon_utils.cc`.
+  `search_engine_choice/generated_icon_utils.cc`.
 
   Generates the function that will be used to populate the `WebUIDataSource`
   with the generated icons.
   """
   print('Creating `AddGeneratedIconResources` function...')
 
-  with open('../../chrome/browser/ui/webui/search_engine_choice/icon_utils.cc',
-            'w',
-            encoding='utf-8',
-            newline='') as utils_file:
+  with open(
+      '../../chrome/browser/ui/webui/search_engine_choice/generated_icon_utils.cc',
+      'w',
+      encoding='utf-8',
+      newline='') as utils_file:
 
     # Add the copyright notice.
     utils_file.write('// Copyright 2023 The Chromium Authors\n')

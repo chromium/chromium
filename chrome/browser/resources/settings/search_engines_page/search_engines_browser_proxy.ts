@@ -24,6 +24,7 @@ export interface SearchEngine {
   displayName: string;
   extension?: {id: string, name: string, canBeDisabled: boolean, icon: string};
   iconURL?: string;
+  iconPath: string;
   id: number;
   isOmniboxExtension: boolean;
   keyword: string;
