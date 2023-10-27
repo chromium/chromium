@@ -5,6 +5,7 @@
 import 'chrome://signin-dice-web-intercept/chrome_signin/chrome_signin_app.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {ChromeSigninAppElement} from 'chrome://signin-dice-web-intercept/chrome_signin/chrome_signin_app.js';
 import {ChromeSigninInterceptionParameters, DiceWebSigninInterceptBrowserProxyImpl} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -70,5 +71,16 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     const img =
         app.shadowRoot!.querySelector<HTMLImageElement>('#account-icon')!;
     assertEquals(PARAMETERS.pictureUrl, img.src);
+
+    // Simulate a change of picture url.
+    const new_params = {
+      ...PARAMETERS,
+      pictureUrl: 'chrome://theme/IDR_PROFILE_AVATAR_2',
+    };
+    webUIListenerCallback(
+        'interception-chrome-signin-parameters-changed', new_params);
+
+    // It should be reflected in the UI.
+    assertEquals(new_params.pictureUrl, img.src);
   });
 });

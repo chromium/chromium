@@ -8,13 +8,15 @@ import '../signin_vars.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ChromeSigninInterceptionParameters, DiceWebSigninInterceptBrowserProxy, DiceWebSigninInterceptBrowserProxyImpl} from '../dice_web_signin_intercept_browser_proxy.js';
 
 import {getTemplate} from './chrome_signin_app.html.js';
 
-const ChromeSigninAppElementBase = I18nMixin(PolymerElement);
+const ChromeSigninAppElementBase =
+    I18nMixin(WebUiListenerMixin(PolymerElement));
 
 export class ChromeSigninAppElement extends ChromeSigninAppElementBase {
   static get is() {
@@ -42,12 +44,20 @@ export class ChromeSigninAppElement extends ChromeSigninAppElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
+    this.addWebUiListener(
+        'interception-chrome-signin-parameters-changed',
+        this.setParameters_.bind(this));
+
     this.diceWebSigninInterceptBrowserProxy_.chromeSigninPageLoaded().then(
         parameters => this.onParametersLoaded_(parameters));
   }
 
-  private onParametersLoaded_(parameters: ChromeSigninInterceptionParameters) {
+  private setParameters_(parameters: ChromeSigninInterceptionParameters) {
     this.interceptionParameters_ = parameters;
+  }
+
+  private onParametersLoaded_(parameters: ChromeSigninInterceptionParameters) {
+    this.setParameters_(parameters);
 
     afterNextRender(this, () => {
       const height =

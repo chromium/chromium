@@ -56,6 +56,8 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
 
   // Gets the values sent to javascript.
   base::Value::Dict GetInterceptionParametersValue();
+  // Get the values for ChromeSignin bubble sent to javascript.
+  base::Value::Dict GetInterceptionChromeSigninParametersValue();
 
   // The dialog string is different when the device is managed. This function
   // returns whether the version for managed devices should be used.

@@ -134,6 +134,14 @@ void DiceWebSigninInterceptHandler::OnExtendedAccountInfoUpdated(
   }
 
   if (should_fire_event) {
+    if (bubble_parameters_.interception_type ==
+        WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+      // Updates might be needed if the picture URL is not yet ready.
+      FireWebUIListener("interception-chrome-signin-parameters-changed",
+                        GetInterceptionChromeSigninParametersValue());
+      return;
+    }
+
     FireWebUIListener("interception-parameters-changed",
                       GetInterceptionParametersValue());
   }
@@ -192,15 +200,10 @@ void DiceWebSigninInterceptHandler::HandleChromeSigninPageLoaded(
   // Image might not be loaded yet.
   UpdateExtendedAccountsInfo();
 
-  base::Value::Dict parameters;
-  parameters.Set("email", intercepted_account().email);
-  parameters.Set("fullName", intercepted_account().full_name);
-  parameters.Set("givenName", intercepted_account().given_name);
-  parameters.Set("pictureUrl", GetAccountPictureUrl(intercepted_account()));
-
   DCHECK(!args.empty());
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, parameters);
+  ResolveJavascriptCallback(callback_id,
+                            GetInterceptionChromeSigninParametersValue());
 }
 
 void DiceWebSigninInterceptHandler::HandleInitializedWithHeight(
@@ -231,6 +234,16 @@ void DiceWebSigninInterceptHandler::UpdateExtendedAccountsInfo() {
   if (!updated_info.IsEmpty()) {
     bubble_parameters_.primary_account = updated_info;
   }
+}
+
+base::Value::Dict
+DiceWebSigninInterceptHandler::GetInterceptionChromeSigninParametersValue() {
+  base::Value::Dict parameters;
+  parameters.Set("email", intercepted_account().email);
+  parameters.Set("fullName", intercepted_account().full_name);
+  parameters.Set("givenName", intercepted_account().given_name);
+  parameters.Set("pictureUrl", GetAccountPictureUrl(intercepted_account()));
+  return parameters;
 }
 
 base::Value::Dict
