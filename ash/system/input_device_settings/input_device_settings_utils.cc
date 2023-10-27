@@ -28,15 +28,6 @@ namespace ash {
 
 namespace {
 
-struct VendorProductId {
-  uint16_t vendor_id;
-  uint16_t product_id;
-  constexpr bool operator<(const VendorProductId& other) const {
-    return vendor_id == other.vendor_id ? product_id < other.product_id
-                                        : vendor_id < other.vendor_id;
-  }
-};
-
 std::string HexEncode(uint16_t v) {
   // Load the bytes into the bytes array in reverse order as hex number should
   // be read from left to right.
@@ -56,6 +47,15 @@ bool ExistingSettingsHasValue(base::StringPiece setting_key,
 }
 
 }  // namespace
+
+constexpr bool VendorProductId::operator<(const VendorProductId& other) const {
+  return vendor_id == other.vendor_id ? product_id < other.product_id
+                                      : vendor_id < other.vendor_id;
+}
+
+bool VendorProductId::operator==(const VendorProductId& other) const {
+  return vendor_id == other.vendor_id && product_id == other.product_id;
+}
 
 // `kIsoLevel5ShiftMod3` is not a valid modifier value.
 bool IsValidModifier(int val) {
