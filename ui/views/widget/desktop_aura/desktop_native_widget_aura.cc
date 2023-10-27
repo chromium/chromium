@@ -574,11 +574,10 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
     }
     host_.reset(desktop_window_tree_host_->AsWindowTreeHost());
   }
+  host_->window()->SetProperty(kDesktopNativeWidgetAuraKey, this);
   desktop_window_tree_host_->Init(params);
 
   host_->window()->AddChild(content_window_);
-  host_->window()->SetProperty(kDesktopNativeWidgetAuraKey, this);
-
   host_->window()->AddObserver(new RootWindowDestructionObserver(this));
 
   // The WindowsModalityController event filter should be at the head of the
