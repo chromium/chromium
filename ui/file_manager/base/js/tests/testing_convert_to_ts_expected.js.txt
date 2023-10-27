@@ -102,4 +102,21 @@ export class FileManagerBase implements FileManagerBaseInterface extends Base {
            });
          }));
   }
+
+  /**
+   * Creates a new list item.
+   * @param dataItem The value to use for the item.
+   */
+  override createItem(dataItem: unknown) {
+    console.log(dataItem);
+  }
+
+  /**
+   * Shows or hides vertical scroll bar.
+   * @param show True to show.
+   * @return True if visibility changed.
+   */
+  showVerticalScrollBar_(show: boolean): boolean {
+    return show;
+  }
 }

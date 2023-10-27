@@ -126,4 +126,22 @@ export class FileManagerBase {
            });
          }));
   }
+
+  /**
+   * Creates a new list item.
+   * @param {*} dataItem The value to use for the item.
+   * @override
+   */
+  createItem(dataItem) {
+    console.log(dataItem);
+  }
+
+  /**
+   * Shows or hides vertical scroll bar.
+   * @param {boolean} show True to show.
+   * @return {boolean} True if visibility changed.
+   */
+  showVerticalScrollBar_(show) {
+    return show;
+  }
 }

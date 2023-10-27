@@ -21,7 +21,8 @@ IMPORT_ASSERT_TS = '''import {%s} from 'chrome://resources/js/assert.js';\n'''
 TS_IGNORE = re.compile(r'@ts-ignore')
 
 COMMENT_JSDOC = re.compile(
-    r'@params?|@returns?|@implements?|@type|@extends?|@private|@protected')
+    r'@params?|@returns?|@implements?|@type|@extends?|@private|@protected|@override'
+)
 
 # Matching:` this.bla;``  or `private this.bla;`
 NON_INITIALIZED_PROP = re.compile(r'\s+this\.[\w_]+;')
@@ -150,6 +151,9 @@ def process_jsdoc(lines, cur_line, idx, regex_match):
     elif jsdoc == '@protected':
         process_private('protected', lines, idx)
         return True
+    elif jsdoc == '@override':
+        process_private('override', lines, idx)
+        return True
 
     print(f'***Unknown JSDoc tag {jsdoc}')
     return False
@@ -217,6 +221,7 @@ def sanitize_type(type_spec):
     t = type_spec.replace('!', '')
     t = t.replace('?', 'null|')
     t = t.replace('=', '')
+    t = t.replace('*', 'unknown')
     t = t.replace('function():void', 'VoidCallback')
     t = re.sub(r'import\(.*\)\.', '', t)
     return t
@@ -313,7 +318,8 @@ def process_param(new_file, idx):
     # Try to insert the param type as TS syntax.
     # Find the param in the function signature.
     line = new_file[idx]
-    while (param_name not in line):
+    search_param_name = re.compile(fr'(\W){param_name}(\W)')
+    while (not search_param_name.search(line)):
         idx += 1
         if idx >= len(new_file):
             return
@@ -323,7 +329,7 @@ def process_param(new_file, idx):
     new_param_name = param_name
     if is_optional:
         new_param_name += '?'
-    new_line = line.replace(param_name, f'{new_param_name}: {t}', 1)
+    new_line = search_param_name.sub(fr'\1{new_param_name}: {t}\2', line)
     new_file[idx] = new_line
 
 
@@ -370,6 +376,9 @@ def process_private(jsdoc_tag, new_file, idx):
     if jsdoc_tag == 'protected':
         tag_regex = r'@protected'
         ts_keyword = 'protected'
+    elif jsdoc_tag == 'override':
+        tag_regex = r'@override'
+        ts_keyword = 'override'
 
     line = new_file[idx]
 
