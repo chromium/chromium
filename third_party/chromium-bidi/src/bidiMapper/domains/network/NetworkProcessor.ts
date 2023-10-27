@@ -53,6 +53,15 @@ export class NetworkProcessor {
       );
     }
 
+    // If AuthRequired is specified, BeforeRequestSent must also be specified.
+    // This is a CDP quirk.
+    if (
+      params.phases.includes(Network.InterceptPhase.AuthRequired) &&
+      !params.phases.includes(Network.InterceptPhase.BeforeRequestSent)
+    ) {
+      params.phases.unshift(Network.InterceptPhase.BeforeRequestSent);
+    }
+
     const urlPatterns: Network.UrlPattern[] = params.urlPatterns ?? [];
     const parsedUrlPatterns: Network.UrlPattern[] =
       NetworkProcessor.parseUrlPatterns(urlPatterns);

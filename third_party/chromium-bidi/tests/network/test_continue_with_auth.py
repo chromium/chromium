@@ -156,7 +156,7 @@ async def test_continue_with_auth_invalid_credentials(websocket, context_id,
             "initiator": {
                 "type": "other",
             },
-            "isBlocked": False,
+            "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": {
@@ -231,7 +231,7 @@ async def test_continue_with_auth_completes(websocket, context_id,
             "initiator": {
                 "type": "other",
             },
-            "isBlocked": False,
+            "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
             "request": {
