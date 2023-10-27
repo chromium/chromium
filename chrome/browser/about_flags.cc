@@ -3920,6 +3920,26 @@ const FeatureEntry::FeatureVariation kAndroidHubVariations[] = {
     {"Phase 4", kHubPhase4, std::size(kHubPhase4), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const flags_ui::FeatureEntry::FeatureParam kParcelTrackingTestDataDelivered[] =
+    {{commerce::kParcelTrackingTestDataParam,
+      commerce::kParcelTrackingTestDataParamDelivered}};
+const flags_ui::FeatureEntry::FeatureParam kParcelTrackingTestDataInProgress[] =
+    {{commerce::kParcelTrackingTestDataParam,
+      commerce::kParcelTrackingTestDataParamInProgress}};
+const flags_ui::FeatureEntry::FeatureParam
+    kParcelTrackingTestDataOutForDelivery[] = {
+        {commerce::kParcelTrackingTestDataParam,
+         commerce::kParcelTrackingTestDataParamOutForDelivery}};
+const flags_ui::FeatureEntry::FeatureVariation
+    kParcelTrackingTestDataVariations[] = {
+        {"Delivered", kParcelTrackingTestDataDelivered,
+         std::size(kParcelTrackingTestDataDelivered), nullptr},
+        {"In progress", kParcelTrackingTestDataInProgress,
+         std::size(kParcelTrackingTestDataInProgress), nullptr},
+        {"Out for delivery", kParcelTrackingTestDataOutForDelivery,
+         std::size(kParcelTrackingTestDataOutForDelivery), nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -6686,6 +6706,14 @@ const FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kCommerceLocalPDPDetectionDescription,
      kOsAndroid | kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kCommerceLocalPDPDetection)},
+
+    {"parcel-tracking-test-data",
+     commerce::flag_descriptions::kParcelTrackingTestDataName,
+     commerce::flag_descriptions::kParcelTrackingTestDataDescription,
+     kOsAndroid | kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kParcelTrackingTestData,
+                                    kParcelTrackingTestDataVariations,
+                                    "ParcelTrackingTestData")},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-price-tracking-chip-experiment",

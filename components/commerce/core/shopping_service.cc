@@ -21,6 +21,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/bookmark_update_manager.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/discounts_storage.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
@@ -1574,6 +1575,14 @@ void ShoppingService::StartTrackingParcels(
 }
 
 void ShoppingService::GetAllParcelStatuses(GetParcelStatusCallback callback) {
+  if (base::FeatureList::IsEnabled(kParcelTrackingTestData)) {
+    auto statuses = std::make_unique<std::vector<ParcelTrackingStatus>>();
+    statuses->push_back(GetParcelTrackingStatusTestData());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), true, std::move(statuses)));
+    return;
+  }
   if (parcels_manager_) {
     parcels_manager_->GetAllParcelStatuses(std::move(callback));
   } else {

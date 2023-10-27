@@ -146,6 +146,12 @@ BASE_DECLARE_FEATURE(kChromeCartDomBasedHeuristics);
 // Feature flag for parcel tracking.
 BASE_DECLARE_FEATURE(kParcelTracking);
 BASE_DECLARE_FEATURE(kParcelTrackingRegionLaunched);
+BASE_DECLARE_FEATURE(kParcelTrackingTestData);
+
+extern const char kParcelTrackingTestDataParam[];
+extern const char kParcelTrackingTestDataParamDelivered[];
+extern const char kParcelTrackingTestDataParamInProgress[];
+extern const char kParcelTrackingTestDataParamOutForDelivery[];
 
 // Shopping list update interval.
 constexpr base::FeatureParam<base::TimeDelta>

@@ -715,6 +715,26 @@ const FeatureEntry::FeatureVariation kIOSHideFeedWithSearchChoiceVariations[]{
      std::size(kIOSHideFeedWithSearchChoiceTargetedParams), nullptr},
 };
 
+const flags_ui::FeatureEntry::FeatureParam kParcelTrackingTestDataDelivered[] =
+    {{commerce::kParcelTrackingTestDataParam,
+      commerce::kParcelTrackingTestDataParamDelivered}};
+const flags_ui::FeatureEntry::FeatureParam kParcelTrackingTestDataInProgress[] =
+    {{commerce::kParcelTrackingTestDataParam,
+      commerce::kParcelTrackingTestDataParamInProgress}};
+const flags_ui::FeatureEntry::FeatureParam
+    kParcelTrackingTestDataOutForDelivery[] = {
+        {commerce::kParcelTrackingTestDataParam,
+         commerce::kParcelTrackingTestDataParamOutForDelivery}};
+const flags_ui::FeatureEntry::FeatureVariation
+    kParcelTrackingTestDataVariations[] = {
+        {"Delivered", kParcelTrackingTestDataDelivered,
+         std::size(kParcelTrackingTestDataDelivered), nullptr},
+        {"In progress", kParcelTrackingTestDataInProgress,
+         std::size(kParcelTrackingTestDataInProgress), nullptr},
+        {"Out for delivery", kParcelTrackingTestDataOutForDelivery,
+         std::size(kParcelTrackingTestDataOutForDelivery), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1557,6 +1577,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-parcel-tracking", flag_descriptions::kIOSParcelTrackingName,
      flag_descriptions::kIOSParcelTrackingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSParcelTracking)},
+    {"parcel-tracking-test-data",
+     commerce::flag_descriptions::kParcelTrackingTestDataName,
+     commerce::flag_descriptions::kParcelTrackingTestDataDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kParcelTrackingTestData,
+                                    kParcelTrackingTestDataVariations,
+                                    "ParcelTrackingTestData")},
     {"autofill-enable-merchant-domain-in-unmask-card-request",
      flag_descriptions::kAutofillEnableMerchantDomainInUnmaskCardRequestName,
      flag_descriptions::

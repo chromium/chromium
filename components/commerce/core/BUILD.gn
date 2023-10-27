@@ -439,6 +439,8 @@ source_set("utils") {
   ]
   deps = [
     ":commerce_constants",
+    ":commerce_types",
+    ":feature_list",
     "//net:net",
   ]
 }

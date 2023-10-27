@@ -292,6 +292,14 @@ BASE_FEATURE(kParcelTracking,
 BASE_FEATURE(kParcelTrackingRegionLaunched,
              "ParcelTrackingRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kParcelTrackingTestData,
+             "ParcelTrackingTestData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kParcelTrackingTestDataParam[] = "ParcelTrackingTestData";
+const char kParcelTrackingTestDataParamDelivered[] = "Delivered";
+const char kParcelTrackingTestDataParamInProgress[] = "InProgress";
+const char kParcelTrackingTestDataParamOutForDelivery[] = "OutForDelivery";
 
 // Params for Discount Consent V2 in the NTP Cart module.
 const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =

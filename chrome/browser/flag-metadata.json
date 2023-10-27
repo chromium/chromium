@@ -6192,6 +6192,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "parcel-tracking-test-data",
+    "owners": [ "mdjones@chromium.org", "thegreenfrog@chromium.org", "chrome-shopping-eng@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "passpoint-arc-support",
     "owners": [ "cros-networking@google.com" ],
     "expiry_milestone": 121
