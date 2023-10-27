@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
+#include "base/notreached.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_dialog_view.h"
 #include "components/plus_addresses/plus_address_metrics.h"
@@ -56,14 +57,24 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
 }
 
 void PlusAddressCreationControllerDesktop::OnConfirmed() {
+  if (!plus_profile_.has_value()) {
+    // The UI should prevent any attempt to Confirm if Reserve() had failed.
+    NOTREACHED_NORETURN();
+  }
+  PlusAddressMetrics::RecordModalEvent(
+      PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed);
+
+  if (plus_profile_->is_confirmed) {
+    OnPlusAddressConfirmed(plus_profile_.value());
+    return;
+  }
+
   PlusAddressService* plus_address_service =
       PlusAddressServiceFactory::GetForBrowserContext(
           GetWebContents().GetBrowserContext());
-  PlusAddressMetrics::RecordModalEvent(
-      PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed);
   if (plus_address_service) {
     plus_address_service->ConfirmPlusAddress(
-        relevant_origin_, plus_address_,
+        relevant_origin_, plus_profile_->plus_address,
         base::BindOnce(
             &PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed,
             GetWeakPtr()));
@@ -75,11 +86,17 @@ void PlusAddressCreationControllerDesktop::OnCanceled() {
 }
 void PlusAddressCreationControllerDesktop::OnDialogDestroyed() {
   ui_modal_showing_ = false;
+  plus_profile_.reset();
 }
 
 void PlusAddressCreationControllerDesktop::set_suppress_ui_for_testing(
     bool should_suppress) {
   suppress_ui_for_testing_ = should_suppress;
+}
+
+absl::optional<PlusProfile>
+PlusAddressCreationControllerDesktop::get_plus_profile_for_testing() {
+  return plus_profile_;
 }
 
 base::WeakPtr<PlusAddressCreationControllerDesktop>
@@ -94,16 +111,10 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
     // TODO: crbug.com/1467623 - Handle error case.
     return;
   }
-  plus_address_ = maybe_plus_profile->plus_address;
-  // Autofill the callback and save `plus_address` in the service.
-  if (maybe_plus_profile->is_confirmed) {
-    // TODO: crbug.com/1467623 - Add metrics here?
-    std::move(callback_).Run(maybe_plus_profile->plus_address);
-    return;
-  }
+  plus_profile_ = maybe_plus_profile.value();
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
-  if (!suppress_ui_for_testing_) {
+  if (!suppress_ui_for_testing_ && !ui_modal_showing_) {
     ShowPlusAddressCreationDialogView(&GetWebContents(), GetWeakPtr(),
                                       primary_email_address,
                                       maybe_plus_profile->plus_address);

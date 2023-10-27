@@ -51,15 +51,25 @@ class FakePlusAddressService : public PlusAddressService {
                           const std::string& plus_address,
                           PlusAddressRequestCallback on_completed) override {
     is_confirmed_ = true;
-    std::move(on_completed)
-        .Run(PlusProfile({.facet = facet_,
-                          .plus_address = plus_address,
-                          .is_confirmed = is_confirmed_}));
+    PlusProfile profile({.facet = facet_,
+                         .plus_address = plus_address,
+                         .is_confirmed = is_confirmed_});
+    if (on_confirmed.has_value()) {
+      std::move(on_confirmed.value()).Run(profile);
+      on_confirmed.reset();
+      return;
+    }
+    std::move(on_completed).Run(profile);
   }
 
   // Used to test scenarios where Reserve returns a confirmed PlusProfile.
   void set_is_confirmed(bool confirmed) { is_confirmed_ = confirmed; }
 
+  void set_confirm_callback(PlusAddressRequestCallback callback) {
+    on_confirmed = std::move(callback);
+  }
+
+  absl::optional<PlusAddressRequestCallback> on_confirmed;
   std::string facet_ = "facet.bar";
   bool is_confirmed_ = false;
 
@@ -140,7 +150,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
 }
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
-       ReserveGivesConfirmedAddress_ModalSuppressed) {
+       ReserveGivesConfirmedAddress_DoesntConfirmAgain) {
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
@@ -150,18 +160,52 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
       PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
   controller->set_suppress_ui_for_testing(true);
 
+  base::test::TestFuture<const std::string&> autofill_future;
+  base::test::TestFuture<const PlusProfileOrError&> confirm_future;
+
   // Make Reserve() return kFakePlusAddress as an already-confirmed address.
   fake_plus_address_service_->set_is_confirmed(true);
-
-  base::test::TestFuture<const std::string&> future;
+  fake_plus_address_service_->set_confirm_callback(
+      confirm_future.GetCallback());
   controller->OfferCreation(
       url::Origin::Create(GURL("https://kirubelwashere.example")),
-      future.GetCallback());
-  ASSERT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), kFakePlusAddress);
+      autofill_future.GetCallback());
+  ASSERT_FALSE(autofill_future.IsReady());
 
-  // Verify that the plus address modal is not shown in this case.
-  histogram_tester_.ExpectTotalCount(kPlusAddressModalEventHistogram, 0);
+  // Confirmation should fill the field, but not call ConfirmPlusAddress.
+  controller->OnConfirmed();
+  EXPECT_TRUE(autofill_future.IsReady());
+  EXPECT_FALSE(confirm_future.IsReady());
+
+  // Verify that the plus address modal is still shown.
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(
+          base::Bucket(PlusAddressMetrics::PlusAddressModalEvent::kModalShown,
+                       1),
+          base::Bucket(
+              PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed, 1)));
+}
+
+TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
+       StoredPlusProfileClearedOnDialogDestroyed) {
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  PlusAddressCreationControllerDesktop::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerDesktop* controller =
+      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
+  EXPECT_FALSE(controller->get_plus_profile_for_testing().has_value());
+  // Offering creation calls Reserve() and sets the profile.
+  controller->OfferCreation(url::Origin::Create(GURL("https://foo.example")),
+                            base::DoNothing());
+  EXPECT_TRUE(controller->get_plus_profile_for_testing().has_value());
+  // Destroying the dialog clears the profile.
+  controller->OnDialogDestroyed();
+  EXPECT_FALSE(controller->get_plus_profile_for_testing().has_value());
 }
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, ModalCanceled) {
@@ -220,7 +264,6 @@ TEST_F(PlusAddressCreationControllerDesktopDisabledTest, NullService) {
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
       future.GetCallback());
-  controller->OnConfirmed();
   EXPECT_FALSE(future.IsReady());
 }
 }  // namespace plus_addresses
