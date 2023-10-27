@@ -24,6 +24,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   private router_: ComposeDialogCallbackRouter =
       new ComposeDialogCallbackRouter();
   remote = this.router_.$.bindNewPipeAndPassRemote();
+  private undoResponse_: ComposeState|null = null;
 
   constructor() {
     super([
@@ -32,6 +33,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
       'compose',
       'requestInitialState',
       'saveWebuiState',
+      'undo',
     ]);
   }
 
@@ -49,7 +51,8 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   }
 
   undo(): Promise<(ComposeState | null)> {
-    return Promise.resolve(null);
+    this.methodCalled('undo');
+    return Promise.resolve(this.undoResponse_);
   }
 
   getRouter() {
@@ -79,6 +82,10 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
         },
         state);
     this.initialInput_ = input || '';
+  }
+
+  setUndoResponse(state: ComposeState|null) {
+    this.undoResponse_ = state;
   }
 }
 
@@ -467,5 +474,46 @@ suite('ComposeApp', () => {
     await mockResponse();
 
     assertEquals(Tone.kCasual, args2.style.tone);
+  });
+
+  test('Undo', async () => {
+    // Set up initial state to show undo button and mock up a previous state.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testProxy.setInitialState({
+      hasPendingRequest: false,
+      response: {
+        status: ComposeStatus.kOk,
+        undoAvailable: true,
+        result: 'here is a result',
+      },
+    });
+    testProxy.setUndoResponse({
+      hasPendingRequest: false,
+      response: {
+        status: ComposeStatus.kOk,
+        undoAvailable: false,
+        result: 'some undone result',
+      },
+      style: {
+        length: Length.kLonger,
+        tone: Tone.kCasual,
+      },
+      webuiState: JSON.stringify({input: 'my old input'}),
+    });
+    const appWithUndo = document.createElement('compose-app');
+    document.body.appendChild(appWithUndo);
+    await testProxy.whenCalled('requestInitialState');
+
+    // CLick undo.
+    appWithUndo.$.undoButton.click();
+    await testProxy.whenCalled('undo');
+
+    // UI is updated.
+    assertEquals('my old input', appWithUndo.$.textarea.value);
+    assertTrue(isVisible(appWithUndo.$.resultContainer));
+    assertTrue(appWithUndo.$.resultContainer.textContent!.includes(
+        'some undone result'));
+    assertEquals(Length.kLonger, Number(appWithUndo.$.lengthMenu.value));
+    assertEquals(Tone.kCasual, Number(appWithUndo.$.toneMenu.value));
   });
 });

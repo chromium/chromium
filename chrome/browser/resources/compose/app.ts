@@ -377,10 +377,15 @@ export class ComposeAppElement extends ComposeAppElementBase {
         return;
       }
       // Restore state to the state returned by Undo.
-      this.response_ = state!.response!;
-      this.undoEnabled_ = state!.response!.undoAvailable;
-      this.selectedLength_ = state!.style.length;
-      this.selectedTone_ = state!.style.tone;
+      this.response_ = state.response;
+      this.undoEnabled_ = Boolean(state.response?.undoAvailable);
+      this.selectedLength_ = state.style.length;
+      this.selectedTone_ = state.style.tone;
+
+      if (state.webuiState) {
+        const appState: ComposeAppState = JSON.parse(state.webuiState);
+        this.input_ = appState.input;
+      }
     } catch (error) {
       // Error (e.g., disconnected mojo pipe) from a rejected Promise.
       // Previously, we received a true `undo_available` field in either
