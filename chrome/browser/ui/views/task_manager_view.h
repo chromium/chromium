@@ -85,12 +85,12 @@ class TaskManagerView : public TableViewDelegate,
   void ExecuteCommand(int id, int event_flags) override;
   void MenuClosed(ui::SimpleMenuModel* source) override;
 
+  static TaskManagerView* GetInstanceForTests();
+
  private:
   friend class TaskManagerViewTest;
 
   TaskManagerView();
-
-  static TaskManagerView* GetInstanceForTests();
 
   // Creates the child controls.
   void Init();
