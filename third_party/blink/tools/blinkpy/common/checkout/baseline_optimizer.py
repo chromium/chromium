@@ -47,7 +47,7 @@ from urllib.parse import urlparse
 from blinkpy.common.host import Host
 from blinkpy.common.memoized import memoized
 from blinkpy.common.path_finder import PathFinder
-from blinkpy.web_tests.models.testharness_results import is_all_pass_testharness_result
+from blinkpy.web_tests.models.testharness_results import is_all_pass_test_result
 from blinkpy.web_tests.models.test_expectations import TestExpectationsCache
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.base import Port
@@ -471,7 +471,7 @@ class ResultDigest:
         if path.endswith('.txt'):
             try:
                 content = fs.read_text_file(path)
-                is_extra_result = not content or is_all_pass_testharness_result(
+                is_extra_result = not content or is_all_pass_test_result(
                     content)
             except UnicodeDecodeError as e:
                 is_extra_result = False

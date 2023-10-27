@@ -13,34 +13,39 @@ from blinkpy.web_tests.models.testharness_results import (
 )
 
 
-class TestHarnessResultCheckerTest(unittest.TestCase):
-    def test_is_all_pass_testharness_result_positive_cases(self):
+class TestResultCheckerTest(unittest.TestCase):
+    def test_is_all_pass_test_result_positive_cases(self):
         self.assertTrue(
-            testharness_results.is_all_pass_testharness_result(
+            testharness_results.is_all_pass_test_result(
                 'This is a testharness.js-based test.\n'
                 '[PASS] foo bar \n'
                 'Harness: the test ran to completion.'))
         self.assertTrue(
-            testharness_results.is_all_pass_testharness_result(
+            testharness_results.is_all_pass_test_result(
+                'This is a wdspec test.\n'
+                '[PASS] foo bar \n'
+                'Harness: the test ran to completion.'))
+        self.assertTrue(
+            testharness_results.is_all_pass_test_result(
                 'This is a testharness.js-based test.\n'
                 '[PASS] \'grid\' with: grid-template-areas: "a b"\n'
                 '"c d";\n'
                 'Harness: the test ran to completion.\n'))
 
-    def test_is_all_pass_testharness_result_negative_cases(self):
+    def test_is_all_pass_test_result_negative_cases(self):
         self.assertFalse(
-            testharness_results.is_all_pass_testharness_result(
+            testharness_results.is_all_pass_test_result(
                 'This is a testharness.js-based test.\n'
                 'CONSOLE WARNING: This is a warning.\n'
                 'Test ran to completion.'))
         self.assertFalse(
-            testharness_results.is_all_pass_testharness_result(
+            testharness_results.is_all_pass_test_result(
                 'This is a testharness.js-based test.\n'
                 '[PASS] foo bar \n'
                 '[FAIL]  \n'
                 ' Harness: the test ran to completion.'))
         self.assertFalse(
-            testharness_results.is_all_pass_testharness_result(
+            testharness_results.is_all_pass_test_result(
                 'This is a testharness.js-based test.\n'
                 'Harness Error. harness_status.status = 1\n'
                 '[PASS] foo bar\n'
@@ -85,99 +90,99 @@ class TestHarnessResultCheckerTest(unittest.TestCase):
                 'is a testharness.js-based test.\n'
                 'Harness: the test ran to completion.'))
 
-    def test_is_testharness_output_passing_empty_content(self):
+    def test_is_test_output_passing_empty_content(self):
         self.assertFalse(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'This is a testharness.js-based test.\n'
                 '   Harness: the test ran to completion.'))
 
-    def test_is_testharness_output_passing_no_pass(self):
+    def test_is_test_output_passing_no_pass(self):
         # If there are no PASS lines, then the test is not considered to pass.
         self.assertFalse(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'This is a testharness.js-based test.\n'
                 '  \n'
                 ' Harness: the test ran to completion.'))
         self.assertFalse(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'This is a testharness.js-based test.\n'
                 ' Foo bar \n'
                 ' Harness: the test ran to completion.'))
 
-    def test_is_testharness_output_passing_with_pass_and_random_text(self):
+    def test_is_test_output_passing_with_pass_and_random_text(self):
         self.assertTrue(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'RANDOM TEXT.\n'
                 'This is a testharness.js-based test.\n'
                 '[PASS] things are fine.\n'
                 ' Harness: the test ran to completion.\n'
                 '\n'))
 
-    def test_is_testharness_output_passing_basic_examples(self):
+    def test_is_test_output_passing_basic_examples(self):
         self.assertTrue(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'This is a testharness.js-based test.\n'
                 '[PASS] foo bar \n'
                 'Harness: the test ran to completion.'))
         self.assertTrue(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'This is a testharness.js-based test.\n'
                 '[PASS] foo bar FAIL  \n'
                 ' Harness: the test ran to completion.'))
         self.assertFalse(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'This is a testharness.js-based test.\n'
                 '[PASS] foo bar \n'
                 '[FAIL]  \n'
                 ' Harness: the test ran to completion.'))
         self.assertFalse(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'This is a testharness.js-based test.\n'
                 '[FAIL] bah \n'
                 'Harness: the test ran to completion.'))
 
-    def test_is_testharness_output_passing_with_console_messages(self):
+    def test_is_test_output_passing_with_console_messages(self):
         self.assertFalse(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'This is a testharness.js-based test.\n'
                 ' CONSOLE ERROR: BLAH  \n'
                 ' Harness: the test ran to completion.'))
         self.assertTrue(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'This is a testharness.js-based test.\n'
                 ' CONSOLE WARNING: BLAH  \n'
                 '[PASS] some passing method\n'
                 'Harness: the test ran to completion.'))
         self.assertTrue(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'CONSOLE LOG: error.\n'
                 'This is a testharness.js-based test.\n'
                 '[PASS] things are fine.\n'
                 'Harness: the test ran to completion.\n'
                 '\n'))
         self.assertTrue(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'CONSOLE ERROR: error.\n'
                 'This is a testharness.js-based test.\n'
                 '[PASS] things are fine.\n'
                 'Harness: the test ran to completion.\n'
                 '\n'))
         self.assertTrue(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'CONSOLE WARNING: error.\n'
                 'This is a testharness.js-based test.\n'
                 '[PASS] things are fine.\n'
                 'Harness: the test ran to completion.\n'
                 '\n'))
 
-    def test_is_testharness_output_passing_with_timeout_or_notrun(self):
+    def test_is_test_output_passing_with_timeout_or_notrun(self):
         self.assertFalse(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'This is a testharness.js-based test.\n'
                 ' TIMEOUT: bah \n'
                 ' Harness: the test ran to completion.'))
         self.assertFalse(
-            testharness_results.is_testharness_output_passing(
+            testharness_results.is_test_output_passing(
                 'This is a testharness.js-based test.\n'
                 ' NOTRUN: bah \n'
                 ' Harness: the test ran to completion.'))
@@ -254,7 +259,7 @@ class TestHarnessResultCheckerTest(unittest.TestCase):
                 """))
         self.assertEqual(len(results), 6)
 
-        self.assertIs(results[0].line_type, LineType.HEADER)
+        self.assertIs(results[0].line_type, LineType.TESTHARNESS_HEADER)
         self.assertEqual(results[0].statuses, frozenset())
         self.assertIsNone(results[0].subtest)
         self.assertIsNone(results[0].message)
@@ -292,7 +297,7 @@ class TestHarnessResultCheckerTest(unittest.TestCase):
         lines = [
             TestharnessLine(LineType.CONSOLE_WARNING,
                             message='warning before test'),
-            TestharnessLine(LineType.HEADER),
+            TestharnessLine(LineType.TESTHARNESS_HEADER),
             TestharnessLine(LineType.HARNESS_ERROR, {Status.ERROR},
                             'SyntaxError'),
             TestharnessLine(LineType.SUBTEST, {Status.PASS, Status.TIMEOUT},
@@ -315,7 +320,7 @@ class TestHarnessResultCheckerTest(unittest.TestCase):
 
     def test_format_all_pass_testharness_baseline(self):
         lines = [
-            TestharnessLine(LineType.HEADER),
+            TestharnessLine(LineType.TESTHARNESS_HEADER),
             TestharnessLine(LineType.SUBTEST, {Status.PASS},
                             subtest='subtest'),
             TestharnessLine(LineType.FOOTER),
@@ -337,7 +342,7 @@ class TestHarnessResultCheckerTest(unittest.TestCase):
                             subtest=f'subtest-{i}') for i in range(50)
         ]
         lines = [
-            TestharnessLine(LineType.HEADER),
+            TestharnessLine(LineType.TESTHARNESS_HEADER),
             *lines,
             TestharnessLine(LineType.FOOTER),
         ]

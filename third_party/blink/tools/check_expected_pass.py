@@ -6,13 +6,13 @@
 """Check if a web test expected file is an all-PASS testharness result.
 
 web_tests/PRESUBMIT.py uses this script to identify generic all-PASS
-testharness baselines, which are redundant because run_web_tests.py assumes
-all-PASS results for testharness tests when baselines are not found.
+testharness/wdspec baselines, which are redundant because run_web/wpt_tests.py
+assumes all-PASS results for them when baselines are not found.
 """
 
 import sys
 
-from blinkpy.web_tests.models.testharness_results import is_all_pass_testharness_result
+from blinkpy.web_tests.models.testharness_results import is_all_pass_test_result
 
 paths = []
 
@@ -26,15 +26,15 @@ for path in filelist:
     # Call .decode() with errors="ignore" because there are a few files that
     # are invalid UTF-8 and will otherwise trigger decode exceptions.
     content = open(path, 'rb').read().decode(errors="ignore")
-    if is_all_pass_testharness_result(content):
+    if is_all_pass_test_result(content):
         paths.append(path)
 
 if len(paths) > 0:
     sys.stderr.write(
-        '* The following files are passing testharness results without console error messages, they should be removed:\n '
+        '* The following files are passing test results without console error messages, they should be removed:\n '
     )
     sys.stderr.write('\n '.join(paths))
     sys.stderr.write('\n')
     sys.exit(
-        "ERROR: found passing testharness results without console error messages."
+        "ERROR: found passing test results without console error messages."
     )

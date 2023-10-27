@@ -11,7 +11,8 @@ from typing import FrozenSet, Iterator, List, NamedTuple, Optional, Tuple
 
 
 class LineType(enum.Enum):
-    HEADER = 'This is a testharness.js-based test.'
+    TESTHARNESS_HEADER = 'This is a testharness.js-based test.'
+    WDSPEC_HEADER = 'This is a wdspec test.'
     FOOTER = 'Harness: the test ran to completion.'
     ALL_PASS = 'All subtests passed and are omitted for brevity.'
     SUBTEST = enum.auto()
@@ -35,7 +36,7 @@ class Status(enum.IntEnum):
 
 
 ABBREVIATED_ALL_PASS = '\n'.join([
-    LineType.HEADER.value,
+    LineType.TESTHARNESS_HEADER.value,
     LineType.ALL_PASS.value,
     'See https://chromium.googlesource.com/chromium/src/+/HEAD/'
     'docs/testing/writing_web_tests.md#Text-Test-Baselines for details.',
@@ -143,7 +144,7 @@ def format_testharness_baseline(lines: List[TestharnessLine]) -> str:
                 content += f' {_escape(line.message)}'
             content += '\n'
         total = sum(status_counts.values())
-        if (line.line_type is LineType.HEADER
+        if (line.line_type is LineType.TESTHARNESS_HEADER
                 and status_counts[Status.PASS] < total
                 and total >= _COUNT_THRESHOLD):
             content += f'Found {total} tests; '
@@ -182,10 +183,11 @@ def _unescape(s: str) -> str:
         lambda match: _UNESCAPE_SUBSTITUTIONS[match[0]], s.lstrip())
 
 
-def is_all_pass_testharness_result(content_text: str) -> bool:
+def is_all_pass_test_result(content_text: str) -> bool:
     """Returns whether |content_text| is a testharness result that only contains PASS lines."""
-    return (is_testharness_output(content_text)
-            and is_testharness_output_passing(content_text)
+    return ((is_testharness_output(content_text)
+             or is_wdspec_output(content_text))
+            and is_test_output_passing(content_text)
             and not has_other_useful_output(content_text))
 
 
@@ -196,10 +198,20 @@ def is_testharness_output(content_text: str) -> bool:
         line.line_type
         for line in parse_testharness_baseline(content_text)
     }
-    return {LineType.HEADER, LineType.FOOTER} <= line_types
+    return {LineType.TESTHARNESS_HEADER, LineType.FOOTER} <= line_types
 
 
-def is_testharness_output_passing(content_text: str) -> bool:
+def is_wdspec_output(content_text: str) -> bool:
+    """Returns whether |content_text| is a wdspec test output."""
+    # A wdspec test output is defined as containing WDSPEC_HEADER and the footer.
+    line_types = {
+        line.line_type
+        for line in parse_testharness_baseline(content_text)
+    }
+    return {LineType.WDSPEC_HEADER, LineType.FOOTER} <= line_types
+
+
+def is_test_output_passing(content_text: str) -> bool:
     """Checks whether |content_text| is a passing testharness output.
 
     Under a relatively loose/accepting definition of passing

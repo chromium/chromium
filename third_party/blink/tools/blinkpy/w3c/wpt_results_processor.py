@@ -100,6 +100,9 @@ class WPTResult(Result):
                                       status: str,
                                       message: Optional[str] = None,
                                       subtest: Optional[str] = None):
+        if self.test_type not in ['testharness', 'wdspec']:
+            return
+
         try:
             status = Status[status]
         except KeyError:
@@ -175,6 +178,15 @@ class WPTResult(Result):
             self.has_stderr = True
         self._maybe_add_testharness_result(status, message)
         self._maybe_set_statuses(status, expected)
+
+    def get_result(self):
+        header = (LineType.TESTHARNESS_HEADER if self.test_type
+                  == 'testharness' else LineType.WDSPEC_HEADER)
+        return [
+            TestharnessLine(header),
+            *self.testharness_results,
+            TestharnessLine(LineType.FOOTER),
+        ]
 
 
 class Event(NamedTuple):
@@ -616,11 +628,7 @@ class WPTResultsProcessor:
         actual_subpath = self.port.output_filename(
             result.name, test_failures.FILENAME_SUFFIX_ACTUAL, '.txt')
         if result.testharness_results:
-            actual_text = format_testharness_baseline([
-                TestharnessLine(LineType.HEADER),
-                *result.testharness_results,
-                TestharnessLine(LineType.FOOTER),
-            ])
+            actual_text = format_testharness_baseline(result.get_result())
             artifacts.CreateArtifact('actual_text', actual_subpath,
                                      actual_text.encode())
 

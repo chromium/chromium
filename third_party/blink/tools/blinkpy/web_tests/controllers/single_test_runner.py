@@ -391,8 +391,7 @@ class SingleTestRunner(object):
     def _is_all_pass_testharness_text_not_needing_baseline(self, text_result):
         return (
             text_result
-            and testharness_results.is_all_pass_testharness_result(text_result)
-            and
+            and testharness_results.is_all_pass_test_result(text_result) and
             # An all-pass testharness test doesn't need the test baseline unless
             # if it is overriding a fallback one.
             not self._port.fallback_expected_filename(self._test_name, '.txt'))
@@ -477,7 +476,7 @@ class SingleTestRunner(object):
             # Will compare text if there is expected text that is not all-pass
             # (e.g., has "interesting output").
             return False, []
-        if not testharness_results.is_testharness_output_passing(
+        if not testharness_results.is_test_output_passing(
                 self._convert_to_str(driver_output.text)):
             return True, [
                 test_failures.FailureTestHarnessAssertion(
