@@ -98,10 +98,10 @@ void DragDrop(NSString* src_identifier, NSString* tab_strip_identifier) {
 }  // namespace
 
 // Tests for the tab strip shown on iPad.
-@interface TabStripTestCase : ChromeTestCase
+@interface LegacyTabStripTestCase : ChromeTestCase
 @end
 
-@implementation TabStripTestCase
+@implementation LegacyTabStripTestCase
 
 - (void)setUp {
   [super setUp];

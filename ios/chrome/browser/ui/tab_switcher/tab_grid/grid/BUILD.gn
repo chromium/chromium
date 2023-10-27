@@ -179,6 +179,7 @@ source_set("unit_tests") {
     "//ios/web/common:features",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

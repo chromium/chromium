@@ -31,13 +31,6 @@ const CGFloat kSymbolSize = 16;
   if (self) {
     _webState = webState->GetWeakPtr();
 
-    // chrome://newtab (NTP) tabs have no title.
-    if (IsUrlNtp(webState->GetVisibleURL())) {
-      self.hidesTitle = YES;
-    }
-    self.title = tab_util::GetTabTitle(webState);
-    self.showsActivity = webState->IsLoading();
-
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(lowMemoryWarningReceived:)
@@ -45,6 +38,27 @@ const CGFloat kSymbolSize = 16;
              object:nil];
   }
   return self;
+}
+
+- (NSString*)title {
+  if (!_webState) {
+    return nil;
+  }
+  return tab_util::GetTabTitle(_webState.get());
+}
+
+- (BOOL)hidesTitle {
+  if (!_webState) {
+    return NO;
+  }
+  return IsUrlNtp(_webState->GetVisibleURL());
+}
+
+- (BOOL)showsActivity {
+  if (!_webState) {
+    return NO;
+  }
+  return _webState->IsLoading();
 }
 
 #pragma mark - Image Fetching

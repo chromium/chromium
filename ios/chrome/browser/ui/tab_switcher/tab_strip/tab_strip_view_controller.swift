@@ -6,7 +6,9 @@ import UIKit
 
 /// View Controller displaying the TabStrip.
 @objcMembers
-class TabStripViewController: UIViewController, TabStripConsumer {
+class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripConsumer,
+  UICollectionViewDelegate
+{
 
   // The enum used by the data source to manage the sections.
   enum Section: Int {
@@ -27,6 +29,7 @@ class TabStripViewController: UIViewController, TabStripConsumer {
     collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
     super.init(nibName: nil, bundle: nil)
 
+    collectionView.delegate = self
     createRegistrations()
     diffableDataSource = UICollectionViewDiffableDataSource<Section, TabSwitcherItem>(
       collectionView: collectionView
@@ -66,10 +69,19 @@ class TabStripViewController: UIViewController, TabStripConsumer {
     snapshot.appendItems(items, toSection: .tabs)
     diffableDataSource?.apply(snapshot)
 
-    // TODO(crbug.com/1490555): Handle the selected item.
+    guard let selectedItem = selectedItem, let diffableDataSource = diffableDataSource else {
+      return
+    }
+    let indexPath = diffableDataSource.indexPath(for: selectedItem)
+    collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
   }
 
   func selectItem(_ item: TabSwitcherItem?) {
+    if let indexPaths = collectionView.indexPathsForSelectedItems {
+      for indexPath in indexPaths {
+        collectionView.deselectItem(at: indexPath, animated: true)
+      }
+    }
     guard let item = item, let diffableDataSource = diffableDataSource else {
       return
     }
@@ -99,13 +111,61 @@ class TabStripViewController: UIViewController, TabStripConsumer {
     diffableDataSource.apply(snapshot, animatingDifferences: false)
   }
 
+  // MARK: - UICollectionViewDelegate
+
+  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    if #available(iOS 16, *) {
+    } else {
+      self.collectionView(collectionView, performPrimaryActionForItemAt: indexPath)
+    }
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView, performPrimaryActionForItemAt indexPath: IndexPath
+  ) {
+    guard let item = diffableDataSource?.itemIdentifier(for: indexPath) else {
+      return
+    }
+    mutator?.activate(item)
+  }
+
+  // MARK: - TabStripCellDelegate
+
+  func closeButtonTapped(for cell: TabStripCell?) {
+    guard let cell = cell, let diffableDataSource = diffableDataSource else {
+      return
+    }
+
+    guard let indexPath = collectionView.indexPath(for: cell) else {
+      return
+    }
+    let item = diffableDataSource.itemIdentifier(for: indexPath)
+    mutator?.close(item)
+  }
+
   // MARK: - Private
 
   /// Creates the registrations of the different cells used in the collection view.
   func createRegistrations() {
     tabCellRegistration = UICollectionView.CellRegistration<TabStripCell, TabSwitcherItem> {
       (cell, indexPath, item) in
-      cell.titleLabel.text = item.title
+      cell.setTitle(item.title)
+      cell.delegate = self
+
+      weak var weakSelf = self
+      item.fetchFavicon { (item: TabSwitcherItem?, image: UIImage?) -> Void in
+        guard let item = item,
+          let diffableDataSource = weakSelf?.diffableDataSource,
+          let indexPath = weakSelf?.collectionView.indexPath(for: cell)
+        else {
+          // If the cell is not visible, nothing is needed.
+          return
+        }
+        let innerItem = diffableDataSource.itemIdentifier(for: indexPath)
+        if innerItem == item {
+          cell.setFaviconImage(image)
+        }
+      }
     }
   }
 

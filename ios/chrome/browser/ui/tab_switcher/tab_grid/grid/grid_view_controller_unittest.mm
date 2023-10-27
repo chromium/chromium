@@ -14,6 +14,7 @@
 #import "ios/web/public/web_state_id.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 // Fake object that conforms to GridViewControllerDelegate.
 @interface FakeGridViewControllerDelegate
@@ -202,8 +203,9 @@ TEST_F(BaseGridViewControllerTest, ReplaceItemSameIdentifier) {
   // an itemCount of 2.
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
-  item.title = @"NEW-ITEM-TITLE";
-  [view_controller_ replaceItemID:identifier_a_ withItem:item];
+  id mock_item = OCMPartialMock(item);
+  OCMStub([mock_item title]).andReturn(@"NEW-ITEM-TITLE");
+  [view_controller_ replaceItemID:identifier_a_ withItem:mock_item];
   EXPECT_EQ(identifier_a_, view_controller_.items[0].identifier);
   EXPECT_NSEQ(@"NEW-ITEM-TITLE", view_controller_.items[0].title);
   EXPECT_EQ(2U, delegate_.itemCount);

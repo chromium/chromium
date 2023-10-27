@@ -46,8 +46,8 @@ class TabStripLayout: UICollectionViewCompositionalLayout {
     let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
     let groupSize = NSCollectionLayoutSize(
-      widthDimension: .absolute(100),
-      heightDimension: .absolute(44))
+      widthDimension: .absolute(150),
+      heightDimension: .absolute(39))
     let group = NSCollectionLayoutGroup.vertical(
       layoutSize: groupSize,
       subitem: item,
