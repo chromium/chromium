@@ -354,7 +354,8 @@
       "chrome://tab-search.top-chrome/*",
       "chrome://tab-strip.top-chrome/*",
       "chrome://welcome/*",
-      "chrome://app-settings/*"
+      "chrome://app-settings/*",
+      "chrome://compose/*"
     ]
   }, {
     "channel": "stable",
