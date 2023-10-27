@@ -70,9 +70,19 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
     serialized_script.js.emplace();
     serialized_script.js->reserve(user_script.js_scripts().size());
     for (const auto& js_script : user_script.js_scripts()) {
-      // TODO(https://crbug.com/1385165): Handle `code`.
       api::scripts_internal::ScriptSource source;
-      source.file = js_script->relative_path().AsUTF8Unsafe();
+      switch (js_script->source()) {
+        case UserScript::Content::Source::kFile:
+          source.file = js_script->relative_path().AsUTF8Unsafe();
+          break;
+        case UserScript::Content::Source::kInlineCode:
+          // Inline code is only serialized for user scripts.
+          CHECK_EQ(user_script.GetSource(),
+                   UserScript::Source::kDynamicUserScript);
+          source.code = js_script->GetContent();
+          break;
+      }
+
       serialized_script.js->push_back(std::move(source));
     }
   }

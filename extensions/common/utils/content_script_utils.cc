@@ -46,6 +46,8 @@ constexpr char kInvalidExcludeMatchDynamicScriptError[] =
     "Script with ID '*' has invalid value for exclude_matches[*]: *";
 constexpr char kInvalidMatchDynamicScriptError[] =
     "Script with ID '*' has invalid value for matches[*]: *";
+constexpr char kForbiddenInlineCodeScriptError[] =
+    "Script with ID '*' has forbidden inline code source";
 
 // Returns false and sets the error if script file can't be loaded, or if it's
 // not UTF-8 encoded. If a script file can be loaded but will exceed
@@ -364,7 +366,22 @@ bool ParseFileSources(
         result->js_scripts().push_back(UserScript::Content::CreateFile(
             resource.extension_root(), resource.relative_path(), url));
       } else if (source.code) {
-        // TODO(https://crbug.com/1385165): Handle code.
+        // Inline code source is only allowed for user scripts.
+        if (result->GetSource() != UserScript::Source::kDynamicUserScript) {
+          *error = ErrorUtils::FormatErrorMessageUTF16(
+              kForbiddenInlineCodeScriptError,
+              UserScript::TrimPrefixFromScriptID(result->id()));
+          return false;
+        }
+
+        GURL url = extension->GetResourceURL(
+            base::Uuid::GenerateRandomV4().AsLowercaseString());
+        std::unique_ptr<UserScript::Content> content =
+            UserScript::Content::CreateInlineCode(url);
+        // TODO(crbug.com/1496555): This creates a copy of a
+        // potentially-expensive string. Optimize the usage of inline code.
+        content->set_content(*source.code);
+        result->js_scripts().push_back(std::move(content));
       }
     }
   }
@@ -416,6 +433,12 @@ bool ValidateFileSources(const UserScriptList& scripts,
   for (const std::unique_ptr<UserScript>& script : scripts) {
     for (const std::unique_ptr<UserScript::Content>& js_script :
          script->js_scripts()) {
+      // Don't validate scripts with inline code source, since they don't have
+      // file sources.
+      if (js_script->source() == UserScript::Content::Source::kInlineCode) {
+        continue;
+      }
+
       const base::FilePath& path = ExtensionResource::GetFilePath(
           js_script->extension_root(), js_script->relative_path(),
           symlink_policy);

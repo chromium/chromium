@@ -27,8 +27,6 @@
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/types/optional_util.h"
-#include "base/version.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -551,6 +549,25 @@ std::unique_ptr<UserScriptList> GetManifestScriptsMetadata(
   return script_vector;
 }
 
+// Returns a copy of the dynamic `script` info, which includes the script
+// content when its source is inline code.
+std::unique_ptr<UserScript> CopyDynamicScriptInfo(const UserScript& script) {
+  std::unique_ptr<UserScript> script_metadata =
+      UserScript::CopyMetadataFrom(script);
+
+  // When the script source is inline code, we need to add the content of the
+  // script to the script metadata so it can be properly persisted/retrieved.
+  for (size_t i = 0; i < script_metadata->js_scripts().size(); i++) {
+    auto& content = script_metadata->js_scripts().at(i);
+    if (content->source() == UserScript::Content::Source::kInlineCode) {
+      std::string inline_code = script.js_scripts().at(i)->GetContent().data();
+      content->set_content(std::move(inline_code));
+    }
+  }
+
+  return script_metadata;
+}
+
 }  // namespace
 
 ExtensionUserScriptLoader::ExtensionUserScriptLoader(
@@ -636,8 +653,12 @@ void ExtensionUserScriptLoader::AddDynamicScripts(
     // Only proceed with adding scripts that the extension still intends to add.
     // This guards again an edge case where scripts registered by an API call
     // are quickly unregistered.
-    if (base::Contains(pending_dynamic_script_ids_, script->id()))
-      scripts_metadata->push_back(UserScript::CopyMetadataFrom(*script));
+    if (base::Contains(pending_dynamic_script_ids_, script->id())) {
+      // TODO(crbug.com/1496555): This results in an additional copy being
+      // stored in the browser for each of these scripts. Optimize the usage of
+      // inline code.
+      scripts_metadata->push_back(CopyDynamicScriptInfo(*script));
+    }
   }
 
   if (scripts_metadata->empty()) {
@@ -859,7 +880,7 @@ void ExtensionUserScriptLoader::OnInitialDynamicScriptsReadFromStateStore(
     UserScriptList initial_dynamic_scripts) {
   auto dynamic_scripts_metadata = std::make_unique<UserScriptList>();
   for (const std::unique_ptr<UserScript>& script : initial_dynamic_scripts) {
-    dynamic_scripts_metadata->push_back(UserScript::CopyMetadataFrom(*script));
+    dynamic_scripts_metadata->push_back(CopyDynamicScriptInfo(*script));
     pending_dynamic_script_ids_.insert(script->id());
   }
 

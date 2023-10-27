@@ -4,6 +4,10 @@
 
 import { openTab, getInjectedElementIds } from '/_test_resources/test_util/tabs_util.js';
 
+const injectDivScript = `var div = document.createElement('div');
+                         div.id = 'injected_code';
+                         document.body.appendChild(div);`;
+
 // Navigates to an url requested by the extension and returns the opened tab.
 async function navigateToRequestedUrl() {
   const config = await chrome.test.getConfig();
@@ -19,7 +23,7 @@ async function runFirstSession() {
       id: 'us1',
       matches: ['*://*/*'],
       excludeGlobs: ['*exclude_glob*'],
-      js: [{file: 'user_script.js'}],
+      js: [{code: injectDivScript}, {file: 'user_script.js'}],
       runAt: 'document_end'
     },
     {
@@ -36,7 +40,7 @@ async function runFirstSession() {
 
   // Verify scripts were injected.
   chrome.test.assertEq(
-      ['injected_user_script', 'injected_user_script_2'],
+      ['injected_code', 'injected_user_script', 'injected_user_script_2'],
       await getInjectedElementIds(tab.id));
 
   chrome.test.succeed();
@@ -51,7 +55,7 @@ async function runSecondSession() {
       id: 'us1',
       matches: ['*://*/*'],
       excludeGlobs: ['*exclude_glob*'],
-      js: [{file: 'user_script.js'}],
+      js: [{code: injectDivScript}, {file: 'user_script.js'}],
       allFrames: false,
       runAt: 'document_end',
       world: 'USER_SCRIPT'
@@ -75,7 +79,7 @@ async function runSecondSession() {
 
   // Verify scripts were injected.
   chrome.test.assertEq(
-      ['injected_user_script', 'injected_user_script_2'],
+      ['injected_code', 'injected_user_script', 'injected_user_script_2'],
       await getInjectedElementIds(tab.id));
 
   // Add a content script using the scripting API.
@@ -102,7 +106,7 @@ async function runThirdSession() {
   // Verify registered scripts are injected
   const tab = await navigateToRequestedUrl();
   chrome.test.assertEq(
-      ['injected_content_script', 'injected_user_script'],
+      ['injected_code', 'injected_content_script', 'injected_user_script'],
       await getInjectedElementIds(tab.id));
 
   chrome.test.succeed();

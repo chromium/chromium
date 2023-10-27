@@ -96,7 +96,9 @@ class UserScript {
         const base::FilePath& extension_root,
         const base::FilePath& relative_path,
         const GURL& url);
-    // Creates a content object with kInlineCode source.
+    // Creates a content object with kInlineCode source. `url` must be unique,
+    // since it's used to inject a js script. This means that a unique url has
+    // to be generated, since inline code scripts don't have a url.
     static std::unique_ptr<Content> CreateInlineCode(const GURL& url);
 
     Source source() { return source_; }
