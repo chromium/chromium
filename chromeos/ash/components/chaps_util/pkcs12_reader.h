@@ -19,6 +19,7 @@
 
 namespace chromeos {
 
+// Used for logging, the values should never be reordered or reused.
 enum class Pkcs12ReaderStatusCode {
   kSuccess = 0,
   kCreateKeyFailed = 1,
@@ -51,23 +52,37 @@ enum class Pkcs12ReaderStatusCode {
   kMissedSlotInfo = 28,
   kPkcs12NotSupportedKeyType = 29,
   kPkcs12CNExtractionFailed = 30,
+  kPkcs12EcKeyExtractionFailed = 31,
+  kPkcs12CkaIdExtractionFailed = 32,
+  kPublicKeyExtractionFailed = 33,
+  kRsaKeyExtractionFailed = 34,
+  kRsaModulusExtractionFailed = 35,
+  kPkcs12RsaModulusEmpty = 36,
+  kPkcs12PKeyMissed = 37,
+};
+
+enum class Pkcs12ReaderCertSearchType {
+  kDerType,
+  kPlainType,
 };
 
 struct CertData {
-  raw_ptr<X509> x509;
-  std::string nickname;
   CertData();
   ~CertData();
+  raw_ptr<X509> x509;
+  std::string nickname;
 };
 
-struct KeyData {
+struct COMPONENT_EXPORT(CHAPS_UTIL) KeyData {
+  KeyData();
+  KeyData(KeyData&&);
+  KeyData& operator=(KeyData&&) = default;
+  ~KeyData();
   bssl::UniquePtr<EVP_PKEY> key;
   std::vector<uint8_t> rsa_key_modulus_bytes;
   std::vector<uint8_t> ec_key_public_bytes;
   std::vector<uint8_t> common_name;
   std::vector<uint8_t> cka_id_value;
-  KeyData();
-  ~KeyData();
 };
 
 // Class helper for operations with X509 certificates data which are required
@@ -136,20 +151,13 @@ class COMPONENT_EXPORT(CHAPS_UTIL) Pkcs12Reader {
       bool& is_nickname_present) const;
 
   // Search if private key is already present in slot (`slot`) using
-  // related X509 certificate (`cert`). Returns Pkcs12ReaderStatusCode::kSuccess
+  // related X509 certificate (`cert`) and certificates type (`cert_type`).
+  // Returns Pkcs12ReaderStatusCode::kSuccess
   // if key found, Pkcs12ReaderStatusCode::kKeyDataMissed if key is missed or
   // a status code.
   virtual Pkcs12ReaderStatusCode DoesKeyForCertExist(
       PK11SlotInfo* slot,
-      const scoped_refptr<net::X509Certificate>& cert) const;
-
-  // Check if private key is already present in slot (`slot`) using DER
-  // representation of X509 certificate (`cert`). Returns
-  // Pkcs12ReaderStatusCode::kSuccess if key found,
-  // Pkcs12ReaderStatusCode::kKeyDataMissed if key is missed or a
-  // status code.
-  virtual Pkcs12ReaderStatusCode DoesKeyForDerCertExist(
-      PK11SlotInfo* slot,
+      const Pkcs12ReaderCertSearchType cert_type,
       const scoped_refptr<net::X509Certificate>& cert) const;
 
   // Calculates additional data which can be used for checking key to
@@ -165,10 +173,18 @@ class COMPONENT_EXPORT(CHAPS_UTIL) Pkcs12Reader {
                                                bool& is_related) const;
   // Converts certificates data from DER representation (`der_cert_data`) and
   // (`der_cert_len`) to X509 (`x509`).
+  // Returns status code.
   virtual Pkcs12ReaderStatusCode GetCertFromDerData(
       const unsigned char* der_cert_data,
       int der_cert_len,
       bssl::UniquePtr<X509>& x509) const;
+
+ private:
+  // Calculate (`modulus`) for RSA key extracted from (`pkey`).
+  // Returns status code.
+  virtual Pkcs12ReaderStatusCode GetRsaModulus(
+      const bssl::UniquePtr<EVP_PKEY>& pkey,
+      std::vector<uint8_t>& modulus) const;
 };
 
 }  // namespace chromeos

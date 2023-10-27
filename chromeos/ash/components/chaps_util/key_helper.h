@@ -15,7 +15,7 @@ namespace chromeos {
 
 // Calculates and returns CKA_ID from public key bytes (`public_key_bytes`).
 crypto::ScopedSECItem MakeIdFromPubKeyNss(
-    std::vector<CK_BYTE>& public_key_bytes);
+    const std::vector<uint8_t>& public_key_bytes);
 
 // Converts ScopedSECItem id (`id`) to vector<uint8_t>.
 std::vector<uint8_t> SECItemToBytes(const crypto::ScopedSECItem& id);

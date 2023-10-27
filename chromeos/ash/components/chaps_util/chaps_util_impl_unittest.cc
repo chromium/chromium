@@ -628,23 +628,18 @@ class FakePkcs12Reader : public Pkcs12Reader {
 
   Pkcs12ReaderStatusCode DoesKeyForCertExist(
       PK11SlotInfo* slot,
+      const Pkcs12ReaderCertSearchType cert_type,
       const scoped_refptr<net::X509Certificate>& cert) const override {
     find_key_by_cert_called_++;
-    if (find_key_by_cert_status_ != Pkcs12ReaderStatusCode::kKeyDataMissed) {
-      return find_key_by_cert_status_;
+    if (cert_type == Pkcs12ReaderCertSearchType::kPlainType &&
+        find_key_by_cert_status_.has_value()) {
+      return find_key_by_cert_status_.value();
     }
-    return Pkcs12Reader::DoesKeyForCertExist(slot, cert);
-  }
-
-  Pkcs12ReaderStatusCode DoesKeyForDerCertExist(
-      PK11SlotInfo* slot,
-      const scoped_refptr<net::X509Certificate>& cert) const override {
-    find_key_by_der_cert_called_++;
-    if (find_key_by_der_cert_status_ !=
-        Pkcs12ReaderStatusCode::kKeyDataMissed) {
-      return find_key_by_der_cert_status_;
+    if (cert_type == Pkcs12ReaderCertSearchType::kDerType &&
+        find_key_by_der_cert_status_.has_value()) {
+      return find_key_by_der_cert_status_.value();
     }
-    return Pkcs12Reader::DoesKeyForDerCertExist(slot, cert);
+    return Pkcs12Reader::DoesKeyForCertExist(slot, cert_type, cert);
   }
 
   Pkcs12ReaderStatusCode GetCertFromDerData(
@@ -697,11 +692,8 @@ class FakePkcs12Reader : public Pkcs12Reader {
   Pkcs12ReaderStatusCode check_relation_status_ =
       Pkcs12ReaderStatusCode::kSuccess;
   mutable int find_key_by_cert_called_ = 0;
-  Pkcs12ReaderStatusCode find_key_by_cert_status_ =
-      Pkcs12ReaderStatusCode::kKeyDataMissed;
-  mutable int find_key_by_der_cert_called_ = 0;
-  Pkcs12ReaderStatusCode find_key_by_der_cert_status_ =
-      Pkcs12ReaderStatusCode::kKeyDataMissed;
+  absl::optional<Pkcs12ReaderStatusCode> find_key_by_cert_status_;
+  absl::optional<Pkcs12ReaderStatusCode> find_key_by_der_cert_status_;
 
   absl::optional<std::vector<uint8_t>> bignum_to_bytes_value_ = absl::nullopt;
 };
@@ -1385,7 +1377,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, CertsSearchInSlot20TimesPKCS12ImportFailed) {
   EXPECT_TRUE(KeyImportDone());
 }
 
-// GetScopedCert is failed inside CanFindInstalledKey.
+// GetScopedCert is failed in CanFindInstalledKey/GetScopedCert.
 // Import failed.
 TEST_F(ChapsUtilPKCS12ImportTest, GetScopedCertFailedPKCS12ImportFailed) {
   fake_pkcs12_reader_.get_der_encoded_cert_status_ =
@@ -1399,22 +1391,21 @@ TEST_F(ChapsUtilPKCS12ImportTest, GetScopedCertFailedPKCS12ImportFailed) {
   EXPECT_TRUE(KeyImportNeverDone());
 }
 
-// FindPrivateKeyFromCert is failed inside CanFindInstalledKey.
+// FindPrivateKeyFromCert is failed in CanFindInstalledKey/DoesKeyForCertExist.
 // Import failed.
 TEST_F(ChapsUtilPKCS12ImportTest,
        FindPrivateKeyFromCertFailedPKCS12ImportFailed) {
   fake_pkcs12_reader_.find_key_by_cert_status_ =
-      Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+      Pkcs12ReaderStatusCode::kMissedSlotInfo;
 
   bool import_result = RunImportPkcs12Certificate();
 
   EXPECT_EQ(fake_pkcs12_reader_.find_key_by_cert_called_, 1);
-  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_der_cert_called_, 0);
   EXPECT_FALSE(import_result);
   EXPECT_TRUE(KeyImportNeverDone());
 }
 
-// Private key found by cert inside CanFindInstalledKey.
+// Private key found by cert in CanFindInstalledKey.
 // Key import is never happened, but cert is imported.
 TEST_F(ChapsUtilPKCS12ImportTest, FindPrivateKeyFromCertSuccPKCS12ImportSucc) {
   fake_pkcs12_reader_.find_key_by_cert_status_ =
@@ -1423,22 +1414,20 @@ TEST_F(ChapsUtilPKCS12ImportTest, FindPrivateKeyFromCertSuccPKCS12ImportSucc) {
   bool import_result = RunImportPkcs12Certificate();
 
   EXPECT_EQ(fake_pkcs12_reader_.find_key_by_cert_called_, 1);
-  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_der_cert_called_, 0);
   EXPECT_TRUE(import_result);
   EXPECT_TRUE(KeyImportNeverDone());
   EXPECT_TRUE(CertImportDone());
 }
 
-// FindKeyByDERCert is failed inside CanFindInstalledKey.
-// Import failed.
+// FindKeyByDERCert is failed in CanFindInstalledKey/DoesKeyForCertExist for
+// DER type of cert. Import failed.
 TEST_F(ChapsUtilPKCS12ImportTest, FindKeyByDERCertFailedPKCS12ImportFailed) {
   fake_pkcs12_reader_.find_key_by_der_cert_status_ =
-      Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+      Pkcs12ReaderStatusCode::kMissedSlotInfo;
 
   bool import_result = RunImportPkcs12Certificate();
 
-  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_cert_called_, 1);
-  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_der_cert_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_cert_called_, 2);
   EXPECT_FALSE(import_result);
   EXPECT_TRUE(KeyImportNeverDone());
 }
@@ -1451,8 +1440,7 @@ TEST_F(ChapsUtilPKCS12ImportTest, FindKeyByDERCertSuccPKCS12ImportSucc) {
 
   bool import_result = RunImportPkcs12Certificate();
 
-  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_cert_called_, 1);
-  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_der_cert_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.find_key_by_cert_called_, 2);
   EXPECT_TRUE(import_result);
   EXPECT_TRUE(KeyImportNeverDone());
   EXPECT_TRUE(CertImportDone());

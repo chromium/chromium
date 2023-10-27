@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include <vector>
 
-#include <nss/pk11pub.h>
 #include "chromeos/ash/components/chaps_util/key_helper.h"
 #include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "net/cert/x509_util_nss.h"
@@ -13,7 +12,17 @@
 
 namespace chromeos {
 
+CertData::CertData() = default;
+CertData::~CertData() = default;
+
+KeyData::KeyData() = default;
+KeyData::KeyData(KeyData&&) = default;
+KeyData::~KeyData() = default;
+
 std::vector<uint8_t> Pkcs12Reader::BignumToBytes(const BIGNUM* bignum) const {
+  if (!bignum) {
+    return {};
+  }
   std::vector<uint8_t> result(BN_num_bytes(bignum));
   BN_bn2bin(bignum, result.data());
 
@@ -48,12 +57,13 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetDerEncodedCert(
     bssl::UniquePtr<uint8_t>& cert_der,
     int& cert_der_size) const {
   if (!cert) {
-    return Pkcs12ReaderStatusCode::kPkcs12CertDerMissed;
+    return Pkcs12ReaderStatusCode::kCertificateDataMissed;
   }
 
   uint8_t* cert_der_ptr = nullptr;
   cert_der_size = i2d_X509(cert, &cert_der_ptr);
   cert_der = bssl::UniquePtr<uint8_t>(cert_der_ptr);
+  // Fail if error happened or if size is 0.
   if (cert_der_size <= 0) {
     return Pkcs12ReaderStatusCode::kPkcs12CertDerFailed;
   }
@@ -64,7 +74,7 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetIssuerNameDer(
     X509* cert,
     base::span<const uint8_t>& issuer_name_data) const {
   if (!cert) {
-    return Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+    return Pkcs12ReaderStatusCode::kCertificateDataMissed;
   }
 
   X509_NAME* issuer_name = X509_get_issuer_name(cert);
@@ -85,6 +95,14 @@ Pkcs12ReaderStatusCode Pkcs12Reader::FindRawCertsWithSubject(
     PK11SlotInfo* slot,
     base::span<const uint8_t> required_subject_name,
     CERTCertificateList** found_certs) const {
+  if (!slot) {
+    return Pkcs12ReaderStatusCode::kMissedSlotInfo;
+  }
+
+  if (required_subject_name.empty()) {
+    return Pkcs12ReaderStatusCode::kPkcs12CertSubjectNameMissed;
+  }
+
   SECItem subject_item;
   subject_item.len = required_subject_name.size();
   subject_item.data = const_cast<uint8_t*>(required_subject_name.data());
@@ -102,14 +120,13 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetSubjectNameDer(
     X509* cert,
     base::span<const uint8_t>& subject_name_data) const {
   if (!cert) {
-    return Pkcs12ReaderStatusCode::kPkcs12CertSubjectNameMissed;
+    return Pkcs12ReaderStatusCode::kCertificateDataMissed;
   }
 
   X509_NAME* subject_name = X509_get_subject_name(cert);
   if (!subject_name) {
     return Pkcs12ReaderStatusCode::kPkcs12CertSubjectNameMissed;
   }
-
   const uint8_t* name_der;
   size_t name_der_size;
   if (!X509_NAME_get0_der(subject_name, &name_der, &name_der_size)) {
@@ -124,7 +141,7 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetSerialNumberDer(
     bssl::UniquePtr<uint8_t>& der_serial_number,
     int& der_serial_number_size) const {
   if (!cert) {
-    return Pkcs12ReaderStatusCode::kPkcs12CertSerialNumberMissed;
+    return Pkcs12ReaderStatusCode::kCertificateDataMissed;
   }
 
   const ASN1_INTEGER* serial_number = X509_get0_serialNumber(cert);
@@ -141,7 +158,7 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetSerialNumberDer(
 Pkcs12ReaderStatusCode Pkcs12Reader::GetLabel(X509* cert,
                                               std::string& label) const {
   if (!cert) {
-    return Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+    return Pkcs12ReaderStatusCode::kCertificateDataMissed;
   }
 
   int alias_len = 0;
@@ -155,7 +172,7 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetLabel(X509* cert,
 
   X509_NAME* subject_name = X509_get_subject_name(cert);
   if (!subject_name) {
-    return Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+    return Pkcs12ReaderStatusCode::kPkcs12CertSubjectNameMissed;
   }
 
   char temp_label[512];
@@ -182,9 +199,10 @@ Pkcs12ReaderStatusCode Pkcs12Reader::IsCertWithNicknameInSlots(
 
 Pkcs12ReaderStatusCode Pkcs12Reader::DoesKeyForCertExist(
     PK11SlotInfo* slot,
+    const Pkcs12ReaderCertSearchType cert_type,
     const scoped_refptr<net::X509Certificate>& cert) const {
   if (!cert) {
-    return Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+    return Pkcs12ReaderStatusCode::kCertificateDataMissed;
   }
   if (!slot) {
     return Pkcs12ReaderStatusCode::kMissedSlotInfo;
@@ -192,8 +210,15 @@ Pkcs12ReaderStatusCode Pkcs12Reader::DoesKeyForCertExist(
   net::ScopedCERTCertificate nss_cert =
       net::x509_util::CreateCERTCertificateFromX509Certificate(cert.get());
 
-  SECKEYPrivateKey* private_key =
-      PK11_FindPrivateKeyFromCert(slot, nss_cert.get(), nullptr);
+  SECKEYPrivateKey* private_key = nullptr;
+  switch (cert_type) {
+    case Pkcs12ReaderCertSearchType::kDerType:
+      private_key = PK11_FindKeyByDERCert(slot, nss_cert.get(), nullptr);
+      break;
+    case Pkcs12ReaderCertSearchType::kPlainType:
+      private_key = PK11_FindPrivateKeyFromCert(slot, nss_cert.get(), nullptr);
+      break;
+  }
 
   if (private_key) {
     return Pkcs12ReaderStatusCode::kSuccess;
@@ -201,36 +226,41 @@ Pkcs12ReaderStatusCode Pkcs12Reader::DoesKeyForCertExist(
   return Pkcs12ReaderStatusCode::kKeyDataMissed;
 }
 
-Pkcs12ReaderStatusCode Pkcs12Reader::DoesKeyForDerCertExist(
-    PK11SlotInfo* slot,
-    const scoped_refptr<net::X509Certificate>& cert) const {
-  if (!cert) {
-    return Pkcs12ReaderStatusCode::kPkcs12CertIssuerNameMissed;
+Pkcs12ReaderStatusCode Pkcs12Reader::GetRsaModulus(
+    const bssl::UniquePtr<EVP_PKEY>& pkey,
+    std::vector<uint8_t>& modulus) const {
+  if (!pkey) {
+    return Pkcs12ReaderStatusCode::kPkcs12PKeyMissed;
   }
-  if (!slot) {
-    return Pkcs12ReaderStatusCode::kMissedSlotInfo;
+  const RSA* rsa_key = EVP_PKEY_get0_RSA(pkey.get());
+  if (!rsa_key) {
+    return Pkcs12ReaderStatusCode::kRsaKeyExtractionFailed;
   }
-  net::ScopedCERTCertificate nss_cert =
-      net::x509_util::CreateCERTCertificateFromX509Certificate(cert.get());
-
-  SECKEYPrivateKey* private_key =
-      PK11_FindKeyByDERCert(slot, nss_cert.get(), nullptr);
-
-  if (private_key) {
-    return Pkcs12ReaderStatusCode::kSuccess;
+  modulus = BignumToBytes(RSA_get0_n(rsa_key));
+  if (modulus.empty()) {
+    return Pkcs12ReaderStatusCode::kPkcs12RsaModulusEmpty;
   }
-  return Pkcs12ReaderStatusCode::kKeyDataMissed;
+  return Pkcs12ReaderStatusCode::kSuccess;
 }
 
 Pkcs12ReaderStatusCode Pkcs12Reader::EnrichKeyData(KeyData& key_data) const {
   if (!key_data.key) {
     return Pkcs12ReaderStatusCode::kKeyDataMissed;
   }
+
   if (EVP_PKEY_base_id(key_data.key.get()) == EVP_PKEY_RSA) {
-    const RSA* rsa_key = EVP_PKEY_get0_RSA(key_data.key.get());
-    key_data.rsa_key_modulus_bytes = BignumToBytes(RSA_get0_n(rsa_key));
-    key_data.cka_id_value =
-        SECItemToBytes(MakeIdFromPubKeyNss(key_data.rsa_key_modulus_bytes));
+    Pkcs12ReaderStatusCode get_modulus_result =
+        GetRsaModulus(key_data.key, key_data.rsa_key_modulus_bytes);
+    if (get_modulus_result != Pkcs12ReaderStatusCode::kSuccess) {
+      return get_modulus_result;
+    }
+
+    crypto::ScopedSECItem cka_id_item =
+        MakeIdFromPubKeyNss(key_data.rsa_key_modulus_bytes);
+    key_data.cka_id_value = SECItemToBytes(cka_id_item);
+    if (key_data.cka_id_value.empty()) {
+      return Pkcs12ReaderStatusCode::kPkcs12CkaIdExtractionFailed;
+    }
     return Pkcs12ReaderStatusCode::kSuccess;
   }
 
@@ -240,6 +270,7 @@ Pkcs12ReaderStatusCode Pkcs12Reader::EnrichKeyData(KeyData& key_data) const {
 Pkcs12ReaderStatusCode Pkcs12Reader::CheckRelation(const KeyData& key_data,
                                                    X509* cert,
                                                    bool& is_related) const {
+  is_related = false;
   if (!key_data.key) {
     return Pkcs12ReaderStatusCode::kKeyDataMissed;
   }
@@ -251,11 +282,13 @@ Pkcs12ReaderStatusCode Pkcs12Reader::CheckRelation(const KeyData& key_data,
   // Check for RSA key.
   if (!key_data.rsa_key_modulus_bytes.empty()) {
     EVP_PKEY* pub_key_ptr = X509_get_pubkey(cert);
-    bssl::UniquePtr<EVP_PKEY> pubkey(pub_key_ptr);
-    const RSA* rsa_pub_key = EVP_PKEY_get0_RSA(pubkey.get());
-    std::vector<uint8_t> public_modulus_bytes =
-        BignumToBytes(RSA_get0_n(rsa_pub_key));
-
+    bssl::UniquePtr<EVP_PKEY> pub_key(pub_key_ptr);
+    std::vector<uint8_t> public_modulus_bytes;
+    Pkcs12ReaderStatusCode get_modulus_result =
+        GetRsaModulus(pub_key, public_modulus_bytes);
+    if (get_modulus_result != Pkcs12ReaderStatusCode::kSuccess) {
+      return get_modulus_result;
+    }
     if (key_data.rsa_key_modulus_bytes != public_modulus_bytes) {
       return Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound;
     }
@@ -274,6 +307,9 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetCertFromDerData(
     return Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound;
   };
   X509* cert = d2i_X509(NULL, &der_cert_data, der_cert_len);
+  if (!cert) {
+    return Pkcs12ReaderStatusCode::kCreateCertFailed;
+  }
   x509 = bssl::UniquePtr<X509>(cert);
   return Pkcs12ReaderStatusCode::kSuccess;
 }
