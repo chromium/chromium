@@ -612,8 +612,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       }
       return keyDisplay.toLowerCase();
     }
-    // TODO(jimmyxgong): Reset to a localized default empty state.
-    return 'key';
+    return this.i18n('inputKeyPlaceholder');
   }
 
   /**

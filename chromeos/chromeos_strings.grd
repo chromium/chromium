@@ -4094,8 +4094,7 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CANCEL" desc="Used to cancel action in various modals">
           Cancel
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT" desc="Used to edit action in various modals" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT" desc="Used to edit action in various modals">
           Edit
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CUSTOMIZATION_DISABLED_BY_POLICY_MESSAGE"
@@ -4170,6 +4169,11 @@
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_PLACEHOLDER_LABEL" desc="Placeholder text shown in search input field before user has typed anything.">
           Search shortcuts
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER"
+            desc="The placeholder text that appears in the input box where the
+            user is required to press a key combination for a shortcut.">
+          key
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_TEXT_DIVIDER" desc="The text shown between multiple shortcut keys.">
           or
@@ -4309,8 +4313,7 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_BACK" desc="The text read aloud by the screen reader describing the keyboard icon 'back'.">
           back
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_FORWARD" desc="The text read aloud by the screen reader describing the keyboard icon 'forward'." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_FORWARD" desc="The text read aloud by the screen reader describing the keyboard icon 'forward'.">
           forward
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_REFRESH" desc="The text read aloud by the screen reader describing the keyboard icon 'refresh'.">

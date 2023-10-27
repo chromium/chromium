@@ -110,6 +110,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"shortcutEdited", IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_EDITED_A11Y},
       {"searchResultSelectedAriaLabel",
        IDS_SHORTCUT_CUSTOMIZATION_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED},
+      {"inputKeyPlaceholder", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER},
       {"subcategoryGeneralControls",
        IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL_CONTROLS},
       {"subcategoryApps", IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_APPS},
