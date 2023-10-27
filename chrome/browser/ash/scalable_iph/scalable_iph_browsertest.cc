@@ -203,6 +203,7 @@ class ScalableIphBrowserTestFeatureOffDebugOn : public ScalableIphBrowserTest {
  public:
   ScalableIphBrowserTestFeatureOffDebugOn() {
     enable_scalable_iph_ = false;
+    setup_scalable_iph_ = false;
     CHECK(enable_scalable_iph_debug_)
         << "Debug feature is on by default for ScalableIphBrowserTest";
   }
@@ -242,6 +243,18 @@ class ScalableIphBrowserTestHelpApp
 
     ash::SystemWebAppManager::GetForTest(browser()->profile())
         ->InstallSystemAppsForTesting();
+  }
+};
+
+class ScalableIphBrowserTestHelpAppParameterized
+    : public ScalableIphBrowserTestHelpApp,
+      public testing::WithParamInterface<TestEnvironment> {
+ public:
+  void SetUp() override {
+    SetTestEnvironment(GetParam());
+    setup_scalable_iph_ = false;
+
+    ScalableIphBrowserTestHelpApp::SetUp();
   }
 };
 
@@ -1614,4 +1627,27 @@ IN_PROC_BROWSER_TEST_P(ScalableIphBrowserTestParameterized,
                        ScalableIphNotAvailable) {
   EXPECT_EQ(nullptr,
             ScalableIphFactory::GetForBrowserContext(browser()->profile()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    NoHelpAppPin,
+    ScalableIphBrowserTestHelpAppParameterized,
+    testing::Values(
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kGuest),
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kManaged),
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kChild),
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kRegularNonOwner)),
+    &TestEnvironment::GenerateTestName);
+
+IN_PROC_BROWSER_TEST_P(ScalableIphBrowserTestHelpAppParameterized,
+                       HelpAppNotPinnedToShelf) {
+  EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
 }
