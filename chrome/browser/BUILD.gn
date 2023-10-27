@@ -3923,6 +3923,8 @@ static_library("browser") {
       "feedback/system_logs/log_sources/memory_details_log_source.h",
       "feedback/system_logs/log_sources/performance_log_source.cc",
       "feedback/system_logs/log_sources/performance_log_source.h",
+      "feedback/system_logs/log_sources/related_website_sets_source.cc",
+      "feedback/system_logs/log_sources/related_website_sets_source.h",
       "first_run/first_run.cc",
       "first_run/first_run.h",
       "first_run/first_run_dialog.h",

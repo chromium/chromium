@@ -70,9 +70,11 @@ void BrowserWithTestWindowTest::SetUp() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user_manager::UserManager::IsInitialized()) {
+    auto user_manager = std::make_unique<user_manager::FakeUserManager>(
+        g_browser_process->local_state());
+    user_manager_ = user_manager.get();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<user_manager::FakeUserManager>(
-            g_browser_process->local_state()));
+        std::move(user_manager));
   }
   ash_test_helper_.SetUp();
 #endif
@@ -153,6 +155,7 @@ void BrowserWithTestWindowTest::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash_test_helper_.TearDown();
   test_views_delegate_.reset();
+  user_manager_ = nullptr;
 #elif defined(TOOLKIT_VIEWS)
   views_test_helper_.reset();
 #endif
