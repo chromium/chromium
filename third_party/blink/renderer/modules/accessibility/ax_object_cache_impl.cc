@@ -2607,10 +2607,6 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 }
 
 void AXObjectCacheImpl::UpdateTreeIfNeeded() {
-  if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
-    return;
-  }
-
   DCHECK(!updating_tree_);
   if (Root()->HasDirtyDescendants()) {
     base::AutoReset<bool> updating(&updating_tree_, true);
@@ -2806,9 +2802,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
     mark_all_dirty_ = false;
 
     // Build out tree, such that each node has computed its children.
-    if (RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
-      UpdateTreeIfNeeded();
-    }
+    UpdateTreeIfNeeded();
   }
 
   // ***** Serialize *****
@@ -2878,12 +2872,8 @@ bool AXObjectCacheImpl::IsDirty() {
       relation_cache_->IsDirty()) {
     return true;
   }
-  DCHECK(RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled() ||
-         !Root()->HasDirtyDescendants());
-  if (RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
-    if (Root()->NeedsToUpdateChildren() || Root()->HasDirtyDescendants()) {
-      return true;
-    }
+  if (Root()->NeedsToUpdateChildren() || Root()->HasDirtyDescendants()) {
+    return true;
   }
   return false;
 }

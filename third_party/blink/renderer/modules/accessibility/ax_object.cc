@@ -621,10 +621,6 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
   }
   CHECK(!AXObjectCache().UpdatingTree());
 
-  if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
-    return;
-  }
-
   // Set the dirty bit for the root AX object when created. For all other
   // objects, this is set by a descendant needing to be updated, and
   // AXObjectCacheImpl::UpdateTreeIfNeeded will therefore process an object
