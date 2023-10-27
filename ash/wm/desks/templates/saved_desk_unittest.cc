@@ -318,10 +318,14 @@ class SavedDeskTest : public OverviewTestBase {
       const auto* dialog_accept_button = ash::GetSavedDeskDialogAcceptButton();
       LeftClickOn(dialog_accept_button);
     }
+
     // Wait for the dialog to close.
     base::RunLoop().RunUntilIdle();
     SavedDeskGridViewTestApi(grid_view).WaitForItemMoveAnimationDone();
     SavedDeskLibraryViewTestApi(saved_desk_library_view).WaitForAnimationDone();
+    SavedDeskPresenterTestApi(
+        GetOverviewGridList()[0]->overview_session()->saved_desk_presenter())
+        .MaybeWaitForModel();
   }
 
   void WaitForSavedDeskLibrary() {
@@ -1043,8 +1047,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonFocusRing) {
 
 // Tests that the save desk as template button and save for later button are
 // enabled and disabled as expected based on the number of saved desk entries.
-// Disabled for being flaky: crbug.com/1472035
-TEST_F(SavedDeskTest, DISABLED_SaveDeskButtonsEnabledDisabled) {
+TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
   // Prepare the test environment, like creating an app window which should be
   // supported.
   auto no_app_id_window = CreateAppWindow();
