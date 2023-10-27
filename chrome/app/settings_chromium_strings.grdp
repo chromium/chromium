@@ -317,6 +317,11 @@
     Sign in to sync and personalize Chromium across your devices
   </message>
 
+  <!-- Page content -->
+  <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
+    To help improve these features, Chromium sends your interactions with them to Google. This data may be read, processed, and annotated by human reviewers.
+  </message>
+
   <!-- Performance Page -->
   <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION" desc="Description for the memory saver mode setting">
     When on, Chromium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chromium fast. Your inactive tabs automatically become active again when you go back to them.

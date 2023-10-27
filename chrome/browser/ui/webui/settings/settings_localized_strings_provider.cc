@@ -1373,6 +1373,8 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_ONE},
     {"pageContentThingsToConsiderBulletTwo",
      IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_TWO},
+    {"pageContentThingsToConsiderBulletThree",
+     IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_THREE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
