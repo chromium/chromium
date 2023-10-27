@@ -211,6 +211,8 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       create_http_post_provider_factory_cb_(
           base::BindRepeating(&CreateHttpBridgeFactory)),
       should_record_trusted_vault_error_shown_on_startup_(true),
+      sync_poll_immediately_on_every_startup_(
+          init_params.sync_poll_immediately_on_every_startup),
 #if BUILDFLAG(IS_ANDROID)
       sessions_invalidations_enabled_(false) {
 #else
@@ -582,6 +584,8 @@ void SyncServiceImpl::TryStartImpl() {
   params.engine_components_factory =
       std::make_unique<EngineComponentsFactoryImpl>(
           EngineSwitchesFromCommandLine());
+  params.sync_poll_immediately_on_every_startup =
+      sync_poll_immediately_on_every_startup_;
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->ConnectionOpened();

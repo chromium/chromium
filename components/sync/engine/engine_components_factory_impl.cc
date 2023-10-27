@@ -22,7 +22,8 @@ std::unique_ptr<SyncScheduler> EngineComponentsFactoryImpl::BuildScheduler(
     const std::string& name,
     SyncCycleContext* context,
     CancelationSignal* cancelation_signal,
-    bool ignore_auth_credentials) {
+    bool ignore_auth_credentials,
+    bool sync_poll_immediately_on_every_startup) {
   std::unique_ptr<BackoffDelayProvider> delay =
       (switches_.backoff_override == BACKOFF_SHORT_INITIAL_RETRY_OVERRIDE)
           ? BackoffDelayProvider::WithShortInitialRetryOverride()
@@ -31,8 +32,8 @@ std::unique_ptr<SyncScheduler> EngineComponentsFactoryImpl::BuildScheduler(
   std::unique_ptr<SyncSchedulerImpl> scheduler =
       std::make_unique<SyncSchedulerImpl>(
           name, std::move(delay), context,
-          std::make_unique<Syncer>(cancelation_signal),
-          ignore_auth_credentials);
+          std::make_unique<Syncer>(cancelation_signal), ignore_auth_credentials,
+          sync_poll_immediately_on_every_startup);
   if (switches_.force_short_nudge_delay_for_test) {
     scheduler->ForceShortNudgeDelayForTest();
   }

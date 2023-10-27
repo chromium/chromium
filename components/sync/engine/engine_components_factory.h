@@ -50,7 +50,8 @@ class EngineComponentsFactory {
       const std::string& name,
       SyncCycleContext* context,
       CancelationSignal* cancelation_signal,
-      bool ignore_auth_credentials) = 0;
+      bool ignore_auth_credentials,
+      bool sync_poll_immediately_on_every_startup) = 0;
 
   virtual std::unique_ptr<SyncCycleContext> BuildContext(
       ServerConnectionManager* connection_manager,

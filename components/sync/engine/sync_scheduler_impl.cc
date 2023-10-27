@@ -93,7 +93,8 @@ SyncSchedulerImpl::SyncSchedulerImpl(
     std::unique_ptr<BackoffDelayProvider> delay_provider,
     SyncCycleContext* context,
     std::unique_ptr<Syncer> syncer,
-    bool ignore_auth_credentials)
+    bool ignore_auth_credentials,
+    bool sync_poll_immediately_on_every_startup)
     : name_(name),
       started_(false),
       syncer_poll_interval_seconds_(context->poll_interval()),
@@ -102,7 +103,9 @@ SyncSchedulerImpl::SyncSchedulerImpl(
       syncer_(std::move(syncer)),
       cycle_context_(context),
       next_sync_cycle_job_priority_(NORMAL_PRIORITY),
-      ignore_auth_credentials_(ignore_auth_credentials) {}
+      ignore_auth_credentials_(ignore_auth_credentials),
+      sync_poll_immediately_on_every_startup_(
+          sync_poll_immediately_on_every_startup) {}
 
 SyncSchedulerImpl::~SyncSchedulerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -181,7 +184,8 @@ void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
     // TODO(crbug.com/1448012): introduce a helper to deal with poll times.
     last_poll_reset_ =
         TimeTicks::Now() -
-        (now - ComputeLastPollOnStart(last_poll_time, GetPollInterval(), now));
+        (now - ComputeLastPollOnStart(last_poll_time, GetPollInterval(), now,
+                                      sync_poll_immediately_on_every_startup_));
   }
 
   if (old_mode != mode_ && mode_ == NORMAL_MODE) {
@@ -203,8 +207,9 @@ void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
 base::Time SyncSchedulerImpl::ComputeLastPollOnStart(
     base::Time last_poll,
     base::TimeDelta poll_interval,
-    base::Time now) {
-  if (base::FeatureList::IsEnabled(kSyncPollImmediatelyOnEveryStartup)) {
+    base::Time now,
+    bool sync_poll_immediately_on_every_startup) {
+  if (sync_poll_immediately_on_every_startup) {
     // Hack: Pretend the last poll happened sufficiently long ago to trigger a
     // poll.
     return now - (poll_interval + base::Seconds(1));

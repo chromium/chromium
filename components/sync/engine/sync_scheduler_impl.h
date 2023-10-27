@@ -38,7 +38,8 @@ class SyncSchedulerImpl : public SyncScheduler {
                     std::unique_ptr<BackoffDelayProvider> delay_provider,
                     SyncCycleContext* context,
                     std::unique_ptr<Syncer> syncer,
-                    bool ignore_auth_credentials);
+                    bool ignore_auth_credentials,
+                    bool sync_poll_immediately_on_every_startup);
 
   SyncSchedulerImpl(const SyncSchedulerImpl&) = delete;
   SyncSchedulerImpl& operator=(const SyncSchedulerImpl&) = delete;
@@ -229,9 +230,11 @@ class SyncSchedulerImpl : public SyncScheduler {
   bool IsEarlierThanCurrentPendingJob(const base::TimeDelta& delay);
 
   // Computes the last poll time the system should assume on start-up.
-  static base::Time ComputeLastPollOnStart(base::Time last_poll,
-                                           base::TimeDelta poll_interval,
-                                           base::Time now);
+  static base::Time ComputeLastPollOnStart(
+      base::Time last_poll,
+      base::TimeDelta poll_interval,
+      base::Time now,
+      bool sync_poll_immediately_on_every_startup);
 
   // Used for logging.
   const std::string name_;
@@ -293,6 +296,8 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   // Dictates if the scheduler should wait for authentication to happen or not.
   bool ignore_auth_credentials_;
+
+  const bool sync_poll_immediately_on_every_startup_;
 
   // Used to prevent changing nudge delays by the server in integration tests.
   bool force_short_nudge_delay_for_test_ = false;

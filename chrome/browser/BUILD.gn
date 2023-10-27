@@ -1815,6 +1815,8 @@ static_library("browser") {
     "sync/sync_invalidations_service_factory.h",
     "sync/sync_service_factory.cc",
     "sync/sync_service_factory.h",
+    "sync/sync_service_util.cc",
+    "sync/sync_service_util.h",
     "sync/sync_startup_tracker.cc",
     "sync/sync_startup_tracker.h",
     "sync/user_event_service_factory.cc",

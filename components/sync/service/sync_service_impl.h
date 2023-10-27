@@ -92,6 +92,7 @@ class SyncServiceImpl : public SyncService,
         nullptr;
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
+    bool sync_poll_immediately_on_every_startup;
   };
 
   explicit SyncServiceImpl(InitParams init_params);
@@ -506,6 +507,8 @@ class SyncServiceImpl : public SyncService,
   // histogram needs to recorded. Set to false iff histogram was already
   // recorded or trusted vault passphrase type wasn't used on startup.
   bool should_record_trusted_vault_error_shown_on_startup_;
+
+  const bool sync_poll_immediately_on_every_startup_;
 
   // Whether we want to receive invalidations for the SESSIONS data type. This
   // is typically false on Android (to save network traffic), but true on all

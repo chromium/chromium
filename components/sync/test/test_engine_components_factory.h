@@ -25,7 +25,8 @@ class TestEngineComponentsFactory : public EngineComponentsFactory {
       const std::string& name,
       SyncCycleContext* context,
       CancelationSignal* cancelation_signal,
-      bool ignore_auth_credentials) override;
+      bool ignore_auth_credentials,
+      bool sync_poll_immediately_on_every_startup) override;
 
   std::unique_ptr<SyncCycleContext> BuildContext(
       ServerConnectionManager* connection_manager,

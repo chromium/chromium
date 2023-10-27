@@ -148,7 +148,8 @@ class ComponentsFactory : public TestEngineComponentsFactory {
       const std::string& name,
       SyncCycleContext* context,
       CancelationSignal* stop_handle,
-      bool local_sync_backend_enabled) override {
+      bool local_sync_backend_enabled,
+      bool sync_poll_immediately_on_every_startup) override {
     DCHECK(scheduler_to_use_);
     return std::move(scheduler_to_use_);
   }

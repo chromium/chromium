@@ -186,7 +186,8 @@ void SyncManagerImpl::Init(InitArgs* args) {
       args->birthday, args->bag_of_chips, args->poll_interval);
   scheduler_ = args->engine_components_factory->BuildScheduler(
       name_, cycle_context_.get(), args->cancelation_signal,
-      args->enable_local_sync_backend);
+      args->enable_local_sync_backend,
+      args->sync_poll_immediately_on_every_startup);
 
   scheduler_->Start(SyncScheduler::CONFIGURATION_MODE, base::Time());
 

@@ -188,7 +188,7 @@ class SyncerTest : public testing::Test,
     syncer_ = syncer.get();
     scheduler_ = std::make_unique<SyncSchedulerImpl>(
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(),
-        context_.get(), std::move(syncer), false);
+        context_.get(), std::move(syncer), false, false);
 
     mock_server_->SetKeystoreKey("encryption_key");
   }
