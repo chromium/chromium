@@ -538,14 +538,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   [self.collectionView reloadData];
 }
 
-- (std::set<web::WebStateID>)selectedItemIDsForEditing {
-  return _selectedEditingItemIDs;
-}
-
-- (std::set<web::WebStateID>)selectedShareableItemIDsForEditing {
-  return _selectedSharableEditingItemIDs;
-}
-
 - (BOOL)allItemsSelectedForEditing {
   return _mode == TabGridModeSelection &&
          self.items.count == _selectedEditingItemIDs.size();
@@ -1410,6 +1402,16 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
   // Update the preamble.
   [self updateInactiveTabsPreambleHeader];
+}
+
+#pragma mark - GridItemProvider
+
+- (std::set<web::WebStateID>)selectedItemIDsForEditing {
+  return _selectedEditingItemIDs;
+}
+
+- (std::set<web::WebStateID>)selectedShareableItemIDsForEditing {
+  return _selectedSharableEditingItemIDs;
 }
 
 #pragma mark - Actions

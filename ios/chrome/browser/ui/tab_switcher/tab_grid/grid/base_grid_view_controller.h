@@ -10,6 +10,7 @@
 #import <set>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
@@ -96,6 +97,7 @@ class WebStateID;
 
 // A view controller that contains a grid of items.
 @interface BaseGridViewController : UIViewController <InactiveTabsInfoConsumer,
+                                                      GridItemProvider,
                                                       TabCollectionConsumer>
 // The gridView is accessible to manage the content inset behavior.
 @property(nonatomic, readonly) UIScrollView* gridView;
@@ -132,14 +134,6 @@ class WebStateID;
 // Provider of shareable state for tabs in the grid.
 @property(nonatomic, weak) id<GridShareableItemsProvider>
     shareableItemsProvider;
-
-// The item IDs of selected items for editing.
-@property(nonatomic, readonly) std::set<web::WebStateID>
-    selectedItemIDsForEditing;
-// The item IDs of selected items for editing which are shareable outside of the
-// application.
-@property(nonatomic, readonly) std::set<web::WebStateID>
-    selectedShareableItemIDsForEditing;
 
 // Whether or not all items are selected. NO if `mode` is not
 // TabGridModeSelection.

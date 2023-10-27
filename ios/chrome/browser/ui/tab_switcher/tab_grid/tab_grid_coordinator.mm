@@ -836,6 +836,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                  syncService:service
                                                  browserList:browserList];
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
+  self.remoteTabsMediator.toolbarActionWrangler = self.baseViewController;
   baseViewController.remoteTabsViewController.imageDataSource =
       self.remoteTabsMediator;
   baseViewController.remoteTabsViewController.delegate =

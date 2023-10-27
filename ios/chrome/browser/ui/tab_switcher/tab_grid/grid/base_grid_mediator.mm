@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
@@ -652,40 +653,6 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
-- (void)showCloseItemsConfirmationActionSheetWithItems:
-            (const std::set<web::WebStateID>&)itemIDs
-                                                anchor:(UIBarButtonItem*)
-                                                           buttonAnchor {
-  [self.delegate dismissPopovers];
-
-  [self.delegate
-      showCloseItemsConfirmationActionSheetWithBaseGridMediator:self
-                                                        itemIDs:itemIDs
-                                                         anchor:buttonAnchor];
-}
-
-- (void)shareItems:(const std::set<web::WebStateID>&)itemIDs
-            anchor:(UIBarButtonItem*)buttonAnchor {
-  [self.delegate dismissPopovers];
-
-  NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
-  for (const web::WebStateID itemID : itemIDs) {
-    TabItem* item = GetTabItem(self.webStateList,
-                               WebStateSearchCriteria{
-                                   .identifier = itemID,
-                                   .pinned_state = PinnedState::kNonPinned,
-                               });
-    URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
-                                                    title:item.title];
-    [URLs addObject:URL];
-  }
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridSelectionShareTabs"));
-  base::UmaHistogramCounts100("IOS.TabGrid.Selection.ShareTabs",
-                              itemIDs.size());
-  [self.delegate baseGridMediator:self shareURLs:URLs anchor:buttonAnchor];
-}
-
 - (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
     (const std::set<web::WebStateID>&)itemIDs {
   if (!self.browser) {
@@ -1116,11 +1083,39 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 }
 
 - (void)closeSelectedTabs:(id)sender {
-  [self.actionWrangler closeSelectedTabs:sender];
+  const std::set<web::WebStateID> itemIDs =
+      [self.itemProvider selectedItemIDsForEditing];
+
+  [self.delegate dismissPopovers];
+
+  [self.delegate
+      showCloseItemsConfirmationActionSheetWithBaseGridMediator:self
+                                                        itemIDs:itemIDs
+                                                         anchor:sender];
 }
 
 - (void)shareSelectedTabs:(id)sender {
-  [self.actionWrangler shareSelectedTabs:sender];
+  const std::set<web::WebStateID> itemIDs =
+      [self.itemProvider selectedShareableItemIDsForEditing];
+
+  [self.delegate dismissPopovers];
+
+  NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
+  for (const web::WebStateID itemID : itemIDs) {
+    TabItem* item = GetTabItem(self.webStateList,
+                               WebStateSearchCriteria{
+                                   .identifier = itemID,
+                                   .pinned_state = PinnedState::kNonPinned,
+                               });
+    URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
+                                                    title:item.title];
+    [URLs addObject:URL];
+  }
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridSelectionShareTabs"));
+  base::UmaHistogramCounts100("IOS.TabGrid.Selection.ShareTabs",
+                              itemIDs.size());
+  [self.delegate baseGridMediator:self shareURLs:URLs anchor:sender];
 }
 
 - (void)selectTabsButtonTapped:(id)sender {

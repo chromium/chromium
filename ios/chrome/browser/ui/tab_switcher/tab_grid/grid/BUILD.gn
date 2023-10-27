@@ -80,6 +80,7 @@ source_set("grid_ui") {
     "grid_header.mm",
     "grid_item_identifier.h",
     "grid_item_identifier.mm",
+    "grid_item_provider.h",
     "grid_layout.h",
     "grid_layout.mm",
     "grid_shareable_items_provider.h",

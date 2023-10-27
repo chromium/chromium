@@ -2123,51 +2123,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.tabGridMode = TabGridModeNormal;
 }
 
-- (void)closeSelectedTabs:(id)sender {
-  BaseGridViewController* gridViewController =
-      [self gridViewControllerForPage:self.currentPage];
-  CHECK(gridViewController);
-  const std::set<web::WebStateID> itemIDs =
-      gridViewController.selectedItemIDsForEditing;
-
-  switch (self.currentPage) {
-    case TabGridPageIncognitoTabs:
-      [self.incognitoTabsDelegate
-          showCloseItemsConfirmationActionSheetWithItems:itemIDs
-                                                  anchor:sender];
-      break;
-    case TabGridPageRegularTabs:
-      [self.regularTabsDelegate
-          showCloseItemsConfirmationActionSheetWithItems:itemIDs
-                                                  anchor:sender];
-      break;
-    case TabGridPageRemoteTabs:
-      NOTREACHED()
-          << "It is invalid to call close selected tabs on remote tabs.";
-      break;
-  }
-}
-
-- (void)shareSelectedTabs:(id)sender {
-  BaseGridViewController* gridViewController =
-      [self gridViewControllerForPage:self.currentPage];
-  CHECK(gridViewController);
-  const std::set<web::WebStateID> itemIDs =
-      gridViewController.selectedShareableItemIDsForEditing;
-
-  switch (self.currentPage) {
-    case TabGridPageIncognitoTabs:
-      [self.incognitoTabsDelegate shareItems:itemIDs anchor:sender];
-      break;
-    case TabGridPageRegularTabs:
-      [self.regularTabsDelegate shareItems:itemIDs anchor:sender];
-      break;
-    case TabGridPageRemoteTabs:
-      NOTREACHED() << "Multiple tab selection invalid on remote tabs.";
-      break;
-  }
-}
-
 - (void)pageControlChangedValue:(id)sender {
   // Map the page control slider position (in the range 0.0-1.0) to an
   // x-offset for the scroll view.

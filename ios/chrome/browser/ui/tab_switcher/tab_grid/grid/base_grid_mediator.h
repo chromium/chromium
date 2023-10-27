@@ -15,6 +15,7 @@
 
 class Browser;
 @protocol GridConsumer;
+@protocol GridItemProvider;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsConfigurationProvider;
 @protocol GridToolbarsMutator;
@@ -50,6 +51,7 @@ class WebStateList;
 @property(nonatomic, weak) id<GridConsumer> gridConsumer;
 // Delegate to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
+@property(nonatomic, weak) id<GridItemProvider> itemProvider;
 
 @end
 

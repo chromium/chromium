@@ -204,6 +204,7 @@
   gridViewController.theme = GridThemeDark;
 
   _mediator.consumer = gridViewController;
+  _mediator.itemProvider = gridViewController;
 
   return gridViewController;
 }

@@ -19,7 +19,6 @@
 @protocol ApplicationCommands;
 @class GridContainerViewController;
 @protocol GridCommands;
-@protocol GridShareableItemsProvider;
 class GURL;
 @protocol InactiveTabsInfoConsumer;
 @class IncognitoGridViewController;

@@ -17,6 +17,7 @@ class BrowserList;
 class FaviconLoader;
 @protocol GridToolbarsMutator;
 @protocol RecentTabsConsumer;
+@protocol TabGridToolbarsActionWrangler;
 
 namespace signin {
 class IdentityManager;
@@ -49,6 +50,9 @@ class TabRestoreService;
 @property(nonatomic, strong) id<RecentTabsConsumer> consumer;
 // Mutator to handle toolbars modification.
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
+// Wrangler handling the TabGrid modifications.
+@property(nonatomic, weak) id<TabGridToolbarsActionWrangler>
+    toolbarActionWrangler;
 
 - (instancetype)
     initWithSessionSyncService:
