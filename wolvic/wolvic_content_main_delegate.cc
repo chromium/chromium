@@ -60,8 +60,8 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_browser_client.h"
-#include "wolvic/wolvic_content_renderer_client.h"
 #include "wolvic/wolvic_content_client.h"
+#include "wolvic/renderer/wolvic_content_renderer_client.h"
 
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #define IPC_MESSAGE_MACROS_LOG_ENABLED
