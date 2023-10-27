@@ -70,8 +70,6 @@ src/webgpu/capability_info.ts
 src/stress/adapter/device_allocation.spec.ts
 src/webgpu/util/reinterpret.ts
 src/webgpu/util/constants.ts
-src/webgpu/util/binary_stream.ts
-src/webgpu/util/conversion.ts
 src/webgpu/util/math.ts
 src/webgpu/util/unions.ts
 src/webgpu/util/texture/base.ts
@@ -81,6 +79,8 @@ src/webgpu/util/buffer.ts
 src/webgpu/util/pretty_diff_tables.ts
 src/webgpu/util/check_contents.ts
 src/webgpu/util/command_buffer_maker.ts
+src/webgpu/util/binary_stream.ts
+src/webgpu/util/conversion.ts
 src/webgpu/util/device_pool.ts
 src/webgpu/util/texture/texel_data.ts
 src/webgpu/util/texture/texel_view.ts
