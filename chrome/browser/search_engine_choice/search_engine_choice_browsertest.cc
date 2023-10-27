@@ -55,6 +55,7 @@
 // TODO(b/280753754): Convert these tests to interactive ui tests.
 
 using testing::_;
+using EntryPoint = SearchEngineChoiceService::EntryPoint;
 
 namespace {
 
@@ -73,10 +74,12 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
                                                         std::move(callback));
         });
 
-    ON_CALL(*this, NotifyChoiceMade).WillByDefault([this](int prepopulate_id) {
-      number_of_browsers_with_dialogs_open_ = 0;
-      SearchEngineChoiceService::NotifyChoiceMade(prepopulate_id);
-    });
+    ON_CALL(*this, NotifyChoiceMade)
+        .WillByDefault([this](int prepopulate_id, EntryPoint entry_point) {
+          number_of_browsers_with_dialogs_open_ = 0;
+          SearchEngineChoiceService::NotifyChoiceMade(prepopulate_id,
+                                                      entry_point);
+        });
   }
   ~MockSearchEngineChoiceService() override = default;
 
@@ -102,7 +105,7 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
               NotifyDialogOpened,
               (Browser*, base::OnceClosure),
               (override));
-  MOCK_METHOD(void, NotifyChoiceMade, (int), (override));
+  MOCK_METHOD(void, NotifyChoiceMade, (int, EntryPoint), (override));
 
  private:
   unsigned int number_of_browsers_with_dialogs_open_ = 0;
@@ -414,7 +417,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
   // Simulate a dialog closing event for the first profile and test that the
   // dialogs for that profile are closed.
-  first_profile_service->NotifyChoiceMade(/*prepopulate_id=*/1);
+  first_profile_service->NotifyChoiceMade(
+      /*prepopulate_id=*/1, EntryPoint::kDialog);
   CheckDefaultWasSetRecorded();
   EXPECT_FALSE(
       first_profile_service->IsShowingDialog(first_browser_with_first_profile));
@@ -489,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
       search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
 
   // Set the pref and simulate a dialog closing event.
-  service->NotifyChoiceMade(/*prepopulate_id=*/1);
+  service->NotifyChoiceMade(/*prepopulate_id=*/1, EntryPoint::kDialog);
   EXPECT_FALSE(service->IsShowingDialog(browser()));
 
   // Test that the dialog doesn't get shown again after opening the browser.
@@ -537,7 +541,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  search_engine_choice_service->NotifyChoiceMade(/*prepopulate_id=*/0);
+  search_engine_choice_service->NotifyChoiceMade(
+      /*prepopulate_id=*/0, EntryPoint::kDialog);
   const TemplateURL* default_search_provider =
       template_url_service->GetDefaultSearchProvider();
   EXPECT_EQ(default_search_provider->short_name(),

@@ -444,6 +444,14 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
         DefaultBrowserChoice::kClickSetAsDefault, 1);
   }
 
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  if (WithSearchEngineChoiceStep()) {
+    histogram_tester.ExpectBucketCount(
+        search_engines::kSearchEngineChoiceScreenEventsHistogram,
+        search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
+  }
+#endif
+
   EXPECT_TRUE(proceed_future.Get());
 
   EXPECT_TRUE(GetFirstRunFinishedPrefValue());

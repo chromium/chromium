@@ -5,13 +5,13 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
@@ -95,7 +95,8 @@ SearchEngineChoiceService::SearchEngineChoiceService(
     TemplateURLService& template_url_service)
     : profile_(profile), template_url_service_(template_url_service) {}
 
-void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id) {
+void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id,
+                                                 EntryPoint entry_point) {
   // Sets the timestamp and search engine choice preferences.
   PrefService* pref_service = profile_->GetPrefs();
   RecordChoiceMade(pref_service,
@@ -120,15 +121,6 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id) {
     CHECK_EQ(default_search_provider->prepopulate_id(), 0);
   }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Log that the choice was made during the FRE.
-  if (FirstRunService* first_run_service =
-          FirstRunServiceFactory::GetForBrowserContextIfExists(
-              &profile_.get())) {
-    choice_made_in_fre_ = true;
-  }
-#endif
-
   // Closes the dialogs that are open on other browser windows that
   // have the same profile as the one on which the choice was made.
   for (auto& browsers_with_open_dialog : browsers_with_open_dialogs_) {
@@ -136,8 +128,15 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id) {
   }
   browsers_with_open_dialogs_.clear();
 
-  search_engines::RecordChoiceScreenEvent(
-      search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet);
+  // Log the view entry point in which the choice was made.
+  if (entry_point == EntryPoint::kProfilePicker) {
+    choice_made_in_profile_picker_ = true;
+    search_engines::RecordChoiceScreenEvent(
+        search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet);
+  } else {
+    search_engines::RecordChoiceScreenEvent(
+        search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet);
+  }
 }
 
 void SearchEngineChoiceService::NotifyDialogOpened(
@@ -247,8 +246,8 @@ bool SearchEngineChoiceService::HasUserMadeChoice() const {
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
 }
 
-bool SearchEngineChoiceService::WasChoiceMadeInFRE() const {
-  return choice_made_in_fre_;
+bool SearchEngineChoiceService::CanSuppressPrivacySandboxPromo() const {
+  return choice_made_in_profile_picker_;
 }
 
 bool SearchEngineChoiceService::HasPendingDialog(Browser& browser) {

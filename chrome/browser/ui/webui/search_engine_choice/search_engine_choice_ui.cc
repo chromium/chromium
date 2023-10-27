@@ -131,15 +131,17 @@ void SearchEngineChoiceUI::BindInterface(
 
 void SearchEngineChoiceUI::Initialize(
     base::OnceClosure display_dialog_callback,
-    base::OnceClosure on_choice_made_callback) {
+    base::OnceClosure on_choice_made_callback,
+    SearchEngineChoiceService::EntryPoint entry_point) {
   display_dialog_callback_ = std::move(display_dialog_callback);
   on_choice_made_callback_ = std::move(on_choice_made_callback);
+  entry_point_ = entry_point;
 }
 
 void SearchEngineChoiceUI::HandleSearchEngineChoiceMade(int prepopulate_id) {
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(&profile_.get());
-  search_engine_choice_service->NotifyChoiceMade(prepopulate_id);
+  search_engine_choice_service->NotifyChoiceMade(prepopulate_id, entry_point_);
 
   // Notify that the choice was made.
   if (on_choice_made_callback_) {

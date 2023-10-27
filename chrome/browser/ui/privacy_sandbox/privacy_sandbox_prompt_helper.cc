@@ -152,17 +152,13 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
     }
   }
 
-// Defer the prompt to the next Chrome run if the Search Engine Choice
-// dialog will be or has been displayed in the current run.
-// The build flag check is needed because we don't build the Search Engine
-// Choice dialog on Fuchsia.
-// TODO(b/301061968): Add a test for when the user makes the search engine
-// choice in the FRE and then opens a browser where the prompt should be shown.
+// `SearchEngineChoiceService` may need to suppress this dialog to avoid
+// dialog conflicts and too frequent promos.
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(profile());
   if (search_engine_choice_service &&
-      !search_engine_choice_service->WasChoiceMadeInFRE()) {
+      !search_engine_choice_service->CanSuppressPrivacySandboxPromo()) {
     base::UmaHistogramEnumeration(kPrivacySandboxPromptHelperEventHistogram,
                                   SettingsPrivacySandboxPromptHelperEvent::
                                       kSearchEngineChoiceDialogShown);

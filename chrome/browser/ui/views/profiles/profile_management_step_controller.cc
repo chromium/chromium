@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
@@ -312,7 +313,8 @@ class SearchEngineChoiceStepController
     CHECK(step_completed_callback_);
     search_engine_choice_ui->Initialize(
         /*display_dialog_callback=*/base::OnceClosure(),
-        /*on_choice_made_callback=*/std::move(step_completed_callback_));
+        /*on_choice_made_callback=*/std::move(step_completed_callback_),
+        SearchEngineChoiceService::EntryPoint::kProfilePicker);
   }
 
   // May be nullptr.
