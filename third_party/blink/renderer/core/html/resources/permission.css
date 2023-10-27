@@ -26,7 +26,7 @@ permission:granted {
 
 permission::-internal-permission-text {
   display: inherit;
-  font-family: monospace;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: inherit;
   font-style: normal;
   font-weight: 400;
