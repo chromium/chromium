@@ -354,8 +354,8 @@ void FocusModeDetailedView::CreateToggleView() {
 
   toggle_view_->AddRightView(
       std::make_unique<PillButton>(
-          base::BindRepeating(&FocusModeController::ToggleFocusMode,
-                              base::Unretained(focus_mode_controller)),
+          base::BindRepeating(&FocusModeDetailedView::ToggleButtonPressed,
+                              base::Unretained(this)),
           l10n_util::GetStringUTF16(
               in_focus_session
                   ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON
@@ -583,6 +583,15 @@ void FocusModeDetailedView::AdjustInactiveSessionDuration(bool decrement) {
       decrement));
 }
 
+void FocusModeDetailedView::ToggleButtonPressed() {
+  auto* controller = FocusModeController::Get();
+  // TODO(b/308019963): we don't need to manually set the session duration once
+  // SystemTextfield is fixed, since it will be set when it is blurred.
+  controller->SetSessionDuration(base::Minutes(
+      focus_mode_util::GetTimerTextfieldInputInMinutes(timer_textfield_)));
+  controller->ToggleFocusMode();
+}
+
 void FocusModeDetailedView::UpdateTimerSettingViewUI() {
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   CHECK(!focus_mode_controller->in_focus_session());
@@ -604,8 +613,12 @@ void FocusModeDetailedView::UpdateTimerSettingViewUI() {
 
 void FocusModeDetailedView::SetInactiveSessionDuration(
     base::TimeDelta duration) {
-  FocusModeController::Get()->SetSessionDuration(duration);
-  UpdateTimerSettingViewUI();
+  // TODO(b/308019963): remove this check once SystemTextfield is fixed.
+  if (auto* controller = FocusModeController::Get();
+      !controller->in_focus_session()) {
+    controller->SetSessionDuration(duration);
+    UpdateTimerSettingViewUI();
+  }
 }
 
 void FocusModeDetailedView::UpdateEndTimeLabelUI() {

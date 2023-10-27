@@ -81,6 +81,9 @@ class ASH_EXPORT FocusModeDetailedView
   // This is only used outside of a focus session.
   void AdjustInactiveSessionDuration(bool decrement);
 
+  // Called whenever the Start/End button in the toggle row is pressed.
+  void ToggleButtonPressed();
+
   // Called whenever the session duration is adjusted. Updates the labels and
   // button visibilities in the timer setting view.
   void UpdateTimerSettingViewUI();
