@@ -887,8 +887,7 @@ bool AutofillAgent::CollectFormlessElements(
 
   return form_util::UnownedFormElementsToFormData(
       control_elements, iframe_elements, nullptr, document,
-      field_data_manager_.get(),
-      {ExtractOption::kValue, ExtractOption::kOptions}, output,
+      field_data_manager_.get(), extract_options, output,
       /*field=*/nullptr);
 }
 
