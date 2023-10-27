@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_policy_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_denied_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_granted_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_show_system_prompt_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_system_settings_view.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/web_contents.h"
@@ -74,8 +75,8 @@ EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
           browser, delegate->GetWeakPtr());
       break;
     case Variant::kOsPrompt:
-      // TODO: Implement behavior for the above embedded prompt flavors.
-      NOTREACHED();
+      prompt_view_ = new EmbeddedPermissionPromptShowSystemPromptView(
+          browser, delegate->GetWeakPtr());
       break;
     case Variant::kOsSystemSettings:
       prompt_view_ = new EmbeddedPermissionPromptSystemSettingsView(
