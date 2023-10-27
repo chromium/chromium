@@ -362,6 +362,17 @@ export class MenuManager {
       [CommandCategory.TABLES]: jumpMenu,
     };
   }
+  /**
+   * @param {!Array<!KeyBinding>} sortedBindings
+   * @return {!Map<!Command, !KeyBinding>}
+   */
+  makeBindingMap(sortedBindings) {
+    const bindingMap = new Map();
+    for (const binding of sortedBindings) {
+      bindingMap.set(binding.command, binding);
+    }
+    return bindingMap;
+  }
 
   /**
    * Activate a menu whose title has been clicked. Stop event propagation at

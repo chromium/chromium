@@ -339,19 +339,12 @@ export class Panel extends PanelInterface {
       const sortedBindings = await this.menuManager_.getSortedKeyBindings();
 
       // Insert items from the bindings into the menus.
-      const sawBindingSet = {};
-      const bindingMap = new Map();
-      sortedBindings.forEach(binding => {
-        const command = binding.command;
-        bindingMap.set(binding.command, binding);
-        if (sawBindingSet[command]) {
-          return;
-        }
-        sawBindingSet[command] = true;
+      const bindingMap = this.menuManager_.makeBindingMap(sortedBindings);
+      for (const binding of bindingMap.values()) {
         const category = CommandStore.categoryForCommand(binding.command);
         const menu = category ? categoryToMenu[category] : null;
         this.menuManager_.addMenuItemFromKeyBinding(binding, menu, touchScreen);
-      });
+      }
 
       // Add Touch Gestures menu items.
       if (touchMenu) {
@@ -381,8 +374,11 @@ export class Panel extends PanelInterface {
           continue;
         }
         const commandName = CommandStore.commandForMessage(actionMsg);
-        const command = bindingMap.get(commandName);
-        const shortcutName = command ? command.keySeq : '';
+        let shortcutName = '';
+        if (commandName) {
+          const commandBinding = bindingMap.get(commandName);
+          shortcutName = commandBinding ? commandBinding.keySeq : '';
+        }
         const actionDesc = Msgs.getMsg(actionMsg);
         actionsMenu.addMenuItem(
             actionDesc, shortcutName, '' /* menuItemBraille */,
