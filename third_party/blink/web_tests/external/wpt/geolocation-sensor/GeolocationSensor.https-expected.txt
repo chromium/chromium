@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] GeolocationSensor: Test that onerror is sent when sensor is not supported.
-  assert_implements: GeolocationSensor is not supported. undefined
 [FAIL] GeolocationSensor: Test that onerror is sent when permissions are not granted.
   assert_implements: GeolocationSensor is not supported. undefined
 [FAIL] GeolocationSensor: Test that onerror is send when start() call has failed.
@@ -31,13 +29,12 @@ This is a testharness.js-based test.
   assert_implements: GeolocationSensor is not supported. undefined
 [FAIL] GeolocationSensor: Test that fresh reading is fetched on start().
   assert_implements: GeolocationSensor is not supported. undefined
-[FAIL] GeolocationSensor: Losing visibility must cause readings to be suspended.
+[FAIL] GeolocationSensor: Readings are not delivered when the page has no visibility
   assert_implements: GeolocationSensor is not supported. undefined
 [FAIL] GeolocationSensor: frequency hint works.
   assert_implements: GeolocationSensor is not supported. undefined
 [FAIL] GeolocationSensor: Readings delivered by shared platform sensor are immediately accessible to all sensors.
   assert_implements: GeolocationSensor is not supported. undefined
-[FAIL] GeolocationSensor: throw 'TypeError' if frequency is invalid.
-  assert_implements: GeolocationSensor is not supported. undefined
+[PASS] GeolocationSensor: throw 'TypeError' if frequency is invalid.
 Harness: the test ran to completion.
 

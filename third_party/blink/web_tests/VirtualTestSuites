@@ -2536,5 +2536,27 @@
     "args": ["--disable-blink-features=StorageAccessAPIBeyondCookies"],
     "expires": "Jul 1, 2024",
     "owners": ["arichiv@chromium.org"]
+  },
+
+  "The GenericSensorExtraClasses feature is controlled by a flag, which has ",
+  "an expiration date. |expires| below is set to 'never' to avoid having to ",
+  "manage the expiration date in two locations.",
+  "",
+  "N.B. skip_base_tests is needed only because of https://crbug.com/1471996",
+  {
+    "prefix": "generic-sensor-extra-classes",
+    "owners": ["raphael.kubo.da.costa@intel.com", "reillyg@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/ambient-light",
+      "external/wpt/magnetometer",
+      "wpt_internal/generic-sensor/reference-frame-tests.https.window.js"
+    ],
+    "exclusive_tests": "ALL",
+    "skip_base_tests": [
+      "wpt_internal/generic-sensor/reference-frame-tests.https.window.html"
+    ],
+    "args": ["--enable-features=GenericSensorExtraClasses"],
+    "expires": "never"
   }
 ]
