@@ -330,8 +330,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_VIEW_FAMILY},
     {"sharePasswordMemeberUnavailable",
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_MEMBER_UNAVAILABLE},
-    {"sharePasswordManagedByAdmin",
-     IDS_PASSWORD_MANAGER_UI_SHARING_IS_MANAGED_BY_ADMIN},
     {"sharePasswordNotAvailable",
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NOT_AVAILABLE},
     {"sharePasswordErrorDescription",
