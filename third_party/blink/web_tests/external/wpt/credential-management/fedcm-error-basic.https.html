@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Federated Credential Management API network request tests.</title>
+<title>Federated Credential Management API Error API tests.</title>
 <link rel="help" href="https://fedidcg.github.io/FedCM">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -9,19 +9,15 @@
 <script type="module">
 import {request_options_with_mediation_required,
         fedcm_test,
+        manifest_origin,
         select_manifest,
         fedcm_get_and_select_first_account} from './support/fedcm-helper.sub.js';
 
-fedcm_test(async t => {
-  let test_options = request_options_with_mediation_required("manifest_redirect_accounts.json");
-  await select_manifest(t, test_options);
-
-  const cred = fedcm_get_and_select_first_account(t, test_options);
-  return promise_rejects_dom(t, 'NetworkError', cred);
-}, 'Test that promise is rejected if accounts endpoint redirects');
+const url_prefix = manifest_origin + '/credential-management/support/fedcm/';
 
 fedcm_test(async t => {
-  let test_options = request_options_with_mediation_required("manifest_redirect_token.json");
+  let test_options =
+  request_options_with_mediation_required("manifest_id_assertion_endpoint_returns_error.json");
   await select_manifest(t, test_options);
 
   try {
@@ -30,7 +26,9 @@ fedcm_test(async t => {
   } catch (e) {
     assert_true(e instanceof DOMException);
     assert_equals(e.name, "IdentityCredentialError");
-    assert_equals(e.code, "server_error");
+    assert_equals(e.code, "unauthorized_client");
+    assert_equals(e.url, url_prefix + "error.html");
   }
-}, 'Test that token endpoint does not follow redirects');
+}, 'Test that the promise is rejected with proper error details');
+
 </script>

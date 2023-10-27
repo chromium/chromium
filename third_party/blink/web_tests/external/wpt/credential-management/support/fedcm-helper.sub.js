@@ -1,4 +1,4 @@
-const manifest_origin = "https://{{host}}:{{ports[https][0]}}";
+export const manifest_origin = "https://{{host}}:{{ports[https][0]}}";
 export const alt_manifest_origin = 'https://{{hosts[alt][]}}:{{ports[https][0]}}';
 
 export function open_and_wait_for_popup(origin, path) {

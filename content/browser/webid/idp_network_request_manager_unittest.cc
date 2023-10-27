@@ -1144,16 +1144,6 @@ TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingAccounts) {
   EXPECT_EQ(net::HTTP_BAD_REQUEST, fetch_status.response_code);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingToken) {
-  FetchStatus fetch_status;
-  TokenResult token_result;
-  std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
-      "account", "request", net::HTTP_INTERNAL_SERVER_ERROR);
-  EXPECT_EQ("", token_result.token);
-  EXPECT_EQ(ParseStatus::kNoResponseError, fetch_status.parse_status);
-  EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, fetch_status.response_code);
-}
-
 TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataValidUrls) {
   // Both HTTPS and HTTP URLs are allowed.
   const std::string privacy_policy_url = "https://privacy.policy";

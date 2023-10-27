@@ -5122,7 +5122,7 @@ TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
   configuration.token_response.parse_status = ParseStatus::kNoResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse,
       /*standalone_console_message=*/absl::nullopt,
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);

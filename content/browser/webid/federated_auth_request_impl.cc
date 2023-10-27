@@ -1838,13 +1838,13 @@ void FederatedAuthRequestImpl::OnDismissFailureDialog(
 }
 
 void FederatedAuthRequestImpl::OnDismissErrorDialog(
+    const GURL& idp_config_url,
+    IdpNetworkRequestManager::FetchStatus status,
     absl::optional<TokenError> token_error,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
   // TODO(crbug.com/1478837): Record metrics for error UI
-  CompleteRequestWithError(
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-      TokenStatus::kIdTokenInvalidResponse, token_error,
-      /*should_delay_callback=*/false);
+  CompleteTokenRequest(idp_config_url, status, /*token=*/absl::nullopt,
+                       token_error, /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::OnDialogDismissed(
@@ -1941,6 +1941,7 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
 
 void FederatedAuthRequestImpl::ShowErrorDialog(
     const GURL& idp_config_url,
+    IdpNetworkRequestManager::FetchStatus status,
     absl::optional<TokenError> token_error) {
   CHECK(idp_infos_.find(idp_config_url) != idp_infos_.end());
 
@@ -1956,7 +1957,8 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
       idp_infos_[idp_config_url]->rp_context,
       idp_infos_[idp_config_url]->metadata, token_error,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissErrorDialog,
-                     weak_ptr_factory_.GetWeakPtr(), token_error),
+                     weak_ptr_factory_.GetWeakPtr(), idp_config_url, status,
+                     token_error),
       token_error && !token_error->url.is_empty()
           ? base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
                            weak_ptr_factory_.GetWeakPtr(), token_error->url)
@@ -1977,10 +1979,12 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
       should_show_error_ui
           ? base::BindOnce(&FederatedAuthRequestImpl::ShowErrorDialog,
                            weak_ptr_factory_.GetWeakPtr(),
-                           idp->config->config_url, result.error)
+                           idp->config->config_url, status, result.error)
           : base::BindOnce(&FederatedAuthRequestImpl::CompleteTokenRequest,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(idp),
-                           status, result.token);
+                           weak_ptr_factory_.GetWeakPtr(),
+                           idp->config->config_url, status, result.token,
+                           /*token_error=*/absl::nullopt,
+                           /*should_delay_callback=*/true);
 
   // When fetching id tokens we show a "Verify" sheet to users in case fetching
   // takes a long time due to latency etc. In case that the fetching process is
@@ -2000,9 +2004,11 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
 }
 
 void FederatedAuthRequestImpl::CompleteTokenRequest(
-    IdentityProviderRequestOptionsPtr idp,
+    const GURL& idp_config_url,
     IdpNetworkRequestManager::FetchStatus status,
-    const std::string& token) {
+    absl::optional<std::string> token,
+    absl::optional<TokenError> token_error,
+    bool should_delay_callback) {
   DCHECK(!start_time_.is_null());
   constexpr char kIdAssertionUrl[] = "id assertion endpoint";
   switch (status.parse_status) {
@@ -2010,36 +2016,31 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound,
-          TokenStatus::kIdTokenHttpNotFound,
-          /*token_error=*/absl::nullopt,
-          /*should_delay_callback=*/true);
+          TokenStatus::kIdTokenHttpNotFound, token_error,
+          should_delay_callback);
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
       MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse,
-          TokenStatus::kIdTokenNoResponse,
-          /*token_error=*/absl::nullopt,
-          /*should_delay_callback=*/true);
+          TokenStatus::kIdTokenNoResponse, token_error, should_delay_callback);
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
       MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-          TokenStatus::kIdTokenInvalidResponse,
-          /*token_error=*/absl::nullopt,
-          /*should_delay_callback=*/true);
+          TokenStatus::kIdTokenInvalidResponse, token_error,
+          should_delay_callback);
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
       MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType,
-          TokenStatus::kIdTokenInvalidContentType,
-          /*token_error=*/absl::nullopt,
-          /*should_delay_callback=*/true);
+          TokenStatus::kIdTokenInvalidContentType, token_error,
+          should_delay_callback);
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
@@ -2047,6 +2048,16 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
+      if (token_error) {
+        MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
+        // TODO(tanzachary): Use error specific value instead of
+        // InvalidResponse for both metrics and inspector.
+        CompleteRequestWithError(
+            FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+            TokenStatus::kIdTokenInvalidResponse, token_error,
+            should_delay_callback);
+        return;
+      }
       // Grant sharing permission specific to *this account*.
       //
       // TODO(majidvp): But wait which account?
@@ -2061,11 +2072,11 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       // https://crbug.com/1199088
       CHECK(!account_id_.empty());
       permission_delegate_->GrantSharingPermission(
-          origin(), GetEmbeddingOrigin(),
-          url::Origin::Create(idp->config->config_url), account_id_);
+          origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
+          account_id_);
 
       permission_delegate_->GrantActiveSession(
-          origin(), url::Origin::Create(idp->config->config_url), account_id_);
+          origin(), url::Origin::Create(idp_config_url), account_id_);
 
       SetRequiresUserMediation(false);
 
@@ -2080,7 +2091,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
             continue;
           }
 
-          if (metrics_endpoint_kv.first == idp->config->config_url) {
+          if (metrics_endpoint_kv.first == idp_config_url) {
             network_manager_->SendSuccessfulTokenRequestMetrics(
                 metrics_endpoint, show_accounts_dialog_time_ - start_time_,
                 select_account_time_ - show_accounts_dialog_time_,
@@ -2099,7 +2110,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
 
       CompleteRequest(FederatedAuthRequestResult::kSuccess,
                       TokenStatus::kSuccess, /*token_error=*/absl::nullopt,
-                      idp->config->config_url, token,
+                      idp_config_url, token.value(),
                       /*should_delay_callback=*/false);
       return;
     }

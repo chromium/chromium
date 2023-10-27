@@ -229,6 +229,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void MaybeShowAccountsDialog();
   void ShowModalDialog(const GURL& url);
   void ShowErrorDialog(const GURL& idp_config_url,
+                       IdpNetworkRequestManager::FetchStatus status,
                        absl::optional<TokenError> error);
 
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
@@ -249,13 +250,17 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnDismissFailureDialog(
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDismissErrorDialog(
+      const GURL& idp_config_url,
+      IdpNetworkRequestManager::FetchStatus status,
       absl::optional<TokenError> token_error,
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDialogDismissed(
       IdentityRequestDialogController::DismissReason dismiss_reason);
-  void CompleteTokenRequest(blink::mojom::IdentityProviderRequestOptionsPtr idp,
+  void CompleteTokenRequest(const GURL& idp_config_url,
                             IdpNetworkRequestManager::FetchStatus status,
-                            const std::string& token);
+                            absl::optional<std::string> token,
+                            absl::optional<TokenError> token_error,
+                            bool should_delay_callback);
   void OnTokenResponseReceived(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
       IdpNetworkRequestManager::FetchStatus status,
