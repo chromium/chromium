@@ -15,7 +15,6 @@ mojom("test_api_mojom") {
     "test_api.test-mojom",
   ]
   webui_module_path = "chrome://webui-test/settings/chromeos"
-  use_typescript_sources = true
 }
 
 build_webui_tests("build") {

@@ -17,7 +17,6 @@ mojom("mojom") {
   ]
 
   webui_module_path = "chrome://resources/cr_components/theme_color_picker/"
-  use_typescript_sources = true
 }
 
 build_webui("build") {

@@ -11,7 +11,6 @@ mojom("mojom") {
   sources = [ "color_internals.mojom" ]
 
   webui_module_path = "/ash/webui/color_internals"
-  use_typescript_sources = true
 
   public_deps = [ "//skia/public/mojom" ]
 

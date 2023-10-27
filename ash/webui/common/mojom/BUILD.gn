@@ -12,7 +12,6 @@ mojom("mojom") {
 
   webui_module_path = "/ash/webui/common"
 
-  use_typescript_sources = true
   disable_variants = true
 
   public_deps = [
@@ -27,7 +26,6 @@ mojom("mojom") {
 mojom("shortcut_input_provider") {
   disable_variants = true
   webui_module_path = "/"
-  use_typescript_sources = true
 
   sources = [ "shortcut_input_provider.mojom" ]
 

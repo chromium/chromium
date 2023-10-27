@@ -104,7 +104,6 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/ash/webui/camera_app_ui"
-  use_typescript_sources = true
 }
 
 cca_grd_prefix = "ash_camera_app"

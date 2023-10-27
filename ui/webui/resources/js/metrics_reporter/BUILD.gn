@@ -8,5 +8,4 @@ mojom("mojo_bindings") {
   sources = [ "metrics_reporter.mojom" ]
   webui_module_path = "chrome://resources/js/metrics_reporter"
   public_deps = [ "//mojo/public/mojom/base" ]
-  use_typescript_sources = true
 }

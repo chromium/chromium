@@ -11,8 +11,6 @@ mojom("mojom") {
 
   webui_module_path = "/ash/webui/firmware_update_ui"
 
-  use_typescript_sources = true
-
   sources = [ "firmware_update.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]

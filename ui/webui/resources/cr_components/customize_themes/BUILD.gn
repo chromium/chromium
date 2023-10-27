@@ -16,7 +16,6 @@ mojom("mojom") {
   ]
 
   webui_module_path = "chrome://resources/cr_components/customize_themes/"
-  use_typescript_sources = true
 }
 
 build_webui("build") {
