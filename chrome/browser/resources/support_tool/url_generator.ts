@@ -13,7 +13,6 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, SupportTokenGenerationResult} from './browser_proxy.js';
@@ -63,10 +62,6 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
         type: String,
         value: '',
       },
-      hideTokenButton_: {
-        type: Boolean,
-        value: () => !loadTimeData.getBoolean('enableCopyTokenButton'),
-      },
       selectAll_: {
         type: Boolean,
         value: false,
@@ -78,7 +73,6 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
   private generatedResult_: string;
   private errorMessage_: string;
   private buttonDisabled_: boolean;
-  private hideTokenButton_: boolean;
   private copiedToastMessage_: string;
   private dataCollectors_: DataCollectorItem[];
   private selectAll_: boolean;

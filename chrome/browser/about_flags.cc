@@ -7325,11 +7325,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSupportToolDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSupportTool)},
 
-    {"support-tool-copy-token-button",
-     flag_descriptions::kSupportToolCopyTokenButton,
-     flag_descriptions::kSupportToolCopyTokenButtonDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSupportToolCopyTokenButton)},
-
     {"support-tool-screenshot", flag_descriptions::kSupportToolScreenshot,
      flag_descriptions::kSupportToolScreenshotDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSupportToolScreenshot)},

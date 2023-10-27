@@ -15,7 +15,6 @@ class SupportToolTest : public WebUIMochaFocusTest {
         {
             features::kSupportTool,
             features::kSupportToolScreenshot,
-            features::kSupportToolCopyTokenButton,
         },
         {});
     set_test_loader_host(chrome::kChromeUISupportToolHost);

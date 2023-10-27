@@ -3209,10 +3209,6 @@ const char kSupportToolDescription[] =
     "Support Tool collects and exports logs to help debugging the issues. It's"
     " available in chrome://support-tool.";
 
-const char kSupportToolCopyTokenButton[] = "Support Tool Copy Token Button";
-const char kSupportToolCopyTokenButtonDescription[] =
-    "Enables the copy token button on Support Tool URL generation page.";
-
 const char kSupportToolScreenshot[] = "Support Tool Screenshot";
 const char kSupportToolScreenshotDescription[] =
     "Enables the Support Tool to capture and include a screenshot in the "

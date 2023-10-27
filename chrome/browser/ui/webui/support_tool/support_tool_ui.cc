@@ -97,9 +97,6 @@ void CreateAndAddSupportToolHTMLSource(Profile* profile, const GURL& url) {
   source->AddString("caseId", GetSupportCaseIDFromURL(url));
   source->AddBoolean("enableScreenshot", base::FeatureList::IsEnabled(
                                              features::kSupportToolScreenshot));
-  source->AddBoolean(
-      "enableCopyTokenButton",
-      base::FeatureList::IsEnabled(features::kSupportToolCopyTokenButton));
 
   source->AddLocalizedStrings(SupportToolUI::GetLocalizedStrings());
 
