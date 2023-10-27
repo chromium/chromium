@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_access_auth_timeout_handler.h"
+#include "chrome/browser/extensions/api/passwords_private/password_access_auth_timeout_handler.h"
 
 #include <utility>
 
@@ -14,7 +14,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/features.h"
 
-namespace password_manager {
+namespace extensions {
 
 PasswordAccessAuthTimeoutHandler::PasswordAccessAuthTimeoutHandler() = default;
 
@@ -47,4 +47,4 @@ void PasswordAccessAuthTimeoutHandler::OnUserReauthenticationResult(
   }
 }
 
-}  // namespace password_manager
+}  // namespace extensions

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_access_auth_timeout_handler.h"
+#include "chrome/browser/extensions/api/passwords_private/password_access_auth_timeout_handler.h"
 
 #include <utility>
 
@@ -17,8 +17,9 @@
 
 using ::testing::TestWithParam;
 using ::testing::Values;
+using password_manager::ReauthPurpose;
 
-namespace password_manager {
+namespace extensions {
 
 using MockTimeoutCallback =
     base::MockCallback<PasswordAccessAuthTimeoutHandler::TimeoutCallback>;
@@ -82,4 +83,4 @@ INSTANTIATE_TEST_SUITE_P(
                                      ReauthPurpose::IMPORT),
                      testing::Bool()));
 
-}  // namespace password_manager
+}  // namespace extensions

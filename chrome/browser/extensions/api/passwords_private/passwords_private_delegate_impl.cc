@@ -96,7 +96,6 @@ namespace {
 using password_manager::CredentialFacet;
 using password_manager::CredentialUIEntry;
 using password_manager::FetchFamilyMembersRequestStatus;
-using password_manager::PasswordAccessAuthTimeoutHandler;
 
 // The error message returned to the UI when Chrome refuses to start multiple
 // exports.

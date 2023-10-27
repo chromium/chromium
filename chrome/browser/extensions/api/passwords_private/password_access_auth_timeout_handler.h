@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCESS_AUTH_TIMEOUT_HANDLER_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCESS_AUTH_TIMEOUT_HANDLER_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORD_ACCESS_AUTH_TIMEOUT_HANDLER_H_
+#define CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORD_ACCESS_AUTH_TIMEOUT_HANDLER_H_
 
 #include "base/functional/callback.h"
 #include "base/time/clock.h"
@@ -11,15 +11,10 @@
 #include "base/timer/timer.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
 
-namespace password_manager {
+namespace extensions {
 
 // This class only records metrics and manages the timer at the end of which the
-// timeout callback is called. It does not manage authentication. It is used on
-// all platforms but iOS and Android (see
-// //ios/chrome/browser/ui/settings/reauthentication_module.* for iOS and
-// PasswordEntryEditor.java and PasswordReauthenticationFragment.java in
-// chrome/android/java/src/org/chromium/chrome/browser/preferences/password/
-// for Android).
+// timeout callback is called. It does not manage authentication.
 class PasswordAccessAuthTimeoutHandler {
  public:
   using TimeoutCallback = base::RepeatingCallback<void()>;
@@ -68,6 +63,6 @@ class PasswordAccessAuthTimeoutHandler {
   base::RetainingOneShotTimer timeout_timer_;
 };
 
-}  // namespace password_manager
+}  // namespace extensions
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCESS_AUTH_TIMEOUT_HANDLER_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORD_ACCESS_AUTH_TIMEOUT_HANDLER_H_
