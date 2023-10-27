@@ -373,6 +373,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED" desc="Text informing the user that they previously denied permission to the site">
     You previously didn't allow <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$1<ex>www.google.com</ex></ph>
   </message>
+  <message name ="IDS_PERMISSION_OFF_FOR_CHROME" desc="Text informing the user that they have turned the permission off for chrome">
+    You've turned <ph name="permission">$1<ex>camera</ex></ph> off for Chrome.
+  </message>
   <message name="IDS_CAMERA_PERMISSION_NAME_FRAGMENT" desc="Text fragment identifying the camera permission">
     camera
   </message>
@@ -382,7 +385,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT" desc="Text fragment identifying the camera and microphone permissions">
     camera and microphone
   </message>
-
+  <message name="IDS_MACOS_NAME_FRAGMENT" desc="Text fragment identifying the macOS">
+    macOS
+  </message>
   <!--Embedded permission prompts: button labels-->
   <message name="IDS_EMBEDDED_PROMPT_OK_LABEL" desc="Label used on a button that allows the user to acknowledge and close an informational dialog">
     OK
@@ -392,6 +397,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
   <message name="IDS_EMBEDDED_PROMPT_STOP_ALLOWING" desc="Label on button to stop allowing a permissions , when the user clicks on the embedded permission element but they have previously granted permission to the site">
     Stop allowing <ph name="permission">$1<ex>camera</ex></ph>
+  </message>
+  <message name="IDS_EMBEDDED_PROMPT_OPEN_SYSTEM_SETTINGS" desc="Label used on a button that on click sends the users to the system settings.">
+    Go to <ph name="operating_system">$1<ex>macOS</ex></ph> settings
   </message>
   <message name="IDS_EMBEDDED_PROMPT_CONTINUE_NOT_ALLOWING" desc="Label used on a button that to continue not allowing a permission prompt that the user has previously also not allowed for the site.">
     Continue not allowing
