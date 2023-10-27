@@ -1980,6 +1980,10 @@ static_library("test_support") {
 test("blink_platform_unittests") {
   deps = [ ":blink_platform_unittests_sources" ]
 
+  if (enable_nocompile_tests_new) {
+    deps += [ ":blink_platform_nocompile_tests" ]
+  }
+
   if (is_fuchsia) {
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/test_fonts.shard.test-cml",
@@ -1999,6 +2003,17 @@ test("blink_platform_unittests") {
   }
   if (is_ios) {
     bundle_deps = [ ":blink_platform_unittests_bundle_data" ]
+  }
+}
+
+if (enable_nocompile_tests_new) {
+  nocompile_source_set("blink_platform_nocompile_tests") {
+    sources = [ "wtf/functional_nocompile.nc" ]
+
+    deps = [
+      ":platform",
+      "//base",
+    ]
   }
 }
 
@@ -2714,26 +2729,4 @@ source_set("unit_tests") {
     "//third_party/blink/public:test_headers",
   ]
   public_deps = [ "//gpu:raster" ]
-}
-
-if (enable_nocompile_tests) {
-  nocompile_test("blink_platform_nocompile_tests") {
-    sources = [ "wtf/functional_test.nc" ]
-
-    deps = [
-      ":platform",
-      "//base",
-      "//base/test:run_all_unittests",
-      "//testing/gtest",
-    ]
-
-    # Since the nocompile test is not able to inspect the contents of
-    # include_dirs, we need to specify the v8 and PartitionAlloc include dir
-    # manually.
-    include_dirs = [
-      "//v8/include",
-      "${root_gen_dir}/base/allocator/partition_allocator/src",
-      "//base/allocator/partition_allocator/src",
-    ]
-  }
 }
