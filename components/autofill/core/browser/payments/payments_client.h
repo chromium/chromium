@@ -191,6 +191,17 @@ class PaymentsClient {
     absl::optional<AutofillErrorDialogContext> autofill_error_dialog_context;
   };
 
+  // A collection of information required to make an unmask IBAN request.
+  struct UnmaskIbanRequestDetails {
+    UnmaskIbanRequestDetails();
+    UnmaskIbanRequestDetails(const UnmaskIbanRequestDetails& other);
+    ~UnmaskIbanRequestDetails();
+
+    int billable_service_number = 0;
+    int64_t billing_customer_number = 0;
+    int64_t instrument_id;
+  };
+
   // Information required to either opt-in or opt-out a user for FIDO
   // Authentication.
   struct OptChangeRequestDetails {
@@ -471,6 +482,13 @@ class PaymentsClient {
       const UnmaskRequestDetails& request_details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               UnmaskResponseDetails&)> callback);
+
+  // Triggers a request to the Payments server to unmask an IBAN. `callback` is
+  // the callback function that is triggered when a response is received from
+  // the server and the full IBAN value is returned via callback.
+  void UnmaskIban(const UnmaskIbanRequestDetails& request_details,
+                  base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                                          const std::u16string&)> callback);
 
   // Opts-in or opts-out the user to use FIDO authentication for card unmasking
   // on this device.

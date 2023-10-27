@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/select_challenge_option_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/unmask_iban_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/upload_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/upload_iban_request.h"
@@ -175,6 +176,11 @@ PaymentsClient::UnmaskResponseDetails::operator=(UnmaskResponseDetails&&) =
 
 PaymentsClient::UnmaskResponseDetails::~UnmaskResponseDetails() = default;
 
+PaymentsClient::UnmaskIbanRequestDetails::UnmaskIbanRequestDetails() = default;
+PaymentsClient::UnmaskIbanRequestDetails::UnmaskIbanRequestDetails(
+    const UnmaskIbanRequestDetails& other) = default;
+PaymentsClient::UnmaskIbanRequestDetails::~UnmaskIbanRequestDetails() = default;
+
 PaymentsClient::OptChangeRequestDetails::OptChangeRequestDetails() = default;
 PaymentsClient::OptChangeRequestDetails::OptChangeRequestDetails(
     const OptChangeRequestDetails& other) {
@@ -294,6 +300,16 @@ void PaymentsClient::UnmaskCard(
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             PaymentsClient::UnmaskResponseDetails&)> callback) {
   IssueRequest(std::make_unique<UnmaskCardRequest>(
+      request_details,
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+      std::move(callback)));
+}
+
+void PaymentsClient::UnmaskIban(
+    const UnmaskIbanRequestDetails& request_details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const std::u16string&)> callback) {
+  IssueRequest(std::make_unique<UnmaskIbanRequest>(
       request_details,
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
       std::move(callback)));
