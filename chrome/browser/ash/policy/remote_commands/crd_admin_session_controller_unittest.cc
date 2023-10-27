@@ -283,11 +283,7 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
     ASSERT_TRUE(done_signal.Wait());
   }
 
-  void TerminateActiveSession() {
-    TestFuture<void> terminate_signal;
-    delegate().TerminateSession(terminate_signal.GetCallback());
-    ASSERT_TRUE(terminate_signal.Wait());
-  }
+  void TerminateActiveSession() { delegate().TerminateSession(); }
 
   void SimulateLoginScreenIsVisible() {
     // Notifies the observers that the login screen is visible and ensure the
@@ -601,11 +597,8 @@ TEST_F(CrdAdminSessionControllerTest,
   StartCrdHostAndBindObserver();
   EXPECT_TRUE(delegate().HasActiveSession());
 
-  TestFuture<void> terminate_session_future;
-  delegate().TerminateSession(terminate_session_future.GetCallback());
+  delegate().TerminateSession();
 
-  ASSERT_TRUE(terminate_session_future.Wait())
-      << "TerminateSession did not invoke the callback.";
   EXPECT_FALSE(delegate().HasActiveSession());
 }
 

@@ -32,7 +32,7 @@ class FakeStartCrdSessionJobDelegate : public StartCrdSessionJobDelegate {
 
   // `StartCrdSessionJobDelegate` implementation:
   bool HasActiveSession() const override;
-  void TerminateSession(base::OnceClosure callback) override;
+  void TerminateSession() override;
   void StartCrdHostAndGetCode(
       const SessionParameters& parameters,
       AccessCodeCallback success_callback,

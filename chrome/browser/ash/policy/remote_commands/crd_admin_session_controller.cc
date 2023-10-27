@@ -316,10 +316,9 @@ bool CrdAdminSessionController::HasActiveSession() const {
   return active_session_ != nullptr;
 }
 
-void CrdAdminSessionController::TerminateSession(base::OnceClosure callback) {
+void CrdAdminSessionController::TerminateSession() {
   CRD_DVLOG(3) << "Terminating CRD session";
   active_session_ = nullptr;
-  std::move(callback).Run();
 }
 
 void CrdAdminSessionController::TryToReconnect(
