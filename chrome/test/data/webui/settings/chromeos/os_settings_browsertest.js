@@ -210,11 +210,10 @@ TEST_F(
 
 [['AboutPage', 'os_about_page_tests.js'],
  ['ApnDetailDialog', 'apn_detail_dialog_test.js'],
- // TODO(crbug.com/1455866): Enable the ApnSubpage test.
- // [
- //   'ApnSubpage', 'apn_subpage_tests.js',
- //   {enabled: ['ash::features::kApnRevamp']}
- // ],
+ [
+   'ApnSubpage', 'apn_subpage_tests.js',
+   {enabled: ['ash::features::kApnRevamp']}
+ ],
  ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
  ['AppManagementManagedApps', 'app_management/managed_apps_test.js'],
  ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],

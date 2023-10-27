@@ -40,7 +40,6 @@ suite('ApnSubpageTest', function() {
 
   teardown(function() {
     return flushTasks().then(() => {
-      apnSubpage.close();
       apnSubpage.remove();
       apnSubpage = null;
       Router.getInstance().resetRouteForTesting();
