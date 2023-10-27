@@ -2578,7 +2578,6 @@ if (!is_android) {
       "../browser/ui/views/sharing/sharing_browsertest.h",
       "../browser/ui/views/side_panel/lens/lens_core_tab_side_panel_helper_browsertest.cc",
       "../browser/ui/views/side_panel/search_companion/companion_live_test.cc",
-      "../browser/ui/views/side_panel/search_companion/companion_page_browsertest.cc",
       "../browser/ui/views/tab_search_bubble_host_browsertest.cc",
       "../browser/ui/views/tabs/tab_search_button_browsertest.cc",
       "../browser/ui/views/tabs/tab_strip_browsertest.cc",
@@ -2712,6 +2711,10 @@ if (!is_android) {
 
     if (!is_fuchsia && enable_nacl) {
       sources += [ "../browser/chrome_browser_main_extra_parts_nacl_deprecation_browsertest.cc" ]
+    }
+
+    if (is_chrome_branded) {
+      sources += [ "../browser/ui/views/side_panel/search_companion/companion_page_browsertest.cc" ]
     }
 
     if (is_chrome_branded && !is_android) {
@@ -9653,7 +9656,6 @@ test("unit_tests") {
       "../browser/ui/views/side_panel/read_anything/read_anything_coordinator_unittest.cc",
       "../browser/ui/views/side_panel/read_anything/read_anything_model_unittest.cc",
       "../browser/ui/views/side_panel/side_panel_coordinator_unittest.cc",
-      "../browser/ui/views/side_panel/side_panel_toolbar_container_unittest.cc",
       "../browser/ui/views/site_data/page_specific_site_data_dialog_unittest.cc",
       "../browser/ui/views/tab_contents/chrome_web_contents_view_delegate_views_unittest.cc",
       "../browser/ui/views/tabs/color_picker_view_unittest.cc",
@@ -9738,6 +9740,9 @@ test("unit_tests") {
           "../browser/ui/webui/certificates_handler_unittest.cc",
         ]
       }
+    }
+    if (is_chrome_branded) {
+      sources += [ "../browser/ui/views/side_panel/side_panel_toolbar_container_unittest.cc" ]
     }
   }
   if (use_nss_certs) {

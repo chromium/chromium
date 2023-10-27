@@ -21,6 +21,7 @@
 namespace companion {
 
 bool IsCompanionFeatureEnabled() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!base::FeatureList::IsEnabled(lens::features::kLensStandalone)) {
     return false;
   }
@@ -30,6 +31,9 @@ bool IsCompanionFeatureEnabled() {
              features::internal::kSidePanelCompanion2) ||
          base::FeatureList::IsEnabled(
              features::internal::kCompanionEnabledByObservingExpsNavigations);
+#else
+  return false;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 bool IsCompanionAvailableForCurrentActiveTab(const Browser* browser) {
