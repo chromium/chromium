@@ -439,7 +439,9 @@ TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
   FAULT_TEST_BEGIN()
 
   // Reading from buffer should fault.
-  int* buffer0 = reinterpret_cast<int*>(buffer);
+  // Volatile prevents the compiler from eliminating the load by folding
+  // buffer0_contents == *buffer0.
+  volatile int* buffer0 = reinterpret_cast<int*>(buffer);
   int buffer0_contents = *buffer0;
   EXPECT_EQ(buffer0_contents, *buffer0);
   EXPECT_TRUE(false);
