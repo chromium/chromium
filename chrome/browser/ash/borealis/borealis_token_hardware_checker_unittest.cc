@@ -104,6 +104,13 @@ TEST(BorealisTokenHardwareCheckerTest, Skyrim) {
   EXPECT_EQ(check_skyrim(), AllowStatus::kAllowed);
 }
 
+TEST(BorealisTokenHardwareCheckerTest, Rex) {
+  // TODO(307825451): Put the real CPU here.
+  EXPECT_EQ(check("rex", "", "Fake Cpu", 8, ""), AllowStatus::kAllowed);
+  EXPECT_EQ(check("rex", "", "Fake Cpu", 4, ""),
+            AllowStatus::kHardwareChecksFailed);
+}
+
 // Procedure for adding and new token:
 //  - uncomment the below test
 //  - Fill it in with details of the board you're trying to bypass

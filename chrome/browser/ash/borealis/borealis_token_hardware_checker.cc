@@ -113,10 +113,15 @@ AllowStatus BorealisTokenHardwareChecker::BoardSpecificChecks() const {
       return AllowStatus::kAllowed;
     }
   } else if (IsBoard("rex")) {
-    if (HasNamedToken("rex", "!P$z%iOvTg,5n3t@%8m",
-                      "+Ynue2NR7pnJrI9McC5aHhcO9OEW6q2dS0kr9fQaq2Q=")) {
+    // TODO(307825451): .* allows any CPU, add the correct cpu regex once we
+    // know what that is.
+    if (HasSufficientHardware(".*")) {
+      return AllowStatus::kAllowed;
+    } else if (HasNamedToken("rex", "!P$z%iOvTg,5n3t@%8m",
+                             "+Ynue2NR7pnJrI9McC5aHhcO9OEW6q2dS0kr9fQaq2Q=")) {
       return AllowStatus::kAllowed;
     }
+    return AllowStatus::kHardwareChecksFailed;
   }
   return AllowStatus::kUnsupportedModel;
 }
