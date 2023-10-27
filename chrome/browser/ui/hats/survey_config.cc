@@ -47,6 +47,7 @@ constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
 constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
+constexpr char kHatsSurveyTriggerSettingsSecurity[] = "settings-security";
 constexpr char kHatsSurveyTriggerTrackingProtectionControlImmediate[] =
     "tracking-protection-control-immediate";
 constexpr char kHatsSurveyTriggerTrackingProtectionTreatmentImmediate[] =
@@ -167,6 +168,15 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*presupplied_trigger_id=*/absl::nullopt,
       std::vector<std::string>{"3P cookies blocked",
                                "Privacy Sandbox enabled"});
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForSecurityPage,
+      kHatsSurveyTriggerSettingsSecurity,
+      /*presupplied_trigger_id=*/
+      features::kHappinessTrackingSurveysForSecurityPageTriggerId.Get(),
+      std::vector<std::string>{},
+      std::vector<std::string>{
+          "Security Page User Action", "Safe Browsing Setting Before Trigger",
+          "Safe Browsing Setting After Trigger", "Client Channel"});
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
       kHatsSurveyTriggerPrivacyGuide);

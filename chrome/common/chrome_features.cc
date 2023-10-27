@@ -633,6 +633,19 @@ const base::FeatureParam<base::TimeDelta>
         &kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpage,
         "settings-time", base::Seconds(20)};
 
+// Enables or disables the Happiness Tracking System for Chrome security page.
+BASE_FEATURE(kHappinessTrackingSurveysForSecurityPage,
+             "HappinessTrackingSurveysForSecurityPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kHappinessTrackingSurveysForSecurityPageTime{
+        &kHappinessTrackingSurveysForSecurityPage, "security-page-time",
+        base::Seconds(15)};
+extern const base::FeatureParam<std::string>
+    kHappinessTrackingSurveysForSecurityPageTriggerId{
+        &kHappinessTrackingSurveysForSecurityPage, "security-page-trigger-id",
+        ""};
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -1139,6 +1139,12 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, FlagsDisabled) {
   RunTest("settings/security_page_test.js", "runMochaSuite('FlagsDisabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
+                       SecurityPageHappinessTrackingSurveys) {
+  RunTest("settings/security_page_test.js",
+          "runMochaSuite('SecurityPageHappinessTrackingSurveys')");
+}
+
 // TODO(crbug.com/1403969): SafeBrowsing suite is flaky on Mac.
 // TODO(crbug.com/1404109): SafeBrowsing suite is flaky on Linux and LaCrOS.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)

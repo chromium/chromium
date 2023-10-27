@@ -41,6 +41,7 @@ extern const char kHatsSurveyTriggerTrackingProtectionTreatmentImmediate[];
 extern const char kHatsSurveyTriggerTrackingProtectionControlDelayed[];
 extern const char kHatsSurveyTriggerTrackingProtectionTreatmentDelayed[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentAccept[];
+extern const char kHatsSurveyTriggerSettingsSecurity[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk[];
