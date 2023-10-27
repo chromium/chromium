@@ -288,9 +288,6 @@ ResultCode ConfigBase::AddRuleInternal(SubSystem subsystem,
       }
       break;
     }
-    case SubSystem::kProcess: {
-      return SBOX_ERROR_UNSUPPORTED;
-    }
   }
 
   return SBOX_ALL_OK;

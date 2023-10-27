@@ -28,13 +28,9 @@ enum class Desktop {
 };
 
 // Windows subsystems that can have specific rules.
-// Note: The process subsystem  (kProcess) does not evaluate the request
-// exactly like the CreateProcess API does. See the comment at the top of
-// process_thread_dispatcher.cc for more details.
 enum class SubSystem {
   kFiles,           // Creation and opening of files and pipes.
   kNamedPipes,      // Creation of named pipes.
-  kProcess,         // Creation of child processes.
   kWin32kLockdown,  // Win32K Lockdown related policy.
   kSignedBinary,    // Signed binary policy.
 };
