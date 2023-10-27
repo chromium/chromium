@@ -421,7 +421,7 @@ bool OmniboxViewIOS::OnWillChange(NSRange range, NSString* new_text) {
 
       if (new_text.length == 1 && range.location == userText.length) {
         old_range =
-            NSMakeRange(field_.text.length, field_.autocompleteText.length);
+            NSMakeRange(userText.length, field_.autocompleteText.length);
       }
     } else if (deleting_text) {
       NSString* userText = field_.text;
