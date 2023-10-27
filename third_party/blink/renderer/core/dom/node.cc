@@ -990,19 +990,17 @@ void Node::MarkSubtreeNeedsStyleRecalcForFontUpdates() {
 }
 
 bool Node::ShouldSkipMarkingStyleDirty() const {
-  if (GetComputedStyle())
-    return false;
-
-  // If we don't have a computed style, and our parent element does not have a
-  // computed style it's not necessary to mark this node for style recalc.
-  if (Element* parent = GetStyleRecalcParent())
-    return !parent || !parent->GetComputedStyle();
+  // If our parent element does not have a computed style, it's not necessary to
+  // mark this node for style recalc.
+  if (Element* parent = GetStyleRecalcParent()) {
+    return !parent->GetComputedStyle();
+  }
   // If this is the root element, and it does not have a computed style, we
   // still need to mark it for style recalc since it may change from
   // display:none. Otherwise, the node is not in the flat tree, and we can
   // skip marking it dirty.
-  auto* root_element = GetDocument().documentElement();
-  return root_element && root_element != this;
+  return !GetComputedStyle() && GetDocument().documentElement() &&
+         this != GetDocument().documentElement();
 }
 
 void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
@@ -1413,7 +1411,8 @@ void Node::DetachLayoutTree(bool performing_reattach) {
     // this Node as a StyleRecalcRoot if this detach is because the node is
     // removed from the flat tree. That is necessary because we are not allowed
     // to have a style recalc root outside the flat tree when traversing the
-    // flat tree for style recalc (see StyleRecalcRoot::RemovedFromFlatTree()).
+    // flat tree for style recalc
+    // (see StyleRecalcRoot::FlatTreePositionChanged()).
     ClearNeedsStyleRecalc();
     ClearChildNeedsStyleRecalc();
   }
@@ -3106,47 +3105,48 @@ void Node::FlatTreeParentChanged() {
   if (!isConnected())
     return;
   DCHECK(IsSlotable());
-  if (const ComputedStyle* style = GetComputedStyle()) {
+
+  const ComputedStyle* style = GetComputedStyle();
+  bool detach = false;
+  if (ShouldSkipMarkingStyleDirty()) {
+    // If we should not mark the node dirty in the new flat tree position,
+    // detach to make sure all computes styles, layout objects, and dirty
+    // flags are cleared.
+    detach = IsDirtyForStyleRecalc() || ChildNeedsStyleRecalc() || style;
+  }
+  if (!detach) {
     // We are moving a node with ensured computed style into the flat tree.
     // Clear ensured styles so that we can use IsEnsuredOutsideFlatTree() to
     // determine that we are outside the flat tree before updating the style
     // recalc root in MarkAncestorsWithChildNeedsStyleRecalc().
-    bool detach = style->IsEnsuredOutsideFlatTree();
-    if (!detach) {
-      // If the recalc parent does not have a computed style, we are either in
-      // a display:none subtree or outside the flat tree. Detach to make sure
-      // we don't unnecessarily mark for recalc or hold on to ComputedStyle or
-      // LayoutObjects in such subtrees.
-      if (Element* recalc_parent = GetStyleRecalcParent())
-        detach = !recalc_parent->GetComputedStyle();
-    }
-    if (detach)
-      DetachLayoutTree();
+    detach = style && style->IsEnsuredOutsideFlatTree();
   }
+  if (detach) {
+    StyleEngine& engine = GetDocument().GetStyleEngine();
+    StyleEngine::DetachLayoutTreeScope detach_scope(engine);
+    DetachLayoutTree();
+    engine.FlatTreePositionChanged(*this);
+  }
+
   // The node changed the flat tree position by being slotted to a new slot or
   // slotted for the first time. We need to recalc style since the inheritance
   // parent may have changed.
-  if (NeedsStyleRecalc()) {
-    // The ancestor chain may have changed. We need to make sure that the
-    // child-dirty flags are updated, but the SetNeedsStyleRecalc() call below
-    // will skip MarkAncestorsWithChildNeedsStyleRecalc() if the node was
-    // already dirty.
-    if (ShouldSkipMarkingStyleDirty()) {
-      // If set, the dirty bits should have been cleared by DetachLayoutTree
-      // above.
-      DCHECK(!ChildNeedsStyleRecalc());
-      DCHECK(!NeedsStyleRecalc());
-    } else {
+  if (!ShouldSkipMarkingStyleDirty()) {
+    if (NeedsStyleRecalc()) {
+      // The ancestor chain may have changed. We need to make sure that the
+      // child-dirty flags are updated, but the SetNeedsStyleRecalc() call below
+      // will skip MarkAncestorsWithChildNeedsStyleRecalc() if the node was
+      // already dirty.
       MarkAncestorsWithChildNeedsStyleRecalc();
+    } else {
+      SetNeedsStyleRecalc(kLocalStyleChange,
+                          StyleChangeReasonForTracing::Create(
+                              style_change_reason::kFlatTreeChange));
     }
+    // We also need to force a layout tree re-attach since the layout tree
+    // parent box may have changed.
+    SetForceReattachLayoutTree();
   }
-  SetNeedsStyleRecalc(kLocalStyleChange,
-                      StyleChangeReasonForTracing::Create(
-                          style_change_reason::kFlatTreeChange));
-  // We also need to force a layout tree re-attach since the layout tree parent
-  // box may have changed.
-  SetForceReattachLayoutTree();
-
   AddCandidateDirectionalityForSlot();
 }
 
@@ -3182,7 +3182,7 @@ void Node::RemovedFromFlatTree() {
     StyleEngine::DOMRemovalScope style_scope(engine);
     DetachLayoutTree();
   }
-  GetDocument().GetStyleEngine().RemovedFromFlatTree(*this);
+  GetDocument().GetStyleEngine().FlatTreePositionChanged(*this);
 
   // Ensure removal from accessibility cache even if it doesn't have layout.
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {

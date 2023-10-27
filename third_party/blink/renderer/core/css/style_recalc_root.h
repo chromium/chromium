@@ -16,7 +16,7 @@ class CORE_EXPORT StyleRecalcRoot : public StyleTraversalRoot {
 
  public:
   Element& RootElement() const;
-  void RemovedFromFlatTree(const Node& node);
+  void FlatTreePositionChanged(const Node& node);
   void SubtreeModified(ContainerNode& parent) final;
 
  private:

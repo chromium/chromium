@@ -3292,8 +3292,8 @@ TEST_F(StyleEngineTest, ForceReattachRecalcRootAttachShadow) {
   EXPECT_FALSE(reattach->NeedsStyleRecalc());
   EXPECT_EQ(reattach, GetStyleRecalcRoot());
 
-  // Attaching the shadow root will call RemovedFromFlatTree() on the span child
-  // of the host. The style recalc root should still be #reattach.
+  // Attaching the shadow root will call FlatTreePositionChanged() on the span
+  // child of the host. The style recalc root should still be #reattach.
   host->AttachShadowRootInternal(ShadowRootType::kOpen);
   EXPECT_EQ(reattach, GetStyleRecalcRoot());
 }
