@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/toggle_root.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -317,7 +316,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoPaused,
     kPseudoPictureInPicture,
     kPseudoPlaying,
-    kPseudoToggle,
     kPseudoXrOverlay,
     // Pseudo elements in UA ShadowRoots. Available in any stylesheets.
     kPseudoWebKitCustomElement,
@@ -450,9 +448,6 @@ class CORE_EXPORT CSSSelector {
     CHECK(has_rare_data_ && data_.rare_data_->ident_list_);
     return *data_.rare_data_->ident_list_;
   }
-  const ToggleRoot::State* ToggleValue() const {
-    return has_rare_data_ ? data_.rare_data_->toggle_value_.get() : nullptr;
-  }
   bool ContainsPseudoInsideHasPseudoClass() const {
     return has_rare_data_ ? data_.rare_data_->bits_.has_.contains_pseudo_
                           : false;
@@ -474,8 +469,6 @@ class CORE_EXPORT CSSSelector {
   void SetArgument(const AtomicString&);
   void SetSelectorList(CSSSelectorList*);
   void SetIdentList(std::unique_ptr<Vector<AtomicString>>);
-  void SetToggle(const AtomicString& name,
-                 std::unique_ptr<ToggleRoot::State>&& value);
   void SetContainsPseudoInsideHasPseudoClass();
   void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
 
@@ -632,12 +625,11 @@ class CORE_EXPORT CSSSelector {
       CSSNestingType unparsed_nesting_type_;
     } bits_;
     QualifiedName attribute_;  // Used for attribute selector
-    AtomicString argument_;    // Used for :contains, :lang, :dir, :toggle, etc.
+    AtomicString argument_;    // Used for :contains, :lang, :dir, etc.
     Member<CSSSelectorList>
         selector_list_;  // Used :is, :not, :-webkit-any, etc.
     std::unique_ptr<Vector<AtomicString>>
         ident_list_;  // Used for ::part(), :active-view-transition().
-    std::unique_ptr<ToggleRoot::State> toggle_value_;  // used for :toggle()
 
     void Trace(Visitor* visitor) const;
   };

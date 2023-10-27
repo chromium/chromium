@@ -464,11 +464,6 @@ textUnderlineOffset
 textUnderlinePosition
 textWrap
 timelineScope
-toggle
-toggleGroup
-toggleRoot
-toggleTrigger
-toggleVisibility
 top
 touchAction
 transform

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
@@ -388,14 +387,6 @@ PopoverData& ElementRareDataVector::EnsurePopoverData() {
 }
 void ElementRareDataVector::RemovePopoverData() {
   SetField(FieldId::kPopoverData, nullptr);
-}
-
-CSSToggleMap* ElementRareDataVector::GetToggleMap() const {
-  return static_cast<CSSToggleMap*>(GetField(FieldId::kToggleMap));
-}
-CSSToggleMap& ElementRareDataVector::EnsureToggleMap(Element* owner_element) {
-  DCHECK(!GetToggleMap() || GetToggleMap()->OwnerElement() == owner_element);
-  return EnsureField<CSSToggleMap>(FieldId::kToggleMap, owner_element);
 }
 
 AnchorPositionScrollData* ElementRareDataVector::GetAnchorPositionScrollData()

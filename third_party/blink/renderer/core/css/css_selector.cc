@@ -399,7 +399,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoStart:
     case kPseudoState:
     case kPseudoTarget:
-    case kPseudoToggle:
     case kPseudoTrue:
     case kPseudoUnknown:
     case kPseudoUnparsed:
@@ -575,7 +574,6 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
     {"part", CSSSelector::kPseudoPart},
     {"slotted", CSSSelector::kPseudoSlotted},
-    {"toggle", CSSSelector::kPseudoToggle},
     {"view-transition-group", CSSSelector::kPseudoViewTransitionGroup},
     {"view-transition-image-pair", CSSSelector::kPseudoViewTransitionImagePair},
     {"view-transition-new", CSSSelector::kPseudoViewTransitionNew},
@@ -650,11 +648,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   if ((match->type == CSSSelector::kPseudoSpellingError ||
        match->type == CSSSelector::kPseudoGrammarError) &&
       !RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
-  if (match->type == CSSSelector::kPseudoToggle &&
-      !RuntimeEnabledFeatures::CSSTogglesEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -876,7 +869,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoStart:
     case kPseudoState:
     case kPseudoTarget:
-    case kPseudoToggle:
     case kPseudoTrue:
     case kPseudoUnknown:
     case kPseudoUnparsed:
@@ -1024,15 +1016,6 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
       case kPseudoLang:
         builder.Append('(');
         SerializeIdentifier(Argument(), builder);
-        builder.Append(')');
-        break;
-      case kPseudoToggle:
-        builder.Append('(');
-        SerializeIdentifier(Argument(), builder);
-        if (const ToggleRoot::State* value = ToggleValue()) {
-          builder.Append(" ");
-          builder.Append(value->ToString());
-        }
         builder.Append(')');
         break;
       case kPseudoHas:
@@ -1261,13 +1244,6 @@ void CSSSelector::SetSelectorList(CSSSelectorList* selector_list) {
   data_.rare_data_->selector_list_ = selector_list;
 }
 
-void CSSSelector::SetToggle(const AtomicString& name,
-                            std::unique_ptr<ToggleRoot::State>&& value) {
-  CreateRareData();
-  data_.rare_data_->argument_ = name;
-  data_.rare_data_->toggle_value_ = std::move(value);
-}
-
 void CSSSelector::SetContainsPseudoInsideHasPseudoClass() {
   CreateRareData();
   data_.rare_data_->bits_.has_.contains_pseudo_ = true;
@@ -1328,7 +1304,6 @@ static bool ValidateSubSelector(const CSSSelector* selector) {
     case CSSSelector::kPseudoIsHtml:
     case CSSSelector::kPseudoListBox:
     case CSSSelector::kPseudoHostHasAppearance:
-    case CSSSelector::kPseudoToggle:
       // TODO(https://crbug.com/1346456): Many pseudos should probably be
       // added to this list.  The default: case below should also be removed
       // so that those adding new pseudos know they need to choose one path or

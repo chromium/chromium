@@ -84,10 +84,6 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
-#include "third_party/blink/renderer/core/dom/css_toggle.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_key_handling.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
@@ -201,8 +197,6 @@
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/toggle_trigger.h"
-#include "third_party/blink/renderer/core/style/toggle_trigger_list.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_href.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -3143,17 +3137,7 @@ const ComputedStyle* Element::StyleForLayoutObject(
     if (!context) {
       context = &EnsureDisplayLockContext();
     }
-    AtomicString toggle_visibility = style->ToggleVisibility();
-    if (!toggle_visibility.IsNull()) {
-      CSSToggle* toggle =
-          CSSToggle::FindToggleInScope(*this, toggle_visibility);
-      if (!toggle || toggle->ValueIsActive()) {
-        // The element is not in scope for a toggle, or it is in scope and
-        // the toggle is active, therefore it is visible.
-        toggle_visibility = g_null_atom;
-      }
-    }
-    context->SetRequestedState(style->ContentVisibility(), toggle_visibility);
+    context->SetRequestedState(style->ContentVisibility());
     style = context->AdjustElementStyle(style);
   }
 
@@ -5566,58 +5550,6 @@ bool Element::hasAttributeNS(const AtomicString& namespace_uri,
   return GetElementData()->Attributes().Find(q_name);
 }
 
-void Element::DefaultEventHandler(Event& event) {
-  if (event.type() == event_type_names::kDOMActivate) {
-    // IsFocusableStyleAfterUpdate() may change the result of
-    // GetComputedStyle(), but it's also potentially expensive and we only
-    // want to call it if we have a toggle-trigger.
-    if (const ComputedStyle* style_before_update = GetComputedStyle()) {
-      Node* target_node = event.target()->ToNode();
-      if (style_before_update->ToggleTrigger() &&
-          IsFocusableStyleAfterUpdate() &&
-          // TODO(https://github.com/tabatkins/css-toggle/issues/39):
-          // There seems to be agreement that the spec's current
-          // statement that toggles should not work on elements with
-          // activation behavior is too restrictive.  Pending a
-          // resolution for what the spec should say, this completely
-          // stops checking for activation behavior on the element with
-          // 'toggle-trigger', but continues to check on descendants.
-          // It's possible that we should be checking for *some*
-          // conditions (e.g., causing a navigation) on the element with
-          // 'toggle-trigger', although perhaps that's unnecessary since
-          // the page will navigate anyway.
-          (ElementTraversal::FirstAncestorOrSelf(*target_node) == this ||
-           !IsClickableControl(target_node))) {
-        if (const ComputedStyle* style = GetComputedStyle()) {
-          // FireToggleActivation might change style too, so hold a reference
-          // to toggle_triggers.
-          if (scoped_refptr<const ToggleTriggerList> toggle_triggers =
-                  style->ToggleTrigger()) {
-            for (const ToggleTrigger& trigger : toggle_triggers->Triggers()) {
-              CSSToggle::FireToggleActivation(*this, trigger);
-            }
-          }
-        }
-      }
-    }
-  } else if (event.type() == event_type_names::kKeydown) {
-    auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-    if (keyboard_event) {
-      bool handled =
-          css_toggle_key_handling::HandleKeydownEvent(this, *keyboard_event);
-      if (handled) {
-        event.SetDefaultHandled();
-        // We don't want to continue to the default handlers for base
-        // classes, because those are likely to treat the same event as
-        // scrolling the page.
-        return;
-      }
-    }
-  }
-
-  ContainerNode::DefaultEventHandler(event);
-}
-
 bool Element::DelegatesFocus() const {
   return GetShadowRoot() && GetShadowRoot()->delegatesFocus();
 }
@@ -6154,15 +6086,11 @@ bool Element::SupportsFocus() const {
   if (DelegatesFocus()) {
     return false;
   }
-  auto has_toggle_trigger = [&]() -> bool {
-    const ComputedStyle* style = GetComputedStyle();
-    return style && style->ToggleTrigger();
-  };
 
   return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
          IsRootEditableElementWithCounting(*this) ||
          IsScrollableContainerThatShouldBeKeyboardFocusable() ||
-         SupportsSpatialNavigationFocus() || has_toggle_trigger();
+         SupportsSpatialNavigationFocus();
 }
 
 bool Element::IsAutofocusable() const {
@@ -8291,10 +8219,6 @@ void Element::DidMoveToNewDocument(Document& old_document) {
   if (auto* context = GetDisplayLockContext()) {
     context->DidMoveToNewDocument(old_document);
   }
-
-  if (CSSToggleMap* css_toggle_map = GetToggleMap()) {
-    css_toggle_map->DidMoveToNewDocument(old_document);
-  }
 }
 
 void Element::UpdateNamedItemRegistration(NamedItemType type,
@@ -9170,56 +9094,10 @@ bool Element::IsInertRoot() {
 
 FocusgroupFlags Element::GetFocusgroupFlags() const {
   ExecutionContext* context = GetExecutionContext();
-
-  // Explicit flags from the focusgroup attribute take priority, when present.
-  if (RuntimeEnabledFeatures::FocusgroupEnabled(context) && HasRareData()) {
-    FocusgroupFlags flags = GetElementRareData()->GetFocusgroupFlags();
-    if (flags != FocusgroupFlags::kNone) {
-      return flags;
-    }
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled(context) || !HasRareData()) {
+    return FocusgroupFlags::kNone;
   }
-
-  // We can also have flags from inferred roles from CSS toggles.
-  if (CSSToggleInference* toggle_inference =
-          GetDocument().GetCSSToggleInference()) {
-    DCHECK(RuntimeEnabledFeatures::CSSTogglesEnabled(context));
-    switch (toggle_inference->RoleForElement(this)) {
-      case CSSToggleRole::kNone:
-      case CSSToggleRole::kAccordion:
-      case CSSToggleRole::kAccordionItem:
-      case CSSToggleRole::kAccordionItemButton:
-      case CSSToggleRole::kButton:
-      case CSSToggleRole::kButtonWithPopup:
-      case CSSToggleRole::kCheckbox:
-      case CSSToggleRole::kDisclosure:
-      case CSSToggleRole::kDisclosureButton:
-      case CSSToggleRole::kListboxItem:
-      case CSSToggleRole::kRadioItem:
-      case CSSToggleRole::kTab:
-      case CSSToggleRole::kTabPanel:
-      case CSSToggleRole::kTreeItem:
-        break;
-      case CSSToggleRole::kCheckboxGroup:
-        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
-               FocusgroupFlags::kForCSSToggleCheckbox;
-      case CSSToggleRole::kListbox:
-        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
-               FocusgroupFlags::kForCSSToggleListboxItem;
-      case CSSToggleRole::kRadioGroup:
-        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
-               FocusgroupFlags::kForCSSToggleRadioItem;
-      case CSSToggleRole::kTabContainer:
-        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
-               FocusgroupFlags::kForCSSToggleTab;
-      case CSSToggleRole::kTree:
-      case CSSToggleRole::kTreeGroup:
-        // TODO(https://crbug.com/1250716): This needs more work!
-        return FocusgroupFlags::kVertical |
-               FocusgroupFlags::kForCSSToggleTreeItem;
-    }
-  }
-
-  return FocusgroupFlags::kNone;
+  return GetElementRareData()->GetFocusgroupFlags();
 }
 
 bool Element::checkVisibility(CheckVisibilityOptions* options) const {
@@ -9628,14 +9506,6 @@ const ComputedStyle* Element::StyleForPositionFallback(unsigned index) {
     return nullptr;
   }
   return base_style->AddCachedPositionFallbackStyle(style, index);
-}
-
-CSSToggleMap* Element::GetToggleMap() {
-  return HasRareData() ? GetElementRareData()->GetToggleMap() : nullptr;
-}
-
-CSSToggleMap& Element::EnsureToggleMap() {
-  return EnsureElementRareData().EnsureToggleMap(this);
 }
 
 AnchorPositionScrollData& Element::EnsureAnchorPositionScrollData() {

@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -1622,75 +1621,6 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   return RoleFromLayoutObjectOrNode();
 }
 
-namespace {
-
-ax::mojom::blink::Role InferredCSSToggleRole(Node* node) {
-  Element* element = DynamicTo<Element>(node);
-  if (!element) {
-    return ax::mojom::blink::Role::kUnknown;
-  }
-
-  // toggle_inference is null when CSS toggles are not used in the document.
-  CSSToggleInference* toggle_inference =
-      element->GetDocument().GetCSSToggleInference();
-  if (!toggle_inference) {
-    return ax::mojom::blink::Role::kUnknown;
-  }
-
-  DCHECK(RuntimeEnabledFeatures::CSSTogglesEnabled());
-
-  switch (toggle_inference->RoleForElement(element)) {
-    case CSSToggleRole::kNone:
-      break;
-    case CSSToggleRole::kButtonWithPopup:
-      return ax::mojom::blink::Role::kPopUpButton;
-    case CSSToggleRole::kDisclosure:
-      break;
-    case CSSToggleRole::kDisclosureButton:
-      return ax::mojom::blink::Role::kButton;
-    case CSSToggleRole::kTree:
-      return ax::mojom::blink::Role::kTree;
-    case CSSToggleRole::kTreeGroup:
-      return ax::mojom::blink::Role::kGroup;
-    case CSSToggleRole::kTreeItem:
-      return ax::mojom::blink::Role::kTreeItem;
-    case CSSToggleRole::kAccordion:
-      break;
-    case CSSToggleRole::kAccordionItem:
-      return ax::mojom::blink::Role::kRegion;
-    case CSSToggleRole::kAccordionItemButton:
-      return ax::mojom::blink::Role::kButton;
-    case CSSToggleRole::kTabContainer:
-      // TODO(https://crbug.com/1250716): We should verify that using
-      // kTabList really works here, since this is a container that has
-      // both the tab list *and* the tab panels.  We should also make
-      // sure that posinset/setsize work correctly for the tabs.
-      return ax::mojom::blink::Role::kTabList;
-    case CSSToggleRole::kTab:
-      return ax::mojom::blink::Role::kTab;
-    case CSSToggleRole::kTabPanel:
-      return ax::mojom::blink::Role::kTabPanel;
-    case CSSToggleRole::kRadioGroup:
-      return ax::mojom::blink::Role::kRadioGroup;
-    case CSSToggleRole::kRadioItem:
-      return ax::mojom::blink::Role::kRadioButton;
-    case CSSToggleRole::kCheckboxGroup:
-      break;
-    case CSSToggleRole::kCheckbox:
-      return ax::mojom::blink::Role::kCheckBox;
-    case CSSToggleRole::kListbox:
-      return ax::mojom::blink::Role::kListBox;
-    case CSSToggleRole::kListboxItem:
-      return ax::mojom::blink::Role::kListBoxOption;
-    case CSSToggleRole::kButton:
-      return ax::mojom::blink::Role::kButton;
-  }
-
-  return ax::mojom::blink::Role::kUnknown;
-}
-
-}  // namespace
-
 ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
 #if DCHECK_IS_ON()
   base::AutoReset<bool> reentrancy_protector(&is_computing_role_, true);
@@ -1706,25 +1636,8 @@ ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
 
   aria_role_ = DetermineAriaRoleAttribute();
 
-  // Order of precedence is currently:
-  //   1. ARIA role
-  //   2. Inferred role from CSS Toggle inference engine
-  //   3. Native markup role
-  // but we may decide to change how the CSS Toggle inference fits in.
-  //
-  // TODO(https://crbug.com/1250716): Perhaps revisit whether there are
-  // types of elements where toggles should not work.
-
-  if (aria_role_ != ax::mojom::blink::Role::kUnknown) {
-    return aria_role_;
-  }
-
-  ax::mojom::blink::Role css_toggle_role = InferredCSSToggleRole(GetNode());
-  if (css_toggle_role != ax::mojom::blink::Role::kUnknown) {
-    return css_toggle_role;
-  }
-
-  return native_role_;
+  return aria_role_ == ax::mojom::blink::Role::kUnknown ? native_role_
+                                                        : aria_role_;
 }
 
 void AXNodeObject::AccessibilityChildrenFromAOMProperty(
@@ -1783,8 +1696,7 @@ void AXNodeObject::Init(AXObject* parent) {
 #endif
   AXObject::Init(parent);
 
-  DCHECK(role_ == native_role_ || role_ == aria_role_ ||
-         GetNode()->GetDocument().GetCSSToggleInference())
+  DCHECK(role_ == native_role_ || role_ == aria_role_)
       << "Role must be either the cached native role or cached aria role: "
       << "\n* Final role: " << role_ << "\n* Native role: " << native_role_
       << "\n* Aria role: " << aria_role_ << "\n* Node: " << GetNode();

@@ -1653,7 +1653,6 @@ class ComputedStyle final : public ComputedStyleBase {
   static unsigned EffectiveContainment(unsigned contain,
                                        unsigned container_type,
                                        EContentVisibility content_visibility,
-                                       const AtomicString& toggle_visibility,
                                        bool skips_contents) {
     unsigned effective = contain;
 
@@ -1667,7 +1666,7 @@ class ComputedStyle final : public ComputedStyleBase {
       effective |= kContainsLayout;
       effective |= kContainsBlockSize;
     }
-    if (!IsContentVisibilityVisible(content_visibility, toggle_visibility)) {
+    if (!IsContentVisibilityVisible(content_visibility)) {
       effective |= kContainsStyle;
       effective |= kContainsLayout;
       effective |= kContainsPaint;
@@ -1681,8 +1680,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   unsigned EffectiveContainment() const {
     return ComputedStyle::EffectiveContainment(
-        Contain(), ContainerType(), ContentVisibility(), ToggleVisibility(),
-        SkipsContents());
+        Contain(), ContainerType(), ContentVisibility(), SkipsContents());
   }
 
   bool ContainsStyle() const { return EffectiveContainment() & kContainsStyle; }
@@ -1729,14 +1727,12 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   static bool IsContentVisibilityVisible(
-      EContentVisibility content_visibility,
-      const AtomicString& toggle_visibility) {
-    return content_visibility == EContentVisibility::kVisible &&
-           toggle_visibility.IsNull();
+      EContentVisibility content_visibility) {
+    return content_visibility == EContentVisibility::kVisible;
   }
 
   bool IsContentVisibilityVisible() const {
-    return IsContentVisibilityVisible(ContentVisibility(), ToggleVisibility());
+    return IsContentVisibilityVisible(ContentVisibility());
   }
 
   // Interleaving roots are elements that may require layout to fully update
@@ -3000,8 +2996,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   // contain
   bool ShouldApplyAnyContainment(const Element& element) const {
     unsigned effective_containment = ComputedStyle::EffectiveContainment(
-        Contain(), ContainerType(), ContentVisibility(), ToggleVisibility(),
-        SkipsContents());
+        Contain(), ContainerType(), ContentVisibility(), SkipsContents());
     return ComputedStyle::ShouldApplyAnyContainment(element, GetDisplayStyle(),
                                                     effective_containment);
   }

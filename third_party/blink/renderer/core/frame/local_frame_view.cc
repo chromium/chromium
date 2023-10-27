@@ -2216,9 +2216,6 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   // RunScrollSnapshotClientSteps must not run more than once.
   bool should_run_scroll_snapshot_client_steps = true;
 
-  // CSS Toggle steps must not run more than once.
-  bool should_run_css_toggle_steps = true;
-
   // Run style, layout, compositing and prepaint lifecycle phases and deliver
   // resize observations if required. Resize observer callbacks/delegates have
   // the potential to dirty layout (until loop limit is reached) and therefore
@@ -2250,15 +2247,6 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     }
     bool run_more_lifecycle_phases =
         RunStyleAndLayoutLifecyclePhases(target_state);
-
-    if (RuntimeEnabledFeatures::CSSTogglesEnabled() &&
-        should_run_css_toggle_steps) {
-      should_run_css_toggle_steps = false;
-      bool needs_to_repeat_lifecycle = RunCSSToggleSteps();
-      if (needs_to_repeat_lifecycle)
-        continue;
-    }
-
     if (!run_more_lifecycle_phases)
       return;
     DCHECK(Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean);
@@ -2397,16 +2385,6 @@ bool LocalFrameView::RunScrollSnapshotClientSteps() {
         bool valid = frame_view.GetFrame().ValidateScrollSnapshotClients();
         re_run_lifecycles |= !valid;
       });
-  return re_run_lifecycles;
-}
-
-bool LocalFrameView::RunCSSToggleSteps() {
-  bool re_run_lifecycles = false;
-  ForAllNonThrottledLocalFrameViews([&re_run_lifecycles](
-                                        LocalFrameView& frame_view) {
-    re_run_lifecycles |=
-        frame_view.GetFrame().GetDocument()->SetNeedsStyleRecalcForToggles();
-  });
   return re_run_lifecycles;
 }
 

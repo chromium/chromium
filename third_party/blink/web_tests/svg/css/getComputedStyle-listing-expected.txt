@@ -364,10 +364,6 @@ text-transform: none
 text-underline-position: auto
 text-wrap: wrap
 timeline-scope: none
-toggle-group: none
-toggle-root: none
-toggle-trigger: none
-toggle-visibility: normal
 top: auto
 touch-action: auto
 transform: none

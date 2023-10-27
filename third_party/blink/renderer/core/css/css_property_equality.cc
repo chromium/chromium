@@ -726,8 +726,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GetTextUnderlinePosition() == b.GetTextUnderlinePosition();
     case CSSPropertyID::kTextWrap:
       return a.GetTextWrap() == b.GetTextWrap();
-    case CSSPropertyID::kToggleVisibility:
-      return a.ToggleVisibility() == b.ToggleVisibility();
     case CSSPropertyID::kTop:
       return a.Top() == b.Top();
     case CSSPropertyID::kOverlay:
@@ -1243,7 +1241,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kTextDecoration:
     case CSSPropertyID::kTextEmphasis:
     case CSSPropertyID::kTextSpacing:
-    case CSSPropertyID::kToggle:
     case CSSPropertyID::kTransition:
     case CSSPropertyID::kViewTimeline:
     case CSSPropertyID::kAlternativeViewTimelineWithInset:
@@ -1287,9 +1284,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kTextCombineUpright:
     case CSSPropertyID::kTextOrientation:
     case CSSPropertyID::kTimelineScope:
-    case CSSPropertyID::kToggleGroup:
-    case CSSPropertyID::kToggleRoot:
-    case CSSPropertyID::kToggleTrigger:
     case CSSPropertyID::kTransitionBehavior:
     case CSSPropertyID::kTransitionDelay:
     case CSSPropertyID::kTransitionDuration:

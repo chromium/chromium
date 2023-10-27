@@ -532,10 +532,6 @@ CSSValue* ConsumeAutospace(CSSParserTokenRange&);
 // https://drafts.csswg.org/css-text-4/#typedef-spacing-trim
 CSSValue* ConsumeSpacingTrim(CSSParserTokenRange&);
 
-CSSValue* ConsumeToggleGroup(CSSParserTokenRange&, const CSSParserContext&);
-CSSValue* ConsumeToggleSpecifier(CSSParserTokenRange&, const CSSParserContext&);
-CSSValue* ConsumeToggleTrigger(CSSParserTokenRange&, const CSSParserContext&);
-
 CSSValue* ConsumeTransformValue(CSSParserTokenRange&,
                                 const CSSParserContext&,
                                 bool use_legacy_parsing);

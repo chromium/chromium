@@ -501,8 +501,7 @@ void KeyboardEventManager::DefaultArrowEventHandler(
     return;
 
   ExecutionContext* context = frame_->GetDocument()->GetExecutionContext();
-  if ((RuntimeEnabledFeatures::FocusgroupEnabled(context) ||
-       RuntimeEnabledFeatures::CSSTogglesEnabled(context)) &&
+  if (RuntimeEnabledFeatures::FocusgroupEnabled(context) &&
       FocusgroupController::HandleArrowKeyboardEvent(event, frame_)) {
     event->SetDefaultHandled();
     return;

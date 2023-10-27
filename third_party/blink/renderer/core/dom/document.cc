@@ -127,7 +127,6 @@
 #include "third_party/blink/renderer/core/dom/beforeunload_event_listener.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
 #include "third_party/blink/renderer/core/dom/document_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -2478,42 +2477,6 @@ void Document::UpdateStyleAndLayoutForNode(const Node* node,
   // For all nodes we must have up-to-date style and have performed layout to do
   // any location-based calculation.
   UpdateStyleAndLayout(reason);
-}
-
-void Document::AddToRecalcStyleForToggle(Element* element) {
-  elements_needing_style_recalc_for_toggle_.insert(element);
-}
-
-bool Document::SetNeedsStyleRecalcForToggles() {
-  // TODO(crbug.com/1250716): We currently call this from
-  // LocalFrameView::RunCSSToggleSteps().  This is not ideal, but it produces
-  // behavior that's basically what we want, except for making
-  // getComputedStyle() produce correct results, which is hopefully fixable
-  // with future changes to PostStyleUpdateScope).  The behavior is also not
-  // yet well-defined; see https://github.com/tabatkins/css-toggle/issues/27
-  // for making this better.
-
-  if (elements_needing_style_recalc_for_toggle_.size() == 0)
-    return false;
-
-  HeapHashSet<Member<Element>> elements;
-  std::swap(elements_needing_style_recalc_for_toggle_, elements);
-
-  const auto& reason = StyleChangeReasonForTracing::CreateWithExtraData(
-      style_change_reason::kPseudoClass, style_change_extra_data::g_toggle);
-
-  for (auto element : elements) {
-    element->SetNeedsStyleRecalc(StyleChangeType::kSubtreeStyleChange, reason);
-  }
-
-  return true;
-}
-
-CSSToggleInference& Document::EnsureCSSToggleInference() {
-  if (!css_toggle_inference_) {
-    css_toggle_inference_ = MakeGarbageCollected<CSSToggleInference>(this);
-  }
-  return *css_toggle_inference_;
 }
 
 DocumentPartRoot& Document::getPartRoot() {
@@ -8821,9 +8784,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(popover_pointerdown_target_);
   visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(all_open_popovers_);
-  visitor->Trace(elements_with_css_toggles_);
-  visitor->Trace(elements_needing_style_recalc_for_toggle_);
-  visitor->Trace(css_toggle_inference_);
   visitor->Trace(document_part_root_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);

@@ -317,7 +317,6 @@
     "timeupdate",
     "timezonechange",
     "toggle",
-    "togglechange",
     "tonechange",
     "touchcancel",
     "touchend",

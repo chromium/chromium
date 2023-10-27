@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
-#include "third_party/blink/renderer/core/css/style_property_serializer.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -3977,63 +3976,6 @@ bool WebkitTextStroke::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       webkitTextStrokeShorthand(), important, context, range, properties);
-}
-
-bool Toggle::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  const CSSValue* toggle_root = css_parsing_utils::ParseLonghand(
-      CSSPropertyID::kToggleRoot, CSSPropertyID::kToggle, context, range);
-  if (!toggle_root || !range.AtEnd()) {
-    return false;
-  }
-
-  const CSSValue* toggle_trigger;
-  if (const auto* ident = DynamicTo<CSSIdentifierValue>(toggle_root)) {
-    DCHECK_EQ(ident->GetValueID(), CSSValueID::kNone);
-    toggle_trigger = CSSIdentifierValue::Create(CSSValueID::kNone);
-  } else {
-    const auto* toggle_root_list = To<CSSValueList>(toggle_root);
-    CSSValueList* toggle_trigger_list = CSSValueList::CreateCommaSeparated();
-    for (const auto& item : *toggle_root_list) {
-      CSSValueList* item_list = CSSValueList::CreateSpaceSeparated();
-      item_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
-          To<CSSCustomIdentValue>(To<CSSValueList>(item.Get())->Item(0))
-              .Value()));
-      toggle_trigger_list->Append(*item_list);
-    }
-    toggle_trigger = toggle_trigger_list;
-  }
-
-  AddProperty(CSSPropertyID::kToggleRoot, CSSPropertyID::kToggle, *toggle_root,
-              important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-              properties);
-  AddProperty(CSSPropertyID::kToggleTrigger, CSSPropertyID::kToggle,
-              *toggle_trigger, important,
-              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  return true;
-}
-
-const CSSValue* Toggle::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style) const {
-  const CSSValue* toggle_root =
-      GetCSSPropertyToggleRoot().CSSValueFromComputedStyle(style, layout_object,
-                                                           allow_visited_style);
-  const CSSValue* toggle_trigger =
-      GetCSSPropertyToggleTrigger().CSSValueFromComputedStyle(
-          style, layout_object, allow_visited_style);
-
-  if (!StylePropertySerializer::IsValidToggleShorthand(toggle_root,
-                                                       toggle_trigger)) {
-    return nullptr;
-  }
-
-  return toggle_root;
 }
 
 bool WhiteSpace::ParseShorthand(

@@ -43,8 +43,6 @@
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -3116,26 +3114,6 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
 
   if (old_style && old_style->OverflowAnchor() != StyleRef().OverflowAnchor()) {
     ClearAncestorScrollAnchors(this);
-  }
-
-  // Note: It's possible this will be moved to a particular later point within
-  // the "update the rendering" steps, and thus not belong here.
-  const auto* toggle_root = StyleRef().ToggleRoot();
-  if (toggle_root && (!old_style || !old_style->ToggleRoot() ||
-                      *toggle_root != *(old_style->ToggleRoot()))) {
-    // This element has toggle specifiers; these specifiers require that we
-    // create toggles.
-    Element* element = DynamicTo<Element>(GetNode());
-    DCHECK(element);
-    if (element) {
-      element->EnsureToggleMap().CreateToggles(toggle_root);
-    }
-  }
-
-  if (old_style &&
-      (old_style->ToggleTrigger() != StyleRef().ToggleTrigger() ||
-       old_style->ToggleVisibility() != StyleRef().ToggleVisibility())) {
-    GetDocument().EnsureCSSToggleInference().MarkNeedsRebuild();
   }
 
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() && old_style &&

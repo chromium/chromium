@@ -549,7 +549,6 @@ _CONFIG = [
             'compositor_target_property::.+',
             'cors::.+',
             'css_parsing_utils::.+',
-            'css_toggle_key_handling::.+',
             'cssvalue::.+',
             'element_locator::.+',
             'encoding::.+',

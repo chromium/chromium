@@ -1668,20 +1668,6 @@
     // Layered @import rule
     "layer",
 
-    // toggle-root
-    "group",
-    "self",
-    "cycle",
-    "cycle-on",
-
-    // toggle-trigger
-    "prev",
-    "next",
-    "set",
-
-    // toggle-visibility
-    "toggle",
-
     // color-contrast()
     "color-contrast",
     "vs",
@@ -1736,6 +1722,7 @@
     // scroll()
     "root",
     "nearest",
+    "self",
 
     // transition-behavior
     "allow-discrete",

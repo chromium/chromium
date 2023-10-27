@@ -958,8 +958,6 @@ class CORE_EXPORT LocalFrameView final
 
   bool RunScrollSnapshotClientSteps();
 
-  bool RunCSSToggleSteps();
-
   bool NotifyResizeObservers();
   bool RunResizeObserverSteps(DocumentLifecycle::LifecycleState target_state);
   void ClearResizeObserverLimit();

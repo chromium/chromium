@@ -1201,12 +1201,6 @@
       name: "CSSTextWrapPretty",
       status: "stable",
     },
-    // Support for CSS Toggles, https://tabatkins.github.io/css-toggle/
-    {
-      name: "CSSToggles",
-      status: "experimental",
-      base_feature: "none",
-    },
     {
       // Support for transitioning top layer elements out of the top layer by
       // allowing the new CSS overlay property to keep the element in the top

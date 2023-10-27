@@ -79,7 +79,6 @@ class ContainerQueryEvaluator;
 class CSSPropertyName;
 class CSSPropertyValueSet;
 class CSSStyleDeclaration;
-class CSSToggleMap;
 class CustomElementDefinition;
 class CustomElementRegistry;
 class DOMRect;
@@ -576,8 +575,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // While the owner document is parsed, this function is called after all
   // attributes in a start tag were added to the element.
   virtual void ParseAttribute(const AttributeModificationParams&);
-
-  void DefaultEventHandler(Event&) override;
 
   virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
 
@@ -1240,11 +1237,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsDocumentElement() const;
 
   bool IsReplacedElementRespectingCSSOverflow() const;
-
-  CSSToggleMap* toggles() { return &EnsureToggleMap(); }
-
-  CSSToggleMap* GetToggleMap();
-  CSSToggleMap& EnsureToggleMap();
 
   void RemovePopoverData();
   PopoverData* EnsurePopoverData();

@@ -134,7 +134,6 @@ class Attr;
 class BeforeUnloadEventListener;
 class CDATASection;
 class CSSStyleSheet;
-class CSSToggleInference;
 class CanvasFontCache;
 class CheckPseudoHasCacheScope;
 class ChromeClient;
@@ -1584,20 +1583,6 @@ class CORE_EXPORT Document : public ContainerNode,
   }
   void SetPopoverPointerdownTarget(const HTMLElement*);
 
-  HeapHashSet<WeakMember<Element>>& ElementsWithCSSToggles() {
-    return elements_with_css_toggles_;
-  }
-  // Add an element to the set of elements that, because of CSS toggle
-  // creation, need style recalc done later.
-  void AddToRecalcStyleForToggle(Element* element);
-  // Call SetNeedsStyleRecalc for elements from AddToRecalcStyleForToggle;
-  // return whether any calls were made.
-  bool SetNeedsStyleRecalcForToggles();
-  CSSToggleInference* GetCSSToggleInference() {
-    return css_toggle_inference_.Get();
-  }
-  CSSToggleInference& EnsureCSSToggleInference();
-
   // https://crbug.com/1453291
   // The DOM Parts API:
   // https://github.com/WICG/webcomponents/blob/gh-pages/proposals/DOM-Parts.md.
@@ -2509,14 +2494,6 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapHashSet<Member<HTMLElement>> popovers_waiting_to_hide_;
   // A set of all open popovers, of all types.
   HeapHashSet<Member<HTMLElement>> all_open_popovers_;
-
-  // Elements that have CSS Toggles.
-  HeapHashSet<WeakMember<Element>> elements_with_css_toggles_;
-  // Elements that need to be restyled because a toggle was created on them,
-  // or a prior sibling, during the previous restyle.
-  HeapHashSet<Member<Element>> elements_needing_style_recalc_for_toggle_;
-  // The inference engine for CSS toggles.
-  Member<CSSToggleInference> css_toggle_inference_;
 
   Member<DocumentPartRoot> document_part_root_;
 

@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_scope_data.h"
-#include "third_party/blink/renderer/core/dom/css_toggle.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -1977,29 +1976,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoRelativeAnchor:
       DCHECK(context.relative_anchor_element);
       return context.relative_anchor_element == &element;
-    case CSSSelector::kPseudoToggle: {
-      using State = ToggleRoot::State;
-
-      const AtomicString& name = selector.Argument();
-      const State* value = selector.ToggleValue();
-
-      CSSToggle* toggle = CSSToggle::FindToggleInScope(element, name);
-      // An element matches :toggle() if the element is in scope for a toggle
-      // with the name given by <custom-ident>, and ...
-      if (!toggle) {
-        return false;
-      }
-
-      if (value) {
-        // ... either the toggle’s value matches the provided <toggle-value>,
-        // ...
-        return toggle->ValueMatches(*value);
-      } else {
-        // ... or the <toggle-value> is omitted and the toggle is in any
-        // active value.
-        return !toggle->ValueMatches(State(0));
-      }
-    }
     case CSSSelector::kPseudoUnparsed:
       // Only kept around for parsing; can never match anything
       // (because we don't know what it's supposed to mean).

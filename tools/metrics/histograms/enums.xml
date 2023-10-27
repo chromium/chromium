@@ -71936,10 +71936,10 @@ Called by update_use_counter_css.py.-->
   <int value="712" label="view-transition-name"/>
   <int value="713" label="object-view-box"/>
   <int value="714" label="object-overflow"/>
-  <int value="715" label="toggle-group"/>
-  <int value="716" label="toggle-root"/>
-  <int value="717" label="toggle-trigger"/>
-  <int value="718" label="toggle"/>
+  <int value="715" label="toggle-group (obsolete)"/>
+  <int value="716" label="toggle-root (obsolete)"/>
+  <int value="717" label="toggle-trigger (obsolete)"/>
+  <int value="718" label="toggle (obsolete)"/>
   <int value="719" label="anchor-name"/>
   <int value="720" label="position-fallback"/>
   <int value="721" label="anchor-scroll (obsolete)"/>
@@ -71953,7 +71953,7 @@ Called by update_use_counter_css.py.-->
   <int value="729" label="view-timeline-axis"/>
   <int value="730" label="view-timeline-inset"/>
   <int value="731" label="view-timeline-name"/>
-  <int value="732" label="toggle-visibility"/>
+  <int value="732" label="toggle-visibility (obsolete)"/>
   <int value="733" label="initial-letter"/>
   <int value="734" label="hyphenate-limit-chars"/>
   <int value="735" label="animation-delay-start"/>
