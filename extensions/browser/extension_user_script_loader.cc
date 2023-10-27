@@ -648,28 +648,31 @@ void ExtensionUserScriptLoader::AddDynamicScripts(
     std::unique_ptr<UserScriptList> scripts,
     std::set<std::string> persistent_script_ids,
     DynamicScriptsModifiedCallback callback) {
-  auto scripts_metadata = std::make_unique<UserScriptList>();
-  for (const std::unique_ptr<UserScript>& script : *scripts) {
-    // Only proceed with adding scripts that the extension still intends to add.
-    // This guards again an edge case where scripts registered by an API call
-    // are quickly unregistered.
-    if (base::Contains(pending_dynamic_script_ids_, script->id())) {
-      // TODO(crbug.com/1496555): This results in an additional copy being
-      // stored in the browser for each of these scripts. Optimize the usage of
-      // inline code.
-      scripts_metadata->push_back(CopyDynamicScriptInfo(*script));
-    }
-  }
+  // Only proceed with adding scripts that the extension still intends to add.
+  // This guards again an edge case where scripts registered by an API call
+  // are quickly unregistered.
+  base::EraseIf(*scripts, [pending_ids = this->pending_dynamic_script_ids_](
+                              const std::unique_ptr<UserScript>& script) {
+    return !base::Contains(pending_ids, script->id());
+  });
 
-  if (scripts_metadata->empty()) {
+  if (scripts->empty()) {
     std::move(callback).Run(/*error=*/absl::nullopt);
     return;
   }
 
+  auto scripts_to_add = std::make_unique<UserScriptList>();
+  for (const auto& script : *scripts) {
+    // TODO(crbug.com/1496555): This results in an additional copy being
+    // stored in the browser for each of these scripts. Optimize the usage of
+    // inline code.
+    scripts_to_add->push_back(CopyDynamicScriptInfo(*script));
+  }
+
   AddScripts(
-      std::move(scripts),
+      std::move(scripts_to_add),
       base::BindOnce(&ExtensionUserScriptLoader::OnDynamicScriptsAdded,
-                     weak_factory_.GetWeakPtr(), std::move(scripts_metadata),
+                     weak_factory_.GetWeakPtr(), std::move(scripts),
                      std::move(persistent_script_ids), std::move(callback)));
 }
 

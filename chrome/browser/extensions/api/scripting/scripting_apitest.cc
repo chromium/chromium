@@ -166,6 +166,92 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptsMainWorld) {
       << message_;
 }
 
+// Unregisters a pending script and verifies that the script is unregistered
+// and doesn't inject.
+// Regression test for https://crbug.com/1496907.
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
+                       RapidDynamicContentScriptRegistrationAndUnregistration) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["scripting"],
+           "host_permissions": ["*://example.com/*"]
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function registerScripts() {
+             const scripts =
+                 [
+                   {
+                     id: 'script_1',
+                     matches: ['http://example.com/*'],
+                     js: ['script1.js'],
+                     runAt: 'document_end',
+                   },
+                   {
+                     id: 'script_2',
+                     matches: ['http://example.com/*'],
+                     js: ['script2.js'],
+                     runAt: 'document_end',
+                   }
+                 ];
+
+             // Call to register the two scripts, then immediately (before
+             // registration is complete) unregister script 1.
+             const registered =
+                 chrome.scripting.registerContentScripts(scripts);
+             const unregistered =
+                 chrome.scripting.unregisterContentScripts({ids: ['script_1']});
+             await Promise.allSettled([registered, unregistered]);
+
+             // Only script 2 should still be registered.
+             const registeredScripts =
+                 await chrome.scripting.getRegisteredContentScripts();
+             chrome.test.assertEq(['script_2'],
+                                  registeredScripts.map(script => script.id));
+
+             chrome.test.succeed();
+         }]);)";
+  static constexpr char kScript1Js[] =
+      R"(var div = document.createElement('div');
+         div.id = 'injected_1';
+         document.body.appendChild(div);)";
+  static constexpr char kScript2Js[] =
+      R"(console.warn('injectory');var div = document.createElement('div');
+         div.id = 'injected_2';
+         document.body.appendChild(div);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("script1.js"), kScript1Js);
+  test_dir.WriteFile(FILE_PATH_LITERAL("script2.js"), kScript2Js);
+
+  // The extension registers two scripts and then immediately unregistered
+  // the first; it also verifies the API indicates only the second script
+  // is still registered.
+  ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  // Verify that only the second script injects (i.e., that the first script
+  // really was unregistered). Regression test for https://crbug.com/1496907.
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  content::RenderFrameHost* new_frame =
+      ui_test_utils::NavigateToURL(browser(), url);
+
+  static constexpr char kGetInjectedIds[] =
+      R"(const divs = document.body.getElementsByTagName('div');
+         JSON.stringify(Array.from(divs).map(div => div.id));)";
+
+  EXPECT_EQ(R"(["injected_2"])", content::EvalJs(new_frame, kGetInjectedIds));
+}
+
 // Test that if an extension with persistent scripts is quickly unloaded while
 // these scripts are being fetched, requests that wait on that extension's
 // script load will be unblocked. Regression for crbug.com/1250575
