@@ -217,7 +217,7 @@ enum NvmeSelfTestTypeEnum {
 // please refer to the EC firmware.
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable, Extensible, RenamedFrom="ash.cros_healthd.mojom.LedName"]
+[Stable, Extensible]
 enum DEPRECATED_LedName {
   // The default value is for backward compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -231,7 +231,7 @@ enum DEPRECATED_LedName {
 // Enumeration of each possible supported LED colors.
 //
 // NextMinVersion: 1, NextIndex: 7
-[Stable, Extensible, RenamedFrom="ash.cros_healthd.mojom.LedColor"]
+[Stable, Extensible]
 enum DEPRECATED_LedColor {
   // The default value is for backward compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -246,7 +246,7 @@ enum DEPRECATED_LedColor {
 // Replier interface for LED lit up routine.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable, RenamedFrom="ash.cros_healthd.mojom.LedLitUpRoutineReplier"]
+[Stable]
 interface DEPRECATED_LedLitUpRoutineReplier {
   // Returns whether the actual LED color matches the expected color.
   //
