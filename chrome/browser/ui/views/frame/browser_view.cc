@@ -802,6 +802,17 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return true;
   }
 
+  int GetExtraInfobarOffset() const override {
+#if BUILDFLAG(IS_MAC)
+    if (browser_view_->UsesImmersiveFullscreenMode() &&
+        browser_view_->immersive_mode_controller()->IsEnabled()) {
+      return browser_view_->immersive_mode_controller()
+          ->GetExtraInfobarOffset();
+    }
+#endif
+    return 0;
+  }
+
  private:
   raw_ptr<BrowserView> browser_view_;
 };

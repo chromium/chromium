@@ -102,6 +102,7 @@ class BridgedNativeWidgetHostDummy
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override {}
   void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount) override {
   }
+  void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override {}
   void DoDialogButtonAction(ui::DialogButton button) override {}
   void OnFocusWindowToolbar() override {}
   void SetRemoteAccessibilityTokens(
@@ -1299,6 +1300,13 @@ void NativeWidgetMacNSWindowHost::OnImmersiveFullscreenMenuBarRevealChanged(
   if (immersive_mode_reveal_client_) {
     immersive_mode_reveal_client_->OnImmersiveModeMenuBarRevealChanged(
         reveal_amount);
+  }
+}
+void NativeWidgetMacNSWindowHost::OnAutohidingMenuBarHeightChanged(
+    int menu_bar_height) {
+  if (immersive_mode_reveal_client_) {
+    immersive_mode_reveal_client_->OnAutohidingMenuBarHeightChanged(
+        menu_bar_height);
   }
 }
 

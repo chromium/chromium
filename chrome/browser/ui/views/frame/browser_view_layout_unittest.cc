@@ -109,6 +109,7 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   bool IsWindowControlsOverlayEnabled() const override { return false; }
   void UpdateWindowControlsOverlay(const gfx::Rect& rect) const override {}
   bool ShouldLayoutTabStrip() const override { return true; }
+  int GetExtraInfobarOffset() const override { return 0; }
 
  private:
   bool should_draw_tab_strip_ = true;
@@ -151,6 +152,7 @@ class MockImmersiveModeController : public ImmersiveModeController {
   bool ShouldStayImmersiveAfterExitingFullscreen() override { return true; }
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override {}
   int GetMinimumContentOffset() const override { return 0; }
+  int GetExtraInfobarOffset() const override { return 0; }
 };
 
 }  // anonymous namespace

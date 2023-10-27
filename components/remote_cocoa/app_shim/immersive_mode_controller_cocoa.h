@@ -148,6 +148,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
 
   bool is_toolbar_revealed_ = false;
 
+  int menu_bar_height_ = 0;
+
   mojom::ToolbarVisibilityStyle last_used_style_ =
       mojom::ToolbarVisibilityStyle::kAutohide;
 

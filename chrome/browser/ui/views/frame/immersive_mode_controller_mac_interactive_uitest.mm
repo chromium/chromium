@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/find_bar/find_bar_host_unittest_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -26,6 +27,22 @@
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
+
+class ScopedAlwaysShowToolbar {
+ public:
+  ScopedAlwaysShowToolbar(Browser* browser, bool always_show) {
+    prefs_ = browser->profile()->GetPrefs();
+    original_ = prefs_->GetBoolean(prefs::kShowFullscreenToolbar);
+    prefs_->SetBoolean(prefs::kShowFullscreenToolbar, always_show);
+  }
+  ~ScopedAlwaysShowToolbar() {
+    prefs_->SetBoolean(prefs::kShowFullscreenToolbar, original_);
+  }
+
+ private:
+  raw_ptr<PrefService> prefs_;
+  bool original_;
+};
 
 class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
  public:
@@ -103,42 +120,70 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        MinimumContentOffset) {
   chrome::DisableFindBarAnimationsDuringTesting(true);
 
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  bool original_always_show = prefs->GetBoolean(prefs::kShowFullscreenToolbar);
-
-  prefs->SetBoolean(prefs::kShowFullscreenToolbar, false);
-
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ImmersiveModeController* controller =
       browser_view->immersive_mode_controller();
   controller->SetEnabled(true);
-  EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
-
   {
-    views::NamedWidgetShownWaiter shown_waiter(
-        views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
-    chrome::Find(browser());
-    std::ignore = shown_waiter.WaitIfNeededAndGet();
-    EXPECT_GT(controller->GetMinimumContentOffset(), 0);
-  }
+    ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
+    EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
 
-  chrome::CloseFind(browser());
-  EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
+    {
+      views::NamedWidgetShownWaiter shown_waiter(
+          views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+      chrome::Find(browser());
+      std::ignore = shown_waiter.WaitIfNeededAndGet();
+      EXPECT_GT(controller->GetMinimumContentOffset(), 0);
+    }
 
-  // Now, with "Always Show..." on
-  prefs->SetBoolean(prefs::kShowFullscreenToolbar, true);
-  {
-    views::NamedWidgetShownWaiter shown_waiter(
-        views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
-    chrome::Find(browser());
-    std::ignore = shown_waiter.WaitIfNeededAndGet();
+    chrome::CloseFind(browser());
     EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
   }
-  chrome::CloseFind(browser());
-  EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
-
-  // Reset the pref.
-  prefs->SetBoolean(prefs::kShowFullscreenToolbar, original_always_show);
-
+  {
+    // Now, with "Always Show..." on
+    ScopedAlwaysShowToolbar scoped_always_show(browser(), true);
+    {
+      views::NamedWidgetShownWaiter shown_waiter(
+          views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+      chrome::Find(browser());
+      std::ignore = shown_waiter.WaitIfNeededAndGet();
+      EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
+    }
+    chrome::CloseFind(browser());
+    EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
+  }
   chrome::DisableFindBarAnimationsDuringTesting(false);
+}
+
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       ExtraInfobarOffset) {
+  ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ImmersiveModeControllerMac* controller =
+      reinterpret_cast<ImmersiveModeControllerMac*>(
+          browser_view->immersive_mode_controller());
+  controller->SetEnabled(true);
+
+  controller->OnImmersiveModeMenuBarRevealChanged(0);
+  controller->OnAutohidingMenuBarHeightChanged(0);
+  EXPECT_EQ(controller->GetExtraInfobarOffset(), 0);
+
+  controller->OnImmersiveModeMenuBarRevealChanged(0.5);
+  int half_revealed = controller->GetExtraInfobarOffset();
+  EXPECT_GT(half_revealed, 0);
+
+  controller->OnImmersiveModeMenuBarRevealChanged(1);
+  int revealed = controller->GetExtraInfobarOffset();
+  EXPECT_EQ(revealed, half_revealed * 2);
+
+  // Now with non-zero menubar.
+  controller->OnAutohidingMenuBarHeightChanged(30);
+  EXPECT_EQ(controller->GetExtraInfobarOffset(), revealed + 30);
+
+  controller->OnImmersiveModeMenuBarRevealChanged(0.5);
+  EXPECT_EQ(controller->GetExtraInfobarOffset(), half_revealed + 15);
+
+  controller->OnImmersiveModeMenuBarRevealChanged(0);
+  EXPECT_EQ(controller->GetExtraInfobarOffset(), 0);
 }

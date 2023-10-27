@@ -1033,6 +1033,11 @@ void NativeWidgetNSWindowBridge::OnImmersiveFullscreenMenuBarRevealChanged(
   host_->OnImmersiveFullscreenMenuBarRevealChanged(reveal_amount);
 }
 
+void NativeWidgetNSWindowBridge::OnAutohidingMenuBarHeightChanged(
+    int menu_bar_height) {
+  host_->OnAutohidingMenuBarHeightChanged(menu_bar_height);
+}
+
 void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
   can_go_back_ = can_go_back;
 }

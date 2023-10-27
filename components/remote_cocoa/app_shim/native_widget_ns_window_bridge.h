@@ -310,6 +310,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // menubar and the browser window traffic lights.
   void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount);
 
+  // Called by the ImmersiveModeController at the end of fullscreen transition
+  // with the height of the menu bar if it autohides, or 0 if it doesn't.
+  void OnAutohidingMenuBarHeightChanged(int menu_bar_height);
+
  private:
   friend class views::test::BridgedNativeWidgetTestApi;
 

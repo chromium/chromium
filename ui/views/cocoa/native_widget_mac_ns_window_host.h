@@ -334,6 +334,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void OnWindowParentChanged(uint64_t new_parent_id) override;
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override;
   void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount) override;
+  void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override;
   void DoDialogButtonAction(ui::DialogButton button) override;
   bool GetDialogButtonInfo(ui::DialogButton type,
                            bool* button_exists,

@@ -16,6 +16,7 @@ class VIEWS_EXPORT ImmersiveModeRevealClient {
 
   virtual void OnImmersiveModeToolbarRevealChanged(bool is_revealed) = 0;
   virtual void OnImmersiveModeMenuBarRevealChanged(float reveal_amount) = 0;
+  virtual void OnAutohidingMenuBarHeightChanged(int menu_bar_height) = 0;
 };
 
 }  // namespace views
