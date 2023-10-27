@@ -570,7 +570,7 @@ BASE_FEATURE(kDeprecateOldKeyboardShortcutsAccelerator,
 
 // Adds a desk button to the shelf that the user can use to navigate between
 // desks.
-BASE_FEATURE(kDeskButton, "DeskButton", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDeskButton, "DeskButton", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Sync for desk templates on ChromeOS.
 BASE_FEATURE(kDeskTemplateSync,
