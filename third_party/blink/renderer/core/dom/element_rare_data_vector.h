@@ -110,7 +110,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void SetField(FieldId field_id, ElementRareDataField* field);
 
   HeapVector<Member<ElementRareDataField>> fields_;
-  using BitfieldType = uint64_t;
+  using BitfieldType = uint32_t;
   BitfieldType fields_bitfield_;
   static_assert(sizeof(fields_bitfield_) * 8 >=
                     static_cast<unsigned>(FieldId::kNumFields),
