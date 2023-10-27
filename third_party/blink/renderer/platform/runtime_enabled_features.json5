@@ -1317,6 +1317,9 @@
       status: "stable",
     },
     {
+      // TODO(crbug.com/1396384) This is being disabled, very slowly, via
+      // Finch over 119 and 120. For now, it is enabled in code, and will be
+      // removed from code starting in M121, assuming things go well.
       name: "DeprecatedNonStreamingDeclarativeShadowDOM",
       status: "stable",
     },
