@@ -63,7 +63,7 @@ const base::TimeDelta kMinProfileAge = base::Days(7);
 // not have used Chrome sufficiently for us to auto-enable HFM.
 const base::FeatureParam<int> kMinTotalEngagementPointsForTypicallySecureUser{
     &features::kHttpsFirstModeV2ForTypicallySecureUsers,
-    "min-total-site-engagement-score", 25};
+    "min-total-site-engagement-score", 50};
 
 namespace {
 
