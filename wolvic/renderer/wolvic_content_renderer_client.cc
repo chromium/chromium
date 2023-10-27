@@ -6,6 +6,8 @@
 
 #include "components/cdm/renderer/key_system_support_update.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
+#include "wolvic/renderer/browser_exposed_renderer_interfaces.h"
 
 namespace wolvic {
 
@@ -20,6 +22,13 @@ void WolvicContentRendererClient::GetSupportedKeySystems(
 
 void WolvicContentRendererClient::RenderThreadStarted() {
   visited_link_reader_ = std::make_unique<visitedlink::VisitedLinkReader>();
+}
+
+void WolvicContentRendererClient::ExposeInterfacesToBrowser(mojo::BinderMap* binders) {
+  // NOTE: Do not add binders directly within this method. Instead, modify the
+  // definition of |ExposeRendererInterfacesToBrowser()| to ensure security
+  // review coverage.
+  ExposeRendererInterfacesToBrowser(this, binders);
 }
 
 uint64_t WolvicContentRendererClient::VisitedLinkHash(const char* canonical_url,

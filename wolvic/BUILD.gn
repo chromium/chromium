@@ -56,6 +56,8 @@ shared_library("libcontent_native") {
     "browser/vr/wvr_thread.h",
     "browser/youtube/youtube_url_loader_request_interceptor.cc",
     "browser/youtube/youtube_url_loader_request_interceptor.h",
+    "renderer/browser_exposed_renderer_interfaces.cc",
+    "renderer/browser_exposed_renderer_interfaces.h",
     "renderer/wolvic_content_renderer_client.cc",
     "renderer/wolvic_content_renderer_client.h",
     "wolvic_browser_context.cc",
