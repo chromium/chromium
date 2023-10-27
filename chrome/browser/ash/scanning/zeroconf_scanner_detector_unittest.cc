@@ -37,6 +37,7 @@ MATCHER_P(ScannerIsEqual, expected_scanner, "") {
   return arg.display_name == expected_scanner.display_name &&
          arg.manufacturer == expected_scanner.manufacturer &&
          arg.model == expected_scanner.model &&
+         arg.uuid == expected_scanner.uuid && arg.pdl == expected_scanner.pdl &&
          arg.device_names == expected_scanner.device_names &&
          arg.ip_addresses == expected_scanner.ip_addresses;
 }
@@ -113,11 +114,20 @@ class ScannerBuilder {
     rs_ = rs;
     return *this;
   }
+  ScannerBuilder& WithUuid(const std::string& uuid) {
+    uuid_ = uuid;
+    return *this;
+  }
+  ScannerBuilder& WithPdl(const std::vector<std::string>& pdl) {
+    pdl_ = pdl;
+    return *this;
+  }
   Scanner Build() {
     const net::IPAddress ip_address = GetIPAddressFor(name_);
     const int port = GetPortFor(name_);
-    auto scanner = CreateSaneScanner(name_, service_type_, manufacturer_,
-                                     model_, rs_, ip_address, port);
+    auto scanner =
+        CreateSaneScanner(name_, service_type_, manufacturer_, model_, uuid_,
+                          rs_, pdl_, ip_address, port);
     CHECK(scanner.has_value());
     return scanner.value();
   }
@@ -127,7 +137,9 @@ class ScannerBuilder {
   std::string service_type_;
   std::string manufacturer_;
   std::string model_;
+  std::string uuid_;
   absl::optional<std::string> rs_;
+  std::vector<std::string> pdl_;
 };
 
 // Merges all of the Scanners in |scanners| into a single Scanner. Used to
@@ -616,6 +628,48 @@ TEST_F(ZeroconfScannerDetectorTest, MetadataUsbTyMfgMdl) {
   std::vector<Scanner> expected_scanners = {
       ScannerBuilder("Scanner1", ZeroconfScannerDetector::kEsclServiceType)
           .WithManufacturerAndModel("The Manufacturer", "Model 123")
+          .Build()};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Tests that metadata with UUID works.
+TEST_F(ZeroconfScannerDetectorTest, MetadataUuid) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      std::vector<std::string>{"UUID=12345-67890"}));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {
+      ScannerBuilder("Scanner1", ZeroconfScannerDetector::kEsclServiceType)
+          .WithUuid("12345-67890")
+          .Build()};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Tests that metadata with uuid works.
+TEST_F(ZeroconfScannerDetectorTest, MetadataUuidLowercase) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      std::vector<std::string>{"uuid=12345-67890"}));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {
+      ScannerBuilder("Scanner1", ZeroconfScannerDetector::kEsclServiceType)
+          .WithUuid("12345-67890")
+          .Build()};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Tests that metadata with PDL works.
+TEST_F(ZeroconfScannerDetectorTest, MetadataPdl) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kEsclServiceType,
+      std::vector<std::string>{"pdl=pdl-1,pdl-2"}));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {
+      ScannerBuilder("Scanner1", ZeroconfScannerDetector::kEsclServiceType)
+          .WithPdl({"pdl-1", "pdl-2"})
           .Build()};
   EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
 }

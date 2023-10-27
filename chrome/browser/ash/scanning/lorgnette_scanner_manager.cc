@@ -463,10 +463,12 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
       SecureScannerFilter secure_only) {
     std::vector<lorgnette::ScannerInfo> retval;
 
-    // TODO(nmuggli): Scanner class should get updated to include this.
-    // ParsedMetadata in zeroconf_scanner_detector.cc should be updated to look
-    // for uuid key.
-    const std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+    // All ScannerInfo objects created from this scanner need to have the same
+    // UUID.  If the scanner does not have a UUID, generate one to use.
+    const std::string uuid =
+        scanner.uuid.empty()
+            ? base::Uuid::GenerateRandomV4().AsLowercaseString()
+            : scanner.uuid;
 
     for (const auto& [protocol, device_names] : scanner.device_names) {
       for (const ScannerDeviceName& device_name : device_names) {
@@ -508,9 +510,8 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
         info.set_device_uuid(uuid);
         info.set_connection_type(connection_type);
         info.set_secure(secure);
-        // TODO(nmuggli): Scanner class should get updated to include this.
-        // ParsedMetadata in zeroconf_scanner_detector.cc should be updated to
-        // look for pdl key.
+        // TODO(b/308191406): SANE backend only supports JPG and PNG, so
+        // hardcode those for now.
         info.add_image_format("image/jpeg");
         info.add_image_format("image/png");
         if (ShouldIncludeScanner(info, local_only, secure_only)) {
