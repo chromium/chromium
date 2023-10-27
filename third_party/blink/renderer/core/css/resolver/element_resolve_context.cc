@@ -34,12 +34,12 @@ ElementResolveContext::ElementResolveContext(Element& element)
       element_link_state_(
           element.GetDocument().GetVisitedLinkState().DetermineLinkState(
               element)) {
-  parent_node_ = LayoutTreeBuilderTraversal::Parent(element);
-  layout_parent_ = LayoutTreeBuilderTraversal::LayoutParent(element);
+  parent_element_ = LayoutTreeBuilderTraversal::ParentElement(element);
+  layout_parent_ = LayoutTreeBuilderTraversal::LayoutParentElement(element);
 
-  if (auto* document_element = element.GetDocument().documentElement()) {
-    if (element != document_element) {
-      root_element_style_ = document_element->GetComputedStyle();
+  if (const Element* root_element = element.GetDocument().documentElement()) {
+    if (element != root_element) {
+      root_element_style_ = root_element->GetComputedStyle();
     }
   }
 }

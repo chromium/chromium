@@ -90,8 +90,8 @@ class CORE_EXPORT SelectorFilter {
   void PushParent(Element& parent);
   void PopParent(Element& parent);
 
-  bool ParentStackIsConsistent(const ContainerNode* parent_node) const {
-    return !parent_stack_.empty() && parent_stack_.back() == parent_node;
+  bool ParentStackIsConsistent(const Element* parent) const {
+    return !parent_stack_.empty() && parent_stack_.back() == parent;
   }
 
   template <unsigned maximumIdentifierCount>

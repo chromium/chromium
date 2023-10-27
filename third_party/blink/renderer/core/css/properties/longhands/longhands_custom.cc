@@ -1889,7 +1889,7 @@ void Color::ApplyValue(StyleResolverState& state,
     StyleColor color = StyleBuilderConverter::ConvertStyleColor(state, value);
     if (color.IsUnresolvedColorMixFunction()) {
       color = StyleColor(color.GetUnresolvedColorMix().Resolve(
-          state.ParentNode()->ComputedStyleRef().Color().GetColor()));
+          state.ParentStyle()->Color().GetColor()));
     }
     builder.SetColor(color);
   }
@@ -3791,7 +3791,7 @@ void InternalVisitedColor::ApplyValue(StyleResolverState& state,
         StyleBuilderConverter::ConvertStyleColor(state, value, true);
     if (color.IsUnresolvedColorMixFunction()) {
       color = StyleColor(color.GetUnresolvedColorMix().Resolve(
-          state.ParentNode()->ComputedStyleRef().Color().GetColor()));
+          state.ParentStyle()->Color().GetColor()));
     }
     builder.SetInternalVisitedColor(color);
   }
@@ -6498,12 +6498,6 @@ const CSSValue* Position::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return CSSIdentifierValue::Create(style.PositionInternal());
-}
-
-void Position::ApplyInherit(StyleResolverState& state) const {
-  if (!state.ParentNode()->IsDocumentNode()) {
-    state.StyleBuilder().SetPosition(state.ParentStyle()->GetPosition());
-  }
 }
 
 const CSSValue* PositionFallback::ParseSingleValue(

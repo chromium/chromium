@@ -333,7 +333,7 @@ ElementRuleCollector::ElementRuleCollector(
       selector_filter_(filter),
       mode_(SelectorChecker::kResolvingStyle),
       can_use_fast_reject_(
-          selector_filter_.ParentStackIsConsistent(context.ParentNode())),
+          selector_filter_.ParentStackIsConsistent(context.ParentElement())),
       matching_ua_rules_(false),
       suppress_visited_(false),
       inside_link_(inside_link),

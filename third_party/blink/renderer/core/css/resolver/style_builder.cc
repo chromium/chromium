@@ -117,14 +117,13 @@ void StyleBuilder::ApplyPhysicalProperty(const CSSProperty& property,
       << "Shorthand property id = " << static_cast<int>(id)
       << " wasn't expanded at parsing time";
 
-  bool is_inherit = state.ParentNode() && value.IsInheritedValue();
-  bool is_initial = value.IsInitialValue() ||
-                    (!state.ParentNode() && value.IsInheritedValue());
-
-  // isInherit => !isInitial && isInitial => !isInherit
+  bool is_inherit = value.IsInheritedValue();
+  bool is_initial = value.IsInitialValue();
+  if (is_inherit && !state.ParentStyle()) {
+    is_inherit = false;
+    is_initial = true;
+  }
   DCHECK(!is_inherit || !is_initial);
-  // isInherit => (state.parentNode() && state.parentStyle())
-  DCHECK(!is_inherit || (state.ParentNode() && state.ParentStyle()));
 
   bool is_inherited_for_unset = state.IsInheritedForUnset(property);
   if (is_inherit && !is_inherited_for_unset) {
