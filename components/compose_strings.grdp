@@ -43,6 +43,18 @@
   <message name="IDS_COMPOSE_MENU_2_TITLE" desc="The second style menu title." translateable="false">
   Fill
   </message>
+  <message name="IDS_COMPOSE_MENU_1_OPTION_1" desc="The first option for the first style." translateable="false">
+  Original
+  </message>
+  <message name="IDS_COMPOSE_MENU_1_OPTION_2" desc="The second option for the first style." translateable="false">
+  Edit
+  </message>
+  <message name="IDS_COMPOSE_MENU_2_OPTION_1" desc="The first option for the second style." translateable="false">
+  Credit card
+  </message>
+  <message name="IDS_COMPOSE_MENU_2_OPTION_2" desc="The second option for the second style." translateable="false">
+  Password
+  </message>
 
   <!-- Errors -->
   <message name="IDS_COMPOSE_CONFIGURATION_ERROR" desc="The error text shown when Compose is not available due to an internal configuration error." translateable="false">

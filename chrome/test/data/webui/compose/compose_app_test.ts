@@ -333,4 +333,33 @@ suite('ComposeApp', () => {
     testError(ComposeStatus.kPermissionDenied, 'errorPermissionDenied');
     testError(ComposeStatus.kMisconfiguration, 'errorGeneric');
   });
+
+  test('ComposeWithLengthToneOptionResult', async () => {
+    // Submit the input once so the refresh button shows up.
+    mockInput('Input to refresh.');
+    app.$.submitButton.click();
+    await mockResponse();
+
+    testProxy.resetResolver('compose');
+
+    assertTrue(isVisible(app.$.lengthMenu), 'Length menu should be visible.');
+
+    app.$.lengthMenu.value = Length.kShorter as unknown as string;
+    app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
+
+    const args = await testProxy.whenCalled('compose');
+    await mockResponse();
+
+    assertEquals(Length.kShorter, args.style.length);
+
+    testProxy.resetResolver('compose');
+
+    app.$.toneMenu.value = Tone.kCasual as unknown as string;
+    app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
+
+    const args2 = await testProxy.whenCalled('compose');
+    await mockResponse();
+
+    assertEquals(Tone.kCasual, args2.style.tone);
+  });
 });

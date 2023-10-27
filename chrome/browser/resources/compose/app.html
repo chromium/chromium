@@ -162,11 +162,22 @@
     [[response_.result]]
 
     <div id="resultOptions">
-      <select class="md-select">
-        <option>$i18n{menu1Title}</option>
+
+      <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
+          on-change="onLengthChanged_">
+        <template is="dom-repeat" items="[[lengthOptions_]]">
+          <option value="[[item]]">
+            [[getLengthOptionLabel_(item)]]
+          </option>
+        </template>
       </select>
-      <select class="md-select">
-        <option>$i18n{menu2Title}</option>
+      <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
+          on-change="onToneChanged_">
+        <template is="dom-repeat" items="[[toneOptions_]]">
+          <option value="[[item]]">
+            [[getToneOptionLabel_(item)]]
+          </option>
+        </template>
       </select>
 
       <div class="icon-buttons-row">

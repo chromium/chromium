@@ -42,6 +42,8 @@ export interface ComposeAppElement {
     resultContainer: HTMLElement,
     submitButton: CrButtonElement,
     textarea: ComposeTextareaElement,
+    lengthMenu: HTMLSelectElement,
+    toneMenu: HTMLSelectElement,
   };
 }
 
@@ -88,6 +90,26 @@ export class ComposeAppElement extends ComposeAppElementBase {
       undoEnabled_: {
         type: Boolean,
         value: false,
+      },
+      lengthOptions_: {
+        type: Array,
+        value: () => {
+          return [
+            Length.kUnset,
+            Length.kShorter,
+            Length.kLonger,
+          ];
+        },
+      },
+      toneOptions_: {
+        type: Array,
+        value: () => {
+          return [
+            Tone.kUnset,
+            Tone.kCasual,
+            Tone.kFormal,
+          ];
+        },
       },
     };
   }
@@ -149,6 +171,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
       }
       const composeState = initialState.composeState;
       this.loading_ = composeState.hasPendingRequest;
+      this.selectedLength_ = composeState.style.length;
+      this.selectedTone_ = composeState.style.tone;
       this.submitted_ =
           composeState.hasPendingRequest || Boolean(composeState.response);
       if (!composeState.hasPendingRequest) {
@@ -188,6 +212,38 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private onInputChanged_() {
     this.userHasModifiedState_ = true;
     this.isSubmitEnabled_ = this.$.textarea.validate();
+  }
+
+  private onLengthChanged_() {
+    this.selectedLength_ = Number(this.$.lengthMenu.value) as Length;
+    this.onSubmit_();
+  }
+
+  private onToneChanged_() {
+    this.selectedTone_ = Number(this.$.toneMenu.value) as Tone;
+    this.onSubmit_();
+  }
+
+  private getLengthOptionLabel_(value: Length): string {
+    switch (value) {
+      case Length.kUnset:
+        return this.i18n('lengthMenuTitle');
+      case Length.kShorter:
+        return this.i18n('shorterOption');
+      case Length.kLonger:
+        return this.i18n('longerOption');
+    }
+  }
+
+  private getToneOptionLabel_(value: Tone): string {
+    switch (value) {
+      case Tone.kUnset:
+        return this.i18n('toneMenuTitle');
+      case Tone.kCasual:
+        return this.i18n('casualToneOption');
+      case Tone.kFormal:
+        return this.i18n('formalToneOption');
+    }
   }
 
   private compose_() {
