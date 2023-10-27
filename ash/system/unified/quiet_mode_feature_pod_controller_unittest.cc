@@ -48,7 +48,8 @@ class QuietModeFeaturePodControllerTest
 
   bool IsOsSettingsAppBadgingToggleEnabled() { return std::get<0>(GetParam()); }
 
-  bool IsQsRevampEnabled() { return std::get<1>(GetParam()); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() { return true; }
 
   void SetUpButton() {
     auto* system_tray = GetPrimaryUnifiedSystemTray();

@@ -3993,7 +3993,7 @@ bool IsProjectorUpdateIndexableTextEnabled() {
 // TODO(b/305075031): Remove `kQsRevamp` and this method after all the clean up
 // is done.
 bool IsQsRevampEnabled() {
-  return base::FeatureList::IsEnabled(kQsRevamp);
+  return true;
 }
 
 bool IsProjectorAccountSwitchNotificationEnabled() {

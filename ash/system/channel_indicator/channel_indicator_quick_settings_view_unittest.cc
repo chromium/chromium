@@ -22,10 +22,8 @@ class ChannelIndicatorQuickSettingsViewTest
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   ChannelIndicatorQuickSettingsViewTest() {
-    // Param 0 is whether QsRevamp is enabled.
-    if (std::get<0>(GetParam())) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    }
+    // TODO(b/305075031) clean up after the flag is removed.
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
   ChannelIndicatorQuickSettingsViewTest(
       const ChannelIndicatorQuickSettingsViewTest&) = delete;

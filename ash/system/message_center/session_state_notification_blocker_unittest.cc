@@ -60,7 +60,8 @@ class SessionStateNotificationBlockerTest
     blocker_->AddObserver(this);
   }
 
-  bool IsQsRevampEnabled() const { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() const { return true; }
 
   void TearDown() override {
     blocker_->RemoveObserver(this);

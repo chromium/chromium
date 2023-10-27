@@ -44,7 +44,8 @@ class LocaleFeaturePodControllerTest
 
   ~LocaleFeaturePodControllerTest() override = default;
 
-  bool IsQsRevampEnabled() const { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() { return true; }
 
   void SetUp() override {
     NoSessionAshTestBase::SetUp();

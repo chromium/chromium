@@ -329,7 +329,8 @@ class AppAccessNotifierPrivacyIndicatorTest
     AppAccessNotifierBaseTest::SetUp();
   }
 
-  bool IsQsRevampEnabled() { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() { return true; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

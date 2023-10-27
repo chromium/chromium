@@ -71,12 +71,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyQsRevamp_Enabled) {
   EXPECT_TRUE(instance()->flags_called_value()->qs_revamp);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyQsRevamp_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(ash::features::kQsRevamp);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->qs_revamp);
-}
-
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(chromeos::features::kJelly);
   Connect();

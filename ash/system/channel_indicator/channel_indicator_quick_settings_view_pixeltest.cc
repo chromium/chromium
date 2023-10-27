@@ -34,9 +34,10 @@ class ChannelIndicatorQuickSettingsViewPixelTest
 
   // AshTestBase:
   void SetUp() override {
+    // TODO(b/305075031) clean up after the flag is removed.
     feature_list_.InitWithFeatureStates(
-        {{features::kQsRevamp, /*enabled=*/GetParam()},
-         {chromeos::features::kJelly, /*enabled=*/GetParam()}});
+        {{features::kQsRevamp, /*enabled=*/true},
+         {chromeos::features::kJelly, /*enabled=*/true}});
 
     // Install a test delegate to allow overriding channel version.
     auto delegate = std::make_unique<TestShellDelegate>();
@@ -78,7 +79,8 @@ class ChannelIndicatorQuickSettingsViewPixelTest
     AshTestBase::TearDown();
   }
 
-  bool IsQsRevampAndJellyEnabled() const { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampAndJellyEnabled() const { return true; }
 
   QuickSettingsHeader* header() { return header_; }
   ChannelIndicatorQuickSettingsView* view() {
@@ -120,7 +122,7 @@ TEST_P(ChannelIndicatorQuickSettingsViewPixelTest, FeedbackButtonVisible) {
   // `ChannelIndicatorQuickSettingsView`.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "feedback_button_visible",
-      /*revision_number=*/6, view()));
+      /*revision_number=*/7, view()));
 }
 
 }  // namespace ash

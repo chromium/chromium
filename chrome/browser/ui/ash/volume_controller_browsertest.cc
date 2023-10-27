@@ -72,7 +72,8 @@ class VolumeControllerTest : public InProcessBrowserTest,
 
   ~VolumeControllerTest() override {}
 
-  bool IsQsRevampEnabled() const { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() const { return true; }
 
   void SetUpOnMainThread() override {
     audio_handler_ = ash::CrasAudioHandler::Get();
@@ -213,7 +214,8 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
 
   ~VolumeControllerSoundsTest() override {}
 
-  bool IsQsRevampEnabled() const { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() { return true; }
 
   void SetUpInProcessBrowserTestFixture() override {
     sounds_manager_ = new SoundsManagerTestImpl();

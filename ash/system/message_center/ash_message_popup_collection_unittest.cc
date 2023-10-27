@@ -158,7 +158,8 @@ class AshMessagePopupCollectionTest
     }
   }
 
-  bool IsQsRevampEnabled() const { return std::get<0>(GetParam()); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() const { return true; }
   bool IsNotifierCollisionEnabled() const { return std::get<1>(GetParam()); }
 
  protected:
@@ -193,10 +194,11 @@ class AshMessagePopupCollectionTest
       return OUTSIDE;
     }
 
-    if (center_point.x() < point.x())
+    if (center_point.x() < point.x()) {
       return (center_point.y() < point.y()) ? BOTTOM_RIGHT : TOP_RIGHT;
-    else
+    } else {
       return (center_point.y() < point.y()) ? BOTTOM_LEFT : TOP_LEFT;
+    }
   }
 
   gfx::Rect GetWorkArea() { return GetPrimaryPopupCollection()->work_area_; }

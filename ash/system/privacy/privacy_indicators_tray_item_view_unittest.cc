@@ -78,11 +78,13 @@ int GetExpectedSizeInShrinkAnimation(bool for_longer_side, double progress) {
 // screen share.
 std::u16string GetExpectedTooltipText(std::u16string cam_mic_status,
                                       std::u16string screen_share_status) {
-  if (cam_mic_status.empty())
+  if (cam_mic_status.empty()) {
     return screen_share_status;
+  }
 
-  if (screen_share_status.empty())
+  if (screen_share_status.empty()) {
     return cam_mic_status;
+  }
 
   return l10n_util::GetStringFUTF16(IDS_PRIVACY_INDICATORS_VIEW_TOOLTIP,
                                     {cam_mic_status, screen_share_status},
@@ -144,7 +146,8 @@ class PrivacyIndicatorsTrayItemViewTest
         privacy_indicators_view()->shorter_side_shrink_animation_.get());
   }
 
-  bool IsQsRevampEnabled() { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() { return true; }
 
  protected:
   PrivacyIndicatorsTrayItemView* privacy_indicators_view() const {

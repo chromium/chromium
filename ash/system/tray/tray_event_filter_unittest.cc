@@ -159,7 +159,8 @@ class TrayEventFilterTest : public AshTestBase,
   }
 
  protected:
-  bool IsQsRevampEnabed() { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabed() { return true; }
 
   std::string AddNotification() {
     std::string notification_id = base::NumberToString(notification_id_++);
@@ -405,55 +406,6 @@ TEST_P(TrayEventFilterTest, CloseTrayBubbleWhenWindowActivated) {
 
   second_widget->Activate();
   EXPECT_FALSE(ime_menu->GetBubbleView());
-}
-
-using TrayEventFilterQsRevampDisabledTest = TrayEventFilterTest;
-
-INSTANTIATE_TEST_SUITE_P(QsRevampDisabled,
-                         TrayEventFilterQsRevampDisabledTest,
-                         testing::Values(false));
-
-TEST_P(TrayEventFilterQsRevampDisabledTest,
-       MessageCenterAndSystemTrayStayOpenTogether) {
-  AddNotification();
-
-  ShowQuickSettingsBubble();
-  EXPECT_TRUE(IsMessageCenterBubbleShown());
-  EXPECT_TRUE(IsQuickSettingsBubbleShown());
-
-  // Clicking inside system tray should not close either bubble.
-  auto* event_generator = GetEventGenerator();
-  auto border_insets =
-      GetPrimaryUnifiedSystemTray()->GetBubbleView()->GetBorderInsets();
-  event_generator->MoveMouseTo(
-      GetPrimaryUnifiedSystemTray()->GetBubbleBoundsInScreen().origin() +
-      gfx::Vector2d(border_insets.left(), border_insets.top()));
-  event_generator->ClickLeftButton();
-
-  EXPECT_TRUE(IsMessageCenterBubbleShown());
-  EXPECT_TRUE(IsQuickSettingsBubbleShown());
-
-  // Clicking inside the message center bubble should not close either bubble.
-  ClickInsideWidget(GetPrimaryUnifiedSystemTray()
-                        ->message_center_bubble()
-                        ->GetBubbleWidget());
-
-  EXPECT_TRUE(IsMessageCenterBubbleShown());
-  EXPECT_TRUE(IsQuickSettingsBubbleShown());
-}
-
-TEST_P(TrayEventFilterQsRevampDisabledTest,
-       MessageCenterAndSystemTrayCloseTogether) {
-  AddNotification();
-
-  ShowQuickSettingsBubble();
-  EXPECT_TRUE(IsMessageCenterBubbleShown());
-  EXPECT_TRUE(IsQuickSettingsBubbleShown());
-
-  // Clicking outside should close both bubbles.
-  ClickOutsideWidget(GetPrimaryUnifiedSystemTray()->GetBubbleWidget());
-  EXPECT_FALSE(IsMessageCenterBubbleShown());
-  EXPECT_FALSE(IsQuickSettingsBubbleShown());
 }
 
 }  // namespace ash

@@ -106,7 +106,8 @@ class SystemTrayTrayCastMediaRouterChromeOSTest
 
   ~SystemTrayTrayCastMediaRouterChromeOSTest() override = default;
 
-  bool IsQsRevampEnabled() const { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() const { return true; }
 
   void ShowBubble() { tray_test_api_->ShowBubble(); }
 
@@ -301,7 +302,8 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
 
   ~SystemTrayTrayCastAccessCodeChromeOSTest() override = default;
 
-  bool IsQsRevampEnabled() const { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() { return true; }
 
   void PreRunTestOnMainThread() override {
     CastConfigControllerMediaRouter::SetMediaRouterForTest(media_router_);
