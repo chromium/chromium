@@ -23,10 +23,6 @@ InvokeEvent::InvokeEvent(const AtomicString& type,
   if (initializer->hasAction()) {
     action_ = initializer->action();
   }
-
-  if (action_.empty()) {
-    action_ = "auto";
-  }
 }
 
 InvokeEvent::InvokeEvent(const AtomicString& type,
@@ -34,7 +30,6 @@ InvokeEvent::InvokeEvent(const AtomicString& type,
                          Element* invoker)
     : Event(type, Bubbles::kNo, Cancelable::kYes), invoker_(invoker) {
   DCHECK(RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled());
-  CHECK(!action.empty());
   action_ = action;
 }
 
