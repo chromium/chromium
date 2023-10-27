@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -40,7 +41,6 @@
 class PrefService;
 
 namespace base {
-class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -440,8 +440,14 @@ class DriveIntegrationService : public KeyedService,
   // Pin all the files in |files_to_pin| with DriveFS.
   void PinFiles(const std::vector<base::FilePath>& files_to_pin);
 
-  // Enables or disables DriveFS bulk pinning.
-  void ToggleBulkPinning();
+  // Called when the "drivefs.bulk_pinning_enabled" pref changes value.
+  // Starts or stops DriveFS bulk pinning accordingly.
+  // Does nothing if there is no bulk-pinning manager.
+  void StartOrStopBulkPinning();
+
+  // Called when the "drivefs.bulk_pinning.visible" pref changes value.
+  // Creates or deletes the DriveFS bulk-pinning manager accordingly.
+  void CreateOrDeleteBulkPinningManager();
 
   // Regularly samples the bulk-pinning preference and stores the result in a
   // UMA histogram.

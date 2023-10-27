@@ -89,6 +89,7 @@ using content::BrowserThread;
 using drivefs::mojom::DriveFs;
 using drivefs::pinning::PinningManager;
 using prefs::kDriveFsBulkPinningEnabled;
+using prefs::kDriveFsBulkPinningVisible;
 using util::ConnectionStatus;
 
 // Name of the directory used to store metadata.
@@ -367,13 +368,13 @@ enum class BulkPinningMountFailureReason {
   kMaxValue = kMoreThanTenTotalFailures,
 };
 
-void RecordBulkPinningMountFailureReason(const Profile* profile,
-                                         BulkPinningMountFailureReason reason) {
-  if (!util::IsDriveFsBulkPinningAvailable(profile)) {
-    return;
+void RecordBulkPinningMountFailureReason(
+    const Profile* const profile,
+    const BulkPinningMountFailureReason reason) {
+  if (util::IsDriveFsBulkPinningAvailable(profile)) {
+    base::UmaHistogramEnumeration(
+        "FileBrowser.GoogleDrive.BulkPinning.MultipleMountFailures", reason);
   }
-  base::UmaHistogramEnumeration(
-      "FileBrowser.GoogleDrive.BulkPinning.MultipleMountFailures", reason);
 }
 
 }  // namespace
@@ -395,12 +396,14 @@ void DriveIntegrationService::RegisterPrefs() {
                             base::Unretained(this)));
   }
 
-  if (util::IsDriveFsBulkPinningAvailable(profile_)) {
-    registrar_.Add(
-        kDriveFsBulkPinningEnabled,
-        base::BindRepeating(&DriveIntegrationService::ToggleBulkPinning,
-                            base::Unretained(this)));
-  }
+  registrar_.Add(kDriveFsBulkPinningVisible,
+                 base::BindRepeating(
+                     &DriveIntegrationService::CreateOrDeleteBulkPinningManager,
+                     base::Unretained(this)));
+  registrar_.Add(
+      kDriveFsBulkPinningEnabled,
+      base::BindRepeating(&DriveIntegrationService::StartOrStopBulkPinning,
+                          base::Unretained(this)));
 
   if (!ash::NetworkHandler::IsInitialized()) {
     return;  // Test environment.
@@ -851,10 +854,8 @@ void DriveIntegrationService::AddDriveMountPoint() {
     return;
   }
 
-  const bool was_ever_mounted =
-      GetPrefs()->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce);
-
-  if (mount_start_.is_null() || was_ever_mounted) {
+  if (mount_start_.is_null() ||
+      GetPrefs()->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce)) {
     mount_start_ = base::TimeTicks::Now();
   }
 
@@ -1014,11 +1015,10 @@ void DriveIntegrationService::MaybeRemountFileSystem(
 }
 
 void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
+  PrefService* const prefs = GetPrefs();
+
   if (AddDriveMountPointAfterMounted()) {
-    PrefService* prefs = GetPrefs();
-    bool was_ever_mounted =
-        prefs->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce);
-    if (was_ever_mounted) {
+    if (prefs->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce)) {
       UmaEmitMountOutcome(DriveMountStatus::kSuccess, mount_start_);
     } else {
       UmaEmitFirstLaunch(mount_start_);
@@ -1030,7 +1030,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
 
   // Enable MirrorSync if the feature is enabled.
   if (ash::features::IsDriveFsMirroringEnabled() &&
-      GetPrefs()->GetBoolean(prefs::kDriveFsEnableMirrorSync)) {
+      prefs->GetBoolean(prefs::kDriveFsEnableMirrorSync)) {
     ToggleMirroring(
         true,
         base::BindOnce(&DriveIntegrationService::OnEnableMirroringStatusUpdate,
@@ -1038,41 +1038,55 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
   }
 
   // Enable bulk-pinning if the feature is enabled.
-  if (util::IsDriveFsBulkPinningAvailable(profile_)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CreateOrDeleteBulkPinningManager();
+}
 
-    // Instantiate a PinningManager.
-    DCHECK(!pinning_manager_);
-    const int queue_size = ash::features::GetDriveFsBulkPinningQueueSize();
-    VLOG(1) << "Bulk-pinning queue size: " << queue_size;
-    pinning_manager_ = std::make_unique<PinningManager>(
-        profile_->GetPath(), mount_path, GetDriveFsInterface(), queue_size);
+void DriveIntegrationService::CreateOrDeleteBulkPinningManager() {
+  VLOG(1) << "CreateOrDeleteBulkPinningManager";
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    // Listen to progress events from this PinningManager.
-    pinning_manager_->AddObserver(this);
-    if (!observers_.empty()) {
-      OnProgress(pinning_manager_->GetProgress());
+  if (!util::IsDriveFsBulkPinningAvailable(profile_)) {
+    if (pinning_manager_) {
+      LOG(WARNING) << "Delete bulk-pinning manager because of policy change";
+      pinning_manager_->Stop();
+      pinning_manager_.reset();
+      GetPrefs()->SetBoolean(kDriveFsBulkPinningEnabled, false);
     }
 
-    pinning_manager_->SetDriveFsHost(GetDriveFsHost());
+    return;
+  }
 
-    // Ensure the new PinningManager has the right view of the network state.
-    pinning_manager_->SetOnline(is_online_);
+  if (pinning_manager_) {
+    VLOG(1) << "Bulk-pinning manager already exists";
+    return;
+  }
 
-    ToggleBulkPinning();
+  // Instantiate a PinningManager.
+  VLOG(1) << "Create bulk-pinning manager";
+  DCHECK(!pinning_manager_);
+  pinning_manager_ = std::make_unique<PinningManager>(
+      profile_->GetPath(), GetMountPointPath(), GetDriveFsInterface(),
+      ash::features::GetDriveFsBulkPinningQueueSize());
 
-    if (!bulk_pinning_pref_sampling_) {
-      bulk_pinning_pref_sampling_ = true;
-      SampleBulkPinningPref();
-    }
+  pinning_manager_->AddObserver(this);
+  pinning_manager_->SetDriveFsHost(GetDriveFsHost());
+  pinning_manager_->SetOnline(is_online_);
 
-    RecordBulkPinningMountFailureReason(
-        profile_, BulkPinningMountFailureReason::kSuccess);
+  OnProgress(pinning_manager_->GetProgress());
+  StartOrStopBulkPinning();
 
-    for (Observer& observer : observers_) {
-      DCHECK_EQ(observer.GetService(), this);
-      observer.OnBulkPinInitialized();
-    }
+  if (!bulk_pinning_pref_sampling_) {
+    VLOG(1) << "Start sampling bulk-pinning pref";
+    bulk_pinning_pref_sampling_ = true;
+    SampleBulkPinningPref();
+  }
+
+  RecordBulkPinningMountFailureReason(profile_,
+                                      BulkPinningMountFailureReason::kSuccess);
+
+  for (Observer& observer : observers_) {
+    DCHECK_EQ(observer.GetService(), this);
+    observer.OnBulkPinInitialized();
   }
 }
 
@@ -1101,12 +1115,10 @@ void DriveIntegrationService::OnUnmounted(
 void DriveIntegrationService::OnMountFailed(
     MountFailure failure,
     absl::optional<TimeDelta> remount_delay) {
-  PrefService* prefs = GetPrefs();
-  DriveMountStatus status = ConvertMountFailure(failure);
+  PrefService* const prefs = GetPrefs();
+  const DriveMountStatus status = ConvertMountFailure(failure);
   UmaEmitMountStatus(status);
-  bool was_ever_mounted =
-      prefs->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce);
-  if (was_ever_mounted) {
+  if (prefs->GetBoolean(prefs::kDriveFsWasLaunchedAtLeastOnce)) {
     UmaEmitMountTime(status, mount_start_);
   } else {
     // We don't record mount time until we mount successfully at least once.
@@ -1207,11 +1219,13 @@ void DriveIntegrationService::PinFiles(
   GetPrefs()->SetBoolean(prefs::kDriveFsPinnedMigrated, true);
 }
 
-void DriveIntegrationService::ToggleBulkPinning() {
-  VLOG(1) << "ToggleBulkPinning";
+void DriveIntegrationService::StartOrStopBulkPinning() {
+  VLOG(1) << "StartOrStopBulkPinning";
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   if (!pinning_manager_) {
-    VLOG(1) << "No bulk-pinning manager";
+    LOG(ERROR) << "Cannot toggle the state of the bulk-pinning manager: "
+                  "There is no bulk-pinning manager";
     return;
   }
 
