@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.carousel;
+package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.reset;
@@ -18,40 +18,37 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/** Tests for {@link BaseCarouselSuggestionRecyclerViewAdapter}. */
+/** Tests for {@link RecyclerViewSelectionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class BaseCarouselSuggestionSelectionManagerUnitTest {
-    BaseCarouselSuggestionSelectionManager mSelectionManager;
+public class RecyclerViewSelectionControllerUnitTest {
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock RecyclerView mRecyclerView;
-
-    @Mock LayoutManager mLayoutManager;
-
-    @Mock View mChildView1;
-
-    @Mock View mChildView2;
-
-    @Mock View mChildView3;
+    private @Mock RecyclerView mRecyclerView;
+    private @Mock LayoutManager mLayoutManager;
+    private @Mock View mChildView1;
+    private @Mock View mChildView2;
+    private @Mock View mChildView3;
+    RecyclerViewSelectionController mSelectionManager;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         when(mLayoutManager.getItemCount()).thenReturn(3);
         when(mLayoutManager.findViewByPosition(0)).thenReturn(mChildView1);
         when(mLayoutManager.findViewByPosition(1)).thenReturn(mChildView2);
         when(mLayoutManager.findViewByPosition(2)).thenReturn(mChildView3);
 
-        mSelectionManager = new BaseCarouselSuggestionSelectionManager(mLayoutManager);
+        mSelectionManager = new RecyclerViewSelectionController(mLayoutManager);
     }
 
     @Test

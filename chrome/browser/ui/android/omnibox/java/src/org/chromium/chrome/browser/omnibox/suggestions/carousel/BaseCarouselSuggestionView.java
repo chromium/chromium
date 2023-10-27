@@ -15,13 +15,14 @@ import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.MockedInTests;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** View for Carousel Suggestions. */
 @MockedInTests
 public class BaseCarouselSuggestionView extends RecyclerView {
-    private BaseCarouselSuggestionSelectionManager mSelectionManager;
+    private RecyclerViewSelectionController mSelectionController;
 
     /**
      * Constructs a new carousel suggestion view.
@@ -42,8 +43,8 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         getResources().getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
         setPaddingRelative(0, topPadding, getPaddingEnd(), bottomPadding);
 
-        mSelectionManager = new BaseCarouselSuggestionSelectionManager(getLayoutManager());
-        addOnChildAttachStateChangeListener(mSelectionManager);
+        mSelectionController = new RecyclerViewSelectionController(getLayoutManager());
+        addOnChildAttachStateChangeListener(mSelectionController);
 
         setAdapter(adapter);
     }
@@ -53,14 +54,14 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         if ((!isRtl && KeyNavigationUtil.isGoRight(event))
                 || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
-            mSelectionManager.selectNextItem();
+            mSelectionController.selectNextItem();
             return true;
         } else if ((isRtl && KeyNavigationUtil.isGoRight(event))
                 || (!isRtl && KeyNavigationUtil.isGoLeft(event))) {
-            mSelectionManager.selectPreviousItem();
+            mSelectionController.selectPreviousItem();
             return true;
         } else if (KeyNavigationUtil.isEnter(event)) {
-            var tile = mSelectionManager.getSelectedView();
+            var tile = mSelectionController.getSelectedView();
             if (tile != null) return tile.performClick();
         }
         return superOnKeyDown(keyCode, event);
@@ -79,17 +80,17 @@ public class BaseCarouselSuggestionView extends RecyclerView {
     @Override
     public void setSelected(boolean isSelected) {
         if (isSelected) {
-            mSelectionManager.setSelectedItem(0, true);
+            mSelectionController.setSelectedItem(0, true);
         } else {
-            mSelectionManager.setSelectedItem(RecyclerView.NO_POSITION, false);
+            mSelectionController.setSelectedItem(RecyclerView.NO_POSITION, false);
         }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    /* package */ void setSelectionManagerForTesting(
-            BaseCarouselSuggestionSelectionManager manager) {
-        removeOnChildAttachStateChangeListener(mSelectionManager);
-        mSelectionManager = manager;
-        addOnChildAttachStateChangeListener(mSelectionManager);
+    /* package */ void setSelectionControllerForTesting(
+            RecyclerViewSelectionController controller) {
+        removeOnChildAttachStateChangeListener(mSelectionController);
+        mSelectionController = controller;
+        addOnChildAttachStateChangeListener(mSelectionController);
     }
 }

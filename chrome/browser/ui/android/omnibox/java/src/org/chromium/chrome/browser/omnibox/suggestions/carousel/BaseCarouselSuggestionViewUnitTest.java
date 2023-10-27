@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Tests for {@link BaseCarouselSuggestionView}. */
@@ -35,15 +36,15 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 public class BaseCarouselSuggestionViewUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock SimpleRecyclerViewAdapter mAdapter;
-    private @Mock BaseCarouselSuggestionSelectionManager mManager;
+    private @Mock RecyclerViewSelectionController mController;
     private @Mock View mChild;
     private @Spy BaseCarouselSuggestionView mView =
             new BaseCarouselSuggestionView(ContextUtils.getApplicationContext(), mAdapter);
 
     @Before
     public void setUp() {
-        mView.setSelectionManagerForTesting(mManager);
-        clearInvocations(mView, mAdapter, mManager, mChild);
+        mView.setSelectionControllerForTesting(mController);
+        clearInvocations(mView, mAdapter, mController, mChild);
     }
 
     @Test
@@ -54,9 +55,9 @@ public class BaseCarouselSuggestionViewUnitTest {
         assertTrue(event.dispatch(mView));
 
         verify(mView).onKeyDown(event.getKeyCode(), event);
-        verify(mManager).selectNextItem();
+        verify(mController).selectNextItem();
 
-        verifyNoMoreInteractions(mManager);
+        verifyNoMoreInteractions(mController);
     }
 
     @Test
@@ -67,9 +68,9 @@ public class BaseCarouselSuggestionViewUnitTest {
         assertTrue(event.dispatch(mView));
 
         verify(mView).onKeyDown(event.getKeyCode(), event);
-        verify(mManager).selectNextItem();
+        verify(mController).selectNextItem();
 
-        verifyNoMoreInteractions(mManager);
+        verifyNoMoreInteractions(mController);
     }
 
     @Test
@@ -80,9 +81,9 @@ public class BaseCarouselSuggestionViewUnitTest {
         assertTrue(event.dispatch(mView));
 
         verify(mView).onKeyDown(event.getKeyCode(), event);
-        verify(mManager).selectPreviousItem();
+        verify(mController).selectPreviousItem();
 
-        verifyNoMoreInteractions(mManager);
+        verifyNoMoreInteractions(mController);
     }
 
     @Test
@@ -93,38 +94,38 @@ public class BaseCarouselSuggestionViewUnitTest {
         assertTrue(event.dispatch(mView));
 
         verify(mView).onKeyDown(event.getKeyCode(), event);
-        verify(mManager).selectPreviousItem();
+        verify(mController).selectPreviousItem();
 
-        verifyNoMoreInteractions(mManager);
+        verifyNoMoreInteractions(mController);
     }
 
     @Test
     public void onKeyDown_enterKeyPassedThroughWhenNoItemSelected() {
-        doReturn(null).when(mManager).getSelectedView();
+        doReturn(null).when(mController).getSelectedView();
 
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER);
         assertFalse(event.dispatch(mView));
 
         verify(mView).onKeyDown(event.getKeyCode(), event);
-        verify(mManager).getSelectedView();
+        verify(mController).getSelectedView();
         verify(mView).superOnKeyDown(event.getKeyCode(), event);
 
-        verifyNoMoreInteractions(mChild, mManager);
+        verifyNoMoreInteractions(mChild, mController);
     }
 
     @Test
     public void onKeyDown_enterKeyAcceptsSelectedItem() {
-        doReturn(mChild).when(mManager).getSelectedView();
+        doReturn(mChild).when(mController).getSelectedView();
         doReturn(true).when(mChild).performClick();
 
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER);
         assertTrue(event.dispatch(mView));
 
         verify(mView).onKeyDown(event.getKeyCode(), event);
-        verify(mManager).getSelectedView();
+        verify(mController).getSelectedView();
         verify(mChild).performClick();
 
-        verifyNoMoreInteractions(mChild, mManager);
+        verifyNoMoreInteractions(mChild, mController);
     }
 
     @Test
@@ -135,20 +136,20 @@ public class BaseCarouselSuggestionViewUnitTest {
         verify(mView).onKeyDown(KeyEvent.KEYCODE_T, event);
         verify(mView).superOnKeyDown(KeyEvent.KEYCODE_T, event);
 
-        verifyNoMoreInteractions(mManager);
+        verifyNoMoreInteractions(mController);
     }
 
     @Test
     public void setSelected_resetsCarouselSelectionWhenSelected() {
         mView.setSelected(true);
-        verify(mManager, times(1)).setSelectedItem(0, /* force= */ true);
-        verifyNoMoreInteractions(mManager);
+        verify(mController, times(1)).setSelectedItem(0, /* force= */ true);
+        verifyNoMoreInteractions(mController);
     }
 
     @Test
     public void setSelected_resetsCarouselSelectionWhenDeselected() {
         mView.setSelected(false);
-        verify(mManager, times(1)).setSelectedItem(RecyclerView.NO_POSITION, /* force= */ false);
-        verifyNoMoreInteractions(mManager);
+        verify(mController, times(1)).setSelectedItem(RecyclerView.NO_POSITION, /* force= */ false);
+        verifyNoMoreInteractions(mController);
     }
 }

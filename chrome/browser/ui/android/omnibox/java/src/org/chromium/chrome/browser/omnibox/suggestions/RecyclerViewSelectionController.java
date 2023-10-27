@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.carousel;
+package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
-/** Selection manager for BaseCarouselSuggestion. */
-public class BaseCarouselSuggestionSelectionManager
+/** Selection manager for RecyclerViews. */
+public class RecyclerViewSelectionController
         implements RecyclerView.OnChildAttachStateChangeListener {
     private int mSelectedItem = RecyclerView.NO_POSITION;
     private LayoutManager mLayoutManager;
 
-    BaseCarouselSuggestionSelectionManager(LayoutManager layoutManager) {
+    public RecyclerViewSelectionController(LayoutManager layoutManager) {
         mLayoutManager = layoutManager;
     }
 
@@ -37,12 +38,12 @@ public class BaseCarouselSuggestionSelectionManager
     }
 
     /** Reset the active selection. */
-    void resetSelection() {
+    public void resetSelection() {
         setSelectedItem(RecyclerView.NO_POSITION, false);
     }
 
     /** Move selection to the next element on the list. */
-    void selectNextItem() {
+    public void selectNextItem() {
         if (mLayoutManager == null) return;
 
         int newSelectedItem;
@@ -58,7 +59,7 @@ public class BaseCarouselSuggestionSelectionManager
     }
 
     /** Move selection to the previous element on the list. */
-    void selectPreviousItem() {
+    public void selectPreviousItem() {
         if (mLayoutManager == null) return;
 
         int newSelectedItem;
@@ -75,7 +76,7 @@ public class BaseCarouselSuggestionSelectionManager
 
     /** Retrieve currently selected element. */
     @Nullable
-    View getSelectedView() {
+    public View getSelectedView() {
         return mLayoutManager.findViewByPosition(mSelectedItem);
     }
 
@@ -86,7 +87,7 @@ public class BaseCarouselSuggestionSelectionManager
      * @param force Whether to apply the selection even if the current selected item has not
      *     changed.
      */
-    void setSelectedItem(int index, boolean force) {
+    public void setSelectedItem(int index, boolean force) {
         if (mLayoutManager == null) return;
         if (index != RecyclerView.NO_POSITION
                 && (index < 0 || index >= mLayoutManager.getItemCount())) {
@@ -109,6 +110,7 @@ public class BaseCarouselSuggestionSelectionManager
     }
 
     /** Returns the selected item index. */
+    @VisibleForTesting
     int getSelectedItemForTest() {
         return mSelectedItem;
     }
