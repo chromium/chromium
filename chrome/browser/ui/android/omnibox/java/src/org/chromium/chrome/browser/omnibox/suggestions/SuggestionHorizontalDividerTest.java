@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Region.Op;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
@@ -88,6 +89,12 @@ public class SuggestionHorizontalDividerTest {
     @Test
     @SmallTest
     public void testDraw() {
+        MarginLayoutParams layoutParams = new MarginLayoutParams(100, 30);
+        layoutParams.leftMargin = 13;
+        layoutParams.rightMargin = 17;
+        doReturn(new RecyclerView.LayoutParams(layoutParams))
+                .when(mChildViewWithDivider)
+                .getLayoutParams();
         doAnswer(
                         (invocation -> {
                             ((Rect) invocation.getArgument(1)).set(0, 0, 100, 30);
@@ -97,6 +104,6 @@ public class SuggestionHorizontalDividerTest {
                 .getDecoratedBoundsWithMargins(any(View.class), any(Rect.class));
 
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
-        verify(mCanvas).clipRect(0, 29, 100, 30, Op.DIFFERENCE);
+        verify(mCanvas).clipRect(13, 29, 100 - 17, 30, Op.DIFFERENCE);
     }
 }

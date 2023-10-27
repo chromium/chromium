@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
+import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.chrome.browser.omnibox.R;
@@ -41,10 +42,11 @@ public class SuggestionHorizontalDivider extends ItemDecoration {
             View child = parent.getChildAt(i);
             if (!shouldDrawDivider(child, parent)) continue;
             parent.getDecoratedBoundsWithMargins(child, mBounds);
+            LayoutParams lp = (LayoutParams) child.getLayoutParams();
             canvas.clipRect(
-                    mBounds.left,
+                    mBounds.left + lp.leftMargin,
                     mBounds.bottom - mHeight,
-                    mBounds.right,
+                    mBounds.right - lp.rightMargin,
                     mBounds.bottom,
                     Op.DIFFERENCE);
         }
