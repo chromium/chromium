@@ -72,6 +72,7 @@ public class SiteSettingsCategory {
         Type.ANTI_ABUSE,
         Type.ZOOM,
         Type.STORAGE_ACCESS,
+        Type.TRACKING_PROTECTION,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -109,10 +110,10 @@ public class SiteSettingsCategory {
         int ANTI_ABUSE = 28;
         int ZOOM = 29;
         int STORAGE_ACCESS = 30;
-        /**
-         * Number of handled categories used for calculating array sizes.
-         */
-        int NUM_ENTRIES = 31;
+        int TRACKING_PROTECTION = 31;
+
+        /** Number of handled categories used for calculating array sizes. */
+        int NUM_ENTRIES = 32;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -246,6 +247,7 @@ public class SiteSettingsCategory {
             case Type.ALL_SITES:
             case Type.USE_STORAGE:
             case Type.ZOOM:
+            case Type.TRACKING_PROTECTION:
                 return ContentSettingsType.DEFAULT; // Conversion unavailable.
         }
         assert false;
@@ -333,6 +335,8 @@ public class SiteSettingsCategory {
                 return "site_data";
             case Type.THIRD_PARTY_COOKIES:
                 return "third_party_cookies";
+            case Type.TRACKING_PROTECTION:
+                return "tracking_protection";
             case Type.ZOOM:
                 return "zoom";
             default:

@@ -61,6 +61,9 @@
   <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED" desc="3 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label." >
     Third-party cookies are blocked
   </message>
+  <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_LIMITED" desc="1 of 2 possible states for the Tracking Protection cookies setting. This text appears beneath the 'Tracking Protection' button label.">
+    Third-party cookies are limited
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_IDLE_DETECTION" desc="Title of the permission to detect user activity [CHAR_LIMIT=32]">
     Your device use
   </message>
@@ -111,6 +114,9 @@
   </message>
   <message name="IDS_STORAGE_ACCESS_PERMISSION_TITLE" desc="Title of the permission to allow embedded content to access cookies and site data [CHAR_LIMIT=32]">
     Embedded content
+  </message>
+  <message name="IDS_TRACKING_PROTECTION_SETTINGS_TITLE" desc="Title of the Tracking Protection category in Site Settings [CHAR_LIMIT=32]">
+    Tracking Protection
   </message>
 
   <!-- Site settings global toggles -->

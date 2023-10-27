@@ -595,6 +595,13 @@ public class ContentSettingsResources {
         return 0;
     }
 
+    /** Returns the summary for the Tracking Protection setting to be displayed in site settings. */
+    public static int getTrackingProtectionListSummary(boolean blockAll) {
+        return blockAll
+                ? R.string.third_party_cookies_link_row_sub_label_disabled
+                : R.string.third_party_cookies_link_row_sub_label_limited;
+    }
+
     /**
      * Returns the resources IDs for descriptions for Allowed, Ask and Blocked states, in that
      * order, on a tri-state setting.

@@ -1292,6 +1292,18 @@ public class SiteSettingsTest {
         settingsActivity.finish();
     }
 
+    /** Test that showing the Site Settings menu contains the "Tracking protection" row. */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
+    public void testSiteSettingsMenuWithTrackingProtectionEnabled() {
+        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
+        SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
+        assertNotNull(websitePreferences.findPreference("tracking_protection"));
+        settingsActivity.finish();
+    }
+
     /** Test that showing the Site Settings menu does not contain the "Anti-abuse" row. */
     @Test
     @SmallTest
@@ -1326,7 +1338,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(31, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(32, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test

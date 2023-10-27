@@ -155,6 +155,16 @@ public interface SiteSettingsDelegate {
     boolean isPartOfManagedFirstPartySet(String origin);
 
     /***
+     * @return true if the Tracking Protection UI should be displayed.
+     */
+    boolean shouldShowTrackingProtectionUI();
+
+    /***
+     * @return true if all third-party cookies are blocked when Tracking Protection is on.
+     */
+    boolean isBlockAll3PCDEnabledInTrackingProtection();
+
+    /***
      * @return Enables/disables First Party Sets data access.
      */
     void setFirstPartySetsDataAccessEnabled(boolean enabled);

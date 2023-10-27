@@ -85,6 +85,14 @@ The order of the following items is from: http://crbug.com/610358.
         android:icon="@drawable/permission_cookie"
         app:iconTint="@macro/default_icon_color"
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
+    <!-- Tracking protection settings -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="tracking_protection"
+        android:icon="@drawable/ic_eye_crossed"
+        app:iconTint="@macro/default_icon_color"
+        android:fragment="org.chromium.components.privacy_sandbox.TrackingProtectionSettings"
+        android:title="@string/tracking_protection_settings_title"
+        app:isPreferenceVisible="false" />
     <!-- JavaScript -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
