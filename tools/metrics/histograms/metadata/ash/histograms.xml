@@ -252,6 +252,41 @@ chromium-metrics-reviews@google.com.
   <variant name="Projector" summary="Projector initiated capture mode"/>
 </variants>
 
+<variants name="SnapActionSource">
+  <variant name="AutoSnapInSplitView"
+      summary="Auto snap a window in split view"/>
+  <variant name="DragDownFromTopToSnap"
+      summary="Drag down from shelf to snap a window"/>
+  <variant name="DragOrSelectOverviewWindowToSnap"
+      summary="Snap a window from overview"/>
+  <variant name="DragTabToSnap" summary="Drag a tab to snap"/>
+  <variant name="DragUpFromShelfToSnap"
+      summary="Drag up from shelf to snap a window"/>
+  <variant name="DragWindowToEdgeToSnap" summary="Drag a window to snap"/>
+  <variant name="KeyboardShortcutToSnap"
+      summary="Use keyboard shortcut to snap a window"/>
+  <variant name="LongPressCaptionButtonToSnap"
+      summary="Long press the caption button to snap a window"/>
+  <variant name="LongPressOverviewButtonToSnap"
+      summary="Long press overview button to snap a window"/>
+  <variant name="NotSpecified"
+      summary="Default value for any snap action actions that's not covered
+               below"/>
+  <variant name="SnapByClamshellTabletTransition"
+      summary="Snap the window during clamshell to tablet mode transition"/>
+  <variant name="SnapByDeskOrSessionChange"
+      summary="Snap a window due to desk or session change"/>
+  <variant name="SnapByFullRestoreOrDeskTemplateOrSavedDesk"
+      summary="Snap the window on full restore, desk template or saved desk"/>
+  <variant name="SnapByWindowLayoutMenu"
+      summary="Snap the window through the window layout menu snap option"/>
+  <variant name="SnapByWindowStateRestore"
+      summary="Snap the window on window state restore"/>
+  <variant name="SnapGroupWindowUpdate"
+      summary="Snap a window while updating a window in split view"/>
+  <variant name="Test" summary="Snap a window in test"/>
+</variants>
+
 <variants name="SplitViewResizeModes">
   <variant name=".ClamshellMode.SingleWindow" summary=""/>
   <variant name=".ClamshellMode.WithOverview" summary=""/>
@@ -6681,22 +6716,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.SplitViewOverviewSession.SplitViewOverviewSessionExitPoint.{TabletOrClamshell}"
-    enum="SplitViewOverviewSessionExitPoint" expires_after="2024-10-25">
-  <owner>michelefan@chromium.org</owner>
-  <owner>sophiewen@chromium.org</owner>
-  <owner>xdai@chromium.org</owner>
-  <summary>
-    Recorded at the exit point of the split view overview session in
-    {TabletOrClamshell}. The recorded enum indicates the reason that triggers
-    the split view overview session exit.
-  </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
-</histogram>
-
-<histogram
     name="Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit.{TabletOrClamshell}"
-    enum="Boolean" expires_after="2024-10-25">
+    enum="Boolean" expires_after="2024-10-30">
   <owner>michelefan@chromium.org</owner>
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
@@ -6705,6 +6726,21 @@ chromium-metrics-reviews@google.com.
     {TabletOrClamshell}. Emits true if the window layout setup is complete,
     false otherwise.
   </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.SplitViewOverviewSession.{SnapSource}.ExitPoint.{TabletOrClamshell}"
+    enum="SplitViewOverviewSessionExitPoint" expires_after="2024-10-30">
+  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Recorded at the exit point of the split view overview session in
+    {TabletOrClamshell}. The recorded enum indicates the reason that triggers
+    the split view overview session exit.
+  </summary>
+  <token key="SnapSource" variants="SnapActionSource"/>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 

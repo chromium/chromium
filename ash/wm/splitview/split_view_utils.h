@@ -186,6 +186,24 @@ views::Widget::InitParams CreateWidgetInitParams(
     aura::Window* parent_window,
     const std::string& widget_name);
 
+// Builds the full histogram that records whether the window layout completes on
+// `SplitViewOverviewSession` exit. The full histogram is shown in the example
+// below:
+// |------------prefix----------|-----root_word-------------------|
+// "Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit"
+//                                                               |--ui_mode--|
+//                                                            ".ClamshellMode",
+ASH_EXPORT std::string BuildWindowLayoutCompleteOnSessionExitHistogram();
+
+// Builds the full histogram that records the exit point of the
+// `SplitViewOverviewSession` by inserting the `snap_action_source` and
+// appending the ui mode suffix to build the full histogram name.
+// The full histogram is shown in the example below:
+// |------------prefix----------|-snap_action_source-|-root_word-|--ui_mode--|
+// "Ash.SplitViewOverviewSession.DragWindowEdgeToSnap.ExitPoint.ClamshellMode".
+ASH_EXPORT std::string BuildSplitViewOverviewExitPointHistogramName(
+    WindowSnapActionSource snap_action_source);
+
 }  // namespace ash
 
 #endif  // ASH_WM_SPLITVIEW_SPLIT_VIEW_UTILS_H_

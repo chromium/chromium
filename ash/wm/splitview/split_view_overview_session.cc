@@ -17,17 +17,12 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 
 namespace ash {
 
 namespace {
-
-constexpr char kWindowLayoutCompleteOnSessionExit[] =
-    "Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit";
-
-constexpr char kSplitViewOverviewSessionExitPoint[] =
-    "Ash.SplitViewOverviewSession.SplitViewOverviewSessionExitPoint";
 
 // Histogram names that record presentation time of resize operation with
 // following conditions:
@@ -55,13 +50,6 @@ bool InClamshellSplitViewMode(SplitViewController* controller) {
   return (features::IsFasterSplitScreenSetupEnabled() ||
           (controller && controller->InClamshellSplitViewMode())) &&
          GetOverviewSession();
-}
-
-std::string BuildHistogramName(const char* const base_name) {
-  std::string histogram_name(base_name);
-  histogram_name.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
-                                                       : ".ClamshellMode");
-  return histogram_name;
 }
 
 }  // namespace
@@ -117,12 +105,13 @@ void SplitViewOverviewSession::RecordSplitViewOverviewSessionExitPointMetrics(
             SplitViewOverviewSessionExitPoint::kCompleteByActivating ||
         user_action == SplitViewOverviewSessionExitPoint::kSkip) {
       base::UmaHistogramBoolean(
-          BuildHistogramName(kWindowLayoutCompleteOnSessionExit),
+          BuildWindowLayoutCompleteOnSessionExitHistogram(),
           user_action ==
               SplitViewOverviewSessionExitPoint::kCompleteByActivating);
     }
     base::UmaHistogramEnumeration(
-        BuildHistogramName(kSplitViewOverviewSessionExitPoint), user_action);
+        BuildSplitViewOverviewExitPointHistogramName(snap_action_source_),
+        user_action);
   }
 }
 

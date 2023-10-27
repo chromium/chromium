@@ -5,9 +5,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
@@ -21,7 +19,6 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
-#include "base/command_line.h"
 #include "base/time/time.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -54,6 +51,13 @@ constexpr base::TimeDelta kLabelAnimationDelay = base::Milliseconds(167);
 
 // Toast data.
 constexpr char kAppCannotSnapToastId[] = "split_view_app_cannot_snap";
+
+constexpr char kHistogramPrefix[] = "Ash.SplitViewOverviewSession.";
+
+constexpr char kWindowLayoutCompleteOnSessionExitRootWord[] =
+    "WindowLayoutCompleteOnSessionExit";
+
+constexpr char kExitPointRootWord[] = "ExitPoint";
 
 // Gets the duration, tween type and delay before animation based on |type|.
 void GetAnimationValuesForType(
@@ -145,6 +149,53 @@ views::BubbleDialogDelegate* AsBubbleDialogDelegate(
   if (!widget || !widget->widget_delegate())
     return nullptr;
   return widget->widget_delegate()->AsBubbleDialogDelegate();
+}
+
+// Returns the corresponding snap action source metric string component with
+// given `snap_action_source`.
+const char* GetSnapActionSourceMetricComponent(
+    WindowSnapActionSource snap_action_source) {
+  switch (snap_action_source) {
+    case WindowSnapActionSource::kNotSpecified:
+      return "NotSpecified";
+    case WindowSnapActionSource::kDragWindowToEdgeToSnap:
+      return "DragWindowToEdgeToSnap";
+    case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
+      return "LongPressCaptionButtonToSnap";
+    case WindowSnapActionSource::kKeyboardShortcutToSnap:
+      return "KeyboardShortcutToSnap";
+    case WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap:
+      return "DragOrSelectOverviewWindowToSnap";
+    case WindowSnapActionSource::kLongPressOverviewButtonToSnap:
+      return "LongPressOverviewButtonToSnap";
+    case WindowSnapActionSource::kDragUpFromShelfToSnap:
+      return "DragUpFromShelfToSnap";
+    case WindowSnapActionSource::kDragDownFromTopToSnap:
+      return "DragDownFromTopToSnap";
+    case WindowSnapActionSource::kDragTabToSnap:
+      return "DragTabToSnap";
+    case WindowSnapActionSource::kAutoSnapInSplitView:
+      return "AutoSnapInSplitView";
+    case WindowSnapActionSource::kSnapByWindowStateRestore:
+      return "SnapByWindowStateRestore";
+    case WindowSnapActionSource::kSnapByWindowLayoutMenu:
+      return "SnapByWindowLayoutMenu";
+    case WindowSnapActionSource::kSnapByFullRestoreOrDeskTemplateOrSavedDesk:
+      return "SnapByFullRestoreOrDeskTemplateOrSavedDesk";
+    case WindowSnapActionSource::kSnapByClamshellTabletTransition:
+      return "SnapByClamshellTabletTransition";
+    case WindowSnapActionSource::kSnapByDeskOrSessionChange:
+      return "SnapByDeskOrSessionChange";
+    case WindowSnapActionSource::kSnapGroupWindowUpdate:
+      return "SnapGroupWindowUpdate";
+    case WindowSnapActionSource::kTest:
+      return "Test";
+  }
+}
+
+void AppendUIModeToHistogram(std::string& histogram_name) {
+  histogram_name.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
+                                                       : ".ClamshellMode");
 }
 
 }  // namespace
@@ -540,6 +591,23 @@ views::Widget::InitParams CreateWidgetInitParams(
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.name = widget_name;
   return params;
+}
+
+ASH_EXPORT std::string BuildWindowLayoutCompleteOnSessionExitHistogram() {
+  std::string histogram_name(kHistogramPrefix);
+  histogram_name.append(kWindowLayoutCompleteOnSessionExitRootWord);
+  AppendUIModeToHistogram(histogram_name);
+  return histogram_name;
+}
+
+ASH_EXPORT std::string BuildSplitViewOverviewExitPointHistogramName(
+    WindowSnapActionSource snap_action_source) {
+  std::string histogram_name(kHistogramPrefix);
+  histogram_name.append(GetSnapActionSourceMetricComponent(snap_action_source));
+  histogram_name.append(".");
+  histogram_name.append(kExitPointRootWord);
+  AppendUIModeToHistogram(histogram_name);
+  return histogram_name;
 }
 
 }  // namespace ash
