@@ -210,6 +210,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_SAVE_TO_PHOTOS_IOS = 53,
   // Access point for the Chrome Signin Intercept Bubble.
   ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE = 54,
+  // Restore primary account info in case it was lost.
+  ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD = 55,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml

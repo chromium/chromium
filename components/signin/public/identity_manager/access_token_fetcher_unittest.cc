@@ -70,9 +70,11 @@ class AccessTokenFetcherTest
                                  &token_service_,
                                  account_tracker_.get()) {
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
+    ProfileOAuth2TokenService::RegisterProfilePrefs(pref_service_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
 
     account_tracker_->Initialize(&pref_service_, base::FilePath());
+    primary_account_manager_.Initialize();
 
     token_service_.AddAccessTokenDiagnosticsObserver(this);
   }

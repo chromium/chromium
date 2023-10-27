@@ -1103,6 +1103,29 @@ should be kept to monitor/debug signin Multilogin issues-->
   <summary>Response status received from gaia Multilogin.</summary>
 </histogram>
 
+<histogram name="Signin.PAMInitialize.PrimaryAccountInfoState"
+    enum="PAMInitializePrimaryAccountInfoState" expires_after="2024-06-01">
+  <owner>msarda@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Logs whether the primary account info is properly tracked by the account
+    tracker service. If it is not, then it logs whether the primary account info
+    was restored.
+  </summary>
+</histogram>
+
+<histogram name="Signin.PAMInitialize.PrimaryAccountPrefs"
+    enum="PAMInitializePrimaryAccountPrefs" expires_after="2024-06-01">
+  <owner>msarda@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Logs the state of the main primary account preferences when the primary
+    account manager is loaded.
+  </summary>
+</histogram>
+
 <histogram name="Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito"
     enum="BooleanAllowed" expires_after="2024-01-14">
   <owner>bsazonov@chromium.org</owner>

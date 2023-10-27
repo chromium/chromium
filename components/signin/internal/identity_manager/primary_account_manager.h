@@ -18,6 +18,10 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_
 
+#include <string>
+#include <utility>
+
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -54,6 +58,18 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
     kKeepAllAccounts = 0,
     // Remove all the accounts.
     kRemoveAllAccounts,
+  };
+
+  // Enum for histogram 'Signin.PAMInitialize.PrimaryAccountInfoState'.
+  enum class InitializeAccountInfoState {
+    kAccountInfoAvailable = 0,
+    kEmptyAccountInfo_RestoreFailedNotSyncConsented = 1,
+    kEmptyAccountInfo_RestoreFailedNoLastSyncGaiaId = 2,
+    kEmptyAccountInfo_RestoreFailedNoLastSyncEmail = 3,
+    kEmptyAccountInfo_RestoreFailedAccountIdDontMatch = 4,
+    kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled = 5,
+    kEmptyAccountInfo_RestoreSuccessFromLastSyncInfo = 6,
+    kMaxValue = kEmptyAccountInfo_RestoreSuccessFromLastSyncInfo,
   };
 
   PrimaryAccountManager(SigninClient* client,
@@ -132,6 +148,13 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // Prepares the primary account and consented preferences before loading them.
   void PrepareToLoadPrefs();
 
+  // Returns the primary account info to be used during initialization. If the
+  // primary account info is not available in the account tracker service, then
+  // it attempts to restore.
+  std::pair<CoreAccountInfo, InitializeAccountInfoState>
+  GetOrRestorePrimaryAccountInfoOnInitialize(const std::string& pref_account_id,
+                                             bool pref_consented_to_sync);
+
   // Sets the primary account id, when the user has consented to sync.
   // If the user has consented for sync with the same account, then this method
   // is a no-op.
@@ -193,7 +216,13 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // this field.
   CoreAccountInfo primary_account_info_;
 
+  // Whether the primary account is consented to sync.
+  bool consented_to_sync_;
+
   base::ObserverList<Observer> observers_;
 };
+
+// Internal feature - exposed only unit testing.
+BASE_DECLARE_FEATURE(kRestorePrimaryAccountInfo);
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_

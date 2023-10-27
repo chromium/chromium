@@ -83622,6 +83622,26 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Enter capture mode"/>
 </enum>
 
+<enum name="PAMInitializePrimaryAccountInfoState">
+  <int value="0" label="OK: Account info available"/>
+  <int value="1" label="Empty account info. Restore failed (no sync consent)."/>
+  <int value="2"
+      label="Empty account info. Restore failed (no last sync gaia ID)."/>
+  <int value="3"
+      label="Empty account info. Restore failed (no last sync email)"/>
+  <int value="4"
+      label="Empty account info. Restore failed (account id mismatch)"/>
+  <int value="5" label="Empty account info. Restore failed (feature disabled)"/>
+  <int value="6" label="Empty account info. Restore success"/>
+</enum>
+
+<enum name="PAMInitializePrimaryAccountPrefs">
+  <int value="0" label="With primary account id, no sync consent"/>
+  <int value="1" label="With primary account id, with sync consent"/>
+  <int value="2" label="Empty primary account id, no sync consent"/>
+  <int value="3" label="[Error] Empty primary accountid, with sync consent"/>
+</enum>
+
 <enum name="PanningModelType">
   <int value="0" label="equalpower"/>
   <int value="1" label="HRTF"/>
