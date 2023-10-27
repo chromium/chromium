@@ -255,28 +255,35 @@ void PasswordProtectionRequestContent::MaybeCollectVisualFeatures() {
   }
 #endif
 
-  bool can_extract_visual_features =
+  visual_utils::CanExtractVisualFeaturesResult
+      can_extract_visual_features_result =
 #if BUILDFLAG(IS_ANDROID)
-      visual_utils::CanExtractVisualFeatures(
-          password_protection_service()->IsExtendedReporting(),
-          password_protection_service()->IsIncognito(),
-          gfx::Size(request_proto_->content_area_width(),
-                    request_proto_->content_area_height()));
+          visual_utils::CanExtractVisualFeatures(
+              password_protection_service()->IsExtendedReporting(),
+              password_protection_service()->IsIncognito(),
+              gfx::Size(request_proto_->content_area_width(),
+                        request_proto_->content_area_height()));
 #else
-      visual_utils::CanExtractVisualFeatures(
-          password_protection_service()->IsExtendedReporting(),
-          password_protection_service()->IsIncognito(),
-          gfx::Size(request_proto_->content_area_width(),
-                    request_proto_->content_area_height()),
-          zoom::ZoomController::GetZoomLevelForWebContents(web_contents_));
+          visual_utils::CanExtractVisualFeatures(
+              password_protection_service()->IsExtendedReporting(),
+              password_protection_service()->IsIncognito(),
+              gfx::Size(request_proto_->content_area_width(),
+                        request_proto_->content_area_height()),
+              zoom::ZoomController::GetZoomLevelForWebContents(web_contents_));
 #endif
+
+  base::UmaHistogramEnumeration("PasswordProtection.VisualFeaturesClearReason",
+                                can_extract_visual_features_result);
 
   // Once the DOM features are collected, either collect visual features, or go
   // straight to sending the ping.
   bool trigger_type_supports_visual_features =
       trigger_type() == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
       trigger_type() == LoginReputationClientRequest::PASSWORD_REUSE_EVENT;
-  if (trigger_type_supports_visual_features && can_extract_visual_features) {
+  if (trigger_type_supports_visual_features &&
+      can_extract_visual_features_result ==
+          visual_utils::CanExtractVisualFeaturesResult::
+              kCanExtractVisualFeatures) {
     CollectVisualFeatures();
   } else {
     SendRequest();

@@ -14532,6 +14532,14 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Canceled, on other sequence"/>
 </enum>
 
+<enum name="CanExtractVisualFeaturesResult">
+  <int value="0" label="Can extract visual features"/>
+  <int value="1" label="User is not subscribed to SBER"/>
+  <int value="2" label="User is off the record"/>
+  <int value="3" label="Frame is below minimal width and/or height"/>
+  <int value="4" label="Zoom level is above maximum value"/>
+</enum>
+
 <enum name="CanMakePaymentUsage">
   <int value="0" label="Used"/>
   <int value="1" label="Not Used"/>

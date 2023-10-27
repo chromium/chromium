@@ -554,9 +554,11 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       size = gfx::Size(static_cast<int>(viewport.width()),
                        static_cast<int>(viewport.height()));
     }
-    bool can_extract_visual_features = visual_utils::CanExtractVisualFeatures(
-        IsExtendedReportingEnabled(*delegate_->GetPrefs()),
-        web_contents()->GetBrowserContext()->IsOffTheRecord(), size);
+    visual_utils::CanExtractVisualFeaturesResult
+        can_extract_visual_features_result =
+            visual_utils::CanExtractVisualFeatures(
+                IsExtendedReportingEnabled(*delegate_->GetPrefs()),
+                web_contents()->GetBrowserContext()->IsOffTheRecord(), size);
 #else
     gfx::Size size;
     content::RenderWidgetHostView* view =
@@ -564,12 +566,19 @@ void ClientSideDetectionHost::PhishingDetectionDone(
     if (view) {
       size = view->GetVisibleViewportSize();
     }
-    bool can_extract_visual_features = visual_utils::CanExtractVisualFeatures(
-        IsExtendedReportingEnabled(*delegate_->GetPrefs()),
-        web_contents()->GetBrowserContext()->IsOffTheRecord(), size,
-        zoom::ZoomController::GetZoomLevelForWebContents(web_contents()));
+    visual_utils::CanExtractVisualFeaturesResult
+        can_extract_visual_features_result =
+            visual_utils::CanExtractVisualFeatures(
+                IsExtendedReportingEnabled(*delegate_->GetPrefs()),
+                web_contents()->GetBrowserContext()->IsOffTheRecord(), size,
+                zoom::ZoomController::GetZoomLevelForWebContents(
+                    web_contents()));
 #endif
-    if (!can_extract_visual_features) {
+    base::UmaHistogramEnumeration("SBClientPhishing.VisualFeaturesClearReason",
+                                  can_extract_visual_features_result);
+    if (can_extract_visual_features_result !=
+        visual_utils::CanExtractVisualFeaturesResult::
+            kCanExtractVisualFeatures) {
       verdict->clear_visual_features();
     }
 
