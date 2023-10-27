@@ -327,7 +327,7 @@ TestNoStatePrefetchContentsFactory::~TestNoStatePrefetchContentsFactory() {
 std::unique_ptr<TestPrerender>
 TestNoStatePrefetchContentsFactory::ExpectNoStatePrefetchContents(
     FinalStatus final_status) {
-  std::unique_ptr<TestPrerender> handle(new TestPrerender());
+  auto handle = std::make_unique<TestPrerender>();
   expected_contents_queue_.push_back(
       ExpectedContents(final_status, handle->AsWeakPtr()));
   return handle;
