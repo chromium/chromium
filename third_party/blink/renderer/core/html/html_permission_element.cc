@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -17,8 +18,10 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
@@ -92,8 +95,8 @@ const AtomicString& HTMLPermissionElement::GetType() const {
 
 void HTMLPermissionElement::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
-  visitor->Trace(inner_element_);
-  visitor->Trace(permission_text_);
+  visitor->Trace(shadow_element_);
+  visitor->Trace(permission_text_span_);
   HTMLElement::Trace(visitor);
 }
 
@@ -148,16 +151,13 @@ void HTMLPermissionElement::AttributeChanged(
 }
 
 void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
-  CHECK(!inner_element_ && !permission_text_);
-  inner_element_ = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  inner_element_->SetShadowPseudoId(
-      AtomicString("-internal-permission-element-inner"));
-  root.AppendChild(inner_element_);
-
-  permission_text_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-  permission_text_->SetShadowPseudoId(
-      AtomicString("-internal-permission-text"));
-  inner_element_->AppendChild(permission_text_);
+  CHECK(!shadow_element_);
+  shadow_element_ = MakeGarbageCollected<PermissionShadowElement>(*this);
+  root.AppendChild(shadow_element_);
+  permission_text_span_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
+  permission_text_span_->SetShadowPseudoId(
+      shadow_element_names::kPseudoInternalPermissionTextSpan);
+  shadow_element_->AppendChild(permission_text_span_);
 }
 
 void HTMLPermissionElement::DefaultEventHandler(Event& event) {
@@ -299,7 +299,7 @@ void HTMLPermissionElement::UpdateText() {
   }
 
   if (message_id) {
-    permission_text_->setInnerText(GetLocale().QueryString(message_id));
+    permission_text_span_->setInnerText(GetLocale().QueryString(message_id));
   }
 }
 

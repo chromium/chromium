@@ -2786,6 +2786,8 @@ class ComputedStyle final : public ComputedStyleBase {
   FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest,
                            TextDecorationNotEqualRequiresRecomputeInkOverflow);
   FRIEND_TEST_ALL_PREFIXES(StyleEngineTest, ScrollbarStyleNoExcessiveCaching);
+  FRIEND_TEST_ALL_PREFIXES(PermissionShadowElementTest,
+                           PropagateCSSPropertyInnerElement);
 };
 
 inline bool ComputedStyle::HasAnyPseudoElementStyles() const {

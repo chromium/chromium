@@ -143,5 +143,9 @@
       name: "-internal-datetime-container",
       Symbol: "kPseudoInternalDatetimeContainer",
     },
+    {
+      name: "-internal-permission-text",
+      Symbol: "kPseudoInternalPermissionTextSpan",
+    },
   ],
 }

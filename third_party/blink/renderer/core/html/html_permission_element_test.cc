@@ -17,9 +17,9 @@ using mojom::blink::PermissionDescriptor;
 using mojom::blink::PermissionDescriptorPtr;
 using mojom::blink::PermissionName;
 
-class HTMLPemissionElementTest : public testing::Test {};
+class HTMLPermissionElementTest : public testing::Test {};
 
-TEST_F(HTMLPemissionElementTest, SetTypeAttribute) {
+TEST_F(HTMLPermissionElementTest, SetTypeAttribute) {
   ScopedPermissionElementForTest scoped_feature(true);
   ScopedNullExecutionContext execution_context;
   auto* document =
@@ -34,7 +34,7 @@ TEST_F(HTMLPemissionElementTest, SetTypeAttribute) {
   EXPECT_EQ(AtomicString("camera"), permission_element->GetType());
 }
 
-TEST_F(HTMLPemissionElementTest, ParsePermissionDescriptorsFromType) {
+TEST_F(HTMLPermissionElementTest, ParsePermissionDescriptorsFromType) {
   ScopedPermissionElementForTest scoped_feature(true);
   ScopedNullExecutionContext execution_context;
   auto* document =

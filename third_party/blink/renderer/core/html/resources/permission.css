@@ -20,24 +20,24 @@ permission {
   width: 188px;
  }
 
-permission::-internal-permission-element-inner {
-  width: 100%;
-  height: 100%;
-}
-
 permission:granted {
   background-color: white;
 }
 
 permission::-internal-permission-text {
+  display: inherit;
   font-family: monospace;
   font-size: inherit;
   font-style: normal;
   font-weight: 400;
+  height: 100%;
   letter-spacing: -0.02em;
+  line-height: 100%;
   opacity: 1 !important;
   outline: none;
   padding: 2px 4px 2px 4px;
   user-select:none !important;
+  vertical-align: inherit;
   white-space:nowrap !important;
+  width: 100%;
 }
