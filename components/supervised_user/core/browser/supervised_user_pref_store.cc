@@ -132,8 +132,6 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     prefs_->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
                        supervised_user::SupervisedUserURLFilter::ALLOW);
     prefs_->SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch, true);
-    prefs_->SetInteger(policy::policy_prefs::kForceYouTubeRestrict,
-                       safe_search_api::YOUTUBE_RESTRICT_MODERATE);
     prefs_->SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
 
 // TODO(b/290004926): Modifying `prefs::kSigninAllowed` causes check failures on
@@ -166,19 +164,6 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       prefs_->SetInteger(
           policy::policy_prefs::kIncognitoModeAvailability,
           static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
-    }
-
-    {
-      // Note that |policy::policy_prefs::kForceGoogleSafeSearch| is set
-      // automatically as part of |kSupervisedUserSettingsPrefMapping|, but this
-      // can't be done for |policy::policy_prefs::kForceYouTubeRestrict| because
-      // it is an int, not a bool.
-      bool force_safe_search =
-          settings.FindBool(supervised_user::kForceSafeSearch).value_or(true);
-      prefs_->SetInteger(policy::policy_prefs::kForceYouTubeRestrict,
-                         force_safe_search
-                             ? safe_search_api::YOUTUBE_RESTRICT_MODERATE
-                             : safe_search_api::YOUTUBE_RESTRICT_OFF);
     }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
