@@ -3456,11 +3456,12 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
 
   NET_LOG(USER) << "CreateCustomApn: Setting custom APNs for: " << network_guid
                 << ": " << new_apns.size();
-  if (!DoesDefaultApnExist(new_apns)) {
-    // TODO(b/303565348): Allow create if it's in disabled state
-    NET_LOG(ERROR)
-        << "CreateCustomApn: Cannot create new custom APN without a "
-        << "default type if no custom APN with a default type exist yet.";
+
+  if (!DoesDefaultApnExist(new_apns) &&
+      apn->state == mojom::ApnState::kEnabled) {
+    NET_LOG(ERROR) << "CreateCustomApn: Cannot create new custom APN in "
+                      "enabled state without a default type if no custom APN "
+                      "with a default type exist yet.";
     std::move(callback).Run(/*success=*/false);
     return;
   }

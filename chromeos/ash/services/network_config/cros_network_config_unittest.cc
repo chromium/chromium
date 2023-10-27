@@ -1969,6 +1969,47 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   EXPECT_TRUE(test_apn_data3.MojoApnEquals(*first_apn));
 }
 
+TEST_F(CrosNetworkConfigTest,
+       CanCreateDisabledAttachApnWithoutExistingDefaultApn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
+
+  // Register an observer to capture values sent to Shill
+  TestNetworkConfigurationObserver network_config_observer(
+      network_configuration_handler());
+
+  ASSERT_FALSE(network_metadata_store()->GetCustomApnList(kCellularGuid));
+
+  // CreateCustomApn with an exclusively attach APN in the disabled state, and
+  // verify that it is created even though a default APN does not exist.
+  TestApnData test_apn1;
+  test_apn1.mojo_state = mojom::ApnState::kDisabled;
+  test_apn1.onc_state = ::onc::cellular_apn::kStateDisabled;
+  test_apn1.access_point_name = kCellularTestApn1;
+  test_apn1.name = kCellularTestApnName1;
+  test_apn1.username = kCellularTestApnUsername1;
+  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.attach = kCellularTestApnAttach1;
+  test_apn1.mojo_apn_types = {mojom::ApnType::kAttach};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
+  ASSERT_TRUE(network_metadata_store()->GetCustomApnList(kCellularGuid));
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn1});
+    EXPECT_TRUE(
+        CustomApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(CustomApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                                network_config_observer));
+    EXPECT_TRUE(
+        CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+  AssertCreateCustomApnResultBucketCount(/*num_success=*/1, /*num_failure=*/0);
+  AssertCreateCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType::kAutomatic,
+      /*auth_type_count=*/1, mojom::ApnIpType::kAutomatic,
+      /*ip_type_count=*/1, ApnTypes::kAttach, /*apn_types_count=*/1);
+}
+
 TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
