@@ -130,6 +130,13 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += " ";
     capabilities += protocol::kMultiStreamCapability;
 
+    // The current fractional-coordinates implementation is only effective for
+    // multi-stream.
+    // TODO: b/227378399 - Move this into ClientSession when it is implemented
+    // for the single-stream case.
+    capabilities += " ";
+    capabilities += protocol::kFractionalCoordinatesCapability;
+
     // Client-controlled layout is only supported with Xorg+video-dummy.
     if (UsingVideoDummyDriver()) {
       capabilities += " ";
