@@ -2996,7 +2996,7 @@
     },
     {
       name: "PermissionsPolicyReporting",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PermissionsRequestRevoke",
