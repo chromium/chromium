@@ -29,7 +29,8 @@ PlusAddressCreationViewAndroid::~PlusAddressCreationViewAndroid() {
 }
 
 void PlusAddressCreationViewAndroid::Show(
-    const std::string& primary_email_address) {
+    const std::string& primary_email_address,
+    const std::string& plus_address) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_PlusAddressCreationViewBridge_create(
       env, reinterpret_cast<intptr_t>(this),
@@ -49,10 +50,7 @@ void PlusAddressCreationViewAndroid::Show(
 
   base::android::ScopedJavaLocalRef<jstring>
       j_proposed_plus_address_placeholder =
-          base::android::ConvertUTF16ToJavaString(
-              env,
-              l10n_util::GetStringUTF16(
-                  IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER));
+          base::android::ConvertUTF8ToJavaString(env, plus_address);
 
   base::android::ScopedJavaLocalRef<jstring> j_plus_address_modal_ok =
       base::android::ConvertUTF16ToJavaString(

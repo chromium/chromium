@@ -12,6 +12,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,10 +29,25 @@ class FakePlusAddressService : public PlusAddressService {
  public:
   FakePlusAddressService() = default;
 
-  void OfferPlusAddressCreation(const url::Origin& origin,
-                                PlusAddressCallback callback) override {
-    std::move(callback).Run(kFakeEmailAddressForCallback);
+  void ReservePlusAddress(const url::Origin& origin,
+                          PlusAddressRequestCallback on_completed) override {
+    std::move(on_completed)
+        .Run(PlusProfile({.facet = facet_,
+                          .plus_address = plus_address_,
+                          .is_confirmed = false}));
   }
+
+  void ConfirmPlusAddress(const url::Origin& origin,
+                          const std::string& plus_address,
+                          PlusAddressRequestCallback on_completed) override {
+    std::move(on_completed)
+        .Run(PlusProfile({.facet = facet_,
+                          .plus_address = plus_address_,
+                          .is_confirmed = true}));
+  }
+
+  std::string plus_address_ = kFakeEmailAddressForCallback;
+  std::string facet_ = "facet.bar";
 
   absl::optional<std::string> GetPrimaryEmail() override {
     return "plus+primary@plus.plus";
@@ -82,6 +98,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, OfferUi) {
   EXPECT_FALSE(future.IsReady());
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), kFakeEmailAddressForCallback);
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
@@ -104,10 +121,10 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
       url::Origin::Create(GURL("https://mattwashere.com")),
       second_future.GetCallback());
 
-  EXPECT_FALSE(future.IsReady());
-  EXPECT_FALSE(second_future.IsReady());
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), kFakeEmailAddressForCallback);
+  EXPECT_FALSE(second_future.IsReady());
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, Cancel) {
@@ -142,7 +159,6 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
       url::Origin::Create(GURL("https://mattwashere.com")),
       future.GetCallback());
   // Then, cancel, destroy, and ensure that `future.GetCallback()` is not run.
-  EXPECT_FALSE(future.IsReady());
   controller->OnCanceled();
   controller->OnDialogDestroyed();
   EXPECT_FALSE(future.IsReady());
@@ -152,7 +168,6 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.com")),
       second_future.GetCallback());
-  EXPECT_FALSE(second_future.IsReady());
   controller->OnConfirmed();
   EXPECT_TRUE(second_future.IsReady());
   EXPECT_EQ(second_future.Get(), kFakeEmailAddressForCallback);

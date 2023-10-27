@@ -44,25 +44,35 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
 
     callback_ = std::move(callback);
     relevant_origin_ = main_frame_origin;
-    PlusAddressMetrics::RecordModalEvent(
-        PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
-    if (!suppress_ui_for_testing_) {
-      view_ = std::make_unique<PlusAddressCreationViewAndroid>(
-          GetWeakPtr(), &GetWebContents());
-      view_->Show(maybe_email.value());
-    }
+    plus_address_service->ReservePlusAddress(
+        relevant_origin_,
+        base::BindOnce(
+            &PlusAddressCreationControllerAndroid::OnPlusAddressReserved,
+            GetWeakPtr(), maybe_email.value()));
   }
 }
 
 void PlusAddressCreationControllerAndroid::OnConfirmed() {
+  if (!plus_profile_.has_value()) {
+    return;
+  }
+  PlusAddressMetrics::RecordModalEvent(
+      PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed);
+  if (plus_profile_->is_confirmed) {
+    OnPlusAddressConfirmed(plus_profile_.value());
+    return;
+  }
   PlusAddressService* plus_address_service =
       PlusAddressServiceFactory::GetForBrowserContext(
           GetWebContents().GetBrowserContext());
-  PlusAddressMetrics::RecordModalEvent(
-      PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed);
   if (plus_address_service) {
-    plus_address_service->OfferPlusAddressCreation(relevant_origin_,
-                                                   std::move(callback_));
+    // Note: this call may fail if this modal is confirmed on the same
+    // `relevant_origin_` from another device.
+    plus_address_service->ConfirmPlusAddress(
+        relevant_origin_, plus_profile_->plus_address,
+        base::BindOnce(
+            &PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed,
+            GetWeakPtr()));
   }
 }
 
@@ -73,12 +83,45 @@ void PlusAddressCreationControllerAndroid::OnCanceled() {
 
 void PlusAddressCreationControllerAndroid::OnDialogDestroyed() {
   view_.reset();
+  plus_profile_.reset();
 }
 
 void PlusAddressCreationControllerAndroid::set_suppress_ui_for_testing(
     bool should_suppress) {
   suppress_ui_for_testing_ = should_suppress;
 }
+
+absl::optional<PlusProfile>
+PlusAddressCreationControllerAndroid::get_plus_profile_for_testing() {
+  return plus_profile_;
+}
+
+void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
+    const std::string& primary_email_address,
+    const PlusProfileOrError& maybe_plus_profile) {
+  if (!maybe_plus_profile.has_value()) {
+    // TODO: crbug.com/1467623 - Handle error case.
+    return;
+  }
+  plus_profile_ = maybe_plus_profile.value();
+  PlusAddressMetrics::RecordModalEvent(
+      PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
+  if (!suppress_ui_for_testing_ && !view_) {
+    view_ = std::make_unique<PlusAddressCreationViewAndroid>(GetWeakPtr(),
+                                                             &GetWebContents());
+    view_->Show(primary_email_address, plus_profile_->plus_address);
+  }
+}
+
+void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
+    const PlusProfileOrError& maybe_plus_profile) {
+  if (!maybe_plus_profile.has_value()) {
+    // TODO: crbug.com/1467623 - Handle error case.
+    return;
+  }
+  std::move(callback_).Run(maybe_plus_profile->plus_address);
+}
+
 base::WeakPtr<PlusAddressCreationControllerAndroid>
 PlusAddressCreationControllerAndroid::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
