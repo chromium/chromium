@@ -59,7 +59,7 @@ public class VideoFullscreenOrientationLockTest {
 
     private boolean isScreenOrientationLocked() {
         return mActivityTestRule.getActivity().getRequestedOrientation()
-                != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                != ActivityInfo.SCREEN_ORIENTATION_USER;
     }
 
     private boolean isScreenOrientationLandscape() throws TimeoutException {

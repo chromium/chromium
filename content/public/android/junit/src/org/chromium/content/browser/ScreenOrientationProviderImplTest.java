@@ -54,7 +54,7 @@ public final class ScreenOrientationProviderImplTest {
 
         instance.runDelayedOrientationRequests(window);
         Assert.assertEquals(
-                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, activity.getRequestedOrientation());
+                ActivityInfo.SCREEN_ORIENTATION_USER, activity.getRequestedOrientation());
     }
 
     /**

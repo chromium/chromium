@@ -114,7 +114,7 @@ public class ScreenOrientationProviderImpl
             @Nullable WindowAndroid window, Context context) {
         switch (orientation) {
             case ScreenOrientationLockType.DEFAULT:
-                return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                return ActivityInfo.SCREEN_ORIENTATION_USER;
             case ScreenOrientationLockType.PORTRAIT_PRIMARY:
                 return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
             case ScreenOrientationLockType.PORTRAIT_SECONDARY:
