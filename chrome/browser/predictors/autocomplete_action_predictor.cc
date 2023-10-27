@@ -143,8 +143,8 @@ AutocompleteActionPredictor::AutocompleteActionPredictor(Profile* profile)
         FROM_HERE,
         base::BindOnce(&AutocompleteActionPredictorTable::GetAllRows, table_,
                        rows_ptr),
-        base::BindOnce(&AutocompleteActionPredictor::CreateCaches, AsWeakPtr(),
-                       std::move(rows)));
+        base::BindOnce(&AutocompleteActionPredictor::CreateCaches,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(rows)));
   }
 }
 

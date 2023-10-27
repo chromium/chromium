@@ -58,10 +58,8 @@ namespace predictors {
 // This class can be accessed as a weak pointer so that it can safely use
 // PostTaskAndReply without fear of crashes if it is destroyed before the reply
 // triggers. This is necessary during initialization.
-class AutocompleteActionPredictor
-    : public KeyedService,
-      public history::HistoryServiceObserver,
-      public base::SupportsWeakPtr<AutocompleteActionPredictor> {
+class AutocompleteActionPredictor : public KeyedService,
+                                    public history::HistoryServiceObserver {
  public:
   // An `Action` is a recommendation on what pre* technology to invoke on a
   // given `AutocompleteMatch`.
@@ -287,6 +285,8 @@ class AutocompleteActionPredictor
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+
+  base::WeakPtrFactory<AutocompleteActionPredictor> weak_ptr_factory_{this};
 };
 
 }  // namespace predictors
