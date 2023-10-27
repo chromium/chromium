@@ -265,7 +265,7 @@ ResultCode ConfigBase::AddRuleInternal(SubSystem subsystem,
           << "Enable MITIGATION_WIN32K_DISABLE before adding win32k policy "
              "rules.";
       if (!ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
-              pattern, semantics, policy_maker_.get())) {
+              policy_maker_.get())) {
         NOTREACHED();
         return SBOX_ERROR_BAD_PARAMS;
       }

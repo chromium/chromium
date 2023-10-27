@@ -11,8 +11,6 @@
 namespace sandbox {
 
 bool ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
-    const wchar_t* name,
-    Semantics semantics,
     LowLevelPolicy* policy) {
   PolicyRule rule(FAKE_SUCCESS);
   if (!policy->AddRule(IpcTag::GDI_GDIDLLINITIALIZE, &rule))
