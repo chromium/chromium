@@ -113129,6 +113129,24 @@ Full version information for the fingerprint enum values:
   <int value="6" label="Failed recording migrated tag in the VK"/>
 </enum>
 
+<enum name="VmmmsRequestPriority">
+<!-- This must be kept in sync with enum ResizePriority in ChromeOS
+src/platform2/system_api/non_standard_ipc/vm_memory_management
+vm_memory_management.proto -->
+
+  <int value="0" label="RESIZE_PRIORITY_UNSPECIFIED"/>
+  <int value="1" label="RESIZE_PRIORITY_BALLOON_STALL"/>
+  <int value="2" label="RESIZE_PRIORITY_NO_KILL_CANDIDATES_HOST"/>
+  <int value="3" label="RESIZE_PRIORITY_NO_KILL_CANDIDATES_GUEST"/>
+  <int value="4" label="RESIZE_PRIORITY_FOCUSED_TAB"/>
+  <int value="5" label="RESIZE_PRIORITY_FOCUSED_APP"/>
+  <int value="6" label="RESIZE_PRIORITY_PERCEPTIBLE_TAB"/>
+  <int value="7" label="RESIZE_PRIORITY_PERCEPTIBLE_APP"/>
+  <int value="8" label="RESIZE_PRIORITY_CACHED_TAB"/>
+  <int value="9" label="RESIZE_PRIORITY_CACHED_APP"/>
+  <int value="10" label="RESIZE_PRIORITY_MGLRU_RECLAIM"/>
+</enum>
+
 <enum name="VmmSwapDisableReason">
   <int value="0" label="VM shutdown while active"/>
   <int value="1" label="VM shutdown while inactive"/>

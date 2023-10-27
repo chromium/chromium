@@ -69,6 +69,15 @@ chromium-metrics-reviews@google.com.
   </variant>
 </variants>
 
+<variants name="VmmmsClientName">
+  <variant name="ARCVM" summary="ARCVM"/>
+  <variant name="Host" summary="Host"/>
+</variants>
+
+<variants name="VmmmsVmName">
+  <variant name="ARCVM" summary="ARCVM"/>
+</variants>
+
 <variants name="VmmSwapVmName">
   <variant name="ARCVM" summary="ARCVM"/>
 </variants>
@@ -2426,6 +2435,98 @@ chromium-metrics-reviews@google.com.
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms.
   </summary>
+</histogram>
+
+<histogram name="Memory.VMMMS.{ClientName}.DecisionLatency" units="ms"
+    expires_after="2024-04-23">
+  <owner>kalutes@google.com</owner>
+  <owner>cwd@google.com</owner>
+  <owner>cros-vm-technology@google.com</owner>
+  <summary>
+    The time the Virtual Machine Memory Management Service added to a kill
+    decision from a client. Logged after a client asks the VMMMS to change a
+    balloon size to avoid killing an app or discarding a tab.
+  </summary>
+  <token key="ClientName" variants="VmmmsClientName"/>
+</histogram>
+
+<histogram name="Memory.VMMMS.{ClientName}.DecisionTimeout"
+    enum="VmmmsRequestPriority" expires_after="2024-04-23">
+  <owner>kalutes@google.com</owner>
+  <owner>cwd@google.com</owner>
+  <owner>cros-vm-technology@google.com</owner>
+  <summary>
+    The priority of each kill decision request that timed out. Logged after a
+    client asks the VMMMS to change a balloon size to avoid killing an app or
+    discarding a tab.
+  </summary>
+  <token key="ClientName" variants="VmmmsClientName"/>
+</histogram>
+
+<histogram name="Memory.VMMMS.{ClientName}.UnnecessaryKill"
+    enum="VmmmsRequestPriority" expires_after="2024-04-23">
+  <owner>kalutes@google.com</owner>
+  <owner>cwd@google.com</owner>
+  <owner>cros-vm-technology@google.com</owner>
+  <summary>
+    The priority of each kill decision request that timed out leading to an
+    unnecessary app kill or tab discard. Logged after a client asks the VMMMS to
+    change a balloon size to avoid killing an app or discarding a tab.
+  </summary>
+  <token key="ClientName" variants="VmmmsClientName"/>
+</histogram>
+
+<histogram name="Memory.VMMMS.{VmName}.Deflate" units="MiB"
+    expires_after="2024-04-23">
+  <owner>kalutes@google.com</owner>
+  <owner>cwd@google.com</owner>
+  <owner>cros-vm-technology@google.com</owner>
+  <summary>
+    When the balloon for a given VM is deflated, the size of the deflation.
+  </summary>
+  <token key="VmName" variants="VmmmsVmName"/>
+</histogram>
+
+<histogram name="Memory.VMMMS.{VmName}.Inflate" units="MiB"
+    expires_after="2024-04-23">
+  <owner>kalutes@google.com</owner>
+  <owner>cwd@google.com</owner>
+  <owner>cros-vm-technology@google.com</owner>
+  <summary>
+    When the balloon for a given VM is inflated, the size of the inlfation.
+  </summary>
+  <token key="VmName" variants="VmmmsVmName"/>
+</histogram>
+
+<histogram name="Memory.VMMMS.{VmName}.ResizeInterval" units="ms"
+    expires_after="2024-04-23">
+  <owner>kalutes@google.com</owner>
+  <owner>cwd@google.com</owner>
+  <owner>cros-vm-technology@google.com</owner>
+  <summary>
+    When the balloon for a given VM resizes, the time since the previous resize.
+  </summary>
+  <token key="VmName" variants="VmmmsVmName"/>
+</histogram>
+
+<histogram name="Memory.VMMMS.{VmName}.Size10Minutes" units="MiB"
+    expires_after="2024-04-23">
+  <owner>kalutes@google.com</owner>
+  <owner>cwd@google.com</owner>
+  <owner>cros-vm-technology@google.com</owner>
+  <summary>
+    The size of the balloon for a given VM. Logged every 10 minutes.
+  </summary>
+  <token key="VmName" variants="VmmmsVmName"/>
+</histogram>
+
+<histogram name="Memory.VMMMS.{VmName}.StallThroughput" units="MiB/s"
+    expires_after="2024-04-23">
+  <owner>kalutes@google.com</owner>
+  <owner>cwd@google.com</owner>
+  <owner>cros-vm-technology@google.com</owner>
+  <summary>The inflation rate of a balloon when a stall is detected.</summary>
+  <token key="VmName" variants="VmmmsVmName"/>
 </histogram>
 
 <histogram name="Memory.VmmSwap.TotalBytesWrittenInAWeek" units="MiB"
