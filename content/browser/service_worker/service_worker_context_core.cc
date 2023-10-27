@@ -1191,6 +1191,13 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
 void ServiceWorkerContextCore::OnVersionStateChanged(
     ServiceWorkerVersion* version) {
   DCHECK_EQ(this, version->context().get());
+  if (version->status() == ServiceWorkerVersion::INSTALLED &&
+      version->router_evaluator()) {
+    observer_list_->Notify(
+        FROM_HERE,
+        &ServiceWorkerContextCoreObserver::OnVersionRouterRulesChanged,
+        version->version_id(), version->router_evaluator()->ToString());
+  }
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnVersionStateChanged,
       version->version_id(), version->scope(), version->key(),

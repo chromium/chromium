@@ -101,6 +101,8 @@ class CONTENT_EXPORT ServiceWorkerContextWatcher
                              const GURL& scope,
                              const blink::StorageKey& key,
                              ServiceWorkerVersion::Status status) override;
+  void OnVersionRouterRulesChanged(int64_t version_id,
+                                   const std::string& router_rules) override;
   void OnVersionDevToolsRoutingIdChanged(int64_t version_id,
                                          int process_id,
                                          int devtools_agent_route_id) override;

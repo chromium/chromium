@@ -260,6 +260,19 @@ void ServiceWorkerContextWatcher::OnVersionStateChanged(
     version_info_map_.erase(version_id);
 }
 
+void ServiceWorkerContextWatcher::OnVersionRouterRulesChanged(
+    int64_t version_id,
+    const std::string& router_rules) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto it = version_info_map_.find(version_id);
+  if (it == version_info_map_.end()) {
+    return;
+  }
+  ServiceWorkerVersionInfo* version = it->second.get();
+  version->router_rules = router_rules;
+  SendVersionInfo(*version);
+}
+
 void ServiceWorkerContextWatcher::OnVersionDevToolsRoutingIdChanged(
     int64_t version_id,
     int process_id,

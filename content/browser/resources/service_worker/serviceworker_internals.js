@@ -13,6 +13,7 @@ function initialize() {
   addWebUiListener('error-reported', onErrorReported);
   addWebUiListener('console-message-reported', onConsoleMessageReported);
   addWebUiListener('version-state-changed', onVersionStateChanged);
+  addWebUiListener('version-router-rules-changed', onVersionRouterRulesChanged);
   addWebUiListener('registration-completed', onRegistrationCompleted);
   addWebUiListener('registration-deleted', onRegistrationDeleted);
   update();
@@ -197,6 +198,10 @@ function initialize() {
   }
 
   function onVersionStateChanged(partition_id, version_id) {
+    update();
+  }
+
+  function onVersionRouterRulesChanged() {
     update();
   }
 
