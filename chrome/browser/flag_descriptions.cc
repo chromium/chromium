@@ -3016,9 +3016,9 @@ const char kSafetyCheckUnusedSitePermissionsDescription[] =
     "When enabled, adds the unused sites permission module to Safety Check on "
     "desktop. The module will be shown depending on the browser state.";
 
-const char kSafetyHubName[] = "Safety Hub";
+const char kSafetyHubName[] = "Safety Check v2";
 const char kSafetyHubDescription[] =
-    "When enabled, Safety Hub will be visible in settings.";
+    "When enabled, Safety Check v2 will be visible in settings.";
 
 const char kSameAppWindowCycleName[] = "Cros Labs: Same App Window Cycling";
 const char kSameAppWindowCycleDescription[] =
