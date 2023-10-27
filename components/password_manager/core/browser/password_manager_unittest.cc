@@ -222,7 +222,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(void, ResetSubmissionTrackingAfterTouchToFill, (), (override));
   MOCK_METHOD(void,
               AutomaticPasswordSave,
-              (std::unique_ptr<PasswordFormManagerForUI>),
+              (std::unique_ptr<PasswordFormManagerForUI>,
+               bool is_update_confirmation),
               (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));

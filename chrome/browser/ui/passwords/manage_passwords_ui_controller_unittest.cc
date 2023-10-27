@@ -353,7 +353,7 @@ void ManagePasswordsUIControllerTest::TestNotChangingStateOnAutofill(
     password_manager::ui::State state) {
   DCHECK(state == password_manager::ui::PENDING_PASSWORD_STATE ||
          state == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
-         state == password_manager::ui::CONFIRMATION_STATE);
+         state == password_manager::ui::SAVE_CONFIRMATION_STATE);
 
   // Set the bubble state to |state|.
   std::vector<const PasswordForm*> best_matches;
@@ -365,8 +365,9 @@ void ManagePasswordsUIControllerTest::TestNotChangingStateOnAutofill(
   } else if (state == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
     best_matches.push_back(&test_local_form());
     controller()->OnUpdatePasswordSubmitted(std::move(test_form_manager));
-  } else {  // password_manager::ui::CONFIRMATION_STATE
-    controller()->OnAutomaticPasswordSave(std::move(test_form_manager));
+  } else {  // password_manager::ui::SAVE_CONFIRMATION_STATE
+    controller()->OnAutomaticPasswordSave(std::move(test_form_manager),
+                                          /*is_update_confirmation=*/false);
   }
   ASSERT_EQ(state, controller()->GetState());
 
@@ -788,8 +789,10 @@ TEST_F(ManagePasswordsUIControllerTest, AutomaticPasswordSave) {
   std::vector<const PasswordForm*> best_matches;
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnAutomaticPasswordSave(std::move(test_form_manager));
-  EXPECT_EQ(password_manager::ui::CONFIRMATION_STATE, controller()->GetState());
+  controller()->OnAutomaticPasswordSave(std::move(test_form_manager),
+                                        /*is_update_confirmation=*/false);
+  EXPECT_EQ(password_manager::ui::SAVE_CONFIRMATION_STATE,
+            controller()->GetState());
 
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
@@ -1063,7 +1066,7 @@ TEST_F(ManagePasswordsUIControllerTest, UpdatePendingStatePasswordAutofilled) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, ConfirmationStatePasswordAutofilled) {
-  TestNotChangingStateOnAutofill(password_manager::ui::CONFIRMATION_STATE);
+  TestNotChangingStateOnAutofill(password_manager::ui::SAVE_CONFIRMATION_STATE);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, OpenBubbleTwice) {
@@ -1350,7 +1353,8 @@ TEST_F(ManagePasswordsUIControllerTest,
     EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
     controller()->OnShowManualFallbackForSaving(
         std::move(test_form_manager), true /* has_generated_password */, false);
-    ExpectIconAndControllerStateIs(password_manager::ui::CONFIRMATION_STATE);
+    ExpectIconAndControllerStateIs(
+        password_manager::ui::SAVE_CONFIRMATION_STATE);
     EXPECT_FALSE(controller()->opened_automatic_bubble());
 
     EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
@@ -1771,7 +1775,8 @@ TEST_F(ManagePasswordsUIControllerTest, UsernameAdded) {
   std::vector<const PasswordForm*> best_matches;
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
   MockPasswordFormManagerForUI* test_form_manager_raw = test_form_manager.get();
-  controller()->OnAutomaticPasswordSave(std::move(test_form_manager));
+  controller()->OnAutomaticPasswordSave(std::move(test_form_manager),
+                                        /*is_update_confirmation=*/false);
 
   EXPECT_CALL(*test_form_manager_raw, Save());
   EXPECT_CALL(*test_form_manager_raw,
@@ -1780,7 +1785,8 @@ TEST_F(ManagePasswordsUIControllerTest, UsernameAdded) {
   controller()->OnAddUsernameSaveClicked(kExampleUsername);
 
   EXPECT_TRUE(controller()->opened_automatic_bubble());
-  EXPECT_EQ(password_manager::ui::CONFIRMATION_STATE, controller()->GetState());
+  EXPECT_EQ(password_manager::ui::SAVE_CONFIRMATION_STATE,
+            controller()->GetState());
 }
 
 TEST_F(ManagePasswordsUIControllerTest, IsDeviceAuthenticatorObtained) {

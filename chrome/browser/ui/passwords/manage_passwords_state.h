@@ -64,7 +64,7 @@ class ManagePasswordsState {
       std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin);
 
-  // Move to CONFIRMATION_STATE.
+  // Move to SAVE_CONFIRMATION_STATE.
   void OnAutomaticPasswordSave(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
 

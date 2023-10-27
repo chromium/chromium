@@ -178,7 +178,8 @@ class ChromePasswordManagerClient
       bool is_blocklisted) override;
   void AutomaticPasswordSave(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
-          saved_form_manager) override;
+          saved_form_manager,
+      bool is_update_confirmation) override;
   void PasswordWasAutofilled(
       const std::vector<const password_manager::PasswordForm*>& best_matches,
       const url::Origin& origin,

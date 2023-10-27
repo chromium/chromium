@@ -19,7 +19,10 @@ enum State {
 
   // A password has been saved and we wish to display UI confirming the save
   // to the user.
-  CONFIRMATION_STATE,
+  SAVE_CONFIRMATION_STATE,
+
+  // Password was successfully silently updated using Credential Manager.
+  UPDATE_CONFIRMATION_STATE,
 
   // A password has been autofilled, or has just been saved. The icon needs
   // to be visible, in the management state.

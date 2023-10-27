@@ -250,11 +250,16 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     }
   } else if (!form_manager_->IsNewLogin()) {
     // Otherwise, if this is not a new password credential, update the existing
-    // credential without prompting the user. This will also update the
-    // 'skip_zero_click' state, as we've gotten an explicit signal that the page
-    // understands the credential management API and so can be trusted to notify
-    // us when they sign the user out.
+    // credential prompting confirmation helium bubble to the user. This will
+    // also update the 'skip_zero_click' state, as we've gotten an explicit
+    // signal that the page understands the credential management API and so can
+    // be trusted to notify us when they sign the user out.
+    bool is_update_confirmation = form_manager_->IsPasswordUpdate();
     form_manager_->Update(form_manager_->GetPendingCredentials());
+    if (is_update_confirmation) {
+      client_->AutomaticPasswordSave(std::move(form_manager_),
+                                     /*is_update_confirmation=*/true);
+    }
     return;
   }
 

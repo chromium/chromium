@@ -68,11 +68,18 @@ ManagePasswordsBubbleController::~ManagePasswordsBubbleController() {
 }
 
 std::u16string ManagePasswordsBubbleController::GetTitle() const {
-  return delegate_->GetState() == password_manager::ui::CONFIRMATION_STATE
-             ? GetConfirmationManagePasswordsDialogTitleText()
-             : GetManagePasswordsDialogTitleText(
-                   GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
-                   !delegate_->GetCurrentForms().empty());
+  switch (delegate_->GetState()) {
+    case password_manager::ui::SAVE_CONFIRMATION_STATE:
+      return GetConfirmationManagePasswordsDialogTitleText(/*is_update=*/false);
+    case password_manager::ui::UPDATE_CONFIRMATION_STATE:
+      return GetConfirmationManagePasswordsDialogTitleText(/*is_update=*/true);
+    case password_manager::ui::MANAGE_STATE:
+      return GetManagePasswordsDialogTitleText(
+          GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
+          !delegate_->GetCurrentForms().empty());
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 void ManagePasswordsBubbleController::OnManageClicked(

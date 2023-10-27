@@ -56,7 +56,8 @@ class StubPasswordManagerClient : public PasswordManagerClient {
       std::unique_ptr<PasswordFormManagerForUI> submitted_manager) override;
   void NotifyStorePasswordCalled() override;
   void AutomaticPasswordSave(
-      std::unique_ptr<PasswordFormManagerForUI> saved_manager) override;
+      std::unique_ptr<PasswordFormManagerForUI> saved_manager,
+      bool is_update_confirmation) override;
   PrefService* GetPrefs() const override;
   PrefService* GetLocalStatePrefs() const override;
   const syncer::SyncService* GetSyncService() const override;

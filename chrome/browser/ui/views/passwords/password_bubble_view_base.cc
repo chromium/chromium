@@ -87,7 +87,8 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
       view = new ManagePasswordsView(web_contents, anchor_view);
   } else if (model_state == password_manager::ui::AUTO_SIGNIN_STATE) {
     view = new PasswordAutoSignInView(web_contents, anchor_view);
-  } else if (model_state == password_manager::ui::CONFIRMATION_STATE) {
+  } else if (model_state == password_manager::ui::SAVE_CONFIRMATION_STATE ||
+             model_state == password_manager::ui::UPDATE_CONFIRMATION_STATE) {
     if (base::FeatureList::IsEnabled(
             password_manager::features::
                 kNewConfirmationBubbleForGeneratedPasswords)) {

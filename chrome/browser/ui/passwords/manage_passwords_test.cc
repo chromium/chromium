@@ -123,7 +123,8 @@ void ManagePasswordsTest::SetupPendingPassword() {
 }
 
 void ManagePasswordsTest::SetupAutomaticPassword() {
-  GetController()->OnAutomaticPasswordSave(CreateFormManager());
+  GetController()->OnAutomaticPasswordSave(CreateFormManager(),
+                                           /*is_update_confirmation=*/false);
 }
 
 void ManagePasswordsTest::SetupAutoSignin(

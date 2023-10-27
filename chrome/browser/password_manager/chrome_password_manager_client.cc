@@ -589,7 +589,8 @@ void ChromePasswordManagerClient::UpdateCredentialCache(
 }
 
 void ChromePasswordManagerClient::AutomaticPasswordSave(
-    std::unique_ptr<password_manager::PasswordFormManagerForUI> saved_form) {
+    std::unique_ptr<password_manager::PasswordFormManagerForUI> saved_form,
+    bool is_update_confirmation) {
 #if BUILDFLAG(IS_ANDROID)
   generated_password_saved_message_delegate_.ShowPrompt(web_contents(),
                                                         std::move(saved_form));
@@ -597,7 +598,7 @@ void ChromePasswordManagerClient::AutomaticPasswordSave(
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
   manage_passwords_ui_controller->OnAutomaticPasswordSave(
-      std::move(saved_form));
+      std::move(saved_form), is_update_confirmation);
 #endif
 }
 
