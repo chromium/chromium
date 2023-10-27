@@ -138,6 +138,7 @@ class AppStorageTest : public testing::Test {
                                    const std::string& app_id) {
     AppPtr app = std::make_unique<App>(app_type, app_id);
     app->readiness = kReadiness1;
+    app->has_badge = false;
     app->paused = false;
     std::vector<AppPtr> apps;
     apps.push_back(std::move(app));
@@ -150,6 +151,7 @@ class AppStorageTest : public testing::Test {
     AppPtr app1 = std::make_unique<App>(kAppType1, kAppId1);
     app1->readiness = kReadiness1;
     app1->name = kAppName1;
+    app1->has_badge = false;
     app1->paused = false;
     apps.push_back(std::move(app1));
 
@@ -177,6 +179,7 @@ class AppStorageTest : public testing::Test {
     app2->show_in_management = true;
     app2->handles_intents = false;
     app2->allow_uninstall = false;
+    app2->has_badge = false;
     app2->paused = false;
     app2->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(
         GURL("https://www.google.com/abc")));

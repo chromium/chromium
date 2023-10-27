@@ -46,12 +46,35 @@ constexpr char kShowInManagementKey[] = "show_in_management";
 constexpr char kHandlesIntentsKey[] = "handles_intents";
 constexpr char kAllowUninstallKey[] = "allow_uninstall";
 constexpr char kIntentFiltersKey[] = "intent_filters";
+constexpr char kWindowModeKey[] = "window_mode";
 
 absl::optional<std::string> GetStringValueFromDict(
     const base::Value::Dict& dict,
     base::StringPiece key_name) {
   const std::string* value = dict.FindString(key_name);
   return value ? absl::optional<std::string>(*value) : absl::nullopt;
+}
+
+template <typename T>
+void SetKeyForEnum(const AppPtr& app,
+                   T App::*field,
+                   const std::string& key,
+                   base::Value::Dict& app_details_dict) {
+  if (app.get()->*field != T::kUnknown) {
+    app_details_dict.Set(key, static_cast<int>(app.get()->*field));
+  }
+}
+
+template <typename T>
+void GetEnumFromKey(base::Value::Dict* value,
+                    T App::*field,
+                    const std::string& key,
+                    AppPtr& app) {
+  auto result = value->FindInt(key);
+  if (result.has_value() && result.value() >= static_cast<int>(T::kUnknown) &&
+      result.value() <= static_cast<int>(T::kMaxValue)) {
+    app.get()->*field = static_cast<T>(result.value());
+  }
 }
 
 }  // namespace
@@ -135,9 +158,7 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
 
     app_details_dict.Set(kTypeKey, static_cast<int>(app->app_type));
 
-    if (app->readiness != Readiness::kUnknown) {
-      app_details_dict.Set(kReadinessKey, static_cast<int>(app->readiness));
-    }
+    SetKeyForEnum(app, &App::readiness, kReadinessKey, app_details_dict);
 
     SET_KEY_FOR_OPTIONAL_VALUE(name, kNameKey)
     SET_KEY_FOR_OPTIONAL_VALUE(short_name, kShortNameKey)
@@ -168,15 +189,10 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
                            base::TimeToValue(app->install_time.value()));
     }
 
-    if (app->install_reason != InstallReason::kUnknown) {
-      app_details_dict.Set(kInstallReasonKey,
-                           static_cast<int>(app->install_reason));
-    }
-
-    if (app->install_source != InstallSource::kUnknown) {
-      app_details_dict.Set(kInstallSourceKey,
-                           static_cast<int>(app->install_source));
-    }
+    SetKeyForEnum(app, &App::install_reason, kInstallReasonKey,
+                  app_details_dict);
+    SetKeyForEnum(app, &App::install_source, kInstallSourceKey,
+                  app_details_dict);
 
     if (!app->policy_ids.empty()) {
       base::Value::List policy_ids;
@@ -204,6 +220,8 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
       }
       app_details_dict.Set(kIntentFiltersKey, std::move(intent_filters));
     }
+
+    SetKeyForEnum(app, &App::window_mode, kWindowModeKey, app_details_dict);
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info_dict.Set(app->app_id, std::move(app_details_dict));
@@ -244,12 +262,7 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     auto app =
         std::make_unique<App>(static_cast<AppType>(app_type.value()), app_id);
 
-    auto readiness = value->FindInt(kReadinessKey);
-    if (readiness.has_value() &&
-        readiness.value() >= static_cast<int>(Readiness::kUnknown) &&
-        readiness.value() <= static_cast<int>(Readiness::kMaxValue)) {
-      app->readiness = static_cast<Readiness>(readiness.value());
-    }
+    GetEnumFromKey(value, &App::readiness, kReadinessKey, app);
 
     app->name = GetStringValueFromDict(*value, kNameKey);
     app->short_name = GetStringValueFromDict(*value, kShortNameKey);
@@ -274,19 +287,8 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
       }
     }
 
-    auto install_reason = value->FindInt(kInstallReasonKey);
-    if (install_reason.has_value() &&
-        install_reason.value() >= static_cast<int>(InstallReason::kUnknown) &&
-        install_reason.value() <= static_cast<int>(InstallReason::kMaxValue)) {
-      app->install_reason = static_cast<InstallReason>(install_reason.value());
-    }
-
-    auto install_source = value->FindInt(kInstallSourceKey);
-    if (install_source.has_value() &&
-        install_source.value() >= static_cast<int>(InstallSource::kUnknown) &&
-        install_source.value() <= static_cast<int>(InstallSource::kMaxValue)) {
-      app->install_source = static_cast<InstallSource>(install_source.value());
-    }
+    GetEnumFromKey(value, &App::install_reason, kInstallReasonKey, app);
+    GetEnumFromKey(value, &App::install_source, kInstallSourceKey, app);
 
     auto* policy_ids = value->FindList(kPolicyIdsKey);
     if (policy_ids) {
@@ -305,6 +307,10 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     app->handles_intents = value->FindBool(kHandlesIntentsKey);
     app->allow_uninstall = value->FindBool(kAllowUninstallKey);
 
+    // Set has_badge as false for the default init value, and wait for the
+    // publishers to update the has_badge status.
+    app->has_badge = false;
+
     // Set paused as false for the default init value to keep the consistent
     // implementation as AppPublisher::MakeApp, and wait for the family link to
     // update the pasued status.
@@ -317,6 +323,8 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
             apps_util::ConvertDictToIntentFilter(intent_filter.GetIfDict()));
       }
     }
+
+    GetEnumFromKey(value, &App::window_mode, kWindowModeKey, app);
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     app_info->apps.push_back(std::move(app));
