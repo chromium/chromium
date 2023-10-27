@@ -583,7 +583,12 @@ void BookmarkModelTypeProcessor::NudgeForCommitIfNeeded() {
 void BookmarkModelTypeProcessor::OnBookmarkModelBeingDeleted() {
   DCHECK(bookmark_model_);
   DCHECK(bookmark_model_observer_);
-  StopTrackingMetadata();
+
+  bookmark_model_->RemoveObserver(bookmark_model_observer_.get());
+  bookmark_model_ = nullptr;
+  bookmark_model_observer_.reset();
+
+  DisconnectSync();
 }
 
 void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
@@ -632,8 +637,8 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
           bookmark_model_->other_node()) ||
       !bookmark_tracker_->GetEntityForBookmarkNode(
           bookmark_model_->mobile_node())) {
-    StopTrackingMetadata();
-    bookmark_tracker_.reset();
+    DisconnectSync();
+    StopTrackingMetadataAndResetTracker();
     error_handler_.Run(
         syncer::ModelError(FROM_HERE, "Permanent bookmark entities missing"));
     return;
@@ -657,16 +662,6 @@ void BookmarkModelTypeProcessor::StartTrackingMetadata() {
                      base::Unretained(this)),
       bookmark_tracker_.get());
   bookmark_model_->AddObserver(bookmark_model_observer_.get());
-}
-
-void BookmarkModelTypeProcessor::StopTrackingMetadata() {
-  DCHECK(bookmark_model_observer_);
-
-  bookmark_model_->RemoveObserver(bookmark_model_observer_.get());
-  bookmark_model_ = nullptr;
-  bookmark_model_observer_.reset();
-
-  DisconnectSync();
 }
 
 void BookmarkModelTypeProcessor::GetAllNodesForDebugging(

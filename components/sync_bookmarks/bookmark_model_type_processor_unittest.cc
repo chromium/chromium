@@ -52,6 +52,7 @@ using testing::IsNull;
 using testing::NiceMock;
 using testing::NotNull;
 using testing::Pointer;
+using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 const char kBookmarkBarTag[] = "bookmark_bar";
@@ -371,9 +372,10 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   std::unique_ptr<TestBookmarkModelView> bookmark_model_;
 };
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMerge) {
+TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithZeroBookmarks) {
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
+  SimulateConnectSync();
 
   syncer::UpdateResponseDataList updates =
       CreateUpdateResponseDataListForPermanentNodes();
@@ -384,11 +386,119 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMerge) {
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
   EXPECT_TRUE(processor()->IsTrackingMetadata());
+  EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), IsEmpty());
 
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeInitialUpdateReceived",
       /*sample=*/syncer::ModelTypeHistogramValue(syncer::BOOKMARKS),
       /*expected_bucket_count=*/3);
+}
+
+TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithOneBookmark) {
+  SimulateModelReadyToSyncWithoutLocalMetadata();
+  SimulateOnSyncStarting();
+  SimulateConnectSync();
+
+  syncer::UpdateResponseDataList updates =
+      CreateUpdateResponseDataListForPermanentNodes();
+
+  // Add one regular bookmark.
+  updates.push_back(CreateUpdateResponseData(
+      {"id1", "title1", "http://foo.com", kBookmarkBarId,
+       /*server_tag=*/std::string()},
+      syncer::UniquePosition::InitialPosition(
+          syncer::UniquePosition::RandomSuffix()),
+      /*response_version=*/0));
+
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
+
+  base::HistogramTester histogram_tester;
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
+  EXPECT_TRUE(processor()->IsTrackingMetadata());
+  EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), SizeIs(1));
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeInitialUpdateReceived",
+      /*sample=*/syncer::ModelTypeHistogramValue(syncer::BOOKMARKS),
+      /*expected_bucket_count=*/4);
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldFailInitialMergeIfServerPermanentNodeMissing) {
+  SimulateModelReadyToSyncWithoutLocalMetadata();
+  SimulateOnSyncStarting();
+  SimulateConnectSync();
+
+  syncer::UpdateResponseDataList updates =
+      CreateUpdateResponseDataListForPermanentNodes();
+
+  // Remove one of the permanent nodes.
+  updates.pop_back();
+
+  // Add one regular bookmark.
+  updates.push_back(CreateUpdateResponseData(
+      {"id1", "title1", "http://foo.com", kBookmarkBarId,
+       /*server_tag=*/std::string()},
+      syncer::UniquePosition::InitialPosition(
+          syncer::UniquePosition::RandomSuffix()),
+      /*response_version=*/0));
+
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
+  ASSERT_TRUE(processor()->IsConnectedForTest());
+
+  // Expect failure when doing initial merge.
+  EXPECT_CALL(*error_handler(), Run);
+
+  base::HistogramTester histogram_tester;
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
+
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
+  EXPECT_FALSE(processor()->IsConnectedForTest());
+
+  // Not an actual requirement but it documents current behavior.
+  EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), SizeIs(1));
+}
+
+TEST_F(BookmarkModelTypeProcessorTest,
+       ShouldFailInitialMergeAndAvoidPartialDataIfServerPermanentNodeMissing) {
+  ResetModelTypeProcessor(syncer::WipeModelUponSyncDisabledBehavior::kAlways);
+  SimulateModelReadyToSyncWithoutLocalMetadata();
+  SimulateOnSyncStarting();
+  SimulateConnectSync();
+
+  syncer::UpdateResponseDataList updates =
+      CreateUpdateResponseDataListForPermanentNodes();
+
+  // Remove one of the permanent nodes.
+  updates.pop_back();
+
+  // Add one regular bookmark.
+  updates.push_back(CreateUpdateResponseData(
+      {"id1", "title1", "http://foo.com", kBookmarkBarId,
+       /*server_tag=*/std::string()},
+      syncer::UniquePosition::InitialPosition(
+          syncer::UniquePosition::RandomSuffix()),
+      /*response_version=*/0));
+
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
+  ASSERT_TRUE(processor()->IsConnectedForTest());
+
+  // Expect failure when doing initial merge.
+  EXPECT_CALL(*error_handler(), Run);
+
+  base::HistogramTester histogram_tester;
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
+
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
+  EXPECT_FALSE(processor()->IsConnectedForTest());
+
+  // Avoid exposing part of the tree to the user. When using
+  // `syncer::WipeModelUponSyncDisabledBehavior::kAlways`, reverting to the
+  // pre-merge state means clearing all data.
+  EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), IsEmpty());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {

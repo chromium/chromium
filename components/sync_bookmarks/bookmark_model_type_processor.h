@@ -129,7 +129,6 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // of metadata fields managed by the processor but only those tracked by the
   // bookmark tracker.
   void StartTrackingMetadata();
-  void StopTrackingMetadata();
 
   // Resets bookmark tracker in addition to stopping metadata tracking. Note
   // that unlike StopTrackingMetadata(), this does not disconnect sync and
