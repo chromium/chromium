@@ -25,12 +25,20 @@ namespace extensions {
 
 // Tests interaction between supervised users and extensions after the optional
 // supervision is removed from the account.
-class SupervisionRemovalExtensionTest : public ExtensionBrowserTest {
+class SupervisionRemovalExtensionTest
+    : public ExtensionBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   SupervisionRemovalExtensionTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        supervised_user::
-            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+    if (AreExtensionsPermissionsEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          supervised_user::
+              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          supervised_user::
+              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+    }
   }
 
   ~SupervisionRemovalExtensionTest() override { scoped_feature_list_.Reset(); }
@@ -96,6 +104,8 @@ class SupervisionRemovalExtensionTest : public ExtensionBrowserTest {
         extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
   }
 
+  bool AreExtensionsPermissionsEnabled() const { return GetParam(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   InProcessBrowserTestMixinHost mixin_host_;
@@ -111,10 +121,13 @@ class SupervisionRemovalExtensionTest : public ExtensionBrowserTest {
                : supervised_user::SupervisionMixin::SignInMode::kRegular}};
 };
 
-// Removing supervision should also remove associated disable reasons, such as
+// If extension permissions are enabled, removing supervision should also
+// remove associated disable reasons, such as
 // DISABLE_CUSTODIAN_APPROVAL_REQUIRED. Extensions should become enabled again
 // after removing supervision. Prevents a regression to crbug/1045625.
-IN_PROC_BROWSER_TEST_F(SupervisionRemovalExtensionTest,
+// If extension permissions are disabled, removing supervision leaves the
+// extension unchanged and enabled.
+IN_PROC_BROWSER_TEST_P(SupervisionRemovalExtensionTest,
                        PRE_RemoveCustodianApprovalRequirement) {
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
@@ -122,18 +135,27 @@ IN_PROC_BROWSER_TEST_F(SupervisionRemovalExtensionTest,
   ASSERT_TRUE(profile()->IsChild());
 
   base::FilePath path = test_data_dir_.AppendASCII("good.crx");
-  EXPECT_FALSE(LoadExtension(path));
+  bool extension_should_be_loaded = !AreExtensionsPermissionsEnabled();
+  EXPECT_EQ(LoadExtension(path) != nullptr, extension_should_be_loaded);
   const Extension* extension =
       extension_registry()->GetInstalledExtension(kGoodCrxId);
   EXPECT_TRUE(extension);
 
-  // This extension is a supervised user initiated install and should remain
-  // disabled.
-  EXPECT_TRUE(extension_registry()->disabled_extensions().Contains(kGoodCrxId));
-  EXPECT_TRUE(IsDisabledForCustodianApproval(kGoodCrxId));
+  if (AreExtensionsPermissionsEnabled()) {
+    // This extension is a supervised user initiated install and should remain
+    // disabled.
+    EXPECT_TRUE(
+        extension_registry()->disabled_extensions().Contains(kGoodCrxId));
+    EXPECT_TRUE(IsDisabledForCustodianApproval(kGoodCrxId));
+  } else {
+    // When extension permissions are disabled, the extension is installed and
+    // enabled.
+    EXPECT_TRUE(
+        extension_registry()->enabled_extensions().Contains(kGoodCrxId));
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisionRemovalExtensionTest,
+IN_PROC_BROWSER_TEST_P(SupervisionRemovalExtensionTest,
                        RemoveCustodianApprovalRequirement) {
   ASSERT_FALSE(profile()->IsChild());
 
@@ -150,5 +172,7 @@ IN_PROC_BROWSER_TEST_F(SupervisionRemovalExtensionTest,
 
   EXPECT_FALSE(IsDisabledForCustodianApproval(kGoodCrxId));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, SupervisionRemovalExtensionTest, testing::Bool());
 
 }  // namespace extensions
