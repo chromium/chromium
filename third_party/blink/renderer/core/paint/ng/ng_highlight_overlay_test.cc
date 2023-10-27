@@ -116,7 +116,7 @@ TEST_F(NGHighlightOverlayTest, ComputeEdges) {
 
   auto* registry =
       MakeGarbageCollected<HighlightRegistry>(*GetFrame().DomWindow());
-  NGTextFragmentPaintInfo originating{"", 1, 4};
+  TextOffsetRange originating{3, 6};
   LayoutSelectionStatus selection{1, 3, SelectSoftLineBreak::kNotSelected};
   auto* none = MakeGarbageCollected<DocumentMarkerVector>();
   HighlightLayer originating_layer{HighlightLayerType::kOriginating};
@@ -178,7 +178,7 @@ TEST_F(NGHighlightOverlayTest, ComputeEdges) {
       }))
       << "should return edges in correct order";
 
-  NGTextFragmentPaintInfo originating2{"", 2, 3};
+  TextOffsetRange originating2{4, 5};
 
   EXPECT_EQ(
       NGHighlightOverlay::ComputeEdges(text, registry, false, originating2,
@@ -223,6 +223,7 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
   HighlightLayer targ{HighlightLayerType::kTargetText};
   HighlightLayer sele{HighlightLayerType::kSelection};
   NGTextFragmentPaintInfo originating{"", 0, 25};
+  TextOffsetRange originating_dom_offsets{0, 25};
   custom->push_back(
       MakeGarbageCollected<CustomHighlightMarker>(0, 14, "foo", nullptr));
   custom->push_back(
@@ -246,7 +247,8 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
   //                                  ::selection, not active
 
   Vector<HighlightEdge> edges = NGHighlightOverlay::ComputeEdges(
-      node, registry, false, originating, nullptr, *none, *none, *none, *none);
+      node, registry, false, originating_dom_offsets, nullptr, *none, *none,
+      *none, *none);
 
   // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating, layers, edges),
@@ -266,8 +268,8 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
   //              [    ]              ::selection, changed!
 
   Vector<HighlightEdge> edges2 = NGHighlightOverlay::ComputeEdges(
-      node, registry, false, originating, &selection, *custom, *grammar,
-      *spelling, *target);
+      node, registry, false, originating_dom_offsets, &selection, *custom,
+      *grammar, *spelling, *target);
 
   // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating, layers, edges2),
@@ -297,8 +299,8 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
 
   custom->at(0)->SetStartOffset(6);
   Vector<HighlightEdge> edges3 = NGHighlightOverlay::ComputeEdges(
-      node, registry, false, originating, &selection, *custom, *grammar,
-      *spelling, *target);
+      node, registry, false, originating_dom_offsets, &selection, *custom,
+      *grammar, *spelling, *target);
 
   // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating, layers, edges3),
@@ -327,9 +329,10 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
   //              [    ]              ::selection, as above
 
   NGTextFragmentPaintInfo originating2{"", 8, 18};
+  TextOffsetRange originating2_dom_offsets{8, 18};
   Vector<HighlightEdge> edges4 = NGHighlightOverlay::ComputeEdges(
-      node, registry, false, originating, &selection, *custom, *grammar,
-      *spelling, *target);
+      node, registry, false, originating2_dom_offsets, &selection, *custom,
+      *grammar, *spelling, *target);
 
   // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating2, layers, edges4),
@@ -353,9 +356,9 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
   //                                  ::target-text, changed!
   //                                  ::selection, changed!
 
-  Vector<HighlightEdge> edges5 =
-      NGHighlightOverlay::ComputeEdges(node, registry, false, originating,
-                                       nullptr, *none, *none, *spelling, *none);
+  Vector<HighlightEdge> edges5 = NGHighlightOverlay::ComputeEdges(
+      node, registry, false, originating2_dom_offsets, nullptr, *none, *none,
+      *spelling, *none);
 
   // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating2, layers, edges5),
@@ -378,9 +381,10 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
   //                                  ::selection, as above
 
   NGTextFragmentPaintInfo originating3{"", 1, 4};
+  TextOffsetRange originating3_dom_offsets{1, 4};
   Vector<HighlightEdge> edges6 = NGHighlightOverlay::ComputeEdges(
-      node, registry, false, originating, &selection, *custom, *grammar,
-      *spelling, *target);
+      node, registry, false, originating3_dom_offsets, &selection, *custom,
+      *grammar, *spelling, *target);
 
   // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating3, layers, edges6),
@@ -400,9 +404,10 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
   //                                  ::selection, as above
 
   NGTextFragmentPaintInfo originating4{"", 25, 28};
+  TextOffsetRange originating4_dom_offsets{25, 28};
   Vector<HighlightEdge> edges7 = NGHighlightOverlay::ComputeEdges(
-      node, registry, false, originating, &selection, *custom, *grammar,
-      *spelling, *target);
+      node, registry, false, originating4_dom_offsets, &selection, *custom,
+      *grammar, *spelling, *target);
 
   // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating4, layers, edges7),

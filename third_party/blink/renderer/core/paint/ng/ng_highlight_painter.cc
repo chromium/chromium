@@ -17,10 +17,12 @@
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
+#include "third_party/blink/renderer/core/paint/ng/marker_range_mapping_context.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_overlay.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
@@ -39,123 +41,6 @@ using HighlightRange = NGHighlightOverlay::HighlightRange;
 using HighlightEdge = NGHighlightOverlay::HighlightEdge;
 using HighlightDecoration = NGHighlightOverlay::HighlightDecoration;
 using HighlightPart = NGHighlightOverlay::HighlightPart;
-
-// Modifies |offset| fixed in a range of |fragment_range| start/end offsets.
-// |offset| points not each character but each span between character.
-// With that concept, we can clear catch what is inside start / end.
-// Suppose we have "foo_bar"('_' is a space).
-// There are 8 offsets for that:
-//  f o o _ b a r
-// 0 1 2 3 4 5 6 7
-// If "bar" is a TextFragment. That start(), end() {4, 7} correspond this
-// offset. If a marker has StartOffset / EndOffset as {2, 6},
-// this function returns{ 4,6 }, which represents "ba" on "foo_bar".
-unsigned ClampToFragmentRange(const TextOffsetRange& fragment_range,
-                              unsigned offset) {
-  return std::min(std::max(offset, fragment_range.start), fragment_range.end);
-}
-
-base::span<const OffsetMappingUnit> GetMappingUnits(
-    const FragmentItem& text_fragment) {
-  const OffsetMapping* const offset_mapping =
-      OffsetMapping::GetFor(text_fragment.GetLayoutObject());
-  DCHECK(offset_mapping);
-  return offset_mapping->GetMappingUnitsForTextContentOffsetRange(
-      text_fragment.StartOffset(), text_fragment.EndOffset());
-}
-
-// Helper for mapping from DOM offset (range) to text content offset.
-//
-// Exploits the fact that DocumentMarkers are sorted in DOM offset order, to
-// maintain a cached starting point within the unit mapping range and thus
-// amortize the cost of unit lookup.
-class MarkerRangeMappingContext {
-  STACK_ALLOCATED();
-
- private:
-  // The internal class that implements the mapping.
-  class DOMToTextContentOffsetMapper {
-    STACK_ALLOCATED();
-
-   public:
-    explicit DOMToTextContentOffsetMapper(const FragmentItem& text_fragment)
-        : units_(GetMappingUnits(text_fragment)), units_begin_(units_.begin()) {
-      DCHECK(units_.size());
-    }
-
-    unsigned GetTextContentOffset(unsigned dom_offset) const {
-      auto unit = FindUnit(units_begin_, dom_offset);
-      // Update the cached search starting point.
-      units_begin_ = unit;
-      // Since the unit range only covers the fragment, map anything that falls
-      // outside of that range to the start/end.
-      if (dom_offset < unit->DOMStart()) {
-        return unit->TextContentStart();
-      }
-      if (dom_offset > unit->DOMEnd()) {
-        return unit->TextContentEnd();
-      }
-      return unit->ConvertDOMOffsetToTextContent(dom_offset);
-    }
-
-    unsigned GetTextContentOffsetNoCache(unsigned dom_offset) const {
-      auto unit = FindUnit(units_begin_, dom_offset);
-      // Since the unit range only covers the fragment, map anything that falls
-      // outside of that range to the start/end.
-      if (dom_offset < unit->DOMStart()) {
-        return unit->TextContentStart();
-      }
-      if (dom_offset > unit->DOMEnd()) {
-        return unit->TextContentEnd();
-      }
-      return unit->ConvertDOMOffsetToTextContent(dom_offset);
-    }
-
-   private:
-    // Find the mapping unit for `dom_offset`, starting from `begin`.
-    base::span<const OffsetMappingUnit>::iterator FindUnit(
-        base::span<const OffsetMappingUnit>::iterator begin,
-        unsigned dom_offset) const {
-      if (dom_offset <= begin->DOMEnd()) {
-        return begin;
-      }
-      return std::prev(
-          std::upper_bound(begin, units_.end(), dom_offset,
-                           [](unsigned offset, const OffsetMappingUnit& unit) {
-                             return offset < unit.DOMStart();
-                           }));
-    }
-
-    base::span<const OffsetMappingUnit> units_;
-    mutable base::span<const OffsetMappingUnit>::iterator units_begin_;
-  };
-
- public:
-  explicit MarkerRangeMappingContext(const FragmentItem& text_fragment)
-      : mapper_(DOMToTextContentOffsetMapper(text_fragment)),
-        fragment_range_(text_fragment.TextOffset()),
-        text_length_(To<Text>(*text_fragment.GetNode()).length()) {}
-
-  std::pair<unsigned, unsigned> MapToTextContent(
-      const DocumentMarker& marker) const {
-    // TODO(yoichio): Sanitize DocumentMarker around text length.
-    const unsigned start_dom_offset =
-        std::min(marker.StartOffset(), text_length_);
-    const unsigned end_dom_offset = std::min(marker.EndOffset(), text_length_);
-    const unsigned text_content_start =
-        mapper_.GetTextContentOffset(start_dom_offset);
-    const unsigned text_content_end =
-        mapper_.GetTextContentOffsetNoCache(end_dom_offset);
-    return std::make_pair(
-        ClampToFragmentRange(fragment_range_, text_content_start),
-        ClampToFragmentRange(fragment_range_, text_content_end));
-  }
-
- private:
-  const DOMToTextContentOffsetMapper mapper_;
-  const TextOffsetRange fragment_range_;
-  const unsigned text_length_;
-};
 
 LineRelativeRect LineRelativeLocalRect(const FragmentItem& text_fragment,
                                        StringView text,
@@ -476,8 +361,7 @@ NGHighlightPainter::NGHighlightPainter(
     if (text_node) {
       DocumentMarkerController& controller = node_->GetDocument().Markers();
       markers_ = controller.ComputeMarkersToPaint(*text_node);
-      if (text_node &&
-          RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
+      if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
         target_ = controller.MarkersFor(
             *text_node, DocumentMarker::MarkerTypes::TextFragment());
         spelling_ = controller.MarkersFor(
@@ -486,6 +370,12 @@ NGHighlightPainter::NGHighlightPainter(
             *text_node, DocumentMarker::MarkerTypes::Grammar());
         custom_ = controller.MarkersFor(
             *text_node, DocumentMarker::MarkerTypes::CustomHighlight());
+      }
+      // Check if there are any markers too, as required by NGOffsetMappingTest.
+      if (selection || !markers_.empty() || !target_.empty() ||
+          !spelling_.empty() || !grammar_.empty() || !custom_.empty()) {
+        fragment_dom_offsets_ = GetFragmentDOMOffsets(
+            *text_node, fragment_paint_info_.from, fragment_paint_info_.to);
       }
     }
   }
@@ -500,8 +390,8 @@ NGHighlightPainter::NGHighlightPainter(
         grammar_, spelling_, target_);
     Vector<HighlightEdge> edges = NGHighlightOverlay::ComputeEdges(
         node_, GetHighlightRegistry(node_), fragment_item_.IsGeneratedText(),
-        fragment_paint_info_, GetSelectionStatus(selection_), custom_, grammar_,
-        spelling_, target_);
+        fragment_dom_offsets_, GetSelectionStatus(selection_), custom_,
+        grammar_, spelling_, target_);
     parts_ =
         NGHighlightOverlay::ComputeParts(fragment_paint_info_, layers, edges);
 
@@ -557,12 +447,17 @@ void NGHighlightPainter::Paint(Phase phase) {
   DCHECK(fragment_item_.GetNode());
   const StringView text = cursor_.CurrentText();
 
-  const MarkerRangeMappingContext mapping_context(fragment_item_);
+  const auto* text_node = DynamicTo<Text>(node_);
+  const MarkerRangeMappingContext mapping_context(*text_node,
+                                                  *fragment_dom_offsets_);
   for (const DocumentMarker* marker : markers_) {
-    const auto [paint_start_offset, paint_end_offset] =
-        mapping_context.MapToTextContent(*marker);
-    if (paint_start_offset == paint_end_offset)
+    absl::optional<TextOffsetRange> marker_offsets =
+        mapping_context.GetTextContentOffsets(*marker);
+    if (!marker_offsets || (marker_offsets->start == marker_offsets->end)) {
       continue;
+    }
+    const unsigned paint_start_offset = marker_offsets->start;
+    const unsigned paint_end_offset = marker_offsets->end;
 
     if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
       DCHECK(!DocumentMarker::MarkerTypes::HighlightPseudos().Contains(
@@ -757,14 +652,16 @@ void NGHighlightPainter::FastPaintSpellingGrammarDecorations(
     const Text& text_node,
     const StringView& text,
     const DocumentMarkerVector& markers) {
-  const MarkerRangeMappingContext mapping_context(fragment_item_);
+  const MarkerRangeMappingContext mapping_context(text_node,
+                                                  *fragment_dom_offsets_);
   for (const DocumentMarker* marker : markers) {
-    const auto [paint_start_offset, paint_end_offset] =
-        mapping_context.MapToTextContent(*marker);
-    if (paint_start_offset == paint_end_offset)
+    absl::optional<TextOffsetRange> marker_offsets =
+        mapping_context.GetTextContentOffsets(*marker);
+    if (!marker_offsets || (marker_offsets->start == marker_offsets->end)) {
       continue;
-    PaintOneSpellingGrammarDecoration(marker->GetType(), text,
-                                      paint_start_offset, paint_end_offset);
+    }
+    PaintOneSpellingGrammarDecoration(
+        marker->GetType(), text, marker_offsets->start, marker_offsets->end);
   }
 }
 
@@ -876,57 +773,76 @@ void NGHighlightPainter::PaintOriginatingText(const TextPaintStyle& text_style,
   }
 }
 
-LayoutSelectionStatus NGHighlightPainter::GetSelectionStatusFromMarker(
-    const Member<DocumentMarker>& marker,
-    const MarkerRangeMappingContext* mapping_context) {
-  const auto [paint_start_offset, paint_end_offset] =
-      mapping_context->MapToTextContent(*marker);
-  return LayoutSelectionStatus{paint_start_offset, paint_end_offset,
-                               SelectSoftLineBreak::kNotSelected};
-}
-
 Vector<LayoutSelectionStatus> NGHighlightPainter::GetHighlights(
     const LayerPaintState& layer) {
   Vector<LayoutSelectionStatus> result{};
-
+  const auto* text_node = DynamicTo<Text>(fragment_item_.GetNode());
   switch (layer.id.type) {
     case HighlightLayerType::kOriginating:
       NOTREACHED();
       break;
     case HighlightLayerType::kCustom: {
-      const MarkerRangeMappingContext mapping_context(fragment_item_);
+      DCHECK(text_node);
+      const MarkerRangeMappingContext mapping_context(*text_node,
+                                                      *fragment_dom_offsets_);
       for (const auto& marker : custom_) {
         // Filter custom highlight markers to one highlight at a time.
         auto* custom = To<CustomHighlightMarker>(marker.Get());
         if (custom->GetHighlightName() != layer.id.PseudoArgument()) {
           continue;
         }
-        result.push_back(
-            GetSelectionStatusFromMarker(marker, &mapping_context));
+        absl::optional<TextOffsetRange> marker_offsets =
+            mapping_context.GetTextContentOffsets(*marker);
+        if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
+          result.push_back(
+              LayoutSelectionStatus{marker_offsets->start, marker_offsets->end,
+                                    SelectSoftLineBreak::kNotSelected});
+        }
       }
       break;
     }
     case HighlightLayerType::kGrammar: {
-      const MarkerRangeMappingContext mapping_context(fragment_item_);
+      DCHECK(text_node);
+      const MarkerRangeMappingContext mapping_context(*text_node,
+                                                      *fragment_dom_offsets_);
       for (const auto& marker : grammar_) {
-        result.push_back(
-            GetSelectionStatusFromMarker(marker, &mapping_context));
+        absl::optional<TextOffsetRange> marker_offsets =
+            mapping_context.GetTextContentOffsets(*marker);
+        if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
+          result.push_back(
+              LayoutSelectionStatus{marker_offsets->start, marker_offsets->end,
+                                    SelectSoftLineBreak::kNotSelected});
+        }
       }
       break;
     }
     case HighlightLayerType::kSpelling: {
-      const MarkerRangeMappingContext mapping_context(fragment_item_);
+      DCHECK(text_node);
+      const MarkerRangeMappingContext mapping_context(*text_node,
+                                                      *fragment_dom_offsets_);
       for (const auto& marker : spelling_) {
-        result.push_back(
-            GetSelectionStatusFromMarker(marker, &mapping_context));
+        absl::optional<TextOffsetRange> marker_offsets =
+            mapping_context.GetTextContentOffsets(*marker);
+        if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
+          result.push_back(
+              LayoutSelectionStatus{marker_offsets->start, marker_offsets->end,
+                                    SelectSoftLineBreak::kNotSelected});
+        }
       }
       break;
     }
     case HighlightLayerType::kTargetText: {
-      const MarkerRangeMappingContext mapping_context(fragment_item_);
+      DCHECK(text_node);
+      const MarkerRangeMappingContext mapping_context(*text_node,
+                                                      *fragment_dom_offsets_);
       for (const auto& marker : target_) {
-        result.push_back(
-            GetSelectionStatusFromMarker(marker, &mapping_context));
+        absl::optional<TextOffsetRange> marker_offsets =
+            mapping_context.GetTextContentOffsets(*marker);
+        if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
+          result.push_back(
+              LayoutSelectionStatus{marker_offsets->start, marker_offsets->end,
+                                    SelectSoftLineBreak::kNotSelected});
+        }
       }
       break;
     }
@@ -935,6 +851,15 @@ Vector<LayoutSelectionStatus> NGHighlightPainter::GetHighlights(
       break;
   }
   return result;
+}
+
+TextOffsetRange NGHighlightPainter::GetFragmentDOMOffsets(const Text& text,
+                                                          unsigned from,
+                                                          unsigned to) {
+  const OffsetMapping* mapping = OffsetMapping::GetFor(text.GetLayoutObject());
+  unsigned last_from = mapping->GetLastPosition(from).OffsetInContainerNode();
+  unsigned first_to = mapping->GetFirstPosition(to).OffsetInContainerNode();
+  return {last_from, first_to};
 }
 
 const PhysicalRect NGHighlightPainter::ComputeBackgroundRect(
@@ -1048,18 +973,6 @@ void NGHighlightPainter::PaintHighlightOverlays(
       }
     }
   }
-}
-
-unsigned NGHighlightPainter::GetTextContentOffset(const Text& text,
-                                                  unsigned offset) {
-  // TODO(yoichio): Sanitize DocumentMarker around text length.
-  const Position position(text, std::min(offset, text.length()));
-  const OffsetMapping* const offset_mapping = OffsetMapping::GetFor(position);
-  DCHECK(offset_mapping);
-  const absl::optional<unsigned>& ng_offset =
-      offset_mapping->GetTextContentOffset(position);
-  DCHECK(ng_offset.has_value());
-  return ng_offset.value();
 }
 
 void NGHighlightPainter::PaintHighlightBackground(

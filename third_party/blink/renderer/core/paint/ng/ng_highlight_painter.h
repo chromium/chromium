@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/selection_state.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_overlay.h"
@@ -37,11 +38,7 @@ struct NGTextFragmentPaintInfo;
 struct PaintInfo;
 struct PhysicalOffset;
 
-namespace {
-class MarkerRangeMappingContext;
-}
-
-// Highlight overlay painter for LayoutNG. Operates on FragmentItem that
+// Highlight overlay painter for LayoutNG. Operates on a FragmentItem that
 // IsText(). Delegates to NGTextPainter to paint the text itself.
 class CORE_EXPORT NGHighlightPainter {
   STACK_ALLOCATED();
@@ -190,6 +187,10 @@ class CORE_EXPORT NGHighlightPainter {
   };
   Case PaintCase() const;
 
+  static TextOffsetRange GetFragmentDOMOffsets(const Text& text,
+                                               unsigned from,
+                                               unsigned to);
+
   // PaintCase() == kFastSpellingGrammar only
   void FastPaintSpellingGrammarDecorations();
 
@@ -206,9 +207,6 @@ class CORE_EXPORT NGHighlightPainter {
       Color color,
       const PhysicalRect& rect,
       const absl::optional<AffineTransform>& rotation);
-
-  // Return the text content offset for a particular fragment offset.
-  static unsigned GetTextContentOffset(const Text& text, unsigned offset);
 
   // Query various style pieces for the given marker type
   static PseudoId PseudoFor(DocumentMarker::MarkerType type);
@@ -251,9 +249,6 @@ class CORE_EXPORT NGHighlightPainter {
                                            unsigned start_offset,
                                            unsigned end_offset);
   Vector<LayoutSelectionStatus> GetHighlights(const LayerPaintState& layer);
-  LayoutSelectionStatus GetSelectionStatusFromMarker(
-      const Member<DocumentMarker>& marker,
-      const MarkerRangeMappingContext* mapping_context);
   void FastPaintSpellingGrammarDecorations(const Text& text_node,
                                            const StringView& text,
                                            const DocumentMarkerVector& markers);
@@ -295,6 +290,13 @@ class CORE_EXPORT NGHighlightPainter {
                           const AtomicString& pseudo_argument = g_empty_atom);
 
   const NGTextFragmentPaintInfo& fragment_paint_info_;
+
+  // Offsets of the fragment in DOM space, or nullopt if |node_| is not Text or
+  // the fragment is generated text (or there are no markers). Used to reject
+  // markers outside the target range in dom space, without converting the
+  // marker's offsets to the fragment space.
+  absl::optional<TextOffsetRange> fragment_dom_offsets_{};
+
   NGTextPainter& text_painter_;
   NGTextDecorationPainter& decoration_painter_;
   const PaintInfo& paint_info_;

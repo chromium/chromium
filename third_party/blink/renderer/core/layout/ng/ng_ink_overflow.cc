@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
+#include "third_party/blink/renderer/core/paint/ng/marker_range_mapping_context.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
@@ -602,21 +603,25 @@ LogicalRect NGInkOverflow::ComputeDecorationOverflow(
         accumulated_bound.Unite(custom_bound);
       }
     }
-
     if (do_spelling_grammar) {
       DocumentMarkerVector spelling_markers = controller.MarkersFor(
           *text_node, DocumentMarker::MarkerTypes::Spelling());
-      LogicalRect spelling_bound = ComputeMarkerOverflow(
-          spelling_markers, DocumentMarker::kSpelling, fragment_item, text_node,
-          style, scaled_font, container_offset, ink_overflow, inline_context);
-      accumulated_bound.Unite(spelling_bound);
+      if (!spelling_markers.empty()) {
+        LogicalRect spelling_bound = ComputeMarkerOverflow(
+            spelling_markers, DocumentMarker::kSpelling, fragment_item,
+            text_node, style, scaled_font, container_offset, ink_overflow,
+            inline_context);
+        accumulated_bound.Unite(spelling_bound);
+      }
 
       DocumentMarkerVector grammar_markers = controller.MarkersFor(
           *text_node, DocumentMarker::MarkerTypes::Grammar());
-      LogicalRect grammar_bound = ComputeMarkerOverflow(
-          grammar_markers, DocumentMarker::kGrammar, fragment_item, text_node,
-          style, scaled_font, container_offset, ink_overflow, inline_context);
-      accumulated_bound.Unite(grammar_bound);
+      if (!grammar_markers.empty()) {
+        LogicalRect grammar_bound = ComputeMarkerOverflow(
+            grammar_markers, DocumentMarker::kGrammar, fragment_item, text_node,
+            style, scaled_font, container_offset, ink_overflow, inline_context);
+        accumulated_bound.Unite(grammar_bound);
+      }
     }
   }
   return accumulated_bound;
@@ -681,14 +686,14 @@ LogicalRect NGInkOverflow::ComputeMarkerOverflow(
           ? nullptr
           : HighlightStyleUtils::HighlightPseudoStyle(
                 text_node, style, NGHighlightPainter::PseudoFor(type));
+  const TextOffsetRange fragment_dom_offsets =
+      NGHighlightPainter::GetFragmentDOMOffsets(
+          *text_node, fragment_item->StartOffset(), fragment_item->EndOffset());
+  MarkerRangeMappingContext mapping_context(*text_node, fragment_dom_offsets);
   for (auto marker : markers) {
-    const unsigned marker_start_offset =
-        NGHighlightPainter::GetTextContentOffset(*text_node,
-                                                 marker->StartOffset());
-    const unsigned marker_end_offset = NGHighlightPainter::GetTextContentOffset(
-        *text_node, marker->EndOffset());
-    if (marker_start_offset > fragment_item->EndOffset() ||
-        marker_end_offset < fragment_item->StartOffset()) {
+    std::optional<TextOffsetRange> marker_offsets =
+        mapping_context.GetTextContentOffsets(*marker);
+    if (!marker_offsets) {
       return LogicalRect();
     }
     LogicalRect decoration_bound;
@@ -723,14 +728,14 @@ LogicalRect NGInkOverflow::ComputeCustomHighlightOverflow(
     const LogicalRect& ink_overflow,
     const NGInlinePaintContext* inline_context) {
   LogicalRect accumulated_bound;
+  const TextOffsetRange fragment_dom_offsets =
+      NGHighlightPainter::GetFragmentDOMOffsets(
+          *text_node, fragment_item->StartOffset(), fragment_item->EndOffset());
+  MarkerRangeMappingContext mapping_context(*text_node, fragment_dom_offsets);
   for (auto marker : markers) {
-    const unsigned marker_start_offset =
-        NGHighlightPainter::GetTextContentOffset(*text_node,
-                                                 marker->StartOffset());
-    const unsigned marker_end_offset = NGHighlightPainter::GetTextContentOffset(
-        *text_node, marker->EndOffset());
-    if (marker_start_offset > fragment_item->EndOffset() ||
-        marker_end_offset < fragment_item->StartOffset()) {
+    std::optional<TextOffsetRange> marker_offsets =
+        mapping_context.GetTextContentOffsets(*marker);
+    if (!marker_offsets) {
       return LogicalRect();
     }
 
