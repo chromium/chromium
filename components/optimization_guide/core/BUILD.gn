@@ -189,6 +189,10 @@ static_library("core") {
     "model_execution/model_execution_fetcher.h",
     "model_execution/model_execution_manager.cc",
     "model_execution/model_execution_manager.h",
+    "model_execution/on_device_model_service_controller.cc",
+    "model_execution/on_device_model_service_controller.h",
+    "model_execution/on_device_model_stream_receiver.cc",
+    "model_execution/on_device_model_stream_receiver.h",
     "model_execution/optimization_guide_model_execution_error.cc",
     "model_execution/optimization_guide_model_execution_error.h",
     "model_handler.h",
@@ -291,6 +295,7 @@ static_library("core") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
+    "//services/on_device_model/public/mojom",
     "//url:url",
   ]
 
@@ -419,6 +424,7 @@ source_set("unit_tests") {
     "hints_processing_util_unittest.cc",
     "insertion_ordered_set_unittest.cc",
     "model_execution/model_execution_fetcher_unittest.cc",
+    "model_execution/on_device_model_service_controller_unittest.cc",
     "model_handler_unittest.cc",
     "model_store_metadata_entry_unittest.cc",
     "model_util_unittest.cc",

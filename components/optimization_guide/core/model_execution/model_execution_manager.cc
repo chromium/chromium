@@ -6,7 +6,10 @@
 
 #include "base/command_line.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_stream_receiver.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "net/base/url_util.h"
@@ -35,6 +38,8 @@ using ModelExecutionError =
 ModelExecutionManager::ModelExecutionManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
+    std::unique_ptr<OnDeviceModelServiceController>
+        on_device_model_service_controller,
     OptimizationGuideLogger* optimization_guide_logger)
     : optimization_guide_logger_(optimization_guide_logger),
       model_execution_service_url_(net::AppendOrReplaceQueryParameter(
@@ -43,7 +48,18 @@ ModelExecutionManager::ModelExecutionManager(
           features::GetOptimizationGuideServiceAPIKey())),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
-      oauth_scopes_(features::GetOAuthScopesForModelExecution()) {}
+      oauth_scopes_(features::GetOAuthScopesForModelExecution()),
+      on_device_model_service_controller_(
+          std::move(on_device_model_service_controller)) {
+  auto model_path_override_switch =
+      switches::GetOnDeviceModelExecutionOverride();
+  if (model_path_override_switch) {
+    auto file_path = StringToFilePath(*model_path_override_switch);
+    if (file_path) {
+      on_device_model_path_ = *file_path;
+    }
+  }
+}
 
 ModelExecutionManager::~ModelExecutionManager() = default;
 
@@ -52,6 +68,7 @@ void ModelExecutionManager::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     OptimizationGuideModelExecutionResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (active_model_execution_fetchers_.find(feature) !=
       active_model_execution_fetchers_.end()) {
     std::move(callback).Run(base::unexpected(
