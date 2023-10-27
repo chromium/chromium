@@ -18,7 +18,6 @@
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_result.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace privacy_sandbox {
@@ -124,13 +123,6 @@ void TrackingProtectionNoticeService::BaseIPHNotice::
     return;
   }
 
-  // If the promo has previously been dismissed by the user, Call the onboarding
-  // service to notify that the promo was shown.
-  if (WasPromoPreviouslyDismissed(browser)) {
-    // Call Notify the onbaording service that the promo was shown.
-    onboarding_service_->NoticeShown(GetNoticeType());
-  }
-
   // We should hide the notice at this point if the browser isn't eligible.
   if (!IsLocationBarEligible(browser)) {
     HidePromo(browser);
@@ -150,12 +142,6 @@ void TrackingProtectionNoticeService::BaseIPHNotice::
   } else {
     // TODO(b/302008359) Emit metrics
   }
-}
-
-bool TrackingProtectionNoticeService::BaseIPHNotice::
-    WasPromoPreviouslyDismissed(Browser* browser) {
-  return browser->window()->CanShowFeaturePromo(GetIPHFeature()) ==
-         user_education::FeaturePromoResult::kPermanentlyDismissed;
 }
 
 bool TrackingProtectionNoticeService::BaseIPHNotice::MaybeShowPromo(

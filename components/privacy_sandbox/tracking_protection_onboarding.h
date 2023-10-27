@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ONBOARDING_H_
 #define COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ONBOARDING_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -141,8 +140,6 @@ class TrackingProtectionOnboarding : public KeyedService {
 
  private:
   friend class tpcd::experiment::EligibilityServiceTest;
-  FRIEND_TEST(TrackingProtectionOnboardingNoticeBrowserTest,
-              TreatsAsShownIfPreviouslyDismissed);
 
   // Called when the underlying onboarding pref is changed.
   virtual void OnOnboardingPrefChanged() const;
