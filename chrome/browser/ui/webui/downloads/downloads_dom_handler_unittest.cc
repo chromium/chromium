@@ -210,7 +210,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest, DiscardDangerous) {
   // Verify that dangerous download report is not sent because the feature flag
   // is disabled.
   EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                  ->serilized_download_report()
+                  ->serialized_download_report()
                   .empty());
 }
 
@@ -250,7 +250,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
   expected_report.SerializeToString(&expected_serialized_report);
   EXPECT_EQ(expected_serialized_report,
             test_safe_browsing_factory_->test_safe_browsing_service()
-                ->serilized_download_report());
+                ->serialized_download_report());
 }
 
 TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
@@ -268,7 +268,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
   // Verify that dangerous download report is not sent because the download is
   // already in complete state.
   EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                  ->serilized_download_report()
+                  ->serialized_download_report()
                   .empty());
 }
 
@@ -287,7 +287,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
 
   // Verify that dangerous download report is not sent because the URL is empty.
   EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                  ->serilized_download_report()
+                  ->serialized_download_report()
                   .empty());
 }
 
@@ -309,7 +309,7 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestNewCsbrrTrigger,
   // Verify that dangerous download report is not sent because it's in
   // Incognito.
   EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                  ->serilized_download_report()
+                  ->serialized_download_report()
                   .empty());
 }
 

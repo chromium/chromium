@@ -55,7 +55,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   // SafeBrowsingService overrides
   V4ProtocolConfig GetV4ProtocolConfig() const override;
 
-  std::string serilized_download_report();
+  std::string serialized_download_report();
   void ClearDownloadReport();
 
   // In browser tests, the following setters must be called before

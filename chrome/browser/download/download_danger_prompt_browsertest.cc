@@ -122,10 +122,10 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
     if (should_send_report) {
       EXPECT_EQ(expected_serialized_report_,
                 test_safe_browsing_factory_->test_safe_browsing_service()
-                    ->serilized_download_report());
+                    ->serialized_download_report());
     } else {
       EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
-                      ->serilized_download_report()
+                      ->serialized_download_report()
                       .empty());
     }
     testing::Mock::VerifyAndClearExpectations(&download_);
