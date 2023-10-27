@@ -165,7 +165,10 @@ class QuickSettingsLacrosIntegrationTest : public QuickSettingsIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest, ManagedDeviceInfo) {
+// Flaky because Lacros can be older than Ash in chromeos_integration_tests,
+// causing NOTREACHED failures at the crosapi level. b/303359438
+IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest,
+                       DISABLED_ManagedDeviceInfo) {
   ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
 
   base::AddFeatureIdTagToTestResult(
