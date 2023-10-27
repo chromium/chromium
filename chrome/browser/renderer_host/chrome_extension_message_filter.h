@@ -15,7 +15,10 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_l10n_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 
 // This class filters out incoming Chrome-specific IPC messages from the
 // extension process on the IPC thread.
@@ -64,5 +67,6 @@ class ChromeExtensionMessageFilter : public content::BrowserMessageFilter,
 
   base::ScopedObservation<Profile, ProfileObserver> observed_profile_{this};
 };
+#endif
 
 #endif  // CHROME_BROWSER_RENDERER_HOST_CHROME_EXTENSION_MESSAGE_FILTER_H_

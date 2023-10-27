@@ -737,8 +737,8 @@ void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
     return;
   }
 
-  host->AddFilter(new ChromeExtensionMessageFilter(profile));
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  host->AddFilter(new ChromeExtensionMessageFilter(profile));
   int id = host->GetID();
   host->AddFilter(new ExtensionMessageFilter(id, profile));
   host->AddFilter(new ExtensionServiceWorkerMessageFilter(

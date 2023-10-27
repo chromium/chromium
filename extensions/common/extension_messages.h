@@ -277,7 +277,6 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_PostMessage,
 IPC_MESSAGE_CONTROL2(ExtensionHostMsg_ResponsePending,
                      extensions::PortContext /* port_context */,
                      extensions::PortId /*port_id */)
-#endif
 
 // Used to get the extension message bundle.
 IPC_SYNC_MESSAGE_CONTROL1_1(
@@ -285,7 +284,6 @@ IPC_SYNC_MESSAGE_CONTROL1_1(
     std::string /* extension id */,
     extensions::MessageBundle::SubstitutionMap /* message bundle */)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 // Asks the browser to wake the event page of an extension.
 // The browser will reply with ExtensionHostMsg_WakeEventPageResponse.
 IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WakeEventPage,

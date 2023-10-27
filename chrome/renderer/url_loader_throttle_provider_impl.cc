@@ -205,7 +205,8 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
       throttles.emplace_back(std::move(throttle));
   }
   std::unique_ptr<blink::URLLoaderThrottle> localization_throttle =
-      extensions::ExtensionLocalizationThrottle::MaybeCreate(request.Url());
+      extensions::ExtensionLocalizationThrottle::MaybeCreate(render_frame_id,
+                                                             request.Url());
   if (localization_throttle) {
     throttles.emplace_back(std::move(localization_throttle));
   }

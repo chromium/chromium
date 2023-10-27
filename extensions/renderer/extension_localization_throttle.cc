@@ -8,9 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/shared_l10n_map.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,10 +36,12 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
                                        public mojo::DataPipeDrainer::Client {
  public:
   ExtensionLocalizationURLLoader(
+      int render_frame_id,
       const std::string& extension_id,
       mojo::PendingRemote<network::mojom::URLLoaderClient>
           destination_url_loader_client)
-      : extension_id_(extension_id),
+      : render_frame_id_(render_frame_id),
+        extension_id_(extension_id),
         destination_url_loader_client_(
             std::move(destination_url_loader_client)) {}
   ~ExtensionLocalizationURLLoader() override = default;
@@ -177,11 +181,22 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
   }
 
   void ReplaceMessages() {
-    IPC::Sender* message_sender = content::RenderThread::Get();
+    extensions::SharedL10nMap::IPCTarget* ipc_target = nullptr;
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+    ipc_target = content::RenderThread::Get();
+    (void)render_frame_id_;
+#else
+    content::RenderFrame* render_frame =
+        content::RenderFrame::FromRoutingID(render_frame_id_);
+    if (render_frame) {
+      ipc_target = ExtensionFrameHelper::Get(render_frame)->GetRendererHost();
+    }
+#endif
     extensions::SharedL10nMap::GetInstance().ReplaceMessages(
-        extension_id_, &data_, message_sender);
+        extension_id_, &data_, ipc_target);
   }
 
+  const int render_frame_id_;
   const ExtensionId extension_id_;
   std::unique_ptr<mojo::DataPipeDrainer> data_drainer_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
@@ -201,14 +216,17 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
 
 // static
 std::unique_ptr<ExtensionLocalizationThrottle>
-ExtensionLocalizationThrottle::MaybeCreate(const blink::WebURL& request_url) {
+ExtensionLocalizationThrottle::MaybeCreate(int render_frame_id,
+                                           const blink::WebURL& request_url) {
   if (!request_url.ProtocolIs(extensions::kExtensionScheme)) {
     return nullptr;
   }
-  return base::WrapUnique(new ExtensionLocalizationThrottle());
+  return base::WrapUnique(new ExtensionLocalizationThrottle(render_frame_id));
 }
 
-ExtensionLocalizationThrottle::ExtensionLocalizationThrottle() = default;
+ExtensionLocalizationThrottle::ExtensionLocalizationThrottle(
+    int render_frame_id)
+    : render_frame_id_(render_frame_id) {}
 
 ExtensionLocalizationThrottle::~ExtensionLocalizationThrottle() = default;
 
@@ -251,7 +269,7 @@ void ExtensionLocalizationThrottle::WillProcessResponse(
   mojo::PendingReceiver<network::mojom::URLLoaderClient> source_client_receiver;
 
   auto loader = std::make_unique<ExtensionLocalizationURLLoader>(
-      response_url.host(), std::move(url_loader_client));
+      render_frame_id_, response_url.host(), std::move(url_loader_client));
 
   ExtensionLocalizationURLLoader* loader_rawptr = loader.get();
   // `loader` will be deleted when `new_remote` is disconnected.
