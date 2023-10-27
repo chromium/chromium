@@ -14,7 +14,12 @@ bool TranslateLanguageProvider::IsLanguageSupported(
   std::string source_language = GetSourceLanguage(translate_manager);
   // TODO(b/307814938): Make this finch configurable.
   // Only English is supported for MVP, we will add more languages over time.
-  return (source_language == std::string("en"));
+  // We accept the empty string which might be returned if the translate system
+  // has not yet deterimed the language, and "und" which means translate
+  // couldn't find an answer.
+  // TODO(b/3081647240): Verify that this is the right behavior.
+  return (source_language == std::string("en") ||
+          source_language == std::string("und") || source_language.empty());
 }
 
 std::string TranslateLanguageProvider::GetSourceLanguage(

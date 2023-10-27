@@ -196,6 +196,46 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageTest) {
       test_profile_, &mock_translate_manager));
 }
 
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLangugeTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable everything.
+  compose_enabling.SetEnabledForTesting();
+
+  // Set the language to the empty string - translate doesn't have the answer
+  // yet.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  EXPECT_CALL(mock_translate_language_provider,
+              GetSourceLanguage(&mock_translate_manager))
+      .WillOnce(Return(std::string()));
+
+  EXPECT_TRUE(compose_enabling.ShouldTriggerContextMenu(
+      test_profile_, &mock_translate_manager));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuUndeterminedLangugeTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable everything.
+  compose_enabling.SetEnabledForTesting();
+
+  // Set the language to the "und" for a page where translate could not
+  // determine the language.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  EXPECT_CALL(mock_translate_language_provider,
+              GetSourceLanguage(&mock_translate_manager))
+      .WillOnce(Return(std::string("und")));
+
+  EXPECT_TRUE(compose_enabling.ShouldTriggerContextMenu(
+      test_profile_, &mock_translate_manager));
+}
+
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTest) {
   testing::NiceMock<MockTranslateLanguageProvider>
       mock_translate_language_provider;
