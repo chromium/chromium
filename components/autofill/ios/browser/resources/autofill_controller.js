@@ -172,6 +172,27 @@ __gCrWeb.autofill['fillActiveFormField'] = function(data) {
   return __gCrWeb.autofill.fillFormField(data, activeElement);
 };
 
+/**
+ * Fills data into the form field identified by `data['unique_renderer_id']`.
+ * This is similar to `fillActiveFormField`, but does not require that the
+ * target field be `document.activeElement`.
+ *
+ * @param {AutofillFormFieldData} data The data to fill in.
+ * @return {boolean} Whether the field was filled successfully.
+ */
+__gCrWeb.autofill['fillSpecificFormField'] = function(data) {
+  const fieldID = data['unique_renderer_id'];
+  if (typeof fieldID === 'undefined') {
+    return false;
+  }
+  const field = __gCrWeb.fill.getElementByUniqueID(fieldID);
+  if (!field) {
+    return false;
+  }
+  __gCrWeb.autofill.lastAutoFilledElement = field;
+  return __gCrWeb.autofill.fillFormField(data, field);
+};
+
 // Remove Autofill styling when control element is edited by the user.
 function controlElementInputListener_(evt) {
   if (evt.isTrusted) {

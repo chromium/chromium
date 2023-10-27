@@ -414,6 +414,35 @@ TEST_F(AutofillJavaScriptFeatureTest, FillActiveFormField) {
   EXPECT_NSEQ(@"newemail@com", ExecuteJavaScript(element_value_javascript));
 }
 
+// Tests filling of a specific field, which differs from `FillActiveFormField`
+// because it does not require that the field have focus.
+TEST_F(AutofillJavaScriptFeatureTest, FillSpecificFormField) {
+  LoadHtml(@"<html><body><form name='testform' method='post'>"
+            "<input type='email' id='email' name='email'/>"
+            "</form></body></html>");
+  RunFormsSearch();
+
+  NSString* get_element_javascript = @"document.getElementsByName('email')[0]";
+  base::Value::Dict data;
+  data.Set("name", "email");
+  data.Set("identifier", "email");
+  data.Set("unique_renderer_id", 2);
+  data.Set("value", "newemail@com");
+  __block BOOL success = NO;
+
+  feature()->FillSpecificFormField(main_web_frame(), std::move(data),
+                                   base::BindOnce(^(BOOL result) {
+                                     success = result;
+                                   }));
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool() {
+        return success;
+      }));
+  NSString* element_value_javascript =
+      [NSString stringWithFormat:@"%@.value", get_element_javascript];
+  EXPECT_NSEQ(@"newemail@com", ExecuteJavaScript(element_value_javascript));
+}
+
 // Tests the generation of the name of the fields.
 TEST_F(AutofillJavaScriptFeatureTest, TestExtractedFieldsNames) {
   LoadHtml(@"<html><body><form name='testform' method='post'>"

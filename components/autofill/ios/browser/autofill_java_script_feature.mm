@@ -91,6 +91,16 @@ void AutofillJavaScriptFeature::FillActiveFormField(
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
+void AutofillJavaScriptFeature::FillSpecificFormField(
+    web::WebFrame* frame,
+    base::Value::Dict data,
+    base::OnceCallback<void(BOOL)> callback) {
+  CallJavaScriptFunction(frame, "autofill.fillSpecificFormField",
+                         base::Value::List().Append(std::move(data)),
+                         autofill::CreateBoolCallback(std::move(callback)),
+                         base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
+}
+
 void AutofillJavaScriptFeature::FillForm(
     web::WebFrame* frame,
     base::Value::Dict data,

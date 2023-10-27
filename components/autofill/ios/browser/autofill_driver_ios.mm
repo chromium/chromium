@@ -111,7 +111,22 @@ std::vector<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
 void AutofillDriverIOS::ApplyFieldAction(
     mojom::ActionPersistence action_persistence,
     const FieldGlobalId& field,
-    const std::u16string& value) {}
+    const std::u16string& value) {
+  // For now, only support filling.
+  switch (action_persistence) {
+    case mojom::ActionPersistence::kFill: {
+      web::WebFrame* frame = web_frame();
+      if (frame) {
+        [bridge_ fillSpecificFormField:field.renderer_id
+                             withValue:value
+                               inFrame:frame];
+      }
+      break;
+    }
+    case mojom::ActionPersistence::kPreview:
+      return;
+  }
+}
 
 void AutofillDriverIOS::ExtractForm(
     FormGlobalId form,

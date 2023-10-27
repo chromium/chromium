@@ -588,6 +588,39 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         form, autofill::AutofillTickClock::NowTicks());
 }
 
+// Similar to `fillField`, but does not rely on `FillActiveFormField`, opting
+// instead to find and fill a specific field in `frame` with `value`. In other
+// words, `field` need not be `document.activeElement`.
+- (void)fillSpecificFormField:(const autofill::FieldRendererId&)field
+                    withValue:(const std::u16string)value
+                      inFrame:(web::WebFrame*)frame {
+  base::Value::Dict data;
+  data.Set("unique_renderer_id", static_cast<int>(field.value()));
+  data.Set("value", value);
+
+  __weak AutofillAgent* weakSelf = self;
+  SuggestionHandledCompletion suggestionHandledCompletionCopy =
+      [_suggestionHandledCompletion copy];
+  _suggestionHandledCompletion = nil;
+
+  AutofillJavaScriptFeature::GetInstance()->FillSpecificFormField(
+      frame, std::move(data), base::BindOnce(^(BOOL success) {
+        AutofillAgent* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        if (success) {
+          [strongSelf updateFieldManagerForSpecificField:field withValue:value];
+        }
+        // Especially in test code, it is possible that the fill was not
+        // initiated by selecting a suggestion. In this case the callback is
+        // nil.
+        if (suggestionHandledCompletionCopy) {
+          suggestionHandledCompletionCopy();
+        }
+      }));
+}
+
 - (void)handleParsedForms:(const std::vector<autofill::FormStructure*>&)forms
                   inFrame:(web::WebFrame*)frame {
 }
@@ -1071,6 +1104,12 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   ukm::builders::Autofill_FormFillSuccessIOS(source_id)
       .SetFormFillSuccess(!fillingResults.empty())
       .Record(ukm::UkmRecorder::Get());
+}
+
+- (void)updateFieldManagerForSpecificField:(FieldRendererId)uniqueFieldID
+                                 withValue:(const std::u16string&)value {
+  _fieldDataManager->UpdateFieldDataMap(uniqueFieldID, value,
+                                        kAutofilledOnUserTrigger);
 }
 
 // Sends the the |data| to |frame| to actually fill the data.

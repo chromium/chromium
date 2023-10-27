@@ -43,6 +43,13 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
                            base::Value::Dict data,
                            base::OnceCallback<void(BOOL)> callback);
 
+  // Fills `data` into the `unique_renderer_id` in `data`, then executes
+  // callback. This is similar to `FillActiveFormField`, but does not require
+  // that the target element be the active element.
+  void FillSpecificFormField(web::WebFrame* frame,
+                             base::Value::Dict data,
+                             base::OnceCallback<void(BOOL)> callback);
+
   // Fills a number of fields in the same named form for full-form Autofill.
   // Applies Autofill CSS (i.e. yellow background) to filled elements.
   // Only empty fields will be filled, except that field named

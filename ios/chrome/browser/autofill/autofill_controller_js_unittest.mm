@@ -2007,6 +2007,51 @@ TEST_F(AutofillControllerJsTest, FillActiveFormField) {
       << "A non-form element's value should changed.";
 }
 
+TEST_F(AutofillControllerJsTest, FillSpecificFormField) {
+  web::test::LoadHtml(kHTMLForTestingElements, web_state());
+
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+
+  uint32_t next_available_id = 1;
+  autofill::FormUtilJavaScriptFeature::GetInstance()
+      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
+
+  // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
+           static_cast<int>(next_available_id);
+  }));
+
+  // Simulate form parsing to set renderer IDs.
+  ExecuteJavaScript(@"__gCrWeb.autofill.extractForms(0, true)");
+
+  NSString* new_value = @"new value";
+  EXPECT_NSEQ(new_value,
+              ExecuteJavaScript([NSString
+                  stringWithFormat:
+                      @"var element=document.getElementsByName('lastname')[0];"
+                       "var "
+                       "data={\"name\":\"lastname\",\"value\":\"%@\","
+                       "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
+                       "__gCrWeb.autofill.fillSpecificFormField(data);"
+                       "element.value",
+                      new_value]));
+
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScript([NSString
+                  stringWithFormat:
+                      @"var element=document.getElementsByName('gl')[0];"
+                       "var oldValue = element.value;"
+                       "var "
+                       "data={\"name\":\"lastname\",\"value\":\"%@\","
+                       "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
+                       "__gCrWeb.autofill.fillSpecificFormField(data);"
+                       "element.value === oldValue",
+                      new_value]))
+      << "A non-form element's value should changed.";
+}
+
 // iOS version of FormAutofillTest.FormCache_ExtractNewForms from
 // chrome/renderer/autofill/form_autofill_browsertest.cc
 TEST_F(AutofillControllerJsTest, ExtractNewForms) {
