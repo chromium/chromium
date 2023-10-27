@@ -43,15 +43,22 @@ using mojom::blink::FormControlType;
 
 namespace {
 
-bool WillReattachChildLayoutObject(const Node& parent) {
+bool WillReattachChildLayoutObject(const Element& parent) {
   for (const Node* child = LayoutTreeBuilderTraversal::FirstChild(parent);
        child; child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-    if (child->NeedsReattachLayoutTree())
+    if (child->NeedsReattachLayoutTree()) {
       return true;
-    if (child->ChildNeedsReattachLayoutTree() && child->GetComputedStyle() &&
-        child->GetComputedStyle()->Display() == EDisplay::kContents &&
-        WillReattachChildLayoutObject(*child))
-      return true;
+    }
+    const auto* element = DynamicTo<Element>(child);
+    if (!element || !element->ChildNeedsReattachLayoutTree()) {
+      continue;
+    }
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (style->Display() == EDisplay::kContents &&
+          WillReattachChildLayoutObject(*element)) {
+        return true;
+      }
+    }
   }
   return false;
 }
