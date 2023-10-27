@@ -44616,6 +44616,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_locks"/>
   <int value="4707"
       label="StorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use"/>
+  <int value="4708" label="RubyElementWithDisplayBlockAndRt"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
