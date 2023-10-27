@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] Root element has a direction
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] Element outside the document tree has a direction
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] Non-HTML element outside the document tree has a direction
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] Element without direction has parent element direction
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] Non-HTML element without direction has parent element direction
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] dir inheritance is correct after insertion and removal from document
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] Non-HTML element text contents influence dir=auto
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] text changes apply to dir=auto on further ancestor after removing dir=auto from closer ancestor
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+Harness: the test ran to completion.
+

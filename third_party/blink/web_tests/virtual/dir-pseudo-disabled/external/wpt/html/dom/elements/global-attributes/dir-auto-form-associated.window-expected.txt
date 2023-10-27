@@ -1,0 +1,47 @@
+This is a testharness.js-based test.
+[FAIL] <input dir=auto type=hidden> directionality
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] <input dir=auto type=text> directionality
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] <input dir=auto type=search> directionality
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] <input dir=auto type=tel> directionality
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] <input dir=auto type=url> directionality
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] <input dir=auto type=email> directionality
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] <input dir=auto type=password> directionality
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] <input dir=auto type=submit> directionality
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] <input dir=auto type=reset> directionality
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] <input dir=auto type=button> directionality
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] <input dir=auto type=date> directionality
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] <input dir=auto type=month> directionality
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] <input dir=auto type=week> directionality
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] <input dir=auto type=time> directionality
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] <input dir=auto type=datetime-local> directionality
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] <input dir=auto type=number> directionality
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] <input dir=auto type=range> directionality
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] <input dir=auto type=color> directionality
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] <input dir=auto type=checkbox> directionality
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] <input dir=auto type=radio> directionality
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] <input dir=auto type=image> directionality
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] <textarea dir=auto> directionality
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+Harness: the test ran to completion.
+

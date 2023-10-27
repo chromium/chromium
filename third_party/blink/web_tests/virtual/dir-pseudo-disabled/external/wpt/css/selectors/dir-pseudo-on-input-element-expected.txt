@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+[FAIL] input element whose type attribute is in the telephone state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the telephone state in a RTL block
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the password state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the text state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the search state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the url state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the email state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the submit state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the reset state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the button state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] dynamic changes to type of input elements affect whether value is used for dir=auto
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the date state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the time state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the number state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the range state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the color state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the checkbox state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the radio state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] input element whose type attribute is in the image state
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+Harness: the test ran to completion.
+

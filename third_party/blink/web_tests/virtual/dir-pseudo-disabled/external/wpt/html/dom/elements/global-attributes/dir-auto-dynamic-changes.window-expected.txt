@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] dynamic insertion of RTL text in a child element
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] dir=auto changes for content insertion and removal, in and out of document
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] dir=auto changes for slot reassignment
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] text changes affecting both slot and ancestor with dir=auto
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] dynamic changes to subtrees excluded as a result of the dir attribute
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] dynamic changes inside of non-HTML elements
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] slotted non-HTML elements
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] slotted non-HTML elements after dynamically assigning dir=auto, and dir attribute ignored on non-HTML elements
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+Harness: the test ran to completion.
+

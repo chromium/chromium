@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] Slots: Directionality: dir=rtl on slot
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] Slots: Directionality: dir=rtl on host
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] Slots: Directionality: dir=auto on host with Arabic shadow tree content
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] Slots: Directionality: dir=auto in shadow tree with Arabic light tree content
+  assert_equals: expected "ltr" but got "rtl"
+[FAIL] Slots: Directionality: dir=auto in shadow tree with Arabic shadow tree content
+  assert_equals: expected "ltr" but got "rtl"
+[FAIL] Slots: Directionality: dir=auto on slot with Arabic light tree content
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] slot provides its directionality (from host) to a dir=auto container
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] children with dir attribute are skipped by dir=auto
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+[FAIL] slot with dir attribute is skipped by dir=auto
+  Failed to execute 'matches' on 'Element': ':dir(rtl)' is not a valid selector.
+Harness: the test ran to completion.
+

@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] bdi element without dir content attribute
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] bdi element with invalid dir content attribute
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] bdi element with dir=auto content attribute
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] bdi element with dir=ltr content attribute
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+[FAIL] bdi element with dir=rtl content attribute
+  Failed to execute 'matches' on 'Element': ':dir(ltr)' is not a valid selector.
+Harness: the test ran to completion.
+
