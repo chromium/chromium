@@ -249,6 +249,18 @@ WolvicBrowserContext::GetOriginTrialsControllerDelegate() {
   return nullptr;
 }
 
+// static
+WolvicBrowserContext* WolvicBrowserContext::FromWebContents(content::WebContents& web_contents) {
+  // Safe as we're the only implementation.
+  return static_cast<WolvicBrowserContext*>(web_contents.GetBrowserContext());
+}
+
+void
+WolvicBrowserContext::AddVisitedURLs(const std::vector<GURL>& urls) {
+  DCHECK(visitedlink_writer_);
+  visitedlink_writer_->AddURLs(urls);
+}
+
 void
 WolvicBrowserContext::RebuildTable(
     const scoped_refptr<URLEnumerator>& enumerator) {

@@ -67,6 +67,9 @@ class WolvicBrowserContext : public BrowserContext,
   GetReduceAcceptLanguageControllerDelegate() override;
   OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate() override;
 
+  static WolvicBrowserContext* FromWebContents(content::WebContents& web_contents);
+  void AddVisitedURLs(const std::vector<GURL>&);
+
   // visitedlink::VisitedLinkDelegate implementation.
   void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;
 
