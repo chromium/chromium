@@ -546,6 +546,10 @@ public final class ProductionSupportedFlagList {
                         + "thread (in contrast to snapshotting unlogged samples in the "
                         + "background, then marking them as logged on the main thread)."),
         Flag.baseFeature(
+                MetricsFeatures.REPORTING_SERVICE_ALWAYS_FLUSH,
+                "Determines whether to always flush Local State immediately after an UMA/UKM "
+                        + "log upload."),
+        Flag.baseFeature(
                 ContentFeatures.MAIN_THREAD_COMPOSITING_PRIORITY,
                 "When enabled runs the main thread at compositing priority."),
         Flag.baseFeature(
