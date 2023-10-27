@@ -161,6 +161,12 @@ base::expected<void, GLError> ConvertYUVACommon(
   }
   sk_subsampling = static_cast<SkYUVAInfo::Subsampling>(subsampling_in);
 
+  if (sk_plane_config == SkYUVAInfo::PlaneConfig::kUnknown ||
+      sk_subsampling == SkYUVAInfo::Subsampling::kUnknown) {
+    return base::unexpected(
+        GLError(GL_INVALID_ENUM, function_name, "Invalid SkYUVAInfo"));
+  }
+
   std::array<gpu::Mailbox, SkYUVAInfo::kMaxPlanes> yuva_mailboxes;
   num_yuva_planes = SkYUVAInfo::NumPlanes(sk_plane_config);
   for (int i = 0; i < num_yuva_planes; ++i) {
