@@ -75,7 +75,8 @@ class PopupCellWithButtonViewTest : public ChromeViewsTestBase {
       base::RepeatingClosure button_callback = base::DoNothing(),
       CellButtonBehavior cell_button_behavior =
           CellButtonBehavior::kShowOnHoverOrSelect) {
-    auto cell = std::make_unique<PopupCellWithButtonView>();
+    auto cell = std::make_unique<PopupCellWithButtonView>(
+        controller_.GetWeakPtr(), /*line_number=*/0);
     cell->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
     cell->AddChildView(std::make_unique<views::Label>(u"Some label"));
@@ -90,11 +91,13 @@ class PopupCellWithButtonViewTest : public ChromeViewsTestBase {
   }
 
  protected:
+  MockAutofillPopupController& controller() { return controller_; }
   ui::test::EventGenerator& generator() { return *generator_; }
   PopupCellWithButtonView& view() { return *view_; }
   views::Widget& widget() { return *widget_; }
 
  private:
+  MockAutofillPopupController controller_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   raw_ptr<PopupCellWithButtonView> view_ = nullptr;
@@ -132,23 +135,18 @@ TEST_F(PopupCellWithButtonViewTest,
   views::ImageButton* button = CreateRowAndGetButton();
   views::View* label = view().children()[0];
 
-  StrictMock<base::MockCallback<base::RepeatingClosure>> selected_callback;
-  StrictMock<base::MockCallback<base::RepeatingClosure>> unselected_callback;
-  view().SetOnSelectedCallback(selected_callback.Get());
-  view().SetOnUnselectedCallback(unselected_callback.Get());
-  EXPECT_CALL(selected_callback, Run);
   view().SetSelected(true);
   ASSERT_TRUE(view().GetSelected());
   // In test env we have to manually set the bounds when a view becomes visible.
   button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
 
   // Selected is false if hovering button.
-  EXPECT_CALL(unselected_callback, Run);
+  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>()));
   generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
   ASSERT_FALSE(view().GetSelected());
 
   // Selected is true if hovering the label when the button state changes.
-  EXPECT_CALL(selected_callback, Run);
+  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(0)));
   generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());
   ASSERT_TRUE(view().GetSelected());
 }

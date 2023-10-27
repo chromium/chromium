@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/aliases.h"
@@ -70,16 +69,6 @@ class PopupCellView : public views::View {
   void SetAccessibilityDelegate(
       std::unique_ptr<AccessibilityDelegate> a11y_delegate);
 
-  // Gets and sets the callbacks for when the cell is (un)selected.
-  const base::RepeatingClosure& GetOnSelectedCallback() const {
-    return on_selected_callback_;
-  }
-  void SetOnSelectedCallback(base::RepeatingClosure callback);
-  const base::RepeatingClosure& GetOnUnselectedCallback() const {
-    return on_unselected_callback_;
-  }
-  void SetOnUnselectedCallback(base::RepeatingClosure callback);
-
   // Adds `label` to a list of labels whose style is refreshed whenever the
   // selection status of the cell changes. Assumes that `label` is a child of
   // `this` that will not be removed until `this` is destroyed.
@@ -103,8 +92,6 @@ class PopupCellView : public views::View {
   // This property controls the a11y `ax::mojom::CheckedState` attribute. It is
   // used for the control cell only to mirror the sub-popup open/closed state.
   bool checked_ = false;
-  base::RepeatingClosure on_selected_callback_;
-  base::RepeatingClosure on_unselected_callback_;
 
  private:
   // Computes the actual `TimeTicks` at which the event occurred (taking latency
@@ -122,8 +109,6 @@ class PopupCellView : public views::View {
 BEGIN_VIEW_BUILDER(/* no export*/, PopupCellView, views::View)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<PopupCellView::AccessibilityDelegate>,
                       AccessibilityDelegate)
-VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnSelectedCallback)
-VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnUnselectedCallback)
 END_VIEW_BUILDER
 
 }  // namespace autofill

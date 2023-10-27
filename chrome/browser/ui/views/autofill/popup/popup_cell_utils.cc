@@ -553,17 +553,6 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
   return result;
 }
 
-// Adds the callbacks for the content area to `content_view`.
-void AddCallbacksToContentView(
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number,
-    PopupCellView& content_view) {
-  content_view.SetOnSelectedCallback(base::BindRepeating(
-      &AutofillPopupController::SelectSuggestion, controller, line_number));
-  content_view.SetOnUnselectedCallback(base::BindRepeating(
-      &AutofillPopupController::SelectSuggestion, controller, absl::nullopt));
-}
-
 void AddSuggestionStrategyContentCellChildren(
     PopupCellView* view,
     base::WeakPtr<AutofillPopupController> controller,
@@ -579,9 +568,6 @@ void AddSuggestionStrategyContentCellChildren(
       CreateMinorTextLabel(kSuggestion.minor_text),
       /*description_label=*/nullptr,
       CreateAndTrackSubtextViews(*view, controller, line_number), *view);
-
-  // Prepare the callbacks to the controller.
-  AddCallbacksToContentView(controller, line_number, *view);
 }
 
 std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(

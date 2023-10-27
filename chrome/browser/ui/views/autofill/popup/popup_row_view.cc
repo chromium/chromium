@@ -318,11 +318,17 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
       selected_cell_ ? GetCellView(*selected_cell_) : nullptr;
   if (old_view) {
     old_view->SetSelected(false);
+    if (selected_cell_ == CellType::kContent && controller_) {
+      controller_->SelectSuggestion(absl::nullopt);
+    }
   }
 
   PopupCellView* new_view = cell ? GetCellView(*cell) : nullptr;
   if (new_view) {
     new_view->SetSelected(true);
+    if (cell == CellType::kContent && controller_) {
+      controller_->SelectSuggestion(line_number_);
+    }
     GetA11ySelectionDelegate().NotifyAXSelection(*new_view);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = cell;

@@ -116,7 +116,10 @@ int ButtonPlaceholder::GetHeightForWidth(int width) const {
 }
 }  // namespace
 
-PopupCellWithButtonView::PopupCellWithButtonView() = default;
+PopupCellWithButtonView::PopupCellWithButtonView(
+    base::WeakPtr<AutofillPopupController> controller,
+    int line_number)
+    : controller_(controller), line_number_(line_number) {}
 
 PopupCellWithButtonView::~PopupCellWithButtonView() = default;
 
@@ -259,9 +262,9 @@ void PopupCellWithButtonView::UpdateSelectedAndRunCallback(bool selected) {
   }
 
   selected_ = selected;
-  if (base::RepeatingClosure callback =
-          selected_ ? on_selected_callback_ : on_unselected_callback_) {
-    callback.Run();
+  if (controller_) {
+    controller_->SelectSuggestion(
+        selected_ ? absl::optional<size_t>(line_number_) : absl::nullopt);
   }
 }
 

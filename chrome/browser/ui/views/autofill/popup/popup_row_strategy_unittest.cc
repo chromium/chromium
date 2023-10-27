@@ -122,21 +122,6 @@ class PopupRowStrategyTest : public ChromeViewsTestBase {
     controller().set_suggestions(std::move(suggestions));
   }
 
-  // Checks that the expected callbacks for content cells are set and call the
-  // controller.
-  void TestContentCallbacks(const PopupCellView& cell, int index) {
-    base::RepeatingClosure on_select_callback = cell.GetOnSelectedCallback();
-    ASSERT_TRUE(on_select_callback);
-    EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(index)));
-    on_select_callback.Run();
-
-    base::RepeatingClosure on_unselect_callback =
-        cell.GetOnUnselectedCallback();
-    ASSERT_TRUE(on_unselect_callback);
-    EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>()));
-    on_unselect_callback.Run();
-  }
-
   std::unique_ptr<PopupRowStrategy> CreateStrategy(StrategyType type,
                                                    int line_number) {
     switch (type) {
@@ -174,18 +159,6 @@ TEST_P(PopupRowStrategyParametrizedTest, HasContentArea) {
 
   // Every suggestion has a content area.
   EXPECT_THAT(strategy->CreateContent(), NotNull());
-}
-
-TEST_P(PopupRowStrategyParametrizedTest, ContentAreaCallbacksWork) {
-  const RowStrategyTestdata kTestdata = GetParam();
-
-  SetSuggestions(kTestdata.popup_item_ids);
-  std::unique_ptr<PopupRowStrategy> strategy =
-      CreateStrategy(kTestdata.strategy_type, kTestdata.line_number);
-
-  std::unique_ptr<PopupCellView> content_cell = strategy->CreateContent();
-  ASSERT_THAT(content_cell, NotNull());
-  TestContentCallbacks(*content_cell, kTestdata.line_number);
 }
 
 TEST_P(PopupRowStrategyParametrizedTest,

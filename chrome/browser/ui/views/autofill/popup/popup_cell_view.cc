@@ -50,10 +50,6 @@ void PopupCellView::SetSelected(bool selected) {
 
   selected_ = selected;
   RefreshStyle();
-  if (base::RepeatingClosure callback =
-          selected_ ? on_selected_callback_ : on_unselected_callback_) {
-    callback.Run();
-  }
 }
 
 void PopupCellView::SetChecked(bool checked) {
@@ -69,15 +65,6 @@ void PopupCellView::SetChecked(bool checked) {
 void PopupCellView::SetAccessibilityDelegate(
     std::unique_ptr<AccessibilityDelegate> a11y_delegate) {
   a11y_delegate_ = std::move(a11y_delegate);
-}
-
-
-void PopupCellView::SetOnSelectedCallback(base::RepeatingClosure callback) {
-  on_selected_callback_ = std::move(callback);
-}
-
-void PopupCellView::SetOnUnselectedCallback(base::RepeatingClosure callback) {
-  on_unselected_callback_ = std::move(callback);
 }
 
 void PopupCellView::TrackLabel(views::Label* label) {

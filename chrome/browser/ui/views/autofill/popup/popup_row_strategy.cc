@@ -224,7 +224,8 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
 
 std::unique_ptr<PopupCellView>
 PopupSuggestionStrategy::CreateAutocompleteWithDeleteButtonCell() {
-  auto view = std::make_unique<PopupCellWithButtonView>();
+  auto view = std::make_unique<PopupCellWithButtonView>(GetController(),
+                                                        GetLineNumber());
   AddContentLabelsAndCallbacks(*view);
 
   // Add a delete button for Autocomplete entries.
@@ -296,10 +297,6 @@ void PopupSuggestionStrategy::AddContentLabelsAndCallbacks(
       popup_cell_utils::CreateAndTrackSubtextViews(view, GetController(),
                                                    GetLineNumber()),
       view);
-
-  // Prepare the callbacks to the controller.
-  popup_cell_utils::AddCallbacksToContentView(GetController(), GetLineNumber(),
-                                              view);
 }
 
 /************************ PopupComposeSuggestionStrategy ********************/
@@ -338,10 +335,6 @@ std::unique_ptr<PopupCellView> PopupComposeSuggestionStrategy::CreateContent() {
       popup_cell_utils::CreateAndTrackSubtextViews(
           *view, GetController(), GetLineNumber(), views::style::STYLE_BODY_4),
       *view);
-
-  // Prepare the callbacks to the controller.
-  popup_cell_utils::AddCallbacksToContentView(GetController(), GetLineNumber(),
-                                              *view);
 
   return view;
 }
@@ -384,10 +377,6 @@ PopupPasswordSuggestionStrategy::CreateContent() {
       kSuggestion, std::move(main_text_label),
       popup_cell_utils::CreateMinorTextLabel(kSuggestion.minor_text),
       CreateDescriptionLabel(), CreateAndTrackSubtextViews(*view), *view);
-
-  // Prepare the callbacks to the controller.
-  popup_cell_utils::AddCallbacksToContentView(GetController(), GetLineNumber(),
-                                              *view);
 
   return view;
 }
@@ -510,9 +499,6 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
 
   // Force a refresh to ensure all the labels'styles are correct.
   view->RefreshStyle();
-
-  popup_cell_utils::AddCallbacksToContentView(GetController(), GetLineNumber(),
-                                              *view);
 
   return view;
 }

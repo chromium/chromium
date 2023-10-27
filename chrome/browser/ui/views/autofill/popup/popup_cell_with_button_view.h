@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view_observer.h"
@@ -66,7 +67,9 @@ class PopupCellWithButtonView : public PopupCellView,
                                 public CellButtonDelegate {
  public:
   METADATA_HEADER(PopupCellWithButtonView);
-  PopupCellWithButtonView();
+  PopupCellWithButtonView(base::WeakPtr<AutofillPopupController> controller,
+                          int line_number);
+
   PopupCellWithButtonView(const PopupCellWithButtonView&) = delete;
   PopupCellWithButtonView& operator=(const PopupCellWithButtonView&) = delete;
   ~PopupCellWithButtonView() override;
@@ -110,6 +113,11 @@ class PopupCellWithButtonView : public PopupCellView,
 
   // Returns whether the cell button (if there is one) should be visible.
   bool ShouldCellButtonBeVisible() const;
+
+  // TODO(crbug.com/1491373): Make it inherited from PopupRowView, remove
+  // `controller_` and `line_number_`, and use them from the parent class.
+  const base::WeakPtr<AutofillPopupController> controller_;
+  const int line_number_;
 
   raw_ptr<views::ImageButton> button_ = nullptr;
   raw_ptr<ButtonPlaceholder> button_placeholder_ = nullptr;

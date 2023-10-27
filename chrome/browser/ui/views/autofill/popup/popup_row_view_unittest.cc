@@ -171,7 +171,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
-  ShowView(2, /*has_control=*/true);
+  ShowView(/*line_number=*/2, /*has_control=*/true);
 
   // Move the mouse of out bounds and force paint to satisfy the check that the
   // mouse has been outside the element before enter/exit events are passed on.
@@ -209,7 +209,7 @@ TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
 TEST_F(PopupRowViewTest, GestureEvents) {
   EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
       .WillOnce(Return(true));
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   EXPECT_CALL(
       selection_delegate(),
@@ -223,7 +223,7 @@ TEST_F(PopupRowViewTest, GestureEvents) {
 TEST_F(PopupRowViewTest, NoCrashOnGestureAcceptingWithInvalidatedController) {
   EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
       .WillOnce(Return(true));
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   controller().InvalidateWeakPtrs();
@@ -233,7 +233,7 @@ TEST_F(PopupRowViewTest, NoCrashOnGestureAcceptingWithInvalidatedController) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsNoControl) {
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
   EXPECT_FALSE(row_view().GetControlView());
   EXPECT_FALSE(row_view().GetSelectedCell().has_value());
 
@@ -259,7 +259,7 @@ TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsNoControl) {
 }
 
 TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsWithControl) {
-  ShowView(0, /*has_control=*/true);
+  ShowView(/*line_number=*/0, /*has_control=*/true);
   ASSERT_TRUE(row_view().GetControlView());
   EXPECT_FALSE(row_view().GetSelectedCell().has_value());
 
@@ -278,8 +278,28 @@ TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsWithControl) {
             absl::make_optional<CellType>(CellType::kControl));
 }
 
+TEST_F(PopupRowViewTest, SetSelectedCellTriggersController) {
+  ShowView(/*line_number=*/0, /*has_control=*/true);
+  ASSERT_TRUE(row_view().GetControlView());
+  ASSERT_FALSE(row_view().GetSelectedCell().has_value());
+
+  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(0)));
+  row_view().SetSelectedCell(CellType::kContent);
+
+  // No selection triggering if trying to set already selected content.
+  EXPECT_CALL(controller(), SelectSuggestion).Times(0);
+  row_view().SetSelectedCell(CellType::kContent);
+
+  // Deselection of selected content.
+  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>()));
+  row_view().SetSelectedCell(CellType::kControl);
+
+  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(0)));
+  row_view().SetSelectedCell(CellType::kContent);
+}
+
 TEST_F(PopupRowViewTest, NotifyAXSelectionCalledOnChangesOnly) {
-  ShowView(0, /*has_control=*/true);
+  ShowView(/*line_number=*/0, /*has_control=*/true);
   ASSERT_TRUE(row_view().GetControlView());
   row_view().SetSelectedCell(CellType::kContent);
 
@@ -300,7 +320,7 @@ TEST_F(PopupRowViewTest, NotifyAXSelectionCalledOnChangesOnly) {
 }
 
 TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {
-  ShowView(0, /*has_control=*/true);
+  ShowView(/*line_number=*/0, /*has_control=*/true);
   ASSERT_TRUE(row_view().GetControlView());
 
   row_view().SetSelectedCell(CellType::kContent);
@@ -335,7 +355,7 @@ TEST_F(PopupRowViewTest, KeyboardEventsArePassedToControlCell) {
 
 TEST_F(PopupRowViewTest,
        ShouldIgnoreMouseObservedOutsideItemBoundsCheckIsFalse_IgnoreClick) {
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
@@ -356,7 +376,7 @@ TEST_F(PopupRowViewTest,
        ShouldIgnoreMouseObservedOutsideItemBoundsCheckIsTrue_DoNotIgnoreClick) {
   EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
       .WillOnce(Return(true));
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
@@ -368,7 +388,7 @@ TEST_F(PopupRowViewTest,
 TEST_F(PopupRowViewTest, NoCrashOnMouseAcceptingWithInvalidatedController) {
   EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
       .WillOnce(Return(true));
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
@@ -378,7 +398,7 @@ TEST_F(PopupRowViewTest, NoCrashOnMouseAcceptingWithInvalidatedController) {
 }
 
 TEST_F(PopupRowViewTest, SelectSuggestionOnFocusedContent) {
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   EXPECT_CALL(
       selection_delegate(),
