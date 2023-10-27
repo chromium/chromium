@@ -1888,6 +1888,16 @@ static bool AnyRuleCausesInvalidation(const MatchRequest& match_request,
   return false;
 }
 
+namespace {
+
+bool CanRejectRuleSet(ElementRuleCollector& collector,
+                      const RuleSet& rule_set) {
+  const StyleScope* scope = rule_set.SingleScope();
+  return scope && collector.CanRejectScope(*scope);
+}
+
+}  // namespace
+
 // See if a given element needs to be recalculated after RuleSet changes
 // (see ApplyRuleSetInvalidation()).
 void StyleEngine::ApplyRuleSetInvalidationForElement(
@@ -1911,6 +1921,9 @@ void StyleEngine::ApplyRuleSetInvalidationForElement(
   MatchRequest match_request{&tree_scope.RootNode()};
   bool matched_any = false;
   for (const Member<RuleSet>& rule_set : rule_sets) {
+    if (CanRejectRuleSet(collector, *rule_set)) {
+      continue;
+    }
     match_request.AddRuleset(rule_set.Get());
     if (match_request.IsFull()) {
       if (AnyRuleCausesInvalidation(match_request, collector, is_shadow_host)) {
