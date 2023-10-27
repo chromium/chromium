@@ -17,9 +17,9 @@ import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo} from 'ch
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeyState, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {AcceleratorResultData, UserAction} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, EditDialogCompletedActions, UserAction} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createAliasedStandardAcceleratorInfo, createCustomStandardAcceleratorInfo, createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 
@@ -240,6 +240,17 @@ suite('acceleratorEditDialogTest', function() {
     // Expect call count for `restoreDefault` to be 1.
     assertEquals(1, provider.getRestoreDefaultCallCount());
     assertEquals(UserAction.kResetAction, provider.getLatestRecordedAction());
+
+    // Click done button.
+    const doneButton = dialog!.querySelector('#doneButton') as CrButtonElement;
+    doneButton.click();
+    waitAfterNextRender(dialog);
+    await flushTasks();
+
+    // Now verify last action was recorded.
+    assertEquals(
+        EditDialogCompletedActions.kReset,
+        provider.getLastEditDialogCompletedActions());
   });
 
   test('RestoreDefaultButtonConflict', async () => {

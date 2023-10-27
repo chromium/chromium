@@ -131,6 +131,10 @@ class AcceleratorConfigurationProvider
   void RecordMainCategoryNavigation(
       mojom::AcceleratorCategory category) override;
 
+  void RecordEditDialogCompletedActions(
+      shortcut_customization::mojom::EditDialogCompletedActions
+          completed_actions) override;
+
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
 

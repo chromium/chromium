@@ -6444,6 +6444,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ShortcutCustomization.EditDialogCompletedActions"
+    enum="ShortcutCustomizationEditDialogCompletedActions"
+    expires_after="2024-08-17">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Tracks the actions done in the accelerator edit dialog before it was closed.
+    If an action has been done at least once it will count towards the
+    appropriate enum. Enums are formatted such that they are ordered in a
+    bitwise manner. 0000: no action, 0001: Add, 0010: Edit, 0100: Remove, 1000:
+    Reset.
+  </summary>
+</histogram>
+
 <histogram name="Ash.ShortcutCustomization.MainCategoryNavigation"
     enum="ShortcutCustomizationMainCategory" expires_after="2024-08-17">
   <owner>jimmyxgong@chromium.org</owner>

@@ -61,6 +61,7 @@ using NonConfigurableActionToParts =
 
 namespace {
 using shortcut_customization::mojom::AcceleratorResultDataPtr;
+using shortcut_customization::mojom::EditDialogCompletedActions;
 using shortcut_customization::mojom::SimpleAccelerator;
 using shortcut_customization::mojom::SimpleAcceleratorPtr;
 using shortcut_customization::mojom::UserAction;
@@ -3169,6 +3170,34 @@ TEST_F(AcceleratorConfigurationProviderTest, UserActions) {
                    "ShortcutCustomization_StartReplaceAccelerator"));
   EXPECT_EQ(1, user_action_tester_->GetActionCount(
                    "ShortcutCustomization_SuccessfullyModified"));
+}
+TEST_F(AcceleratorConfigurationProviderTest, EditDialogCompetedActionsMetrics) {
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kNoAction, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kRemove, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kResetRemoveEditAdd, 0);
+
+  provider_->RecordEditDialogCompletedActions(
+      EditDialogCompletedActions::kNoAction);
+  provider_->RecordEditDialogCompletedActions(
+      EditDialogCompletedActions::kRemove);
+  provider_->RecordEditDialogCompletedActions(
+      EditDialogCompletedActions::kResetRemoveEditAdd);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kNoAction, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kRemove, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kResetRemoveEditAdd, 1);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, MainNavigationCategoryMetrics) {

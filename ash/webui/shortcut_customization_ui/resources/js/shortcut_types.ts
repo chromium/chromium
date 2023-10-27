@@ -31,6 +31,19 @@ export enum Modifier {
   COMMAND = 1 << 4,
 }
 
+/**
+ * The actions that can be done in the accelerator edit dialog. These should
+ * be consistent with the representation in
+ * `ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom`.
+ */
+export enum EditAction {
+  NONE = 0,
+  ADD = 1 << 0,
+  EDIT = 1 << 1,
+  REMOVE = 1 << 2,
+  RESET = 1 << 3,
+}
+
 export type TextAcceleratorPart = AcceleratorInfoTypes.TextAcceleratorPart;
 export type TextAcceleratorPartType =
     AcceleratorInfoTypes.TextAcceleratorPartType;

@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote, PolicyUpdatedObserverRemote, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote, EditDialogCompletedActions, PolicyUpdatedObserverRemote, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {Accelerator, AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
@@ -35,6 +35,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   private removeAcceleratorCallCount: number = 0;
   private lastRecordedUserAction: UserAction;
   private lastRecordedMainCategory: AcceleratorCategory;
+  private lastRecoredEditDialogActions: EditDialogCompletedActions;
 
   constructor() {
     this.methods = new FakeMethodResolver();
@@ -57,6 +58,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('getDefaultAcceleratorsForId');
     this.methods.register('recordUserAction');
     this.methods.register('recordMainCategoryNavigation');
+    this.methods.register('recordEditDialogCompetedActions');
     this.registerObservables();
   }
 
@@ -175,6 +177,15 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   recordUserAction(userAction: UserAction): void {
     this.lastRecordedUserAction = userAction;
+  }
+
+  recordEditDialogCompletedActions(completed_actions:
+                                       EditDialogCompletedActions): void {
+    this.lastRecoredEditDialogActions = completed_actions;
+  }
+
+  getLastEditDialogCompletedActions(): EditDialogCompletedActions {
+    return this.lastRecoredEditDialogActions;
   }
 
   getLatestRecordedAction(): UserAction {

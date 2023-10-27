@@ -100545,6 +100545,26 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="ResetAll"/>
 </enum>
 
+<enum name="ShortcutCustomizationEditDialogCompletedActions">
+  <summary>Completed actions done in the accelerator edit dialog.</summary>
+  <int value="0" label="NoAction"/>
+  <int value="1" label="Add"/>
+  <int value="2" label="Edit"/>
+  <int value="3" label="EditAdd"/>
+  <int value="4" label="Remove"/>
+  <int value="5" label="RemoveAdd"/>
+  <int value="6" label="RemoveEdit"/>
+  <int value="7" label="RemoveEditAdd"/>
+  <int value="8" label="Reset"/>
+  <int value="9" label="ResetAdd"/>
+  <int value="10" label="ResetEdit"/>
+  <int value="11" label="ResetEditAdd"/>
+  <int value="12" label="ResetRemove"/>
+  <int value="13" label="ResetRemoveAdd"/>
+  <int value="14" label="ResetRemoveEdit"/>
+  <int value="15" label="ResetRemoveEditAdd"/>
+</enum>
+
 <enum name="ShortcutCustomizationMainCategory">
   <summary>
     The categories that are present within the Key Shortcuts app.

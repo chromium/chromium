@@ -21,7 +21,7 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, EditAction, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {areAcceleratorsEqual, canBypassErrorWithRetry, createEmptyAcceleratorInfo, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, keyToIconNameMap, LWIN_KEY, META_KEY, unidentifiedKeyCodeToKey} from './shortcut_utils.js';
 export interface AcceleratorViewElement {
   $: {
@@ -157,6 +157,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
   private eventTracker: EventTracker = new EventTracker();
+  private editAction: EditAction = EditAction.NONE;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -222,6 +223,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     await this.shortcutProvider.preventProcessingAccelerators(false);
 
     this.isCapturing = false;
+    this.editAction = EditAction.NONE;
     this.dispatchEvent(new CustomEvent('accelerator-capturing-ended', {
       bubbles: true,
       composed: true,
@@ -363,11 +365,13 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         this.acceleratorInfo.state === AcceleratorState.kDisabledByUser;
 
     if (this.viewState === ViewState.ADD || isDisabledAccelerator) {
+      this.editAction = EditAction.ADD;
       result = await this.shortcutProvider.addAccelerator(
           this.source, this.action, getAccelerator(pendingAccelInfo));
     }
 
     if (this.viewState === ViewState.EDIT && !isDisabledAccelerator) {
+      this.editAction = EditAction.EDIT;
       const originalAccelerator: Accelerator|undefined =
           this.acceleratorInfo.layoutProperties.standardAccelerator
               ?.originalAccelerator;
@@ -458,13 +462,14 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         return;
       }
       case AcceleratorConfigResult.kSuccess: {
-        this.fireUpdateEvent();
+        this.fireEditCompletedActionEvent(this.editAction);
         getShortcutProvider().recordUserAction(
             UserAction.kSuccessfulModification);
         const message = (this.viewState == ViewState.ADD) ?
             this.i18n('shortcutAdded') :
             this.i18n('shortcutEdited');
         this.makeA11yAnnouncement(message);
+        this.fireUpdateEvent();
         return;
       }
     }
@@ -654,6 +659,16 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
     // Always end input capturing if an update event was fired.
     this.endCapture(/*should_delay=*/ true);
+  }
+
+  private fireEditCompletedActionEvent(editAction: EditAction): void {
+    this.dispatchEvent(new CustomEvent('edit-action-completed', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        editAction: editAction,
+      },
+    }));
   }
 
   private shouldShowLockIcon(): boolean {

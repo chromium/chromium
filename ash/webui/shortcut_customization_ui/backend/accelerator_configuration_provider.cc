@@ -1182,6 +1182,14 @@ void AcceleratorConfigurationProvider::RecordMainCategoryNavigation(
       "Ash.ShortcutCustomization.MainCategoryNavigation", category);
 }
 
+void AcceleratorConfigurationProvider::RecordEditDialogCompletedActions(
+    shortcut_customization::mojom::EditDialogCompletedActions
+        completed_actions) {
+  base::UmaHistogramEnumeration(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      completed_actions);
+}
+
 void AcceleratorConfigurationProvider::BindInterface(
     mojo::PendingReceiver<
         shortcut_customization::mojom::AcceleratorConfigurationProvider>

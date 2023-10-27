@@ -43,6 +43,36 @@ enum UserAction {
   kResetAll,
 };
 
+// Enum of all possible actions that can be done within the accelerator edit
+// dialog.
+// The enum is ordered by bit order of the actions:
+// 0000: No Action
+// 0001: Add
+// 0010: Edit
+// 0100: Remove
+// 1000: Reset
+// This should be kept in sync with the enum
+// `ShortcutCustomizationEditDialogCompletedActions` in
+// `tools/metrics/histograms/enums.xml`.
+enum EditDialogCompletedActions {
+  kNoAction,
+  kAdd,
+  kEdit,
+  kEditAdd,
+  kRemove,
+  kRemoveAdd,
+  kRemoveEdit,
+  kRemoveEditAdd,
+  kReset,
+  kResetAdd,
+  kResetEdit,
+  kResetEditAdd,
+  kResetRemove,
+  kResetRemoveAdd,
+  kResetRemoveEdit,
+  kResetRemoveEditAdd,
+};
+
 // Observer interface, to be implemented by the Shortcut Customization SWA to
 // receive updated accelerators.
 interface AcceleratorsUpdatedObserver {
@@ -166,4 +196,9 @@ interface AcceleratorConfigurationProvider {
 
   // Records the side panel category the user navigates to.
   RecordMainCategoryNavigation(ash.mojom.AcceleratorCategory category);
+
+  // Record the actions done in the accelerator edit dialog before it was
+  // closed.
+  RecordEditDialogCompletedActions(
+      EditDialogCompletedActions completed_actions);
 };

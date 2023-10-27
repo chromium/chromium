@@ -15,12 +15,12 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {DomRepeat, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {EditDialogCompletedActions, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {getTemplate} from './accelerator_edit_dialog.html.js';
 import {ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, AcceleratorState} from './shortcut_types.js';
+import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, AcceleratorState, EditAction} from './shortcut_types.js';
 import {compareAcceleratorInfos, getAccelerator, isStandardAcceleratorInfo} from './shortcut_utils.js';
 
 export type DefaultConflictResolvedEvent = CustomEvent<{accelerator: string}>;
@@ -120,6 +120,8 @@ export class AcceleratorEditDialogElement extends
   private shouldSnapshotConflictDefaults: boolean;
   private defaultAcceleratorsWithConflict: Set<string> = new Set<string>();
   private eventTracker: EventTracker = new EventTracker();
+  // Represents bitwise actions done in the dialog.
+  private completedActions: number = EditDialogCompletedActions.kNoAction;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -151,6 +153,7 @@ export class AcceleratorEditDialogElement extends
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    this.completedActions = 0;
     this.eventTracker.removeAll();
     this.set('acceleratorInfos', []);
     this.shouldSnapshotConflictDefaults = false;
@@ -190,6 +193,8 @@ export class AcceleratorEditDialogElement extends
   }
 
   protected onDialogClose(): void {
+    getShortcutProvider().recordEditDialogCompletedActions(
+        this.completedActions as EditDialogCompletedActions);
     this.dispatchEvent(
         new CustomEvent('edit-dialog-closed', {bubbles: true, composed: true}));
   }
@@ -207,6 +212,15 @@ export class AcceleratorEditDialogElement extends
     assert(this.defaultAcceleratorsWithConflict.delete(
         e.detail.stringifiedAccelerator));
     this.updateObservableAcceleratorsWithConflict();
+  }
+
+  private onEditActionCompleted(e: CustomEvent<{editAction: EditAction}>):
+      void {
+    this.updateCompletedActions(e.detail.editAction);
+  }
+
+  private updateCompletedActions(editAction: EditAction): void {
+    this.completedActions |= editAction;
   }
 
   private focusAcceleratorItemContainer(): void {
@@ -269,6 +283,7 @@ export class AcceleratorEditDialogElement extends
           getShortcutProvider().recordUserAction(UserAction.kResetAction);
           if (result.result === AcceleratorConfigResult.kSuccess) {
             this.requestUpdateAccelerator(this.source, this.action);
+            this.updateCompletedActions(EditAction.RESET);
           } else if (
               result.result ===
               AcceleratorConfigResult.kRestoreSuccessWithConflicts) {

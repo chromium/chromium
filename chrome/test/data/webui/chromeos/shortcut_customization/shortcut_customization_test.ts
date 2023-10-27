@@ -26,7 +26,7 @@ import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customizatio
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoLayoutInfo, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
-import {AcceleratorResultData, UserAction} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, EditDialogCompletedActions, UserAction} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -375,6 +375,9 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
 
     assertFalse(dialog.open);
+    assertEquals(
+        EditDialogCompletedActions.kNoAction,
+        provider.getLastEditDialogCompletedActions());
   });
 
   test('ReplaceAccelerator', async () => {
@@ -574,6 +577,17 @@ suite('shortcutCustomizationAppTest', function() {
     assertFalse(editElement.hasError);
     assertEquals(
         UserAction.kSuccessfulModification, provider.getLatestRecordedAction());
+
+    // Click done button.
+    const doneButton =
+        editDialog!.shadowRoot!.querySelector('#doneButton') as CrButtonElement;
+    doneButton.click();
+
+    await flushTasks();
+    // Now verify last action was recorded.
+    assertEquals(
+        EditDialogCompletedActions.kAdd,
+        provider.getLastEditDialogCompletedActions());
   });
 
   test('PreventDuplicateFailedRequest', async () => {

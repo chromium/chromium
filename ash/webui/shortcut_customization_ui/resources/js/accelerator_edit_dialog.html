@@ -91,7 +91,8 @@
         <accelerator-edit-view class="acceleratorItem"
             accelerator-info=[[item]]
             action="[[action]]"
-            source="[[source]]">
+            source="[[source]]"
+            on-edit-action-completed="onEditActionCompleted">
         </accelerator-edit-view>
       </template>
       <template id="newAccelerator" is="dom-if"
@@ -100,7 +101,8 @@
         <accelerator-edit-view id="pendingAccelerator"
             view-state="{{pendingNewAcceleratorState}}"
             action="[[action]]"
-            source="[[source]]">
+            source="[[source]]"
+            on-edit-action-completed="onEditActionCompleted">
         </accelerator-edit-view>
       </template>
     </div>

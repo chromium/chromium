@@ -22,7 +22,7 @@ import {getTemplate} from './accelerator_edit_view.html.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {AcceleratorViewElement, ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorType, EditAction, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {getAccelerator} from './shortcut_utils.js';
 
 export type RequestUpdateAcceleratorEvent =
@@ -203,6 +203,12 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         bubbles: true,
         composed: true,
         detail: {source: this.source, action: this.action},
+      }));
+
+      this.dispatchEvent(new CustomEvent('edit-action-completed', {
+        bubbles: true,
+        composed: true,
+        detail: {editAction: EditAction.REMOVE},
       }));
 
       getShortcutProvider().recordUserAction(UserAction.kRemoveAccelerator);
