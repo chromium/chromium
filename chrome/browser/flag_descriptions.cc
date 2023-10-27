@@ -7078,6 +7078,10 @@ const char kVirtualKeyboardRoundCornersName[] =
 const char kVirtualKeyboardRoundCornersDescription[] =
     "Enables round corners on the virtual keyboard.";
 
+const char kVmMemoryManagementServiceName[] = "VM Memory Management Service";
+const char kVmMemoryManagementServiceDescription[] =
+    "Enables the VM Memory Management Service.";
+
 const char kWakeOnWifiAllowedName[] = "Allow enabling wake on WiFi features";
 const char kWakeOnWifiAllowedDescription[] =
     "Allows wake on WiFi features in shill to be enabled.";

@@ -4070,6 +4070,9 @@ extern const char kVirtualKeyboardDisabledDescription[];
 extern const char kVirtualKeyboardRoundCornersName[];
 extern const char kVirtualKeyboardRoundCornersDescription[];
 
+extern const char kVmMemoryManagementServiceName[];
+extern const char kVmMemoryManagementServiceDescription[];
+
 extern const char kWakeOnWifiAllowedName[];
 extern const char kWakeOnWifiAllowedDescription[];
 
