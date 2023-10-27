@@ -5,10 +5,11 @@ import 'chrome://shortcut-customization/js/search/search_result_row.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
-import {CycleTabsTextSearchResult, fakeAcceleratorConfig, fakeLayoutInfo, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
+import {CycleTabsTextSearchResult, fakeAcceleratorConfig, fakeLayoutInfo, OpenCalculatorAppSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {InputKeyElement} from 'chrome://shortcut-customization/js/input_key.js';
 import {getBoldedDescription} from 'chrome://shortcut-customization/js/search/search_result_bolding.js';
 import {SearchResultRowElement} from 'chrome://shortcut-customization/js/search/search_result_row.js';
@@ -140,6 +141,29 @@ suite('searchResultRowTest', function() {
     assertTrue(keys1[0]!.highlighted);
     assertTrue(keys1[1]!.highlighted);
     assertTrue(keys2[0]!.highlighted);
+  });
+
+  test('NoShortcutAssigned message render correctly', async () => {
+    loadTimeData.overrideValues({isCustomizationAllowed: true});
+    searchResultRowElement = initSearchResultRowElement();
+    // Open Calculator app has no entries due to unavailable keys.
+    searchResultRowElement.searchResult = OpenCalculatorAppSearchResult;
+    await flush();
+
+    // Verify description is shown.
+    assertEquals(
+        'Open Calculator app',
+        strictQuery(
+            '#description', searchResultRowElement.shadowRoot, HTMLDivElement)
+            .innerText);
+
+    // Verify 'No shortcut assigned' message is shown.
+    assertEquals(
+        'No shortcut assigned',
+        strictQuery(
+            '#noShortcutAssignedMessage', searchResultRowElement.shadowRoot,
+            HTMLDivElement)
+            .innerText);
   });
 
   test('Standard accelerators have correct text dividers', async () => {

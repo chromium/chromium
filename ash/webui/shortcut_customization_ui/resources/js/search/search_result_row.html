@@ -126,6 +126,11 @@
               highlighted="[[selected]]" narrow>
           </text-accelerator>
         </template>
+        <template is="dom-if" if="[[isNoShortcutAssigned(searchResult)]]">
+          <div id="noShortcutAssignedMessage">
+            [[i18n('noShortcutAssigned')]]
+          </div>
+        </template>
       </div>
       <iron-icon id="actionIcon" icon="cr:arrow-forward"></iron-icon>
     </div>

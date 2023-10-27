@@ -15,7 +15,7 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../router.js';
-import {LayoutStyle, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
+import {AcceleratorState, LayoutStyle, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
 import {getAriaLabelForStandardAccelerators, getAriaLabelForTextAccelerators, getModifiersForAcceleratorInfo, getTextAcceleratorParts, getURLForSearchResult, isStandardAcceleratorInfo, isTextAcceleratorInfo} from '../shortcut_utils.js';
 
 import {getBoldedDescription} from './search_result_bolding.js';
@@ -73,13 +73,23 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
     return getTemplate();
   }
 
+  private isNoShortcutAssigned(): boolean {
+    // Check if every accelerators are disabled due to unavailable keys or by
+    // the user, or if there are no accelerators, display "No shortcut assigned"
+    // as result.
+    return this.searchResult.acceleratorInfos.every(
+               a => a.state === AcceleratorState.kDisabledByUnavailableKeys ||
+                   a.state === AcceleratorState.kDisabledByUser) ||
+        this.searchResult.acceleratorInfos.length === 0;
+  }
+
   private isStandardLayout(): boolean {
-    return this.searchResult.acceleratorLayoutInfo.style ===
-        LayoutStyle.kDefault;
+    return !this.isNoShortcutAssigned() &&
+        this.searchResult.acceleratorLayoutInfo.style === LayoutStyle.kDefault;
   }
 
   private isTextLayout(): boolean {
-    return !this.isStandardLayout();
+    return !this.isNoShortcutAssigned() && !this.isStandardLayout();
   }
 
   private getTextAcceleratorParts(): TextAcceleratorPart[] {
@@ -165,7 +175,10 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
     const description = mojoString16ToString(
         this.searchResult.acceleratorLayoutInfo.description);
     let searchResultText;
-    if (this.isStandardLayout()) {
+
+    if (this.isNoShortcutAssigned()) {
+      searchResultText = `${description}, ${this.i18n('noShortcutAssigned')}`;
+    } else if (this.isStandardLayout()) {
       searchResultText = `${description}, ${
           getAriaLabelForStandardAccelerators(
               this.getStandardAcceleratorInfos(),
