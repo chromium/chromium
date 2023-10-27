@@ -129,8 +129,9 @@ class ProfileTokenQuality {
       PersonalDataManager& pdm);
 
   // Returns all `ObservationType`s available for the `type`. The resulting
-  // vector has at most `kMaxNumberOfObservations` items. It is guaranteed that
-  // no observation type is `kNone`.
+  // vector has at most `kMaxNumberOfObservations` items. It can contain
+  // observations of type `kUnknown`, if a newer client synced observation types
+  // that this client doesn't understand.
   // `type` must be a supported type of `AutofillProfile`. For a derived `type`,
   // the observations of the corresponding stored type are returned.
   std::vector<ObservationType> GetObservationTypesForFieldType(
