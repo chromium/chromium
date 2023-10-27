@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -690,10 +691,10 @@ IN_PROC_BROWSER_TEST_F(
       << message_;
 }
 
-// Tests that changing the developer mode setting affects existing renderers.
-// TODO(https://crbug.com/1267489): Expand this to test service worker bindings.
+// Tests that changing the developer mode setting affects existing renderers
+// for page-based contexts (i.e., the main renderer thread).
 IN_PROC_BROWSER_TEST_F(NativeBindingsRestrictedToDeveloperModeApiTest,
-                       SwitchingDeveloperModeAffectsExistingRenderers) {
+                       SwitchingDeveloperModeAffectsExistingRenderers_Pages) {
   static constexpr char kManifest[] =
       R"({
            "name": "Test",
@@ -792,6 +793,59 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsRestrictedToDeveloperModeApiTest,
   util::SetDeveloperModeForProfile(profile(), false);
   ASSERT_TRUE(content::ExecJs(incognito_tab, "verifyApiIsNotAvailable();"));
   EXPECT_EQ("success", result_queue.GetNextResult());
+}
+
+// Tests that changing the developer mode setting affects existing renderers
+// for service worker contexts (which run off the main thread in the renderer).
+IN_PROC_BROWSER_TEST_F(
+    NativeBindingsRestrictedToDeveloperModeApiTest,
+    SwitchingDeveloperModeAffectsExistingRenderers_ServiceWorkers) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["userScripts"],
+           "background": {"service_worker": "background.js"}
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kCheckApiAvailability);
+  test_dir.WriteFile(FILE_PATH_LITERAL("script.js"), "// blank");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  auto call_in_service_worker = [this, extension](const std::string& script) {
+    return BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), script,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  };
+
+  auto renderer_round_trip = [this, extension]() {
+    EXPECT_EQ("success",
+              BackgroundScriptExecutor::ExecuteScript(
+                  profile(), extension->id(),
+                  "chrome.test.sendScriptResult('success');",
+                  BackgroundScriptExecutor::ResultCapture::kSendScriptResult));
+  };
+
+  // By default, the API is unavailable.
+  EXPECT_EQ("success", call_in_service_worker("verifyApiIsNotAvailable();"));
+
+  // Next, set the user in developer mode. Now the API should be available.
+  util::SetDeveloperModeForProfile(profile(), true);
+  // We need to give the renderer time to do a few thread hops since there are
+  // multiple IPC channels at play (unlike the test above). Do a round-trip to
+  // the renderer to allow it to process.
+  renderer_round_trip();
+  EXPECT_EQ("success", call_in_service_worker("verifyApiIsAvailable();"));
+
+  // Toggle back to not in developer mode. The API should be unavailable again.
+  util::SetDeveloperModeForProfile(profile(), false);
+  renderer_round_trip();
+  EXPECT_EQ("success", call_in_service_worker("verifyApiIsNotAvailable();"));
 }
 
 }  // namespace extensions

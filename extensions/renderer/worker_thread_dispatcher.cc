@@ -200,17 +200,21 @@ void WorkerThreadDispatcher::ForwardIPC(int worker_thread_id,
 
 // static
 void WorkerThreadDispatcher::UpdateBindingsOnWorkerThread(
-    const ExtensionId& extension_id) {
+    const absl::optional<ExtensionId>& extension_id) {
   DCHECK(worker_thread_util::IsWorkerThread());
-  DCHECK(!extension_id.empty());
+  DCHECK(!extension_id || !extension_id->empty())
+      << "If provided, `extension_id` must be non-empty.";
 
   ServiceWorkerData* data = WorkerThreadDispatcher::GetServiceWorkerData();
   // Bail out if the worker was destroyed.
   if (!data || !data->bindings_system()) {
     return;
   }
+
+  // NativeExtensionBindingsSystem::UpdateBindings() will update all bindings
+  // if the provided ExtensionId is empty.
   data->bindings_system()->UpdateBindings(
-      extension_id, true /* permissions_changed */,
+      extension_id.value_or(ExtensionId()), true /* permissions_changed */,
       Dispatcher::GetWorkerScriptContextSet());
 }
 
@@ -252,18 +256,11 @@ bool WorkerThreadDispatcher::OnControlMessageReceived(
 
 bool WorkerThreadDispatcher::UpdateBindingsForWorkers(
     const ExtensionId& extension_id) {
-  bool success = true;
-  base::AutoLock lock(task_runner_map_lock_);
-  for (const auto& task_runner_info : task_runner_map_) {
-    const int worker_thread_id = task_runner_info.first;
-    base::TaskRunner* runner = task_runner_map_[worker_thread_id];
-    bool posted = runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WorkerThreadDispatcher::UpdateBindingsOnWorkerThread,
-                       extension_id));
-    success &= posted;
-  }
-  return success;
+  return UpdateBindingsHelper(extension_id);
+}
+
+void WorkerThreadDispatcher::UpdateAllServiceWorkerBindings() {
+  UpdateBindingsHelper(absl::nullopt);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
@@ -696,6 +693,22 @@ void WorkerThreadDispatcher::UnbindEventDispatcher(int worker_thread_id) {
 
 ScriptContextSetIterable* WorkerThreadDispatcher::GetScriptContextSet() {
   return Dispatcher::GetWorkerScriptContextSet();
+}
+
+bool WorkerThreadDispatcher::UpdateBindingsHelper(
+    const absl::optional<ExtensionId>& extension_id) {
+  bool success = true;
+  base::AutoLock lock(task_runner_map_lock_);
+  for (const auto& task_runner_info : task_runner_map_) {
+    const int worker_thread_id = task_runner_info.first;
+    base::TaskRunner* runner = task_runner_map_[worker_thread_id];
+    bool posted = runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WorkerThreadDispatcher::UpdateBindingsOnWorkerThread,
+                       extension_id));
+    success &= posted;
+  }
+  return success;
 }
 
 }  // namespace extensions

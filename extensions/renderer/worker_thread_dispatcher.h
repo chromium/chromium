@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -119,6 +120,10 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   // each Service Workers.
   bool UpdateBindingsForWorkers(const ExtensionId& extension_id);
 
+  // Updates bindings for every extension service worker context, assuming
+  // changes that can affect API availability.
+  void UpdateAllServiceWorkerBindings();
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   // Posts mojom::EventRouter::AddListenerForServiceWorker to the IO thread to
   // call it with GetEventRouterOnIO().
@@ -188,7 +193,8 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   ScriptContextSetIterable* GetScriptContextSet() override;
 
  private:
-  static void UpdateBindingsOnWorkerThread(const ExtensionId& extension_id);
+  static void UpdateBindingsOnWorkerThread(
+      const absl::optional<ExtensionId>& extension_id);
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   static bool HandlesMessageOnWorkerThread(const IPC::Message& message);
   static void ForwardIPC(int worker_thread_id, const IPC::Message& message);
@@ -217,6 +223,11 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 
   void PostTaskToMainThread(base::OnceClosure task);
 #endif
+
+  // Helper method to update bindings. If `extension_id` is non-null, updates
+  // only bindings for that extension; otherwise, updates all bindings.
+  // Returns true if the task to each worker thread posts correctly.
+  bool UpdateBindingsHelper(const absl::optional<ExtensionId>& extension_id);
 
   // IPC sender. Belongs to the render thread, but thread safe.
   scoped_refptr<IPC::SyncMessageFilter> message_filter_;
