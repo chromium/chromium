@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -224,57 +225,50 @@ bool MediaValues::CalculateInvertedColors(LocalFrame* frame) {
 }
 
 float MediaValues::CalculateEmSize(LocalFrame* frame) {
-  DCHECK(frame);
-  DCHECK(frame->GetDocument());
-  const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
-  DCHECK(style);
-  return CSSToLengthConversionData::FontSizes(style->GetFontSizeStyle(), style)
+  CHECK(frame);
+  CHECK(frame->ContentLayoutObject());
+  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  return CSSToLengthConversionData::FontSizes(style.GetFontSizeStyle(), &style)
       .Em(/* zoom */ 1.0f);
 }
 
 float MediaValues::CalculateExSize(LocalFrame* frame) {
-  DCHECK(frame);
-  DCHECK(frame->GetDocument());
-  const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
-  DCHECK(style);
-  return CSSToLengthConversionData::FontSizes(style->GetFontSizeStyle(), style)
+  CHECK(frame);
+  CHECK(frame->ContentLayoutObject());
+  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  return CSSToLengthConversionData::FontSizes(style.GetFontSizeStyle(), &style)
       .Ex(/* zoom */ 1.0f);
 }
 
 float MediaValues::CalculateChSize(LocalFrame* frame) {
-  DCHECK(frame);
-  DCHECK(frame->GetDocument());
-  const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
-  DCHECK(style);
-  return CSSToLengthConversionData::FontSizes(style->GetFontSizeStyle(), style)
+  CHECK(frame);
+  CHECK(frame->ContentLayoutObject());
+  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  return CSSToLengthConversionData::FontSizes(style.GetFontSizeStyle(), &style)
       .Ch(/* zoom */ 1.0f);
 }
 
 float MediaValues::CalculateIcSize(LocalFrame* frame) {
-  DCHECK(frame);
-  DCHECK(frame->GetDocument());
-  const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
-  DCHECK(style);
-  return CSSToLengthConversionData::FontSizes(style->GetFontSizeStyle(), style)
+  CHECK(frame);
+  CHECK(frame->ContentLayoutObject());
+  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  return CSSToLengthConversionData::FontSizes(style.GetFontSizeStyle(), &style)
       .Ic(/* zoom */ 1.0f);
 }
 
 float MediaValues::CalculateCapSize(LocalFrame* frame) {
-  DCHECK(frame);
-  DCHECK(frame->GetDocument());
-  const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
-  DCHECK(style);
-  return CSSToLengthConversionData::FontSizes(style->GetFontSizeStyle(), style)
+  CHECK(frame);
+  CHECK(frame->ContentLayoutObject());
+  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  return CSSToLengthConversionData::FontSizes(style.GetFontSizeStyle(), &style)
       .Cap(/* zoom */ 1.0f);
 }
 
 float MediaValues::CalculateLineHeight(LocalFrame* frame) {
-  DCHECK(frame);
-  DCHECK(frame->GetDocument());
-  const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
-  DCHECK(style);
-  return AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
-                                            *style);
+  CHECK(frame);
+  CHECK(frame->ContentLayoutObject());
+  const ComputedStyle& style = frame->ContentLayoutObject()->StyleRef();
+  return AdjustForAbsoluteZoom::AdjustFloat(style.ComputedLineHeight(), style);
 }
 
 const String MediaValues::CalculateMediaType(LocalFrame* frame) {
