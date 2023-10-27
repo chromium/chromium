@@ -608,11 +608,17 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kConv2d:
       return CreateConv2dOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kAdd:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kSub:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kMul:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kDiv:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kMin:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kMax:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kPow:
       return CreateElementWiseBinaryOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kGemm:
@@ -620,6 +626,7 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kPad:
       return CreatePadOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kAveragePool2d:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kMaxPool2d:
       return CreatePool2dOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kPRelu:
@@ -630,29 +637,19 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateReluOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kReshape:
       return CreateReshapeOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kSigmoid:
+      return CreateSigmoidOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSlice:
       return CreateSliceOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSoftmax:
       return CreateSoftmaxOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSplit:
       return CreateSplitOperation(operand_to_id_map, op);
-    case MLOperator::OperatorKind::kTranspose:
-      return CreateTransposeOperation(operand_to_id_map, op);
-    case MLOperator::OperatorKind::kHardSwish:
-    case MLOperator::OperatorKind::kReduceMean:
-    case MLOperator::OperatorKind::kReduceSum:
-    case MLOperator::OperatorKind::kSigmoid:
-      return CreateSigmoidOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kTanh:
       return CreateTanhOperation(operand_to_id_map, op);
-    case MLOperator::OperatorKind::kLeakyRelu:
-    case MLOperator::OperatorKind::kConvTranspose2d:
-    case MLOperator::OperatorKind::kElu:
-    case MLOperator::OperatorKind::kAbs:
-    case MLOperator::OperatorKind::kCeil:
-    case MLOperator::OperatorKind::kFloor:
-    case MLOperator::OperatorKind::kNeg:
-    case MLOperator::OperatorKind::kMatmul:
+    case MLOperator::OperatorKind::kTranspose:
+      return CreateTransposeOperation(operand_to_id_map, op);
+    default:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                               " is not implemented.");
   }
