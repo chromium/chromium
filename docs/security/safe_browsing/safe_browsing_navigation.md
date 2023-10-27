@@ -48,8 +48,8 @@ navigation into two phases:
     parsing it, rendering the document so it is visible to the user, executing
     any script, and loading any subresources (images, scripts, CSS files)
     specified by the document.
-    *   Safe Browsing will also check URLs that fetch subresources at this
-        stage, but only “hash-based” checks are performed.
+    *   Safe Browsing doesn't check subresources, iframes or websocket
+        connection.
 
 [Navigation Concepts](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/navigation_concepts.md)
 covers a set of important topics to understand navigation, such as:
@@ -80,27 +80,13 @@ covers a set of important topics to understand navigation, such as:
 
 ![workflow](safe_browsing_navigation_flowchart.png)
 
-As illustrated above, Safe Browsing may block navigation in two phases:
+As illustrated above, Safe Browsing blocks navigation in the navigation phase.
+It blocks the navigation before it is committed. Safe Browsing needs to finish
+checking all URLs (including redirect URLs) before committing the navigation.
+These checks are initiated from the browser process.
 
-*   In the navigation phase, Safe Browsing blocks the navigation before
-    committing. Safe Browsing needs to finish checking all URLs (including
-    redirect URLs) before committing the navigation. These checks are initiated
-    from the browser process.
-*   In the loading phase, Safe Browsing blocks loading subresources (images,
-    scripts,...) before finishing the check for URLs that fetch them. These
-    checks are initiated from the renderer process, but the check is still
-    performed within the browser process. They are connected by the
-    [SafeBrowsing mojo interface](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/content/common/safe_browsing.mojom;l=14;drc=9d6b0dd8dc0ca9364cc74fe5df855466bb15ef67)
-    and
-    [SafeBrowsingUrlChecker mojo interface](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/core/common/safe_browsing_url_checker.mojom;l=12;drc=efb0f6367a11f87129195032753f332b925ecf5f).
-    If you see a page is rendered first and then a warning page is shown, it is
-    likely triggered by subresources.
-
-If one of the URLs (initial URL, redirect URLs, subresource URLs) is classified
-as dangerous, a warning page will be shown and the navigation will be cancelled.
-Note that some of the subresource URLs may not trigger a full page interstitial.
-For example, when the threat type is “URL unwanted”
-([code](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/content/base_ui_manager.cc;l=207-221;drc=40a8d5fea781057ff74a699247bc699f71ca4d5d)).
+If one of the URLs (initial URL or redirect URLs) is classified as dangerous, a
+warning page will be shown and the navigation will be cancelled.
 
 ## Speed
 
@@ -116,21 +102,9 @@ Safe Browsing won’t slow down the navigation if it is completed before the
 response header is received. If Safe Browsing is not completed at this point,
 the response body will still be fetched but the renderer won’t read or parse it.
 
-We have two metrics to measure the speed of Safe Browsing checks on the
-browser-side (include both hash-based check and real-time check):
-
-*   SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse
-    *   Measures whether the Safe Browsing check is completed when the response
-        header is received. If completed, it won’t delay the navigation.
-*   SafeBrowsing.BrowserThrottle.TotalDelay
-    *   The total delayed time if Safe Browsing delays the navigation.
-
-Similarly, we have two metrics to measure the speed of Safe Browsing checks on
-the renderer-side (only include hash-based check because real-time check is not
-available on the renderer-side):
-
-*   SafeBrowsing.RendererThrottle.IsCheckCompletedOnProcessResponse
-*   SafeBrowsing.RendererThrottle.TotalDelay
+SafeBrowsing.BrowserThrottle.TotalDelay2 is the metric to measure the speed of
+Safe Browsing checks. 0 means that the Safe Browsing check is completed before
+the response header is received -- it doesn't delay the navigation.
 
 ## Implementation Details
 
@@ -145,20 +119,12 @@ interface. This interface provides several phases to defer URL loading:
 The throttle can mark `defer` as true if it wants to defer the navigation and
 can call Resume to resume the navigation.
 
-The throttle on the browser side is
-[BrowserUrlLoaderThrottle](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/content/browser/browser_url_loader_throttle.h;drc=b9e2c27ca6debc7796367f295888ba4701df62bf)
-and the throttle on the render side is
-[RendererUrlLoaderThrottle](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/content/renderer/renderer_url_loader_throttle.cc;l=107;drc=40a8d5fea781057ff74a699247bc699f71ca4d5d;bpv=1;bpt=1).
-The throttles only mark `defer` as true in
-[WillProcessResponse](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/content/browser/browser_url_loader_throttle.cc;l=264;drc=40a8d5fea781057ff74a699247bc699f71ca4d5d).
-
-Note that another way of deferring and blocking navigation is by implementing
-the
-[NavigationThrottle](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/navigation_throttle.h;drc=40a8d5fea781057ff74a699247bc699f71ca4d5d;l=18)
-interface. This interface doesn’t fit the Safe Browsing use case because it
-cannot defer loading subresources.
+The throttle class is
+[BrowserUrlLoaderThrottle](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/content/browser/browser_url_loader_throttle.h;drc=67847e1d488161fcc71acdfd3b77e1654f6e6121).
+The throttle only marks `defer` as true in
+[WillProcessResponse](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/content/browser/browser_url_loader_throttle.cc;l=489;drc=710d8b1f851677cbdafb8f14d0a5bba26066aebe).
 
 Safe Browsing doesn’t defer navigation forever. The current timeout is set to 5
 seconds. If the check is not completed in
-[5 seconds](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/core/browser/safe_browsing_url_checker_impl.cc;l=33;drc=c40dd9cd443bc4ca05647f8d582c38d5bdfb6814),
+[5 seconds](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.cc;l=14;drc=615be57df122442ad3c09558b7d7a7b8495c2360),
 the navigation will resume.
