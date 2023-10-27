@@ -9890,6 +9890,8 @@
                 {
                     "name": "Enabled_Magic_Stack_Less_Top_Space_20231024",
                     "params": {
+                        "MagicStackMostVisitedModule": "false",
+                        "ReducedNTPTopSpace": "20",
                         "enable_default_model": "true",
                         "variant": "tab-resumption-recent-tab-only"
                     },
