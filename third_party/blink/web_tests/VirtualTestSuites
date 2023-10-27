@@ -1653,7 +1653,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "exclusive_tests": "ALL",
     "bases": ["http/tests/low-priority-async-script-execution"],
-    "args": ["--enable-features=LCPCriticalPathPredictor,LCPScriptObserver,LowPriorityAsyncScriptExecution:low_pri_async_exec_timeout/100ms/low_pri_async_exec_exclude_lcp_influencers/true",
+    "args": ["--enable-features=LCPScriptObserver,LowPriorityAsyncScriptExecution:low_pri_async_exec_timeout/100ms/low_pri_async_exec_exclude_lcp_influencers/true",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": [
       "alexnj@chromium.org",
@@ -2411,7 +2411,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=LCPCriticalPathPredictor,LCPPFontURLPredictor"
+      "--enable-features=LCPPFontURLPredictor"
     ],
     "expires": "Oct 16, 2024",
     "owners": [
@@ -2431,7 +2431,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=LCPCriticalPathPredictor,LCPScriptObserver"
+      "--enable-features=LCPScriptObserver"
     ],
     "expires": "Sep 10, 2024",
     "owners": [

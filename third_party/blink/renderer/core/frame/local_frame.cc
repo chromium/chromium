@@ -51,6 +51,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
+#include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
@@ -790,7 +791,7 @@ ClipPathPaintImageGenerator* LocalFrame::GetClipPathPaintImageGenerator() {
 }
 
 LCPCriticalPathPredictor* LocalFrame::GetLCPP() {
-  if (!base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor)) {
+  if (!LcppEnabled()) {
     return nullptr;
   }
 

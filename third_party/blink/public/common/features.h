@@ -560,6 +560,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPAnimatedImagesReporting);
 
 // When enabled, LCP critical path predictor will optimize the subsequent visits
 // to websites using performance hints collected in the past page loads.
+// It enables boosting a loading priority of the possible LCP element.
+// TODO(crbug.com/1419756): rename to represent this is for possible LCP entry
+// boost.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPCriticalPathPredictor);
 
 // If true, LCP critical path predictor mechanism doesn't change the fetch

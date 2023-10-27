@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -27,7 +28,7 @@ LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame)
     : frame_(&frame),
       host_(frame.DomWindow()),
       task_runner_(frame.GetTaskRunner(TaskType::kInternalLoading)) {
-  CHECK(base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor));
+  CHECK(LcppEnabled());
   if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
     lcp_script_observer_ = MakeGarbageCollected<LCPScriptObserver>(frame_);
   }
@@ -61,27 +62,29 @@ void LCPCriticalPathPredictor::Reset() {
 
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     const Element& lcp_element) {
-  std::string lcp_element_locator_string =
-      element_locator::OfElement(lcp_element).SerializeAsString();
+  if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor)) {
+    std::string lcp_element_locator_string =
+        element_locator::OfElement(lcp_element).SerializeAsString();
+    features::LcppRecordedLcpElementTypes recordable_lcp_element_type =
+        features::kLCPCriticalPathPredictorRecordedLcpElementTypes.Get();
+    bool should_record_element_locator =
+        (recordable_lcp_element_type ==
+         features::LcppRecordedLcpElementTypes::kAll) ||
+        (recordable_lcp_element_type ==
+             features::LcppRecordedLcpElementTypes::kImageOnly &&
+         IsA<HTMLImageElement>(lcp_element));
 
-  features::LcppRecordedLcpElementTypes recordable_lcp_element_type =
-      features::kLCPCriticalPathPredictorRecordedLcpElementTypes.Get();
-  bool should_record_element_locator =
-      (recordable_lcp_element_type ==
-       features::LcppRecordedLcpElementTypes::kAll) ||
-      (recordable_lcp_element_type ==
-           features::LcppRecordedLcpElementTypes::kImageOnly &&
-       IsA<HTMLImageElement>(lcp_element));
+    if (should_record_element_locator) {
+      base::UmaHistogramCounts10000(
+          "Blink.LCPP.LCPElementLocatorSize",
+          base::checked_cast<int>(lcp_element_locator_string.size()));
 
-  if (should_record_element_locator) {
-    base::UmaHistogramCounts10000(
-        "Blink.LCPP.LCPElementLocatorSize",
-        base::checked_cast<int>(lcp_element_locator_string.size()));
-
-    if (lcp_element_locator_string.size() <=
-        base::checked_cast<size_t>(
-            features::kLCPCriticalPathPredictorMaxElementLocatorLength.Get())) {
-      GetHost().SetLcpElementLocator(lcp_element_locator_string);
+      if (lcp_element_locator_string.size() <=
+          base::checked_cast<size_t>(
+              features::kLCPCriticalPathPredictorMaxElementLocatorLength
+                  .Get())) {
+        GetHost().SetLcpElementLocator(lcp_element_locator_string);
+      }
     }
   }
 

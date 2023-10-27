@@ -32,6 +32,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
@@ -168,8 +169,7 @@ enum class LcppHintStatus {
 // would be sent to the renderer process upon navigation commit.
 void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
                                 LoadingPredictor& predictor) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kLCPCriticalPathPredictor)) {
+  if (blink::LcppEnabled()) {
     const GURL& navigation_url = navigation_handle.GetURL();
     absl::optional<LcppData> lcpp_data =
         predictor.resource_prefetch_predictor()->GetLcppData(navigation_url);

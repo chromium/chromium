@@ -284,7 +284,6 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
       features::kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam
           .Get();
   if (exclude_lcp_influencers &&
-      base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
       base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
     if (LCPCriticalPathPredictor* lcpp = top_document.GetFrame()->GetLCPP()) {
       if (lcpp->IsLcpInfluencerScript(GetResource()->Url())) {
