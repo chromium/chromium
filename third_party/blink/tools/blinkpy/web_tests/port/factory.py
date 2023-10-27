@@ -492,6 +492,23 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                                '--fully-parallel',
                                action='store_true',
                                help='run all tests in parallel')
+    testing_group.add_argument(
+        '--skipped',
+        help=('Control how tests marked SKIP are run. '
+              '"default" == Skip tests unless explicitly listed on the '
+              'command line, "ignore" == Run them anyway, '
+              '"only" == only run the SKIP tests, '
+              '"always" == always skip, even if listed on the command line.'))
+    testing_group.add_argument(
+        '--skip-failing-tests',
+        action='store_true',
+        help=('Skip tests that are expected to fail. Note: When using this '
+              'option, you might miss new crashes in these tests.'))
+    testing_group.add_argument(
+        '--skip-timeouts',
+        action='store_true',
+        help=('Skip tests marked TIMEOUT. Use it to speed up running the '
+              'entire test suite.'))
     if rwt:
         testing_group.add_argument(
             '--build',
@@ -588,14 +605,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             help=('Seed to use for random test order (default: %(default)s). '
                   'Only applicable in combination with --order=random.'))
         testing_group.add_argument(
-            '--skipped',
-            help=
-            ('Control how tests marked SKIP are run. '
-             '"default" == Skip tests unless explicitly listed on the command '
-             'line, "ignore" == Run them anyway, '
-             '"only" == only run the SKIP tests, '
-             '"always" == always skip, even if listed on the command line.'))
-        testing_group.add_argument(
             '--isolated-script-test-also-run-disabled-tests',
             # TODO(crbug.com/893235): Remove the gtest alias when FindIt no longer uses it.
             '--gtest_also_run_disabled_tests',
@@ -603,17 +612,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             const='ignore',
             dest='skipped',
             help=('Equivalent to --skipped=ignore.'))
-        testing_group.add_argument(
-            '--skip-failing-tests',
-            action='store_true',
-            help=(
-                'Skip tests that are expected to fail. Note: When using this '
-                'option, you might miss new crashes in these tests.'))
-        testing_group.add_argument(
-            '--skip-timeouts',
-            action='store_true',
-            help=('Skip tests marked TIMEOUT. Use it to speed up running the '
-                  'entire test suite.'))
         testing_group.add_argument('--timeout-ms',
                                    type=float,
                                    help='Set the timeout for each test')

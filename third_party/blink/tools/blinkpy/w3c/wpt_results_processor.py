@@ -17,6 +17,7 @@ import time
 from typing import (
     Any,
     Dict,
+    FrozenSet,
     Iterator,
     List,
     NamedTuple,
@@ -33,7 +34,7 @@ from blinkpy.common.html_diff import html_diff
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.unified_diff import unified_diff
-from blinkpy.w3c.wpt_metadata import RunInfo
+from blinkpy.w3c import wpt_metadata
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.testharness_results import (
@@ -50,7 +51,54 @@ from blinkpy.web_tests.models.typ_types import (
     ResultType,
 )
 
+path_finder.bootstrap_wpt_imports()
+from wptrunner import wpttest
+
 _log = logging.getLogger(__name__)
+_status_mapping = collections.OrderedDict([
+    ('OK', ResultType.Pass),
+    ('FAIL', ResultType.Failure),
+    ('PASS', ResultType.Pass),
+    ('TIMEOUT', ResultType.Timeout),
+    ('ERROR', ResultType.Failure),
+    ('CRASH', ResultType.Crash),
+    ('PRECONDITION_FAILED', ResultType.Failure),
+    ('SKIP', ResultType.Skip),
+    ('NOTRUN', ResultType.Failure),
+])
+
+
+def wptrunner_to_chromium_status(status: str) -> str:
+    return _status_mapping[status]
+
+
+@memoized
+def chromium_to_wptrunner_statuses(
+    statuses: FrozenSet[str],
+    test_type: wpt_metadata.TestType,
+    subtest: bool = False,
+) -> Set[str]:
+    wptrunner_statuses = {
+        wptrunner_status
+        for wptrunner_status, chromium_status in _status_mapping.items()
+        if chromium_status in statuses
+    }
+    test_cls = wpttest.manifest_test_cls[test_type]
+    if subtest:
+        result_cls = test_cls.subtest_result_cls
+        assert result_cls, f'{test_type!r} tests cannot have subtests'
+    else:
+        result_cls = test_cls.result_cls
+    return wptrunner_statuses & result_cls.statuses
+
+
+def normalize_statuses(statuses: Iterator[str]) -> List[str]:
+    status_order = list(_status_mapping.keys())
+    # Some Chromium statuses may map to more than one wptrunner status (e.g.,
+    # ResultType.FAIL -> FAIL, PRECONDITION_FAILED), so return a list of
+    # statuses instead of a single status. Also, return them in a well-defined
+    # order (generally, most commonly used statuses to least).
+    return sorted(set(statuses), key=status_order.index)
 
 
 class WPTResult(Result):
@@ -64,21 +112,7 @@ class WPTResult(Result):
      3. Format (sub)test statuses and messages into baselines or logs.
     """
 
-    _wptrunner_to_chromium_statuses = {
-        'OK': ResultType.Pass,
-        'PASS': ResultType.Pass,
-        'FAIL': ResultType.Failure,
-        'ERROR': ResultType.Failure,
-        'PRECONDITION_FAILED': ResultType.Failure,
-        'TIMEOUT': ResultType.Timeout,
-        'EXTERNAL-TIMEOUT': ResultType.Timeout,
-        'CRASH': ResultType.Crash,
-        'INTERNAL-ERROR': ResultType.Crash,
-        'SKIP': ResultType.Skip,
-        'NOTRUN': ResultType.Failure,
-    }
-
-    _status_priority = [
+    status_priority = [
         # Sorted from least to most "interesting" statuses. A status is more
         # "interesting" when it indicates the test did not run to completion.
         ResultType.Pass,
@@ -130,11 +164,8 @@ class WPTResult(Result):
         overrides a subtest-level status when they have the same priority.
         """
         unexpected = status not in expected
-        actual = self._wptrunner_to_chromium_statuses[status]
-        expected = {
-            self._wptrunner_to_chromium_statuses[status]
-            for status in expected
-        }
+        actual = wptrunner_to_chromium_status(status)
+        expected = set(map(wptrunner_to_chromium_status, expected))
         # Converting wptrunner to ResultDB statuses is lossy, so it's possible
         # for the wptrunner result to be unexpected, but ResultDB status
         # `actual` maps to a member of `expected`. Removing the common status
@@ -151,7 +182,7 @@ class WPTResult(Result):
     def _result_priority(self, status: str,
                          unexpected: bool) -> Tuple[bool, bool, int]:
         incomplete = status in {ResultType.Timeout, ResultType.Crash}
-        return (incomplete, unexpected, self._status_priority.index(status))
+        return (incomplete, unexpected, self.status_priority.index(status))
 
     def update_from_subtest(self,
                             subtest: str,
@@ -404,7 +435,7 @@ class WPTResultsProcessor:
 
     def suite_start(self,
                     event: Event,
-                    run_info: Optional[RunInfo] = None,
+                    run_info: Optional[wpt_metadata.RunInfo] = None,
                     **_):
         if run_info:
             self.run_info.update(run_info)
