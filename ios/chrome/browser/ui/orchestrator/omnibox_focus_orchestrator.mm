@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/orchestrator/edit_view_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/toolbar_animatee.h"
@@ -248,6 +249,10 @@
     // Use UIView animateWithDuration instead of UIViewPropertyAnimator to
     // avoid UIKit bug. See https://crbug.com/856155.
     self.inProgressAnimationCount += 1;
+    if (IsIOSLargeFakeboxEnabled()) {
+      // Set the location bar height to the default.
+      [self.toolbarAnimatee setLocationBarHeightExpanded];
+    }
     [self.toolbarAnimatee setToolbarFaded:NO];
     switch (_trigger) {
       case OmniboxFocusTrigger::kPinnedLargeFakebox:
@@ -349,10 +354,10 @@
     if (_completion) {
       _completion();
       _completion = nil;
-      if (_trigger == OmniboxFocusTrigger::kPinnedLargeFakebox) {
-        // Reset the location bar height back to the default.
-        [self.toolbarAnimatee setLocationBarHeightExpanded];
-      }
+    }
+    if (IsIOSLargeFakeboxEnabled()) {
+      // Reset the location bar height back to the default.
+      [self.toolbarAnimatee setLocationBarHeightExpanded];
     }
   }
   self.stateChangedDuringAnimation = NO;
