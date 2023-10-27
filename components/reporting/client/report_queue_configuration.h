@@ -90,7 +90,7 @@ class ReportQueueConfiguration {
   //               /*filling_time=*/base::Minutes(10)))
   //           .Build();
   //   if (!config_result.has_value()) {
-  //     return config_result.status();
+  //     return config_result.error();
   //   }
   //   auto config = config_result.value();
   static Builder Create(const Settings& settings);

@@ -365,7 +365,7 @@ TEST_F(TaskRunner, ActionsWithStatusOrPtr) {
   Start<ActionsWithStatusOrContext>(
       &vector, test_event.cb(), base::SequencedTaskRunner::GetCurrentDefault());
   const StatusOrPtr result = test_event.result();
-  ASSERT_TRUE(result.has_value()) << result.status();
+  ASSERT_TRUE(result.has_value()) << result.error();
   EXPECT_EQ(result.value()->value(), kI);
 }
 

@@ -135,8 +135,8 @@ void DmServerUploader::Finalize(CompletionResponse upload_result) {
         error::OUT_OF_RANGE,
     };
     LOG_IF(WARNING,
-           !base::Contains(kIgnoredCodes, upload_result.status().code()))
-        << upload_result.status();
+           !base::Contains(kIgnoredCodes, upload_result.error().code()))
+        << upload_result.error();
   }
   Response(upload_result);
 }

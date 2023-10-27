@@ -439,7 +439,7 @@ void FileUploadJob::DoneInitiate(
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   CHECK(event_helper_) << "Event must be associated with the job";
   if (!result.has_value()) {
-    result.status().SaveTo(tracker_.mutable_status());
+    result.error().SaveTo(tracker_.mutable_status());
     return;
   }
   int64_t total = 0L;
@@ -506,7 +506,7 @@ void FileUploadJob::DoneNextStep(
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   CHECK(event_helper_) << "Event must be associated with the job";
   if (!result.has_value()) {
-    result.status().SaveTo(tracker_.mutable_status());
+    result.error().SaveTo(tracker_.mutable_status());
     return;
   }
   int64_t uploaded = 0L;
@@ -570,7 +570,7 @@ void FileUploadJob::DoneFinalize(
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   CHECK(event_helper_) << "Event must be associated with the job";
   if (!result.has_value()) {
-    result.status().SaveTo(tracker_.mutable_status());
+    result.error().SaveTo(tracker_.mutable_status());
     return;
   }
   std::string_view access_parameters = result.value();

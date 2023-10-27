@@ -83,7 +83,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithValidParams) {
           .SetDMToken(kDmToken)
           .SetPolicyCheckCallback(kValidCallback)
           .Build();
-  EXPECT_TRUE(config_result.has_value()) << config_result.status();
+  EXPECT_TRUE(config_result.has_value()) << config_result.error();
 }
 
 TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithNoDMToken) {
@@ -91,7 +91,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithNoDMToken) {
       ReportQueueConfiguration::Create({.destination = kValidDestination})
           .SetPolicyCheckCallback(kValidCallback)
           .Build();
-  EXPECT_TRUE(config_result.has_value()) << config_result.status();
+  EXPECT_TRUE(config_result.has_value()) << config_result.error();
 }
 
 TEST_F(ReportQueueConfigurationTest,
@@ -127,7 +127,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithDeviceEventType) {
           {.event_type = EventType::kDevice, .destination = kValidDestination})
           .SetPolicyCheckCallback(kValidCallback)
           .Build();
-  EXPECT_TRUE(config_result.has_value()) << config_result.status();
+  EXPECT_TRUE(config_result.has_value()) << config_result.error();
 }
 
 TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithUserEventType) {
@@ -136,7 +136,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithUserEventType) {
           {.event_type = EventType::kUser, .destination = kValidDestination})
           .SetPolicyCheckCallback(kValidCallback)
           .Build();
-  EXPECT_TRUE(config_result.has_value()) << config_result.status();
+  EXPECT_TRUE(config_result.has_value()) << config_result.error();
 }
 
 TEST_F(ReportQueueConfigurationTest,
@@ -183,7 +183,7 @@ TEST_F(ReportQueueConfigurationTest, UsesProvidedPolicyCheckCallback) {
               base::BindRepeating(&::testing::MockFunction<Status(void)>::Call,
                                   base::Unretained(&mock_handler)))
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   const auto config = std::move(config_result.value());
   EXPECT_OK(config->CheckPolicy());
@@ -199,7 +199,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithRateLimiter) {
           .SetPolicyCheckCallback(kValidCallback)
           .SetRateLimiter(std::move(rate_limiter))
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
   const auto config = std::move(config_result.value());
   const auto is_event_allowed_cb = config->is_event_allowed_cb();
   ASSERT_TRUE(is_event_allowed_cb);
@@ -224,7 +224,7 @@ TEST_F(ReportQueueConfigurationTest,
           .SetPolicyCheckCallback(kValidCallback)
           .SetRateLimiter(std::move(rate_limiter))
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
   auto config = std::move(config_result.value());
   const auto is_event_allowed_cb = config->is_event_allowed_cb();
   ASSERT_TRUE(is_event_allowed_cb);
@@ -244,7 +244,7 @@ TEST_F(ReportQueueConfigurationTest,
                                         .reserved_space = kReservedSpace})
           .SetPolicyCheckCallback(kValidCallback)
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   const auto config = std::move(config_result.value());
   EXPECT_THAT(config->reserved_space(), Eq(kReservedSpace));
@@ -259,7 +259,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithSource) {
           .SetPolicyCheckCallback(kValidCallback)
           .SetSourceInfo(source_info)
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   const auto config = std::move(config_result.value());
   ASSERT_TRUE(config->source_info().has_value());
@@ -287,7 +287,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithSourceVersion) {
           .SetPolicyCheckCallback(kValidCallback)
           .SetSourceInfo(source_info)
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   const auto config = std::move(config_result.value());
   ASSERT_TRUE(config->source_info().has_value());

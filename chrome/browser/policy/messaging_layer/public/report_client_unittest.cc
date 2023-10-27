@@ -65,7 +65,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
                                    signature_verification_public_key_);
       // Create decryption module.
       auto decryptor_result = test::Decryptor::Create();
-      ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
+      ASSERT_TRUE(decryptor_result.has_value()) << decryptor_result.error();
       decryptor_ = std::move(decryptor_result.value());
       // Prepare the key.
       signed_encryption_key_ = GenerateAndSignKey();
@@ -110,7 +110,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
         std::string(reinterpret_cast<const char*>(public_value), kKeySize),
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
-    CHECK(prepare_key_result.has_value()) << prepare_key_result.status();
+    CHECK(prepare_key_result.has_value()) << prepare_key_result.error();
     public_key_id = prepare_key_result.value();
     // Prepare public key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
@@ -145,7 +145,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
             {.event_type = EventType::kUser, .destination = destination_})
             .SetPolicyCheckCallback(policy_checker_callback_)
             .Build();
-    EXPECT_TRUE(config_result.has_value()) << config_result.status();
+    EXPECT_TRUE(config_result.has_value()) << config_result.error();
     return CreateQueueWithConfig(std::move(config_result.value()));
   }
 
@@ -172,7 +172,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
             {.event_type = EventType::kUser, .destination = destination_})
             .SetPolicyCheckCallback(policy_checker_callback_)
             .Build();
-    EXPECT_TRUE(config_result.has_value()) << config_result.status();
+    EXPECT_TRUE(config_result.has_value()) << config_result.error();
 
     return CreateSpeculativeQueueWithConfig(std::move(config_result.value()));
   }
@@ -186,7 +186,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     auto speculative_queue_result = ReportQueueProvider::CreateSpeculativeQueue(
         std::move(report_queue_config));
     EXPECT_TRUE(speculative_queue_result.has_value())
-        << speculative_queue_result.status();
+        << speculative_queue_result.error();
     return std::move(speculative_queue_result.value());
   }
 
@@ -317,8 +317,8 @@ TEST_P(ReportClientTest, CreateReportQueueWhenDMTokenRetrievalFailure) {
   MockDMTokenRetrieverWithResult(
       Status(error::INTERNAL, "Simulated DM token retrieval failure"));
   auto report_queue_result = CreateQueue();
-  EXPECT_FALSE(report_queue_result.has_value());
-  EXPECT_EQ(report_queue_result.status().error_code(), error::INTERNAL);
+  ASSERT_FALSE(report_queue_result.has_value());
+  EXPECT_EQ(report_queue_result.error().error_code(), error::INTERNAL);
 }
 
 // Ensures that created ReportQueues are actually different.

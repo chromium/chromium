@@ -134,7 +134,7 @@ void ReportingPipeline::UpdateToken(std::string request_token) {
 
   if (!config_result.has_value()) {
     LOG(ERROR) << "Report Client Configuration failed with error message: "
-               << config_result.status().ToString();
+               << config_result.error();
     // Reset DMToken to allow future attempts at configuring the report queue.
     // TODO(b/175156039): Attempt to create a new configuration again.
     dm_token_.clear();
@@ -180,7 +180,7 @@ void ReportingPipeline::OnReportQueueUpdated(
 
   if (!report_queue_result.has_value()) {
     LOG(ERROR) << "Report Queue creation failed with error message: "
-               << report_queue_result.status().ToString();
+               << report_queue_result.error();
     // Reset DMToken to allow future attempts at creating a report queue.
     // TODO(b/175156039): Attempt to create a new queue again.
     dm_token_.clear();

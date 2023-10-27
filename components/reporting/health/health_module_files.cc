@@ -110,7 +110,7 @@ void HealthModuleFiles::PopulateHistory(ERPHealthData* data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& file : files_) {
     const auto read_result = MaybeReadFile(file.second, /*offset=*/0);
-    if (!read_result.status().ok()) {
+    if (!read_result.has_value()) {
       return;
     }
 

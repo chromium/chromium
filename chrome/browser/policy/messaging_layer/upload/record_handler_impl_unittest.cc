@@ -251,7 +251,7 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 }
 
@@ -283,7 +283,7 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 }
 
@@ -323,7 +323,7 @@ TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_TRUE(result.has_value()) << result.status();
+  EXPECT_TRUE(result.has_value()) << result.error();
 }
 
 TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
@@ -357,7 +357,7 @@ TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_TRUE(result.has_value()) << result.status();
+  EXPECT_TRUE(result.has_value()) << result.error();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -390,7 +390,7 @@ TEST_P(RecordHandlerImplTest, InvalidGenerationGuid) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -431,7 +431,7 @@ TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_TRUE(result.has_value()) << result.status();
+  EXPECT_TRUE(result.has_value()) << result.error();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -471,8 +471,8 @@ TEST_P(RecordHandlerImplTest,
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_FALSE(result.status().ok());
-  EXPECT_THAT(result.status(),
+  EXPECT_FALSE(result.has_value());
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -498,7 +498,7 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   EXPECT_THAT(*test_env_.url_loader_factory()->pending_requests(), IsEmpty());
 
   const auto result = responder_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::FAILED_PRECONDITION)));
 }
 
@@ -522,7 +522,7 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
       0, Status(error::INTERNAL, "Test injected error"));
 
   const auto result = response_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::DATA_LOSS)));
 
   EXPECT_TRUE(encryption_key_attached_event.no_result());
@@ -611,7 +611,7 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
   test_env_.SimulateCustomResponseForRequest(0, base::Value::Dict());
 
   const auto result = response_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 
   EXPECT_TRUE(encryption_key_attached_event.no_result());

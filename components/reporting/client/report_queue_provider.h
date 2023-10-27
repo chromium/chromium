@@ -46,7 +46,7 @@ BASE_DECLARE_FEATURE(kEncryptedReportingPipeline);
 //      reporting::ReportQueueConfiguration::Create({...}).Set...().Build();
 //   // Bail out if configuration failed to create.
 //   if (!config_result.has_value()) {
-//     std::move(done_cb).Run(config_result.status());
+//     std::move(done_cb).Run(config_result.error());
 //     return;
 //   }
 //   // Asynchronously create ReportingQueue.
@@ -67,7 +67,7 @@ BASE_DECLARE_FEATURE(kEncryptedReportingPipeline);
 //                            report_queue_result) {
 //                       // Bail out if queue failed to create.
 //                       if (!report_queue_result.has_value()) {
-//                         std::move(done_cb).Run(report_queue_result.status());
+//                         std::move(done_cb).Run(report_queue_result.error());
 //                         return;
 //                       }
 //                       // Queue created successfully, enqueue the message.

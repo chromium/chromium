@@ -37,7 +37,7 @@ namespace reporting {
 //      reporting::ReportQueueConfiguration::Create({...}).Set...().Build();
 //   // Bail out if configuration failed to create.
 //   if (!config_result.has_value()) {
-//     std::move(done_cb).Run(config_result.status());
+//     std::move(done_cb).Run(config_result.error());
 //     return;
 //   }
 //   // Asynchronously instantiate ReportQueue.
@@ -56,7 +56,7 @@ namespace reporting {
 //                            reporting::ReportQueue>> report_queue_result) {
 //                       // Bail out if queue failed to create.
 //                       if (!report_queue_result.has_value()) {
-//                         std::move(done_cb).Run(report_queue_result.status());
+//                         std::move(done_cb).Run(report_queue_result.error());
 //                         return;
 //                       }
 //                       // Queue created successfully, enqueue the message.
@@ -86,7 +86,7 @@ namespace reporting {
 //      reporting::ReportQueueConfiguration::Create({...}).Set...().Build();
 //   // Bail out if configuration failed to create.
 //   if (!config_result.has_value()) {
-//     std::move(done_cb).Run(config_result.status());
+//     std::move(done_cb).Run(config_result.error());
 //     return;
 //   }
 //   // Synchronously instantiate SpeculativeReportQueueImpl, returning it as
@@ -95,7 +95,7 @@ namespace reporting {
 //       reporting::ReportQueueProvider::CreateSpeculativeQueue(
 //           std::move(config));
 //   if (!report_queue_result.has_value()) {
-//     std::move(done_cb).Run(config_result.status());
+//     std::move(done_cb).Run(config_result.error());
 //     return;
 //   }
 //   // Enqueue event (store it in memory only until the actual queue is

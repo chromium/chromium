@@ -78,14 +78,13 @@ class ReportQueueImplTest : public testing::Test {
             .SetDMToken(dm_token_)
             .SetPolicyCheckCallback(policy_check_callback_)
             .Build();
-    ASSERT_TRUE(config_result.has_value()) << config_result.status();
+    ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
     ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
                             report_queue_event.cb());
     auto report_queue_result = report_queue_event.result();
-    ASSERT_TRUE(report_queue_result.has_value())
-        << report_queue_result.status();
+    ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
 
     report_queue_ = std::move(report_queue_result.value());
   }
@@ -97,7 +96,7 @@ class ReportQueueImplTest : public testing::Test {
     ReportQueueImpl::Create(std::move(config), storage_module_,
                             report_queue_event.cb());
     auto report_queue_result = report_queue_event.result();
-    CHECK(report_queue_result.has_value()) << report_queue_result.status();
+    CHECK(report_queue_result.has_value()) << report_queue_result.error();
 
     report_queue_ = std::move(report_queue_result.value());
 
@@ -189,7 +188,7 @@ TEST_F(ReportQueueImplTest,
                            .SetDMToken(dm_token_)
                            .SetPolicyCheckCallback(policy_check_callback_)
                            .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   // Test records are not MetricData so they should trigger CHECK.
   EXPECT_CHECK_DEATH(static_cast<void>(EnqueueTestRecord(
@@ -205,7 +204,7 @@ TEST_F(ReportQueueImplTest,
                            .SetDMToken(dm_token_)
                            .SetPolicyCheckCallback(policy_check_callback_)
                            .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   // Test records are not MetricData so they should trigger CHECK.
   EXPECT_CHECK_DEATH(static_cast<void>(EnqueueTestRecord(
@@ -221,7 +220,7 @@ TEST_F(ReportQueueImplTest,
                            .SetDMToken(dm_token_)
                            .SetPolicyCheckCallback(policy_check_callback_)
                            .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   // Test records are not MetricData so they should trigger CHECK.
   EXPECT_CHECK_DEATH(static_cast<void>(EnqueueTestRecord(
@@ -237,13 +236,13 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithRateLimiter) {
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetRateLimiter(std::move(rate_limiter))
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
   ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
                           report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
-  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.status();
+  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
 
   report_queue_ = std::move(report_queue_result.value());
 
@@ -288,7 +287,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithReservedSpace) {
           .SetDMToken(dm_token_)
           .SetPolicyCheckCallback(policy_check_callback_)
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestMessage test_message;
   test_message.set_test(kTestMessage);
@@ -316,7 +315,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithSource) {
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetSourceInfo(source_info)
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestMessage test_message;
   test_message.set_test(kTestMessage);
@@ -345,7 +344,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithSourceVersion) {
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetSourceInfo(source_info)
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestMessage test_message;
   test_message.set_test(kTestMessage);
@@ -489,13 +488,13 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithRateLimiter) {
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetRateLimiter(std::move(rate_limiter))
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
   ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
                           report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
-  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.status();
+  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
 
   report_queue_ = std::move(report_queue_result.value());
 
@@ -541,13 +540,13 @@ TEST_F(ReportQueueImplTest,
           .SetDMToken(dm_token_)
           .SetPolicyCheckCallback(policy_check_callback_)
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
   ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
                           report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
-  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.status();
+  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
 
   report_queue_ = std::move(report_queue_result.value());
 
@@ -580,13 +579,13 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithSource) {
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetSourceInfo(source_info)
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
   ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
                           report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
-  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.status();
+  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
   report_queue_ = std::move(report_queue_result.value());
 
   test::TestEvent<Status> a;
@@ -620,13 +619,13 @@ TEST_F(ReportQueueImplTest,
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetSourceInfo(source_info)
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
   ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
                           report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
-  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.status();
+  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
   report_queue_ = std::move(report_queue_result.value());
 
   test::TestEvent<Status> a;

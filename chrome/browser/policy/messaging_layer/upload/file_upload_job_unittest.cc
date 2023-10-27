@@ -866,9 +866,9 @@ TEST_F(FileUploadJobTest, AttemptToInitiateMultipleJobs) {
                  std::atomic<size_t>* failures,
                  StatusOr<FileUploadJob*> job_or_error) {
                 if (!job_or_error.has_value()) {
-                  EXPECT_THAT(job_or_error.status().error_code(),
+                  EXPECT_THAT(job_or_error.error().error_code(),
                               Eq(error::ALREADY_EXISTS));
-                  EXPECT_THAT(job_or_error.status().error_message(),
+                  EXPECT_THAT(job_or_error.error().error_message(),
                               StrEq("Duplicate event"));
                   ++(*failures);
                   return;
@@ -951,14 +951,14 @@ TEST_F(FileUploadJobTest, AttemptToNextStepMultipleJobs) {
                  std::atomic<size_t>* failures,
                  StatusOr<FileUploadJob*> job_or_error) {
                 if (!job_or_error.has_value()) {
-                  EXPECT_THAT(job_or_error.status().error_code(),
+                  EXPECT_THAT(job_or_error.error().error_code(),
                               Eq(error::ALREADY_EXISTS));
-                  EXPECT_THAT(job_or_error.status().error_message(),
+                  EXPECT_THAT(job_or_error.error().error_message(),
                               StrEq("Duplicate event"));
                   ++(*failures);
                   return;
                 }
-                EXPECT_TRUE(job_or_error.has_value()) << job_or_error.status();
+                EXPECT_TRUE(job_or_error.has_value()) << job_or_error.error();
                 auto* const job = job_or_error.value();
                 jobs_weak_ptrs->push_back(job->GetWeakPtr());
                 ScopedReservation scoped_reservation(0uL, memory_resource);
@@ -1031,14 +1031,14 @@ TEST_F(FileUploadJobTest, AttemptToFinalizeMultipleJobs) {
                  std::atomic<size_t>* failures,
                  StatusOr<FileUploadJob*> job_or_error) {
                 if (!job_or_error.has_value()) {
-                  EXPECT_THAT(job_or_error.status().error_code(),
+                  EXPECT_THAT(job_or_error.error().error_code(),
                               Eq(error::ALREADY_EXISTS));
-                  EXPECT_THAT(job_or_error.status().error_message(),
+                  EXPECT_THAT(job_or_error.error().error_message(),
                               StrEq("Duplicate event"));
                   ++(*failures);
                   return;
                 }
-                EXPECT_TRUE(job_or_error.has_value()) << job_or_error.status();
+                EXPECT_TRUE(job_or_error.has_value()) << job_or_error.error();
                 auto* const job = job_or_error.value();
                 jobs_weak_ptrs->push_back(job->GetWeakPtr());
                 job->Finalize(done.Release());
@@ -1097,7 +1097,7 @@ TEST_F(FileUploadJobTest, MultipleStagesJob) {
             [](base::ScopedClosureRunner done,
                base::WeakPtr<FileUploadJob>* job_weak_ptr,
                StatusOr<FileUploadJob*> job_or_error) {
-              EXPECT_TRUE(job_or_error.has_value()) << job_or_error.status();
+              EXPECT_TRUE(job_or_error.has_value()) << job_or_error.error();
               auto* const job = job_or_error.value();
               *job_weak_ptr = job->GetWeakPtr();
               job->Initiate(done.Release());
@@ -1193,7 +1193,7 @@ TEST_F(FileUploadJobTest, FailureRegisteringJobWithNoRetries) {
           [](base::ScopedClosureRunner done,
              StatusOr<FileUploadJob*> job_or_error) {
             EXPECT_THAT(
-                job_or_error.status(),
+                job_or_error.error(),
                 AllOf(Property(&Status::code, Eq(error::INVALID_ARGUMENT)),
                       Property(&Status::error_message,
                                StrEq("Too many upload attempts"))));

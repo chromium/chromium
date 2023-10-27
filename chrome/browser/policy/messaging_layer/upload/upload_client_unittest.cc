@@ -202,8 +202,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
   UploadClient::Create(e.cb());
   StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
-  ASSERT_TRUE(upload_client_result.has_value())
-      << upload_client_result.status();
+  ASSERT_TRUE(upload_client_result.has_value()) << upload_client_result.error();
 
   auto upload_client = std::move(upload_client_result.value());
   // config_file_version is set to 0 for testing. The default value is -1 and we

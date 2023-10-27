@@ -29,7 +29,7 @@ namespace reporting {
 #define ASSIGN_OR_RETURN_IMPL(result, lhs, rexpr) \
   auto result = rexpr;                            \
   if (__builtin_expect(!result.has_value(), 0)) { \
-    return result.status();                       \
+    return result.error();                        \
   }                                               \
   lhs = std::move(result).value()
 
@@ -52,7 +52,7 @@ namespace reporting {
 #define ASSIGN_OR_ONCE_CALLBACK_AND_RETURN_IMPL(result, lhs, callback, rexpr) \
   const auto result = (rexpr);                                                \
   if (__builtin_expect(!result.has_value(), 0)) {                             \
-    std::move(callback).Run(result.status());                                 \
+    std::move(callback).Run(result.error());                                  \
     return;                                                                   \
   }                                                                           \
   lhs = result.value();

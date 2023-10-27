@@ -205,7 +205,7 @@ TEST_F(EncryptedReportingClientTest, Default) {
     // Sequence ID decreased, upload is rejected.
     const auto actual_response = response_event.result();
     EXPECT_THAT(actual_response,
-                Property(&StatusOr<base::Value::Dict>::status,
+                Property(&StatusOr<base::Value::Dict>::error,
                          AllOf(Property(&Status::code, Eq(error::OUT_OF_RANGE)),
                                Property(&Status::error_message,
                                         StrEq("Too many upload requests")))));
@@ -224,7 +224,7 @@ TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
   EXPECT_THAT(
       actual_response,
       Property(
-          &StatusOr<base::Value::Dict>::status,
+          &StatusOr<base::Value::Dict>::error,
           AllOf(
               Property(&Status::code, Eq(error::NOT_FOUND)),
               Property(
@@ -283,7 +283,7 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
         response_event.cb());
     const auto actual_response = response_event.result();
     EXPECT_THAT(actual_response,
-                Property(&StatusOr<base::Value::Dict>::status,
+                Property(&StatusOr<base::Value::Dict>::error,
                          AllOf(Property(&Status::code, Eq(error::OUT_OF_RANGE)),
                                Property(&Status::error_message,
                                         StrEq("Too many upload requests")))));

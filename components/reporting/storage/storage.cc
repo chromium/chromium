@@ -106,7 +106,7 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
       UploaderInterfaceResultCb start_uploader_cb,
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
     if (!uploader_result.has_value()) {
-      std::move(start_uploader_cb).Run(uploader_result.status());
+      std::move(start_uploader_cb).Run(uploader_result.error());
       return;
     }
     std::move(start_uploader_cb)
@@ -194,7 +194,7 @@ class Storage::KeyDelivery {
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
     if (!uploader_result.has_value()) {
-      std::move(start_uploader_cb).Run(uploader_result.status());
+      std::move(start_uploader_cb).Run(uploader_result.error());
       return;
     }
     std::move(start_uploader_cb)
@@ -205,7 +205,7 @@ class Storage::KeyDelivery {
   void EncryptionKeyReceiverReady(
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
     if (!uploader_result.has_value()) {
-      OnCompletion(uploader_result.status());
+      OnCompletion(uploader_result.error());
       return;
     }
     uploader_result.value()->Completed(Status::StatusOK());
@@ -516,7 +516,7 @@ void Storage::Create(
       if (!download_key_result.has_value()) {
         // Key not found or corrupt. Proceed with queues creation directly.
         // We will download the key on the first Enqueue.
-        EncryptionSetUp(download_key_result.status());
+        EncryptionSetUp(download_key_result.error());
         return;
       }
 
@@ -586,9 +586,9 @@ void Storage::Create(
         CHECK(add_result.second);
       } else {
         LOG(ERROR) << "Could not create queue, priority=" << priority
-                   << ", status=" << storage_queue_result.status();
+                   << ", status=" << storage_queue_result.error();
         if (final_status_.ok()) {
-          final_status_ = storage_queue_result.status();
+          final_status_ = storage_queue_result.error();
         }
       }
       CHECK_GT(count_, 0u);
@@ -606,7 +606,7 @@ void Storage::Create(
       CHECK_EQ(storage_->queues_.size(), queues_options_.size());
       for (const auto& queue_options : queues_options_) {
         const auto queue_or_error = storage_->GetQueue(queue_options.first);
-        CHECK(queue_or_error.has_value()) << queue_or_error.status();
+        CHECK(queue_or_error.has_value()) << queue_or_error.error();
         queue_or_error.value()->AssignDegradationQueues(degradation_queues);
         // Add newly created queue to the list to be used by all the later ones.
         degradation_queues.emplace_back(queue_or_error.value());
@@ -775,7 +775,7 @@ void Storage::AsyncGetQueueAndProceed(
             auto queue_result = self->GetQueue(priority);
             if (!queue_result.has_value()) {
               // Queue not found, abort.
-              std::move(completion_cb).Run(queue_result.status());
+              std::move(completion_cb).Run(queue_result.error());
               return;
             }
             // Queue found, execute the action (it should relocate on

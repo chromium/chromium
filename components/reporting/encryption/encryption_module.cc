@@ -50,7 +50,7 @@ EncryptionModule::EncryptionModule(base::TimeDelta renew_encryption_key_period)
   static_assert(std::is_same<PublicKeyId, Encryptor::PublicKeyId>::value,
                 "Public key id types must match");
   auto encryptor_result = Encryptor::Create();
-  CHECK(encryptor_result.has_value()) << encryptor_result.status();
+  CHECK(encryptor_result.has_value()) << encryptor_result.error();
   encryptor_ = std::move(encryptor_result.value());
 }
 
@@ -65,7 +65,7 @@ void EncryptionModule::EncryptRecordImpl(
          base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
          StatusOr<Encryptor::Handle*> handle_result) {
         if (!handle_result.has_value()) {
-          std::move(cb).Run(handle_result.status());
+          std::move(cb).Run(handle_result.error());
           return;
         }
         base::ThreadPool::PostTask(

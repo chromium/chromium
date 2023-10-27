@@ -167,7 +167,7 @@ void ProcessFileUpload(base::WeakPtr<FileUploadJob::Delegate> delegate,
                  StatusOr<FileUploadJob*> job_or_error) {
                 if (!job_or_error.has_value()) {
                   LOG(WARNING) << "Failed to locate/create upload job, status="
-                               << job_or_error.status();
+                               << job_or_error.error();
                   // Upload the event as is.
                   std::move(done_cb).Run(Status::StatusOK());
                   return;
@@ -586,7 +586,7 @@ void RecordHandlerImpl::ReportUploader::OnUploadComplete(
   scoped_reservation_.Reduce(0uL);
 
   if (!response.has_value()) {
-    HandleFailedUpload(response.status());
+    HandleFailedUpload(response.error());
     return;
   }
 
@@ -636,7 +636,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
       LOG(ERROR) << "Server responded with an invalid SequenceInformation "
                     "for lastSucceedUploadedRecord"
                  << "\n"
-                 << "error status = " << seq_info_result.status() << "\n"
+                 << "error status = " << seq_info_result.error() << "\n"
                  << "last_succeed_uploaded_record = "
                  << *last_succeed_uploaded_record;
     }
@@ -699,7 +699,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
       // TODO(b/289117140): Call the callback when it is in place.
     } else {
       base::UmaHistogramEnumeration("Browser.ERP.ConfigFileParsingError",
-                                    seq_info_result.status().code(),
+                                    seq_info_result.error().code(),
                                     error::Code::MAX_VALUE);
     }
   }

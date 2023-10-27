@@ -152,7 +152,7 @@ void ReportQueueProvider::CreateNewQueue(
                   // If configuration hit an error, we abort and
                   // report this through the callback
                   if (!config_result.has_value()) {
-                    std::move(cb).Run(config_result.status());
+                    std::move(cb).Run(config_result.error());
                     return;
                   }
 

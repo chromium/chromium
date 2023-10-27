@@ -50,7 +50,7 @@ void Encryptor::Handle::ProduceEncryptedRecord(
 
   // Validate and accept asymmetric peer key.
   if (!asymmetric_key_result.has_value()) {
-    std::move(cb).Run(asymmetric_key_result.status());
+    std::move(cb).Run(asymmetric_key_result.error());
     return;
   }
   const auto& asymmetric_key = asymmetric_key_result.value();

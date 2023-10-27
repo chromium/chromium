@@ -77,7 +77,7 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
   // Generate record data.
   const auto record_result = std::move(record_producer).Run();
   if (!record_result.has_value()) {
-    std::move(callback).Run(record_result.status());
+    std::move(callback).Run(record_result.error());
     return;
   }
 
@@ -399,7 +399,7 @@ void SpeculativeReportQueueImpl::AttachActualQueue(
   if (!status_or_actual_queue.has_value()) {
     // Failed to create actual queue.
     // Flush all pending records with this status.
-    PurgePendingProducers(status_or_actual_queue.status());
+    PurgePendingProducers(status_or_actual_queue.error());
     return;
   }
   // Actual report queue succeeded, store it (never to change later).

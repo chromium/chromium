@@ -164,7 +164,7 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
         storage_queue_create_event.result();
     ASSERT_TRUE(storage_queue_result.has_value())
         << "Failed to create StorageQueue, error="
-        << storage_queue_result.status();
+        << storage_queue_result.error();
     storage_queue_ = std::move(storage_queue_result.value());
   }
 

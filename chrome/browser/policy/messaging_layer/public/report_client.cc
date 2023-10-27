@@ -121,7 +121,7 @@ void ReportingClient::ConfigureReportQueue(
             // Trigger completion callback with error if there was an error
             // retrieving DM token.
             if (!dm_token_result.has_value()) {
-              std::move(completion_cb).Run(dm_token_result.status());
+              std::move(completion_cb).Run(dm_token_result.error());
               return;
             }
 
