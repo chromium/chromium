@@ -22,7 +22,7 @@ class SystemTrustStore;
 struct CertInput;
 struct CertInputWithTrustSetting;
 
-// Verifies |target_der_cert| using CertPathBuilder. Returns true if the
+// Verifies |target_der_cert| using bssl::CertPathBuilder. Returns true if the
 // certificate verified successfully, false if it failed to verify or there was
 // some other error.
 // Informational messages will be printed to stdout/stderr as appropriate.

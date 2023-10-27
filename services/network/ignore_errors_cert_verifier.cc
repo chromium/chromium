@@ -105,9 +105,9 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
         [](const SHA256HashValue& v) { return HashValue(v); });
     if (!params.ocsp_response().empty()) {
       verify_result->ocsp_result.response_status =
-          net::OCSPVerifyResult::PROVIDED;
+          bssl::OCSPVerifyResult::PROVIDED;
       verify_result->ocsp_result.revocation_status =
-          net::OCSPRevocationStatus::GOOD;
+          bssl::OCSPRevocationStatus::GOOD;
     }
     return net::OK;
   }

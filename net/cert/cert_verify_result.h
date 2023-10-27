@@ -11,8 +11,8 @@
 #include "net/base/net_export.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/ocsp_verify_result.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "third_party/boringssl/src/pki/ocsp_verify_result.h"
 
 namespace ct {
 enum class CTPolicyCompliance;
@@ -83,7 +83,7 @@ class NET_EXPORT CertVerifyResult {
   bool is_issued_by_additional_trust_anchor;
 
   // Verification of stapled OCSP response, if present.
-  OCSPVerifyResult ocsp_result;
+  bssl::OCSPVerifyResult ocsp_result;
 
   // `scts` contains the result of verifying any provided or embedded SCTs for
   // this certificate against the set of known logs. Consumers should not simply

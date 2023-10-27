@@ -20,21 +20,21 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
-#include "net/cert/pki/cert_issuer_source_static.h"
-#include "net/cert/pki/certificate_policies.h"
-#include "net/cert/pki/common_cert_errors.h"
-#include "net/cert/pki/parse_certificate.h"
-#include "net/cert/pki/parse_name.h"
-#include "net/cert/pki/parsed_certificate.h"
-#include "net/cert/pki/path_builder.h"
-#include "net/cert/pki/simple_path_builder_delegate.h"
-#include "net/cert/pki/trust_store_in_memory.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "net/der/input.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/pki/cert_issuer_source_static.h"
+#include "third_party/boringssl/src/pki/certificate_policies.h"
+#include "third_party/boringssl/src/pki/common_cert_errors.h"
+#include "third_party/boringssl/src/pki/input.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
+#include "third_party/boringssl/src/pki/parse_name.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/path_builder.h"
+#include "third_party/boringssl/src/pki/simple_path_builder_delegate.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 // Used specifically when CAST_ALLOW_DEVELOPER_CERTIFICATE is true:
 #include "base/command_line.h"
@@ -66,7 +66,7 @@ namespace {
 
 class CastTrustStore {
  public:
-  using AccessCallback = base::OnceCallback<void(net::TrustStore*)>;
+  using AccessCallback = base::OnceCallback<void(bssl::TrustStore*)>;
 
   CastTrustStore(const CastTrustStore&) = delete;
   CastTrustStore& operator=(const CastTrustStore&) = delete;
@@ -127,9 +127,9 @@ class CastTrustStore {
   // storage.
   template <size_t N>
   void AddAnchor(const uint8_t (&data)[N]) {
-    net::CertErrors errors;
-    std::shared_ptr<const net::ParsedCertificate> cert =
-        net::ParsedCertificate::Create(
+    bssl::CertErrors errors;
+    std::shared_ptr<const bssl::ParsedCertificate> cert =
+        bssl::ParsedCertificate::Create(
             net::x509_util::CreateCryptoBufferFromStaticDataUnsafe(data), {},
             &errors);
     CHECK(cert) << errors.ToDebugString();
@@ -139,15 +139,15 @@ class CastTrustStore {
   }
 
   base::Lock lock_;
-  net::TrustStoreInMemory store_ GUARDED_BY(lock_);
+  bssl::TrustStoreInMemory store_ GUARDED_BY(lock_);
 };
 
 // Returns the OID for the Audio-Only Cast policy
 // (1.3.6.1.4.1.11129.2.5.2) in DER form.
-net::der::Input AudioOnlyPolicyOid() {
+bssl::der::Input AudioOnlyPolicyOid() {
   static const uint8_t kAudioOnlyPolicy[] = {0x2B, 0x06, 0x01, 0x04, 0x01,
                                              0xD6, 0x79, 0x02, 0x05, 0x02};
-  return net::der::Input(kAudioOnlyPolicy);
+  return bssl::der::Input(kAudioOnlyPolicy);
 }
 
 // Cast certificates rely on RSASSA-PKCS#1 v1.5 with SHA-1 for signatures.
@@ -159,7 +159,7 @@ net::der::Input AudioOnlyPolicyOid() {
 //   * Hashes: All SHA hashes including SHA-1 (despite being known weak).
 //
 // It will also require RSA keys have a modulus at least 2048-bits long.
-class CastPathBuilderDelegate : public net::SimplePathBuilderDelegate {
+class CastPathBuilderDelegate : public bssl::SimplePathBuilderDelegate {
  public:
   CastPathBuilderDelegate()
       : SimplePathBuilderDelegate(
@@ -210,15 +210,16 @@ class CertVerificationContextImpl : public CertVerificationContext {
 // Helper that extracts the Common Name from a certificate's subject field. On
 // success |common_name| contains the text for the attribute (UTF-8, but for
 // Cast device certs it should be ASCII).
-bool GetCommonNameFromSubject(const net::der::Input& subject_tlv,
+bool GetCommonNameFromSubject(const bssl::der::Input& subject_tlv,
                               std::string* common_name) {
-  net::RDNSequence rdn_sequence;
-  if (!net::ParseName(subject_tlv, &rdn_sequence))
+  bssl::RDNSequence rdn_sequence;
+  if (!bssl::ParseName(subject_tlv, &rdn_sequence)) {
     return false;
+  }
 
-  for (const net::RelativeDistinguishedName& rdn : rdn_sequence) {
+  for (const bssl::RelativeDistinguishedName& rdn : rdn_sequence) {
     for (const auto& atv : rdn) {
-      if (atv.type == net::der::Input(net::kTypeCommonNameOid)) {
+      if (atv.type == bssl::der::Input(bssl::kTypeCommonNameOid)) {
         return atv.ValueAsString(common_name);
       }
     }
@@ -236,7 +237,7 @@ bool GetCommonNameFromSubject(const net::der::Input& subject_tlv,
 // See the unit-tests VerifyCastDeviceCertTest.Policies* for some
 // concrete examples of how this works.
 void DetermineDeviceCertificatePolicy(
-    const net::CertPathBuilderResultPath* result_path,
+    const bssl::CertPathBuilderResultPath* result_path,
     CastDeviceCertPolicy* policy) {
   // Iterate over all the certificates, including the root certificate. If any
   // certificate contains the audio-only policy, the whole chain is considered
@@ -249,7 +250,7 @@ void DetermineDeviceCertificatePolicy(
   bool audio_only = false;
   for (const auto& cert : result_path->certs) {
     if (cert->has_policy_oids()) {
-      const std::vector<net::der::Input>& policies = cert->policy_oids();
+      const std::vector<bssl::der::Input>& policies = cert->policy_oids();
       if (base::Contains(policies, AudioOnlyPolicyOid())) {
         audio_only = true;
         break;
@@ -265,15 +266,16 @@ void DetermineDeviceCertificatePolicy(
 //
 //   * The Key Usage must include Digital Signature
 [[nodiscard]] bool CheckTargetCertificate(
-    const net::ParsedCertificate* cert,
+    const bssl::ParsedCertificate* cert,
     std::unique_ptr<CertVerificationContext>* context) {
   // Get the Key Usage extension.
   if (!cert->has_key_usage())
     return false;
 
   // Ensure Key Usage contains digitalSignature.
-  if (!cert->key_usage().AssertsBit(net::KEY_USAGE_BIT_DIGITAL_SIGNATURE))
+  if (!cert->key_usage().AssertsBit(bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
     return false;
+  }
 
   // Get the Common Name for the certificate.
   std::string common_name;
@@ -294,8 +296,8 @@ void DetermineDeviceCertificatePolicy(
 }
 
 // Returns the parsing options used for Cast certificates.
-net::ParseCertificateOptions GetCertParsingOptions() {
-  net::ParseCertificateOptions options;
+bssl::ParseCertificateOptions GetCertParsingOptions() {
+  bssl::ParseCertificateOptions options;
 
   // Some cast intermediate certificates contain serial numbers that are
   // 21 octets long, and might also not use valid DER encoding for an
@@ -311,14 +313,14 @@ net::ParseCertificateOptions GetCertParsingOptions() {
 
 // Returns the CastCertError for the failed path building.
 // This function must only be called if path building failed.
-CastCertError MapToCastError(const net::CertPathBuilder::Result& result) {
+CastCertError MapToCastError(const bssl::CertPathBuilder::Result& result) {
   DCHECK(!result.HasValidPath());
   if (result.paths.empty())
     return CastCertError::ERR_CERTS_VERIFY_GENERIC;
-  const net::CertPathErrors& path_errors =
+  const bssl::CertPathErrors& path_errors =
       result.paths.at(result.best_result_index)->errors;
-  if (path_errors.ContainsError(net::cert_errors::kValidityFailedNotAfter) ||
-      path_errors.ContainsError(net::cert_errors::kValidityFailedNotBefore)) {
+  if (path_errors.ContainsError(bssl::cert_errors::kValidityFailedNotAfter) ||
+      path_errors.ContainsError(bssl::cert_errors::kValidityFailedNotBefore)) {
     return CastCertError::ERR_CERTS_DATE_INVALID;
   }
   return CastCertError::ERR_CERTS_VERIFY_GENERIC;
@@ -340,7 +342,7 @@ CastCertError VerifyDeviceCert(
          std::unique_ptr<CertVerificationContext>* context,
          CastDeviceCertPolicy* policy, const CastCRL* crl,
          const CastCRL* fallback_crl, CRLPolicy crl_policy,
-         CastCertError* result, net::TrustStore* store) {
+         CastCertError* result, bssl::TrustStore* store) {
         *result = VerifyDeviceCertUsingCustomTrustStore(
             certs, time, context, policy, crl, fallback_crl, crl_policy, store);
       },
@@ -357,7 +359,7 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
     const CastCRL* crl,
     const CastCRL* fallback_crl,
     CRLPolicy crl_policy,
-    net::TrustStore* trust_store) {
+    bssl::TrustStore* trust_store) {
   if (!trust_store)
     return VerifyDeviceCert(certs, time, context, policy, crl, fallback_crl,
                             crl_policy);
@@ -369,12 +371,12 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
   if (!crl && crl_policy == CRLPolicy::CRL_REQUIRED)
     return CastCertError::ERR_CRL_INVALID;
 
-  net::CertErrors errors;
-  std::shared_ptr<const net::ParsedCertificate> target_cert;
-  net::CertIssuerSourceStatic intermediate_cert_issuer_source;
+  bssl::CertErrors errors;
+  std::shared_ptr<const bssl::ParsedCertificate> target_cert;
+  bssl::CertIssuerSourceStatic intermediate_cert_issuer_source;
   for (size_t i = 0; i < certs.size(); ++i) {
-    std::shared_ptr<const net::ParsedCertificate> cert(
-        net::ParsedCertificate::Create(
+    std::shared_ptr<const bssl::ParsedCertificate> cert(
+        bssl::ParsedCertificate::Create(
             net::x509_util::CreateCryptoBuffer(certs[i]),
             GetCertParsingOptions(), &errors));
     if (!cert)
@@ -390,18 +392,18 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
 
   // Do path building and RFC 5280 compatible certificate verification using the
   // two Cast trust anchors and Cast signature policy.
-  net::der::GeneralizedTime verification_time;
+  bssl::der::GeneralizedTime verification_time;
   if (!net::EncodeTimeAsGeneralizedTime(time, &verification_time)) {
     return CastCertError::ERR_UNEXPECTED;
   }
-  net::CertPathBuilder path_builder(
+  bssl::CertPathBuilder path_builder(
       target_cert, trust_store, &path_builder_delegate, verification_time,
-      net::KeyPurpose::CLIENT_AUTH, net::InitialExplicitPolicy::kFalse,
-      {net::der::Input(net::kAnyPolicyOid)},
-      net::InitialPolicyMappingInhibit::kFalse,
-      net::InitialAnyPolicyInhibit::kFalse);
+      bssl::KeyPurpose::CLIENT_AUTH, bssl::InitialExplicitPolicy::kFalse,
+      {bssl::der::Input(bssl::kAnyPolicyOid)},
+      bssl::InitialPolicyMappingInhibit::kFalse,
+      bssl::InitialAnyPolicyInhibit::kFalse);
   path_builder.AddCertIssuerSource(&intermediate_cert_issuer_source);
-  net::CertPathBuilder::Result result = path_builder.Run();
+  bssl::CertPathBuilder::Result result = path_builder.Run();
   if (!result.HasValidPath())
     return MapToCastError(result);
 

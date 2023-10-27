@@ -12,15 +12,15 @@
 #include "base/synchronization/lock.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_database.h"
-#include "net/cert/pki/trust_store.h"
-#include "net/cert/pki/trust_store_in_memory.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 namespace net {
 
-// TrustStoreAndroid is an implementation of TrustStore which uses the Android
-// cert systems to find user-added trust anchors for path building. It ignores
-// the Android builtin trust anchors.
-class NET_EXPORT TrustStoreAndroid : public TrustStore,
+// TrustStoreAndroid is an implementation of bssl::TrustStore which uses the
+// Android cert systems to find user-added trust anchors for path building. It
+// ignores the Android builtin trust anchors.
+class NET_EXPORT TrustStoreAndroid : public bssl::TrustStore,
                                      public CertDatabase::Observer {
  public:
   TrustStoreAndroid();
@@ -31,10 +31,10 @@ class NET_EXPORT TrustStoreAndroid : public TrustStore,
   // Load user settings from Android.
   void Initialize();
 
-  // TrustStore:
-  void SyncGetIssuersOf(const ParsedCertificate* cert,
-                        ParsedCertificateList* issuers) override;
-  CertificateTrust GetTrust(const ParsedCertificate* cert) override;
+  // bssl::TrustStore:
+  void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                        bssl::ParsedCertificateList* issuers) override;
+  bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
 
   // CertDatabase::Observer:
   void OnTrustStoreChanged() override;

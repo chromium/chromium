@@ -75,8 +75,8 @@ void SignedExchangeBrowserTestHelper::InstallMockCert(
   net::CertVerifyResult dummy_result;
   dummy_result.verified_cert = original_cert;
   dummy_result.cert_status = net::OK;
-  dummy_result.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
-  dummy_result.ocsp_result.revocation_status = net::OCSPRevocationStatus::GOOD;
+  dummy_result.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
+  dummy_result.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::GOOD;
   cert_verifier->AddResultForCertAndHost(original_cert, "test.example.org",
                                          dummy_result, net::OK);
 }

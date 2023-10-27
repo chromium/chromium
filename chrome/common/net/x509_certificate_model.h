@@ -11,10 +11,10 @@
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "net/cert/pki/parse_certificate.h"
-#include "net/cert/pki/parse_name.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
+#include "third_party/boringssl/src/pki/parse_name.h"
 
 // This namespace defines a set of functions to be used in UI-related bits of
 // X509 certificates.
@@ -111,29 +111,29 @@ class X509CertificateModel {
   std::string ProcessRawBitsSignatureWrap() const;
 
  private:
-  bool ParseExtensions(const net::der::Input& extensions_tlv);
+  bool ParseExtensions(const bssl::der::Input& extensions_tlv);
   std::string ProcessExtension(base::StringPiece critical_label,
                                base::StringPiece non_critical_label,
-                               const net::ParsedExtension& extension) const;
-  absl::optional<std::string> ProcessExtensionData(
-      const net::ParsedExtension& extension) const;
+                               const bssl::ParsedExtension& extension) const;
+  std::optional<std::string> ProcessExtensionData(
+      const bssl::ParsedExtension& extension) const;
 
   // Externally provided "nickname" for the cert.
   std::string nickname_;
 
   bool parsed_successfully_ = false;
   bssl::UniquePtr<CRYPTO_BUFFER> cert_data_;
-  net::der::Input tbs_certificate_tlv_;
-  net::der::Input signature_algorithm_tlv_;
-  net::der::BitString signature_value_;
-  net::ParsedTbsCertificate tbs_;
+  bssl::der::Input tbs_certificate_tlv_;
+  bssl::der::Input signature_algorithm_tlv_;
+  bssl::der::BitString signature_value_;
+  bssl::ParsedTbsCertificate tbs_;
 
-  net::RDNSequence subject_rdns_;
-  net::RDNSequence issuer_rdns_;
-  std::vector<net::ParsedExtension> extensions_;
+  bssl::RDNSequence subject_rdns_;
+  bssl::RDNSequence issuer_rdns_;
+  std::vector<bssl::ParsedExtension> extensions_;
 
   // Parsed SubjectAltName extension.
-  std::unique_ptr<net::GeneralNames> subject_alt_names_;
+  std::unique_ptr<bssl::GeneralNames> subject_alt_names_;
 };
 
 // For host values, if they contain IDN Punycode-encoded A-labels, this will

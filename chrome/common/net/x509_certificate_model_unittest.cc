@@ -4,12 +4,12 @@
 
 #include "chrome/common/net/x509_certificate_model.h"
 
-#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
 
 class X509CertificateModel : public testing::TestWithParam<std::string> {};
 
@@ -334,7 +334,7 @@ TEST_P(X509CertificateModel, CertificatePoliciesInvalidUtf8UserNotice) {
       0x30, 0x11, 0x0c, 0x0f, 0x45, 0x78, 0x70, 0x6c, 0x69, 0x63, 0x69,
       0x74, 0x20, 0xa1, 0x20, 0x54, 0x65, 0x78, 0x74};
   builder->SetExtension(
-      net::der::Input(net::kCertificatePoliciesOid),
+      bssl::der::Input(bssl::kCertificatePoliciesOid),
       std::string(kExtension, kExtension + sizeof(kExtension)));
 
   x509_certificate_model::X509CertificateModel model(
@@ -518,7 +518,7 @@ TEST_P(X509CertificateModel, CrlDpCrlIssuerAndRelativeName) {
       0x63, 0x74, 0x43, 0x52, 0x4c, 0x20, 0x43, 0x41, 0x33, 0x20, 0x63, 0x52,
       0x4c, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72};
 
-  builder->SetExtension(net::der::Input(net::kCrlDistributionPointsOid),
+  builder->SetExtension(bssl::der::Input(bssl::kCrlDistributionPointsOid),
                         std::string(kCrldp, kCrldp + sizeof(kCrldp)));
 
   x509_certificate_model::X509CertificateModel model(
@@ -587,7 +587,7 @@ TEST_P(X509CertificateModel, CrlDpReasons) {
       0x0b, 0x06, 0x03, 0x55, 0x04, 0x03, 0x13, 0x04, 0x43, 0x52, 0x4c,
       0x32, 0x81, 0x03, 0x07, 0x9f, 0x80};
 
-  builder->SetExtension(net::der::Input(net::kCrlDistributionPointsOid),
+  builder->SetExtension(bssl::der::Input(bssl::kCrlDistributionPointsOid),
                         std::string(kCrldp, kCrldp + sizeof(kCrldp)));
 
   x509_certificate_model::X509CertificateModel model(
@@ -621,7 +621,7 @@ TEST_P(X509CertificateModel, AuthorityInfoAccessNonstandardOidAndLocationType) {
   const uint8_t kAIA[] = {0x30, 0x18, 0x30, 0x16, 0x06, 0x03, 0x2c, 0x09, 0x14,
                           0x81, 0x0f, 0x66, 0x6f, 0x6f, 0x40, 0x65, 0x78, 0x61,
                           0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d};
-  builder->SetExtension(net::der::Input(net::kAuthorityInfoAccessOid),
+  builder->SetExtension(bssl::der::Input(bssl::kAuthorityInfoAccessOid),
                         std::string(kAIA, kAIA + sizeof(kAIA)));
 
   x509_certificate_model::X509CertificateModel model(

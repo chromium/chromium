@@ -13,13 +13,13 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "net/cert/pem.h"
-#include "net/cert/pki/cert_errors.h"
-#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/x509_certificate.h"
-#include "net/der/input.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/input.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
+#include "third_party/boringssl/src/pki/pem.h"
 
 namespace network {
 
@@ -44,7 +44,7 @@ class NSSTempCertsCacheChromeOSTest : public testing::Test {
   void CheckIsCertificateAvailable(const base::FilePath& pem_cert_file,
                                    bool* out_available) {
     std::string cert_contents_buffer;
-    net::der::Input subject;
+    bssl::der::Input subject;
     ASSERT_NO_FATAL_FAILURE(GetCertificateSubjectDN(
         pem_cert_file, &cert_contents_buffer, &subject));
 
@@ -67,30 +67,30 @@ class NSSTempCertsCacheChromeOSTest : public testing::Test {
   // failures after it returns.
   void GetCertificateSubjectDN(const base::FilePath& pem_cert_file,
                                std::string* cert_contents_buffer,
-                               net::der::Input* out_subject) {
+                               bssl::der::Input* out_subject) {
     std::string file_data;
     ASSERT_TRUE(base::ReadFileToString(pem_cert_file, &file_data));
 
     std::vector<std::string> pem_headers;
     pem_headers.push_back("CERTIFICATE");
-    net::PEMTokenizer pem_tokenizer(file_data, pem_headers);
+    bssl::PEMTokenizer pem_tokenizer(file_data, pem_headers);
     ASSERT_TRUE(pem_tokenizer.GetNext());
     *cert_contents_buffer = pem_tokenizer.data();
 
     // Parsing the certificate.
-    net::der::Input tbs_certificate_tlv;
-    net::der::Input signature_algorithm_tlv;
-    net::der::BitString signature_value;
-    net::CertErrors errors;
-    ASSERT_TRUE(net::ParseCertificate(
-        net::der::Input(*cert_contents_buffer), &tbs_certificate_tlv,
+    bssl::der::Input tbs_certificate_tlv;
+    bssl::der::Input signature_algorithm_tlv;
+    bssl::der::BitString signature_value;
+    bssl::CertErrors errors;
+    ASSERT_TRUE(bssl::ParseCertificate(
+        bssl::der::Input(*cert_contents_buffer), &tbs_certificate_tlv,
         &signature_algorithm_tlv, &signature_value, &errors));
 
-    net::ParsedTbsCertificate tbs;
-    net::ParseCertificateOptions options;
+    bssl::ParsedTbsCertificate tbs;
+    bssl::ParseCertificateOptions options;
     options.allow_invalid_serial_numbers = true;
     ASSERT_TRUE(
-        net::ParseTbsCertificate(tbs_certificate_tlv, options, &tbs, nullptr));
+        bssl::ParseTbsCertificate(tbs_certificate_tlv, options, &tbs, nullptr));
     *out_subject = tbs.subject_tlv;
   }
 };

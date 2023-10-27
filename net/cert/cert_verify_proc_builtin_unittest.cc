@@ -21,9 +21,6 @@
 #include "net/cert/crl_set.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/internal/system_trust_store.h"
-#include "net/cert/pki/trust_store.h"
-#include "net/cert/pki/trust_store_collection.h"
-#include "net/cert/pki/trust_store_in_memory.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/http/transport_security_state.h"
@@ -41,6 +38,9 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
+#include "third_party/boringssl/src/pki/trust_store_collection.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -116,13 +116,15 @@ int VerifyOnWorkerThread(const scoped_refptr<CertVerifyProc>& verify_proc,
 
 class MockSystemTrustStore : public SystemTrustStore {
  public:
-  TrustStore* GetTrustStore() override { return &trust_store_; }
+  bssl::TrustStore* GetTrustStore() override { return &trust_store_; }
 
-  bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
+  bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const override {
     return mock_is_known_root_;
   }
 
-  void AddTrustStore(TrustStore* store) { trust_store_.AddTrustStore(store); }
+  void AddTrustStore(bssl::TrustStore* store) {
+    trust_store_.AddTrustStore(store);
+  }
 
   void SetMockIsKnownRoot(bool is_known_root) {
     mock_is_known_root_ = is_known_root;
@@ -133,18 +135,19 @@ class MockSystemTrustStore : public SystemTrustStore {
 #endif
 
  private:
-  TrustStoreCollection trust_store_;
+  bssl::TrustStoreCollection trust_store_;
   bool mock_is_known_root_ = false;
 };
 
-class BlockingTrustStore : public TrustStore {
+class BlockingTrustStore : public bssl::TrustStore {
  public:
-  CertificateTrust GetTrust(const ParsedCertificate* cert) override {
+  bssl::CertificateTrust GetTrust(
+      const bssl::ParsedCertificate* cert) override {
     return backing_trust_store_.GetTrust(cert);
   }
 
-  void SyncGetIssuersOf(const ParsedCertificate* cert,
-                        ParsedCertificateList* issuers) override {
+  void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                        bssl::ParsedCertificateList* issuers) override {
     sync_get_issuer_started_event_.Signal();
     sync_get_issuer_ok_to_finish_event_.Wait();
 
@@ -153,7 +156,7 @@ class BlockingTrustStore : public TrustStore {
 
   base::WaitableEvent sync_get_issuer_started_event_;
   base::WaitableEvent sync_get_issuer_ok_to_finish_event_;
-  TrustStoreInMemory backing_trust_store_;
+  bssl::TrustStoreInMemory backing_trust_store_;
 };
 
 }  // namespace
@@ -196,11 +199,11 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   // Creates a CRL issued and signed by |crl_issuer|, marking |revoked_serials|
   // as revoked, and registers it to be served by the test server.
   // Returns the full URL to retrieve the CRL from the test server.
-  GURL CreateAndServeCrl(
-      EmbeddedTestServer* test_server,
-      CertBuilder* crl_issuer,
-      const std::vector<uint64_t>& revoked_serials,
-      absl::optional<SignatureAlgorithm> signature_algorithm = absl::nullopt) {
+  GURL CreateAndServeCrl(EmbeddedTestServer* test_server,
+                         CertBuilder* crl_issuer,
+                         const std::vector<uint64_t>& revoked_serials,
+                         absl::optional<bssl::SignatureAlgorithm>
+                             signature_algorithm = absl::nullopt) {
     std::string crl = BuildCrl(crl_issuer->GetSubject(), crl_issuer->GetKey(),
                                revoked_serials, signature_algorithm);
     std::string crl_path = MakeRandomPath(".crl");
@@ -211,7 +214,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     return test_server->GetURL(crl_path);
   }
 
-  void AddTrustStore(TrustStore* store) {
+  void AddTrustStore(bssl::TrustStore* store) {
     mock_system_trust_store_->AddTrustStore(store);
   }
 
@@ -575,8 +578,8 @@ TEST_F(CertVerifyProcBuiltinTest, DeadlineExceededDuringSyncGetIssuers) {
   BlockingTrustStore trust_store;
   AddTrustStore(&trust_store);
 
-  auto intermediate_parsed_cert =
-      ParsedCertificate::Create(intermediate->DupCertBuffer(), {}, nullptr);
+  auto intermediate_parsed_cert = bssl::ParsedCertificate::Create(
+      intermediate->DupCertBuffer(), {}, nullptr);
   ASSERT_TRUE(intermediate_parsed_cert);
   trust_store.backing_trust_store_.AddCertificateWithUnspecifiedTrust(
       intermediate_parsed_cert);
@@ -633,8 +636,8 @@ std::string UnknownSignatureAlgorithmTLV() {
 }
 
 // Returns a TLV to use as an invalid signature algorithm when building a cert.
-// This is a SEQUENCE so that it will pass the ParseCertificate code
-// and fail inside ParseSignatureAlgorithm.
+// This is a SEQUENCE so that it will pass the bssl::ParseCertificate code
+// and fail inside bssl::ParseSignatureAlgorithm.
 // SEQUENCE {
 //   INTEGER { 42 }
 // }

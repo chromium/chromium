@@ -157,8 +157,8 @@ TEST(IPCMessageTest, SSLInfo) {
 
   in.ct_policy_compliance =
       net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
-  in.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
-  in.ocsp_result.revocation_status = net::OCSPRevocationStatus::REVOKED;
+  in.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
+  in.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::REVOKED;
 
   // Now serialize and deserialize.
   IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);

@@ -17,10 +17,10 @@
 #include "components/media_router/common/providers/cast/channel/cast_channel_metrics.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "crypto/random.h"
-#include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "net/der/parse_values.h"
+#include "third_party/boringssl/src/pki/parse_values.h"
+#include "third_party/boringssl/src/pki/signature_algorithm.h"
 
 namespace cast_channel {
 
@@ -408,8 +408,8 @@ AuthResult AuthenticateChallengeReply(const CastMessage& challenge_reply,
 AuthResult VerifyCredentialsImpl(const AuthResponse& response,
                                  const std::string& signature_input,
                                  const cast_crypto::CRLPolicy& crl_policy,
-                                 net::TrustStore* cast_trust_store,
-                                 net::TrustStore* crl_trust_store,
+                                 bssl::TrustStore* cast_trust_store,
+                                 bssl::TrustStore* crl_trust_store,
                                  const base::Time& verification_time) {
   // Verify the certificate
   std::unique_ptr<cast_crypto::CertVerificationContext> verification_context;
@@ -528,8 +528,8 @@ AuthResult VerifyCredentials(const AuthResponse& response,
 AuthResult VerifyCredentialsForTest(const AuthResponse& response,
                                     const std::string& signature_input,
                                     const cast_crypto::CRLPolicy& crl_policy,
-                                    net::TrustStore* cast_trust_store,
-                                    net::TrustStore* crl_trust_store,
+                                    bssl::TrustStore* cast_trust_store,
+                                    bssl::TrustStore* crl_trust_store,
                                     const base::Time& verification_time) {
   return VerifyCredentialsImpl(response, signature_input, crl_policy,
                                cast_trust_store, crl_trust_store,

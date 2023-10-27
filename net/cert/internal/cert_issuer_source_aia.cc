@@ -8,9 +8,9 @@
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "net/cert/cert_net_fetcher.h"
-#include "net/cert/pem.h"
-#include "net/cert/pki/cert_errors.h"
 #include "net/cert/x509_util.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/pem.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -23,9 +23,9 @@ const int kMaxResponseBytes = 65536;
 const int kMaxFetchesPerCert = 5;
 
 bool ParseCertFromDer(base::span<const uint8_t> data,
-                      ParsedCertificateList* results) {
-  CertErrors errors;
-  if (!ParsedCertificate::CreateAndAddToVector(
+                      bssl::ParsedCertificateList* results) {
+  bssl::CertErrors errors;
+  if (!bssl::ParsedCertificate::CreateAndAddToVector(
           x509_util::CreateCryptoBuffer(data),
           x509_util::DefaultParseCertificateOptions(), results, &errors)) {
     // TODO(crbug.com/634443): propagate error info.
@@ -41,7 +41,7 @@ bool ParseCertFromDer(base::span<const uint8_t> data,
 }
 
 bool ParseCertsFromCms(base::span<const uint8_t> data,
-                       ParsedCertificateList* results) {
+                       bssl::ParsedCertificateList* results) {
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_buffers;
   // A "certs-only CMS message" is a PKCS#7 SignedData structure with no signed
   // inner content. See RFC 3851 section 3.2.2 and RFC 2315 section 9.1.
@@ -53,8 +53,8 @@ bool ParseCertsFromCms(base::span<const uint8_t> data,
   }
   bool any_succeeded = false;
   for (auto& cert_buffer : cert_buffers) {
-    CertErrors errors;
-    if (!ParsedCertificate::CreateAndAddToVector(
+    bssl::CertErrors errors;
+    if (!bssl::ParsedCertificate::CreateAndAddToVector(
             std::move(cert_buffer), x509_util::DefaultParseCertificateOptions(),
             results, &errors)) {
       // TODO(crbug.com/634443): propagate error info.
@@ -69,10 +69,10 @@ bool ParseCertsFromCms(base::span<const uint8_t> data,
 
 bool ParseCertFromPem(const uint8_t* data,
                       size_t length,
-                      ParsedCertificateList* results) {
+                      bssl::ParsedCertificateList* results) {
   base::StringPiece data_strpiece(reinterpret_cast<const char*>(data), length);
 
-  PEMTokenizer pem_tokenizer(data_strpiece, {"CERTIFICATE"});
+  bssl::PEMTokenizer pem_tokenizer(data_strpiece, {"CERTIFICATE"});
   if (!pem_tokenizer.GetNext())
     return false;
 
@@ -80,7 +80,7 @@ bool ParseCertFromPem(const uint8_t* data,
                           results);
 }
 
-class AiaRequest : public CertIssuerSource::Request {
+class AiaRequest : public bssl::CertIssuerSource::Request {
  public:
   AiaRequest() = default;
 
@@ -89,15 +89,15 @@ class AiaRequest : public CertIssuerSource::Request {
 
   ~AiaRequest() override;
 
-  // CertIssuerSource::Request implementation.
-  void GetNext(ParsedCertificateList* issuers) override;
+  // bssl::CertIssuerSource::Request implementation.
+  void GetNext(bssl::ParsedCertificateList* issuers) override;
 
   void AddCertFetcherRequest(
       std::unique_ptr<CertNetFetcher::Request> cert_fetcher_request);
 
   bool AddCompletedFetchToResults(Error error,
                                   std::vector<uint8_t> fetched_bytes,
-                                  ParsedCertificateList* results);
+                                  bssl::ParsedCertificateList* results);
 
  private:
   std::vector<std::unique_ptr<CertNetFetcher::Request>> cert_fetcher_requests_;
@@ -106,7 +106,7 @@ class AiaRequest : public CertIssuerSource::Request {
 
 AiaRequest::~AiaRequest() = default;
 
-void AiaRequest::GetNext(ParsedCertificateList* out_certs) {
+void AiaRequest::GetNext(bssl::ParsedCertificateList* out_certs) {
   // TODO(eroman): Rather than blocking in FIFO order, select the one that
   // completes first.
   while (current_request_ < cert_fetcher_requests_.size()) {
@@ -127,9 +127,10 @@ void AiaRequest::AddCertFetcherRequest(
   cert_fetcher_requests_.push_back(std::move(cert_fetcher_request));
 }
 
-bool AiaRequest::AddCompletedFetchToResults(Error error,
-                                            std::vector<uint8_t> fetched_bytes,
-                                            ParsedCertificateList* results) {
+bool AiaRequest::AddCompletedFetchToResults(
+    Error error,
+    std::vector<uint8_t> fetched_bytes,
+    bssl::ParsedCertificateList* results) {
   if (error != OK) {
     // TODO(mattm): propagate error info.
     LOG(ERROR) << "AiaRequest::OnFetchCompleted got error " << error;
@@ -157,12 +158,13 @@ CertIssuerSourceAia::CertIssuerSourceAia(
 
 CertIssuerSourceAia::~CertIssuerSourceAia() = default;
 
-void CertIssuerSourceAia::SyncGetIssuersOf(const ParsedCertificate* cert,
-                                           ParsedCertificateList* issuers) {
+void CertIssuerSourceAia::SyncGetIssuersOf(
+    const bssl::ParsedCertificate* cert,
+    bssl::ParsedCertificateList* issuers) {
   // CertIssuerSourceAia never returns synchronous results.
 }
 
-void CertIssuerSourceAia::AsyncGetIssuersOf(const ParsedCertificate* cert,
+void CertIssuerSourceAia::AsyncGetIssuersOf(const bssl::ParsedCertificate* cert,
                                             std::unique_ptr<Request>* out_req) {
   out_req->reset();
 

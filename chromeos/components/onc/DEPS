@@ -8,6 +8,7 @@ include_rules = [
   "+crypto",
   "+net",
   "+testing",
+  "+third_party/boringssl/src/pki",
 
   # Abseil is allowed by default, but some features are banned. See
   # //styleguide/c++/c++-features.md.

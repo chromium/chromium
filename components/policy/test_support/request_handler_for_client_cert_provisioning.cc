@@ -61,7 +61,8 @@ std::string GeneratePEMEncodedCertificate(
   std::unique_ptr<net::CertBuilder> cert_builder =
       net::CertBuilder::FromSubjectPublicKeyInfo(spki_der,
                                                  &issuer_cert_builder);
-  cert_builder->SetSignatureAlgorithm(net::SignatureAlgorithm::kRsaPkcs1Sha256);
+  cert_builder->SetSignatureAlgorithm(
+      bssl::SignatureAlgorithm::kRsaPkcs1Sha256);
   cert_builder->SetValidity(base::Time::Now(),
                             base::Time::Now() + base::Days(30));
   cert_builder->SetSubjectCommonName(subject_common_name);

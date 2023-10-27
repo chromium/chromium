@@ -4,14 +4,14 @@
 
 #include "net/cert/internal/system_trust_store.h"
 
-#include "net/cert/pki/parsed_certificate.h"
-#include "net/cert/pki/trust_store.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "net/cert/internal/trust_store_chrome.h"
@@ -28,12 +28,13 @@ TEST(SystemTrustStoreChrome, SystemDistrustOverridesChromeTrust) {
       "test_store.certs", X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
   ASSERT_GE(certs.size(), 1u);
 
-  std::shared_ptr<const ParsedCertificate> root = ParsedCertificate::Create(
-      bssl::UpRef(certs[0]->cert_buffer()),
-      x509_util::DefaultParseCertificateOptions(), nullptr);
+  std::shared_ptr<const bssl::ParsedCertificate> root =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(certs[0]->cert_buffer()),
+          x509_util::DefaultParseCertificateOptions(), nullptr);
   ASSERT_TRUE(root);
 
-  auto test_system_trust_store = std::make_unique<TrustStoreInMemory>();
+  auto test_system_trust_store = std::make_unique<bssl::TrustStoreInMemory>();
   auto* test_system_trust_store_ptr = test_system_trust_store.get();
 
   std::unique_ptr<TrustStoreChrome> test_trust_store_chrome =
@@ -66,12 +67,13 @@ TEST(SystemTrustStoreChrome, SystemLeafTrustDoesNotOverrideChromeTrust) {
       "test_store.certs", X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
   ASSERT_GE(certs.size(), 1u);
 
-  std::shared_ptr<const ParsedCertificate> root = ParsedCertificate::Create(
-      bssl::UpRef(certs[0]->cert_buffer()),
-      x509_util::DefaultParseCertificateOptions(), nullptr);
+  std::shared_ptr<const bssl::ParsedCertificate> root =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(certs[0]->cert_buffer()),
+          x509_util::DefaultParseCertificateOptions(), nullptr);
   ASSERT_TRUE(root);
 
-  auto test_system_trust_store = std::make_unique<TrustStoreInMemory>();
+  auto test_system_trust_store = std::make_unique<bssl::TrustStoreInMemory>();
   auto* test_system_trust_store_ptr = test_system_trust_store.get();
 
   std::unique_ptr<TrustStoreChrome> test_trust_store_chrome =
@@ -93,7 +95,7 @@ TEST(SystemTrustStoreChrome, SystemLeafTrustDoesNotOverrideChromeTrust) {
   // Adding the certificate to the fake system store as a trusted leaf doesn't
   // matter, the trust in the chrome root store is still preferred.
   test_system_trust_store_ptr->AddCertificate(
-      root, CertificateTrust::ForTrustedLeaf());
+      root, bssl::CertificateTrust::ForTrustedLeaf());
   EXPECT_TRUE(system_trust_store_chrome->GetTrustStore()
                   ->GetTrust(root.get())
                   .IsTrustAnchor());

@@ -15,11 +15,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/nss_cert_database.h"
-#include "net/cert/pem.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util_nss.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/pki/pem.h"
 
 namespace arc {
 
@@ -175,7 +175,7 @@ TEST_F(CertManagerImplTest, ImportKeyAndCertTest) {
   EXPECT_TRUE(import_future.imported_slot_id().has_value());
 
   // Assert that the imported key and certificate have the same ID.
-  net::PEMTokenizer tokenizer(kUserCert, {kCertificatePEMHeader});
+  bssl::PEMTokenizer tokenizer(kUserCert, {kCertificatePEMHeader});
   EXPECT_TRUE(tokenizer.GetNext());
   std::vector<uint8_t> cert_der(tokenizer.data().begin(),
                                 tokenizer.data().end());

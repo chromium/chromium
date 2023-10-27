@@ -23,8 +23,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_info_source_list.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/pki/simple_path_builder_delegate.h"
-#include "net/cert/pki/trust_store.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
@@ -48,6 +46,8 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+#include "third_party/boringssl/src/pki/simple_path_builder_delegate.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "net/network_error_logging/network_error_logging_service.h"
@@ -184,19 +184,20 @@ base::Value::Dict GetNetConstants() {
   }
 
   {
-    static_assert(SimplePathBuilderDelegate::DigestPolicy::kMaxValue ==
-                      SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1,
-                  "Update with new flags");
+    static_assert(
+        bssl::SimplePathBuilderDelegate::DigestPolicy::kMaxValue ==
+            bssl::SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1,
+        "Update with new flags");
 
     constants_dict.Set(
         "certPathBuilderDigestPolicy",
         base::Value::Dict()
             .Set("kStrong",
                  static_cast<int>(
-                     SimplePathBuilderDelegate::DigestPolicy::kStrong))
+                     bssl::SimplePathBuilderDelegate::DigestPolicy::kStrong))
             .Set("kWeakAllowSha1",
-                 static_cast<int>(
-                     SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1)));
+                 static_cast<int>(bssl::SimplePathBuilderDelegate::
+                                      DigestPolicy::kWeakAllowSha1)));
   }
 
   // Add a dictionary with information about the relationship between load flag

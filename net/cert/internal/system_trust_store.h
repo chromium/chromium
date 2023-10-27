@@ -9,35 +9,34 @@
 
 #include "build/build_config.h"
 #include "net/base/net_export.h"
-#include "net/cert/pki/parsed_certificate.h"
 #include "net/net_buildflags.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
 
-class TrustStore;
-
-// The SystemTrustStore interface is used to encapsulate a TrustStore for the
-// current platform, with some extra bells and whistles. Implementations must be
-// thread-safe.
+// The SystemTrustStore interface is used to encapsulate a bssl::TrustStore for
+// the current platform, with some extra bells and whistles. Implementations
+// must be thread-safe.
 //
 // This is primarily used to abstract out the platform-specific bits that
-// relate to configuring the TrustStore needed for path building.
+// relate to configuring the bssl::TrustStore needed for path building.
 class SystemTrustStore {
  public:
   virtual ~SystemTrustStore() = default;
 
-  // Returns an aggregate TrustStore that can be used by the path builder. The
-  // store composes the system trust store (if implemented) with manually added
-  // trust anchors added via AddTrustAnchor(). This pointer is non-owned, and
-  // valid only for the lifetime of |this|. Any TrustStore objects returned from
-  // this method must be thread-safe.
-  virtual TrustStore* GetTrustStore() = 0;
+  // Returns an aggregate bssl::TrustStore that can be used by the path builder.
+  // The store composes the system trust store (if implemented) with manually
+  // added trust anchors added via AddTrustAnchor(). This pointer is non-owned,
+  // and valid only for the lifetime of |this|. Any bssl::TrustStore objects
+  // returned from this method must be thread-safe.
+  virtual bssl::TrustStore* GetTrustStore() = 0;
 
   // IsKnownRoot() returns true if the given certificate originated from the
   // system trust store and is a "standard" one. The meaning of "standard" is
   // that it is one of default trust anchors for the system, as opposed to a
   // user-installed one.
-  virtual bool IsKnownRoot(const ParsedCertificate* cert) const = 0;
+  virtual bool IsKnownRoot(const bssl::ParsedCertificate* cert) const = 0;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // Returns the current version of the Chrome Root Store being used. If
@@ -65,7 +64,7 @@ CreateSslSystemTrustStoreChromeRoot(
 NET_EXPORT_PRIVATE std::unique_ptr<SystemTrustStore>
 CreateSystemTrustStoreChromeForTesting(
     std::unique_ptr<TrustStoreChrome> trust_store_chrome,
-    std::unique_ptr<TrustStore> trust_store_system);
+    std::unique_ptr<bssl::TrustStore> trust_store_system);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 // Creates an instance of SystemTrustStore that initially does not have any

@@ -5,4 +5,5 @@ include_rules = [
   "+services/network/public",
   "+services/network/test",
   "+services/network/url_loader.h",
+  "+third_party/boringssl/src/pki",
 ]

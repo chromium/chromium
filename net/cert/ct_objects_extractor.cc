@@ -347,9 +347,9 @@ bool ExtractSCTListFromOCSPResponse(const CRYPTO_BUFFER* issuer,
                                     const std::string& cert_serial_number,
                                     base::StringPiece ocsp_response,
                                     std::string* sct_list) {
-  // The input is an OCSPResponse. See RFC2560, section 4.2.1. The SCT list is
-  // in the extensions field of the SingleResponse which matches the input
-  // certificate.
+  // The input is an bssl::OCSPResponse. See RFC2560, section 4.2.1. The SCT
+  // list is in the extensions field of the SingleResponse which matches the
+  // input certificate.
   CBS cbs;
   CBS_init(&cbs, reinterpret_cast<const uint8_t*>(ocsp_response.data()),
            ocsp_response.size());

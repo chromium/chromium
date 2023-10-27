@@ -1,5 +1,6 @@
 specific_include_rules = {
   '.*_[a-z]*test.*': [
     "+services/network/test",
+    "+third_party/boringssl/src/pki",
   ],
 }

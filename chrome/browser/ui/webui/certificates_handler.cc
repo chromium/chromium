@@ -42,8 +42,8 @@
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
-#include "net/der/input.h"
-#include "net/der/parser.h"
+#include "third_party/boringssl/src/pki/input.h"
+#include "third_party/boringssl/src/pki/parser.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using base::UTF8ToUTF16;
@@ -164,12 +164,13 @@ bool CouldBePFX(std::string_view data) {
 
   // If the SEQUENCE is definite length, it can be parsed through the version
   // tag using DER parser, since INTEGER must be definite length, even in BER.
-  net::der::Parser parser((net::der::Input(data)));
-  net::der::Parser sequence_parser;
+  bssl::der::Parser parser((bssl::der::Input(data)));
+  bssl::der::Parser sequence_parser;
   if (!parser.ReadSequence(&sequence_parser))
     return false;
-  if (!sequence_parser.SkipTag(net::der::kInteger))
+  if (!sequence_parser.SkipTag(bssl::der::kInteger)) {
     return false;
+  }
   return true;
 }
 

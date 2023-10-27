@@ -36,18 +36,10 @@
 #include "net/cert/crl_set.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/internal/system_trust_store.h"
-#include "net/cert/ocsp_revocation_status.h"
-#include "net/cert/pem.h"
-#include "net/cert/pki/extended_key_usage.h"
-#include "net/cert/pki/parse_certificate.h"
-#include "net/cert/pki/signature_algorithm.h"
-#include "net/cert/pki/trust_store.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
-#include "net/der/input.h"
-#include "net/der/parser.h"
 #include "net/log/test_net_log.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
@@ -68,6 +60,14 @@
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
+#include "third_party/boringssl/src/pki/extended_key_usage.h"
+#include "third_party/boringssl/src/pki/input.h"
+#include "third_party/boringssl/src/pki/ocsp_revocation_status.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
+#include "third_party/boringssl/src/pki/parser.h"
+#include "third_party/boringssl/src/pki/pem.h"
+#include "third_party/boringssl/src/pki/signature_algorithm.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "net/cert/cert_verify_proc_android.h"
@@ -116,10 +116,10 @@ std::string TestOid0SignatureAlgorithmTLV() {
 
 // An OID for use in tests, from https://davidben.net/oid
 // OBJECT_IDENTIFIER { 1.2.840.113554.4.1.72585.0 }
-der::Input TestOid0() {
+bssl::der::Input TestOid0() {
   static uint8_t kTestOid0[] = {0x06, 0x0c, 0x2a, 0x86, 0x48, 0x86, 0xf7,
                                 0x12, 0x04, 0x01, 0x84, 0xb7, 0x09, 0x00};
-  return der::Input(kTestOid0);
+  return bssl::der::Input(kTestOid0);
 }
 
 // Mock CertVerifyProc that sets the CertVerifyResult to a given value for
@@ -478,11 +478,11 @@ TEST_P(CertVerifyProcInternalTest, DistrustedIntermediate) {
 
   // Trusting root should cause chain to verify successfully.
   ScopedTestRoot trust_root(root->GetX509Certificate(),
-                            CertificateTrust::ForTrustAnchor());
+                            bssl::CertificateTrust::ForTrustAnchor());
   EXPECT_THAT(Verify(chain.get(), kHostname), IsOk());
 
   ScopedTestRoot distrust_intermediate(intermediate->GetX509Certificate(),
-                                       CertificateTrust::ForDistrusted());
+                                       bssl::CertificateTrust::ForDistrusted());
   if (VerifyProcTypeIsBuiltin()) {
     // Distrusting intermediate should cause chain to not verify again.
     EXPECT_THAT(Verify(chain.get(), kHostname),
@@ -676,7 +676,7 @@ TEST_P(CertVerifyProcInternalTest, TrustedIntermediateCertWithEVPolicy) {
 TEST_P(CertVerifyProcInternalTest, CertWithNullInCommonNameAndNoSAN) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
 
-  leaf->EraseExtension(der::Input(kSubjectAltNameOid));
+  leaf->EraseExtension(bssl::der::Input(bssl::kSubjectAltNameOid));
 
   std::string common_name;
   common_name += "www.fake.com";
@@ -756,8 +756,8 @@ TEST_P(CertVerifyProcInternalTest, InvalidTarget) {
   if (VerifyProcTypeIsBuiltin()) {
     // Builtin verifier doesn't distinguish between invalid signature algorithm
     // and unknown signature algorithm, so use a different test file that will
-    // fail in ParsedCertificate::Create. The other verifiers use a different
-    // test file since the platform verifiers don't all consider empty
+    // fail in bssl::ParsedCertificate::Create. The other verifiers use a
+    // different test file since the platform verifiers don't all consider empty
     // extensions sequence invalid.
     bad_cert = ImportCertFromFile(certs_dir, "extensions_empty_sequence.pem");
   } else {
@@ -927,7 +927,7 @@ TEST_P(CertVerifyProcInternalTest, RejectWeakKeys) {
 TEST_P(CertVerifyProcInternalTest, ExtraneousRootCert) {
   auto [leaf_builder, root_builder] = CertBuilder::CreateSimpleChain2();
 
-  root_builder->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
+  root_builder->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha256);
   scoped_refptr<X509Certificate> root_cert = root_builder->GetX509Certificate();
 
   scoped_refptr<X509Certificate> server_cert =
@@ -938,7 +938,7 @@ TEST_P(CertVerifyProcInternalTest, ExtraneousRootCert) {
   // also signs the leaf cert and which could be used in path-building if the
   // path builder doesn't prioritize trusted roots above other certs.
   root_builder->SetRandomSerialNumber();
-  root_builder->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha1);
+  root_builder->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha1);
   scoped_refptr<X509Certificate> extra_cert =
       root_builder->GetX509Certificate();
 
@@ -1056,46 +1056,49 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
  protected:
   // In the test setup, SHA384 is given special treatment as an unknown
   // algorithm.
-  static constexpr DigestAlgorithm kUnknownDigestAlgorithm =
-      DigestAlgorithm::Sha384;
+  static constexpr bssl::DigestAlgorithm kUnknownDigestAlgorithm =
+      bssl::DigestAlgorithm::Sha384;
 
   struct CertParams {
     // Certificate.signatureAlgorithm
-    DigestAlgorithm cert_algorithm;
+    bssl::DigestAlgorithm cert_algorithm;
 
     // TBSCertificate.algorithm
-    DigestAlgorithm tbs_algorithm;
+    bssl::DigestAlgorithm tbs_algorithm;
   };
 
   // Shorthand for VerifyChain() where only the leaf's parameters need
   // to be specified.
   [[nodiscard]] int VerifyLeaf(const CertParams& leaf_params) {
-    return VerifyChain({// Target
-                        leaf_params,
-                        // Root
-                        {DigestAlgorithm::Sha256, DigestAlgorithm::Sha256}});
+    return VerifyChain(
+        {// Target
+         leaf_params,
+         // Root
+         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256}});
   }
 
   // Shorthand for VerifyChain() where only the intermediate's parameters need
   // to be specified.
   [[nodiscard]] int VerifyIntermediate(const CertParams& intermediate_params) {
-    return VerifyChain({// Target
-                        {DigestAlgorithm::Sha256, DigestAlgorithm::Sha256},
-                        // Intermediate
-                        intermediate_params,
-                        // Root
-                        {DigestAlgorithm::Sha256, DigestAlgorithm::Sha256}});
+    return VerifyChain(
+        {// Target
+         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256},
+         // Intermediate
+         intermediate_params,
+         // Root
+         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256}});
   }
 
   // Shorthand for VerifyChain() where only the root's parameters need to be
   // specified.
   [[nodiscard]] int VerifyRoot(const CertParams& root_params) {
-    return VerifyChain({// Target
-                        {DigestAlgorithm::Sha256, DigestAlgorithm::Sha256},
-                        // Intermediate
-                        {DigestAlgorithm::Sha256, DigestAlgorithm::Sha256},
-                        // Root
-                        root_params});
+    return VerifyChain(
+        {// Target
+         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256},
+         // Intermediate
+         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256},
+         // Root
+         root_params});
   }
 
   // Manufactures a certificate chain where each certificate has the indicated
@@ -1126,17 +1129,17 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
   // Overwrites the AlgorithmIdentifier pointed to by |algorithm_sequence| with
   // |algorithm|. Note this violates the constness of StringPiece.
   [[nodiscard]] static bool SetAlgorithmSequence(
-      DigestAlgorithm algorithm,
+      bssl::DigestAlgorithm algorithm,
       base::StringPiece* algorithm_sequence) {
     // This string of bytes is the full SEQUENCE for an AlgorithmIdentifier.
     std::vector<uint8_t> replacement_sequence;
     switch (algorithm) {
-      case DigestAlgorithm::Sha1:
+      case bssl::DigestAlgorithm::Sha1:
         // sha1WithRSAEncryption
         replacement_sequence = {0x30, 0x0D, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
                                 0xf7, 0x0d, 0x01, 0x01, 0x05, 0x05, 0x00};
         break;
-      case DigestAlgorithm::Sha256:
+      case bssl::DigestAlgorithm::Sha256:
         // sha256WithRSAEncryption
         replacement_sequence = {0x30, 0x0D, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
                                 0xf7, 0x0d, 0x01, 0x01, 0x0b, 0x05, 0x00};
@@ -1169,25 +1172,27 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
   [[nodiscard]] static bool ExtractSerialNumberFromDERCert(
       base::StringPiece der_cert,
       base::StringPiece* serial_value) {
-    der::Parser parser((der::Input(der_cert)));
-    der::Parser certificate;
+    bssl::der::Parser parser((bssl::der::Input(der_cert)));
+    bssl::der::Parser certificate;
     if (!parser.ReadSequence(&certificate))
       return false;
 
-    der::Parser tbs_certificate;
+    bssl::der::Parser tbs_certificate;
     if (!certificate.ReadSequence(&tbs_certificate))
       return false;
 
     bool unused;
     if (!tbs_certificate.SkipOptionalTag(
-            der::kTagConstructed | der::kTagContextSpecific | 0, &unused)) {
+            bssl::der::kTagConstructed | bssl::der::kTagContextSpecific | 0,
+            &unused)) {
       return false;
     }
 
     // serialNumber
-    der::Input serial_value_der;
-    if (!tbs_certificate.ReadTag(der::kInteger, &serial_value_der))
+    bssl::der::Input serial_value_der;
+    if (!tbs_certificate.ReadTag(bssl::der::kInteger, &serial_value_der)) {
       return false;
+    }
 
     *serial_value = serial_value_der.AsStringView();
     return true;
@@ -1280,7 +1285,8 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 //  Certificate.signatureAlgorithm:  sha1WithRSASignature
 //  TBSCertificate.algorithm:        sha1WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha1Sha1) {
-  int rv = VerifyLeaf({DigestAlgorithm::Sha1, DigestAlgorithm::Sha1});
+  int rv =
+      VerifyLeaf({bssl::DigestAlgorithm::Sha1, bssl::DigestAlgorithm::Sha1});
   ASSERT_THAT(rv, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
 }
 
@@ -1291,7 +1297,8 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha1Sha1) {
 //  Certificate.signatureAlgorithm:  sha256WithRSASignature
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha256) {
-  int rv = VerifyLeaf({DigestAlgorithm::Sha256, DigestAlgorithm::Sha256});
+  int rv = VerifyLeaf(
+      {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsOk());
 }
 
@@ -1300,7 +1307,8 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha256) {
 //  Certificate.signatureAlgorithm:  sha1WithRSASignature
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha1Sha256) {
-  int rv = VerifyLeaf({DigestAlgorithm::Sha1, DigestAlgorithm::Sha256});
+  int rv =
+      VerifyLeaf({bssl::DigestAlgorithm::Sha1, bssl::DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
 
@@ -1309,7 +1317,8 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha1Sha256) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        sha1WithRSASignature
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha1) {
-  int rv = VerifyLeaf({DigestAlgorithm::Sha256, DigestAlgorithm::Sha1});
+  int rv =
+      VerifyLeaf({bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha1});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
 
@@ -1318,7 +1327,7 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha1) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        ?
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Unknown) {
-  int rv = VerifyLeaf({DigestAlgorithm::Sha256, kUnknownDigestAlgorithm});
+  int rv = VerifyLeaf({bssl::DigestAlgorithm::Sha256, kUnknownDigestAlgorithm});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
 
@@ -1327,7 +1336,7 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Unknown) {
 //  Certificate.signatureAlgorithm:  ?
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafUnknownSha256) {
-  int rv = VerifyLeaf({kUnknownDigestAlgorithm, DigestAlgorithm::Sha256});
+  int rv = VerifyLeaf({kUnknownDigestAlgorithm, bssl::DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
 
@@ -1336,7 +1345,8 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafUnknownSha256) {
 //  Certificate.signatureAlgorithm:  sha1WithRSASignature
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha1Sha256) {
-  int rv = VerifyIntermediate({DigestAlgorithm::Sha1, DigestAlgorithm::Sha256});
+  int rv = VerifyIntermediate(
+      {bssl::DigestAlgorithm::Sha1, bssl::DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
 
@@ -1345,7 +1355,8 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha1Sha256) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        sha1WithRSASignature
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha256Sha1) {
-  int rv = VerifyIntermediate({DigestAlgorithm::Sha256, DigestAlgorithm::Sha1});
+  int rv = VerifyIntermediate(
+      {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha1});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
 
@@ -1354,7 +1365,8 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha256Sha1) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        sha1WithRSASignature
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootSha256Sha1) {
-  int rv = VerifyRoot({DigestAlgorithm::Sha256, DigestAlgorithm::Sha1});
+  int rv =
+      VerifyRoot({bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha1});
   ASSERT_THAT(rv, IsOk());
 }
 
@@ -1363,7 +1375,7 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootSha256Sha1) {
 //  Certificate.signatureAlgorithm:  ?
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootUnknownSha256) {
-  int rv = VerifyRoot({kUnknownDigestAlgorithm, DigestAlgorithm::Sha256});
+  int rv = VerifyRoot({kUnknownDigestAlgorithm, bssl::DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsOk());
 }
 
@@ -1549,10 +1561,11 @@ TEST_P(CertVerifyProcInternalTest, Sha1IntermediateUsesServerGatedCrypto) {
 
   ASSERT_TRUE(root->UseKeyFromFile(
       GetTestCertsDirectory().AppendASCII("rsa-2048-1.key")));
-  root->SetSignatureAlgorithm(SignatureAlgorithm::kRsaPkcs1Sha1);
+  root->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kRsaPkcs1Sha1);
 
-  intermediate->SetExtendedKeyUsages({der::Input(kNetscapeServerGatedCrypto)});
-  intermediate->SetSignatureAlgorithm(SignatureAlgorithm::kRsaPkcs1Sha1);
+  intermediate->SetExtendedKeyUsages(
+      {bssl::der::Input(bssl::kNetscapeServerGatedCrypto)});
+  intermediate->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kRsaPkcs1Sha1);
 
   ScopedTestRoot scoped_root(root->GetX509Certificate());
 
@@ -2537,8 +2550,9 @@ TEST_P(CertVerifyProcInternalTest, FailedIntermediateSignatureValidation) {
 
   // Intermediate has no authorityKeyIdentifier. Also remove
   // subjectKeyIdentifier from root for good measure.
-  intermediate->EraseExtension(der::Input(kAuthorityKeyIdentifierOid));
-  root->EraseExtension(der::Input(kSubjectKeyIdentifierOid));
+  intermediate->EraseExtension(
+      bssl::der::Input(bssl::kAuthorityKeyIdentifierOid));
+  root->EraseExtension(bssl::der::Input(bssl::kSubjectKeyIdentifierOid));
 
   // Get the chain with the leaf and the intermediate signed by the original
   // key of |root|.
@@ -2568,8 +2582,9 @@ TEST_P(CertVerifyProcInternalTest, FailedTargetSignatureValidation) {
 
   // Leaf has no authorityKeyIdentifier. Also remove subjectKeyIdentifier from
   // intermediate for good measure.
-  leaf->EraseExtension(der::Input(kAuthorityKeyIdentifierOid));
-  intermediate->EraseExtension(der::Input(kSubjectKeyIdentifierOid));
+  leaf->EraseExtension(bssl::der::Input(bssl::kAuthorityKeyIdentifierOid));
+  intermediate->EraseExtension(
+      bssl::der::Input(bssl::kSubjectKeyIdentifierOid));
 
   // Get a copy of the leaf signed by the original key of intermediate.
   bssl::UniquePtr<CRYPTO_BUFFER> leaf_wrong_signature = leaf->DupCertBuffer();
@@ -2850,10 +2865,10 @@ class CertVerifyProcInternalWithNetFetchingTest
   // Creates a CRL issued and signed by |crl_issuer|, marking |revoked_serials|
   // as revoked, and registers it to be served by the test server.
   // Returns the full URL to retrieve the CRL from the test server.
-  GURL CreateAndServeCrl(
-      CertBuilder* crl_issuer,
-      const std::vector<uint64_t>& revoked_serials,
-      absl::optional<SignatureAlgorithm> signature_algorithm = absl::nullopt) {
+  GURL CreateAndServeCrl(CertBuilder* crl_issuer,
+                         const std::vector<uint64_t>& revoked_serials,
+                         absl::optional<bssl::SignatureAlgorithm>
+                             signature_algorithm = absl::nullopt) {
     std::string crl = BuildCrl(crl_issuer->GetSubject(), crl_issuer->GetKey(),
                                revoked_serials, signature_algorithm);
     std::string crl_path = MakeRandomPath(".crl");
@@ -3188,11 +3203,11 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   // that is SHA1 signed. Note that the subjectKeyIdentifier for `intermediate`
   // is intentionally not changed, so that path building will consider both
   // certificate paths.
-  intermediate->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
+  intermediate->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha256);
   intermediate->SetRandomSerialNumber();
   auto intermediate_sha256 = intermediate->DupCertBuffer();
 
-  intermediate->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha1);
+  intermediate->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha1);
   intermediate->SetRandomSerialNumber();
   auto intermediate_sha1 = intermediate->DupCertBuffer();
 
@@ -3749,7 +3764,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   // ecdsaWithSha256.
   leaf->SetCrlDistributionPointUrl(
       CreateAndServeCrl(intermediate.get(), {leaf->GetSerialNumber()},
-                        SignatureAlgorithm::kEcdsaSha1));
+                        bssl::SignatureAlgorithm::kEcdsaSha1));
 
   // Trust the root and build a chain to verify that includes the intermediate.
   ScopedTestRoot scoped_root(root->GetX509Certificate());
@@ -3785,7 +3800,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   // so that the CRL will be signed with the md5WithRSAEncryption algorithm.
   ASSERT_TRUE(intermediate->UseKeyFromFile(
       GetTestCertsDirectory().AppendASCII("rsa-2048-1.key")));
-  leaf->SetSignatureAlgorithm(SignatureAlgorithm::kRsaPkcs1Sha256);
+  leaf->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kRsaPkcs1Sha256);
 
   // Leaf is revoked by intermediate issued CRL which is signed with
   // md5WithRSAEncryption.
@@ -3898,7 +3913,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.policy_oids = {kEVTestCertPolicy};
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::GOOD,
+      {{bssl::OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   EmbeddedTestServer ocsp_test_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -3982,7 +3997,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.policy_oids = {kEVTestCertPolicy};
   cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{OCSPRevocationStatus::REVOKED,
+      {{bssl::OCSPRevocationStatus::REVOKED,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   EmbeddedTestServer ocsp_test_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -4022,7 +4037,7 @@ class CertVerifyProcConstraintsTest : public CertVerifyProcInternalTest {
     chain_ = CertBuilder::CreateSimpleChain(/*chain_length=*/4);
   }
 
-  int VerifyWithTrust(CertificateTrust trust) {
+  int VerifyWithTrust(bssl::CertificateTrust trust) {
     ScopedTestRoot test_root(chain_.back()->GetX509Certificate(), trust);
     CertVerifyResult verify_result;
     int flags = 0;
@@ -4031,16 +4046,18 @@ class CertVerifyProcConstraintsTest : public CertVerifyProcInternalTest {
         flags, CertificateList(), &verify_result);
   }
 
-  int Verify() { return VerifyWithTrust(CertificateTrust::ForTrustAnchor()); }
+  int Verify() {
+    return VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchor());
+  }
 
   int VerifyWithExpiryAndConstraints() {
-    return VerifyWithTrust(CertificateTrust::ForTrustAnchor()
+    return VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchor()
                                .WithEnforceAnchorExpiry()
                                .WithEnforceAnchorConstraints());
   }
 
   int VerifyWithExpiryAndFullConstraints() {
-    return VerifyWithTrust(CertificateTrust::ForTrustAnchor()
+    return VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchor()
                                .WithEnforceAnchorExpiry()
                                .WithEnforceAnchorConstraints()
                                .WithRequireAnchorBasicConstraints());
@@ -4068,9 +4085,9 @@ TEST_P(CertVerifyProcConstraintsTest, BaseCase) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndFullConstraints(), IsOk());
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()),
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchorOrLeaf()),
                 IsOk());
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustedLeaf()),
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustedLeaf()),
                 IsError(ERR_CERT_AUTHORITY_INVALID));
   }
 }
@@ -4101,10 +4118,10 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsIsCaLeaf) {
     chain_[0]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
 
     if (has_key_usage_cert_sign) {
-      chain_[0]->SetKeyUsages(
-          {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+      chain_[0]->SetKeyUsages({bssl::KEY_USAGE_BIT_KEY_CERT_SIGN,
+                               bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE});
     } else {
-      chain_[0]->SetKeyUsages({KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+      chain_[0]->SetKeyUsages({bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE});
     }
     EXPECT_THAT(Verify(), IsOk());
   }
@@ -4169,7 +4186,7 @@ TEST_P(CertVerifyProcConstraintsTest,
 }
 
 TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentRoot) {
-  chain_[3]->EraseExtension(der::Input(kBasicConstraintsOid));
+  chain_[3]->EraseExtension(bssl::der::Input(bssl::kBasicConstraintsOid));
 
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
@@ -4184,7 +4201,7 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentRoot) {
 }
 
 TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentRootX509V1) {
-  chain_[3]->SetCertificateVersion(CertificateVersion::V1);
+  chain_[3]->SetCertificateVersion(bssl::CertificateVersion::V1);
   chain_[3]->ClearExtensions();
 
   EXPECT_THAT(Verify(), IsOk());
@@ -4195,13 +4212,13 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentRootX509V1) {
 }
 
 TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentIntermediate) {
-  chain_[2]->EraseExtension(der::Input(kBasicConstraintsOid));
+  chain_[2]->EraseExtension(bssl::der::Input(bssl::kBasicConstraintsOid));
 
   EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
 }
 
 TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentLeaf) {
-  chain_[0]->EraseExtension(der::Input(kBasicConstraintsOid));
+  chain_[0]->EraseExtension(bssl::der::Input(bssl::kBasicConstraintsOid));
 
   EXPECT_THAT(Verify(), IsOk());
 }
@@ -4771,7 +4788,7 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyMappingsRoot) {
 }
 
 TEST_P(CertVerifyProcConstraintsTest, KeyUsageNoCertSignRoot) {
-  chain_[3]->SetKeyUsages({KEY_USAGE_BIT_CRL_SIGN});
+  chain_[3]->SetKeyUsages({bssl::KEY_USAGE_BIT_CRL_SIGN});
 
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
@@ -4786,7 +4803,7 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageNoCertSignRoot) {
 }
 
 TEST_P(CertVerifyProcConstraintsTest, KeyUsageNotPresentRoot) {
-  chain_[3]->EraseExtension(der::Input(kKeyUsageOid));
+  chain_[3]->EraseExtension(bssl::der::Input(bssl::kKeyUsageOid));
 
   EXPECT_THAT(Verify(), IsOk());
   if (VerifyProcTypeIsBuiltin()) {
@@ -4796,13 +4813,13 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageNotPresentRoot) {
 }
 
 TEST_P(CertVerifyProcConstraintsTest, KeyUsageNoCertSignIntermediate) {
-  chain_[2]->SetKeyUsages({KEY_USAGE_BIT_CRL_SIGN});
+  chain_[2]->SetKeyUsages({bssl::KEY_USAGE_BIT_CRL_SIGN});
 
   EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
 }
 
 TEST_P(CertVerifyProcConstraintsTest, KeyUsageNotPresentIntermediate) {
-  chain_[2]->EraseExtension(der::Input(kKeyUsageOid));
+  chain_[2]->EraseExtension(bssl::der::Input(bssl::kKeyUsageOid));
 
   EXPECT_THAT(Verify(), IsOk());
 }
@@ -4810,7 +4827,7 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageNotPresentIntermediate) {
 TEST_P(CertVerifyProcConstraintsTest, KeyUsageNoDigitalSignatureLeaf) {
   // This test is mostly uninteresting since keyUsage on the end-entity is only
   // checked at the TLS layer, not during cert verification.
-  chain_[0]->SetKeyUsages({KEY_USAGE_BIT_CRL_SIGN});
+  chain_[0]->SetKeyUsages({bssl::KEY_USAGE_BIT_CRL_SIGN});
 
   EXPECT_THAT(Verify(), IsOk());
 }
@@ -4818,7 +4835,7 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageNoDigitalSignatureLeaf) {
 TEST_P(CertVerifyProcConstraintsTest, KeyUsageNotPresentLeaf) {
   // This test is mostly uninteresting since keyUsage on the end-entity is only
   // checked at the TLS layer, not during cert verification.
-  chain_[0]->EraseExtension(der::Input(kKeyUsageOid));
+  chain_[0]->EraseExtension(bssl::der::Input(bssl::kKeyUsageOid));
 
   EXPECT_THAT(Verify(), IsOk());
 }
@@ -4829,8 +4846,8 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageCertSignLeaf) {
   // 4.2.1.3 and 4.2.1.9, however most implementations seem to allow it.
   // Perhaps because 5280 section 6 does not explicitly say to enforce this on
   // the target cert.
-  chain_[0]->SetKeyUsages(
-      {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+  chain_[0]->SetKeyUsages({bssl::KEY_USAGE_BIT_KEY_CERT_SIGN,
+                           bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE});
 
   EXPECT_THAT(Verify(), IsOk());
   if (VerifyProcTypeIsBuiltin()) {
@@ -4840,7 +4857,7 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageCertSignLeaf) {
 }
 
 TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageNoServerAuthRoot) {
-  chain_[3]->SetExtendedKeyUsages({der::Input(kCodeSigning)});
+  chain_[3]->SetExtendedKeyUsages({bssl::der::Input(bssl::kCodeSigning)});
 
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
@@ -4856,7 +4873,7 @@ TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageNoServerAuthRoot) {
 }
 
 TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageServerAuthRoot) {
-  chain_[3]->SetExtendedKeyUsages({der::Input(kServerAuth)});
+  chain_[3]->SetExtendedKeyUsages({bssl::der::Input(bssl::kServerAuth)});
 
   EXPECT_THAT(Verify(), IsOk());
   if (VerifyProcTypeIsBuiltin()) {
@@ -4866,7 +4883,7 @@ TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageServerAuthRoot) {
 
 TEST_P(CertVerifyProcConstraintsTest,
        ExtendedKeyUsageNoServerAuthIntermediate) {
-  chain_[2]->SetExtendedKeyUsages({der::Input(kCodeSigning)});
+  chain_[2]->SetExtendedKeyUsages({bssl::der::Input(bssl::kCodeSigning)});
 
   if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID ||
       VerifyProcTypeIsIOSAtMostOS15()) {
@@ -4877,13 +4894,13 @@ TEST_P(CertVerifyProcConstraintsTest,
 }
 
 TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageServerAuthIntermediate) {
-  chain_[2]->SetExtendedKeyUsages({der::Input(kServerAuth)});
+  chain_[2]->SetExtendedKeyUsages({bssl::der::Input(bssl::kServerAuth)});
 
   EXPECT_THAT(Verify(), IsOk());
 }
 
 TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageNoServerAuthLeaf) {
-  chain_[0]->SetExtendedKeyUsages({der::Input(kCodeSigning)});
+  chain_[0]->SetExtendedKeyUsages({bssl::der::Input(bssl::kCodeSigning)});
 
   EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
 }
@@ -4981,7 +4998,7 @@ class CertVerifyProcConstraintsTrustedLeafTest
     chain_ = CertBuilder::CreateSimpleChain(/*chain_length=*/2);
   }
 
-  int VerifyWithTrust(CertificateTrust trust) {
+  int VerifyWithTrust(bssl::CertificateTrust trust) {
     ScopedTestRoot test_root(chain_[0]->GetX509Certificate(), trust);
     CertVerifyResult verify_result;
     int flags = 0;
@@ -4990,10 +5007,12 @@ class CertVerifyProcConstraintsTrustedLeafTest
         CertificateList(), &verify_result);
   }
 
-  int Verify() { return VerifyWithTrust(CertificateTrust::ForTrustAnchor()); }
+  int Verify() {
+    return VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchor());
+  }
 
   int VerifyAsTrustedLeaf() {
-    return VerifyWithTrust(CertificateTrust::ForTrustedLeaf());
+    return VerifyWithTrust(bssl::CertificateTrust::ForTrustedLeaf());
   }
 
   std::vector<std::unique_ptr<CertBuilder>> chain_;
@@ -5011,13 +5030,12 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BaseCase) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
     EXPECT_THAT(VerifyAsTrustedLeaf(), IsOk());
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()),
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchorOrLeaf()),
                 IsOk());
-    EXPECT_THAT(
-        VerifyWithTrust(
-            CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned()),
-        IsError(ERR_CERT_AUTHORITY_INVALID));
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustedLeaf()
+                                    .WithRequireLeafSelfSigned()),
+                IsError(ERR_CERT_AUTHORITY_INVALID));
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchorOrLeaf()
                                     .WithRequireLeafSelfSigned()),
                 IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
@@ -5041,13 +5059,14 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, RootAlsoTrusted) {
       // An explicit trust entry for the leaf with a value of Unspecified
       // should be no different than the leaf not being in the trust store at
       // all.
-      EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForUnspecified()), IsOk());
+      EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForUnspecified()),
+                  IsOk());
     }
     {
       ScopedTestRoot test_root1(chain_[1]->GetX509Certificate());
       // If the leaf is explicitly distrusted, verification should fail even if
       // the root is trusted.
-      EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForDistrusted()),
+      EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForDistrusted()),
                   IsError(ERR_CERT_AUTHORITY_INVALID));
     }
     {
@@ -5056,19 +5075,19 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, RootAlsoTrusted) {
     }
     {
       ScopedTestRoot test_root(chain_[1]->GetX509Certificate());
-      EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()),
-                  IsOk());
-    }
-    {
-      ScopedTestRoot test_root(chain_[1]->GetX509Certificate());
       EXPECT_THAT(
-          VerifyWithTrust(
-              CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned()),
+          VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchorOrLeaf()),
           IsOk());
     }
     {
       ScopedTestRoot test_root(chain_[1]->GetX509Certificate());
-      EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()
+      EXPECT_THAT(
+          VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchorOrLeaf()),
+          IsOk());
+    }
+    {
+      ScopedTestRoot test_root(chain_[1]->GetX509Certificate());
+      EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchorOrLeaf()
                                       .WithRequireLeafSelfSigned()),
                   IsOk());
     }
@@ -5080,10 +5099,10 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsIsCa) {
     chain_[0]->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
 
     if (has_key_usage_cert_sign) {
-      chain_[0]->SetKeyUsages(
-          {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+      chain_[0]->SetKeyUsages({bssl::KEY_USAGE_BIT_KEY_CERT_SIGN,
+                               bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE});
     } else {
-      chain_[0]->SetKeyUsages({KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+      chain_[0]->SetKeyUsages({bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE});
     }
 
     if (VerifyProcTypeIsBuiltin()) {
@@ -5106,7 +5125,7 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsPathlen) {
 }
 
 TEST_P(CertVerifyProcConstraintsTrustedLeafTest, BasicConstraintsMissing) {
-  chain_[0]->EraseExtension(der::Input(kBasicConstraintsOid));
+  chain_[0]->EraseExtension(bssl::der::Input(bssl::kBasicConstraintsOid));
 
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
@@ -5184,7 +5203,7 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, InhibitAnyPolicy) {
 TEST_P(CertVerifyProcConstraintsTrustedLeafTest, KeyUsageNoDigitalSignature) {
   // This test is mostly uninteresting since keyUsage on the end-entity is only
   // checked at the TLS layer, not during cert verification.
-  chain_[0]->SetKeyUsages({KEY_USAGE_BIT_CRL_SIGN});
+  chain_[0]->SetKeyUsages({bssl::KEY_USAGE_BIT_CRL_SIGN});
 
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
@@ -5197,8 +5216,8 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, KeyUsageNoDigitalSignature) {
 TEST_P(CertVerifyProcConstraintsTrustedLeafTest, KeyUsageCertSignLeaf) {
   // Test a leaf that has keyUsage asserting keyCertSign with basicConstraints
   // CA=false, which is an error according to 5280 (4.2.1.3 and 4.2.1.9).
-  chain_[0]->SetKeyUsages(
-      {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+  chain_[0]->SetKeyUsages({bssl::KEY_USAGE_BIT_KEY_CERT_SIGN,
+                           bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE});
 
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
@@ -5209,7 +5228,7 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, KeyUsageCertSignLeaf) {
 }
 
 TEST_P(CertVerifyProcConstraintsTrustedLeafTest, ExtendedKeyUsageNoServerAuth) {
-  chain_[0]->SetExtendedKeyUsages({der::Input(kCodeSigning)});
+  chain_[0]->SetExtendedKeyUsages({bssl::der::Input(bssl::kCodeSigning)});
 
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
@@ -5234,7 +5253,7 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, UnknownSignatureAlgorithm) {
 }
 
 TEST_P(CertVerifyProcConstraintsTrustedLeafTest, WeakSignatureAlgorithm) {
-  chain_[0]->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha1);
+  chain_[0]->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha1);
 
   if (VerifyProcTypeIsBuiltin()) {
     // Since no chain is found, signature is not checked, fails with generic
@@ -5246,10 +5265,9 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, WeakSignatureAlgorithm) {
 
     // Cert is not self-signed so directly trusted leaf with
     // require_leaf_selfsigned should fail.
-    EXPECT_THAT(
-        VerifyWithTrust(
-            CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned()),
-        IsError(ERR_CERT_AUTHORITY_INVALID));
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustedLeaf()
+                                    .WithRequireLeafSelfSigned()),
+                IsError(ERR_CERT_AUTHORITY_INVALID));
   } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
   } else {
@@ -5286,7 +5304,7 @@ class CertVerifyProcConstraintsTrustedSelfSignedTest
     cert_ = std::move(CertBuilder::CreateSimpleChain(/*chain_length=*/1)[0]);
   }
 
-  int VerifyWithTrust(CertificateTrust trust) {
+  int VerifyWithTrust(bssl::CertificateTrust trust) {
     ScopedTestRoot test_root(cert_->GetX509Certificate(), trust);
     CertVerifyResult verify_result;
     int flags = 0;
@@ -5295,11 +5313,13 @@ class CertVerifyProcConstraintsTrustedSelfSignedTest
         CertificateList(), &verify_result);
   }
 
-  int Verify() { return VerifyWithTrust(CertificateTrust::ForTrustAnchor()); }
+  int Verify() {
+    return VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchor());
+  }
 
   int VerifyAsTrustedSelfSignedLeaf() {
     return VerifyWithTrust(
-        CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned());
+        bssl::CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned());
   }
 
   std::unique_ptr<CertBuilder> cert_;
@@ -5317,8 +5337,9 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, BaseCase) {
   if (VerifyProcTypeIsBuiltin()) {
     // Should succeed when verified as a trusted leaf.
     EXPECT_THAT(VerifyAsTrustedSelfSignedLeaf(), IsOk());
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustedLeaf()), IsOk());
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()),
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustedLeaf()),
+                IsOk());
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchorOrLeaf()),
                 IsOk());
 
     // Should also be allowed by verifying as anchor for itself.
@@ -5327,14 +5348,13 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, BaseCase) {
     // Should fail if verified as anchor of itself with constraints enabled,
     // enforcing the basicConstraints on the anchor will fail since the cert
     // has CA=false.
-    EXPECT_THAT(
-        VerifyWithTrust(
-            CertificateTrust::ForTrustAnchor().WithEnforceAnchorConstraints()),
-        IsError(ERR_CERT_INVALID));
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchor()
+                                    .WithEnforceAnchorConstraints()),
+                IsError(ERR_CERT_INVALID));
 
     // Should be allowed since it will be evaluated as a trusted leaf, so
     // anchor constraints being enabled doesn't matter.
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchorOrLeaf()
                                     .WithEnforceAnchorConstraints()),
                 IsOk());
   } else {
@@ -5347,10 +5367,10 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, BasicConstraintsIsCa) {
     cert_->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
 
     if (has_key_usage_cert_sign) {
-      cert_->SetKeyUsages(
-          {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+      cert_->SetKeyUsages({bssl::KEY_USAGE_BIT_KEY_CERT_SIGN,
+                           bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE});
     } else {
-      cert_->SetKeyUsages({KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+      cert_->SetKeyUsages({bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE});
     }
     EXPECT_THAT(Verify(), IsOk());
     if (VerifyProcTypeIsBuiltin()) {
@@ -5381,7 +5401,7 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
 
 TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
        BasicConstraintsMissing) {
-  cert_->EraseExtension(der::Input(kBasicConstraintsOid));
+  cert_->EraseExtension(bssl::der::Input(bssl::kBasicConstraintsOid));
 
   EXPECT_THAT(Verify(), IsOk());
   if (VerifyProcTypeIsBuiltin()) {
@@ -5455,7 +5475,7 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
        KeyUsageNoDigitalSignature) {
   // This test is mostly uninteresting since keyUsage on the end-entity is only
   // checked at the TLS layer, not during cert verification.
-  cert_->SetKeyUsages({KEY_USAGE_BIT_CRL_SIGN});
+  cert_->SetKeyUsages({bssl::KEY_USAGE_BIT_CRL_SIGN});
 
   EXPECT_THAT(Verify(), IsOk());
   if (VerifyProcTypeIsBuiltin()) {
@@ -5466,17 +5486,16 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
 TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, KeyUsageCertSignLeaf) {
   // Test a leaf that has keyUsage asserting keyCertSign with basicConstraints
   // CA=false, which is an error according to 5280 (4.2.1.3 and 4.2.1.9).
-  cert_->SetKeyUsages(
-      {KEY_USAGE_BIT_KEY_CERT_SIGN, KEY_USAGE_BIT_DIGITAL_SIGNATURE});
+  cert_->SetKeyUsages({bssl::KEY_USAGE_BIT_KEY_CERT_SIGN,
+                       bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE});
 
   EXPECT_THAT(Verify(), IsOk());
   if (VerifyProcTypeIsBuiltin()) {
-    EXPECT_THAT(
-        VerifyWithTrust(
-            CertificateTrust::ForTrustAnchor().WithEnforceAnchorConstraints()),
-        IsError(ERR_CERT_INVALID));
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchor()
+                                    .WithEnforceAnchorConstraints()),
+                IsError(ERR_CERT_INVALID));
     EXPECT_THAT(VerifyAsTrustedSelfSignedLeaf(), IsOk());
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchorOrLeaf()
                                     .WithEnforceAnchorConstraints()
                                     .WithRequireLeafSelfSigned()),
                 IsOk());
@@ -5485,7 +5504,7 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, KeyUsageCertSignLeaf) {
 
 TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
        ExtendedKeyUsageNoServerAuth) {
-  cert_->SetExtendedKeyUsages({der::Input(kCodeSigning)});
+  cert_->SetExtendedKeyUsages({bssl::der::Input(bssl::kCodeSigning)});
 
   EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
   if (VerifyProcTypeIsBuiltin()) {
@@ -5503,7 +5522,8 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
 
     // Signature not checked when verified as a directly trusted leaf without
     // require_leaf_selfsigned.
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustedLeaf()), IsOk());
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustedLeaf()),
+                IsOk());
 
     // PathBuilder override ignores require_leaf_selfsigned due to the
     // self-signed check returning false (due to the invalid signature
@@ -5515,7 +5535,7 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
     // PathBuilder override ignores require_leaf_selfsigned due to the invalid
     // signature algorithm, thus this tries to verify as anchor of itself,
     // which fails when verifying the signature.
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchorOrLeaf()
                                     .WithRequireLeafSelfSigned()),
                 IsError(ERR_CERT_INVALID));
   } else {
@@ -5524,7 +5544,7 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
 }
 
 TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, WeakSignatureAlgorithm) {
-  cert_->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha1);
+  cert_->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha1);
   if (VerifyProcTypeIsBuiltin()) {
     // Attempts to verify as anchor of itself, which fails due to the weak
     // signature algorithm.
@@ -5532,12 +5552,13 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, WeakSignatureAlgorithm) {
 
     // Signature not checked when verified as a directly trusted leaf without
     // require_leaf_selfsigned.
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustedLeaf()), IsOk());
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustedLeaf()),
+                IsOk());
 
     // require_leaf_selfsigned allows any supported signature algorithm when
     // doing the self-signed check, so this is okay.
     EXPECT_THAT(VerifyAsTrustedSelfSignedLeaf(), IsOk());
-    EXPECT_THAT(VerifyWithTrust(CertificateTrust::ForTrustAnchorOrLeaf()
+    EXPECT_THAT(VerifyWithTrust(bssl::CertificateTrust::ForTrustAnchorOrLeaf()
                                     .WithRequireLeafSelfSigned()),
                 IsOk());
   } else {
@@ -6051,8 +6072,8 @@ TEST(CertVerifyProcTest, DoesNotRecalculateStapledOCSPResult) {
 
   CertVerifyResult result;
 
-  result.ocsp_result.response_status = OCSPVerifyResult::PROVIDED;
-  result.ocsp_result.revocation_status = OCSPRevocationStatus::GOOD;
+  result.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
+  result.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::GOOD;
 
   auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
@@ -6065,9 +6086,9 @@ TEST(CertVerifyProcTest, DoesNotRecalculateStapledOCSPResult) {
                           &verify_result, NetLogWithSource());
   EXPECT_EQ(OK, error);
 
-  EXPECT_EQ(OCSPVerifyResult::PROVIDED,
+  EXPECT_EQ(bssl::OCSPVerifyResult::PROVIDED,
             verify_result.ocsp_result.response_status);
-  EXPECT_EQ(OCSPRevocationStatus::GOOD,
+  EXPECT_EQ(bssl::OCSPRevocationStatus::GOOD,
             verify_result.ocsp_result.revocation_status);
 }
 
@@ -6081,8 +6102,9 @@ TEST(CertVerifyProcTest, CalculateStapledOCSPResultIfNotAlreadyDone) {
   CertVerifyResult result;
 
   // Confirm the default-constructed values are as expected.
-  EXPECT_EQ(OCSPVerifyResult::NOT_CHECKED, result.ocsp_result.response_status);
-  EXPECT_EQ(OCSPRevocationStatus::UNKNOWN,
+  EXPECT_EQ(bssl::OCSPVerifyResult::NOT_CHECKED,
+            result.ocsp_result.response_status);
+  EXPECT_EQ(bssl::OCSPRevocationStatus::UNKNOWN,
             result.ocsp_result.revocation_status);
 
   auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
@@ -6095,9 +6117,9 @@ TEST(CertVerifyProcTest, CalculateStapledOCSPResultIfNotAlreadyDone) {
       NetLogWithSource());
   EXPECT_EQ(OK, error);
 
-  EXPECT_EQ(OCSPVerifyResult::PARSE_RESPONSE_ERROR,
+  EXPECT_EQ(bssl::OCSPVerifyResult::PARSE_RESPONSE_ERROR,
             verify_result.ocsp_result.response_status);
-  EXPECT_EQ(OCSPRevocationStatus::UNKNOWN,
+  EXPECT_EQ(bssl::OCSPRevocationStatus::UNKNOWN,
             verify_result.ocsp_result.revocation_status);
 }
 

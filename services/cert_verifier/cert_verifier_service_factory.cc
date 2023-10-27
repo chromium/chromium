@@ -31,10 +31,10 @@
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/cert/internal/trust_store_chrome.h"
-#include "net/cert/pki/parse_name.h"
-#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/pki/parse_name.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 #endif
 
 namespace net {
@@ -79,19 +79,19 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-std::string GetName(const net::ParsedCertificate& cert) {
-  net::RDNSequence subject_rdn;
-  if (!net::ParseName(cert.subject_tlv(), &subject_rdn)) {
+std::string GetName(const bssl::ParsedCertificate& cert) {
+  bssl::RDNSequence subject_rdn;
+  if (!bssl::ParseName(cert.subject_tlv(), &subject_rdn)) {
     return "UNKNOWN";
   }
   std::string subject_string;
-  if (!net::ConvertToRFC2253(subject_rdn, &subject_string)) {
+  if (!bssl::ConvertToRFC2253(subject_rdn, &subject_string)) {
     return "UNKNOWN";
   }
   return subject_string;
 }
 
-std::string GetHash(const net::ParsedCertificate& cert) {
+std::string GetHash(const bssl::ParsedCertificate& cert) {
   net::SHA256HashValue hash =
       net::X509Certificate::CalculateFingerprint256(cert.cert_buffer());
   return base::HexEncode(hash.data, std::size(hash.data));

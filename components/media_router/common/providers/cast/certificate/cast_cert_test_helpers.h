@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "net/cert/pki/trust_store_in_memory.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 namespace cast_certificate {
 namespace testing {
@@ -46,7 +46,7 @@ base::Time ConvertUnixTimestampSeconds(uint64_t time);
 
 // Helper method that loads a certificate from the test certificates folder and
 // places it in an heap allocated trust store.
-std::unique_ptr<net::TrustStoreInMemory> LoadTestCert(
+std::unique_ptr<bssl::TrustStoreInMemory> LoadTestCert(
     const base::StringPiece& cert_file_name);
 
 }  // namespace testing

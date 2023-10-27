@@ -5,4 +5,5 @@ include_rules = [
   "+components/url_matcher",
   "+crypto",
   "+net",
+  "+third_party/boringssl/src/pki",
 ]

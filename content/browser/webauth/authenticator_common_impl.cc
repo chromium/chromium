@@ -49,11 +49,11 @@
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_params.h"
 #include "net/cert/asn1_util.h"
-#include "net/der/input.h"
-#include "net/der/parse_values.h"
-#include "net/der/parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
+#include "third_party/boringssl/src/pki/input.h"
+#include "third_party/boringssl/src/pki/parse_values.h"
+#include "third_party/boringssl/src/pki/parser.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator.h"
@@ -172,9 +172,9 @@ bool AddTransportsFromCertificate(
     return false;
   }
 
-  const net::der::Input contents_der(contents);
-  net::der::Parser contents_parser(contents_der);
-  absl::optional<net::der::BitString> transport_bits =
+  const bssl::der::Input contents_der(contents);
+  bssl::der::Parser contents_parser(contents_der);
+  absl::optional<bssl::der::BitString> transport_bits =
       contents_parser.ReadBitString();
   if (!transport_bits) {
     return false;

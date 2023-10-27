@@ -10,12 +10,12 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "net/cert/pki/trust_store_in_memory.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 namespace cast_certificate {
 
 // Creates a trust store using the test roots encoded in the PEM file at |path|.
-bool PopulateStoreWithCertsFromPath(net::TrustStoreInMemory* store,
+bool PopulateStoreWithCertsFromPath(bssl::TrustStoreInMemory* store,
                                     const base::FilePath& path);
 
 // Reads a PEM file located at |path|, containing certificates to a vector of

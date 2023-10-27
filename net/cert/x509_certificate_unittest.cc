@@ -20,14 +20,14 @@
 #include "crypto/rsa_private_key.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
-#include "net/cert/pem.h"
-#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_certificate_data.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
+#include "third_party/boringssl/src/pki/pem.h"
 
 using base::HexEncode;
 using base::Time;
@@ -220,7 +220,7 @@ TEST(X509CertificateTest, ThawteCertParsing) {
 }
 
 // Test that all desired AttributeAndValue pairs can be extracted when only
-// a single RelativeDistinguishedName is present. "Normally" there is only
+// a single bssl::RelativeDistinguishedName is present. "Normally" there is only
 // one AVA per RDN, but some CAs place all AVAs within a single RDN.
 // This is a regression test for http://crbug.com/101009
 TEST(X509CertificateTest, MultivalueRDN) {
@@ -273,7 +273,7 @@ TEST(X509CertificateTest, InvalidPrintableStringIsUtf8) {
           "subject_printable_string_containing_utf8_client_cert.pem"),
       &file_data));
 
-  net::PEMTokenizer pem_tokenizer(file_data, {"CERTIFICATE"});
+  bssl::PEMTokenizer pem_tokenizer(file_data, {"CERTIFICATE"});
   ASSERT_TRUE(pem_tokenizer.GetNext());
   std::string cert_der(pem_tokenizer.data());
   ASSERT_FALSE(pem_tokenizer.GetNext());
@@ -625,8 +625,8 @@ TEST(X509CertificateTest, ExtractExtension) {
   base::StringPiece contents;
   ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
       x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
-      der::Input(kBasicConstraintsOid).AsStringView(), &present, &critical,
-      &contents));
+      bssl::der::Input(bssl::kBasicConstraintsOid).AsStringView(), &present,
+      &critical, &contents));
   EXPECT_TRUE(present);
   EXPECT_TRUE(critical);
   ASSERT_EQ(base::StringPiece("\x30\x00", 2), contents);
@@ -644,8 +644,8 @@ TEST(X509CertificateTest, ExtractExtension) {
   ASSERT_TRUE(uid_cert);
   ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
       x509_util::CryptoBufferAsStringPiece(uid_cert->cert_buffer()),
-      der::Input(kBasicConstraintsOid).AsStringView(), &present, &critical,
-      &contents));
+      bssl::der::Input(bssl::kBasicConstraintsOid).AsStringView(), &present,
+      &critical, &contents));
   EXPECT_TRUE(present);
   EXPECT_FALSE(critical);
   ASSERT_EQ(base::StringPiece("\x30\x00", 2), contents);

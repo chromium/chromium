@@ -7,11 +7,11 @@
 #include <string>
 #include <utility>
 
-#include "net/cert/pki/cert_errors.h"
-#include "net/cert/pki/trust_store.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
 
@@ -33,11 +33,13 @@ bool TestRootCerts::HasInstance() {
   return g_has_instance;
 }
 
-bool TestRootCerts::Add(X509Certificate* certificate, CertificateTrust trust) {
-  CertErrors errors;
-  std::shared_ptr<const ParsedCertificate> parsed = ParsedCertificate::Create(
-      bssl::UpRef(certificate->cert_buffer()),
-      x509_util::DefaultParseCertificateOptions(), &errors);
+bool TestRootCerts::Add(X509Certificate* certificate,
+                        bssl::CertificateTrust trust) {
+  bssl::CertErrors errors;
+  std::shared_ptr<const bssl::ParsedCertificate> parsed =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(certificate->cert_buffer()),
+          x509_util::DefaultParseCertificateOptions(), &errors);
   if (!parsed) {
     return false;
   }
@@ -82,11 +84,12 @@ TestRootCerts::TestRootCerts() {
 ScopedTestRoot::ScopedTestRoot() = default;
 
 ScopedTestRoot::ScopedTestRoot(scoped_refptr<X509Certificate> cert,
-                               CertificateTrust trust) {
+                               bssl::CertificateTrust trust) {
   Reset({std::move(cert)}, trust);
 }
 
-ScopedTestRoot::ScopedTestRoot(CertificateList certs, CertificateTrust trust) {
+ScopedTestRoot::ScopedTestRoot(CertificateList certs,
+                               bssl::CertificateTrust trust) {
   Reset(std::move(certs), trust);
 }
 
@@ -105,7 +108,8 @@ ScopedTestRoot::~ScopedTestRoot() {
   Reset({});
 }
 
-void ScopedTestRoot::Reset(CertificateList certs, CertificateTrust trust) {
+void ScopedTestRoot::Reset(CertificateList certs,
+                           bssl::CertificateTrust trust) {
   if (!certs_.empty())
     TestRootCerts::GetInstance()->Clear();
   for (const auto& cert : certs)

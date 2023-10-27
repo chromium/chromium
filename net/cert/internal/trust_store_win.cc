@@ -13,10 +13,10 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_features.h"
-#include "net/cert/pki/cert_errors.h"
-#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/third_party/mozilla_win/cert/win_util.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
 
@@ -255,8 +255,8 @@ class TrustStoreWin::Impl {
   Impl(const Impl& other) = delete;
   Impl& operator=(const Impl& other) = delete;
 
-  void SyncGetIssuersOf(const ParsedCertificate* cert,
-                        ParsedCertificateList* issuers) {
+  void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                        bssl::ParsedCertificateList* issuers) {
     if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
         !trusted_people_cert_store_.get() || !all_certs_store_.get() ||
         !disallowed_cert_store_.get()) {
@@ -277,18 +277,18 @@ class TrustStoreWin::Impl {
       bssl::UniquePtr<CRYPTO_BUFFER> der_crypto =
           x509_util::CreateCryptoBuffer(base::make_span(
               cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded));
-      CertErrors errors;
-      ParsedCertificate::CreateAndAddToVector(
+      bssl::CertErrors errors;
+      bssl::ParsedCertificate::CreateAndAddToVector(
           std::move(der_crypto), x509_util::DefaultParseCertificateOptions(),
           issuers, &errors);
     }
   }
 
-  CertificateTrust GetTrust(const ParsedCertificate* cert) {
+  bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) {
     if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
         !trusted_people_cert_store_.get() || !all_certs_store_.get() ||
         !disallowed_cert_store_.get()) {
-      return CertificateTrust::ForUnspecified();
+      return bssl::CertificateTrust::ForUnspecified();
     }
 
     base::span<const uint8_t> cert_span = cert->der_cert().AsSpan();
@@ -308,7 +308,7 @@ class TrustStoreWin::Impl {
       // If a cert is in the windows distruted store, it is considered
       // distrusted for all purporses. EKU isn't checked. See crbug.com/1355961.
       if (base::ranges::equal(cert_span, cert_from_store_span)) {
-        return CertificateTrust::ForDistrusted();
+        return bssl::CertificateTrust::ForDistrusted();
       }
     }
 
@@ -327,13 +327,13 @@ class TrustStoreWin::Impl {
                   features::kTrustStoreTrustedLeafSupport)) {
             // Certificates in the Roots store may be used as either trust
             // anchors or trusted leafs (if self-signed).
-            return CertificateTrust::ForTrustAnchorOrLeaf()
+            return bssl::CertificateTrust::ForTrustAnchorOrLeaf()
                 .WithEnforceAnchorExpiry()
                 .WithEnforceAnchorConstraints(
                     IsLocalAnchorConstraintsEnforcementEnabled())
                 .WithRequireLeafSelfSigned();
           } else {
-            return CertificateTrust::ForTrustAnchor()
+            return bssl::CertificateTrust::ForTrustAnchor()
                 .WithEnforceAnchorExpiry()
                 .WithEnforceAnchorConstraints(
                     IsLocalAnchorConstraintsEnforcementEnabled());
@@ -354,7 +354,7 @@ class TrustStoreWin::Impl {
           if (IsCertTrustedForServerAuth(cert_from_store)) {
             // Certificates in the Trusted People store may be trusted leafs (if
             // self-signed).
-            return CertificateTrust::ForTrustedLeaf()
+            return bssl::CertificateTrust::ForTrustedLeaf()
                 .WithRequireLeafSelfSigned();
           }
         }
@@ -372,7 +372,7 @@ class TrustStoreWin::Impl {
     // or
     //
     // (b) Haven't found the cert. Tell everyone Unspecified.
-    return CertificateTrust::ForUnspecified();
+    return bssl::CertificateTrust::ForUnspecified();
   }
 
  private:
@@ -419,8 +419,8 @@ TrustStoreWin::TrustStoreWin(std::unique_ptr<Impl> impl)
 
 TrustStoreWin::~TrustStoreWin() = default;
 
-void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
-                                     ParsedCertificateList* issuers) {
+void TrustStoreWin::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                                     bssl::ParsedCertificateList* issuers) {
   MaybeInitializeAndGetImpl()->SyncGetIssuersOf(cert, issuers);
 }
 
@@ -454,7 +454,8 @@ void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
 // If a certificate is found multiple times in the ROOT store, it is trusted
 // for TLS server auth if any instance of the certificate found
 // is usable for TLS server auth.
-CertificateTrust TrustStoreWin::GetTrust(const ParsedCertificate* cert) {
+bssl::CertificateTrust TrustStoreWin::GetTrust(
+    const bssl::ParsedCertificate* cert) {
   return MaybeInitializeAndGetImpl()->GetTrust(cert);
 }
 

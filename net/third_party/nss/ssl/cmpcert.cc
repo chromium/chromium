@@ -11,37 +11,38 @@
 #include <secitem.h>
 
 #include "base/strings/string_piece.h"
-#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "net/der/parser.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
+#include "third_party/boringssl/src/pki/parser.h"
 
 namespace net {
 
 namespace {
 
 bool GetIssuerAndSubject(CERTCertificate* cert,
-                         der::Input* issuer,
-                         der::Input* subject) {
-  *issuer = der::Input(cert->derIssuer.data, cert->derIssuer.len);
-  *subject = der::Input(cert->derSubject.data, cert->derSubject.len);
+                         bssl::der::Input* issuer,
+                         bssl::der::Input* subject) {
+  *issuer = bssl::der::Input(cert->derIssuer.data, cert->derIssuer.len);
+  *subject = bssl::der::Input(cert->derSubject.data, cert->derSubject.len);
   return true;
 }
 
 bool GetIssuerAndSubject(X509Certificate* cert,
-                         der::Input* issuer,
-                         der::Input* subject) {
-  der::Input tbs_certificate_tlv;
-  der::Input signature_algorithm_tlv;
-  der::BitString signature_value;
-  if (!ParseCertificate(der::Input(CRYPTO_BUFFER_data(cert->cert_buffer()),
-                                   CRYPTO_BUFFER_len(cert->cert_buffer())),
-                        &tbs_certificate_tlv, &signature_algorithm_tlv,
-                        &signature_value, nullptr)) {
+                         bssl::der::Input* issuer,
+                         bssl::der::Input* subject) {
+  bssl::der::Input tbs_certificate_tlv;
+  bssl::der::Input signature_algorithm_tlv;
+  bssl::der::BitString signature_value;
+  if (!bssl::ParseCertificate(
+          bssl::der::Input(CRYPTO_BUFFER_data(cert->cert_buffer()),
+                           CRYPTO_BUFFER_len(cert->cert_buffer())),
+          &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
+          nullptr)) {
     return false;
   }
-  ParsedTbsCertificate tbs;
+  bssl::ParsedTbsCertificate tbs;
   if (!ParseTbsCertificate(tbs_certificate_tlv,
                            x509_util::DefaultParseCertificateOptions(), &tbs,
                            nullptr)) {
@@ -69,8 +70,8 @@ bool MatchClientCertificateIssuers(
     return true;
 
   // DER encoded issuer and subject name of current certificate.
-  der::Input issuer;
-  der::Input subject;
+  bssl::der::Input issuer;
+  bssl::der::Input subject;
 
   if (!GetIssuerAndSubject(cert, &issuer, &subject))
     return false;
@@ -78,7 +79,7 @@ bool MatchClientCertificateIssuers(
   while (intermediates->size() < kMaxDepth) {
     // Check if current cert is issued by a valid CA.
     for (const std::string& ca : cert_authorities) {
-      if (issuer == der::Input(ca)) {
+      if (issuer == bssl::der::Input(ca)) {
         return true;
       }
     }

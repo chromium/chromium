@@ -7,14 +7,14 @@
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
-#include "net/cert/pki/extended_key_usage.h"
-#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/x509_util_apple.h"
 #include "net/ssl/client_cert_identity_mac.h"
 #include "net/ssl/client_cert_identity_test_util.h"
 #include "net/ssl/client_cert_store_unittest-inl.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/cert_builder.h"
+#include "third_party/boringssl/src/pki/extended_key_usage.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
 
 namespace net {
 
@@ -40,7 +40,7 @@ ClientCertIdentityMacListFromCertificateList(const CertificateList& certs) {
   return identities;
 }
 
-std::string InputVectorToString(std::vector<der::Input> vec) {
+std::string InputVectorToString(std::vector<bssl::der::Input> vec) {
   std::string r = "{";
   std::string sep;
   for (const auto& element : vec) {
@@ -52,7 +52,7 @@ std::string InputVectorToString(std::vector<der::Input> vec) {
   return r;
 }
 
-std::string KeyUsageVectorToString(std::vector<KeyUsageBit> vec) {
+std::string KeyUsageVectorToString(std::vector<bssl::KeyUsageBit> vec) {
   std::string r = "{";
   std::string sep;
   for (const auto& element : vec) {
@@ -168,30 +168,43 @@ TEST_F(ClientCertStoreMacTest, CertSupportsClientAuth) {
 
   struct {
     bool expected_result;
-    std::vector<KeyUsageBit> key_usages;
-    std::vector<der::Input> ekus;
+    std::vector<bssl::KeyUsageBit> key_usages;
+    std::vector<bssl::der::Input> ekus;
   } cases[] = {
       {true, {}, {}},
-      {true, {KEY_USAGE_BIT_DIGITAL_SIGNATURE}, {}},
+      {true, {bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE}, {}},
       {true,
-       {KEY_USAGE_BIT_DIGITAL_SIGNATURE, KEY_USAGE_BIT_KEY_CERT_SIGN},
+       {bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE,
+        bssl::KEY_USAGE_BIT_KEY_CERT_SIGN},
        {}},
-      {false, {KEY_USAGE_BIT_NON_REPUDIATION}, {}},
-      {false, {KEY_USAGE_BIT_KEY_ENCIPHERMENT}, {}},
-      {false, {KEY_USAGE_BIT_DATA_ENCIPHERMENT}, {}},
-      {false, {KEY_USAGE_BIT_KEY_AGREEMENT}, {}},
-      {false, {KEY_USAGE_BIT_KEY_CERT_SIGN}, {}},
-      {false, {KEY_USAGE_BIT_CRL_SIGN}, {}},
-      {false, {KEY_USAGE_BIT_ENCIPHER_ONLY}, {}},
-      {false, {KEY_USAGE_BIT_DECIPHER_ONLY}, {}},
-      {true, {}, {der::Input(kAnyEKU)}},
-      {true, {}, {der::Input(kClientAuth)}},
-      {true, {}, {der::Input(kServerAuth), der::Input(kClientAuth)}},
-      {true, {}, {der::Input(kClientAuth), der::Input(kServerAuth)}},
-      {false, {}, {der::Input(kServerAuth)}},
-      {true, {KEY_USAGE_BIT_DIGITAL_SIGNATURE}, {der::Input(kClientAuth)}},
-      {false, {KEY_USAGE_BIT_KEY_CERT_SIGN}, {der::Input(kClientAuth)}},
-      {false, {KEY_USAGE_BIT_DIGITAL_SIGNATURE}, {der::Input(kServerAuth)}},
+      {false, {bssl::KEY_USAGE_BIT_NON_REPUDIATION}, {}},
+      {false, {bssl::KEY_USAGE_BIT_KEY_ENCIPHERMENT}, {}},
+      {false, {bssl::KEY_USAGE_BIT_DATA_ENCIPHERMENT}, {}},
+      {false, {bssl::KEY_USAGE_BIT_KEY_AGREEMENT}, {}},
+      {false, {bssl::KEY_USAGE_BIT_KEY_CERT_SIGN}, {}},
+      {false, {bssl::KEY_USAGE_BIT_CRL_SIGN}, {}},
+      {false, {bssl::KEY_USAGE_BIT_ENCIPHER_ONLY}, {}},
+      {false, {bssl::KEY_USAGE_BIT_DECIPHER_ONLY}, {}},
+      {true, {}, {bssl::der::Input(bssl::kAnyEKU)}},
+      {true, {}, {bssl::der::Input(bssl::kClientAuth)}},
+      {true,
+       {},
+       {bssl::der::Input(bssl::kServerAuth),
+        bssl::der::Input(bssl::kClientAuth)}},
+      {true,
+       {},
+       {bssl::der::Input(bssl::kClientAuth),
+        bssl::der::Input(bssl::kServerAuth)}},
+      {false, {}, {bssl::der::Input(bssl::kServerAuth)}},
+      {true,
+       {bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE},
+       {bssl::der::Input(bssl::kClientAuth)}},
+      {false,
+       {bssl::KEY_USAGE_BIT_KEY_CERT_SIGN},
+       {bssl::der::Input(bssl::kClientAuth)}},
+      {false,
+       {bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE},
+       {bssl::der::Input(bssl::kServerAuth)}},
   };
 
   for (const auto& testcase : cases) {
@@ -200,12 +213,12 @@ TEST_F(ClientCertStoreMacTest, CertSupportsClientAuth) {
     SCOPED_TRACE(InputVectorToString(testcase.ekus));
 
     if (testcase.key_usages.empty())
-      builder->EraseExtension(der::Input(kKeyUsageOid));
+      builder->EraseExtension(bssl::der::Input(bssl::kKeyUsageOid));
     else
       builder->SetKeyUsages(testcase.key_usages);
 
     if (testcase.ekus.empty())
-      builder->EraseExtension(der::Input(kExtKeyUsageOid));
+      builder->EraseExtension(bssl::der::Input(bssl::kExtKeyUsageOid));
     else
       builder->SetExtendedKeyUsages(testcase.ekus);
 

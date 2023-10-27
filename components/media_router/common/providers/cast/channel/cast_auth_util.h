@@ -18,8 +18,11 @@ enum class CRLPolicy;
 
 namespace net {
 class X509Certificate;
-class TrustStore;
 }  // namespace net
+
+namespace bssl {
+class TrustStore;
+}  // namespace bssl
 
 namespace cast_channel {
 
@@ -134,8 +137,8 @@ AuthResult VerifyCredentialsForTest(
     const AuthResponse& response,
     const std::string& signature_input,
     const cast_certificate::CRLPolicy& crl_policy,
-    net::TrustStore* cast_trust_store,
-    net::TrustStore* crl_trust_store,
+    bssl::TrustStore* cast_trust_store,
+    bssl::TrustStore* crl_trust_store,
     const base::Time& verification_time);
 
 }  // namespace cast_channel

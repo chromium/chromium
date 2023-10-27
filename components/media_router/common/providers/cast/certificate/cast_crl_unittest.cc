@@ -9,9 +9,9 @@
 #include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_test_helpers.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_validator.h"
-#include "net/cert/pki/cert_errors.h"
-#include "net/cert/pki/trust_store_in_memory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 #include "third_party/openscreen/src/cast/common/certificate/proto/test_suite.pb.h"
 
 using cast::certificate::DeviceCertTest;
@@ -31,7 +31,7 @@ enum TestStepResult {
 bool TestVerifyCertificate(TestStepResult expected_result,
                            const std::vector<std::string>& certificate_chain,
                            const base::Time& time,
-                           net::TrustStore* cast_trust_store) {
+                           bssl::TrustStore* cast_trust_store) {
   std::unique_ptr<CertVerificationContext> context;
   CastDeviceCertPolicy policy;
   CastCertError result = VerifyDeviceCertUsingCustomTrustStore(
@@ -51,7 +51,7 @@ bool TestVerifyCertificate(TestStepResult expected_result,
 bool TestVerifyCRL(TestStepResult expected_result,
                    const std::string& crl_bundle,
                    const base::Time& time,
-                   net::TrustStore* crl_trust_store) {
+                   bssl::TrustStore* crl_trust_store) {
   std::unique_ptr<CastCRL> crl = ParseAndVerifyCRLUsingCustomTrustStore(
       crl_bundle, time, crl_trust_store, false /* is_fallback_crl */);
 
@@ -74,8 +74,8 @@ bool TestVerifyRevocation(CastCertError expected_result,
                           const base::Time& crl_time,
                           const base::Time& cert_time,
                           CRLPolicy crl_policy,
-                          net::TrustStore* cast_trust_store,
-                          net::TrustStore* crl_trust_store) {
+                          bssl::TrustStore* cast_trust_store,
+                          bssl::TrustStore* crl_trust_store) {
   std::unique_ptr<CastCRL> crl;
   if (!crl_bundle.empty()) {
     crl = ParseAndVerifyCRLUsingCustomTrustStore(
@@ -94,11 +94,11 @@ bool TestVerifyRevocation(CastCertError expected_result,
 
 // Runs a single test case.
 bool RunTest(const DeviceCertTest& test_case) {
-  std::unique_ptr<net::TrustStoreInMemory> cast_trust_store =
+  std::unique_ptr<bssl::TrustStoreInMemory> cast_trust_store =
       test_case.use_test_trust_anchors()
           ? cast_certificate::testing::LoadTestCert("cast_test_root_ca.pem")
           : nullptr;
-  std::unique_ptr<net::TrustStoreInMemory> crl_trust_store =
+  std::unique_ptr<bssl::TrustStoreInMemory> crl_trust_store =
       test_case.use_test_trust_anchors()
           ? cast_certificate::testing::LoadTestCert("cast_crl_test_root_ca.pem")
           : nullptr;

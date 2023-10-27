@@ -365,7 +365,7 @@ class RSAKeyUsageDisabledPolicyTest : public SSLPolicyTest {
 
 IN_PROC_BROWSER_TEST_F(RSAKeyUsageDisabledPolicyTest, RSAKeyUsagePolicy) {
   net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-  cert_config.key_usages = {net::KEY_USAGE_BIT_KEY_ENCIPHERMENT};
+  cert_config.key_usages = {bssl::KEY_USAGE_BIT_KEY_ENCIPHERMENT};
   net::SSLServerConfig ssl_config;
   ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
   // 0xc02f is TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, which expects the
@@ -415,7 +415,7 @@ class RSAKeyUsageEnabledPolicyTest : public SSLPolicyTest {
 
 IN_PROC_BROWSER_TEST_F(RSAKeyUsageEnabledPolicyTest, RSAKeyUsagePolicy) {
   net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-  cert_config.key_usages = {net::KEY_USAGE_BIT_KEY_ENCIPHERMENT};
+  cert_config.key_usages = {bssl::KEY_USAGE_BIT_KEY_ENCIPHERMENT};
   net::SSLServerConfig ssl_config;
   ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
   // 0xc02f is TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, which expects the

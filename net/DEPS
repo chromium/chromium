@@ -4,6 +4,7 @@ include_rules = [
   "+net/net_jni_headers",
   "+third_party/apple_apsl",
   "+third_party/boringssl/src/include",
+  "+third_party/boringssl/src/pki",
   "+third_party/nss",
   "+third_party/protobuf/src/google/protobuf",
   "+third_party/zlib",

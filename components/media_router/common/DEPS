@@ -3,6 +3,7 @@ include_rules = [
   "+mojo",
   "+third_party/openscreen/src/cast/common/public",
   "+third_party/blink/public",
+  "+third_party/boringssl/src/pki",
   "+media",
   "+net",
 ]

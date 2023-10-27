@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/cert/pki/path_builder.h"
+#include "third_party/boringssl/src/pki/path_builder.h"
 
 #include <algorithm>
 
@@ -11,27 +11,26 @@
 #include "base/functional/callback_forward.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/win/wincrypt_shim.h"
 #include "build/build_config.h"
-#include "net/cert/pem.h"
-#include "net/cert/pki/cert_error_params.h"
-#include "net/cert/pki/cert_issuer_source_static.h"
-#include "net/cert/pki/common_cert_errors.h"
-#include "net/cert/pki/parsed_certificate.h"
-#include "net/cert/pki/simple_path_builder_delegate.h"
-#include "net/cert/pki/test_helpers.h"
-#include "net/cert/pki/trust_store_collection.h"
-#include "net/cert/pki/trust_store_in_memory.h"
-#include "net/cert/pki/verify_certificate_chain.h"
-#include "net/der/input.h"
+#include "crypto/scoped_capi_types.h"
+#include "net/cert/internal/test_helpers.h"
+#include "net/cert/internal/trust_store_win.h"
 #include "net/net_buildflags.h"
 #include "net/test/test_certificate_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
-
-#include "base/win/wincrypt_shim.h"
-#include "crypto/scoped_capi_types.h"
-#include "net/cert/internal/trust_store_win.h"
+#include "third_party/boringssl/src/pki/cert_error_params.h"
+#include "third_party/boringssl/src/pki/cert_issuer_source_static.h"
+#include "third_party/boringssl/src/pki/common_cert_errors.h"
+#include "third_party/boringssl/src/pki/input.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/pem.h"
+#include "third_party/boringssl/src/pki/simple_path_builder_delegate.h"
+#include "third_party/boringssl/src/pki/trust_store_collection.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
+#include "third_party/boringssl/src/pki/verify_certificate_chain.h"
 
 namespace net {
 
@@ -46,11 +45,13 @@ using ::testing::SaveArg;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
 
-class DeadlineTestingPathBuilderDelegate : public SimplePathBuilderDelegate {
+class DeadlineTestingPathBuilderDelegate
+    : public bssl::SimplePathBuilderDelegate {
  public:
   DeadlineTestingPathBuilderDelegate(size_t min_rsa_modulus_length_bits,
                                      DigestPolicy digest_policy)
-      : SimplePathBuilderDelegate(min_rsa_modulus_length_bits, digest_policy) {}
+      : bssl::SimplePathBuilderDelegate(min_rsa_modulus_length_bits,
+                                        digest_policy) {}
 
   bool IsDeadlineExpired() override { return deadline_is_expired_; }
 
@@ -63,11 +64,11 @@ class DeadlineTestingPathBuilderDelegate : public SimplePathBuilderDelegate {
 };
 
 // AsyncCertIssuerSourceStatic always returns its certs asynchronously.
-class AsyncCertIssuerSourceStatic : public CertIssuerSource {
+class AsyncCertIssuerSourceStatic : public bssl::CertIssuerSource {
  public:
   class StaticAsyncRequest : public Request {
    public:
-    explicit StaticAsyncRequest(ParsedCertificateList&& issuers) {
+    explicit StaticAsyncRequest(bssl::ParsedCertificateList&& issuers) {
       issuers_.swap(issuers);
       issuers_iter_ = issuers_.begin();
     }
@@ -77,13 +78,13 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
 
     ~StaticAsyncRequest() override = default;
 
-    void GetNext(ParsedCertificateList* out_certs) override {
+    void GetNext(bssl::ParsedCertificateList* out_certs) override {
       if (issuers_iter_ != issuers_.end())
         out_certs->push_back(std::move(*issuers_iter_++));
     }
 
-    ParsedCertificateList issuers_;
-    ParsedCertificateList::iterator issuers_iter_;
+    bssl::ParsedCertificateList issuers_;
+    bssl::ParsedCertificateList::iterator issuers_iter_;
   };
 
   ~AsyncCertIssuerSourceStatic() override = default;
@@ -92,16 +93,16 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
     async_get_callback_ = std::move(closure);
   }
 
-  void AddCert(std::shared_ptr<const ParsedCertificate> cert) {
+  void AddCert(std::shared_ptr<const bssl::ParsedCertificate> cert) {
     static_cert_issuer_source_.AddCert(std::move(cert));
   }
 
-  void SyncGetIssuersOf(const ParsedCertificate* cert,
-                        ParsedCertificateList* issuers) override {}
-  void AsyncGetIssuersOf(const ParsedCertificate* cert,
+  void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                        bssl::ParsedCertificateList* issuers) override {}
+  void AsyncGetIssuersOf(const bssl::ParsedCertificate* cert,
                          std::unique_ptr<Request>* out_req) override {
     num_async_gets_++;
-    ParsedCertificateList issuers;
+    bssl::ParsedCertificateList issuers;
     static_cert_issuer_source_.SyncGetIssuersOf(cert, &issuers);
     auto req = std::make_unique<StaticAsyncRequest>(std::move(issuers));
     *out_req = std::move(req);
@@ -111,7 +112,7 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
   int num_async_gets() const { return num_async_gets_; }
 
  private:
-  CertIssuerSourceStatic static_cert_issuer_source_;
+  bssl::CertIssuerSourceStatic static_cert_issuer_source_;
 
   int num_async_gets_ = 0;
   base::RepeatingClosure async_get_callback_;
@@ -129,20 +130,20 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
 
 ::testing::AssertionResult ReadTestCert(
     const std::string& file_name,
-    std::shared_ptr<const ParsedCertificate>* result) {
+    std::shared_ptr<const bssl::ParsedCertificate>* result) {
   std::string der;
   ::testing::AssertionResult r = ReadTestPem(
       "net/data/ssl/certificates/" + file_name, "CERTIFICATE", &der);
   if (!r)
     return r;
-  CertErrors errors;
-  *result = ParsedCertificate::Create(
+  bssl::CertErrors errors;
+  *result = bssl::ParsedCertificate::Create(
       bssl::UniquePtr<CRYPTO_BUFFER>(CRYPTO_BUFFER_new(
           reinterpret_cast<const uint8_t*>(der.data()), der.size(), nullptr)),
       {}, &errors);
   if (!*result) {
     return ::testing::AssertionFailure()
-           << "ParseCertificate::Create() failed:\n"
+           << "bssl::ParseCertificate::Create() failed:\n"
            << errors.ToDebugString();
   }
   return ::testing::AssertionSuccess();
@@ -167,25 +168,25 @@ class PathBuilderMultiRootWindowsTest : public ::testing::Test {
   }
 
  protected:
-  std::shared_ptr<const ParsedCertificate> a_by_b_, b_by_c_, b_by_f_, c_by_d_,
-      c_by_e_, d_by_d_, e_by_e_, f_by_e_;
+  std::shared_ptr<const bssl::ParsedCertificate> a_by_b_, b_by_c_, b_by_f_,
+      c_by_d_, c_by_e_, d_by_d_, e_by_e_, f_by_e_;
 
   DeadlineTestingPathBuilderDelegate delegate_;
-  der::GeneralizedTime time_ = {2017, 3, 1, 0, 0, 0};
+  bssl::der::GeneralizedTime time_ = {2017, 3, 1, 0, 0, 0};
 
-  const InitialExplicitPolicy initial_explicit_policy_ =
-      InitialExplicitPolicy::kFalse;
-  const std::set<der::Input> user_initial_policy_set_ = {
-      der::Input(kAnyPolicyOid)};
-  const InitialPolicyMappingInhibit initial_policy_mapping_inhibit_ =
-      InitialPolicyMappingInhibit::kFalse;
-  const InitialAnyPolicyInhibit initial_any_policy_inhibit_ =
-      InitialAnyPolicyInhibit::kFalse;
+  const bssl::InitialExplicitPolicy initial_explicit_policy_ =
+      bssl::InitialExplicitPolicy::kFalse;
+  const std::set<bssl::der::Input> user_initial_policy_set_ = {
+      bssl::der::Input(bssl::kAnyPolicyOid)};
+  const bssl::InitialPolicyMappingInhibit initial_policy_mapping_inhibit_ =
+      bssl::InitialPolicyMappingInhibit::kFalse;
+  const bssl::InitialAnyPolicyInhibit initial_any_policy_inhibit_ =
+      bssl::InitialAnyPolicyInhibit::kFalse;
 };
 
 void AddToStoreWithEKURestriction(
     HCERTSTORE store,
-    const std::shared_ptr<const ParsedCertificate>& cert,
+    const std::shared_ptr<const bssl::ParsedCertificate>& cert,
     LPCSTR usage_identifier) {
   crypto::ScopedPCCERT_CONTEXT os_cert(CertCreateCertificateContext(
       X509_ASN_ENCODING, cert->der_cert().UnsafeData(),
@@ -201,8 +202,8 @@ void AddToStoreWithEKURestriction(
                                    nullptr);
 }
 
-bool AreCertsEq(const std::shared_ptr<const ParsedCertificate> cert_1,
-                const std::shared_ptr<const ParsedCertificate> cert_2) {
+bool AreCertsEq(const std::shared_ptr<const bssl::ParsedCertificate> cert_1,
+                const std::shared_ptr<const bssl::ParsedCertificate> cert_2) {
   return cert_1 && cert_2 && cert_1->der_cert() == cert_2->der_cert();
 }
 
@@ -223,8 +224,8 @@ TEST_F(PathBuilderMultiRootWindowsTest, TrustStoreWinOnlyFindTrustedTLSPath) {
   std::unique_ptr<TrustStoreWin> trust_store =
       TrustStoreWin::CreateForTesting(std::move(stores));
 
-  CertPathBuilder path_builder(
-      b_by_c_, trust_store.get(), &delegate_, time_, KeyPurpose::ANY_EKU,
+  bssl::CertPathBuilder path_builder(
+      b_by_c_, trust_store.get(), &delegate_, time_, bssl::KeyPurpose::ANY_EKU,
       initial_explicit_policy_, user_initial_policy_set_,
       initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
 
@@ -260,8 +261,8 @@ TEST_F(PathBuilderMultiRootWindowsTest, TrustStoreWinNoPathEKURestrictions) {
   std::unique_ptr<TrustStoreWin> trust_store =
       TrustStoreWin::CreateForTesting(std::move(stores));
 
-  CertPathBuilder path_builder(
-      b_by_c_, trust_store.get(), &delegate_, time_, KeyPurpose::ANY_EKU,
+  bssl::CertPathBuilder path_builder(
+      b_by_c_, trust_store.get(), &delegate_, time_, bssl::KeyPurpose::ANY_EKU,
       initial_explicit_policy_, user_initial_policy_set_,
       initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
 

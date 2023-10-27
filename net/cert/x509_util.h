@@ -20,6 +20,7 @@
 #include "net/base/net_export.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace crypto {
 class RSAPrivateKey;
@@ -27,7 +28,6 @@ class RSAPrivateKey;
 
 namespace net {
 
-struct ParseCertificateOptions;
 class X509Certificate;
 
 namespace x509_util {
@@ -151,7 +151,7 @@ NET_EXPORT bool CreateCertBuffersFromPKCS7Bytes(
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>* handles);
 
 // Returns the default ParseCertificateOptions for the net stack.
-NET_EXPORT ParseCertificateOptions DefaultParseCertificateOptions();
+NET_EXPORT bssl::ParseCertificateOptions DefaultParseCertificateOptions();
 
 // On success, returns true and updates |hash| to be the SHA-256 hash of the
 // subjectPublicKeyInfo of the certificate in |buffer|. If |buffer| is not a
