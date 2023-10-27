@@ -49,14 +49,14 @@ FollowedWebChannel* FollowedWebSiteToFollowedWebChannel(
   NSMutableArray<id<FollowManagementUIUpdater>>* _updaters;
 }
 
-- (instancetype)initWithBrowser:(Browser*)browser {
+- (instancetype)initWithBrowserAgent:(FollowBrowserAgent*)browserAgent
+                       faviconLoader:(FaviconLoader*)faviconLoader {
   self = [super init];
   if (self) {
-    _faviconLoader = IOSChromeFaviconLoaderFactory::GetForBrowserState(
-        browser->GetBrowserState());
-    _followBrowserAgent = FollowBrowserAgent::FromBrowser(browser);
+    _followBrowserAgent = browserAgent;
     _observer = std::make_unique<FollowBrowserAgentObserverBridge>(
         self, _followBrowserAgent);
+    _faviconLoader = faviconLoader;
     _updaters = [[NSMutableArray alloc] init];
   }
   return self;

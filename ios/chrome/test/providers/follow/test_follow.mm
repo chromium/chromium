@@ -5,14 +5,20 @@
 #import "ios/public/provider/chrome/browser/follow/follow_api.h"
 
 #import "base/functional/callback.h"
+#import "base/observer_list.h"
+#import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/follow/follow_service_observer.h"
 
 namespace ios {
 namespace provider {
 namespace {
 
-// FollowService implementation used in tests.
+// FollowService implementation used in tests. Uses an array to store followed
+// sites.
 class TestFollowService final : public FollowService {
  public:
+  TestFollowService();
+
   // FollowService implementation.
   bool IsWebSiteFollowed(WebPageURLs* web_page_urls) final;
   NSURL* GetRecommendedSiteURL(WebPageURLs* web_page_urls) final;
@@ -26,10 +32,35 @@ class TestFollowService final : public FollowService {
                        ResultCallback callback) final;
   void AddObserver(FollowServiceObserver* observer) final;
   void RemoveObserver(FollowServiceObserver* observer) final;
+
+ private:
+  // Returns the index of the given url, if it is currently followed.
+  NSUInteger FindFollowedWebSite(NSURL* url);
+  // Returns a FollowedWebSite with the URL from `web_page_urls`.
+  FollowedWebSite* WebPageURLsToFollowedWebSite(WebPageURLs* web_page_urls);
+
+  // Notify the observers of various events.
+  void NotifyWebSiteFollowed(FollowedWebSite* web_site);
+  void NotifyWebSiteUnfollowed(FollowedWebSite* web_site);
+  void NotifyFollowedChannelLoaded();
+
+  base::ObserverList<FollowServiceObserver> observer_list_;
+  NSMutableArray<FollowedWebSite*>* following_;
 };
 
+TestFollowService::TestFollowService() {
+  following_ = [[NSMutableArray alloc] init];
+}
+
+NSUInteger TestFollowService::FindFollowedWebSite(NSURL* url) {
+  return [following_ indexOfObjectPassingTest:^BOOL(
+                         FollowedWebSite* site, NSUInteger idx, BOOL* stop) {
+    return [site.webPageURL isEqual:url];
+  }];
+}
+
 bool TestFollowService::IsWebSiteFollowed(WebPageURLs* web_page_urls) {
-  return false;
+  return FindFollowedWebSite(web_page_urls.URL) != NSNotFound;
 }
 
 NSURL* TestFollowService::GetRecommendedSiteURL(WebPageURLs* web_page_urls) {
@@ -37,31 +68,78 @@ NSURL* TestFollowService::GetRecommendedSiteURL(WebPageURLs* web_page_urls) {
 }
 
 NSArray<FollowedWebSite*>* TestFollowService::GetFollowedWebSites() {
-  return @[];
+  return [following_ copy];
 }
 
 void TestFollowService::LoadFollowedWebSites() {
-  // Do nothing.
+  NotifyFollowedChannelLoaded();
+}
+
+FollowedWebSite* TestFollowService::WebPageURLsToFollowedWebSite(
+    WebPageURLs* web_page_urls) {
+  FollowedWebSite* followed_web_site = [[FollowedWebSite alloc] init];
+  followed_web_site.title = @"";
+  followed_web_site.webPageURL = web_page_urls.URL;
+  followed_web_site.RSSURL = [web_page_urls.RSSURLs firstObject];
+  followed_web_site.state = FollowedWebSiteStateStateUnknown;
+  return followed_web_site;
 }
 
 void TestFollowService::FollowWebSite(WebPageURLs* web_page_urls,
                                       FollowSource source,
                                       ResultCallback callback) {
-  // Do nothing.
+  FollowedWebSite* site = WebPageURLsToFollowedWebSite(web_page_urls);
+  if (IsWebSiteFollowed(web_page_urls)) {
+    return;
+  }
+
+  [following_ addObject:site];
+  NotifyWebSiteFollowed(site);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), FollowResult::Success, site));
 }
 
 void TestFollowService::UnfollowWebSite(WebPageURLs* web_page_urls,
                                         FollowSource source,
                                         ResultCallback callback) {
-  // Do nothing.
+  FollowedWebSite* site = WebPageURLsToFollowedWebSite(web_page_urls);
+  NSUInteger index = FindFollowedWebSite(web_page_urls.URL);
+  if (index == NSNotFound) {
+    return;
+  }
+
+  [following_ removeObjectAtIndex:index];
+  NotifyWebSiteUnfollowed(site);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), FollowResult::Success, site));
 }
 
 void TestFollowService::AddObserver(FollowServiceObserver* observer) {
-  // Do nothing.
+  observer_list_.AddObserver(observer);
 }
 
 void TestFollowService::RemoveObserver(FollowServiceObserver* observer) {
-  // Do nothing.
+  observer_list_.RemoveObserver(observer);
+}
+
+void TestFollowService::NotifyWebSiteFollowed(FollowedWebSite* web_site) {
+  for (FollowServiceObserver& observer : observer_list_) {
+    observer.OnWebSiteFollowed(web_site);
+  }
+}
+
+void TestFollowService::NotifyWebSiteUnfollowed(FollowedWebSite* web_site) {
+  for (FollowServiceObserver& observer : observer_list_) {
+    observer.OnWebSiteUnfollowed(web_site);
+  }
+}
+
+void TestFollowService::NotifyFollowedChannelLoaded() {
+  for (FollowServiceObserver& observer : observer_list_) {
+    observer.OnFollowedWebSitesLoaded();
+  }
 }
 
 }  // anonymous namespace
