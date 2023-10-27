@@ -79,7 +79,7 @@ class NET_EXPORT ProxyChain {
   const std::vector<ProxyServer>& proxy_servers() const;
 
   // Get the ProxyServers in this chain, or `nullopt` if the chain is not valid.
-  const std::optional<std::vector<ProxyServer>>& proxy_servers_if_valid()
+  const absl::optional<std::vector<ProxyServer>>& proxy_servers_if_valid()
       const {
     return proxy_server_list_;
   }
