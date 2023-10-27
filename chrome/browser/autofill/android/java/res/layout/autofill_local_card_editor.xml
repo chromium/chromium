@@ -69,8 +69,7 @@ found in the LICENSE file.
                 android:id="@+id/autofill_credit_card_editor_month_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="@dimen/min_touch_target_size"
-                android:contentDescription="@string/autofill_credit_card_editor_expiration_month" />
+                android:minHeight="@dimen/min_touch_target_size" />
 
             <View style="@style/PreferenceSpinnerUnderlineView" />
 
@@ -86,8 +85,7 @@ found in the LICENSE file.
                 android:id="@+id/autofill_credit_card_editor_year_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="@dimen/min_touch_target_size"
-                android:contentDescription="@string/autofill_credit_card_editor_expiration_year" />
+                android:minHeight="@dimen/min_touch_target_size" />
 
             <View style="@style/PreferenceSpinnerUnderlineView"  />
 

@@ -555,12 +555,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_DATE" desc="Label for text input field containing a credit card expiration date. [CHAR_LIMIT=32]">
         Expiration date
       </message>
-      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_MONTH" desc="Accessibility label for a spinner input field containing a list of expiration months for a credit card. [CHAR_LIMIT=32]">
-        Expiration month
-      </message>
-      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_YEAR" desc="Accessibility label for a spinner input field containing a list of expiration years for a credit card. [CHAR_LIMIT=32]">
-        Expiration year
-      </message>
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_BILLING_ADDRESS" desc="Label for a spinner input field containing a list of billing addresses for a credit card. [CHAR_LIMIT=32]">
         Billing address
       </message>
