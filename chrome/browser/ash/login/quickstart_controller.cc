@@ -35,18 +35,18 @@ absl::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
   return absl::nullopt;
 }
 
-quick_start_metrics::ScreenName ScreenNameFromOobeScreenId(
+QuickStartMetrics::ScreenName ScreenNameFromOobeScreenId(
     OobeScreenId screen_id) {
   //  TODO(b/298042953): Check Screen IDs for Unicorn account setup flow.
   if (screen_id == ConsumerUpdateScreenView::kScreenId) {
     //  TODO(b/298042953): Update Screen ID when the new OOBE Checking for
     //  update and determining device configuration screen is added.
-    return quick_start_metrics::ScreenName::
+    return QuickStartMetrics::ScreenName::
         kCheckingForUpdateAndDeterminingDeviceConfiguration;
   } else if (screen_id == UserCreationView::kScreenId) {
-    return quick_start_metrics::ScreenName::kChooseChromebookSetup;
+    return QuickStartMetrics::ScreenName::kChooseChromebookSetup;
   }
-  return quick_start_metrics::ScreenName::kOther;
+  return QuickStartMetrics::ScreenName::kOther;
 }
 
 }  // namespace
@@ -159,16 +159,16 @@ void QuickStartController::OnStatusChanged(
       CHECK(absl::holds_alternative<QRCode::PixelData>(status.payload));
       qr_code_data_ = absl::get<QRCode::PixelData>(status.payload);
       UpdateUiState(UiState::SHOWING_QR);
-      quick_start_metrics::RecordScreenOpened(
-          quick_start_metrics::ScreenName::kSetUpAndroidPhone);
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kSetUpAndroidPhone);
       return;
     }
     case Step::PIN_VERIFICATION: {
       CHECK(status.pin.length() == 4);
       pin_ = status.pin;
       UpdateUiState(UiState::SHOWING_PIN);
-      quick_start::quick_start_metrics::RecordScreenOpened(
-          quick_start_metrics::ScreenName::kSetUpAndroidPhone);
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kSetUpAndroidPhone);
       return;
     }
     case Step::ERROR:
@@ -182,8 +182,8 @@ void QuickStartController::OnStatusChanged(
       return;
     case Step::REQUESTING_WIFI_CREDENTIALS:
       UpdateUiState(UiState::CONNECTING_TO_WIFI);
-      quick_start::quick_start_metrics::RecordScreenOpened(
-          quick_start_metrics::ScreenName::kConnectingToWifi);
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kConnectingToWifi);
       return;
     case Step::WIFI_CREDENTIALS_RECEIVED:
       LoginDisplayHost::default_host()
@@ -245,7 +245,7 @@ void QuickStartController::OnCurrentScreenChanged(OobeScreenId previous_screen,
     // the Quick Start screen are recorded from OnStatusChanged().
     HandleTransitionToQuickStartScreen();
   } else if (IsSetupOngoing()) {
-    quick_start_metrics::RecordScreenOpened(
+    QuickStartMetrics::RecordScreenOpened(
         ScreenNameFromOobeScreenId(current_screen));
   }
 }

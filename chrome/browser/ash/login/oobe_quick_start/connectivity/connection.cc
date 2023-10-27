@@ -234,7 +234,7 @@ void Connection::OnRequestAccountTransferAssertionResponse(
   assertion_info.authenticator_data = fido_response->auth_data;
   assertion_info.signature = fido_response->signature;
 
-  quick_start_metrics::RecordGaiaTransferResult(
+  QuickStartMetrics::RecordGaiaTransferResult(
       /*succeeded=*/true, /*failure_reason=*/absl::nullopt);
 
   std::move(callback).Run(assertion_info);
@@ -293,8 +293,8 @@ void Connection::SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,
                                           QuickStartResponseType response_type,
                                           ConnectionResponseCallback callback,
                                           base::TimeDelta timeout) {
-  quick_start_metrics::RecordMessageSent(
-      quick_start_metrics::MapResponseToMessageType(response_type));
+  QuickStartMetrics::RecordMessageSent(
+      QuickStartMetrics::MapResponseToMessageType(response_type));
   nearby_connection_->Write(std::move(bytes));
   nearby_connection_->Read(base::BindOnce(
       &Connection::OnResponseReceived, response_weak_ptr_factory_.GetWeakPtr(),
@@ -325,10 +325,10 @@ void Connection::OnHandshakeResponse(
     absl::optional<std::vector<uint8_t>> response_bytes) {
   if (!response_bytes) {
     QS_LOG(ERROR) << "Failed to read handshake response from NearbyConnection";
-    quick_start_metrics::RecordHandshakeResult(
+    QuickStartMetrics::RecordHandshakeResult(
         /*success=*/false, /*duration=*/handshake_elapsed_timer_->Elapsed(),
         /*error_code=*/
-        quick_start_metrics::HandshakeErrorCode::kFailedToReadResponse);
+        QuickStartMetrics::HandshakeErrorCode::kFailedToReadResponse);
     handshake_elapsed_timer_.reset();
     std::move(callback).Run(/*success=*/false);
     return;
@@ -338,11 +338,11 @@ void Connection::OnHandshakeResponse(
                                         session_context_.shared_secret());
   bool success = status == handshake::VerifyHandshakeMessageStatus::kSuccess;
   if (success) {
-    quick_start_metrics::RecordHandshakeResult(
+    QuickStartMetrics::RecordHandshakeResult(
         /*success=*/true, /*duration=*/handshake_elapsed_timer_->Elapsed(),
         /*error_code=*/absl::nullopt);
   } else {
-    quick_start_metrics::RecordHandshakeResult(
+    QuickStartMetrics::RecordHandshakeResult(
         /*success=*/false, /*duration=*/handshake_elapsed_timer_->Elapsed(),
         /*error_code=*/
         handshake::MapHandshakeStatusToErrorCode(status));
@@ -469,12 +469,12 @@ void Connection::OnResponseTimeout(QuickStartResponseType response_type) {
   QS_LOG(ERROR) << "Timed out waiting for " << response_type
                 << " response from source device.";
   Close(TargetDeviceConnectionBroker::ConnectionClosedReason::kResponseTimeout);
-  quick_start_metrics::RecordMessageReceived(
-      /*desired_message_type=*/quick_start_metrics::MapResponseToMessageType(
+  QuickStartMetrics::RecordMessageReceived(
+      /*desired_message_type=*/QuickStartMetrics::MapResponseToMessageType(
           response_type),
       /*succeeded=*/false,
       /*listen_duration=*/kDefaultRoundTripTimeout,
-      quick_start_metrics::MessageReceivedErrorCode::kTimeOut);
+      QuickStartMetrics::MessageReceivedErrorCode::kTimeOut);
   message_elapsed_timer_.reset();
   if (response_type == QuickStartResponseType::kHandshake &&
       handshake_elapsed_timer_) {
@@ -493,15 +493,15 @@ void Connection::OnResponseReceived(
                << " response from source device";
 
   if (!response_bytes.has_value()) {
-    quick_start_metrics::RecordMessageReceived(
-        /*desired_message_type=*/quick_start_metrics::MapResponseToMessageType(
+    QuickStartMetrics::RecordMessageReceived(
+        /*desired_message_type=*/QuickStartMetrics::MapResponseToMessageType(
             response_type),
         /*succeeded=*/false,
         /*listen_duration=*/message_elapsed_timer_->Elapsed(),
-        quick_start_metrics::MessageReceivedErrorCode::kDeserializationFailure);
+        QuickStartMetrics::MessageReceivedErrorCode::kDeserializationFailure);
   } else {
-    quick_start_metrics::RecordMessageReceived(
-        /*desired_message_type=*/quick_start_metrics::MapResponseToMessageType(
+    QuickStartMetrics::RecordMessageReceived(
+        /*desired_message_type=*/QuickStartMetrics::MapResponseToMessageType(
             response_type),
         /*succeeded=*/true,
         /*listen_duration=*/message_elapsed_timer_->Elapsed(), absl::nullopt);

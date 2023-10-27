@@ -430,10 +430,10 @@ TEST_F(FastPairAdvertiserTest, TestStartAdvertising_DeleteInErrorCallback) {
   expected_failure_count_++;
   histograms_.ExpectBucketCount(
       "QuickStart.FastPairAdvertisementStarted.AdvertisingMethod",
-      quick_start_metrics::AdvertisingMethod::kQrCode, expected_failure_count_);
+      QuickStartMetrics::AdvertisingMethod::kQrCode, expected_failure_count_);
   histograms_.ExpectBucketCount(
       "QuickStart.FastPairAdvertisementEnded.AdvertisingMethod",
-      quick_start_metrics::AdvertisingMethod::kQrCode, expected_failure_count_);
+      QuickStartMetrics::AdvertisingMethod::kQrCode, expected_failure_count_);
   histograms_.ExpectBucketCount(
       "QuickStart.FastPairAdvertisementEnded.Succeeded", false,
       expected_failure_count_);

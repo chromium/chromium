@@ -90,7 +90,7 @@ class FastPairAdvertiser : public device::BluetoothAdvertisement::Observer {
   // Timer to keep track of advertising duration.
   std::unique_ptr<base::ElapsedTimer> advertising_timer_;
   // Used for metrics to record advertising method.
-  quick_start_metrics::AdvertisingMethod advertising_method_;
+  QuickStartMetrics::AdvertisingMethod advertising_method_;
   base::WeakPtrFactory<FastPairAdvertiser> weak_ptr_factory_{this};
 };
 

@@ -438,7 +438,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
 
   if (use_pin_authentication_ && !is_resume_after_update_) {
     QS_LOG(INFO) << "Pin authentication completed!";
-    quick_start_metrics::RecordHandshakeStarted(/*handshake_started=*/false);
+    QuickStartMetrics::RecordHandshakeStarted(/*handshake_started=*/false);
     connection_->MarkConnectionAuthenticated();
   } else {
     QS_LOG(INFO) << "Initiating cryptographic handshake.";
@@ -446,7 +446,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
         quick_start_connectivity_service_->GetNearbyConnectionsManager()
             ->GetAuthenticationToken(endpoint_id);
     CHECK(auth_token);
-    quick_start_metrics::RecordHandshakeStarted(/*handshake_started=*/true);
+    QuickStartMetrics::RecordHandshakeStarted(/*handshake_started=*/true);
     connection_->InitiateHandshake(
         *auth_token,
         base::BindOnce(&TargetDeviceConnectionBrokerImpl::OnHandshakeCompleted,

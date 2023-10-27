@@ -176,9 +176,9 @@ class ConnectionTest : public testing::Test {
                                     absl::nullopt);
     TestMessageMetrics(
         /*succeeded=*/false, /*message_type=*/
-        quick_start_metrics::MapResponseToMessageType(response_type),
+        QuickStartMetrics::MapResponseToMessageType(response_type),
         /*error_code=*/
-        quick_start_metrics::MessageReceivedErrorCode::kDeserializationFailure);
+        QuickStartMetrics::MessageReceivedErrorCode::kDeserializationFailure);
   }
 
   void OnHandshakeResponse(base::OnceCallback<void(bool)> callback) {
@@ -195,15 +195,14 @@ class ConnectionTest : public testing::Test {
 
   void TestMessageMetrics(
       bool should_succeed,
-      quick_start_metrics::MessageType message_type,
-      absl::optional<quick_start_metrics::MessageReceivedErrorCode>
-          error_code) {
+      QuickStartMetrics::MessageType message_type,
+      absl::optional<QuickStartMetrics::MessageReceivedErrorCode> error_code) {
     histogram_tester_.ExpectBucketCount("QuickStart.MessageSent.MessageType",
                                         message_type, 1);
     histogram_tester_.ExpectBucketCount(
         "QuickStart.MessageReceived.DesiredMessageType", message_type, 1);
     switch (message_type) {
-      case quick_start_metrics::MessageType::kWifiCredentials:
+      case QuickStartMetrics::MessageType::kWifiCredentials:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.WifiCredentials.Succeeded",
             should_succeed, 1);
@@ -215,7 +214,7 @@ class ConnectionTest : public testing::Test {
               error_code.value(), 1);
         }
         break;
-      case quick_start_metrics::MessageType::kBootstrapConfigurations:
+      case QuickStartMetrics::MessageType::kBootstrapConfigurations:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.BootstrapConfigurations.Succeeded",
             should_succeed, 1);
@@ -228,7 +227,7 @@ class ConnectionTest : public testing::Test {
               error_code.value(), 1);
         }
         break;
-      case quick_start_metrics::MessageType::kHandshake:
+      case QuickStartMetrics::MessageType::kHandshake:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.Handshake.Succeeded", should_succeed,
             1);
@@ -240,7 +239,7 @@ class ConnectionTest : public testing::Test {
               error_code.value(), 1);
         }
         break;
-      case quick_start_metrics::MessageType::kNotifySourceOfUpdate:
+      case QuickStartMetrics::MessageType::kNotifySourceOfUpdate:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.NotifySourceOfUpdate.Succeeded",
             should_succeed, 1);
@@ -253,7 +252,7 @@ class ConnectionTest : public testing::Test {
               error_code.value(), 1);
         }
         break;
-      case quick_start_metrics::MessageType::kGetInfo:
+      case QuickStartMetrics::MessageType::kGetInfo:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.GetInfo.Succeeded", should_succeed, 1);
         histogram_tester_.ExpectTotalCount(
@@ -264,7 +263,7 @@ class ConnectionTest : public testing::Test {
               error_code.value(), 1);
         }
         break;
-      case quick_start_metrics::MessageType::kAssertion:
+      case QuickStartMetrics::MessageType::kAssertion:
         histogram_tester_.ExpectBucketCount(
             "QuickStart.MessageReceived.Assertion.Succeeded", should_succeed,
             1);
@@ -281,7 +280,7 @@ class ConnectionTest : public testing::Test {
 
   void TestHandshakeMetrics(
       bool should_succeed,
-      absl::optional<quick_start_metrics::HandshakeErrorCode> error_code) {
+      absl::optional<QuickStartMetrics::HandshakeErrorCode> error_code) {
     if (!should_succeed) {
       histogram_tester_.ExpectBucketCount(
           "QuickStart.HandshakeResult.ErrorCode", error_code.value(), 1);
@@ -368,7 +367,7 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
   EXPECT_TRUE(credentials.value().is_hidden);
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kWifiCredentials,
+      /*message_type=*/QuickStartMetrics::MessageType::kWifiCredentials,
       /*error_code=*/absl::nullopt);
 }
 
@@ -416,7 +415,7 @@ TEST_F(ConnectionTest, RequestAccountInfo) {
   ASSERT_TRUE(future.Wait());
 
   TestMessageMetrics(/*should_succeed=*/true, /*message_type=*/
-                     quick_start_metrics::MessageType::kBootstrapConfigurations,
+                     QuickStartMetrics::MessageType::kBootstrapConfigurations,
                      /*error_code=*/absl::nullopt);
 }
 
@@ -450,7 +449,7 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   fake_nearby_connection_->AppendReadableData(kTestBytes);
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kGetInfo,
+      /*message_type=*/QuickStartMetrics::MessageType::kGetInfo,
       /*error_code=*/absl::nullopt);
 
   // OnFidoGetInfoResponse should trigger a write of FIDO GetAssertion
@@ -499,7 +498,7 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   EXPECT_FALSE(fake_nearby_connection_->IsClosed());
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kAssertion,
+      /*message_type=*/QuickStartMetrics::MessageType::kAssertion,
       /*error_code=*/absl::nullopt);
 
   // Wait for callback to finish and verify response
@@ -582,7 +581,7 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {
   EXPECT_TRUE(future.Get());
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kNotifySourceOfUpdate,
+      /*message_type=*/QuickStartMetrics::MessageType::kNotifySourceOfUpdate,
       /*error_code=*/absl::nullopt);
 }
 
@@ -598,7 +597,7 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_FalseAckReceivedValue) {
   EXPECT_FALSE(future.Get());
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kNotifySourceOfUpdate,
+      /*message_type=*/QuickStartMetrics::MessageType::kNotifySourceOfUpdate,
       /*error_code=*/absl::nullopt);
 }
 
@@ -638,8 +637,8 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_ResponseTimeout) {
   EXPECT_EQ(connection_->GetState(), Connection::State::kClosed);
   TestMessageMetrics(
       /*should_succeed=*/false,
-      /*message_type=*/quick_start_metrics::MessageType::kNotifySourceOfUpdate,
-      /*error_code=*/quick_start_metrics::MessageReceivedErrorCode::kTimeOut);
+      /*message_type=*/QuickStartMetrics::MessageType::kNotifySourceOfUpdate,
+      /*error_code=*/QuickStartMetrics::MessageReceivedErrorCode::kTimeOut);
 }
 
 TEST_F(ConnectionTest, SendBytesAndReadResponse_TimedOut) {
@@ -736,7 +735,7 @@ TEST_F(ConnectionTest, InitiateHandshake) {
   EXPECT_TRUE(future.Get());
   TestMessageMetrics(
       /*should_succeed=*/true,
-      /*message_type=*/quick_start_metrics::MessageType::kHandshake,
+      /*message_type=*/QuickStartMetrics::MessageType::kHandshake,
       /*error_code=*/absl::nullopt);
   TestHandshakeMetrics(/*should_succeed=*/true, /*error_code=*/absl::nullopt);
 }
@@ -752,7 +751,7 @@ TEST_F(ConnectionTest, InitiateHandshake_BadResponse) {
   fake_nearby_connection_->AppendReadableData(written_payload);
   EXPECT_FALSE(future.Get());
   TestHandshakeMetrics(/*should_succeed=*/false,
-                       /*error_code=*/quick_start_metrics::HandshakeErrorCode::
+                       /*error_code=*/QuickStartMetrics::HandshakeErrorCode::
                            kUnexpectedAuthPayloadRole);
 }
 
@@ -761,7 +760,7 @@ TEST_F(ConnectionTest, EmptyHandshakeResponse) {
   connection_->InitiateHandshake(kAuthToken, future.GetCallback());
   OnHandshakeResponse(future.GetCallback());
   TestHandshakeMetrics(/*should_succeed=*/false,
-                       /*error_code=*/quick_start_metrics::HandshakeErrorCode::
+                       /*error_code=*/QuickStartMetrics::HandshakeErrorCode::
                            kFailedToReadResponse);
 }
 

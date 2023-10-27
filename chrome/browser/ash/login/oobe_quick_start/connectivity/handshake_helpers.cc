@@ -164,24 +164,21 @@ VerifyHandshakeMessageStatus VerifyHandshakeMessage(
   return VerifyHandshakeMessageStatus::kSuccess;
 }
 
-quick_start_metrics::HandshakeErrorCode MapHandshakeStatusToErrorCode(
-    VerifyHandshakeMessageStatus handshake_status) {
+QuickStartMetrics::HandshakeErrorCode MapHandshakeStatusToErrorCode(
+    handshake::VerifyHandshakeMessageStatus handshake_status) {
   switch (handshake_status) {
     case VerifyHandshakeMessageStatus::kSuccess:
-      return quick_start_metrics::HandshakeErrorCode::
-          kInvalidHandshakeErrorCode;
+      return QuickStartMetrics::HandshakeErrorCode::kInvalidHandshakeErrorCode;
     case VerifyHandshakeMessageStatus::kFailedToParse:
-      return quick_start_metrics::HandshakeErrorCode::kFailedToParse;
+      return QuickStartMetrics::HandshakeErrorCode::kFailedToParse;
     case VerifyHandshakeMessageStatus::kFailedToDecryptAuthPayload:
-      return quick_start_metrics::HandshakeErrorCode::
-          kFailedToDecryptAuthPayload;
+      return QuickStartMetrics::HandshakeErrorCode::kFailedToDecryptAuthPayload;
     case VerifyHandshakeMessageStatus::kFailedToParseAuthPayload:
-      return quick_start_metrics::HandshakeErrorCode::kFailedToParseAuthPayload;
+      return QuickStartMetrics::HandshakeErrorCode::kFailedToParseAuthPayload;
     case VerifyHandshakeMessageStatus::kUnexpectedAuthPayloadRole:
-      return quick_start_metrics::HandshakeErrorCode::
-          kUnexpectedAuthPayloadRole;
+      return QuickStartMetrics::HandshakeErrorCode::kUnexpectedAuthPayloadRole;
     case VerifyHandshakeMessageStatus::kUnexpectedAuthPayloadAuthToken:
-      return quick_start_metrics::HandshakeErrorCode::
+      return QuickStartMetrics::HandshakeErrorCode::
           kUnexpectedAuthPayloadAuthToken;
   }
 }

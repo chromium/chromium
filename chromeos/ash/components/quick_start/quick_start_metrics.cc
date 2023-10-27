@@ -8,7 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 
-namespace ash::quick_start::quick_start_metrics {
+namespace ash::quick_start {
 
 namespace {
 
@@ -59,44 +59,89 @@ constexpr const char kGaiaTransferResultFailureReasonName[] =
     "QuickStart.GaiaTransferResult.FailureReason";
 constexpr const char kScreenOpened[] = "QuickStart.ScreenOpened";
 
-std::string MapMessageTypeToMetric(MessageType message_type) {
+std::string MapMessageTypeToMetric(
+    QuickStartMetrics::MessageType message_type) {
   switch (message_type) {
-    case MessageType::kWifiCredentials:
+    case QuickStartMetrics::MessageType::kWifiCredentials:
       return kMessageReceivedWifiCredentials;
-    case MessageType::kBootstrapConfigurations:
+    case QuickStartMetrics::MessageType::kBootstrapConfigurations:
       return kMessageReceivedBootstrapConfigurations;
-    case MessageType::kHandshake:
+    case QuickStartMetrics::MessageType::kHandshake:
       return kMessageReceivedHandshake;
-    case MessageType::kNotifySourceOfUpdate:
+    case QuickStartMetrics::MessageType::kNotifySourceOfUpdate:
       return kMessageReceivedNotifySourceOfUpdate;
-    case MessageType::kGetInfo:
+    case QuickStartMetrics::MessageType::kGetInfo:
       return kMessageReceivedGetInfo;
-    case MessageType::kAssertion:
+    case QuickStartMetrics::MessageType::kAssertion:
       return kMessageReceivedAssertion;
   }
 }
 
 }  // namespace
 
-void RecordScreenOpened(ScreenName screen) {
+// static
+QuickStartMetrics::MessageType QuickStartMetrics::MapResponseToMessageType(
+    QuickStartResponseType response_type) {
+  switch (response_type) {
+    case QuickStartResponseType::kWifiCredentials:
+      return MessageType::kWifiCredentials;
+    case QuickStartResponseType::kBootstrapConfigurations:
+      return MessageType::kBootstrapConfigurations;
+    case QuickStartResponseType::kHandshake:
+      return MessageType::kHandshake;
+    case QuickStartResponseType::kNotifySourceOfUpdate:
+      return MessageType::kNotifySourceOfUpdate;
+    case QuickStartResponseType::kGetInfo:
+      return MessageType::kGetInfo;
+    case QuickStartResponseType::kAssertion:
+      return MessageType::kAssertion;
+  }
+}
+
+// static
+void QuickStartMetrics::RecordScreenOpened(ScreenName screen) {
   // TODO(b/298042953): Add metric for previous screen.
   base::UmaHistogramEnumeration(kScreenOpened, screen);
 }
 
-void RecordScreenClosed(ScreenName screen,
-                        int32_t session_id,
-                        base::Time timestamp,
-                        absl::optional<ScreenName> previous_screen) {
+// static
+void QuickStartMetrics::RecordScreenClosed(
+    ScreenName screen,
+    int32_t session_id,
+    base::Time timestamp,
+    absl::optional<ScreenName> previous_screen) {
   // TODO(b/298042953): Add metric for screen duration.
 }
 
-void RecordFastPairAdvertisementStarted(AdvertisingMethod advertising_method) {
+// static
+void QuickStartMetrics::RecordWifiTransferResult(
+    bool succeeded,
+    absl::optional<WifiTransferResultFailureReason> failure_reason) {
+  if (succeeded) {
+    CHECK(!failure_reason.has_value());
+  } else {
+    CHECK(failure_reason.has_value());
+    base::UmaHistogramEnumeration(kWifiTransferResultFailureReasonHistogramName,
+                                  failure_reason.value());
+  }
+  base::UmaHistogramBoolean(kWifiTransferResultHistogramName, succeeded);
+}
+
+// static
+void QuickStartMetrics::RecordGaiaTransferAttempted(bool attempted) {
+  base::UmaHistogramBoolean(kGaiaTransferAttemptedName, attempted);
+}
+
+// static
+void QuickStartMetrics::RecordFastPairAdvertisementStarted(
+    AdvertisingMethod advertising_method) {
   base::UmaHistogramEnumeration(
       kFastPairAdvertisementStartedAdvertisingMethodHistogramName,
       advertising_method);
 }
 
-void RecordFastPairAdvertisementEnded(
+// static
+void QuickStartMetrics::RecordFastPairAdvertisementEnded(
     AdvertisingMethod advertising_method,
     bool succeeded,
     base::TimeDelta duration,
@@ -117,11 +162,14 @@ void RecordFastPairAdvertisementEnded(
       advertising_method);
 }
 
-void RecordNearbyConnectionsAdvertisementStarted(int32_t session_id) {
+// static
+void QuickStartMetrics::RecordNearbyConnectionsAdvertisementStarted(
+    int32_t session_id) {
   // TODO(279614071): Add advertising metrics.
 }
 
-void RecordNearbyConnectionsAdvertisementEnded(
+// static
+void QuickStartMetrics::RecordNearbyConnectionsAdvertisementEnded(
     int32_t session_id,
     AdvertisingMethod advertising_method,
     bool succeeded,
@@ -130,13 +178,16 @@ void RecordNearbyConnectionsAdvertisementEnded(
   // TODO(279614071): Add advertising metrics.
 }
 
-void RecordHandshakeStarted(bool handshake_started) {
+// static
+void QuickStartMetrics::RecordHandshakeStarted(bool handshake_started) {
   base::UmaHistogramBoolean(kHandshakeStartedName, handshake_started);
 }
 
-void RecordHandshakeResult(bool succeeded,
-                           base::TimeDelta duration,
-                           absl::optional<HandshakeErrorCode> error_code) {
+// static
+void QuickStartMetrics::RecordHandshakeResult(
+    bool succeeded,
+    base::TimeDelta duration,
+    absl::optional<HandshakeErrorCode> error_code) {
   if (succeeded) {
     CHECK(!error_code.has_value());
   } else {
@@ -148,11 +199,13 @@ void RecordHandshakeResult(bool succeeded,
   base::UmaHistogramTimes(kHandshakeResultDurationName, duration);
 }
 
-void RecordMessageSent(MessageType message_type) {
+// static
+void QuickStartMetrics::RecordMessageSent(MessageType message_type) {
   base::UmaHistogramEnumeration(kMessageSentMessageTypeName, message_type);
 }
 
-void RecordMessageReceived(
+// static
+void QuickStartMetrics::RecordMessageReceived(
     MessageType desired_message_type,
     bool succeeded,
     base::TimeDelta listen_duration,
@@ -171,11 +224,14 @@ void RecordMessageReceived(
                                 desired_message_type);
 }
 
-void RecordAttestationCertificateRequested(int32_t session_id) {
+// static
+void QuickStartMetrics::RecordAttestationCertificateRequested(
+    int32_t session_id) {
   // TODO(279614284): Add FIDO assertion metrics.
 }
 
-void RecordAttestationCertificateRequestEnded(
+// static
+void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
     int32_t session_id,
     bool succeded,
     int duration,
@@ -183,24 +239,8 @@ void RecordAttestationCertificateRequestEnded(
   // TODO(279614284): Add FIDO assertion metrics.
 }
 
-void RecordWifiTransferResult(
-    bool succeeded,
-    absl::optional<WifiTransferResultFailureReason> failure_reason) {
-  if (succeeded) {
-    CHECK(!failure_reason.has_value());
-  } else {
-    CHECK(failure_reason.has_value());
-    base::UmaHistogramEnumeration(kWifiTransferResultFailureReasonHistogramName,
-                                  failure_reason.value());
-  }
-  base::UmaHistogramBoolean(kWifiTransferResultHistogramName, succeeded);
-}
-
-void RecordGaiaTransferAttempted(bool attempted) {
-  base::UmaHistogramBoolean(kGaiaTransferAttemptedName, attempted);
-}
-
-void RecordGaiaTransferResult(
+// static
+void QuickStartMetrics::RecordGaiaTransferResult(
     bool succeeded,
     absl::optional<GaiaTransferResultFailureReason> failure_reason) {
   if (succeeded) {
@@ -213,25 +253,13 @@ void RecordGaiaTransferResult(
   base::UmaHistogramBoolean(kGaiaTransferResultName, succeeded);
 }
 
-void RecordEntryPoint(EntryPoint entry_point) {
+// static
+void QuickStartMetrics::RecordEntryPoint(EntryPoint entry_point) {
   // TODO(280306867): Add metric for entry point.
 }
 
-MessageType MapResponseToMessageType(QuickStartResponseType response_type) {
-  switch (response_type) {
-    case QuickStartResponseType::kWifiCredentials:
-      return MessageType::kWifiCredentials;
-    case QuickStartResponseType::kBootstrapConfigurations:
-      return MessageType::kBootstrapConfigurations;
-    case QuickStartResponseType::kHandshake:
-      return MessageType::kHandshake;
-    case QuickStartResponseType::kNotifySourceOfUpdate:
-      return MessageType::kNotifySourceOfUpdate;
-    case QuickStartResponseType::kGetInfo:
-      return MessageType::kGetInfo;
-    case QuickStartResponseType::kAssertion:
-      return MessageType::kAssertion;
-  }
-}
+QuickStartMetrics::QuickStartMetrics() = default;
 
-}  // namespace ash::quick_start::quick_start_metrics
+QuickStartMetrics::~QuickStartMetrics() = default;
+
+}  // namespace ash::quick_start

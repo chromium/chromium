@@ -51,8 +51,7 @@ VerifyHandshakeMessageStatus VerifyHandshakeMessage(
     std::array<uint8_t, 32> secret,
     DeviceRole role = DeviceRole::kSource);
 
-// Helper function that maps handshake status to HandshakeErrorCode.
-quick_start_metrics::HandshakeErrorCode MapHandshakeStatusToErrorCode(
+QuickStartMetrics::HandshakeErrorCode MapHandshakeStatusToErrorCode(
     VerifyHandshakeMessageStatus handshake_status);
 
 }  // namespace ash::quick_start::handshake

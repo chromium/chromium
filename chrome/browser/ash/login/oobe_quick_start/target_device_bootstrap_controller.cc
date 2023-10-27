@@ -184,8 +184,8 @@ void TargetDeviceBootstrapController::OnConnectionRejected() {
 void TargetDeviceBootstrapController::OnConnectionClosed(
     TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
   if (status_.step == Step::REQUESTING_WIFI_CREDENTIALS) {
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kConnectionDroppedDuringAttempt);
   }
   status_.step = Step::ERROR;
@@ -311,7 +311,7 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
 
   // Record successful wifi credentials transfer. Failures will be
   // logged from the QuickStartDecoder class.
-  quick_start_metrics::RecordWifiTransferResult(
+  QuickStartMetrics::RecordWifiTransferResult(
       /*succeeded=*/true, /*failure_reason=*/absl::nullopt);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -364,7 +364,7 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
                                << "Reason: " << challenge.error().ToString();
     status_.step = Step::ERROR;
     status_.payload = ErrorCode::FETCHING_CHALLENGE_BYTES_FAILED;
-    quick_start_metrics::RecordGaiaTransferAttempted(/*attempted=*/false);
+    QuickStartMetrics::RecordGaiaTransferAttempted(/*attempted=*/false);
     NotifyObservers();
     return;
     // TODO(b:286853512) - Implement retry mechanism.
@@ -380,7 +380,7 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
       << "Received challenge bytes from Gaia. Requesting FIDO assertion.";
   challenge_bytes_ = challenge.value();
 
-  quick_start_metrics::RecordGaiaTransferAttempted(/*attempted=*/true);
+  QuickStartMetrics::RecordGaiaTransferAttempted(/*attempted=*/true);
   authenticated_connection_->RequestAccountTransferAssertion(
       challenge_bytes_,
       base::BindOnce(&TargetDeviceBootstrapController::OnFidoAssertionReceived,

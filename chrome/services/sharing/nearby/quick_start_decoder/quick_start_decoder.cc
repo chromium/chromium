@@ -363,8 +363,8 @@ QuickStartDecoder::DecodeWifiCredentials(
       wifi_network_information.FindString(kWifiNetworkSsidKey);
   if (!ssid) {
     LOG(ERROR) << "SSID cannot be found within WifiCredentialsResponse.";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kSsidNotFound);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -372,8 +372,8 @@ QuickStartDecoder::DecodeWifiCredentials(
 
   if (ssid->length() == 0) {
     LOG(ERROR) << "SSID has a length of 0.";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kEmptySsid);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -384,8 +384,8 @@ QuickStartDecoder::DecodeWifiCredentials(
   if (!security_type_string) {
     LOG(ERROR)
         << "Security Type cannot be found within WifiCredentialsResponse";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kSecurityTypeNotFound);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -396,8 +396,8 @@ QuickStartDecoder::DecodeWifiCredentials(
 
   if (!maybe_security_type.has_value()) {
     LOG(ERROR) << "Security type was not a valid value.";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kInvalidSecurityType);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -412,8 +412,8 @@ QuickStartDecoder::DecodeWifiCredentials(
 
   if (password_ptr && security_type == mojom::WifiSecurityType::kOpen) {
     LOG(ERROR) << "Password is found but network security type is open.";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kPasswordFoundAndOpenNetwork);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -423,10 +423,10 @@ QuickStartDecoder::DecodeWifiCredentials(
     LOG(ERROR) << "Password cannot be found within WifiCredentialsResponse but "
                   "network is not open. wifi_security_type: "
                << security_type;
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
-            WifiTransferResultFailureReason::
-                kPasswordNotFoundAndNotOpenNetwork);
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false,
+        /*failure_reason=*/QuickStartMetrics::WifiTransferResultFailureReason::
+            kPasswordNotFoundAndNotOpenNetwork);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
   }
@@ -440,8 +440,8 @@ QuickStartDecoder::DecodeWifiCredentials(
   if (!is_hidden.has_value()) {
     LOG(ERROR)
         << "Wifi Hide Status cannot be found within WifiCredentialsResponse";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kWifiHideStatusNotFound);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);

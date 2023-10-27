@@ -122,8 +122,8 @@ bool MultiDeviceSetupScreen::MaybeSkip(WizardContext& context) {
   const std::string& phone_instance_id = context.quick_start_phone_instance_id;
   if (!phone_instance_id.empty()) {
     setup_client_->SetQuickStartPhoneInstanceID(phone_instance_id);
-    quick_start::quick_start_metrics::RecordScreenOpened(
-        quick_start::quick_start_metrics::ScreenName::kUnifiedSetup);
+    quick_start::QuickStartMetrics::RecordScreenOpened(
+        quick_start::QuickStartMetrics::ScreenName::kUnifiedSetup);
   }
 
   // Do not skip if potential host exists but none is set yet.

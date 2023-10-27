@@ -665,7 +665,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
                                       1);
   histogram_tester_.ExpectBucketCount(
       kWifiTransferResultFailureReasonHistogramName,
-      quick_start_metrics::WifiTransferResultFailureReason::
+      QuickStartMetrics::WifiTransferResultFailureReason::
           kConnectionDroppedDuringAttempt,
       1);
   ExpectQuickStartConnectivityServiceCleanupCalled();
