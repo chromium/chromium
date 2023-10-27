@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
@@ -24,18 +25,19 @@ class SyncFeatureStatusForMigrationsRecorderTest : public testing::Test {
     SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(
         pref_service_.registry());
   }
-  ~SyncFeatureStatusForMigrationsRecorderTest() override {
-    if (recorder_) {
-      recorder_->OnSyncShutdown(&sync_service_);
-    }
-  }
+  ~SyncFeatureStatusForMigrationsRecorderTest() override { DestroyRecorder(); }
 
   void CreateRecorder() {
-    if (recorder_) {
-      recorder_->OnSyncShutdown(&sync_service_);
-    }
+    CHECK(!recorder_);
     recorder_ = std::make_unique<SyncFeatureStatusForMigrationsRecorder>(
         &pref_service_, &sync_service_);
+  }
+
+  void DestroyRecorder() {
+    if (recorder_) {
+      recorder_->OnSyncShutdown(&sync_service_);
+      recorder_.reset();
+    }
   }
 
   SyncFeatureStatusForSyncToSigninMigration GetSyncFeatureStatus() const {
@@ -205,6 +207,74 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, StartupSequence) {
   EXPECT_TRUE(GetDataTypeStatus(syncer::BOOKMARKS));
   EXPECT_TRUE(GetDataTypeStatus(syncer::PASSWORDS));
   EXPECT_TRUE(GetDataTypeStatus(syncer::READING_LIST));
+}
+
+TEST_F(SyncFeatureStatusForMigrationsRecorderTest, RecordsMetricsOnStartup) {
+  // First run of Chrome: No pre-existing status is recorded in prefs yet.
+  // Initially, everything is enabled, but SyncService is still initializing.
+  sync_service().SetTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
+  ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
+  ASSERT_FALSE(sync_service().IsSyncFeatureActive());
+  ASSERT_TRUE(sync_service().GetActiveDataTypes().Empty());
+
+  // Once the recorder gets created, it should record the pre-existing state,
+  // which is "undefined".
+  {
+    base::HistogramTester histograms;
+
+    CreateRecorder();
+
+    histograms.ExpectUniqueSample(
+        "Sync.FeatureStatusForSyncToSigninMigration",
+        SyncFeatureStatusForSyncToSigninMigration::kUndefined, 1);
+    histograms.ExpectTotalCount(
+        "Sync.DataTypeActiveForSyncToSigninMigration.BOOKMARK", 0);
+    histograms.ExpectTotalCount(
+        "Sync.DataTypeActiveForSyncToSigninMigration.PASSWORD", 0);
+  }
+
+  // Further changes at runtime should have no impact on the histograms (but
+  // still get written to prefs).
+  {
+    base::HistogramTester histograms;
+
+    sync_service().SetTransportState(
+        syncer::SyncService::TransportState::ACTIVE);
+    sync_service().FireStateChanged();
+    ASSERT_EQ(GetSyncFeatureStatus(),
+              SyncFeatureStatusForSyncToSigninMigration::kActive);
+    ASSERT_TRUE(GetDataTypeStatus(BOOKMARKS));
+    ASSERT_TRUE(GetDataTypeStatus(PASSWORDS));
+
+    histograms.ExpectTotalCount("Sync.FeatureStatusForSyncToSigninMigration",
+                                0);
+    histograms.ExpectTotalCount(
+        "Sync.DataTypeActiveForSyncToSigninMigration.BOOKMARK", 0);
+    histograms.ExpectTotalCount(
+        "Sync.DataTypeActiveForSyncToSigninMigration.PASSWORD", 0);
+  }
+
+  // Simulate a Chrome restart: The SyncService state is "initializing" again,
+  // and the recorder gets re-created. Since the SyncService and the data types
+  // were active at the end of the previous run, that should be recorded in the
+  // histograms.
+  DestroyRecorder();
+  sync_service().SetTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
+  {
+    base::HistogramTester histograms;
+
+    CreateRecorder();
+
+    histograms.ExpectUniqueSample(
+        "Sync.FeatureStatusForSyncToSigninMigration",
+        SyncFeatureStatusForSyncToSigninMigration::kActive, 1);
+    histograms.ExpectUniqueSample(
+        "Sync.DataTypeActiveForSyncToSigninMigration.BOOKMARK", true, 1);
+    histograms.ExpectUniqueSample(
+        "Sync.DataTypeActiveForSyncToSigninMigration.PASSWORD", true, 1);
+  }
 }
 
 }  // namespace

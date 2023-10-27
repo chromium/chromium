@@ -105658,6 +105658,13 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Sync transport only."/>
 </enum>
 
+<enum name="SyncFeatureStatusForSyncToSigninMigration">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Disabled or paused"/>
+  <int value="2" label="Initializing"/>
+  <int value="3" label="Active"/>
+</enum>
+
 <enum name="SyncFirstSetupCompleteSource">
   <summary>Possible flows where the FirstSetupComplete bit was set.</summary>
   <int value="0" label="Basic Flow"/>

@@ -469,6 +469,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.DataTypeActiveForSyncToSigninMigration{SyncModelType}"
+    enum="BooleanActive" expires_after="2024-05-01">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The Sync-the-feature &quot;active&quot; status of {SyncModelType} for the
+    purpose of the SyncToSignin migration. Recorded on profile creation/startup,
+    capturing the state from just before shutdown during the previous run of
+    Chrome (i.e. before re-evaluation). Recorded only if
+    `Sync.FeatureStatusForSyncToSigninMigration` recorded &quot;active&quot;.
+  </summary>
+  <token key="SyncModelType" variants="SyncModelType"/>
+</histogram>
+
 <histogram name="Sync.DataTypeRunFailures2" enum="SyncModelTypes"
     expires_after="2024-03-17">
   <owner>rushans@google.com</owner>
@@ -589,6 +604,20 @@ chromium-metrics-reviews@google.com.
     invalidations. Recorded on successful token fetch excluding token validation
     requests (Sync.FCMInstanceIdTokenRetrievalStatus can be used to compare with
     token fetch failure count).
+  </summary>
+</histogram>
+
+<histogram name="Sync.FeatureStatusForSyncToSigninMigration"
+    enum="SyncFeatureStatusForSyncToSigninMigration" expires_after="2024-05-01">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The overall status of Sync-the-feature for the purpose of the SyncToSignin
+    migration, recorded on profile creation/startup, capturing the state from
+    just before shutdown during the previous run of Chrome (i.e. before
+    re-evaluation). See also data-type-specific statuses in
+    `Sync.DataTypeActiveForSyncToSigninMigration.*`.
   </summary>
 </histogram>
 

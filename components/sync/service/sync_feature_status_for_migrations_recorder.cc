@@ -5,6 +5,7 @@
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -34,7 +35,21 @@ SyncFeatureStatusForMigrationsRecorder::SyncFeatureStatusForMigrationsRecorder(
     PrefService* prefs,
     SyncService* sync)
     : prefs_(prefs) {
-  // TODO(crbug.com/1486420): Record metrics on the pre-existing status?
+  // Record metrics on the pre-existing status.
+  SyncFeatureStatusForSyncToSigninMigration old_status =
+      SyncFeatureStatusForSyncToSigninMigrationFromInt(prefs->GetInteger(
+          prefs::internal::kSyncFeatureStatusForSyncToSigninMigration));
+  base::UmaHistogramEnumeration("Sync.FeatureStatusForSyncToSigninMigration",
+                                old_status);
+  if (old_status == SyncFeatureStatusForSyncToSigninMigration::kActive) {
+    for (ModelType type : ProtocolTypes()) {
+      bool type_status = prefs->GetBoolean(GetModelTypeStatusPrefName(type));
+      base::UmaHistogramBoolean(
+          base::StrCat({"Sync.DataTypeActiveForSyncToSigninMigration.",
+                        ModelTypeToHistogramSuffix(type)}),
+          type_status);
+    }
+  }
 
   // Start observing the SyncService, and query the initial state. This ensures
   // that any pre-existing pref values get overridden, and can't carry over into
