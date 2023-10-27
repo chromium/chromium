@@ -796,11 +796,8 @@ void AutofillAgent::ApplyFieldAction(
       case mojom::ActionPersistence::kFill:
         switch (text_replacement) {
           case mojom::TextReplacement::kReplaceSelection: {
-            // TODO(crbug.com/1490373): Replace the selection in
-            // contenteditables.
-            NOTIMPLEMENTED()
-                << "Replacing the selection of form controls with '" << value
-                << "' isn't implemented yet";
+            form_control.PasteText(WebString::FromUTF16(value),
+                                   /*replace_all=*/false);
             break;
           }
           case mojom::TextReplacement::kReplaceAll: {
@@ -823,10 +820,10 @@ void AutofillAgent::ApplyFieldAction(
             << "Previewing replacement of selection is not implemented";
         break;
       case mojom::ActionPersistence::kFill:
-        // TODO(crbug.com/1490373): Preview and fill the contenteditable.
-        NOTIMPLEMENTED()
-            << "Previewing and filling contenteditable with value '" << value
-            << "' isn't implemented yet";
+        content_editable.PasteText(
+            WebString::FromUTF16(value),
+            /*replace_all=*/
+            (text_replacement == mojom::TextReplacement::kReplaceAll));
         break;
     }
   }
