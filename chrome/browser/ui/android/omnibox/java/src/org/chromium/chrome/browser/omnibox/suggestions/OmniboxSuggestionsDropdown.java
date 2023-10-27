@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 
@@ -396,6 +398,12 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                             availableViewportHeight,
                             mEmbedder.isTablet() ? MeasureSpec.AT_MOST : MeasureSpec.EXACTLY);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            if (mEmbedder.isTablet()) {
+                setRoundBottomCorners(
+                        getMeasuredHeight() < availableViewportHeight
+                                || !KeyboardVisibilityDelegate.getInstance()
+                                        .isKeyboardShowing(getContext(), this));
+            }
         }
     }
 
@@ -541,6 +549,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                     mOmniboxAlignment.paddingRight,
                     getPaddingBottom());
         }
+    }
+
+    private void setRoundBottomCorners(boolean roundBottomCorners) {
+        ViewOutlineProvider outlineProvider = getOutlineProvider();
+        if (!(outlineProvider instanceof RoundedCornerOutlineProvider)) return;
+
+        RoundedCornerOutlineProvider roundedCornerOutlineProvider =
+                (RoundedCornerOutlineProvider) outlineProvider;
+        roundedCornerOutlineProvider.setRoundingEdges(true, true, true, roundBottomCorners);
     }
 
     public void emitWindowContentChanged() {
