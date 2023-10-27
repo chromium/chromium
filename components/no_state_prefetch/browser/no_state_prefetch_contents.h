@@ -133,7 +133,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
     return no_state_prefetch_manager_;
   }
 
-  const GURL& prerender_url() const { return prerender_url_; }
+  const GURL& prefetch_url() const { return prefetch_url_; }
   bool has_finished_loading() const { return has_finished_loading_; }
   bool prerendering_has_started() const { return prerendering_has_started_; }
 
@@ -271,8 +271,8 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // The delegate that content embedders use to override this class's logic.
   std::unique_ptr<NoStatePrefetchContentsDelegate> delegate_;
 
-  // The URL being prerendered.
-  const GURL prerender_url_;
+  // The URL being prefetched.
+  const GURL prefetch_url_;
 
   // Store the PreloadingAttempt for this NoStatePrefetch attempt. We store
   // WeakPtr as it is possible that the PreloadingAttempt is deleted before the

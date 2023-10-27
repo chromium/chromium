@@ -185,7 +185,7 @@ UnitTestNoStatePrefetchManager::CreateNoStatePrefetchContents(
     const absl::optional<url::Origin>& initiator_origin,
     Origin origin) {
   CHECK(next_no_state_prefetch_contents_);
-  EXPECT_EQ(url, next_no_state_prefetch_contents_->prerender_url());
+  EXPECT_EQ(url, next_no_state_prefetch_contents_->prefetch_url());
   EXPECT_EQ(origin, next_no_state_prefetch_contents_->origin());
   return std::move(next_no_state_prefetch_contents_);
 }

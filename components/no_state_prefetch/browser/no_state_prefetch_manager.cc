@@ -1005,7 +1005,7 @@ void NoStatePrefetchManager::ScheduleDeleteOldWebContents(
 }
 
 void NoStatePrefetchManager::AddToHistory(NoStatePrefetchContents* contents) {
-  NoStatePrefetchHistory::Entry entry(contents->prerender_url(),
+  NoStatePrefetchHistory::Entry entry(contents->prefetch_url(),
                                       contents->final_status(),
                                       contents->origin(), base::Time::Now());
   prefetch_history_->AddEntry(entry);

@@ -165,7 +165,7 @@ NoStatePrefetchContents::NoStatePrefetchContents(
     : prerendering_has_started_(false),
       no_state_prefetch_manager_(no_state_prefetch_manager),
       delegate_(std::move(delegate)),
-      prerender_url_(url),
+      prefetch_url_(url),
       referrer_(referrer),
       initiator_origin_(initiator_origin),
       browser_context_(browser_context),
@@ -200,7 +200,7 @@ NoStatePrefetchContents::NoStatePrefetchContents(
 }
 
 bool NoStatePrefetchContents::Init() {
-  return AddAliasURL(prerender_url_);
+  return AddAliasURL(prefetch_url_);
 }
 
 // static
@@ -302,7 +302,7 @@ void NoStatePrefetchContents::StartPrerendering(
 
   NotifyPrefetchStart();
 
-  content::NavigationController::LoadURLParams load_url_params(prerender_url_);
+  content::NavigationController::LoadURLParams load_url_params(prefetch_url_);
   load_url_params.referrer = referrer_;
   load_url_params.initiator_origin = initiator_origin_;
   load_url_params.transition_type = ui::PAGE_TRANSITION_LINK;
@@ -522,7 +522,7 @@ void NoStatePrefetchContents::Destroy(FinalStatus final_status) {
 
   prerendering_has_been_cancelled_ = true;
   no_state_prefetch_manager_->AddToHistory(this);
-  no_state_prefetch_manager_->SetPrefetchFinalStatusForUrl(prerender_url_,
+  no_state_prefetch_manager_->SetPrefetchFinalStatusForUrl(prefetch_url_,
                                                            final_status);
   no_state_prefetch_manager_->MoveEntryToPendingDelete(this, final_status);
 
@@ -589,7 +589,7 @@ absl::optional<base::Value::Dict> NoStatePrefetchContents::GetAsDict() const {
   if (!no_state_prefetch_contents_)
     return absl::nullopt;
   base::Value::Dict dict;
-  dict.Set("url", prerender_url_.spec());
+  dict.Set("url", prefetch_url_.spec());
   base::TimeTicks current_time = base::TimeTicks::Now();
   base::TimeDelta duration = current_time - load_start_time_;
   dict.Set("duration", static_cast<int>(duration.InSeconds()));

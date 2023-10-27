@@ -246,7 +246,7 @@ void AutocompleteActionPredictor::StartPrerendering(
     content::SessionStorageNamespace* session_storage_namespace =
         web_contents.GetController().GetDefaultSessionStorageNamespace();
     if (no_state_prefetch_handle_) {
-      if (no_state_prefetch_handle_->prerender_url() == url) {
+      if (no_state_prefetch_handle_->prefetch_url() == url) {
         // In case NSP is already present for the URL, NoStatPrefetch is
         // eligible but mark triggering outcome as a duplicate.
         preloading_attempt->SetEligibility(
@@ -370,7 +370,7 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
   // Abandon the current prefetch. If it is to be used, it will be used very
   // soon, so use the lower timeout.
   if (no_state_prefetch_handle_) {
-    if (no_state_prefetch_handle_->prerender_url() == opened_url) {
+    if (no_state_prefetch_handle_->prefetch_url() == opened_url) {
       if (no_state_prefetch_handle_->IsFinishedLoading()
           // If the handle doesn't have its contents anymore we don't know if it
           // complete successfully or not, but we know it's no longer active, so
