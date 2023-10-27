@@ -63,7 +63,7 @@
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "services/network/public/mojom/ct_log_info.mojom.h"
-#endif
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 namespace net {
 class FileNetLogObserver;
@@ -133,7 +133,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   // These are called by NetworkContexts as they are being created and
   // destroyed.
-  // TODO(mmenke):  Remove once all NetworkContexts are owned by the
+  // TODO(mmenke): Remove once all NetworkContexts are owned by the
   // NetworkService.
   void RegisterNetworkContext(NetworkContext* network_context);
   void DeregisterNetworkContext(NetworkContext* network_context);
@@ -188,7 +188,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void OnPeerToPeerConnectionsCountChange(uint32_t count) override;
 #if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state) override;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
   void SetEnvironment(
       std::vector<mojom::EnvironmentVariablePtr> environment) override;
   void SetTrustTokenKeyCommitments(const std::string& raw_commitments,
@@ -211,7 +211,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void SetCtEnforcementEnabled(
       bool enabled,
       SetCtEnforcementEnabledCallback callback) override;
-#endif
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
   void UpdateKeyPinsList(mojom::PinListPtr pin_list,
                          base::Time update_time) override;
@@ -220,7 +220,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
 #if BUILDFLAG(IS_ANDROID)
   void DumpWithoutCrashing(base::Time dump_request_time) override;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
   void BindTestInterfaceForTesting(
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
   void SetFirstPartySets(net::GlobalFirstPartySets sets) override;
@@ -242,7 +242,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       uint64_t max_total_size,
       net::NetLogCaptureMode capture_mode,
       base::Value::Dict constants,
-      const base::FilePath& inprogress_dir_path);
+      const base::FilePath& in_progress_dir_path);
 
   void StartNetLogUnbounded(base::File file,
                             net::NetLogCaptureMode capture_mode,
@@ -281,7 +281,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   CtLogListDistributor* ct_log_list_distributor() {
     return ct_log_list_distributor_.get();
   }
-#endif
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
   FirstPartySetsManager* first_party_sets_manager() const {
     return first_party_sets_manager_.get();
@@ -324,7 +324,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   bool is_ct_enforcement_enabled_for_testing() const {
     return ct_enforcement_enabled_;
   }
-#endif
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
   bool pins_list_updated() const { return pins_list_updated_; }
 
@@ -478,7 +478,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   base::Time ct_log_list_update_time_;
 
   bool ct_enforcement_enabled_ = true;
-#endif
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
   bool pins_list_updated_ = false;
 
