@@ -102,6 +102,17 @@ void AppListItem::SetIconVersion(int icon_version) {
   }
 }
 
+const gfx::ImageSkia& AppListItem::GetHostBadgeIcon() const {
+  return metadata_->badge_icon;
+}
+
+void AppListItem::SetHostBadgeIcon(const gfx::ImageSkia host_badge_icon) {
+  metadata_->badge_icon = host_badge_icon;
+  for (auto& observer : observers_) {
+    observer.ItemHostBadgeIconChanged();
+  }
+}
+
 SkColor AppListItem::GetNotificationBadgeColor() const {
   return metadata_->badge_color;
 }

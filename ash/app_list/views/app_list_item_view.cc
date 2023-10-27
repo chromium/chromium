@@ -59,6 +59,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_owner.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/event.h"
@@ -67,21 +68,30 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -548,6 +558,8 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
       item_weak_->GetMetadata()->app_status == AppStatus::kPending ||
       item_weak_->GetMetadata()->app_status == AppStatus::kInstalling;
 
+  has_host_badge_ = !item_weak_->GetMetadata()->badge_icon.isNull();
+
   // Draw the promise ring for the first time before waiting for updates.
   if (is_promise_app_) {
     ItemProgressUpdated();
@@ -615,6 +627,10 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   if (use_item_icon_) {
     // If the item icon is used, set the icon in ImageView and paint the view.
+    if (chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
+      shortcut_background_container_ =
+          AddChildView(std::make_unique<views::View>());
+    }
     icon_ = AddChildView(std::make_unique<views::ImageView>());
     icon_->SetCanProcessEventsWithinSubtree(false);
     icon_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
@@ -735,6 +751,50 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
   gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST, icon_bounds);
   icon_->SetImage(resized);
+
+  Layout();
+}
+
+void AppListItemView::SetHostBadgeIcon(const gfx::ImageSkia& host_badge_icon,
+                                       bool update_host_badge_icon) {
+  // This function is only used when AppListItem host icons are used for
+  // painting.
+  CHECK(use_item_icon_);
+
+  // Clear host badge icon and bail out if host badge icon is empty.
+  if (host_badge_icon.isNull()) {
+    host_badge_icon_view_->SetImage(nullptr);
+    host_badge_icon_image_ = gfx::ImageSkia();
+    has_host_badge_ = false;
+    return;
+  }
+  host_badge_icon_image_ = host_badge_icon;
+
+  const gfx::Size host_badge_icon_size = gfx::ScaleToRoundedSize(
+      gfx::Size(app_list_config_->shortcut_host_badge_icon_dimension(),
+                app_list_config_->shortcut_host_badge_icon_dimension()),
+      icon_scale_);
+
+  gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
+      host_badge_icon, skia::ImageOperations::RESIZE_BEST,
+      host_badge_icon_size);
+
+  if (!host_badge_icon_view_) {
+    host_badge_icon_container_ = AddChildView(std::make_unique<views::View>());
+
+    auto* host_badge_icon_container_layout =
+        host_badge_icon_container_->SetLayoutManager(
+            std::make_unique<views::BoxLayout>(
+                views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
+    host_badge_icon_container_layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    host_badge_icon_container_layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    host_badge_icon_view_ = host_badge_icon_container_->AddChildView(
+        std::make_unique<views::ImageView>());
+  }
+  host_badge_icon_view_->SetImage(resized);
+  has_host_badge_ = true;
 
   Layout();
 }
@@ -1296,6 +1356,36 @@ void AppListItemView::Layout() {
       gfx::ScaleToRoundedSize(icon_size, GetAdjustedIconScaleForProgressRing()),
       icon_scale_);
 
+  const int shortcut_background_container_dimension =
+      app_list_config_->GetShortcutBackgroundContainerDimension();
+  const int shotcut_host_badge_icon_container_dimension =
+      app_list_config_->GetShortcutHostBadgeIconContainerDimension();
+
+  const gfx::Size shortcut_background_container_size =
+      gfx::Size(shortcut_background_container_dimension,
+                shortcut_background_container_dimension);
+
+  const gfx::Size shotcut_host_badge_icon_container_size =
+      gfx::Size(shotcut_host_badge_icon_container_dimension,
+                shotcut_host_badge_icon_container_dimension);
+
+  if (shortcut_background_container_ && has_host_badge_) {
+    shortcut_background_container_->SetBackground(
+        views::CreateThemedRoundedRectBackground(
+            cros_tokens::kCrosSysSystemOnBaseOpaque,
+            shortcut_background_container_dimension / 2, 0));
+
+    const gfx::Rect shortcut_background_container_bounds =
+        GetIconBoundsForTargetViewBounds(
+            app_list_config_, rect,
+            gfx::ScaleToRoundedSize(shortcut_background_container_size,
+                                    GetAdjustedIconScaleForProgressRing()),
+            icon_scale_);
+
+    shortcut_background_container_->SetBoundsRect(
+        shortcut_background_container_bounds);
+  }
+
   GetIconView()->SetBoundsRect(icon_bounds);
   UpdateBackgroundLayerBounds();
   SetBackgroundExtendedState(is_icon_extended_, /*animate=*/false);
@@ -1316,6 +1406,23 @@ void AppListItemView::Layout() {
         title_bounds.x() - kNewInstallDotSize - kNewInstallDotPadding,
         title_bounds.y() + title_bounds.height() / 2 - kNewInstallDotSize / 2,
         kNewInstallDotSize, kNewInstallDotSize);
+  }
+
+  if (host_badge_icon_container_ && host_badge_icon_view_ &&
+      chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
+    gfx::Rect host_badge_icon_container_bounds =
+        GetHostBadgeIconContainerBoundsForTargetViewBounds(
+            icon_bounds,
+            gfx::ScaleToRoundedSize(shotcut_host_badge_icon_container_size,
+                                    icon_scale_),
+            icon_scale_);
+
+    host_badge_icon_container_->SetBackground(
+        views::CreateThemedRoundedRectBackground(
+            cros_tokens::kCrosSysSystemOnBaseOpaque,
+            shortcut_background_container_dimension / 2, 0));
+
+    host_badge_icon_container_->SetBoundsRect(host_badge_icon_container_bounds);
   }
 
   const float indicator_size =
@@ -1825,6 +1932,17 @@ gfx::Rect AppListItemView::GetIconBoundsForTargetViewBounds(
 }
 
 // static
+gfx::Rect AppListItemView::GetHostBadgeIconContainerBoundsForTargetViewBounds(
+    const gfx::Rect& main_icon_bounds,
+    const gfx::Size& host_badge_icon_with_background_size,
+    const float icon_scale) {
+  gfx::Rect rect(main_icon_bounds.CenterPoint(),
+                 host_badge_icon_with_background_size);
+  rect.ClampToCenteredSize(host_badge_icon_with_background_size);
+  return rect;
+}
+
+// static
 gfx::Rect AppListItemView::GetTitleBoundsForTargetViewBounds(
     const AppListConfig* config,
     const gfx::Rect& target_bounds,
@@ -1858,6 +1976,11 @@ void AppListItemView::ItemIconChanged(AppListConfigType config_type) {
 void AppListItemView::ItemNameChanged() {
   SetItemName(base::UTF8ToUTF16(item_weak_->name()),
               base::UTF8ToUTF16(item_weak_->GetAccessibleName()));
+}
+
+void AppListItemView::ItemHostBadgeIconChanged() {
+  DCHECK(item_weak_);
+  SetHostBadgeIcon(item_weak_->GetHostBadgeIcon(), true);
 }
 
 void AppListItemView::ItemBadgeVisibilityChanged() {

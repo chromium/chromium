@@ -468,9 +468,7 @@ void ChromeAppListModelUpdater::SetItemBadgeIcon(
   if (!item) {
     return;
   }
-  std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
-  data->badge_icon = badge_icon;
-  model_.SetItemMetadata(id, std::move(data));
+  item->SetHostBadgeIcon(badge_icon);
 }
 
 void ChromeAppListModelUpdater::SetItemName(const std::string& id,

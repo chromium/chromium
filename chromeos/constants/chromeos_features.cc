@@ -65,6 +65,12 @@ BASE_FEATURE(kCrosWebAppInstallDialog,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// With this feature enabled, the shortcut app badge is painted in the UI
+// instead of being part of the shortcut app icon.
+BASE_FEATURE(kSeparateWebAppShortcutBadgeIcon,
+             "SeparateWebAppShortcutBadgeIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the new UI for browser created shortcut backed by web app system
 // on Chrome OS.
 BASE_FEATURE(kCrosWebAppShortcutUiUpdate,
@@ -182,6 +188,15 @@ bool IsBlinkExtensionDiagnosticsEnabled() {
 
 bool IsCrosComponentsEnabled() {
   return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
+}
+
+bool IsSeparateWebAppShortcutBadgeIconEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/304661502): Pass the value to lacros.
+  return false;
+#else
+  return base::FeatureList::IsEnabled(kSeparateWebAppShortcutBadgeIcon);
+#endif
 }
 
 bool IsCrosWebAppShortcutUiUpdateEnabled() {

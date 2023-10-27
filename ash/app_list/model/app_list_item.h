@@ -18,7 +18,6 @@
 #include "base/observer_list.h"
 #include "components/sync/model/string_ordinal.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/view.h"
 
 namespace ash {
 enum class AppListConfigType;
@@ -58,6 +57,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // perform the actual icon loading. When the icon is loaded, SetIcon is called
   // and UI would be updated since it also observe ItemIconChanged.
   void SetIconVersion(int icon_version);
+
+  const gfx::ImageSkia& GetHostBadgeIcon() const;
+  void SetHostBadgeIcon(const gfx::ImageSkia bage_icon);
 
   SkColor GetNotificationBadgeColor() const;
   void SetNotificationBadgeColor(const SkColor color);
