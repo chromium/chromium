@@ -24,7 +24,6 @@
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -51,6 +50,7 @@ namespace content {
 
 class AttributionTrigger;
 class CommonSourceInfo;
+struct FakeEventLevelReport;
 
 enum class RateLimitResult : int;
 
@@ -308,11 +308,9 @@ bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
 
 bool operator==(const AttributionInfo& a, const AttributionInfo& b);
 
-bool operator==(const AttributionStorageDelegate::FakeReport& a,
-                const AttributionStorageDelegate::FakeReport& b);
+bool operator==(const FakeEventLevelReport& a, const FakeEventLevelReport& b);
 
-bool operator<(const AttributionStorageDelegate::FakeReport& a,
-               const AttributionStorageDelegate::FakeReport& b);
+bool operator<(const FakeEventLevelReport& a, const FakeEventLevelReport& b);
 
 bool operator==(const StorableSource& a, const StorableSource& b);
 
@@ -347,8 +345,7 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source);
 std::ostream& operator<<(std::ostream& out,
                          const AttributionInfo& attribution_info);
 
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionStorageDelegate::FakeReport&);
+std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport&);
 
 std::ostream& operator<<(std::ostream& out, const StorableSource& source);
 

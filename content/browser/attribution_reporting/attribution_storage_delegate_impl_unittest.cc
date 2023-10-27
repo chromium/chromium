@@ -37,8 +37,6 @@ using ::testing::IsEmpty;
 using ::testing::Le;
 using ::testing::Lt;
 
-using FakeReport = ::content::AttributionStorageDelegate::FakeReport;
-
 constexpr base::TimeDelta kDefaultExpiry = base::Days(30);
 
 void RunRandomFakeReportsTest(const SourceType source_type,
@@ -59,15 +57,16 @@ void RunRandomFakeReportsTest(const SourceType source_type,
                   : 1)
           .BuildStored();
 
-  base::flat_map<std::vector<FakeReport>, int> output_counts;
+  base::flat_map<std::vector<FakeEventLevelReport>, int> output_counts;
   for (int i = 0; i < num_samples; i++) {
     const AttributionStorageDelegateImpl delegate;
     const int64_t num_states =
         delegate.GetNumStates(source_type, source.event_report_windows(),
                               source.max_event_level_reports());
-    std::vector<FakeReport> fake_reports = delegate.GetRandomFakeReports(
-        source.common_info().source_type(), source.event_report_windows(),
-        source.max_event_level_reports(), source.source_time(), num_states);
+    std::vector<FakeEventLevelReport> fake_reports =
+        delegate.GetRandomFakeReports(
+            source.common_info().source_type(), source.event_report_windows(),
+            source.max_event_level_reports(), source.source_time(), num_states);
     output_counts[fake_reports]++;
   }
 
@@ -217,14 +216,10 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
   constexpr base::Time kImpressionTime = base::Time();
   constexpr base::TimeDelta kExpiry = base::Days(9);
 
-  constexpr base::Time kEarlyReportTime1 = kImpressionTime + base::Days(2);
-  constexpr base::Time kEarlyReportTime2 = kImpressionTime + base::Days(7);
-  constexpr base::Time kExpiryReportTime = kImpressionTime + kExpiry;
-
   const struct {
     SourceType source_type;
     int sequence_index;
-    std::vector<FakeReport> expected;
+    std::vector<FakeEventLevelReport> expected;
   } kTestCases[] = {
       // Event sources only have 3 output states, so we can enumerate them:
       {
@@ -235,20 +230,12 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
       {
           .source_type = SourceType::kEvent,
           .sequence_index = 1,
-          .expected = {{
-              .trigger_data = 0,
-              .trigger_time = kExpiryReportTime - base::Milliseconds(1),
-              .report_time = kExpiryReportTime,
-          }},
+          .expected = {{.trigger_data = 0, .window_index = 0}},
       },
       {
           .source_type = SourceType::kEvent,
           .sequence_index = 2,
-          .expected = {{
-              .trigger_data = 1,
-              .trigger_time = kExpiryReportTime - base::Milliseconds(1),
-              .report_time = kExpiryReportTime,
-          }},
+          .expected = {{.trigger_data = 1, .window_index = 0}},
       },
       // Navigation sources have 2925 output states, so pick interesting ones:
       {
@@ -259,27 +246,15 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
       {
           .source_type = SourceType::kNavigation,
           .sequence_index = 20,
-          .expected = {{
-              .trigger_data = 3,
-              .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
-              .report_time = kEarlyReportTime1,
-          }},
+          .expected = {{.trigger_data = 3, .window_index = 0}},
       },
       {
           .source_type = SourceType::kNavigation,
           .sequence_index = 41,
           .expected =
               {
-                  {
-                      .trigger_data = 4,
-                      .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
-                      .report_time = kEarlyReportTime1,
-                  },
-                  {
-                      .trigger_data = 2,
-                      .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
-                      .report_time = kEarlyReportTime1,
-                  },
+                  {.trigger_data = 4, .window_index = 0},
+                  {.trigger_data = 2, .window_index = 0},
               },
       },
       {
@@ -287,16 +262,8 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
           .sequence_index = 50,
           .expected =
               {
-                  {
-                      .trigger_data = 4,
-                      .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
-                      .report_time = kEarlyReportTime1,
-                  },
-                  {
-                      .trigger_data = 4,
-                      .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
-                      .report_time = kEarlyReportTime1,
-                  },
+                  {.trigger_data = 4, .window_index = 0},
+                  {.trigger_data = 4, .window_index = 0},
               },
       },
       {
@@ -304,21 +271,9 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
           .sequence_index = 1268,
           .expected =
               {
-                  {
-                      .trigger_data = 1,
-                      .trigger_time = kExpiryReportTime - base::Milliseconds(1),
-                      .report_time = kExpiryReportTime,
-                  },
-                  {
-                      .trigger_data = 6,
-                      .trigger_time = kEarlyReportTime2 - base::Milliseconds(1),
-                      .report_time = kEarlyReportTime2,
-                  },
-                  {
-                      .trigger_data = 7,
-                      .trigger_time = kEarlyReportTime1 - base::Milliseconds(1),
-                      .report_time = kEarlyReportTime1,
-                  },
+                  {.trigger_data = 1, .window_index = 2},
+                  {.trigger_data = 6, .window_index = 1},
+                  {.trigger_data = 7, .window_index = 0},
               },
       },
   };

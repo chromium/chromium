@@ -54,6 +54,7 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/os_registration.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -2117,14 +2118,9 @@ class AttributionManagerImplFakeReportTest : public AttributionManagerImplTest {
  protected:
   void ConfigureStorageDelegate(
       ConfigurableStorageDelegate& delegate) const override {
-    delegate.set_randomized_response(
-        std::vector<AttributionStorageDelegate::FakeReport>{
-            {
-                .trigger_data = 0,
-                .trigger_time = base::Time::Now() + base::Hours(3),
-                .report_time = base::Time::Now() + base::Days(1),
-            },
-        });
+    delegate.set_randomized_response(std::vector<FakeEventLevelReport>{
+        {.trigger_data = 0, .window_index = 0},
+    });
   }
 };
 
@@ -2145,7 +2141,7 @@ TEST_F(AttributionManagerImplFakeReportTest,
       SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
 
   checkpoint.Call(1);
-  task_environment_.FastForwardBy(base::Days(1));
+  task_environment_.FastForwardBy(kImpressionExpiry);
 }
 
 // Test that multiple source and trigger registrations, with and without debug

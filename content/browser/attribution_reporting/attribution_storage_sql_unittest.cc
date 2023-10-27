@@ -46,6 +46,7 @@
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
@@ -1579,11 +1580,8 @@ TEST_P(AttributionStorageSqlTest, ReportTablesStoreDestinationOrigin) {
 TEST_P(AttributionStorageSqlTest, FakeReportUsesSourceOriginAsContext) {
   OpenDatabase();
 
-  delegate()->set_randomized_response(
-      std::vector<AttributionStorageDelegate::FakeReport>{
-          {.trigger_data = 1,
-           .trigger_time = base::Time::Now() + base::Microseconds(1),
-           .report_time = base::Time::Now() + base::Microseconds(2)}});
+  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
+      {.trigger_data = 1, .window_index = 0}});
 
   storage()->StoreSource(
       SourceBuilder()

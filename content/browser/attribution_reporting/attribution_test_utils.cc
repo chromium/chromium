@@ -30,6 +30,7 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/os_registration.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -506,18 +507,16 @@ bool operator==(const AttributionInfo& a, const AttributionInfo& b) {
   return tie(a) == tie(b);
 }
 
-bool operator==(const AttributionStorageDelegate::FakeReport& a,
-                const AttributionStorageDelegate::FakeReport& b) {
-  const auto tie = [](const AttributionStorageDelegate::FakeReport& r) {
-    return std::make_tuple(r.trigger_data, r.trigger_time, r.report_time);
+bool operator==(const FakeEventLevelReport& a, const FakeEventLevelReport& b) {
+  const auto tie = [](const FakeEventLevelReport& r) {
+    return std::make_tuple(r.trigger_data, r.window_index);
   };
   return tie(a) == tie(b);
 }
 
-bool operator<(const AttributionStorageDelegate::FakeReport& a,
-               const AttributionStorageDelegate::FakeReport& b) {
-  const auto tie = [](const AttributionStorageDelegate::FakeReport& r) {
-    return std::make_tuple(r.trigger_data, r.trigger_time, r.report_time);
+bool operator<(const FakeEventLevelReport& a, const FakeEventLevelReport& b) {
+  const auto tie = [](const FakeEventLevelReport& r) {
+    return std::make_tuple(r.trigger_data, r.window_index);
   };
   return tie(a) < tie(b);
 }
@@ -680,11 +679,9 @@ std::ostream& operator<<(std::ostream& out,
              << ",context_origin=" << attribution_info.context_origin << "}";
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionStorageDelegate::FakeReport& r) {
+std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport& r) {
   return out << "{trigger_data=" << r.trigger_data
-             << ",trigger_time=" << r.trigger_time
-             << ",report_time=" << r.report_time << "}";
+             << ",window_index=" << r.window_index << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, const StorableSource& source) {

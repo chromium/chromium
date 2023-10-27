@@ -31,6 +31,7 @@ class TriggerVerification;
 namespace content {
 
 struct AttributionConfig;
+struct FakeEventLevelReport;
 
 enum class AttributionNoiseMode {
   // Various aspects of the API are subject to noise:
@@ -112,7 +113,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   // possible output of the API.
   //
   // Exposed for testing.
-  std::vector<FakeReport> GetRandomFakeReports(
+  std::vector<FakeEventLevelReport> GetRandomFakeReports(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
       int max_event_level_reports,
@@ -129,7 +130,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   //    uniquely determined by that number.
   //
   // Exposed for testing.
-  std::vector<FakeReport> GetFakeReportsForSequenceIndex(
+  std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
       int max_event_level_reports,

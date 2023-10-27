@@ -16,6 +16,7 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -49,18 +50,12 @@ class CONTENT_EXPORT AttributionStorageDelegate {
     base::TimeDelta max;
   };
 
-  struct FakeReport {
-    uint64_t trigger_data;
-    // A placeholder time created to align with `report_time`.
-    base::Time trigger_time;
-    base::Time report_time;
-  };
 
   // Corresponds to `StoredSource::AttributionLogic` as follows:
   // `absl::nullopt` -> `StoredSource::AttributionLogic::kTruthfully`
   // empty vector -> `StoredSource::AttributionLogic::kNever`
   // non-empty vector -> `StoredSource::AttributionLogic::kFalsely`
-  using RandomizedResponse = absl::optional<std::vector<FakeReport>>;
+  using RandomizedResponse = absl::optional<std::vector<FakeEventLevelReport>>;
 
   class CONTENT_EXPORT RandomizedResponseData {
    public:

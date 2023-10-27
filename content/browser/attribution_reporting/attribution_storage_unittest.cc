@@ -48,6 +48,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
@@ -1204,8 +1205,7 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest,
        NeverAttributeImpression_EventLevelReportNotStored) {
-  delegate()->set_randomized_response(
-      std::vector<AttributionStorageDelegate::FakeReport>{});
+  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{});
   StoreSourceResult result = storage()->StoreSource(
       TestAggregatableSourceProvider().GetBuilder().Build());
   EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
@@ -1235,14 +1235,8 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(SourceBuilder().SetSourceEventId(7).Build());
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  const base::Time fake_report_time = base::Time::Now() + kReportDelay;
-  const base::Time fake_trigger_time = fake_report_time - base::Microseconds(1);
-
-  delegate()->set_randomized_response(
-      std::vector<AttributionStorageDelegate::FakeReport>{
-          {.trigger_data = 7,
-           .trigger_time = fake_trigger_time,
-           .report_time = fake_report_time}});
+  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
+      {.trigger_data = 7, .window_index = 0}});
   StoreSourceResult result =
       storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
   EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
@@ -1261,14 +1255,8 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(SourceBuilder().Build());
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  const base::Time fake_report_time = base::Time::Now() + kReportDelay;
-  const base::Time fake_trigger_time = fake_report_time - base::Microseconds(1);
-
-  delegate()->set_randomized_response(
-      std::vector<AttributionStorageDelegate::FakeReport>{
-          {.trigger_data = 7,
-           .trigger_time = fake_trigger_time,
-           .report_time = fake_report_time}});
+  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
+      {.trigger_data = 7, .window_index = 0}});
   StoreSourceResult result = storage()->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
@@ -1292,8 +1280,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsChanged) {
     return r;
   }());
 
-  delegate()->set_randomized_response(
-      std::vector<AttributionStorageDelegate::FakeReport>{});
+  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{});
   storage()->StoreSource(TestAggregatableSourceProvider()
                              .GetBuilder()
                              .SetSourceEventId(5)
@@ -1324,8 +1311,7 @@ TEST_F(AttributionStorageTest,
 
   SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
 
-  delegate()->set_randomized_response(
-      std::vector<AttributionStorageDelegate::FakeReport>{});
+  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{});
   storage()->StoreSource(builder.SetSourceEventId(5).Build());
   delegate()->set_randomized_response(absl::nullopt);
 
@@ -1357,8 +1343,7 @@ TEST_F(AttributionStorageTest,
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  delegate()->set_randomized_response(
-      std::vector<AttributionStorageDelegate::FakeReport>{});
+  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{});
 
   storage()->StoreSource(provider.GetBuilder().Build());
   delegate()->set_randomized_response(absl::nullopt);
@@ -1738,19 +1723,21 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
     return r;
   }());
 
-  const base::Time fake_report_time = base::Time::Now() + kReportDelay;
-  const base::Time fake_trigger_time = fake_report_time - base::Microseconds(1);
+  base::TimeDelta kFirstWindow = base::Days(1);
+  base::TimeDelta kExpiry = base::Days(30);
+  const base::Time fake_report_time = base::Time::Now() + kFirstWindow;
+  const base::Time fake_trigger_time = fake_report_time - base::Milliseconds(1);
 
   SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
   builder.SetSourceEventId(4)
       .SetSourceType(SourceType::kEvent)
+      .SetExpiry(kExpiry)
       .SetPriority(100)
+      .SetEventReportWindows(*attribution_reporting::EventReportWindows::Create(
+          base::Days(0), {kFirstWindow, kExpiry}))
       .SetMaxEventLevelReports(1);
-  delegate()->set_randomized_response(
-      std::vector<AttributionStorageDelegate::FakeReport>{
-          {.trigger_data = 1,
-           .trigger_time = fake_trigger_time,
-           .report_time = fake_report_time}});
+  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
+      {.trigger_data = 1, .window_index = 0}});
   StoreSourceResult result = storage()->StoreSource(builder.Build());
   EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
@@ -1763,6 +1750,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
               .SetTime(fake_trigger_time)
               .Build(),
           builder.SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
+              .SetExpiry(kExpiry)
               .SetActiveState(
                   StoredSource::ActiveState::kReachedEventLevelAttributionLimit)
               .SetMaxEventLevelReports(1)
@@ -1771,7 +1759,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
           .SetReportTime(fake_report_time)
           .Build();
 
-  task_environment_.FastForwardBy(kReportDelay);
+  task_environment_.FastForwardBy(kFirstWindow);
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
               ElementsAre(expected_event_level_report));
@@ -1814,6 +1802,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
               .Build(),
           builder.SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
               .SetAggregatableBudgetConsumed(1)
+              .SetExpiry(kExpiry)
               .SetActiveState(
                   StoredSource::ActiveState::kReachedEventLevelAttributionLimit)
               .BuildStored())
@@ -1826,7 +1815,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
           builder.SetAggregatableBudgetConsumed(1).BuildStored(),
           DefaultAggregatableHistogramContributions({1}), trigger);
 
-  task_environment_.FastForwardBy(kReportDelay);
+  task_environment_.FastForwardBy(kExpiry);
 
   EXPECT_THAT(
       storage()->GetAttributionReports(base::Time::Now()),
@@ -1841,25 +1830,24 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
     absl::optional<base::Time> expected;
   } kTestCases[] = {
       {absl::nullopt, absl::nullopt},
-      {std::vector<AttributionStorageDelegate::FakeReport>(), absl::nullopt},
-      {std::vector<AttributionStorageDelegate::FakeReport>{
-           {.trigger_data = 0,
-            .trigger_time = now + base::Hours(1),
-            .report_time = now + base::Days(2)},
-           {.trigger_data = 0,
-            .trigger_time = now + base::Hours(1),
-            .report_time = now + base::Days(1)},
-           {.trigger_data = 0,
-            .trigger_time = now + base::Hours(1),
-            .report_time = now + base::Days(3)},
-       },
+      {std::vector<FakeEventLevelReport>(), absl::nullopt},
+      {std::vector<FakeEventLevelReport>{
+           {.trigger_data = 0, .window_index = 0},
+           {.trigger_data = 0, .window_index = 1},
+           {.trigger_data = 0, .window_index = 2}},
        now + base::Days(1)},
   };
 
   for (const auto& test_case : kTestCases) {
     delegate()->set_randomized_response(test_case.randomized_response);
 
-    auto result = storage()->StoreSource(SourceBuilder().Build());
+    auto result = storage()->StoreSource(
+        SourceBuilder()
+            .SetEventReportWindows(
+                *attribution_reporting::EventReportWindows::Create(
+                    base::Days(0),
+                    {base::Days(1), base::Days(2), base::Days(3)}))
+            .Build());
     EXPECT_EQ(result.status, test_case.randomized_response
                                  ? StorableSource::Result::kSuccessNoised
                                  : StorableSource::Result::kSuccess);

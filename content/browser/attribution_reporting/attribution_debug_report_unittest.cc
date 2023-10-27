@@ -8,6 +8,7 @@
 
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"

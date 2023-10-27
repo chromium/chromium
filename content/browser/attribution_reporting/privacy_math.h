@@ -13,6 +13,11 @@
 
 namespace content {
 
+struct FakeEventLevelReport {
+  uint64_t trigger_data;
+  int window_index;
+};
+
 // Computes the binomial coefficient aka (`n` choose `k`).
 // https://en.wikipedia.org/wiki/Binomial_coefficient
 // Negative inputs are not supported.

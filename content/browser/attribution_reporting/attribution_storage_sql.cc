@@ -62,8 +62,10 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
@@ -934,20 +936,29 @@ StoreSourceResult AttributionStorageSql::StoreSource(
                 SanitizeTriggerData(fake_report.trigger_data,
                                     common_info.source_type()));
 
-      DCHECK_LT(source_time, fake_report.trigger_time);
-      DCHECK_LT(fake_report.trigger_time, fake_report.report_time);
+      const EventReportWindows& windows = reg.event_report_windows;
+      DCHECK_LT(fake_report.window_index,
+                static_cast<int>(windows.end_times().size()));
+
+      base::Time report_time =
+          windows.ReportTimeAtWindow(source_time, fake_report.window_index);
+      // The last trigger time will always fall within a report window, no
+      // matter the report window's start time.
+      base::Time trigger_time = LastTriggerTimeForReportTime(report_time);
+      DCHECK_EQ(windows.ComputeReportTime(source_time, trigger_time),
+                report_time);
 
       // Set the `context_origin` to be the source origin for fake reports,
       // as these reports are generated only via the source site's context.
       // The fake destinations are not relevant to the context that
       // actually created the report.
       AttributionReport fake_attribution_report(
-          AttributionInfo(fake_report.trigger_time,
+          AttributionInfo(trigger_time,
                           /*debug_key=*/absl::nullopt,
                           /*context_origin=*/common_info.source_origin()),
-          AttributionReport::Id(kUnsetRecordId), fake_report.report_time,
-          /*initial_report_time=*/fake_report.report_time,
-          delegate_->NewReportID(), /*failed_send_attempts=*/0,
+          AttributionReport::Id(kUnsetRecordId), report_time,
+          /*initial_report_time=*/report_time, delegate_->NewReportID(),
+          /*failed_send_attempts=*/0,
           AttributionReport::EventLevelData(fake_report.trigger_data,
                                             /*priority=*/0, *stored_source));
       if (!StoreAttributionReport(fake_attribution_report)) {
@@ -955,8 +966,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       }
 
       if (!min_fake_report_time.has_value() ||
-          fake_report.report_time < *min_fake_report_time) {
-        min_fake_report_time = fake_report.report_time;
+          report_time < *min_fake_report_time) {
+        min_fake_report_time = report_time;
       }
     }
   }

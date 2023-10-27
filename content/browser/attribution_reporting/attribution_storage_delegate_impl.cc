@@ -260,7 +260,7 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
   }
 }
 
-std::vector<AttributionStorageDelegate::FakeReport>
+std::vector<FakeEventLevelReport>
 AttributionStorageDelegateImpl::GetRandomFakeReports(
     SourceType source_type,
     const EventReportWindows& event_report_windows,
@@ -283,7 +283,7 @@ AttributionStorageDelegateImpl::GetRandomFakeReports(
                                         sequence_index);
 }
 
-std::vector<AttributionStorageDelegate::FakeReport>
+std::vector<FakeEventLevelReport>
 AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     SourceType source_type,
     const EventReportWindows& event_report_windows,
@@ -303,7 +303,7 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
               event_report_windows.end_times().size(),
           /*sequence_index=*/random_stars_and_bars_sequence_index));
 
-  std::vector<FakeReport> fake_reports;
+  std::vector<FakeEventLevelReport> fake_reports;
 
   // an output state is uniquely determined by an ordering of c stars and w*d
   // bars, where:
@@ -321,20 +321,8 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     DCHECK_GE(trigger_data, 0);
     DCHECK_LT(trigger_data, trigger_data_cardinality);
 
-    base::Time report_time = event_report_windows.ReportTimeAtWindow(
-        source_time, /*window_index=*/result.quot);
-    // The last trigger time will always fall within a report window, no matter
-    // the report window's start time.
-    base::Time trigger_time = LastTriggerTimeForReportTime(report_time);
-
-    DCHECK_EQ(event_report_windows.ComputeReportTime(source_time, trigger_time),
-              report_time);
-
-    fake_reports.push_back({
-        .trigger_data = static_cast<uint64_t>(trigger_data),
-        .trigger_time = trigger_time,
-        .report_time = report_time,
-    });
+    fake_reports.push_back({.trigger_data = static_cast<uint64_t>(trigger_data),
+                            .window_index = result.quot});
   }
   DCHECK_LE(fake_reports.size(), static_cast<size_t>(max_event_level_reports));
   return fake_reports;
