@@ -162,11 +162,13 @@ using base::UserMetricsAction;
     }
     return canPerformForward;
   }
+  if (sel_isEqual(action, @selector(keyCommand_showHistory))) {
+    return !_browser->GetBrowserState()->IsOffTheRecord() && self.tabsCount > 0;
+  }
   if (sel_isEqual(action, @selector(keyCommand_openLocation)) ||
       sel_isEqual(action, @selector(keyCommand_closeTab)) ||
       sel_isEqual(action, @selector(keyCommand_showBookmarks)) ||
       sel_isEqual(action, @selector(keyCommand_reload)) ||
-      sel_isEqual(action, @selector(keyCommand_showHistory)) ||
       sel_isEqual(action, @selector(keyCommand_voiceSearch)) ||
       sel_isEqual(action, @selector(keyCommand_stop)) ||
       sel_isEqual(action, @selector(keyCommand_showHelp)) ||
