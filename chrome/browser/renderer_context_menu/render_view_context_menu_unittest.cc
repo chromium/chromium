@@ -1702,16 +1702,8 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchChromeUIScheme) {
 
 // Verify that the adding the companion image search option to the menu
 // issues a preconnection request to lens.google.com.
-// TODO(crbug.com/1486497): Test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CompanionImageSearchIssuesGoogleLensPreconnect \
-  DISABLED_CompanionImageSearchIssuesGoogleLensPreconnect
-#else
-#define MAYBE_CompanionImageSearchIssuesGoogleLensPreconnect \
-  CompanionImageSearchIssuesGoogleLensPreconnect
-#endif
 TEST_F(RenderViewContextMenuPrefsTest,
-       MAYBE_CompanionImageSearchIssuesGoogleLensPreconnect) {
+       CompanionImageSearchIssuesGoogleLensPreconnect) {
   BeginPreresolveListening();
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
@@ -1741,16 +1733,8 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
 // Verify that the adding the companion region search option to the menu
 // issues a preconnection request to lens.google.com.
-// TODO(crbug.com/1486497): Test is flaky on ChromeOS and Linux.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_CompanionRegionSearchIssuesGoogleLensPreconnect \
-  DISABLED_CompanionRegionSearchIssuesGoogleLensPreconnect
-#else
-#define MAYBE_CompanionRegionSearchIssuesGoogleLensPreconnect \
-  CompanionRegionSearchIssuesGoogleLensPreconnect
-#endif
 TEST_F(RenderViewContextMenuPrefsTest,
-       MAYBE_CompanionRegionSearchIssuesGoogleLensPreconnect) {
+       CompanionRegionSearchIssuesGoogleLensPreconnect) {
   BeginPreresolveListening();
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
@@ -1781,16 +1765,8 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
 // Verify that the adding the Lens image search option to the menu
 // issues a preconnection request to lens.google.com.
-// TODO(crbug.com/1492349): Test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LensImageSearchIssuesGoogleLensPreconnect \
-  DISABLED_LensImageSearchIssuesGoogleLensPreconnect
-#else
-#define MAYBE_LensImageSearchIssuesGoogleLensPreconnect \
-  LensImageSearchIssuesGoogleLensPreconnect
-#endif
 TEST_F(RenderViewContextMenuPrefsTest,
-       MAYBE_LensImageSearchIssuesGoogleLensPreconnect) {
+       LensImageSearchIssuesGoogleLensPreconnect) {
   BeginPreresolveListening();
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(lens::features::kLensStandalone);
@@ -1817,16 +1793,8 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
 // Verify that the adding the Lens region search option to the menu
 // issues a preconnection request to lens.google.com.
-// TODO(crbug.com/1486497): Test is flaky on ChromeOS and Linux.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_LensRegionSearchIssuesGoogleLensPreconnect \
-  DISABLED_LensRegionSearchIssuesGoogleLensPreconnect
-#else
-#define MAYBE_LensRegionSearchIssuesGoogleLensPreconnect \
-  LensRegionSearchIssuesGoogleLensPreconnect
-#endif
 TEST_F(RenderViewContextMenuPrefsTest,
-       MAYBE_LensRegionSearchIssuesGoogleLensPreconnect) {
+       LensRegionSearchIssuesGoogleLensPreconnect) {
   BeginPreresolveListening();
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(lens::features::kLensStandalone);
