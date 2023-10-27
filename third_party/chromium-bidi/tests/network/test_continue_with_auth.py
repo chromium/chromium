@@ -112,11 +112,12 @@ async def test_continue_with_auth_non_blocked_request(
 
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: Fix this test")
-async def test_continue_with_auth_completes_use_bidi_events(
-        websocket, context_id, auth_required_url):
-    await subscribe(websocket,
-                    ["network.beforeRequestSent", "network.authRequired"],
-                    [context_id])
+async def test_continue_with_auth_completes(websocket, context_id,
+                                            auth_required_url):
+    await subscribe(websocket, [
+        "network.beforeRequestSent", "network.authRequired",
+        "network.responseCompleted"
+    ], [context_id])
 
     await execute_command(
         websocket, {
@@ -168,8 +169,6 @@ async def test_continue_with_auth_completes_use_bidi_events(
     }
     network_id = event_response["params"]["request"]["request"]
 
-    await subscribe(websocket, ["network.responseCompleted"])
-
     await execute_command(
         websocket, {
             "method": "network.continueWithAuth",
@@ -210,7 +209,9 @@ async def test_continue_with_auth_completes_use_bidi_events(
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: Fix this test")
 async def test_continue_with_auth_twice(websocket, context_id, example_url):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    [context_id])
 
     await execute_command(
         websocket, {
@@ -262,8 +263,6 @@ async def test_continue_with_auth_twice(websocket, context_id, example_url):
     }
     network_id = event_response["params"]["request"]["request"]
 
-    await subscribe(websocket, ["network.responseCompleted"])
-
     await execute_command(
         websocket, {
             "method": "network.continueWithAuth",
@@ -296,7 +295,9 @@ async def test_continue_with_auth_twice(websocket, context_id, example_url):
 @pytest.mark.skip(reason="TODO: Fix this test")
 async def test_continue_with_auth_remove_intercept_inflight_request(
         websocket, context_id, example_url, auth_required_url):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    [context_id])
 
     await execute_command(
         websocket, {
@@ -374,8 +375,6 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
             },
         })
     assert result == {}
-
-    await subscribe(websocket, ["network.responseCompleted"])
 
     await execute_command(
         websocket, {

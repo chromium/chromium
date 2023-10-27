@@ -284,8 +284,7 @@ async def test_fail_request_with_auth_required_phase(
 
 
 @pytest.mark.asyncio
-async def test_fail_request_completes_use_bidi_events(websocket, context_id,
-                                                      example_url):
+async def test_fail_request_completes(websocket, context_id, example_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     result = await execute_command(

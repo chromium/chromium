@@ -199,7 +199,9 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
 @pytest.mark.asyncio
 async def test_continue_response_must_specify_both_status_and_headers(
         websocket, context_id, example_url, continueResponseParams):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    [context_id])
 
     await execute_command(
         websocket, {
@@ -227,8 +229,6 @@ async def test_continue_response_must_specify_both_status_and_headers(
                                           "network.beforeRequestSent")
     network_id = event_response["params"]["request"]["request"]
 
-    await subscribe(websocket, ["network.responseCompleted"])
-
     # TODO(https://github.com/w3c/webdriver-bidi/issues/572): Follow up with spec.
     with pytest.raises(
             Exception,
@@ -247,9 +247,10 @@ async def test_continue_response_must_specify_both_status_and_headers(
 
 
 @pytest.mark.asyncio
-async def test_continue_response_completes_use_bidi_events(
-        websocket, context_id, example_url):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+async def test_continue_response_completes(websocket, context_id, example_url):
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    [context_id])
 
     await execute_command(
         websocket, {
@@ -300,8 +301,6 @@ async def test_continue_response_completes_use_bidi_events(
         "type": "event",
     }
     network_id = event_response["params"]["request"]["request"]
-
-    await subscribe(websocket, ["network.responseCompleted"])
 
     await execute_command(
         websocket, {
@@ -350,7 +349,9 @@ async def test_continue_response_completes_use_bidi_events(
 
 @pytest.mark.asyncio
 async def test_continue_response_twice(websocket, context_id, example_url):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    [context_id])
 
     await execute_command(
         websocket, {
@@ -402,8 +403,6 @@ async def test_continue_response_twice(websocket, context_id, example_url):
     }
     network_id = event_response["params"]["request"]["request"]
 
-    await subscribe(websocket, ["network.responseCompleted"])
-
     await execute_command(
         websocket, {
             "method": "network.continueResponse",
@@ -433,7 +432,9 @@ async def test_continue_response_twice(websocket, context_id, example_url):
 @pytest.mark.asyncio
 async def test_continue_response_remove_intercept_inflight_request(
         websocket, context_id, example_url):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    [context_id])
 
     result = await execute_command(
         websocket, {
@@ -498,8 +499,6 @@ async def test_continue_response_remove_intercept_inflight_request(
             },
         })
     assert result == {}
-
-    await subscribe(websocket, ["network.responseCompleted"])
 
     await execute_command(
         websocket, {

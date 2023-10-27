@@ -159,9 +159,10 @@ async def test_continue_request_non_blocked_request(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_continue_request_completes_use_bidi_events(
-        websocket, context_id, example_url):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+async def test_continue_request_completes(websocket, context_id, example_url):
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    [context_id])
 
     await execute_command(
         websocket, {
@@ -212,8 +213,6 @@ async def test_continue_request_completes_use_bidi_events(
         "type": "event",
     }
     network_id = event_response["params"]["request"]["request"]
-
-    await subscribe(websocket, ["network.responseCompleted"])
 
     await execute_command(
         websocket, {
@@ -243,7 +242,9 @@ async def test_continue_request_completes_use_bidi_events(
 
 @pytest.mark.asyncio
 async def test_continue_request_twice(websocket, context_id, example_url):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    [context_id])
 
     await execute_command(
         websocket, {
@@ -294,8 +295,6 @@ async def test_continue_request_twice(websocket, context_id, example_url):
         "type": "event",
     }
     network_id = event_response["params"]["request"]["request"]
-
-    await subscribe(websocket, ["network.responseCompleted"])
 
     await execute_command(
         websocket, {
@@ -328,7 +327,9 @@ async def test_continue_request_twice(websocket, context_id, example_url):
 @pytest.mark.asyncio
 async def test_continue_request_remove_intercept_inflight_request(
         websocket, context_id, example_url):
-    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+    await subscribe(websocket,
+                    ["network.beforeRequestSent", "network.responseCompleted"],
+                    [context_id])
 
     result = await execute_command(
         websocket, {
@@ -393,8 +394,6 @@ async def test_continue_request_remove_intercept_inflight_request(
             },
         })
     assert result == {}
-
-    await subscribe(websocket, ["network.responseCompleted"])
 
     await execute_command(
         websocket, {

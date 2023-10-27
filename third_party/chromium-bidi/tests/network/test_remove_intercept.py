@@ -111,8 +111,8 @@ async def test_remove_intercept_twice(websocket):
                              "string and pattern",
                          ])
 @pytest.mark.asyncio
-async def test_remove_intercept_unblocks_use_bidi_events(
-        websocket, context_id, another_context_id, url_patterns):
+async def test_remove_intercept_unblocks(websocket, context_id,
+                                         another_context_id, url_patterns):
     # TODO: make offline
     example_url = "https://www.example.com/"
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
