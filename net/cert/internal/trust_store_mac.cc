@@ -102,7 +102,7 @@ TrustStatus IsTrustDictionaryTrustedForPolicy(
 
     // kSecPolicyOid is guaranteed to be present in the policy dictionary.
     CFStringRef policy_oid = base::apple::GetValueFromDictionary<CFStringRef>(
-        policy_dict, kSecPolicyOid);
+        policy_dict.get(), kSecPolicyOid);
 
     if (!CFEqual(policy_oid, target_policy_oid))
       return TrustStatus::UNSPECIFIED;
@@ -195,7 +195,7 @@ TrustStatus IsSecCertificateTrustedForPolicyInDomain(
     return TrustStatus::UNSPECIFIED;
   }
   TrustStatus trust = IsTrustSettingsTrustedForPolicy(
-      trust_settings, is_self_issued, policy_oid);
+      trust_settings.get(), is_self_issued, policy_oid);
   return trust;
 }
 
@@ -222,8 +222,8 @@ TrustStatus IsCertificateTrustedForPolicyInDomain(
   const bool is_self_issued =
       cert->normalized_subject() == cert->normalized_issuer();
 
-  return IsSecCertificateTrustedForPolicyInDomain(cert_handle, is_self_issued,
-                                                  policy_oid, trust_domain);
+  return IsSecCertificateTrustedForPolicyInDomain(
+      cert_handle.get(), is_self_issued, policy_oid, trust_domain);
 }
 
 TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
@@ -251,7 +251,7 @@ TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
       continue;
     }
     TrustStatus trust = IsTrustSettingsTrustedForPolicy(
-        trust_settings, is_self_issued, policy_oid);
+        trust_settings.get(), is_self_issued, policy_oid);
     if (trust != TrustStatus::UNSPECIFIED)
       return trust;
   }
@@ -270,7 +270,7 @@ TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
   if (!cert_handle)
     return TrustStatus::UNSPECIFIED;
 
-  return IsCertificateTrustedForPolicy(cert, cert_handle, policy_oid);
+  return IsCertificateTrustedForPolicy(cert, cert_handle.get(), policy_oid);
 }
 
 // Returns true if |cert| would never be a valid intermediate. (A return
@@ -337,9 +337,10 @@ class TrustDomainCacheFullCerts {
     }
     std::vector<std::pair<SHA256HashValue, TrustStatusDetails>>
         trust_status_vector;
-    for (CFIndex i = 0, size = CFArrayGetCount(cert_array); i < size; ++i) {
+    for (CFIndex i = 0, size = CFArrayGetCount(cert_array.get()); i < size;
+         ++i) {
       SecCertificateRef cert = reinterpret_cast<SecCertificateRef>(
-          const_cast<void*>(CFArrayGetValueAtIndex(cert_array, i)));
+          const_cast<void*>(CFArrayGetValueAtIndex(cert_array.get(), i)));
       base::apple::ScopedCFTypeRef<CFDataRef> der_data(
           SecCertificateCopyData(cert));
       if (!der_data) {
@@ -681,9 +682,9 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
         CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
 
-    CFDictionarySetValue(query, kSecClass, kSecClassCertificate);
-    CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
-    CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
+    CFDictionarySetValue(query.get(), kSecClass, kSecClassCertificate);
+    CFDictionarySetValue(query.get(), kSecReturnRef, kCFBooleanTrue);
+    CFDictionarySetValue(query.get(), kSecMatchLimit, kSecMatchLimitAll);
 
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
 
@@ -697,12 +698,13 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
             << "TestKeychainSearchList::CopySearchList error";
         return;
       }
-      CFDictionarySetValue(query, kSecMatchSearchList,
+      CFDictionarySetValue(query.get(), kSecMatchSearchList,
                            scoped_alternate_keychain_search_list.get());
     }
 
     base::apple::ScopedCFTypeRef<CFTypeRef> matching_items;
-    OSStatus err = SecItemCopyMatching(query, matching_items.InitializeInto());
+    OSStatus err =
+        SecItemCopyMatching(query.get(), matching_items.InitializeInto());
     if (err == errSecItemNotFound) {
       RecordCachedIntermediatesHistograms(0, timer.Elapsed());
       // No matches found.
@@ -714,7 +716,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
       return;
     }
     CFArrayRef matching_items_array =
-        base::apple::CFCastStrict<CFArrayRef>(matching_items);
+        base::apple::CFCastStrict<CFArrayRef>(matching_items.get());
     for (CFIndex i = 0, item_count = CFArrayGetCount(matching_items_array);
          i < item_count; ++i) {
       SecCertificateRef match_cert_handle =
@@ -748,7 +750,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;
       }
-      if (IsNotAcceptableIntermediate(parsed_cert.get(), policy_oid_)) {
+      if (IsNotAcceptableIntermediate(parsed_cert.get(), policy_oid_.get())) {
         continue;
       }
       intermediates_cert_issuer_source_.AddCert(std::move(parsed_cert));
@@ -857,9 +859,9 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
         CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
 
-    CFDictionarySetValue(query, kSecClass, kSecClassCertificate);
-    CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
-    CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
+    CFDictionarySetValue(query.get(), kSecClass, kSecClassCertificate);
+    CFDictionarySetValue(query.get(), kSecReturnRef, kCFBooleanTrue);
+    CFDictionarySetValue(query.get(), kSecMatchLimit, kSecMatchLimitAll);
 
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
 
@@ -873,12 +875,13 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
             << "TestKeychainSearchList::CopySearchList error";
         return;
       }
-      CFDictionarySetValue(query, kSecMatchSearchList,
+      CFDictionarySetValue(query.get(), kSecMatchSearchList,
                            scoped_alternate_keychain_search_list.get());
     }
 
     base::apple::ScopedCFTypeRef<CFTypeRef> matching_items;
-    OSStatus err = SecItemCopyMatching(query, matching_items.InitializeInto());
+    OSStatus err =
+        SecItemCopyMatching(query.get(), matching_items.InitializeInto());
     if (err == errSecItemNotFound) {
       RecordHistograms(0, timer.Elapsed());
       // No matches found.
@@ -890,7 +893,7 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
       return;
     }
     CFArrayRef matching_items_array =
-        base::apple::CFCastStrict<CFArrayRef>(matching_items);
+        base::apple::CFCastStrict<CFArrayRef>(matching_items.get());
     std::vector<std::pair<SHA256HashValue, TrustStatus>> trust_status_vector;
     for (CFIndex i = 0, item_count = CFArrayGetCount(matching_items_array);
          i < item_count; ++i) {
@@ -917,7 +920,7 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
       }
 
       TrustStatus trust_status = IsCertificateTrustedForPolicy(
-          parsed_cert.get(), sec_cert, policy_oid_);
+          parsed_cert.get(), sec_cert, policy_oid_.get());
 
       if (trust_status == TrustStatus::TRUSTED ||
           trust_status == TrustStatus::DISTRUSTED) {
@@ -929,7 +932,7 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
         continue;
       }
 
-      if (IsNotAcceptableIntermediate(parsed_cert.get(), policy_oid_)) {
+      if (IsNotAcceptableIntermediate(parsed_cert.get(), policy_oid_.get())) {
         continue;
       }
       cert_issuer_source_.AddCert(std::move(parsed_cert));
@@ -1030,7 +1033,7 @@ void TrustStoreMac::SyncGetIssuersOf(const ParsedCertificate* cert,
     return;
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> matching_cert_buffers =
-      FindMatchingCertificatesForMacNormalizedSubject(name_data);
+      FindMatchingCertificatesForMacNormalizedSubject(name_data.get());
 
   // Convert to ParsedCertificate.
   for (auto& buffer : matching_cert_buffers) {
@@ -1094,10 +1097,10 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
       CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
 
-  CFDictionarySetValue(query, kSecClass, kSecClassCertificate);
-  CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
-  CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
-  CFDictionarySetValue(query, kSecAttrSubject, name_data);
+  CFDictionarySetValue(query.get(), kSecClass, kSecClassCertificate);
+  CFDictionarySetValue(query.get(), kSecReturnRef, kCFBooleanTrue);
+  CFDictionarySetValue(query.get(), kSecMatchLimit, kSecMatchLimitAll);
+  CFDictionarySetValue(query.get(), kSecAttrSubject, name_data);
 
   base::AutoLock lock(crypto::GetMacSecurityServicesLock());
 
@@ -1114,13 +1117,14 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
   }
 
   if (scoped_alternate_keychain_search_list) {
-    CFDictionarySetValue(query, kSecMatchSearchList,
+    CFDictionarySetValue(query.get(), kSecMatchSearchList,
                          scoped_alternate_keychain_search_list.get());
   }
 
   base::apple::ScopedCFTypeRef<CFArrayRef> matching_items;
   OSStatus err = SecItemCopyMatching(
-      query, reinterpret_cast<CFTypeRef*>(matching_items.InitializeInto()));
+      query.get(),
+      reinterpret_cast<CFTypeRef*>(matching_items.InitializeInto()));
   if (err == errSecItemNotFound) {
     // No matches found.
     return matching_cert_buffers;
@@ -1130,10 +1134,10 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
     return matching_cert_buffers;
   }
 
-  for (CFIndex i = 0, item_count = CFArrayGetCount(matching_items);
+  for (CFIndex i = 0, item_count = CFArrayGetCount(matching_items.get());
        i < item_count; ++i) {
     SecCertificateRef match_cert_handle = reinterpret_cast<SecCertificateRef>(
-        const_cast<void*>(CFArrayGetValueAtIndex(matching_items, i)));
+        const_cast<void*>(CFArrayGetValueAtIndex(matching_items.get(), i)));
 
     base::apple::ScopedCFTypeRef<CFDataRef> der_data(
         SecCertificateCopyData(match_cert_handle));
@@ -1163,7 +1167,8 @@ base::apple::ScopedCFTypeRef<CFDataRef> TrustStoreMac::GetMacNormalizedIssuer(
     LOG(ERROR) << "CreateCertBufferFromBytes";
     return name_data;
   }
-  name_data.reset(SecCertificateCopyNormalizedIssuerSequence(cert_handle));
+  name_data.reset(
+      SecCertificateCopyNormalizedIssuerSequence(cert_handle.get()));
   if (!name_data)
     LOG(ERROR) << "SecCertificateCopyNormalizedIssuerContent";
   return name_data;

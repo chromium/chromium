@@ -142,15 +142,15 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
 
     base::apple::ScopedCFTypeRef<CFErrorRef> error;
     base::apple::ScopedCFTypeRef<CFDataRef> signature_ref(SecKeyCreateSignature(
-        key_, sec_algorithm, digest_ref, error.InitializeInto()));
+        key_.get(), sec_algorithm, digest_ref.get(), error.InitializeInto()));
     if (!signature_ref) {
-      LOG(ERROR) << error;
+      LOG(ERROR) << error.get();
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
 
-    signature->assign(
-        CFDataGetBytePtr(signature_ref),
-        CFDataGetBytePtr(signature_ref) + CFDataGetLength(signature_ref));
+    signature->assign(CFDataGetBytePtr(signature_ref.get()),
+                      CFDataGetBytePtr(signature_ref.get()) +
+                          CFDataGetLength(signature_ref.get()));
     return OK;
   }
 

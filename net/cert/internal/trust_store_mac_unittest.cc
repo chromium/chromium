@@ -191,7 +191,7 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
                                     keychain.InitializeInto());
   ASSERT_EQ(errSecSuccess, status);
   ASSERT_TRUE(keychain);
-  test_keychain_search_list->AddKeychain(keychain);
+  test_keychain_search_list->AddKeychain(keychain.get());
 
 #pragma clang diagnostic pop
 
@@ -347,11 +347,11 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     base::apple::ScopedCFTypeRef<SecTrustRef> trust;
     {
       base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-      ASSERT_EQ(noErr,
-                SecTrustCreateWithCertificates(cert_handle, sec_policy,
-                                               trust.InitializeInto()));
-      ASSERT_EQ(noErr,
-                SecTrustSetOptions(trust, kSecTrustOptionLeafIsCA |
+      ASSERT_EQ(noErr, SecTrustCreateWithCertificates(cert_handle.get(),
+                                                      sec_policy.get(),
+                                                      trust.InitializeInto()));
+      ASSERT_EQ(noErr, SecTrustSetOptions(trust.get(),
+                                          kSecTrustOptionLeafIsCA |
                                               kSecTrustOptionAllowExpired |
                                               kSecTrustOptionAllowExpiredRoot));
 
@@ -366,9 +366,9 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
         // Cert is only in the system domain. It should be untrusted.
         EXPECT_FALSE(is_trusted);
       } else {
-        bool trusted = SecTrustEvaluateWithError(trust, nullptr);
+        bool trusted = SecTrustEvaluateWithError(trust.get(), nullptr);
         bool expected_trust_anchor =
-            trusted && (SecTrustGetCertificateCount(trust) == 1);
+            trusted && (SecTrustGetCertificateCount(trust.get()) == 1);
         EXPECT_EQ(expected_trust_anchor, is_trusted);
       }
     }

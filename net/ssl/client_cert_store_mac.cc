@@ -67,7 +67,7 @@ OSStatus CopyCertChain(
   SecTrustRef trust_ref = nullptr;
   {
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    result = SecTrustCreateWithCertificates(input_certs, ssl_policy,
+    result = SecTrustCreateWithCertificates(input_certs.get(), ssl_policy.get(),
                                             &trust_ref);
   }
   if (result)
@@ -80,8 +80,8 @@ OSStatus CopyCertChain(
     // The return value is intentionally ignored since we only care about
     // building a cert chain, not whether it is trusted (the server is the
     // only one that can decide that.)
-    std::ignore = SecTrustEvaluateWithError(trust, nullptr);
-    *out_cert_chain = x509_util::CertificateChainFromSecTrust(trust);
+    std::ignore = SecTrustEvaluateWithError(trust.get(), nullptr);
+    *out_cert_chain = x509_util::CertificateChainFromSecTrust(trust.get());
   }
   return result;
 }
@@ -110,10 +110,10 @@ bool IsIssuedByInKeychain(const std::vector<std::string>& valid_issuers,
     return false;
 
   std::vector<base::apple::ScopedCFTypeRef<SecCertificateRef>> intermediates;
-  for (CFIndex i = 1, chain_count = CFArrayGetCount(cert_chain);
+  for (CFIndex i = 1, chain_count = CFArrayGetCount(cert_chain.get());
        i < chain_count; ++i) {
     SecCertificateRef sec_cert = reinterpret_cast<SecCertificateRef>(
-        const_cast<void*>(CFArrayGetValueAtIndex(cert_chain, i)));
+        const_cast<void*>(CFArrayGetValueAtIndex(cert_chain.get(), i)));
     intermediates.emplace_back(sec_cert, base::scoped_policy::RETAIN);
   }
 
@@ -313,7 +313,7 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
     {
       base::AutoLock lock(crypto::GetMacSecurityServicesLock());
       preferred_sec_identity.reset(
-          SecIdentityCopyPreferred(domain_str, nullptr, nullptr));
+          SecIdentityCopyPreferred(domain_str.get(), nullptr, nullptr));
     }
   }
 
@@ -374,12 +374,12 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
   {
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
     err = SecItemCopyMatching(
-        query, reinterpret_cast<CFTypeRef*>(result.InitializeInto()));
+        query.get(), reinterpret_cast<CFTypeRef*>(result.InitializeInto()));
   }
   if (!err) {
-    for (CFIndex i = 0; i < CFArrayGetCount(result); i++) {
+    for (CFIndex i = 0; i < CFArrayGetCount(result.get()); i++) {
       SecIdentityRef item = reinterpret_cast<SecIdentityRef>(
-          const_cast<void*>(CFArrayGetValueAtIndex(result, i)));
+          const_cast<void*>(CFArrayGetValueAtIndex(result.get(), i)));
       AddIdentity(
           ScopedCFTypeRef<SecIdentityRef>(item, base::scoped_policy::RETAIN),
           preferred_sec_identity.get(), &regular_identities,

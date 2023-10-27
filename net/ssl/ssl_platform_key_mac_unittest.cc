@@ -92,15 +92,15 @@ base::apple::ScopedCFTypeRef<SecKeyRef> SecKeyFromPKCS8(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(attrs, kSecAttrKeyClass, kSecAttrKeyClassPrivate);
-  CFDictionarySetValue(attrs, kSecAttrKeyType, key_type);
+  CFDictionarySetValue(attrs.get(), kSecAttrKeyClass, kSecAttrKeyClassPrivate);
+  CFDictionarySetValue(attrs.get(), kSecAttrKeyType, key_type);
 
   base::apple::ScopedCFTypeRef<CFDataRef> data(
       CFDataCreate(kCFAllocatorDefault, CBB_data(cbb.get()),
                    base::checked_cast<CFIndex>(CBB_len(cbb.get()))));
 
   return base::apple::ScopedCFTypeRef<SecKeyRef>(
-      SecKeyCreateWithData(data, attrs, nullptr));
+      SecKeyCreateWithData(data.get(), attrs.get(), nullptr));
 }
 
 }  // namespace
