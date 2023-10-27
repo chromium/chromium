@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "net/base/net_export.h"
-#include "third_party/boringssl/src/pki/input.h"
+#include "net/der/input.h"
 
 namespace net {
 
@@ -27,7 +27,7 @@ struct NET_EXPORT CertPrincipal {
 
   // Parses a BER-format DistinguishedName.
   bool ParseDistinguishedName(
-      bssl::der::Input ber_name_data,
+      der::Input ber_name_data,
       PrintableStringHandling printable_string_handling =
           PrintableStringHandling::kDefault);
 

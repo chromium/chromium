@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/cert/pem.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/log/test_net_log.h"
 #include "net/quic/crypto/proof_source_chromium.h"
@@ -32,7 +33,6 @@
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/url_request_context_builder_mojo.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/pki/pem.h"
 
 namespace network {
 namespace {
@@ -774,7 +774,7 @@ class WebTransportWithCustomCertificateTest : public WebTransportTest {
       return nullptr;
     }
 
-    bssl::PEMTokenizer pem_tokenizer(cert_pem, {"CERTIFICATE"});
+    net::PEMTokenizer pem_tokenizer(cert_pem, {"CERTIFICATE"});
     if (!pem_tokenizer.GetNext()) {
       ADD_FAILURE() << "No certificates found in " << cert_path;
       return nullptr;

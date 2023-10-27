@@ -42,9 +42,9 @@
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/cert/internal/trust_store_chrome.h"
+#include "net/cert/pki/parse_name.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
-#include "third_party/boringssl/src/pki/input.h"
-#include "third_party/boringssl/src/pki/parse_name.h"
+#include "net/der/input.h"
 #endif
 
 using net::test::IsError;
@@ -496,11 +496,11 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
   EXPECT_EQ(info_ptr->version, root_store_proto.version_major());
   ASSERT_EQ(info_ptr->root_cert_info.size(), static_cast<std::size_t>(1));
 
-  bssl::der::Input subject_tlv(root->GetSubject());
-  bssl::RDNSequence subject_rdn;
-  ASSERT_TRUE(bssl::ParseName(subject_tlv, &subject_rdn));
+  net::der::Input subject_tlv(root->GetSubject());
+  net::RDNSequence subject_rdn;
+  ASSERT_TRUE(net::ParseName(subject_tlv, &subject_rdn));
   std::string subject_string;
-  ASSERT_TRUE(bssl::ConvertToRFC2253(subject_rdn, &subject_string));
+  ASSERT_TRUE(net::ConvertToRFC2253(subject_rdn, &subject_string));
   EXPECT_EQ(info_ptr->root_cert_info[0]->name, subject_string);
 
   net::SHA256HashValue root_hash =
@@ -511,7 +511,7 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
 
 TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
   base::test::TaskEnvironment task_environment;
-  bssl::ParsedCertificateList anchors = net::CompiledChromeRootStoreAnchors();
+  net::ParsedCertificateList anchors = net::CompiledChromeRootStoreAnchors();
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(

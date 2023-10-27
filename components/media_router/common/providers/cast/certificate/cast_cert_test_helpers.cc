@@ -10,9 +10,9 @@
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
+#include "net/cert/pem.h"
+#include "net/cert/pki/cert_errors.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/pki/cert_errors.h"
-#include "third_party/boringssl/src/pki/pem.h"
 
 namespace cast_certificate {
 namespace testing {
@@ -65,7 +65,7 @@ SignatureTestData ReadSignatureTestData(const base::StringPiece& file_name) {
                          &file_data);
   CHECK(!file_data.empty());
 
-  bssl::PEMTokenizer pem_tokenizer(
+  net::PEMTokenizer pem_tokenizer(
       file_data, {"MESSAGE", "SIGNATURE SHA1", "SIGNATURE SHA256"});
   while (pem_tokenizer.GetNext()) {
     const std::string& type = pem_tokenizer.block_type();
@@ -91,9 +91,9 @@ base::Time ConvertUnixTimestampSeconds(uint64_t time) {
   return base::Time::UnixEpoch() + base::Seconds(time);
 }
 
-std::unique_ptr<bssl::TrustStoreInMemory> LoadTestCert(
+std::unique_ptr<net::TrustStoreInMemory> LoadTestCert(
     const base::StringPiece& cert_file_name) {
-  auto store = std::make_unique<bssl::TrustStoreInMemory>();
+  auto store = std::make_unique<net::TrustStoreInMemory>();
   CHECK(PopulateStoreWithCertsFromPath(
       store.get(),
       testing::GetCastCertificatesSubDirectory().AppendASCII(cert_file_name)));

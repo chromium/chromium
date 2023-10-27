@@ -36,6 +36,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
+#include "net/cert/pem.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/ssl_client_socket.h"
@@ -53,7 +54,6 @@
 #include "services/network/network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/pki/pem.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 const int64_t kDistantTimeoutMillis = 100000;  // 100 seconds (never hit).
@@ -545,7 +545,7 @@ class SslCastSocketTest : public CastSocketTestBase {
     }
 
     const std::vector<std::string> headers({"PRIVATE KEY"});
-    bssl::PEMTokenizer pem_tokenizer(pem_data, headers);
+    net::PEMTokenizer pem_tokenizer(pem_data, headers);
     if (!pem_tokenizer.GetNext()) {
       return nullptr;
     }

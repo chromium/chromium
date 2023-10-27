@@ -12,13 +12,13 @@
 #include "base/rand_util.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/base/ip_address.h"
+#include "net/cert/pki/parse_certificate.h"
+#include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
-#include "third_party/boringssl/src/pki/parse_certificate.h"
-#include "third_party/boringssl/src/pki/signature_algorithm.h"
 
 class GURL;
 
@@ -92,12 +92,12 @@ class CertBuilder {
   static std::array<std::unique_ptr<CertBuilder>, 2> CreateSimpleChain2();
 
   // Returns a compatible signature algorithm for |key|.
-  static absl::optional<bssl::SignatureAlgorithm>
-  DefaultSignatureAlgorithmForKey(EVP_PKEY* key);
+  static absl::optional<SignatureAlgorithm> DefaultSignatureAlgorithmForKey(
+      EVP_PKEY* key);
 
   // Signs |tbs_data| with |key| using |signature_algorithm| appending the
   // signature onto |out_signature| and returns true if successful.
-  static bool SignData(bssl::SignatureAlgorithm signature_algorithm,
+  static bool SignData(SignatureAlgorithm signature_algorithm,
                        base::StringPiece tbs_data,
                        EVP_PKEY* key,
                        CBB* out_signature);
@@ -110,7 +110,7 @@ class CertBuilder {
   // Returns a DER encoded AlgorithmIdentifier TLV for |signature_algorithm|
   // empty string on error.
   static std::string SignatureAlgorithmToDer(
-      bssl::SignatureAlgorithm signature_algorithm);
+      SignatureAlgorithm signature_algorithm);
 
   // Generates |num_bytes| random bytes, and then returns the hex encoding of
   // those bytes.
@@ -126,15 +126,15 @@ class CertBuilder {
   // contain extensions, so if |version| is |V1| or |V2| you may want to also
   // call |ClearExtensions()| unless you intentionally want to generate an
   // invalid certificate.
-  void SetCertificateVersion(bssl::CertificateVersion version);
+  void SetCertificateVersion(CertificateVersion version);
 
   // Sets a value for the indicated X.509 (v3) extension.
-  void SetExtension(const bssl::der::Input& oid,
+  void SetExtension(const der::Input& oid,
                     std::string value,
                     bool critical = false);
 
   // Removes an extension (if present).
-  void EraseExtension(const bssl::der::Input& oid);
+  void EraseExtension(const der::Input& oid);
 
   // Removes all extensions.
   void ClearExtensions();
@@ -186,13 +186,13 @@ class CertBuilder {
   void SetSubjectAltNames(const std::vector<std::string>& dns_names,
                           const std::vector<IPAddress>& ip_addresses);
 
-  // Sets the keyUsage extension. |usages| should contain the bssl::KeyUsageBit
+  // Sets the keyUsage extension. |usages| should contain the KeyUsageBit
   // values of the usages to set, and must not be empty.
-  void SetKeyUsages(const std::vector<bssl::KeyUsageBit>& usages);
+  void SetKeyUsages(const std::vector<KeyUsageBit>& usages);
 
   // Sets the extendedKeyUsage extension. |usages| should contain the DER OIDs
   // of the usage purposes to set, and must not be empty.
-  void SetExtendedKeyUsages(const std::vector<bssl::der::Input>& purpose_oids);
+  void SetExtendedKeyUsages(const std::vector<der::Input>& purpose_oids);
 
   // Sets the certificatePolicies extension with the specified policyIdentifier
   // OIDs, which must be specified in dotted string notation (e.g. "1.2.3.4").
@@ -242,7 +242,7 @@ class CertBuilder {
   // CertBuilder was initialized from a template cert, the signature algorithm
   // of that cert will be used, or if there was no template cert, a default
   // algorithm will be used base on the signing key type.
-  void SetSignatureAlgorithm(bssl::SignatureAlgorithm signature_algorithm);
+  void SetSignatureAlgorithm(SignatureAlgorithm signature_algorithm);
 
   // Sets both signature AlgorithmIdentifier TLVs to encode in the generated
   // certificate.
@@ -374,7 +374,7 @@ class CertBuilder {
   //   * All extensions (dropping any duplicates)
   //   * Signature algorithm (from Certificate)
   //   * Validity (expiration)
-  void InitFromCert(const bssl::der::Input& cert);
+  void InitFromCert(const der::Input& cert);
 
   // Assembles the CertBuilder into a TBSCertificate.
   void BuildTBSCertificate(base::StringPiece signature_algorithm_tlv,
@@ -387,11 +387,11 @@ class CertBuilder {
     std::string value;
   };
 
-  bssl::CertificateVersion version_ = bssl::CertificateVersion::V3;
+  CertificateVersion version_ = CertificateVersion::V3;
   std::string validity_tlv_;
   absl::optional<std::string> issuer_tlv_;
   std::string subject_tlv_;
-  absl::optional<bssl::SignatureAlgorithm> signature_algorithm_;
+  absl::optional<SignatureAlgorithm> signature_algorithm_;
   std::string outer_signature_algorithm_tlv_;
   std::string tbs_signature_algorithm_tlv_;
   uint64_t serial_number_ = 0;

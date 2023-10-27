@@ -33,7 +33,7 @@ void CertVerifyResult::Reset() {
   is_issued_by_additional_trust_anchor = false;
 
   public_key_hashes.clear();
-  ocsp_result = bssl::OCSPVerifyResult();
+  ocsp_result = OCSPVerifyResult();
 
   scts.clear();
   policy_compliance =

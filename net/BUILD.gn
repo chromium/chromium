@@ -351,6 +351,65 @@ component("net") {
     "cert/multi_log_ct_verifier.h",
     "cert/multi_threaded_cert_verifier.cc",
     "cert/multi_threaded_cert_verifier.h",
+    "cert/ocsp_revocation_status.h",
+    "cert/ocsp_verify_result.cc",
+    "cert/ocsp_verify_result.h",
+    "cert/pem.cc",
+    "cert/pem.h",
+    "cert/pki/cert_error_id.cc",
+    "cert/pki/cert_error_id.h",
+    "cert/pki/cert_error_params.cc",
+    "cert/pki/cert_error_params.h",
+    "cert/pki/cert_errors.cc",
+    "cert/pki/cert_errors.h",
+    "cert/pki/cert_issuer_source.h",
+    "cert/pki/cert_issuer_source_static.cc",
+    "cert/pki/cert_issuer_source_static.h",
+    "cert/pki/certificate_policies.cc",
+    "cert/pki/certificate_policies.h",
+    "cert/pki/common_cert_errors.cc",
+    "cert/pki/common_cert_errors.h",
+    "cert/pki/crl.cc",
+    "cert/pki/crl.h",
+    "cert/pki/extended_key_usage.cc",
+    "cert/pki/extended_key_usage.h",
+    "cert/pki/general_names.cc",
+    "cert/pki/general_names.h",
+    "cert/pki/ip_util.cc",
+    "cert/pki/ip_util.h",
+    "cert/pki/name_constraints.cc",
+    "cert/pki/name_constraints.h",
+    "cert/pki/ocsp.cc",
+    "cert/pki/ocsp.h",
+    "cert/pki/parse_certificate.cc",
+    "cert/pki/parse_certificate.h",
+    "cert/pki/parse_name.cc",
+    "cert/pki/parse_name.h",
+    "cert/pki/parsed_certificate.cc",
+    "cert/pki/parsed_certificate.h",
+    "cert/pki/path_builder.cc",
+    "cert/pki/path_builder.h",
+    "cert/pki/revocation_util.cc",
+    "cert/pki/revocation_util.h",
+    "cert/pki/signature_algorithm.cc",
+    "cert/pki/signature_algorithm.h",
+    "cert/pki/signature_verify_cache.h",
+    "cert/pki/simple_path_builder_delegate.cc",
+    "cert/pki/simple_path_builder_delegate.h",
+    "cert/pki/string_util.cc",
+    "cert/pki/string_util.h",
+    "cert/pki/trust_store.cc",
+    "cert/pki/trust_store.h",
+    "cert/pki/trust_store_collection.cc",
+    "cert/pki/trust_store_collection.h",
+    "cert/pki/trust_store_in_memory.cc",
+    "cert/pki/trust_store_in_memory.h",
+    "cert/pki/verify_certificate_chain.cc",
+    "cert/pki/verify_certificate_chain.h",
+    "cert/pki/verify_name_match.cc",
+    "cert/pki/verify_name_match.h",
+    "cert/pki/verify_signed_data.cc",
+    "cert/pki/verify_signed_data.h",
     "cert/root_cert_list_generated.h",
     "cert/sct_auditing_delegate.h",
     "cert/sct_status_flags.cc",
@@ -414,6 +473,16 @@ component("net") {
     "cookies/site_for_cookies.h",
     "cookies/static_cookie_policy.cc",
     "cookies/static_cookie_policy.h",
+    "der/encode_values.cc",
+    "der/encode_values.h",
+    "der/input.cc",
+    "der/input.h",
+    "der/parse_values.cc",
+    "der/parse_values.h",
+    "der/parser.cc",
+    "der/parser.h",
+    "der/tag.cc",
+    "der/tag.h",
     "disk_cache/backend_cleanup_tracker.cc",
     "disk_cache/backend_cleanup_tracker.h",
     "disk_cache/blockfile/addr.cc",
@@ -1853,15 +1922,14 @@ static_library("test_support") {
     "base/test_completion_callback.h",
     "base/test_data_stream.cc",
     "base/test_data_stream.h",
-    "cert/internal/cert_issuer_source_sync_unittest.h",
-    "cert/internal/test_helpers.cc",
-    "cert/internal/test_helpers.h",
     "cert/mock_cert_net_fetcher.cc",
     "cert/mock_cert_net_fetcher.h",
     "cert/mock_cert_verifier.cc",
     "cert/mock_cert_verifier.h",
     "cert/mock_client_cert_verifier.cc",
     "cert/mock_client_cert_verifier.h",
+    "cert/pki/mock_signature_verify_cache.cc",
+    "cert/pki/mock_signature_verify_cache.h",
     "cookies/canonical_cookie_test_helpers.h",
     "cookies/cookie_change_dispatcher_test_helpers.cc",
     "cookies/cookie_change_dispatcher_test_helpers.h",
@@ -2520,6 +2588,37 @@ test("net_unittests") {
     "cert/merkle_tree_leaf_unittest.cc",
     "cert/multi_log_ct_verifier_unittest.cc",
     "cert/multi_threaded_cert_verifier_unittest.cc",
+    "cert/pem_unittest.cc",
+    "cert/pki/cert_issuer_source_static_unittest.cc",
+    "cert/pki/cert_issuer_source_sync_unittest.h",
+    "cert/pki/certificate_policies_unittest.cc",
+    "cert/pki/crl_unittest.cc",
+    "cert/pki/extended_key_usage_unittest.cc",
+    "cert/pki/general_names_unittest.cc",
+    "cert/pki/ip_util_unittest.cc",
+    "cert/pki/name_constraints_unittest.cc",
+    "cert/pki/nist_pkits_unittest.cc",
+    "cert/pki/nist_pkits_unittest.h",
+    "cert/pki/ocsp_unittest.cc",
+    "cert/pki/parse_certificate_unittest.cc",
+    "cert/pki/parse_name_unittest.cc",
+    "cert/pki/parsed_certificate_unittest.cc",
+    "cert/pki/path_builder_pkits_unittest.cc",
+    "cert/pki/path_builder_unittest.cc",
+    "cert/pki/path_builder_verify_certificate_chain_unittest.cc",
+    "cert/pki/revocation_util_unittest.cc",
+    "cert/pki/signature_algorithm_unittest.cc",
+    "cert/pki/simple_path_builder_delegate_unittest.cc",
+    "cert/pki/string_util_unittest.cc",
+    "cert/pki/test_helpers.cc",
+    "cert/pki/test_helpers.h",
+    "cert/pki/trust_store_collection_unittest.cc",
+    "cert/pki/trust_store_unittest.cc",
+    "cert/pki/verify_certificate_chain_pkits_unittest.cc",
+    "cert/pki/verify_certificate_chain_typed_unittest.h",
+    "cert/pki/verify_certificate_chain_unittest.cc",
+    "cert/pki/verify_name_match_unittest.cc",
+    "cert/pki/verify_signed_data_unittest.cc",
     "cert/signed_certificate_timestamp_unittest.cc",
     "cert/symantec_certs_unittest.cc",
     "cert/test_root_certs_unittest.cc",
@@ -2540,6 +2639,10 @@ test("net_unittests") {
     "cookies/parsed_cookie_unittest.cc",
     "cookies/site_for_cookies_unittest.cc",
     "cookies/static_cookie_policy_unittest.cc",
+    "der/encode_values_unittest.cc",
+    "der/input_unittest.cc",
+    "der/parse_values_unittest.cc",
+    "der/parser_unittest.cc",
     "disk_cache/backend_cleanup_tracker_unittest.cc",
     "disk_cache/backend_unittest.cc",
     "disk_cache/blockfile/addr_unittest.cc",
@@ -3257,6 +3360,14 @@ if (use_fuzzing_engine) {
   }
 }
 
+fuzzer_test("net_der_parser_fuzzer") {
+  sources = [ "der/parser_fuzzer.cc" ]
+  deps = [
+    "//net",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
 fuzzer_test("host_port_pair_fuzzer") {
   sources = [ "base/host_port_pair_fuzzer.cc" ]
   deps = [ "//net" ]
@@ -3400,6 +3511,130 @@ fuzzer_test("net_cert_ct_decode_signed_certificate_timestamp_fuzzer") {
   sources = [ "cert/decode_signed_certificate_timestamp_fuzzer.cc" ]
   deps = [
     ":net_fuzzer_test_support",
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_verify_name_match_fuzzer") {
+  sources = [ "cert/pki/verify_name_match_fuzzer.cc" ]
+  deps = [
+    ":net_fuzzer_test_support",
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_normalize_name_fuzzer") {
+  sources = [ "cert/pki/verify_name_match_normalizename_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_verify_name_in_subtree_fuzzer") {
+  sources = [ "cert/pki/verify_name_match_verifynameinsubtree_fuzzer.cc" ]
+  deps = [
+    ":net_fuzzer_test_support",
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_crl_parse_crl_certificatelist_fuzzer") {
+  sources = [ "cert/pki/crl_parse_crl_certificatelist_fuzzer.cc" ]
+  seed_corpus = "data/fuzzer_data/crl_parse_crl_certificatelist_fuzzer"
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_crl_parse_crl_tbscertlist_fuzzer") {
+  sources = [ "cert/pki/crl_parse_crl_tbscertlist_fuzzer.cc" ]
+  seed_corpus = "data/fuzzer_data/crl_parse_crl_tbscertlist_fuzzer"
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_crl_parse_issuing_distribution_point_fuzzer") {
+  sources = [ "cert/pki/crl_parse_issuing_distribution_point_fuzzer.cc" ]
+  seed_corpus = "data/fuzzer_data/crl_parse_issuing_distribution_point_fuzzer"
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_crl_getcrlstatusforcert_fuzzer") {
+  sources = [ "cert/pki/crl_getcrlstatusforcert_fuzzer.cc" ]
+  seed_corpus = "data/fuzzer_data/crl_getcrlstatusforcert_fuzzer"
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_ocsp_parse_ocsp_cert_id_fuzzer") {
+  sources = [ "cert/pki/ocsp_parse_ocsp_cert_id_fuzzer.cc" ]
+  seed_corpus = "data/fuzzer_data/parse_ocsp_cert_id_fuzzer"
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_ocsp_parse_ocsp_single_response_fuzzer") {
+  sources = [ "cert/pki/ocsp_parse_ocsp_single_response_fuzzer.cc" ]
+  seed_corpus = "data/fuzzer_data/parse_ocsp_single_response_fuzzer"
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_ocsp_parse_ocsp_response_data_fuzzer") {
+  sources = [ "cert/pki/ocsp_parse_ocsp_response_data_fuzzer.cc" ]
+  seed_corpus = "data/fuzzer_data/parse_ocsp_response_data_fuzzer"
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_ocsp_parse_ocsp_response_fuzzer") {
+  sources = [ "cert/pki/ocsp_parse_ocsp_response_fuzzer.cc" ]
+  seed_corpus = "data/fuzzer_data/parse_ocsp_response_fuzzer"
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_parse_authority_key_identifier_fuzzer") {
+  sources = [ "cert/pki/parse_authority_key_identifier_fuzzer.cc" ]
+  seed_corpus = "data/fuzzer_data/parse_authority_key_identifier_fuzzer"
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_parse_certificate_fuzzer") {
+  sources = [ "cert/pki/parse_certificate_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+fuzzer_test("net_cert_parse_crldp_fuzzer") {
+  sources = [ "cert/pki/parse_crldp_fuzzer.cc" ]
+  seed_corpus = "data/fuzzer_data/parse_crldp_fuzzer"
+  deps = [
     "//base",
     "//net",
   ]

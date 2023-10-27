@@ -45,10 +45,12 @@
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/ct_verifier.h"
+#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/x509_certificate_net_log_param.h"
 #include "net/cert/x509_util.h"
+#include "net/der/parse_values.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_values.h"
@@ -67,8 +69,6 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
-#include "third_party/boringssl/src/pki/parse_certificate.h"
-#include "third_party/boringssl/src/pki/parse_values.h"
 
 namespace net {
 
@@ -197,14 +197,14 @@ RSAKeyUsage CheckRSAKeyUsage(const X509Certificate* cert,
   }
 
   const CRYPTO_BUFFER* buffer = cert->cert_buffer();
-  bssl::der::Input tbs_certificate_tlv;
-  bssl::der::Input signature_algorithm_tlv;
-  bssl::der::BitString signature_value;
-  bssl::ParsedTbsCertificate tbs;
-  if (!bssl::ParseCertificate(bssl::der::Input(CRYPTO_BUFFER_data(buffer),
-                                               CRYPTO_BUFFER_len(buffer)),
-                              &tbs_certificate_tlv, &signature_algorithm_tlv,
-                              &signature_value, nullptr) ||
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
+  ParsedTbsCertificate tbs;
+  if (!ParseCertificate(
+          der::Input(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer)),
+          &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
+          nullptr) ||
       !ParseTbsCertificate(tbs_certificate_tlv,
                            x509_util::DefaultParseCertificateOptions(), &tbs,
                            nullptr)) {
@@ -215,24 +215,24 @@ RSAKeyUsage CheckRSAKeyUsage(const X509Certificate* cert,
     return RSAKeyUsage::kOKNoExtension;
   }
 
-  std::map<bssl::der::Input, bssl::ParsedExtension> extensions;
+  std::map<der::Input, ParsedExtension> extensions;
   if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions)) {
     return RSAKeyUsage::kError;
   }
-  bssl::ParsedExtension key_usage_ext;
-  if (!ConsumeExtension(bssl::der::Input(bssl::kKeyUsageOid), &extensions,
+  ParsedExtension key_usage_ext;
+  if (!ConsumeExtension(der::Input(kKeyUsageOid), &extensions,
                         &key_usage_ext)) {
     return RSAKeyUsage::kOKNoExtension;
   }
-  bssl::der::BitString key_usage;
-  if (!bssl::ParseKeyUsage(key_usage_ext.value, &key_usage)) {
+  der::BitString key_usage;
+  if (!ParseKeyUsage(key_usage_ext.value, &key_usage)) {
     return RSAKeyUsage::kError;
   }
 
   bool have_digital_signature =
-      key_usage.AssertsBit(bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE);
+      key_usage.AssertsBit(KEY_USAGE_BIT_DIGITAL_SIGNATURE);
   bool have_key_encipherment =
-      key_usage.AssertsBit(bssl::KEY_USAGE_BIT_KEY_ENCIPHERMENT);
+      key_usage.AssertsBit(KEY_USAGE_BIT_KEY_ENCIPHERMENT);
   if (have_digital_signature && have_key_encipherment) {
     return RSAKeyUsage::kOKHaveBoth;
   }

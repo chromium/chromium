@@ -54,6 +54,7 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
 
     // DEPS prohibits includes from base/
     "chrome/install_static",
+    "net/cert/pki",
     "sandbox/mac/",
 
     // Exclude pocdll.dll as it doesn't depend on //base and only used for

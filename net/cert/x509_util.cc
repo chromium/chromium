@@ -21,8 +21,15 @@
 #include "crypto/sha2.h"
 #include "net/base/hash_value.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/name_constraints.h"
+#include "net/cert/pki/parse_certificate.h"
+#include "net/cert/pki/parse_name.h"
+#include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_certificate.h"
+#include "net/der/input.h"
+#include "net/der/parse_values.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -30,13 +37,6 @@
 #include "third_party/boringssl/src/include/openssl/pkcs7.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/stack.h"
-#include "third_party/boringssl/src/pki/cert_errors.h"
-#include "third_party/boringssl/src/pki/input.h"
-#include "third_party/boringssl/src/pki/name_constraints.h"
-#include "third_party/boringssl/src/pki/parse_certificate.h"
-#include "third_party/boringssl/src/pki/parse_name.h"
-#include "third_party/boringssl/src/pki/parse_values.h"
-#include "third_party/boringssl/src/pki/signature_algorithm.h"
 
 namespace net::x509_util {
 
@@ -168,7 +168,7 @@ bool AddName(CBB* cbb, base::StringPiece name) {
 }
 
 bool CBBAddTime(CBB* cbb, base::Time time) {
-  bssl::der::GeneralizedTime generalized_time;
+  der::GeneralizedTime generalized_time;
   if (!EncodeTimeAsGeneralizedTime(time, &generalized_time)) {
     return false;
   }
@@ -179,14 +179,13 @@ bool CBBAddTime(CBB* cbb, base::Time time) {
   uint8_t* out;
   if (generalized_time.InUTCTimeRange()) {
     return CBB_add_asn1(cbb, &child, CBS_ASN1_UTCTIME) &&
-           CBB_add_space(&child, &out, bssl::der::kUTCTimeLength) &&
-           bssl::der::EncodeUTCTime(generalized_time, out) && CBB_flush(cbb);
+           CBB_add_space(&child, &out, der::kUTCTimeLength) &&
+           der::EncodeUTCTime(generalized_time, out) && CBB_flush(cbb);
   }
 
   return CBB_add_asn1(cbb, &child, CBS_ASN1_GENERALIZEDTIME) &&
-         CBB_add_space(&child, &out, bssl::der::kGeneralizedTimeLength) &&
-         bssl::der::EncodeGeneralizedTime(generalized_time, out) &&
-         CBB_flush(cbb);
+         CBB_add_space(&child, &out, der::kGeneralizedTimeLength) &&
+         der::EncodeGeneralizedTime(generalized_time, out) && CBB_flush(cbb);
 }
 
 bool GetTLSServerEndPointChannelBinding(const X509Certificate& certificate,
@@ -196,46 +195,46 @@ bool GetTLSServerEndPointChannelBinding(const X509Certificate& certificate,
   base::StringPiece der_encoded_certificate =
       x509_util::CryptoBufferAsStringPiece(certificate.cert_buffer());
 
-  bssl::der::Input tbs_certificate_tlv;
-  bssl::der::Input signature_algorithm_tlv;
-  bssl::der::BitString signature_value;
-  if (!bssl::ParseCertificate(bssl::der::Input(der_encoded_certificate),
-                              &tbs_certificate_tlv, &signature_algorithm_tlv,
-                              &signature_value, nullptr)) {
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
+  if (!ParseCertificate(der::Input(der_encoded_certificate),
+                        &tbs_certificate_tlv, &signature_algorithm_tlv,
+                        &signature_value, nullptr)) {
     return false;
   }
-  std::optional<bssl::SignatureAlgorithm> signature_algorithm =
-      bssl::ParseSignatureAlgorithm(signature_algorithm_tlv);
+  absl::optional<SignatureAlgorithm> signature_algorithm =
+      ParseSignatureAlgorithm(signature_algorithm_tlv);
   if (!signature_algorithm) {
     return false;
   }
 
-  std::optional<bssl::DigestAlgorithm> binding_digest =
-      bssl::GetTlsServerEndpointDigestAlgorithm(*signature_algorithm);
+  absl::optional<net::DigestAlgorithm> binding_digest =
+      GetTlsServerEndpointDigestAlgorithm(*signature_algorithm);
   if (!binding_digest) {
     return false;
   }
   const EVP_MD* digest_evp_md = nullptr;
   switch (binding_digest.value()) {
-    case bssl::DigestAlgorithm::Md2:
-    case bssl::DigestAlgorithm::Md4:
-    case bssl::DigestAlgorithm::Md5:
-    case bssl::DigestAlgorithm::Sha1:
+    case net::DigestAlgorithm::Md2:
+    case net::DigestAlgorithm::Md4:
+    case net::DigestAlgorithm::Md5:
+    case net::DigestAlgorithm::Sha1:
       // Legacy digests are not supported, and
       // `GetTlsServerEndpointDigestAlgorithm` internally maps MD5 and SHA-1 to
       // SHA-256.
       NOTREACHED();
       break;
 
-    case bssl::DigestAlgorithm::Sha256:
+    case net::DigestAlgorithm::Sha256:
       digest_evp_md = EVP_sha256();
       break;
 
-    case bssl::DigestAlgorithm::Sha384:
+    case net::DigestAlgorithm::Sha384:
       digest_evp_md = EVP_sha384();
       break;
 
-    case bssl::DigestAlgorithm::Sha512:
+    case net::DigestAlgorithm::Sha512:
       digest_evp_md = EVP_sha512();
       break;
   }
@@ -465,8 +464,8 @@ bool CreateCertBuffersFromPKCS7Bytes(
   return success;
 }
 
-bssl::ParseCertificateOptions DefaultParseCertificateOptions() {
-  bssl::ParseCertificateOptions options;
+ParseCertificateOptions DefaultParseCertificateOptions() {
+  ParseCertificateOptions options;
   options.allow_invalid_serial_numbers = true;
   return options;
 }
@@ -489,13 +488,12 @@ bool SignatureVerifierInitWithCertificate(
   base::StringPiece cert_der =
       x509_util::CryptoBufferAsStringPiece(certificate);
 
-  bssl::der::Input tbs_certificate_tlv;
-  bssl::der::Input signature_algorithm_tlv;
-  bssl::der::BitString signature_value;
-  bssl::ParsedTbsCertificate tbs;
-  if (!bssl::ParseCertificate(bssl::der::Input(cert_der), &tbs_certificate_tlv,
-                              &signature_algorithm_tlv, &signature_value,
-                              nullptr) ||
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
+  ParsedTbsCertificate tbs;
+  if (!ParseCertificate(der::Input(cert_der), &tbs_certificate_tlv,
+                        &signature_algorithm_tlv, &signature_value, nullptr) ||
       !ParseTbsCertificate(tbs_certificate_tlv,
                            DefaultParseCertificateOptions(), &tbs, nullptr)) {
     return false;
@@ -503,16 +501,16 @@ bool SignatureVerifierInitWithCertificate(
 
   // The key usage extension, if present, must assert the digitalSignature bit.
   if (tbs.extensions_tlv) {
-    std::map<bssl::der::Input, bssl::ParsedExtension> extensions;
+    std::map<der::Input, ParsedExtension> extensions;
     if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions)) {
       return false;
     }
-    bssl::ParsedExtension key_usage_ext;
-    if (ConsumeExtension(bssl::der::Input(bssl::kKeyUsageOid), &extensions,
+    ParsedExtension key_usage_ext;
+    if (ConsumeExtension(der::Input(kKeyUsageOid), &extensions,
                          &key_usage_ext)) {
-      bssl::der::BitString key_usage;
-      if (!bssl::ParseKeyUsage(key_usage_ext.value, &key_usage) ||
-          !key_usage.AssertsBit(bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
+      der::BitString key_usage;
+      if (!ParseKeyUsage(key_usage_ext.value, &key_usage) ||
+          !key_usage.AssertsBit(KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
         return false;
       }
     }
@@ -524,21 +522,21 @@ bool SignatureVerifierInitWithCertificate(
 }
 
 bool HasRsaPkcs1Sha1Signature(const CRYPTO_BUFFER* cert_buffer) {
-  bssl::der::Input tbs_certificate_tlv;
-  bssl::der::Input signature_algorithm_tlv;
-  bssl::der::BitString signature_value;
-  if (!bssl::ParseCertificate(bssl::der::Input(CRYPTO_BUFFER_data(cert_buffer),
-                                               CRYPTO_BUFFER_len(cert_buffer)),
-                              &tbs_certificate_tlv, &signature_algorithm_tlv,
-                              &signature_value, /*out_errors=*/nullptr)) {
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
+  if (!ParseCertificate(der::Input(CRYPTO_BUFFER_data(cert_buffer),
+                                   CRYPTO_BUFFER_len(cert_buffer)),
+                        &tbs_certificate_tlv, &signature_algorithm_tlv,
+                        &signature_value, /*out_errors=*/nullptr)) {
     return false;
   }
 
-  std::optional<bssl::SignatureAlgorithm> signature_algorithm =
-      bssl::ParseSignatureAlgorithm(signature_algorithm_tlv);
+  absl::optional<SignatureAlgorithm> signature_algorithm =
+      ParseSignatureAlgorithm(signature_algorithm_tlv);
 
   return signature_algorithm &&
-         *signature_algorithm == bssl::SignatureAlgorithm::kRsaPkcs1Sha1;
+         *signature_algorithm == SignatureAlgorithm::kRsaPkcs1Sha1;
 }
 
 }  // namespace net::x509_util

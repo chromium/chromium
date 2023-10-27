@@ -15,8 +15,11 @@
 #include "crypto/scoped_capi_types.h"
 #include "net/base/features.h"
 #include "net/cert/cert_net_fetcher.h"
-#include "net/cert/internal/test_helpers.h"
 #include "net/cert/internal/trust_store_features.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/test_helpers.h"
+#include "net/cert/pki/trust_store.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
@@ -25,9 +28,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
-#include "third_party/boringssl/src/pki/cert_errors.h"
-#include "third_party/boringssl/src/pki/parsed_certificate.h"
-#include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
 
@@ -35,21 +35,19 @@ namespace {
 
 ::testing::AssertionResult ParseCertFromFile(
     base::StringPiece file_name,
-    std::shared_ptr<const bssl::ParsedCertificate>* out_cert) {
+    std::shared_ptr<const ParsedCertificate>* out_cert) {
   const scoped_refptr<X509Certificate> cert =
       ImportCertFromFile(net::GetTestCertsDirectory(), file_name);
   if (!cert) {
     return ::testing::AssertionFailure() << "ImportCertFromFile failed";
   }
-  bssl::CertErrors errors;
-  std::shared_ptr<const bssl::ParsedCertificate> parsed =
-      bssl::ParsedCertificate::Create(
-          bssl::UpRef(cert->cert_buffer()),
-          x509_util::DefaultParseCertificateOptions(), &errors);
+  CertErrors errors;
+  std::shared_ptr<const ParsedCertificate> parsed = ParsedCertificate::Create(
+      bssl::UpRef(cert->cert_buffer()),
+      x509_util::DefaultParseCertificateOptions(), &errors);
   if (!parsed) {
-    return ::testing::AssertionFailure()
-           << "bssl::ParseCertificate::Create failed:\n"
-           << errors.ToDebugString();
+    return ::testing::AssertionFailure() << "ParseCertificate::Create failed:\n"
+                                         << errors.ToDebugString();
   }
   *out_cert = parsed;
   return ::testing::AssertionSuccess();
@@ -89,33 +87,32 @@ class TrustStoreWinTest
     return std::get<1>(GetParam());
   }
 
-  bssl::CertificateTrust ExpectedTrustForAnchor() const {
+  CertificateTrust ExpectedTrustForAnchor() const {
     if (ExpectedTrustedLeafSupportEnabled()) {
-      return bssl::CertificateTrust::ForTrustAnchorOrLeaf()
+      return CertificateTrust::ForTrustAnchorOrLeaf()
           .WithEnforceAnchorExpiry()
           .WithEnforceAnchorConstraints(
               ExpectedEnforceLocalAnchorConstraintsEnabled())
           .WithRequireLeafSelfSigned();
     } else {
-      return bssl::CertificateTrust::ForTrustAnchor()
+      return CertificateTrust::ForTrustAnchor()
           .WithEnforceAnchorExpiry()
           .WithEnforceAnchorConstraints(
               ExpectedEnforceLocalAnchorConstraintsEnabled());
     }
   }
 
-  bssl::CertificateTrust ExpectedTrustForPeer() const {
+  CertificateTrust ExpectedTrustForPeer() const {
     if (ExpectedTrustedLeafSupportEnabled()) {
-      return bssl::CertificateTrust::ForTrustedLeaf()
-          .WithRequireLeafSelfSigned();
+      return CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned();
     } else {
-      return bssl::CertificateTrust::ForUnspecified();
+      return CertificateTrust::ForUnspecified();
     }
   }
 
   // Returns true if |cert| successfully added to store, false otherwise.
   bool AddToStore(HCERTSTORE store,
-                  std::shared_ptr<const bssl::ParsedCertificate> cert) {
+                  std::shared_ptr<const ParsedCertificate> cert) {
     crypto::ScopedPCCERT_CONTEXT os_cert(CertCreateCertificateContext(
         X509_ASN_ENCODING, CRYPTO_BUFFER_data(cert->cert_buffer()),
         CRYPTO_BUFFER_len(cert->cert_buffer())));
@@ -127,7 +124,7 @@ class TrustStoreWinTest
   // restricted usage, false otherwise.
   bool AddToStoreWithEKURestriction(
       HCERTSTORE store,
-      std::shared_ptr<const bssl::ParsedCertificate> cert,
+      std::shared_ptr<const ParsedCertificate> cert,
       LPCSTR usage_identifier) {
     crypto::ScopedPCCERT_CONTEXT os_cert(CertCreateCertificateContext(
         X509_ASN_ENCODING, CRYPTO_BUFFER_data(cert->cert_buffer()),
@@ -156,8 +153,8 @@ class TrustStoreWinTest
   TrustStoreWin::CertStores stores_ =
       TrustStoreWin::CertStores::CreateInMemoryStoresForTesting();
 
-  std::shared_ptr<const bssl::ParsedCertificate> a_by_b_, b_by_c_, b_by_f_,
-      c_by_d_, c_by_e_, d_by_d_, e_by_e_, f_by_e_;
+  std::shared_ptr<const ParsedCertificate> a_by_b_, b_by_c_, b_by_f_, c_by_d_,
+      c_by_e_, d_by_d_, e_by_e_, f_by_e_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -171,8 +168,8 @@ TEST_P(TrustStoreWinTest, GetTrustInitializationError) {
       TrustStoreWin::CreateForTesting(
           TrustStoreWin::CertStores::CreateNullStoresForTesting());
   ASSERT_TRUE(trust_store_win);
-  bssl::CertificateTrust trust = trust_store_win->GetTrust(d_by_d_.get());
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+  CertificateTrust trust = trust_store_win->GetTrust(d_by_d_.get());
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust.ToDebugString());
 }
 
@@ -196,12 +193,12 @@ TEST_P(TrustStoreWinTest, GetTrust) {
             trust_store_win->GetTrust(a_by_b_.get()).ToDebugString());
 
   // Intermediate for path building should not be trusted.
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust_store_win->GetTrust(c_by_d_.get()).ToDebugString());
 
   // Unknown roots should not be trusted (e.g. just because they're
   // self-signed doesn't make them a root)
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust_store_win->GetTrust(e_by_e_.get()).ToDebugString());
 }
 
@@ -238,15 +235,15 @@ TEST_P(TrustStoreWinTest, GetTrustRestrictedEKU) {
 
   // Root cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow usage of
   // cert for server auth, return UNSPECIFIED.
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust_store_win->GetTrust(e_by_e_.get()).ToDebugString());
 
   // Root cert with no EKU usages, return UNSPECIFIED.
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust_store_win->GetTrust(c_by_d_.get()).ToDebugString());
 
   // Unknown cert has unspecified trust.
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust_store_win->GetTrust(f_by_e_.get()).ToDebugString());
 }
 
@@ -276,15 +273,15 @@ TEST_P(TrustStoreWinTest, GetTrustTrustedPeopleRestrictedEKU) {
 
   // TrustedPeople cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow usage
   // of cert for server auth, return UNSPECIFIED.
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust_store_win->GetTrust(e_by_e_.get()).ToDebugString());
 
   // TrustedPeople cert with no EKU usages, return UNSPECIFIED.
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust_store_win->GetTrust(c_by_d_.get()).ToDebugString());
 
   // Unknown cert has unspecified trust.
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust_store_win->GetTrust(f_by_e_.get()).ToDebugString());
 }
 
@@ -326,18 +323,18 @@ TEST_P(TrustStoreWinTest, GetTrustDisallowedCerts) {
   ASSERT_TRUE(trust_store_win);
 
   // E-by-E is in both root and distrusted store. Distrust takes precedence.
-  EXPECT_EQ(bssl::CertificateTrust::ForDistrusted().ToDebugString(),
+  EXPECT_EQ(CertificateTrust::ForDistrusted().ToDebugString(),
             trust_store_win->GetTrust(e_by_e_.get()).ToDebugString());
 
   // F-by-E is in both trusted people and distrusted store. Distrust takes
   // precedence.
-  EXPECT_EQ(bssl::CertificateTrust::ForDistrusted().ToDebugString(),
+  EXPECT_EQ(CertificateTrust::ForDistrusted().ToDebugString(),
             trust_store_win->GetTrust(f_by_e_.get()).ToDebugString());
 
   // D-by-D is in root and in distrusted but without szOID_PKIX_KP_SERVER_AUTH
   // set. It should still be distrusted since the EKU settings aren't checked
   // on distrust.
-  EXPECT_EQ(bssl::CertificateTrust::ForDistrusted().ToDebugString(),
+  EXPECT_EQ(CertificateTrust::ForDistrusted().ToDebugString(),
             trust_store_win->GetTrust(d_by_d_.get()).ToDebugString());
 }
 
@@ -353,7 +350,7 @@ TEST_P(TrustStoreWinTest, GetIssuersInitializationError) {
       TrustStoreWin::CreateForTesting(
           TrustStoreWin::CertStores::CreateNullStoresForTesting());
   ASSERT_TRUE(trust_store_win);
-  bssl::ParsedCertificateList issuers;
+  ParsedCertificateList issuers;
   trust_store_win->SyncGetIssuersOf(b_by_f_.get(), &issuers);
   ASSERT_EQ(0U, issuers.size());
 }
@@ -373,14 +370,14 @@ TEST_P(TrustStoreWinTest, GetIssuers) {
 
   // No matching issuer (Trusted People and Disallowed are not consulted).
   {
-    bssl::ParsedCertificateList issuers;
+    ParsedCertificateList issuers;
     trust_store_win->SyncGetIssuersOf(a_by_b_.get(), &issuers);
     ASSERT_EQ(0U, issuers.size());
   }
 
   // Single matching issuer found in intermediates.
   {
-    bssl::ParsedCertificateList issuers;
+    ParsedCertificateList issuers;
     trust_store_win->SyncGetIssuersOf(b_by_f_.get(), &issuers);
     ASSERT_EQ(1U, issuers.size());
     EXPECT_THAT(issuers, testing::UnorderedElementsAre(ParsedCertEq(f_by_e_)));
@@ -388,7 +385,7 @@ TEST_P(TrustStoreWinTest, GetIssuers) {
 
   // Single matching issuer found in roots.
   {
-    bssl::ParsedCertificateList issuers;
+    ParsedCertificateList issuers;
     trust_store_win->SyncGetIssuersOf(d_by_d_.get(), &issuers);
     ASSERT_EQ(1U, issuers.size());
     EXPECT_THAT(issuers, testing::UnorderedElementsAre(ParsedCertEq(d_by_d_)));
@@ -396,7 +393,7 @@ TEST_P(TrustStoreWinTest, GetIssuers) {
 
   // Multiple issuers found.
   {
-    bssl::ParsedCertificateList issuers;
+    ParsedCertificateList issuers;
     trust_store_win->SyncGetIssuersOf(b_by_c_.get(), &issuers);
     ASSERT_EQ(2U, issuers.size());
     EXPECT_THAT(issuers, testing::UnorderedElementsAre(ParsedCertEq(c_by_d_),

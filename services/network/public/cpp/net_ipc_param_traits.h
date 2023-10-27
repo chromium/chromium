@@ -119,8 +119,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    ParamTraits<bssl::OCSPVerifyResult> {
-  typedef bssl::OCSPVerifyResult param_type;
+    ParamTraits<net::OCSPVerifyResult> {
+  typedef net::OCSPVerifyResult param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
@@ -235,10 +235,10 @@ IPC_ENUM_TRAITS_MAX_VALUE(
 
 IPC_ENUM_TRAITS(net::ProxyServer::Scheme)  // BitMask.
 
-IPC_ENUM_TRAITS_MAX_VALUE(bssl::OCSPVerifyResult::ResponseStatus,
-                          bssl::OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR)
-IPC_ENUM_TRAITS_MAX_VALUE(bssl::OCSPRevocationStatus,
-                          bssl::OCSPRevocationStatus::UNKNOWN)
+IPC_ENUM_TRAITS_MAX_VALUE(net::OCSPVerifyResult::ResponseStatus,
+                          net::OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR)
+IPC_ENUM_TRAITS_MAX_VALUE(net::OCSPRevocationStatus,
+                          net::OCSPRevocationStatus::UNKNOWN)
 
 IPC_ENUM_TRAITS_MAX_VALUE(net::ct::SCTVerifyStatus, net::ct::SCT_STATUS_MAX)
 IPC_ENUM_TRAITS_MAX_VALUE(net::RequestPriority, net::MAXIMUM_PRIORITY)

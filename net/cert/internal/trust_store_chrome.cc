@@ -6,13 +6,13 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
-#include "third_party/boringssl/src/pki/cert_errors.h"
-#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
 
@@ -43,7 +43,7 @@ ChromeRootStoreData::CreateChromeRootStoreData(
       return absl::nullopt;
     }
 
-    auto parsed = bssl::ParsedCertificate::Create(
+    auto parsed = net::ParsedCertificate::Create(
         net::x509_util::CreateCryptoBuffer(anchor.der()),
         net::x509_util::DefaultParseCertificateOptions(), nullptr);
     if (!parsed) {
@@ -84,8 +84,8 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
     } else {
       cert = x509_util::CreateCryptoBuffer(cert_info.root_cert_der);
     }
-    bssl::CertErrors errors;
-    auto parsed = bssl::ParsedCertificate::Create(
+    CertErrors errors;
+    auto parsed = ParsedCertificate::Create(
         std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
     // There should always be a valid cert, because we should be parsing Chrome
     // Root Store static data compiled in.
@@ -104,17 +104,16 @@ TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data) {
 
 TrustStoreChrome::~TrustStoreChrome() = default;
 
-void TrustStoreChrome::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
-                                        bssl::ParsedCertificateList* issuers) {
+void TrustStoreChrome::SyncGetIssuersOf(const ParsedCertificate* cert,
+                                        ParsedCertificateList* issuers) {
   trust_store_.SyncGetIssuersOf(cert, issuers);
 }
 
-bssl::CertificateTrust TrustStoreChrome::GetTrust(
-    const bssl::ParsedCertificate* cert) {
+CertificateTrust TrustStoreChrome::GetTrust(const ParsedCertificate* cert) {
   return trust_store_.GetTrust(cert);
 }
 
-bool TrustStoreChrome::Contains(const bssl::ParsedCertificate* cert) const {
+bool TrustStoreChrome::Contains(const ParsedCertificate* cert) const {
   return trust_store_.Contains(cert);
 }
 
@@ -131,14 +130,14 @@ int64_t CompiledChromeRootStoreVersion() {
   return kRootStoreVersion;
 }
 
-bssl::ParsedCertificateList CompiledChromeRootStoreAnchors() {
-  bssl::ParsedCertificateList parsed_cert_list;
+ParsedCertificateList CompiledChromeRootStoreAnchors() {
+  ParsedCertificateList parsed_cert_list;
   for (const auto& cert_info : kChromeRootCertList) {
     bssl::UniquePtr<CRYPTO_BUFFER> cert =
         x509_util::CreateCryptoBufferFromStaticDataUnsafe(
             cert_info.root_cert_der);
-    bssl::CertErrors errors;
-    auto parsed = bssl::ParsedCertificate::Create(
+    CertErrors errors;
+    auto parsed = ParsedCertificate::Create(
         std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
     DCHECK(parsed);
     parsed_cert_list.push_back(std::move(parsed));

@@ -21,6 +21,7 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/internal/system_trust_store.h"
+#include "net/cert/pki/trust_store.h"
 #include "net/cert/x509_util.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/tools/cert_verify_tool/cert_verify_tool_util.h"
@@ -29,7 +30,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "third_party/boringssl/src/pki/trust_store.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "net/proxy_resolution/proxy_config.h"
@@ -155,7 +155,7 @@ class CertVerifyImplUsingProc : public CertVerifyImpl {
   scoped_refptr<net::CertVerifyProc> proc_;
 };
 
-// Runs certificate verification using bssl::CertPathBuilder.
+// Runs certificate verification using CertPathBuilder.
 class CertVerifyImplUsingPathBuilder : public CertVerifyImpl {
  public:
   explicit CertVerifyImplUsingPathBuilder(
@@ -482,11 +482,11 @@ int main(int argc, char** argv) {
   }
 
   if (command_line.HasSwitch("trust-leaf-cert")) {
-    bssl::CertificateTrust trust = bssl::CertificateTrust::ForTrustedLeaf();
+    net::CertificateTrust trust = net::CertificateTrust::ForTrustedLeaf();
     std::string trust_str = command_line.GetSwitchValueASCII("trust-leaf-cert");
     if (!trust_str.empty()) {
-      absl::optional<bssl::CertificateTrust> parsed_trust =
-          bssl::CertificateTrust::FromDebugString(trust_str);
+      absl::optional<net::CertificateTrust> parsed_trust =
+          net::CertificateTrust::FromDebugString(trust_str);
       if (!parsed_trust) {
         std::cerr << "ERROR: invalid leaf trust string " << trust_str << "\n";
         return 1;
@@ -498,12 +498,12 @@ int main(int argc, char** argv) {
 
   // TODO(https://crbug.com/1408473): Maybe default to the trust setting that
   // would be used for locally added anchors on the current platform?
-  bssl::CertificateTrust root_trust = bssl::CertificateTrust::ForTrustAnchor();
+  net::CertificateTrust root_trust = net::CertificateTrust::ForTrustAnchor();
 
   if (command_line.HasSwitch("root-trust")) {
     std::string trust_str = command_line.GetSwitchValueASCII("root-trust");
-    absl::optional<bssl::CertificateTrust> parsed_trust =
-        bssl::CertificateTrust::FromDebugString(trust_str);
+    absl::optional<net::CertificateTrust> parsed_trust =
+        net::CertificateTrust::FromDebugString(trust_str);
     if (!parsed_trust) {
       std::cerr << "ERROR: invalid root trust string " << trust_str << "\n";
       return 1;

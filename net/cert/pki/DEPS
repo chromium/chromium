@@ -1,0 +1,10 @@
+include_rules = [
+  # Do not take new base/ dependencies in here.
+  # Please check with bbe@ if you run afoul of this
+  # TODO(crbug.com/1322914): Remove exceptions.
+  "-base",
+  "+base/base_paths.h",
+  "+base/files/file_util.h",
+  "+base/numerics/clamped_math.h",
+  "+base/path_service.h",
+]

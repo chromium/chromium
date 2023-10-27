@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "net/cert/ev_root_ca_metadata.h"
+#include "net/cert/pem.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/test_data_directory.h"

@@ -25,11 +25,11 @@
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/known_roots.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/pki/cert_errors.h"
-#include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -58,15 +58,15 @@ const unsigned int kMaxAIAFetches = 5;
 // TODO(estark): when searching for an issuer, this always uses the first
 // encountered issuer in |certs|, and does not handle the situation where
 // |certs| contains more than one issuer for a given certificate.
-std::shared_ptr<const bssl::ParsedCertificate> FindLastCertWithUnknownIssuer(
-    const bssl::ParsedCertificateList& certs,
-    const std::shared_ptr<const bssl::ParsedCertificate>& start) {
+std::shared_ptr<const ParsedCertificate> FindLastCertWithUnknownIssuer(
+    const ParsedCertificateList& certs,
+    const std::shared_ptr<const ParsedCertificate>& start) {
   DCHECK_GE(certs.size(), 1u);
-  std::set<std::shared_ptr<const bssl::ParsedCertificate>> used_in_path;
-  std::shared_ptr<const bssl::ParsedCertificate> last = start;
+  std::set<std::shared_ptr<const ParsedCertificate>> used_in_path;
+  std::shared_ptr<const ParsedCertificate> last = start;
   while (true) {
     used_in_path.insert(last);
-    std::shared_ptr<const bssl::ParsedCertificate> last_issuer;
+    std::shared_ptr<const ParsedCertificate> last_issuer;
     // Find an issuer for |last| (which might be |last| itself if self-signed).
     for (const auto& cert : certs) {
       if (cert->normalized_subject() == last->normalized_issuer()) {
@@ -99,10 +99,9 @@ std::shared_ptr<const bssl::ParsedCertificate> FindLastCertWithUnknownIssuer(
 // certificate is parsed and added to |cert_list|. Returns true if the fetch was
 // successful and the result could be parsed as a certificate, and false
 // otherwise.
-bool PerformAIAFetchAndAddResultToVector(
-    scoped_refptr<CertNetFetcher> fetcher,
-    std::string_view uri,
-    bssl::ParsedCertificateList* cert_list) {
+bool PerformAIAFetchAndAddResultToVector(scoped_refptr<CertNetFetcher> fetcher,
+                                         std::string_view uri,
+                                         ParsedCertificateList* cert_list) {
   GURL url(uri);
   if (!url.is_valid())
     return false;
@@ -113,8 +112,8 @@ bool PerformAIAFetchAndAddResultToVector(
   request->WaitForResult(&error, &aia_fetch_bytes);
   if (error != OK)
     return false;
-  bssl::CertErrors errors;
-  return bssl::ParsedCertificate::CreateAndAddToVector(
+  CertErrors errors;
+  return ParsedCertificate::CreateAndAddToVector(
       x509_util::CreateCryptoBuffer(aia_fetch_bytes),
       x509_util::DefaultParseCertificateOptions(), cert_list, &errors);
 }
@@ -124,7 +123,7 @@ bool PerformAIAFetchAndAddResultToVector(
 // successful, this function populates |verify_result| and |verified_chain|;
 // otherwise it leaves them untouched.
 android::CertVerifyStatusAndroid AttemptVerificationAfterAIAFetch(
-    const bssl::ParsedCertificateList& certs,
+    const ParsedCertificateList& certs,
     const std::string& hostname,
     CertVerifyResult* verify_result,
     std::vector<std::string>* verified_chain) {
@@ -173,10 +172,10 @@ android::CertVerifyStatusAndroid TryVerifyWithAIAFetching(
 
   // Convert the certificates into ParsedCertificates for ease of pulling out
   // AIA URLs.
-  bssl::CertErrors errors;
-  bssl::ParsedCertificateList certs;
+  CertErrors errors;
+  ParsedCertificateList certs;
   for (const auto& cert : cert_bytes) {
-    if (!bssl::ParsedCertificate::CreateAndAddToVector(
+    if (!ParsedCertificate::CreateAndAddToVector(
             x509_util::CreateCryptoBuffer(cert),
             x509_util::DefaultParseCertificateOptions(), &certs, &errors)) {
       return android::CERT_VERIFY_STATUS_ANDROID_NO_TRUSTED_ROOT;
@@ -185,7 +184,7 @@ android::CertVerifyStatusAndroid TryVerifyWithAIAFetching(
 
   // Build a chain as far as possible from the target certificate at index 0,
   // using the initially provided certificates.
-  std::shared_ptr<const bssl::ParsedCertificate> last_cert_with_unknown_issuer =
+  std::shared_ptr<const ParsedCertificate> last_cert_with_unknown_issuer =
       FindLastCertWithUnknownIssuer(certs, certs[0]);
   if (!last_cert_with_unknown_issuer) {
     // |certs| either contains a loop, or contains a full chain to a self-signed
@@ -222,9 +221,8 @@ android::CertVerifyStatusAndroid TryVerifyWithAIAFetching(
 
     // If verification still failed but the path expanded, continue to attempt
     // AIA fetches.
-    std::shared_ptr<const bssl::ParsedCertificate>
-        new_last_cert_with_unknown_issuer =
-            FindLastCertWithUnknownIssuer(certs, last_cert_with_unknown_issuer);
+    std::shared_ptr<const ParsedCertificate> new_last_cert_with_unknown_issuer =
+        FindLastCertWithUnknownIssuer(certs, last_cert_with_unknown_issuer);
     if (!new_last_cert_with_unknown_issuer ||
         new_last_cert_with_unknown_issuer == last_cert_with_unknown_issuer) {
       // The last round of AIA fetches (if there were any) didn't expand the

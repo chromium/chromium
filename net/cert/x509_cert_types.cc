@@ -4,8 +4,8 @@
 
 #include "net/cert/x509_cert_types.h"
 
-#include "third_party/boringssl/src/pki/input.h"
-#include "third_party/boringssl/src/pki/parse_name.h"
+#include "net/cert/pki/parse_name.h"
+#include "net/der/input.h"
 
 namespace net {
 
@@ -24,54 +24,51 @@ bool CertPrincipal::EqualsForTesting(const CertPrincipal& other) const {
 }
 
 bool CertPrincipal::ParseDistinguishedName(
-    bssl::der::Input ber_name_data,
+    der::Input ber_name_data,
     PrintableStringHandling printable_string_handling) {
-  bssl::RDNSequence rdns;
+  RDNSequence rdns;
   if (!ParseName(ber_name_data, &rdns)) {
     return false;
   }
 
   auto string_handling =
       printable_string_handling == PrintableStringHandling::kAsUTF8Hack
-          ? bssl::X509NameAttribute::PrintableStringHandling::kAsUTF8Hack
-          : bssl::X509NameAttribute::PrintableStringHandling::kDefault;
-  for (const bssl::RelativeDistinguishedName& rdn : rdns) {
-    for (const bssl::X509NameAttribute& name_attribute : rdn) {
-      if (name_attribute.type == bssl::der::Input(bssl::kTypeCommonNameOid)) {
+          ? X509NameAttribute::PrintableStringHandling::kAsUTF8Hack
+          : X509NameAttribute::PrintableStringHandling::kDefault;
+  for (const RelativeDistinguishedName& rdn : rdns) {
+    for (const X509NameAttribute& name_attribute : rdn) {
+      if (name_attribute.type == der::Input(kTypeCommonNameOid)) {
         if (common_name.empty() &&
             !name_attribute.ValueAsStringWithUnsafeOptions(string_handling,
                                                            &common_name)) {
           return false;
         }
-      } else if (name_attribute.type ==
-                 bssl::der::Input(bssl::kTypeLocalityNameOid)) {
+      } else if (name_attribute.type == der::Input(kTypeLocalityNameOid)) {
         if (locality_name.empty() &&
             !name_attribute.ValueAsStringWithUnsafeOptions(string_handling,
                                                            &locality_name)) {
           return false;
         }
       } else if (name_attribute.type ==
-                 bssl::der::Input(bssl::kTypeStateOrProvinceNameOid)) {
+                 der::Input(kTypeStateOrProvinceNameOid)) {
         if (state_or_province_name.empty() &&
             !name_attribute.ValueAsStringWithUnsafeOptions(
                 string_handling, &state_or_province_name)) {
           return false;
         }
-      } else if (name_attribute.type ==
-                 bssl::der::Input(bssl::kTypeCountryNameOid)) {
+      } else if (name_attribute.type == der::Input(kTypeCountryNameOid)) {
         if (country_name.empty() &&
             !name_attribute.ValueAsStringWithUnsafeOptions(string_handling,
                                                            &country_name)) {
           return false;
         }
-      } else if (name_attribute.type ==
-                 bssl::der::Input(bssl::kTypeOrganizationNameOid)) {
+      } else if (name_attribute.type == der::Input(kTypeOrganizationNameOid)) {
         std::string s;
         if (!name_attribute.ValueAsStringWithUnsafeOptions(string_handling, &s))
           return false;
         organization_names.push_back(s);
       } else if (name_attribute.type ==
-                 bssl::der::Input(bssl::kTypeOrganizationUnitNameOid)) {
+                 der::Input(kTypeOrganizationUnitNameOid)) {
         std::string s;
         if (!name_attribute.ValueAsStringWithUnsafeOptions(string_handling, &s))
           return false;

@@ -25,20 +25,20 @@
 #include "net/base/tracing.h"
 #include "net/base/url_util.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/pem.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/name_constraints.h"
+#include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/signature_algorithm.h"
+#include "net/cert/pki/verify_certificate_chain.h"
+#include "net/cert/pki/verify_name_match.h"
+#include "net/cert/pki/verify_signed_data.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
+#include "net/der/parser.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
-#include "third_party/boringssl/src/pki/cert_errors.h"
-#include "third_party/boringssl/src/pki/name_constraints.h"
-#include "third_party/boringssl/src/pki/parsed_certificate.h"
-#include "third_party/boringssl/src/pki/parser.h"
-#include "third_party/boringssl/src/pki/pem.h"
-#include "third_party/boringssl/src/pki/signature_algorithm.h"
-#include "third_party/boringssl/src/pki/verify_certificate_chain.h"
-#include "third_party/boringssl/src/pki/verify_name_match.h"
-#include "third_party/boringssl/src/pki/verify_signed_data.h"
 #include "url/url_canon.h"
 
 namespace net {
@@ -76,49 +76,48 @@ void SplitOnChar(base::StringPiece src,
 
 // Sets |value| to the Value from a DER Sequence Tag-Length-Value and return
 // true, or return false if the TLV was not a valid DER Sequence.
-[[nodiscard]] bool ParseSequenceValue(const bssl::der::Input& tlv,
-                                      bssl::der::Input* value) {
-  bssl::der::Parser parser(tlv);
-  return parser.ReadTag(bssl::der::kSequence, value) && !parser.HasMore();
+[[nodiscard]] bool ParseSequenceValue(const der::Input& tlv,
+                                      der::Input* value) {
+  der::Parser parser(tlv);
+  return parser.ReadTag(der::kSequence, value) && !parser.HasMore();
 }
 
 // Normalize |cert|'s Issuer and store it in |out_normalized_issuer|, returning
 // true on success or false if there was a parsing error.
 bool GetNormalizedCertIssuer(CRYPTO_BUFFER* cert,
                              std::string* out_normalized_issuer) {
-  bssl::der::Input tbs_certificate_tlv;
-  bssl::der::Input signature_algorithm_tlv;
-  bssl::der::BitString signature_value;
-  if (!bssl::ParseCertificate(
-          bssl::der::Input(CRYPTO_BUFFER_data(cert), CRYPTO_BUFFER_len(cert)),
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
+  if (!ParseCertificate(
+          der::Input(CRYPTO_BUFFER_data(cert), CRYPTO_BUFFER_len(cert)),
           &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
           nullptr)) {
     return false;
   }
-  bssl::ParsedTbsCertificate tbs;
+  ParsedTbsCertificate tbs;
   if (!ParseTbsCertificate(tbs_certificate_tlv,
                            x509_util::DefaultParseCertificateOptions(), &tbs,
                            nullptr))
     return false;
 
-  bssl::der::Input issuer_value;
+  der::Input issuer_value;
   if (!ParseSequenceValue(tbs.issuer_tlv, &issuer_value))
     return false;
 
-  bssl::CertErrors errors;
+  CertErrors errors;
   return NormalizeName(issuer_value, out_normalized_issuer, &errors);
 }
 
 bssl::UniquePtr<CRYPTO_BUFFER> CreateCertBufferFromBytesWithSanityCheck(
     base::span<const uint8_t> data) {
-  bssl::der::Input tbs_certificate_tlv;
-  bssl::der::Input signature_algorithm_tlv;
-  bssl::der::BitString signature_value;
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
   // Do a bare minimum of DER parsing here to see if the input looks
   // certificate-ish.
-  if (!bssl::ParseCertificate(bssl::der::Input(data), &tbs_certificate_tlv,
-                              &signature_algorithm_tlv, &signature_value,
-                              nullptr)) {
+  if (!ParseCertificate(der::Input(data), &tbs_certificate_tlv,
+                        &signature_algorithm_tlv, &signature_value, nullptr)) {
     return nullptr;
   }
   return x509_util::CreateCryptoBuffer(data);
@@ -234,7 +233,7 @@ CertificateList X509Certificate::CreateCertificateListFromBytes(
   if (format & FORMAT_PKCS7)
     pem_headers.push_back(kPKCS7Header);
 
-  bssl::PEMTokenizer pem_tokenizer(data_string, pem_headers);
+  PEMTokenizer pem_tokenizer(data_string, pem_headers);
   while (pem_tokenizer.GetNext()) {
     std::string decoded(pem_tokenizer.data());
 
@@ -333,18 +332,17 @@ bool X509Certificate::GetSubjectAltName(
   if (ip_addrs)
     ip_addrs->clear();
 
-  bssl::der::Input tbs_certificate_tlv;
-  bssl::der::Input signature_algorithm_tlv;
-  bssl::der::BitString signature_value;
-  if (!bssl::ParseCertificate(
-          bssl::der::Input(CRYPTO_BUFFER_data(cert_buffer_.get()),
-                           CRYPTO_BUFFER_len(cert_buffer_.get())),
-          &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
-          nullptr)) {
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
+  if (!ParseCertificate(der::Input(CRYPTO_BUFFER_data(cert_buffer_.get()),
+                                   CRYPTO_BUFFER_len(cert_buffer_.get())),
+                        &tbs_certificate_tlv, &signature_algorithm_tlv,
+                        &signature_value, nullptr)) {
     return false;
   }
 
-  bssl::ParsedTbsCertificate tbs;
+  ParsedTbsCertificate tbs;
   if (!ParseTbsCertificate(tbs_certificate_tlv,
                            x509_util::DefaultParseCertificateOptions(), &tbs,
                            nullptr))
@@ -352,19 +350,19 @@ bool X509Certificate::GetSubjectAltName(
   if (!tbs.extensions_tlv)
     return false;
 
-  std::map<bssl::der::Input, bssl::ParsedExtension> extensions;
+  std::map<der::Input, ParsedExtension> extensions;
   if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions))
     return false;
 
-  bssl::ParsedExtension subject_alt_names_extension;
-  if (!ConsumeExtension(bssl::der::Input(bssl::kSubjectAltNameOid), &extensions,
+  ParsedExtension subject_alt_names_extension;
+  if (!ConsumeExtension(der::Input(kSubjectAltNameOid), &extensions,
                         &subject_alt_names_extension)) {
     return false;
   }
 
-  bssl::CertErrors errors;
-  std::unique_ptr<bssl::GeneralNames> subject_alt_names =
-      bssl::GeneralNames::Create(subject_alt_names_extension.value, &errors);
+  CertErrors errors;
+  std::unique_ptr<GeneralNames> subject_alt_names =
+      GeneralNames::Create(subject_alt_names_extension.value, &errors);
   if (!subject_alt_names)
     return false;
 
@@ -408,11 +406,11 @@ bool X509Certificate::EqualsIncludingChain(const X509Certificate* other) const {
 bool X509Certificate::IsIssuedByEncoded(
     const std::vector<std::string>& valid_issuers) const {
   std::vector<std::string> normalized_issuers;
-  bssl::CertErrors errors;
+  CertErrors errors;
   for (const auto& raw_issuer : valid_issuers) {
-    bssl::der::Input issuer_value;
+    der::Input issuer_value;
     std::string normalized_issuer;
-    if (!ParseSequenceValue(bssl::der::Input(raw_issuer), &issuer_value) ||
+    if (!ParseSequenceValue(der::Input(raw_issuer), &issuer_value) ||
         !NormalizeName(issuer_value, &normalized_issuer, &errors)) {
       continue;
     }
@@ -579,7 +577,7 @@ bool X509Certificate::GetPEMEncodedFromDER(base::StringPiece der_encoded,
   if (der_encoded.empty())
     return false;
 
-  *pem_encoded = bssl::PEMEncode(der_encoded, "CERTIFICATE");
+  *pem_encoded = PEMEncode(der_encoded, "CERTIFICATE");
   return true;
 }
 
@@ -702,10 +700,10 @@ SHA256HashValue X509Certificate::CalculateChainFingerprint256() const {
 
 // static
 bool X509Certificate::IsSelfSigned(CRYPTO_BUFFER* cert_buffer) {
-  std::shared_ptr<const bssl::ParsedCertificate> parsed_cert =
-      bssl::ParsedCertificate::Create(
-          bssl::UpRef(cert_buffer), x509_util::DefaultParseCertificateOptions(),
-          /*errors=*/nullptr);
+  std::shared_ptr<const ParsedCertificate> parsed_cert =
+      ParsedCertificate::Create(bssl::UpRef(cert_buffer),
+                                x509_util::DefaultParseCertificateOptions(),
+                                /*errors=*/nullptr);
   if (!parsed_cert) {
     return false;
   }
@@ -738,18 +736,18 @@ X509Certificate::ParsedFields::~ParsedFields() = default;
 bool X509Certificate::ParsedFields::Initialize(
     const CRYPTO_BUFFER* cert_buffer,
     X509Certificate::UnsafeCreateOptions options) {
-  bssl::der::Input tbs_certificate_tlv;
-  bssl::der::Input signature_algorithm_tlv;
-  bssl::der::BitString signature_value;
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
 
-  if (!bssl::ParseCertificate(bssl::der::Input(CRYPTO_BUFFER_data(cert_buffer),
-                                               CRYPTO_BUFFER_len(cert_buffer)),
-                              &tbs_certificate_tlv, &signature_algorithm_tlv,
-                              &signature_value, nullptr)) {
+  if (!ParseCertificate(der::Input(CRYPTO_BUFFER_data(cert_buffer),
+                                   CRYPTO_BUFFER_len(cert_buffer)),
+                        &tbs_certificate_tlv, &signature_algorithm_tlv,
+                        &signature_value, nullptr)) {
     return false;
   }
 
-  bssl::ParsedTbsCertificate tbs;
+  ParsedTbsCertificate tbs;
   if (!ParseTbsCertificate(tbs_certificate_tlv,
                            x509_util::DefaultParseCertificateOptions(), &tbs,
                            nullptr))

@@ -1,6 +1,5 @@
 include_rules = [
   "+device",
-  "+third_party/boringssl/src/pki",
 ]
 
 specific_include_rules = {

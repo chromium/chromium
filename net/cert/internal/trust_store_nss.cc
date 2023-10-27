@@ -25,12 +25,12 @@
 #include "crypto/scoped_nss_types.h"
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_features.h"
+#include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/trust_store.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
-#include "third_party/boringssl/src/pki/cert_errors.h"
-#include "third_party/boringssl/src/pki/parsed_certificate.h"
-#include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
 
@@ -109,7 +109,7 @@ bool IsCertOnlyInNSSRoots(CERTCertificate* cert) {
 }  // namespace
 
 TrustStoreNSS::ListCertsResult::ListCertsResult(ScopedCERTCertificate cert,
-                                                bssl::CertificateTrust trust)
+                                                CertificateTrust trust)
     : cert(std::move(cert)), trust(trust) {}
 TrustStoreNSS::ListCertsResult::~ListCertsResult() = default;
 
@@ -123,8 +123,8 @@ TrustStoreNSS::TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting)
 
 TrustStoreNSS::~TrustStoreNSS() = default;
 
-void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
-                                     bssl::ParsedCertificateList* issuers) {
+void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
+                                     ParsedCertificateList* issuers) {
   crypto::EnsureNSSInit();
 
   SECItem name;
@@ -145,9 +145,9 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 
   for (CERTCertListNode* node = CERT_LIST_HEAD(found_certs);
        !CERT_LIST_END(node, found_certs); node = CERT_LIST_NEXT(node)) {
-    bssl::CertErrors parse_errors;
-    std::shared_ptr<const bssl::ParsedCertificate> cur_cert =
-        bssl::ParsedCertificate::Create(
+    CertErrors parse_errors;
+    std::shared_ptr<const ParsedCertificate> cur_cert =
+        ParsedCertificate::Create(
             x509_util::CreateCryptoBuffer(base::make_span(
                 node->cert->derCert.data, node->cert->derCert.len)),
             {}, &parse_errors);
@@ -211,8 +211,7 @@ TrustStoreNSS::ListCertsIgnoringNSSRoots() {
 // matching trust object. Do we need to do that too? (this pk11_isID0 thing:
 // https://searchfox.org/nss/source/lib/pk11wrap/pk11cert.c#357)
 
-bssl::CertificateTrust TrustStoreNSS::GetTrust(
-    const bssl::ParsedCertificate* cert) {
+CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert) {
   crypto::EnsureNSSInit();
   // If trust settings are only being used from a specified slot, and that slot
   // is nullptr, there's nothing to do. This corresponds to the case where we
@@ -231,7 +230,7 @@ bssl::CertificateTrust TrustStoreNSS::GetTrust(
   if (absl::holds_alternative<crypto::ScopedPK11Slot>(
           user_slot_trust_setting_) &&
       absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_) == nullptr) {
-    return bssl::CertificateTrust::ForUnspecified();
+    return CertificateTrust::ForUnspecified();
   }
 
   SECItem der_cert;
@@ -250,20 +249,20 @@ bssl::CertificateTrust TrustStoreNSS::GetTrust(
       CERT_FindCertByDERCert(CERT_GetDefaultCertDB(), &der_cert));
   if (!nss_cert) {
     DVLOG(1) << "skipped cert that has no CERTCertificate already";
-    return bssl::CertificateTrust::ForUnspecified();
+    return CertificateTrust::ForUnspecified();
   }
 
   return GetTrustIgnoringSystemTrust(nss_cert.get());
 }
 
-bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
+CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
     CERTCertificate* nss_cert) const {
   // See if NSS has any trust settings for the certificate at all. If not,
   // there is no point in doing further work.
   CERTCertTrust nss_cert_trust;
   if (CERT_GetCertTrust(nss_cert, &nss_cert_trust) != SECSuccess) {
     DVLOG(1) << "skipped cert that has no trust settings";
-    return bssl::CertificateTrust::ForUnspecified();
+    return CertificateTrust::ForUnspecified();
   }
 
   // If there were trust settings, we may not be able to use the NSS calculated
@@ -286,7 +285,7 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   // cert in user slots? I don't know how that can actually happen though.)
   if (slots_and_handles_for_cert.empty()) {
     DVLOG(1) << "skipped cert that has no slots";
-    return bssl::CertificateTrust::ForUnspecified();
+    return CertificateTrust::ForUnspecified();
   }
 
   // List of trustOrder, slot pairs.
@@ -319,7 +318,7 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   }
   if (slots_to_check.empty()) {
     DVLOG(1) << "cert is only in disallowed slots, skipping";
-    return bssl::CertificateTrust::ForUnspecified();
+    return CertificateTrust::ForUnspecified();
   }
 
   DVLOG(1) << "cert is in both allowed and disallowed slots, doing manual "
@@ -411,16 +410,16 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
           if (base::FeatureList::IsEnabled(
                   features::kTrustStoreTrustedLeafSupport)) {
             DVLOG(1) << "CKT_NSS_TRUSTED -> trusted leaf";
-            return bssl::CertificateTrust::ForTrustedLeaf();
+            return CertificateTrust::ForTrustedLeaf();
           } else {
             DVLOG(1) << "CKT_NSS_TRUSTED -> unspecified";
-            return bssl::CertificateTrust::ForUnspecified();
+            return CertificateTrust::ForUnspecified();
           }
         case CKT_NSS_TRUSTED_DELEGATOR: {
           DVLOG(1) << "CKT_NSS_TRUSTED_DELEGATOR -> trust anchor";
           const bool enforce_anchor_constraints =
               IsLocalAnchorConstraintsEnforcementEnabled();
-          return bssl::CertificateTrust::ForTrustAnchor()
+          return CertificateTrust::ForTrustAnchor()
               .WithEnforceAnchorConstraints(enforce_anchor_constraints)
               .WithEnforceAnchorExpiry(enforce_anchor_constraints);
         }
@@ -428,10 +427,10 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
         case CKT_NSS_VALID_DELEGATOR:
           DVLOG(1) << "CKT_NSS_MUST_VERIFY_TRUST or CKT_NSS_VALID_DELEGATOR -> "
                       "unspecified";
-          return bssl::CertificateTrust::ForUnspecified();
+          return CertificateTrust::ForUnspecified();
         case CKT_NSS_NOT_TRUSTED:
           DVLOG(1) << "CKT_NSS_NOT_TRUSTED -> distrusted";
-          return bssl::CertificateTrust::ForDistrusted();
+          return CertificateTrust::ForDistrusted();
         case CKT_NSS_TRUST_UNKNOWN:
           DVLOG(1) << "CKT_NSS_TRUST_UNKNOWN trust value - skip";
           break;
@@ -443,17 +442,17 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   }
 
   DVLOG(1) << "no suitable NSS trust record found";
-  return bssl::CertificateTrust::ForUnspecified();
+  return CertificateTrust::ForUnspecified();
 }
 
-bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
+CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
     const CERTCertTrust& trust) const {
   unsigned int trust_flags = SEC_GET_TRUST_FLAGS(&trust, trustSSL);
 
   // Determine if the certificate is distrusted.
   if ((trust_flags & (CERTDB_TERMINAL_RECORD | CERTDB_TRUSTED_CA |
                       CERTDB_TRUSTED)) == CERTDB_TERMINAL_RECORD) {
-    return bssl::CertificateTrust::ForDistrusted();
+    return CertificateTrust::ForDistrusted();
   }
 
   bool is_trusted_ca = false;
@@ -475,18 +474,18 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
   }
 
   if (is_trusted_ca && is_trusted_leaf) {
-    return bssl::CertificateTrust::ForTrustAnchorOrLeaf()
+    return CertificateTrust::ForTrustAnchorOrLeaf()
         .WithEnforceAnchorConstraints(enforce_anchor_constraints)
         .WithEnforceAnchorExpiry(enforce_anchor_constraints);
   } else if (is_trusted_ca) {
-    return bssl::CertificateTrust::ForTrustAnchor()
+    return CertificateTrust::ForTrustAnchor()
         .WithEnforceAnchorConstraints(enforce_anchor_constraints)
         .WithEnforceAnchorExpiry(enforce_anchor_constraints);
   } else if (is_trusted_leaf) {
-    return bssl::CertificateTrust::ForTrustedLeaf();
+    return CertificateTrust::ForTrustedLeaf();
   }
 
-  return bssl::CertificateTrust::ForUnspecified();
+  return CertificateTrust::ForUnspecified();
 }
 
 }  // namespace net

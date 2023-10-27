@@ -12,13 +12,13 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/media_router/common/providers/cast/certificate/net_parsed_certificate.h"
+#include "net/cert/pem.h"
+#include "net/cert/pki/cert_issuer_source_static.h"
+#include "net/cert/pki/common_cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/path_builder.h"
+#include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/pki/cert_issuer_source_static.h"
-#include "third_party/boringssl/src/pki/common_cert_errors.h"
-#include "third_party/boringssl/src/pki/parsed_certificate.h"
-#include "third_party/boringssl/src/pki/path_builder.h"
-#include "third_party/boringssl/src/pki/pem.h"
-#include "third_party/boringssl/src/pki/simple_path_builder_delegate.h"
 #include "third_party/openscreen/src/cast/common/public/trust_store.h"
 
 namespace {
@@ -70,7 +70,7 @@ TrustStore::CreateInstanceFromPemFile(std::string_view file_path) {
   CHECK(base::ReadFileToString(base::FilePath::FromASCII(base::StringPiece(
                                    file_path.data(), file_path.size())),
                                &pem_data));
-  bssl::PEMTokenizer tokenizer(pem_data, {std::string("CERTIFICATE")});
+  net::PEMTokenizer tokenizer(pem_data, {std::string("CERTIFICATE")});
   auto result = std::make_unique<cast_certificate::NetTrustStore>();
   while (tokenizer.GetNext()) {
     const std::string& data = tokenizer.data();
@@ -110,7 +110,7 @@ namespace {
 //   * Hashes: All SHA hashes including SHA-1 (despite being known weak).
 //
 // It will also require RSA keys have a modulus at least 2048-bits long.
-class CastPathBuilderDelegate : public bssl::SimplePathBuilderDelegate {
+class CastPathBuilderDelegate : public net::SimplePathBuilderDelegate {
  public:
   CastPathBuilderDelegate()
       : SimplePathBuilderDelegate(
@@ -121,7 +121,7 @@ class CastPathBuilderDelegate : public bssl::SimplePathBuilderDelegate {
 // Returns the CastCertError for the failed path building.
 // This function must only be called if path building failed.
 openscreen::Error::Code MapToCastError(
-    const bssl::CertPathBuilder::Result& result) {
+    const net::CertPathBuilder::Result& result) {
   DCHECK(!result.HasValidPath());
   if (result.paths.empty()) {
     return openscreen::Error::Code::kErrCertsVerifyGeneric;
@@ -132,13 +132,13 @@ openscreen::Error::Code MapToCastError(
   // TODO(issuetracker.google.com/222145200): Here and elsewhere, we would like
   // to provide better error messages for logs and feedback reports.  For
   // example, collecting the certificate validity dates for a date error.
-  const bssl::CertPathErrors& path_errors =
+  const net::CertPathErrors& path_errors =
       result.paths.at(result.best_result_index)->errors;
-  if (path_errors.ContainsError(bssl::cert_errors::kValidityFailedNotAfter) ||
-      path_errors.ContainsError(bssl::cert_errors::kValidityFailedNotBefore)) {
+  if (path_errors.ContainsError(net::cert_errors::kValidityFailedNotAfter) ||
+      path_errors.ContainsError(net::cert_errors::kValidityFailedNotBefore)) {
     return openscreen::Error::Code::kErrCertsDateInvalid;
   }
-  if (path_errors.ContainsError(bssl::cert_errors::kMaxPathLengthViolated)) {
+  if (path_errors.ContainsError(net::cert_errors::kMaxPathLengthViolated)) {
     return openscreen::Error::Code::kErrCertsPathlen;
   }
   return openscreen::Error::Code::kErrCertsVerifyGeneric;
@@ -151,10 +151,10 @@ NetTrustStore::NetTrustStore() = default;
 NetTrustStore::~NetTrustStore() = default;
 
 void NetTrustStore::AddAnchor(base::span<const uint8_t> data) {
-  bssl::CertErrors errors;
-  std::shared_ptr<const bssl::ParsedCertificate> cert =
-      bssl::ParsedCertificate::Create(net::x509_util::CreateCryptoBuffer(data),
-                                      {}, &errors);
+  net::CertErrors errors;
+  std::shared_ptr<const net::ParsedCertificate> cert =
+      net::ParsedCertificate::Create(net::x509_util::CreateCryptoBuffer(data),
+                                     {}, &errors);
   CHECK(cert) << errors.ToDebugString();
   // Enforce pathlen constraints and policies defined on the root certificate.
   store_.AddTrustAnchorWithConstraints(std::move(cert));
@@ -163,11 +163,11 @@ void NetTrustStore::AddAnchor(base::span<const uint8_t> data) {
 openscreen::ErrorOr<NetTrustStore::CertificatePathResult>
 NetTrustStore::FindCertificatePath(const std::vector<std::string>& der_certs,
                                    const openscreen::cast::DateTime& time) {
-  std::shared_ptr<const bssl::ParsedCertificate> leaf_cert;
-  bssl::CertIssuerSourceStatic intermediate_cert_issuer_source;
+  std::shared_ptr<const net::ParsedCertificate> leaf_cert;
+  net::CertIssuerSourceStatic intermediate_cert_issuer_source;
   for (const std::string& der_cert : der_certs) {
-    std::shared_ptr<const bssl::ParsedCertificate> cert(
-        bssl::ParsedCertificate::Create(
+    std::shared_ptr<const net::ParsedCertificate> cert(
+        net::ParsedCertificate::Create(
             net::x509_util::CreateCryptoBuffer(der_cert),
             GetCertParsingOptions(), nullptr));
     if (!cert) {
@@ -181,7 +181,7 @@ NetTrustStore::FindCertificatePath(const std::vector<std::string>& der_certs,
     }
   }
 
-  bssl::der::GeneralizedTime verification_time;
+  net::der::GeneralizedTime verification_time;
   verification_time.year = time.year;
   verification_time.month = time.month;
   verification_time.day = time.day;
@@ -192,24 +192,24 @@ NetTrustStore::FindCertificatePath(const std::vector<std::string>& der_certs,
   // Do path building and RFC 5280 compatible certificate verification using the
   // two Cast trust anchors and Cast signature policy.
   CastPathBuilderDelegate path_builder_delegate;
-  bssl::CertPathBuilder path_builder(
+  net::CertPathBuilder path_builder(
       leaf_cert, &store_, &path_builder_delegate, verification_time,
-      bssl::KeyPurpose::CLIENT_AUTH, bssl::InitialExplicitPolicy::kFalse,
-      {bssl::der::Input(bssl::kAnyPolicyOid)},
-      bssl::InitialPolicyMappingInhibit::kFalse,
-      bssl::InitialAnyPolicyInhibit::kFalse);
+      net::KeyPurpose::CLIENT_AUTH, net::InitialExplicitPolicy::kFalse,
+      {net::der::Input(net::kAnyPolicyOid)},
+      net::InitialPolicyMappingInhibit::kFalse,
+      net::InitialAnyPolicyInhibit::kFalse);
   path_builder.AddCertIssuerSource(&intermediate_cert_issuer_source);
-  bssl::CertPathBuilder::Result result = path_builder.Run();
+  net::CertPathBuilder::Result result = path_builder.Run();
   if (!result.HasValidPath()) {
     return MapToCastError(result);
   }
-  const bssl::CertPathBuilderResultPath* path = result.GetBestValidPath();
+  const net::CertPathBuilderResultPath* path = result.GetBestValidPath();
 
   // Check that the leaf is valid as a _device_ certificate, which is not
   // checked by path building.
   if (!leaf_cert->has_key_usage() ||
       !leaf_cert->key_usage().AssertsBit(
-          bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
+          net::KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
     return openscreen::Error::Code::kErrCertsRestrictions;
   }
 

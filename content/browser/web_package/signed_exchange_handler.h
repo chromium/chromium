@@ -36,14 +36,11 @@ class WebPackageRequestMatcher;
 }  // namespace blink
 
 namespace net {
+class CertVerifyResult;
 class DrainableIOBuffer;
 class SourceStream;
-}  // namespace net
-
-namespace bssl {
-class CertVerifyResult;
 struct OCSPVerifyResult;
-}  // namespace bssl
+}  // namespace net
 
 namespace network {
 namespace mojom {
@@ -157,7 +154,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
       net::IPAddress cert_server_ip_address);
   SignedExchangeLoadResult CheckCertRequirements(
       const net::X509Certificate* verified_cert);
-  bool CheckOCSPStatus(const bssl::OCSPVerifyResult& ocsp_result);
+  bool CheckOCSPStatus(const net::OCSPVerifyResult& ocsp_result);
 
   void OnVerifyCert(int32_t error_code,
                     const net::CertVerifyResult& cv_result,

@@ -34,21 +34,21 @@
 #include "net/cert/internal/revocation_checker.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/known_roots.h"
+#include "net/cert/ocsp_revocation_status.h"
+#include "net/cert/pem.h"
+#include "net/cert/pki/extended_key_usage.h"
+#include "net/cert/pki/ocsp.h"
+#include "net/cert/pki/parse_certificate.h"
+#include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/symantec_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_certificate_net_log_param.h"
 #include "net/cert/x509_util.h"
+#include "net/der/encode_values.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
-#include "third_party/boringssl/src/pki/encode_values.h"
-#include "third_party/boringssl/src/pki/extended_key_usage.h"
-#include "third_party/boringssl/src/pki/ocsp.h"
-#include "third_party/boringssl/src/pki/ocsp_revocation_status.h"
-#include "third_party/boringssl/src/pki/parse_certificate.h"
-#include "third_party/boringssl/src/pki/pem.h"
-#include "third_party/boringssl/src/pki/signature_algorithm.h"
 #include "url/url_canon.h"
 
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -197,10 +197,10 @@ bool ExaminePublicKeys(const scoped_refptr<X509Certificate>& cert,
 
 void BestEffortCheckOCSP(const std::string& raw_response,
                          const X509Certificate& certificate,
-                         bssl::OCSPVerifyResult* verify_result) {
+                         OCSPVerifyResult* verify_result) {
   if (raw_response.empty()) {
-    *verify_result = bssl::OCSPVerifyResult();
-    verify_result->response_status = bssl::OCSPVerifyResult::MISSING;
+    *verify_result = OCSPVerifyResult();
+    verify_result->response_status = OCSPVerifyResult::MISSING;
     return;
   }
 
@@ -216,7 +216,7 @@ void BestEffortCheckOCSP(const std::string& raw_response,
       issuer_der = cert_der;
     } else {
       // A valid cert chain wasn't provided.
-      *verify_result = bssl::OCSPVerifyResult();
+      *verify_result = OCSPVerifyResult();
       return;
     }
   } else {
@@ -224,7 +224,7 @@ void BestEffortCheckOCSP(const std::string& raw_response,
         certificate.intermediate_buffers().front().get());
   }
 
-  verify_result->revocation_status = bssl::CheckOCSP(
+  verify_result->revocation_status = CheckOCSP(
       raw_response, cert_der, issuer_der, base::Time::Now().ToTimeT(),
       kMaxRevocationLeafUpdateAge.InSeconds(), &verify_result->response_status);
 }
@@ -284,29 +284,29 @@ void RecordTrustAnchorHistogram(const HashValueVector& spki_hashes,
     return false;
   }
 
-  absl::optional<bssl::SignatureAlgorithm> cert_algorithm =
-      bssl::ParseSignatureAlgorithm(bssl::der::Input(cert_algorithm_sequence));
-  absl::optional<bssl::SignatureAlgorithm> tbs_algorithm =
-      bssl::ParseSignatureAlgorithm(bssl::der::Input(tbs_algorithm_sequence));
+  absl::optional<SignatureAlgorithm> cert_algorithm =
+      ParseSignatureAlgorithm(der::Input(cert_algorithm_sequence));
+  absl::optional<SignatureAlgorithm> tbs_algorithm =
+      ParseSignatureAlgorithm(der::Input(tbs_algorithm_sequence));
   if (!cert_algorithm || !tbs_algorithm || *cert_algorithm != *tbs_algorithm) {
     return false;
   }
 
   switch (*cert_algorithm) {
-    case bssl::SignatureAlgorithm::kRsaPkcs1Sha1:
-    case bssl::SignatureAlgorithm::kEcdsaSha1:
+    case SignatureAlgorithm::kRsaPkcs1Sha1:
+    case SignatureAlgorithm::kEcdsaSha1:
       verify_result->has_sha1 = true;
       return true;  // For now.
 
-    case bssl::SignatureAlgorithm::kRsaPkcs1Sha256:
-    case bssl::SignatureAlgorithm::kRsaPkcs1Sha384:
-    case bssl::SignatureAlgorithm::kRsaPkcs1Sha512:
-    case bssl::SignatureAlgorithm::kEcdsaSha256:
-    case bssl::SignatureAlgorithm::kEcdsaSha384:
-    case bssl::SignatureAlgorithm::kEcdsaSha512:
-    case bssl::SignatureAlgorithm::kRsaPssSha256:
-    case bssl::SignatureAlgorithm::kRsaPssSha384:
-    case bssl::SignatureAlgorithm::kRsaPssSha512:
+    case SignatureAlgorithm::kRsaPkcs1Sha256:
+    case SignatureAlgorithm::kRsaPkcs1Sha384:
+    case SignatureAlgorithm::kRsaPkcs1Sha512:
+    case SignatureAlgorithm::kEcdsaSha256:
+    case SignatureAlgorithm::kEcdsaSha384:
+    case SignatureAlgorithm::kEcdsaSha512:
+    case SignatureAlgorithm::kRsaPssSha256:
+    case SignatureAlgorithm::kRsaPssSha384:
+    case SignatureAlgorithm::kRsaPssSha512:
       return true;
   }
 
@@ -379,11 +379,10 @@ base::Value::Dict CertVerifyParams(
   base::Value::Dict dict;
   dict.Set("certificates", NetLogX509CertificateList(cert));
   if (!ocsp_response.empty()) {
-    dict.Set("ocsp_response",
-             bssl::PEMEncode(ocsp_response, "NETLOG OCSP RESPONSE"));
+    dict.Set("ocsp_response", PEMEncode(ocsp_response, "NETLOG OCSP RESPONSE"));
   }
   if (!sct_list.empty()) {
-    dict.Set("sct_list", bssl::PEMEncode(sct_list, "NETLOG SCT LIST"));
+    dict.Set("sct_list", PEMEncode(sct_list, "NETLOG SCT LIST"));
   }
   dict.Set("host", NetLogStringValue(hostname));
   dict.Set("verify_flags", flags);
@@ -504,7 +503,7 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   }
 
   if (verify_result->ocsp_result.response_status ==
-      bssl::OCSPVerifyResult::NOT_CHECKED) {
+      OCSPVerifyResult::NOT_CHECKED) {
     // If VerifyInternal did not record the result of checking stapled OCSP,
     // do it now.
     BestEffortCheckOCSP(ocsp_response, *verify_result->verified_cert,
@@ -639,19 +638,19 @@ void CertVerifyProc::LogNameNormalizationMetrics(
   for (const auto& buf : verified_cert->intermediate_buffers())
     der_certs.push_back(buf.get());
 
-  bssl::ParseCertificateOptions options;
+  ParseCertificateOptions options;
   options.allow_invalid_serial_numbers = true;
 
-  std::vector<bssl::der::Input> subjects;
-  std::vector<bssl::der::Input> issuers;
+  std::vector<der::Input> subjects;
+  std::vector<der::Input> issuers;
 
   for (auto* buf : der_certs) {
-    bssl::der::Input tbs_certificate_tlv;
-    bssl::der::Input signature_algorithm_tlv;
-    bssl::der::BitString signature_value;
-    bssl::ParsedTbsCertificate tbs;
-    if (!bssl::ParseCertificate(
-            bssl::der::Input(CRYPTO_BUFFER_data(buf), CRYPTO_BUFFER_len(buf)),
+    der::Input tbs_certificate_tlv;
+    der::Input signature_algorithm_tlv;
+    der::BitString signature_value;
+    ParsedTbsCertificate tbs;
+    if (!ParseCertificate(
+            der::Input(CRYPTO_BUFFER_data(buf), CRYPTO_BUFFER_len(buf)),
             &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
             nullptr /* errors*/) ||
         !ParseTbsCertificate(tbs_certificate_tlv, options, &tbs,

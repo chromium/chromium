@@ -115,39 +115,39 @@ void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
       std::move(wrapped_callback));
 }
 
-std::string OCSPErrorToString(const bssl::OCSPVerifyResult& ocsp_result) {
+std::string OCSPErrorToString(const net::OCSPVerifyResult& ocsp_result) {
   switch (ocsp_result.response_status) {
-    case bssl::OCSPVerifyResult::PROVIDED:
+    case net::OCSPVerifyResult::PROVIDED:
       break;
-    case bssl::OCSPVerifyResult::NOT_CHECKED:
+    case net::OCSPVerifyResult::NOT_CHECKED:
       // This happens only in tests.
       return "OCSP verification was not performed.";
-    case bssl::OCSPVerifyResult::MISSING:
+    case net::OCSPVerifyResult::MISSING:
       return "No OCSP Response was stapled.";
-    case bssl::OCSPVerifyResult::ERROR_RESPONSE:
+    case net::OCSPVerifyResult::ERROR_RESPONSE:
       return "OCSP response did not have a SUCCESSFUL status.";
-    case bssl::OCSPVerifyResult::BAD_PRODUCED_AT:
+    case net::OCSPVerifyResult::BAD_PRODUCED_AT:
       return "OCSP Response was produced at outside the certificate "
              "validity period.";
-    case bssl::OCSPVerifyResult::NO_MATCHING_RESPONSE:
+    case net::OCSPVerifyResult::NO_MATCHING_RESPONSE:
       return "OCSP Response did not match the certificate.";
-    case bssl::OCSPVerifyResult::INVALID_DATE:
+    case net::OCSPVerifyResult::INVALID_DATE:
       return "OCSP Response was expired or not yet valid.";
-    case bssl::OCSPVerifyResult::PARSE_RESPONSE_ERROR:
+    case net::OCSPVerifyResult::PARSE_RESPONSE_ERROR:
       return "OCSPResponse structure could not be parsed.";
-    case bssl::OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR:
+    case net::OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR:
       return "OCSP ResponseData structure could not be parsed.";
-    case bssl::OCSPVerifyResult::UNHANDLED_CRITICAL_EXTENSION:
+    case net::OCSPVerifyResult::UNHANDLED_CRITICAL_EXTENSION:
       return "OCSP Response contained unhandled critical extension.";
   }
 
   switch (ocsp_result.revocation_status) {
-    case bssl::OCSPRevocationStatus::GOOD:
+    case net::OCSPRevocationStatus::GOOD:
       NOTREACHED();
       break;
-    case bssl::OCSPRevocationStatus::REVOKED:
+    case net::OCSPRevocationStatus::REVOKED:
       return "OCSP response indicates that the certificate is revoked.";
-    case bssl::OCSPRevocationStatus::UNKNOWN:
+    case net::OCSPRevocationStatus::UNKNOWN:
       return "OCSP responder doesn't know about the certificate.";
   }
   NOTREACHED();
@@ -577,7 +577,7 @@ SignedExchangeLoadResult SignedExchangeHandler::CheckCertRequirements(
 }
 
 bool SignedExchangeHandler::CheckOCSPStatus(
-    const bssl::OCSPVerifyResult& ocsp_result) {
+    const net::OCSPVerifyResult& ocsp_result) {
   // https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html#cross-origin-trust
   // Step 6.3 Validate that main-certificate has an ocsp property (Section 3.3)
   // with a valid OCSP response whose lifetime (nextUpdate - thisUpdate) is less
@@ -588,17 +588,16 @@ bool SignedExchangeHandler::CheckOCSPStatus(
   UMA_HISTOGRAM_ENUMERATION(kHistogramOCSPResponseStatus,
                             ocsp_result.response_status,
                             static_cast<base::HistogramBase::Sample>(
-                                bssl::OCSPVerifyResult::RESPONSE_STATUS_MAX) +
+                                net::OCSPVerifyResult::RESPONSE_STATUS_MAX) +
                                 1);
-  if (ocsp_result.response_status == bssl::OCSPVerifyResult::PROVIDED) {
+  if (ocsp_result.response_status == net::OCSPVerifyResult::PROVIDED) {
     UMA_HISTOGRAM_ENUMERATION(kHistogramOCSPRevocationStatus,
                               ocsp_result.revocation_status,
                               static_cast<base::HistogramBase::Sample>(
-                                  bssl::OCSPRevocationStatus::MAX_VALUE) +
+                                  net::OCSPRevocationStatus::MAX_VALUE) +
                                   1);
-    if (ocsp_result.revocation_status == bssl::OCSPRevocationStatus::GOOD) {
+    if (ocsp_result.revocation_status == net::OCSPRevocationStatus::GOOD)
       return true;
-    }
   }
   return false;
 }

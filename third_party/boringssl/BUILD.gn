@@ -51,10 +51,8 @@ config("no_asm_config") {
   defines = [ "OPENSSL_NO_ASM" ]
 }
 
-# TODO(crbug.com/1496373): having the headers in all_sources is hacky and should
-# be fixed. It is caused by issues with the fuzzer target.
-all_sources = crypto_sources + ssl_sources + pki_sources + pki_internal_headers
-all_headers = crypto_headers + ssl_headers + pki_internal_headers
+all_sources = crypto_sources + ssl_sources + pki_sources
+all_headers = crypto_headers + ssl_headers
 
 if (enable_rust_boringssl) {
   rust_bindgen("raw_bssl_sys_bindings") {

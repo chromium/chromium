@@ -12,10 +12,10 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
-namespace bssl {
+namespace net {
 class TrustStore;
 enum class DigestAlgorithm;
-}  // namespace bssl
+}  // namespace net
 namespace cast_certificate {
 
 class CastCRL;
@@ -159,7 +159,7 @@ class CertVerificationContext {
     const CastCRL* crl,
     const CastCRL* fallback_crl,
     CRLPolicy crl_policy,
-    bssl::TrustStore* trust_store);
+    net::TrustStore* trust_store);
 
 // Returns a string status messages for the CastCertError provided.
 std::string CastCertErrorToString(CastCertError error);

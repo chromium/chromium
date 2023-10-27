@@ -79,7 +79,7 @@ class CertNotificationForwarder : public NSSCertDatabase::Observer {
 // TODO(https://crbug.com/1412591): once the other IsUntrusted impl is deleted,
 // rename this.
 bool IsUntrustedUsingTrustStore(const CERTCertificate* cert,
-                                bssl::CertificateTrust trust) {
+                                CertificateTrust trust) {
   if (trust.IsDistrusted()) {
     return true;
   }

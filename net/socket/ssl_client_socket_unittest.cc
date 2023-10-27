@@ -55,6 +55,9 @@
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_util.h"
+#include "net/der/input.h"
+#include "net/der/parser.h"
+#include "net/der/tag.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
@@ -2835,7 +2838,7 @@ TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsEnablesOCSP) {
   // for a freshly minted certificate.
   EmbeddedTestServer::ServerCertificateConfig cert_config;
   cert_config.stapled_ocsp_config = EmbeddedTestServer::OCSPConfig(
-      {{bssl::OCSPRevocationStatus::GOOD,
+      {{OCSPRevocationStatus::GOOD,
         EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
 
   ASSERT_TRUE(StartEmbeddedTestServer(cert_config, GetServerConfig()));
