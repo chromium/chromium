@@ -38,6 +38,7 @@
 #include "gpu/command_buffer/service/dawn_service_memory_transfer_service.h"
 #include "gpu/command_buffer/service/dawn_service_serializer.h"
 #include "gpu/command_buffer/service/decoder_client.h"
+#include "gpu/command_buffer/service/graphite_utils.h"
 #include "gpu/command_buffer/service/isolation_key_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_surface_egl.h"
 
@@ -619,6 +621,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     }
 
     bool ReadPixelsIntoBuffer(void* dst_pointer, uint32_t bytes_per_row) {
+      // TODO(crbug.com/1467566): Support multiplanar format.
+      DCHECK(representation_->format().NumberOfPlanes() == 1);
       DCHECK(dst_pointer);
       std::vector<GrBackendSemaphore> begin_semaphores;
       std::vector<GrBackendSemaphore> end_semaphores;
@@ -648,11 +652,25 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       // Read back the Skia image contents into the staging buffer.
       DCHECK(dst_pointer);
-      if (success && !sk_image->readPixels(shared_context_state_->gr_context(),
-                                           sk_image->imageInfo(), dst_pointer,
-                                           bytes_per_row, 0, 0)) {
-        DLOG(ERROR) << "Failed to read from SkImage";
-        success = false;
+      if (shared_context_state_->gr_context()) {
+        if (success &&
+            !sk_image->readPixels(shared_context_state_->gr_context(),
+                                  sk_image->imageInfo(), dst_pointer,
+                                  bytes_per_row, 0, 0)) {
+          DLOG(ERROR) << "Failed to read from SkImage";
+          success = false;
+        }
+      } else {
+        DCHECK(shared_context_state_->graphite_context());
+        DCHECK(shared_context_state_->gpu_main_graphite_recorder());
+        if (success && !GraphiteReadPixelsSync(
+                           shared_context_state_->graphite_context(),
+                           shared_context_state_->gpu_main_graphite_recorder(),
+                           sk_image.get(), sk_image->imageInfo(), dst_pointer,
+                           bytes_per_row, 0, 0)) {
+          DLOG(ERROR) << "Failed to read from SkImage";
+          success = false;
+        }
       }
 
       // Transition the image back to the desired end state. This is used
@@ -722,6 +740,9 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     }
 
     bool UploadContentsToSkia() {
+      // TODO(crbug.com/1467566): Support multiplanar format.
+      DCHECK(representation_->format().NumberOfPlanes() == 1);
+
       uint32_t bytes_per_row;
       size_t buffer_size;
       if (!ComputeStagingBufferParams(representation_->format(),
@@ -813,7 +834,14 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       // It's ok to pass in empty GrFlushInfo here since SignalSemaphores()
       // will populate it with semaphores and call GrDirectContext::flush.
-      skgpu::ganesh::Flush(surface);
+      if (shared_context_state_->gr_context()) {
+        skgpu::ganesh::Flush(surface);
+      } else {
+        DCHECK(shared_context_state_->graphite_context());
+        DCHECK(shared_context_state_->gpu_main_graphite_recorder());
+        GraphiteFlushAndSubmit(shared_context_state_->graphite_context(),
+                               shared_context_state_->gpu_main_graphite_recorder());
+      }
       // Transition the image back to the desired end state. This is used for
       // transitioning the image to the external queue for Vulkan/GL interop.
       scoped_write_access->ApplyBackendSurfaceEndState();

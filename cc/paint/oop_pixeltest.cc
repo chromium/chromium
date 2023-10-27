@@ -33,6 +33,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
+#include "gpu/command_buffer/service/graphite_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ipc/common/gpu_client_ids.h"
 #include "skia/ext/legacy_display_globals.h"
@@ -98,19 +99,6 @@ sk_sp<SkImage> MakeSkImage(const gfx::Size& size,
   canvas.drawRect(SkRect::MakeXYWH(10, 20, 30, 40), green);
 
   return SkImages::RasterFromBitmap(bitmap);
-}
-
-struct ReadPixelsContext {
-  std::unique_ptr<const SkImage::AsyncReadResult> async_result;
-  bool finished = false;
-};
-
-void OnReadPixelsDone(
-    void* raw_ctx,
-    std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
-  ReadPixelsContext* context = reinterpret_cast<ReadPixelsContext*>(raw_ctx);
-  context->async_result = std::move(async_result);
-  context->finished = true;
 }
 
 constexpr size_t kCacheLimitBytes = 1024 * 1024;
@@ -1837,30 +1825,11 @@ class OopTextBlobPixelTest
                                                   GrSyncCpu::kNo);
       success = surface->readPixels(expected, 0, 0);
     } else if (context_state->graphite_context()) {
-      ReadPixelsContext context;
-      const SkIRect src_rect =
-          SkIRect::MakeXYWH(0, 0, image_size.width(), image_size.height());
-
-      auto recording = context_state->gpu_main_graphite_recorder()->snap();
-      if (recording) {
-        skgpu::graphite::InsertRecordingInfo info = {};
-        info.fRecording = recording.get();
-        context_state->graphite_context()->insertRecording(info);
-      }
-      context_state->graphite_context()->asyncRescaleAndReadPixels(
-          surface.get(), image_info, src_rect, SkImage::RescaleGamma::kSrc,
-          SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &context);
-
-      context_state->graphite_context()->submit(
-          skgpu::graphite::SyncToCpu::kYes);
-      CHECK(context.finished);
-
-      if (context.async_result) {
-        success = true;
-        SkPixmap pixmap(image_info, context.async_result->data(0),
-                        image_info.minRowBytes());
-        expected.writePixels(pixmap);
-      }
+      success = gpu::GraphiteReadPixelsSync(
+          context_state->graphite_context(),
+          context_state->gpu_main_graphite_recorder(), surface.get(),
+          image_info, expected.pixmap().writable_addr(),
+          expected.pixmap().rowBytes(), 0, 0);
     }
 
     ASSERT_TRUE(success);

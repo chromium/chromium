@@ -61,12 +61,17 @@ std::ostream& operator<<(std::ostream& os,
          options.format == viz::SinglePlaneFormat::kBGRA_8888 ||
          options.format == viz::SinglePlaneFormat::kRGBA_F16);
   os << options.format.ToTestParamString();
+
+  if (options.use_skia_graphite) {
+    os << "_SkiaGraphite";
+  }
   if (options.enable_unsafe_webgpu) {
     os << "_UnsafeWebGPU";
   }
   if (options.force_fallback_adapter) {
     os << "_FallbackAdapter";
   }
+
   return os;
 }
 
@@ -112,9 +117,18 @@ class WebGPUMailboxTest
       o.format = format;
       params.push_back(o);
 
+      // Test SwiftShader fallback both with and without SkiaGraphite
       o = fallback_options;
       o.format = format;
+
+      o.use_skia_graphite = false;
       params.push_back(o);
+
+      // Note: Only windows & Mac have Graphite supported for now.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      o.use_skia_graphite = true;
+      params.push_back(o);
+#endif
     }
     return params;
   }
