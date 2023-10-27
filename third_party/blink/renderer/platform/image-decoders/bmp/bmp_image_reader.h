@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_BMP_BMP_IMAGE_READER_H_
 
 #include <stdint.h>
+#include <string.h>
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
@@ -23,11 +24,15 @@ class PLATFORM_EXPORT BMPImageReader final {
   // Read a value from |buffer|, converting to an int assuming little
   // endianness
   static inline uint16_t ReadUint16(const char* buffer) {
-    return *reinterpret_cast<const uint16_t*>(buffer);
+    uint16_t v;
+    memcpy(&v, buffer, sizeof(v));
+    return v;
   }
 
   static inline uint32_t ReadUint32(const char* buffer) {
-    return *reinterpret_cast<const uint32_t*>(buffer);
+    uint32_t v;
+    memcpy(&v, buffer, sizeof(v));
+    return v;
   }
 
   // |parent| is the decoder that owns us.

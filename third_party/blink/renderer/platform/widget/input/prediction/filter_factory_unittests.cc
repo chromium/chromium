@@ -35,7 +35,7 @@ class FilterFactoryTest : public testing::Test {
   }
 
   FilterType GetFilterTypeFromName(const std::string& filter_name) {
-    return factory_->GetFilterTypeFromName(filter_name);
+    return FilterFactory::GetFilterTypeFromName(filter_name);
   }
 
   std::unique_ptr<ui::InputFilter> CreateFilter(

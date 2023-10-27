@@ -35,6 +35,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
@@ -117,7 +118,7 @@ int AudioDestination::Render(base::TimeDelta delay,
     base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
         "WebAudio.AudioDestination.HardwareOutputLatency", 0, 200, 100,
         base::HistogramBase::kUmaTargetedHistogramFlag);
-    histogram->Add(static_cast<int32_t>(delay_seconds * 1000));
+    histogram->Add(base::saturated_cast<int32_t>(delay_seconds * 1000));
     is_latency_metric_collected_ = true;
   }
 

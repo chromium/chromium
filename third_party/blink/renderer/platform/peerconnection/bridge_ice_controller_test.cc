@@ -90,7 +90,7 @@ static const std::string kIpTwo = "1.3.5.7";
 static const std::string kIpThree = "1.4.7.10";
 static const int kPort = 6745;
 
-static const IceConfig* kIceConfig = reinterpret_cast<const IceConfig*>(0xfefe);
+static const IceConfig kIceConfig;
 
 static const std::vector<const Connection*> kEmptyConnsList{};
 static const IceControllerInterface::SwitchResult kEmptySwitchResult{};
@@ -230,8 +230,8 @@ TEST_F(BridgeIceControllerTest, PassthroughIceControllerInterface) {
   const Connection* conn_three = GetConnection(kIpThree, kPort);
   ASSERT_NE(conn_three, nullptr);
 
-  EXPECT_CALL(*wrapped, SetIceConfig(Ref(*kIceConfig)));
-  controller.SetIceConfig(*kIceConfig);
+  EXPECT_CALL(*wrapped, SetIceConfig(Ref(kIceConfig)));
+  controller.SetIceConfig(kIceConfig);
 
   EXPECT_CALL(*wrapped, GetUseCandidateAttr(conn, NominationMode::AGGRESSIVE,
                                             IceMode::ICEMODE_LITE))
