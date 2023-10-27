@@ -3549,6 +3549,12 @@ const char kWebAuthnFilterGooglePasskeysDescription[] =
     "credentials that do not match a user.id prefix identifying them as "
     "passkeys, e.g. because they are used for autofill auth.";
 
+const char kWebAuthnScreenReaderModeName[] =
+    "Enable screen reader mode for webauthn UI";
+const char kWebAuthnScreenReaderModeDescription[] =
+    "When displaying webauthn UI, try to detect if a screen reader is running "
+    "to tailor the experience for blind and low vision users.";
+
 const char kWebBluetoothName[] = "Web Bluetooth";
 const char kWebBluetoothDescription[] =
     "Enables the Web Bluetooth API on platforms without official support";

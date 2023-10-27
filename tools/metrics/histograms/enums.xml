@@ -64689,6 +64689,7 @@ from previous Chrome versions.
   <int value="-545624357"
       label="AutofillEnableMerchantOptOutErrorDialog:disabled"/>
   <int value="-545419529" label="LauncherAppSort:disabled"/>
+  <int value="-544906308" label="WebAuthenticationScreenReaderMode:enabled"/>
   <int value="-544685871" label="NewOsSettingsSearch:enabled"/>
   <int value="-544629557" label="CSSBackdropFilter:enabled"/>
   <int value="-541989470" label="AccessCodeCastRememberDevices:enabled"/>
@@ -65753,6 +65754,7 @@ from previous Chrome versions.
   <int value="-27287076" label="DesktopPWAsTabStripSettings:disabled"/>
   <int value="-27213807" label="GlobalMediaControls:enabled"/>
   <int value="-25726674" label="CompressionDictionaryTransport:enabled"/>
+  <int value="-25537346" label="WebAuthenticationScreenReaderMode:disabled"/>
   <int value="-25303818" label="CCTResizableSideSheetForThirdParties:disabled"/>
   <int value="-25025176" label="PerformantSplitViewResizing:enabled"/>
   <int value="-24570936" label="DestroyProfileOnBrowserClose:disabled"/>

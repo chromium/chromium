@@ -227,4 +227,9 @@ BASE_FEATURE(kChromeOsPasskeys,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnScreenReaderMode,
+             "WebAuthenticationScreenReaderMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

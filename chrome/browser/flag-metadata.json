@@ -8069,6 +8069,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "web-authentication-screen-reader-mode",
+    "owners": [ "chrome-webauthn@google.com" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "web-feed",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 122
