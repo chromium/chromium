@@ -78,6 +78,20 @@ class SafetyHubMenuNotificationServiceTest
         unused_site_permissions_service());
   }
 
+  void ShowNotificationEnoughTimes(
+      int remainingImpressionCount =
+          kSafetyHubMenuNotificationMinImpressionCount) {
+    absl::optional<MenuNotificationEntry> notification;
+    AdvanceClockBy(base::Days(90));
+    for (int i = 0; i < remainingImpressionCount; ++i) {
+      notification = menu_notification_service()->GetNotificationToShow();
+      EXPECT_TRUE(notification.has_value());
+    }
+    AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
+    notification = menu_notification_service()->GetNotificationToShow();
+    EXPECT_FALSE(notification.has_value());
+  }
+
   UnusedSitePermissionsService* unused_site_permissions_service() {
     return UnusedSitePermissionsServiceFactory::GetForProfile(profile());
   }
@@ -183,15 +197,14 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsSequentially) {
 
   // Show the notification sufficient days and times.
   absl::optional<MenuNotificationEntry> notification;
-  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount + 1; ++i) {
+  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount; ++i) {
     notification = menu_notification_service()->GetNotificationToShow();
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
         IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
         notification->label);
   }
-  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
-                 base::Days(1));
+  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
 
   // The notification has been shown sufficiently, so shouldn't be shown again.
   notification = menu_notification_service()->GetNotificationToShow();
@@ -227,15 +240,14 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
       notification->label);
 
   // Showing the notification sufficient days and times.
-  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount - 1; ++i) {
+  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount - 2; ++i) {
     notification = menu_notification_service()->GetNotificationToShow();
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
         IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
         notification->label);
   }
-  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
-                 base::Days(1));
+  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
 
   // After the unused site permissions notification has been shown sufficient
   // times, the notification permission review notification should be shown.
@@ -246,15 +258,14 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
       1, notification->label);
 
   // Showing the new notification enough times and days.
-  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount; ++i) {
+  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount - 1; ++i) {
     notification = menu_notification_service()->GetNotificationToShow();
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
         IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION,
         1, notification->label);
   }
-  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
-                 base::Days(1));
+  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
 
   // Both notifications have been shown sufficiently, so no new notification
   // should be shown.
@@ -275,6 +286,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingOverride) {
   // Disable safe browsing, which generates a medium-priority Safe Browsing
   // notification that should override the low priority notification.
   prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  AdvanceClockBy(base::Days(1));
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -286,4 +298,38 @@ TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingOverride) {
   prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_FALSE(notification.has_value());
+}
+
+TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingTriggerLogic) {
+  absl::optional<MenuNotificationEntry> notification;
+  // Disabling Safe Browsing should only trigger a menu notification after one
+  // day.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+
+  AdvanceClockBy(base::Hours(12));
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+  AdvanceClockBy(base::Hours(12));
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+
+  // A notification for Safe Browsing should only be shown three times in total.
+  ShowNotificationEnoughTimes(kSafetyHubMenuNotificationMinImpressionCount - 1);
+  AdvanceClockBy(base::Days(90));
+  ShowNotificationEnoughTimes();
+  AdvanceClockBy(base::Days(90));
+  ShowNotificationEnoughTimes();
+  AdvanceClockBy(base::Days(90));
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+
+  // When the user toggles the SB prefs, the notification can be shown again,
+  // after one day.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  AdvanceClockBy(base::Days(1));
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
 }

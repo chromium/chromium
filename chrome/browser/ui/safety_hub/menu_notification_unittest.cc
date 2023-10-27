@@ -93,15 +93,20 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
   // When transforming the notification to a Dict, the properties of the
   // notification should be correct.
   base::Value::Dict dict = notification->ToDictValue();
-  EXPECT_TRUE(dict.FindBool(kSafetyHubMenuNotificationActiveKey).value());
-  EXPECT_EQ(42, dict.FindInt(kSafetyHubMenuNotificationImpressionCountKey));
-  EXPECT_EQ(base::TimeToValue(kPastTime),
-            *dict.Find(kSafetyHubMenuNotificationFirstImpressionKey));
-  EXPECT_EQ(base::TimeToValue(last),
-            *dict.Find(kSafetyHubMenuNotificationLastImpressionKey));
-  EXPECT_TRUE(dict.contains(kSafetyHubMenuNotificationResultKey));
+  EXPECT_TRUE(
+      dict.FindBool(safety_hub::kSafetyHubMenuNotificationActiveKey).value());
+  EXPECT_EQ(42, dict.FindInt(
+                    safety_hub::kSafetyHubMenuNotificationImpressionCountKey));
+  EXPECT_EQ(
+      base::TimeToValue(kPastTime),
+      *dict.Find(safety_hub::kSafetyHubMenuNotificationFirstImpressionKey));
+  EXPECT_EQ(
+      base::TimeToValue(last),
+      *dict.Find(safety_hub::kSafetyHubMenuNotificationLastImpressionKey));
+  EXPECT_TRUE(dict.contains(safety_hub::kSafetyHubMenuNotificationResultKey));
   // The properties of the contained result should also be correct.
-  auto* result_dict = dict.FindDict(kSafetyHubMenuNotificationResultKey);
+  auto* result_dict =
+      dict.FindDict(safety_hub::kSafetyHubMenuNotificationResultKey);
   EXPECT_TRUE(result_dict->contains(kUnusedSitePermissionsResultKey));
   EXPECT_EQ(1U, result_dict->FindList(kUnusedSitePermissionsResultKey)->size());
   base::Value::Dict& revoked_perm =

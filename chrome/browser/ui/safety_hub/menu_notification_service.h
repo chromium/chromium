@@ -110,6 +110,9 @@ class SafetyHubMenuNotificationService : public KeyedService {
           result_getter,
       const base::Value::Dict& stored_notifications);
 
+  // Called when the pref for Safe Browsing has been updated.
+  void OnSafeBrowsingPrefUpdate();
+
   const std::map<safety_hub::SafetyHubModuleType, const char*>
       pref_dict_key_map_ = {
           {safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS,
@@ -127,6 +130,9 @@ class SafetyHubMenuNotificationService : public KeyedService {
   std::map<safety_hub::SafetyHubModuleType,
            std::unique_ptr<SafetyHubModuleInfoElement>>
       module_info_map_;
+
+  // Registrar to record the pref changes to Safe Browsing.
+  PrefChangeRegistrar registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_MENU_NOTIFICATION_SERVICE_H_
