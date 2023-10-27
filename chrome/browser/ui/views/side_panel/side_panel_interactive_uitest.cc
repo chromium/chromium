@@ -347,18 +347,6 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
-                       SidePanelPinButtonsHideInIncognitoMode) {
-  Browser* const incognito = CreateIncognitoBrowser();
-  RunTestSequence(
-      InContext(incognito->window()->GetElementContext(),
-                WaitForShow(kBrowserViewElementId)),
-      InSameContext(Steps(ActivateSurface(kBrowserViewElementId), FlushEvents(),
-                          EnsureNotPresent(kSidePanelElementId),
-                          OpenBookmarksSidePanel(),
-                          EnsureNotPresent(kSidePanelPinButtonElementId))));
-}
-
-IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                        PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.

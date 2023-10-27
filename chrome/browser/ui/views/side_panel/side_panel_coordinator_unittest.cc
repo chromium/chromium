@@ -13,7 +13,6 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -29,7 +28,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1743,16 +1741,6 @@ TEST_F(SidePanelPinningCoordinatorTest, SidePanelTitleUpdates) {
             SidePanelEntry::Id::kAboutThisSite);
   EXPECT_EQ(coordinator_->panel_title_->GetText(),
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE));
-}
-
-TEST_F(SidePanelPinningCoordinatorTest, SidePanelPinButtonsHideInGuestMode) {
-  coordinator_->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_TRUE(coordinator_->GetHeaderPinButtonForTesting()->GetVisible());
-  coordinator_->Close();
-  TestingProfile* const testprofile = browser()->profile()->AsTestingProfile();
-  testprofile->SetGuestSession(true);
-  coordinator_->Show(SidePanelEntry::Id::kBookmarks);
-  EXPECT_FALSE(coordinator_->GetHeaderPinButtonForTesting()->GetVisible());
 }
 
 // Test that the SidePanelCoordinator behaves and updates corrected when dealing

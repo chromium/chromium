@@ -1184,7 +1184,6 @@ void SidePanelCoordinator::UpdateHeaderPinButtonState() {
     CHECK(action_id.has_value());
     header_pin_button_->SetToggled(actions_model->Contains(action_id.value()));
     header_pin_button_->SetVisible(
-        !profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
         action_item->GetProperty(actions::kActionItemPinnableKey));
   } else {
     PrefService* pref_service = profile->GetPrefs();
