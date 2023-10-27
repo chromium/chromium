@@ -35,7 +35,7 @@ BluetoothAvailability GetBluetoothAvailability() {
     bluetooth_available = true;
 
     base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
-    kr = IORegistryEntryCreateCFProperties(device, dict.InitializeInto(),
+    kr = IORegistryEntryCreateCFProperties(device.get(), dict.InitializeInto(),
                                            kCFAllocatorDefault, kNilOptions);
     if (kr != KERN_SUCCESS)
       continue;

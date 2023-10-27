@@ -174,7 +174,8 @@ bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
       OSStatus ls_result = LSRegisterURL(
           base::apple::FilePathToCFURL(
               install_path->Append("Current").Append(base::StrCat(
-                  {PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}))),
+                  {PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"})))
+              .get(),
           true);
       VLOG_IF(1, ls_result != noErr) << "LSRegisterURL failed: " << ls_result;
     } else {

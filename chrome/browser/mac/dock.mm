@@ -53,7 +53,7 @@ NSDictionary* DockFileDataDictionaryForURL(NSURL* url) {
   base::apple::ScopedCFTypeRef<CFPropertyListRef> property_list(
       _CFURLCopyPropertyListRepresentation(base::apple::NSToCFPtrCast(url)));
   CFDictionaryRef dictionary =
-      base::apple::CFCast<CFDictionaryRef>(property_list);
+      base::apple::CFCast<CFDictionaryRef>(property_list.get());
   if (!dictionary)
     return nil;
 

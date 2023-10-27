@@ -110,7 +110,8 @@ TEST_F(BinaryIntegrityAnalyzerMacTest, GetCriticalPathsAndRequirements) {
     EXPECT_EQ(
         errSecSuccess,
         SecRequirementCreateWithString(
-            base::SysUTF8ToCFStringRef(paths_and_requirements[i].requirement),
+            base::SysUTF8ToCFStringRef(paths_and_requirements[i].requirement)
+                .get(),
             kSecCSDefaultFlags, requirement.InitializeInto()));
   }
 }
