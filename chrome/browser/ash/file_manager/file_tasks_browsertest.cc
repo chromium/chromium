@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -163,23 +164,6 @@ void VerifyAsyncTask(int* remaining,
                      std::unique_ptr<ResultingTasks> resulting_tasks) {
   VerifyTasks(remaining, expectation, std::move(resulting_tasks));
   std::move(quit_closure).Run();
-}
-
-// Verifies that all tasks are either blocked or not by DLP, according to
-// |expectation|. Decrements the provided |remaining| integer to provide
-// additional verification that this function is invoked an expected number of
-// times (i.e. even if the callback could be invoked asynchronously).
-void VerifyDlpStatus(int* remaining,
-                     Expectation expectation,
-                     std::unique_ptr<ResultingTasks> resulting_tasks) {
-  ASSERT_TRUE(resulting_tasks) << expectation.file_extensions;
-  --*remaining;
-
-  bool expect_dlp_blocked = expectation.dlp_source_url &&
-                            strcmp(expectation.dlp_source_url, blockedUrl) == 0;
-  EXPECT_EQ(expect_dlp_blocked,
-            base::ranges::all_of(resulting_tasks->tasks,
-                                 &FullTaskDescriptor::is_dlp_blocked));
 }
 
 // Installs a chrome app that handles .tiff.
@@ -722,21 +706,26 @@ class FileTasksPolicyBrowserTest : public FileTasksBrowserTest {
   // Tests that fetched tasks are marked as blocked by DLP, if expected.
   void TestExpectationsAgainstDlp(
       const std::vector<Expectation>& expectations) {
-    int remaining = expectations.size();
-
     for (const Expectation& test : expectations) {
       std::vector<extensions::EntryInfo> entries;
       std::vector<GURL> file_urls;
       std::vector<std::string> dlp_source_urls;
       ConvertExpectation(test, entries, file_urls, dlp_source_urls);
 
-      // task_verifier callback is invoked synchronously from
-      // FindAllTypesOfTasks.
+      base::test::TestFuture<std::unique_ptr<ResultingTasks>> tasks_future;
       FindAllTypesOfTasks(browser()->profile(), entries, file_urls,
-                          dlp_source_urls,
-                          base::BindOnce(&VerifyDlpStatus, &remaining, test));
+                          dlp_source_urls, tasks_future.GetCallback());
+      ASSERT_TRUE(tasks_future.Get()) << test.file_extensions;
+      ResultingTasks& resulting_tasks = *tasks_future.Get();
+
+      // Verifies that all tasks are either blocked or not by DLP, according to
+      // |test|.
+      bool expect_dlp_blocked =
+          test.dlp_source_url && strcmp(test.dlp_source_url, blockedUrl) == 0;
+      EXPECT_EQ(expect_dlp_blocked,
+                base::ranges::all_of(resulting_tasks.tasks,
+                                     &FullTaskDescriptor::is_dlp_blocked));
     }
-    EXPECT_EQ(0, remaining);
   }
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
