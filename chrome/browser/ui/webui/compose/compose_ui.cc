@@ -16,6 +16,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/compose_resources.h"
 #include "chrome/grit/compose_resources_map.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -56,6 +57,9 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"errorRequestNotSuccessful", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
       {"errorPermissionDenied", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
       {"errorGeneric", IDS_COMPOSE_ERROR_GENERIC},
+      {"editButton", IDS_EDIT},
+      {"editCancelButton", IDS_CANCEL},
+      {"editUpdateButton", IDS_COMPOSE_EDIT_UPDATE_BUTTON},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddString(

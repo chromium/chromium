@@ -26,14 +26,18 @@ import {ComposeTextareaElement} from './textarea.js';
 
 // Struct with ComposeAppElement's properties that need to be saved to return
 // the element to a specific state.
-interface ComposeAppState {
+export interface ComposeAppState {
+  editedInput?: string;
   input: string;
+  isEditingSubmittedInput?: boolean;
 }
 
 export interface ComposeAppElement {
   $: {
     body: HTMLElement,
+    cancelEditButton: CrButtonElement,
     closeButton: HTMLElement,
+    editTextarea: ComposeTextareaElement,
     errorFooter: HTMLElement,
     insertButton: CrButtonElement,
     loading: HTMLElement,
@@ -41,6 +45,7 @@ export interface ComposeAppElement {
     refreshButton: HTMLElement,
     resultContainer: HTMLElement,
     submitButton: CrButtonElement,
+    submitEditButton: CrButtonElement,
     textarea: ComposeTextareaElement,
     lengthMenu: HTMLSelectElement,
     toneMenu: HTMLSelectElement,
@@ -48,6 +53,7 @@ export interface ComposeAppElement {
 }
 
 const ComposeAppElementBase = I18nMixin(CrScrollableMixin(PolymerElement));
+
 export class ComposeAppElement extends ComposeAppElementBase {
   static get is() {
     return 'compose-app';
@@ -59,9 +65,22 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   static get properties() {
     return {
+      editedInput_: {
+        type: String,
+        observer: 'onEditedInputChanged_',
+      },
       input_: {
         type: String,
         observer: 'onInputChanged_',
+      },
+      isEditingSubmittedInput_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+      isEditSubmitEnabled_: {
+        type: Boolean,
+        value: false,
       },
       isSubmitEnabled_: {
         type: Boolean,
@@ -116,14 +135,18 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   static get observers() {
     return [
-      'debounceSaveComposeAppState_(input_)',
+      'debounceSaveComposeAppState_(input_, isEditingSubmittedInput_, ' +
+          'editedInput_)',
     ];
   }
 
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
   private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
+  private editedInput_: string;
   private input_: string;
+  private isEditingSubmittedInput_: boolean;
+  private isEditSubmitEnabled_: boolean;
   private isSubmitEnabled_: boolean;
   private loading_: boolean;
   private response_: ComposeResponse|undefined;
@@ -184,12 +207,30 @@ export class ComposeAppElement extends ComposeAppElementBase {
       if (composeState.webuiState) {
         const appState: ComposeAppState = JSON.parse(composeState.webuiState);
         this.input_ = appState.input;
+        if (appState.isEditingSubmittedInput) {
+          this.isEditingSubmittedInput_ = appState.isEditingSubmittedInput;
+          this.editedInput_ = appState.editedInput!;
+        }
       }
     });
   }
 
+  private onCancelEditClick_() {
+    this.isEditingSubmittedInput_ = false;
+  }
+
   private onClose_() {
     this.apiProxy_.closeUi(CloseReason.kCloseButton);
+  }
+
+  private onEditedInputChanged_() {
+    this.userHasModifiedState_ = true;
+    this.isEditSubmitEnabled_ = this.$.editTextarea.validate();
+  }
+
+  private onEditClick_() {
+    this.editedInput_ = this.input_;
+    this.isEditingSubmittedInput_ = true;
   }
 
   private onSubmit_() {
@@ -198,6 +239,16 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
 
     this.submitted_ = true;
+    this.compose_();
+  }
+
+  private onSubmitEdit_() {
+    if (!this.$.editTextarea.validate()) {
+      return;
+    }
+
+    this.isEditingSubmittedInput_ = false;
+    this.input_ = this.editedInput_;
     this.compose_();
   }
 
@@ -308,9 +359,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
       return;
     }
 
-    const state: ComposeAppState = {
-      input: this.input_,
-    };
+    const state: ComposeAppState = {input: this.input_};
+    if (this.isEditingSubmittedInput_) {
+      state.isEditingSubmittedInput = this.isEditingSubmittedInput_;
+      state.editedInput = this.editedInput_;
+    }
     this.apiProxy_.saveWebuiState(JSON.stringify(state));
   }
 

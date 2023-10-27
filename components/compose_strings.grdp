@@ -78,5 +78,8 @@
   <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details." translateable="false">
   Something went wrong.
   </message>
+  <message name="IDS_COMPOSE_EDIT_UPDATE_BUTTON" desc="The button that confirms the edited input." translateable="false">
+    Update
+  </message>
 
 </grit-part>

@@ -4,11 +4,11 @@
 
 import 'chrome://compose/app.js';
 
-import {ComposeAppElement} from 'chrome://compose/app.js';
+import {ComposeAppElement, ComposeAppState} from 'chrome://compose/app.js';
 import {CloseReason, ComposeDialogCallbackRouter, ComposeState, ComposeStatus, Length, OpenMetadata, StyleModifiers, Tone} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
@@ -271,29 +271,94 @@ suite('ComposeApp', () => {
     });
     assertTrue(isVisible(appWithResultAndLoading.$.loading));
     assertFalse(isVisible(appWithResultAndLoading.$.resultContainer));
+
+    // Input with response while editing input shows edit textarea.
+    const appEditingPrompt = await initializeNewAppWithState({
+      webuiState: JSON.stringify({
+        input: 'some input',
+        isEditingSubmittedInput: true,
+        editedInput: 'some new input',
+      }),
+      hasPendingRequest: false,
+      response: {
+        status: ComposeStatus.kOk,
+        undoAvailable: false,
+        result: 'here is a result',
+      },
+    });
+    assertTrue(isVisible(appEditingPrompt.$.editTextarea));
+    assertEquals('some new input', appEditingPrompt.$.editTextarea.value);
+    assertEquals(
+        'hidden',
+        window.getComputedStyle(appEditingPrompt.$.textarea).visibility);
+    assertFalse(isVisible(appEditingPrompt.$.loading));
+    assertEquals(
+        'hidden',
+        window.getComputedStyle(appEditingPrompt.$.resultContainer).visibility);
   });
 
   test('SavesState', async () => {
     assertEquals(0, testProxy.getCallCount('saveWebuiState'), 'es');
 
+    async function assertSavedState(expectedState: ComposeAppState) {
+      const savedState = await testProxy.whenCalled('saveWebuiState');
+      assertDeepEquals(expectedState, JSON.parse(savedState));
+      testProxy.resetResolver('saveWebuiState');
+    }
+
     // Changing input saves state.
     mockInput('Here is my input');
-    let savedState = await testProxy.whenCalled('saveWebuiState');
-    assertEquals(JSON.stringify({input: 'Here is my input'}), savedState);
-    testProxy.resetResolver('saveWebuiState');
+    await assertSavedState({input: 'Here is my input'});
 
     // Visibilitychange event saves state.
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', writable: true});
     document.dispatchEvent(new CustomEvent('visibilitychange'));
-    savedState = await testProxy.whenCalled('saveWebuiState');
-    assertEquals(JSON.stringify({input: 'Here is my input'}), savedState);
-    testProxy.resetResolver('saveWebuiState');
+    await assertSavedState({input: 'Here is my input'});
 
     // Hitting submit saves state.
     app.$.submitButton.click();
-    savedState = await testProxy.whenCalled('saveWebuiState');
-    assertEquals(JSON.stringify({input: 'Here is my input'}), savedState);
+    await assertSavedState({input: 'Here is my input'});
+
+    // Hitting edit button saves state.
+    app.$.textarea.dispatchEvent(
+        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    await assertSavedState({
+      editedInput: 'Here is my input',
+      input: 'Here is my input',
+      isEditingSubmittedInput: true,
+    });
+
+    // Updating edit textarea saves state.
+    app.$.editTextarea.value = 'Here is my new input';
+    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
+    await assertSavedState({
+      editedInput: 'Here is my new input',
+      input: 'Here is my input',
+      isEditingSubmittedInput: true,
+    });
+
+    // Canceling reverts state back to before editing.
+    app.$.cancelEditButton.click();
+    await assertSavedState({input: 'Here is my input'});
+
+    // Submitting edited textarea saves state.
+    app.$.textarea.dispatchEvent(
+        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    app.$.editTextarea.value = 'Here is my new input!!!!';
+    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
+    testProxy.resetResolver('saveWebuiState');
+    app.$.submitEditButton.click();
+    await assertSavedState({input: 'Here is my new input!!!!'});
+  });
+
+  test('DebouncesSavingState', async () => {
+    mockInput('Here is my input');
+    mockInput('Here is my input 2');
+    await flushTasks();
+    const savedState = await testProxy.whenCalled('saveWebuiState');
+    assertEquals(1, testProxy.getCallCount('saveWebuiState'));
+    assertEquals(JSON.stringify({input: 'Here is my input 2'}), savedState);
   });
 
   test('DebouncesSavingState', async () => {
@@ -334,6 +399,45 @@ suite('ComposeApp', () => {
     testError(ComposeStatus.kTryAgain, 'errorTryAgain');
     testError(ComposeStatus.kPermissionDenied, 'errorPermissionDenied');
     testError(ComposeStatus.kMisconfiguration, 'errorGeneric');
+  });
+
+  test('AllowsEditingPrompt', async () => {
+    app.$.textarea.dispatchEvent(
+        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    assertTrue(isVisible(app.$.editTextarea));
+
+    mockInput('Initial input.');
+    app.$.submitButton.click();
+    await testProxy.whenCalled('compose');
+    await flushTasks();
+    testProxy.resetResolver('compose');
+
+    // Mock clicking edit in the textarea and verify new textarea shows.
+    app.$.textarea.dispatchEvent(
+        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    assertTrue(isVisible(app.$.editTextarea));
+
+    // Mock updating input and cancelling.
+    assertEquals('Initial input.', app.$.editTextarea.value);
+    app.$.editTextarea.value = 'Here is a better input.';
+    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
+    app.$.cancelEditButton.click();
+    assertFalse(isVisible(app.$.editTextarea));
+    assertEquals('Initial input.', app.$.textarea.value);
+
+    // Mock updating input and submitting.
+    app.$.textarea.dispatchEvent(
+        new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    app.$.editTextarea.value = 'Here is an even better input.';
+    app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
+    app.$.submitEditButton.click();
+    assertFalse(isVisible(app.$.editTextarea));
+    assertEquals('Here is an even better input.', app.$.textarea.value);
+
+    const args = await testProxy.whenCalled('compose');
+    await mockResponse('new response');
+    assertEquals('Here is an even better input.', args.input);
+    assertTrue(app.$.resultContainer.textContent!.includes('new response'));
   });
 
   test('ComposeWithLengthToneOptionResult', async () => {

@@ -63,6 +63,11 @@ export class ComposeTextareaElement extends PolymerElement {
   private tooShort_: boolean;
   value: string;
 
+  private onEditClick_() {
+    this.dispatchEvent(
+        new CustomEvent('edit-click', {bubbles: true, composed: true}));
+  }
+
   private shouldShowEditIcon_(): boolean {
     return this.allowExitingReadonlyMode && this.readonly;
   }

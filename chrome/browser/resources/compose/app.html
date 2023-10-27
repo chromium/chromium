@@ -1,9 +1,11 @@
 <style include="cr-hidden-style md-select">
   :host {
+    --gap-between-sections_: 16px;
+    --padding_: 20px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 20px 0;
+    gap: var(--gap-between-sections_);
+    padding: var(--padding_) 0;
   }
 
   a {
@@ -14,7 +16,7 @@
     display: flex;
     height: 24px;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 var(--padding_);
   }
 
   h1 {
@@ -29,6 +31,13 @@
   cr-icon-button {
     margin: 0;
     margin-inline-end: -6px;
+  }
+
+  #bodyAndFooter {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-between-sections_);
+    position: relative;
   }
 
   #body {
@@ -109,7 +118,7 @@
   .footer {
     align-items: center;
     display: flex;
-    padding: 0 20px;
+    padding: 0 var(--padding_);
     justify-content: flex-end;
   }
 
@@ -131,6 +140,30 @@
   .footer cr-button {
     margin-inline-start: 8px;
   }
+
+  :host-context([is-editing-submitted-input_]) #body,
+  :host-context([is-editing-submitted-input_]) .footer {
+    visibility: hidden;
+  }
+
+  #editContainer {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    gap: var(--gap-between-sections_);
+    inset: 0;
+    padding: 0 var(--padding_);
+  }
+
+  #editContainer compose-textarea {
+    flex: 1;
+  }
+
+  #editContainer .footer {
+    padding: 0;
+    visibility: visible;
+  }
 </style>
 
 <div id="heading">
@@ -139,91 +172,104 @@
   </cr-icon-button>
 </div>
 
-<div id="body" scrollable>
-  <compose-textarea id="textarea"
-      value="{{input_}}"
-      readonly="[[submitted_]]"
-      allow-exiting-readonly-mode="[[!loading_]]">
-  </compose-textarea>
+<div id="bodyAndFooter">
+  <div id="body" scrollable>
+    <compose-textarea id="textarea"
+        value="{{input_}}"
+        readonly="[[submitted_]]"
+        allow-exiting-readonly-mode="[[!loading_]]"
+        on-edit-click="onEditClick_">
+    </compose-textarea>
 
-  <div id="loading" hidden="[[!loading_]]">
-    <cr-loading-gradient>
-      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="43">
-        <clipPath>
-          <rect x="0" y="0" width="100%" height="11" rx="4"></rect>
-          <rect x="0" y="16" width="100%" height="10.8333" rx="4"></rect>
-          <rect x="0" y="32" width="75%" height="11" rx="4"></rect>
-        </clipPath>
-      </svg>
-    </cr-loading-gradient>
-  </div>
+    <div id="loading" hidden="[[!loading_]]">
+      <cr-loading-gradient>
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="43">
+          <clipPath>
+            <rect x="0" y="0" width="100%" height="11" rx="4"></rect>
+            <rect x="0" y="16" width="100%" height="10.8333" rx="4"></rect>
+            <rect x="0" y="32" width="75%" height="11" rx="4"></rect>
+          </clipPath>
+        </svg>
+      </cr-loading-gradient>
+    </div>
 
-  <div id="resultContainer" hidden="[[!hasSuccessfulResponse_(response_)]]">
-    [[response_.result]]
+    <div id="resultContainer" hidden="[[!hasSuccessfulResponse_(response_)]]">
+      [[response_.result]]
 
-    <div id="resultOptions">
+      <div id="resultOptions">
+        <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
+            on-change="onLengthChanged_">
+          <template is="dom-repeat" items="[[lengthOptions_]]">
+            <option value="[[item]]">
+              [[getLengthOptionLabel_(item)]]
+            </option>
+          </template>
+        </select>
+        <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
+            on-change="onToneChanged_">
+          <template is="dom-repeat" items="[[toneOptions_]]">
+            <option value="[[item]]">
+              [[getToneOptionLabel_(item)]]
+            </option>
+          </template>
+        </select>
 
-      <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
-          on-change="onLengthChanged_">
-        <template is="dom-repeat" items="[[lengthOptions_]]">
-          <option value="[[item]]">
-            [[getLengthOptionLabel_(item)]]
-          </option>
-        </template>
-      </select>
-      <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
-          on-change="onToneChanged_">
-        <template is="dom-repeat" items="[[toneOptions_]]">
-          <option value="[[item]]">
-            [[getToneOptionLabel_(item)]]
-          </option>
-        </template>
-      </select>
-
-      <div class="icon-buttons-row">
-        <cr-icon-button id="undoButton" iron-icon="compose:undo"
-            disabled="[[!undoEnabled_]]"
-            on-click="onUndoClick_">
-        </cr-icon-button>
-        <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
-            on-click="onSubmit_">
-        </cr-icon-button>
+        <div class="icon-buttons-row">
+          <cr-icon-button id="undoButton" iron-icon="compose:undo"
+              disabled="[[!undoEnabled_]]"
+              on-click="onUndoClick_">
+          </cr-icon-button>
+          <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
+              on-click="onSubmit_">
+          </cr-icon-button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<div id="submitFooter" class="footer" hidden$="[[submitted_]]">
-  <div class="footer-text">
-    <div>
-      $i18nRaw{inputFooter}
+  <div id="submitFooter" class="footer" hidden$="[[submitted_]]">
+    <div class="footer-text">
+      <div>$i18nRaw{inputFooter}</div>
+    </div>
+    <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
+        disabled="[[!isSubmitEnabled_]]">
+      $i18n{submitButton}
+    </cr-button>
+  </div>
+
+  <div id="resultFooter" class="footer"
+      hidden="[[!hasSuccessfulResponse_(response_)]]">
+    <div class="footer-text">
+      <div>$i18nRaw{resultFooter}</div>
+
+      <div class="icon-buttons-row">
+        <cr-icon-button iron-icon="cr:thumbs-up"></cr-icon-button>
+        <cr-icon-button iron-icon="cr:thumbs-down" on-click="onThumbsDown_">
+        </cr-icon-button>
+      </div>
+    </div>
+    <cr-button id="insertButton" class="action-button" on-click="onAccept_">
+      $i18n{insertButton}
+    </cr-button>
+  </div>
+
+  <div id="errorFooter" class="footer"
+      hidden="[[!hasFailedResponse_(response_)]]">
+    <div class="footer-text">[[failedResponseErrorText_(response_)]]</div>
+  </div>
+
+  <div id="editContainer" hidden$="[[!isEditingSubmittedInput_]]">
+    <compose-textarea id="editTextarea" value="{{editedInput_}}">
+    </compose-textarea>
+    <div class="footer">
+      <cr-button id="cancelEditButton" class="tonal-button"
+          on-click="onCancelEditClick_">
+        $i18n{editCancelButton}
+      </cr-button>
+      <cr-button id="submitEditButton" class="action-button"
+          on-click="onSubmitEdit_" disabled$="[[!isEditSubmitEnabled_]]">
+        $i18n{editUpdateButton}
+      </cr-button>
     </div>
   </div>
-  <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
-      disabled="[[!isSubmitEnabled_]]">
-    $i18n{submitButton}
-  </cr-button>
-</div>
-
-<div id="resultFooter" class="footer"
-    hidden="[[!hasSuccessfulResponse_(response_)]]">
-  <div class="footer-text">
-    <div>
-      $i18nRaw{resultFooter}
-    </div>
-
-    <div class="icon-buttons-row">
-      <cr-icon-button iron-icon="cr:thumbs-up"></cr-icon-button>
-      <cr-icon-button iron-icon="cr:thumbs-down" on-click="onThumbsDown_">
-      </cr-icon-button>
-    </div>
-  </div>
-  <cr-button id="insertButton" class="action-button" on-click="onAccept_">
-    $i18n{insertButton}
-  </cr-button>
-</div>
-
-<div id="errorFooter" class="footer"
-    hidden="[[!hasFailedResponse_(response_)]]">
-  <div class="footer-text">[[failedResponseErrorText_(response_)]]</div>
 </div>
