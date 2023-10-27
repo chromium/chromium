@@ -18,6 +18,7 @@
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
+#include "ash/ambient/test/ambient_test_util.h"
 #include "ash/ambient/ui/ambient_animation_view.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_container_view.h"
@@ -51,6 +52,8 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia.h"
@@ -74,15 +77,6 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   }
 
   // AmbientPhotoCache:
-  void DownloadPhoto(
-      const std::string& url,
-      base::OnceCallback<void(std::string&&)> callback) override {
-    // Pretend to respond asynchronously.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(std::move(callback), GetDownloadData()),
-        photo_download_delay_);
-  }
-
   void DownloadPhotoToFile(const std::string& url,
                            int cache_index,
                            base::OnceCallback<void(bool)> callback) override {
@@ -192,6 +186,68 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   base::TimeDelta photo_download_delay_ = base::Milliseconds(1);
 };
 
+class AmbientAshTestBase::FakePhotoDownloadServer {
+ public:
+  explicit FakePhotoDownloadServer(
+      network::TestURLLoaderFactory& url_loader_factory)
+      : url_loader_factory_(&url_loader_factory) {
+    url_loader_factory.SetInterceptor(
+        base::BindRepeating(&FakePhotoDownloadServer::InterceptIncomingRequest,
+                            weak_factory_.GetWeakPtr()));
+  }
+  FakePhotoDownloadServer(const FakePhotoDownloadServer&) = delete;
+  FakePhotoDownloadServer& operator=(const FakePhotoDownloadServer&) = delete;
+  ~FakePhotoDownloadServer() = default;
+
+  void set_download_data(std::unique_ptr<std::string> download_data) {
+    download_data_ = std::move(download_data);
+  }
+
+  void set_download_delay(base::TimeDelta delay) { download_delay_ = delay; }
+
+ private:
+  static constexpr int kTestImageMinSize = 25;
+  static constexpr int kTestImageMaxSize = 50;
+
+  void InterceptIncomingRequest(const network::ResourceRequest& request) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&FakePhotoDownloadServer::RespondToPendingRequest,
+                       weak_factory_.GetWeakPtr(), request.url.spec(),
+                       GetDownloadData()),
+        download_delay_);
+  }
+
+  void RespondToPendingRequest(const std::string& url,
+                               const std::string& content) {
+    CHECK(url_loader_factory_->SimulateResponseForPendingRequest(url, content))
+        << "Failed to find pending request for " << url;
+  }
+
+  std::string GetDownloadData() {
+    return download_data_ ? *download_data_ : CreateEncodedTestImage();
+  }
+
+  std::string CreateEncodedTestImage() {
+    gfx::Size test_size = gfx::Size(test_image_size_, test_image_size_);
+    // Choose a different size each time so that the same photo is not returned
+    // twice in a row and the controller's duplicate photo detection is not
+    // triggered.
+    ++test_image_size_;
+    if (test_image_size_ > kTestImageMaxSize) {
+      test_image_size_ = kTestImageMinSize;
+    }
+    return CreateEncodedImageForTesting(std::move(test_size));
+  }
+
+  const raw_ptr<network::TestURLLoaderFactory> url_loader_factory_;
+  // If not null, will return an arbitrary photo when downloading.
+  std::unique_ptr<std::string> download_data_;
+  base::TimeDelta download_delay_ = base::Milliseconds(1);
+  int test_image_size_ = kTestImageMinSize;
+  base::WeakPtrFactory<FakePhotoDownloadServer> weak_factory_{this};
+};
+
 AmbientAshTestBase::AmbientAshTestBase()
     : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   recorder_ = AuthEventsRecorder::CreateForTesting();
@@ -204,6 +260,10 @@ void AmbientAshTestBase::SetUp() {
       base::BindRepeating(&TestAmbientPhotoCacheImpl::Create));
   AshTestBase::SetUp();
 
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(true);
+  fake_photo_download_server_ = std::make_unique<FakePhotoDownloadServer>(
+      GetAmbientAshTestHelper()->ambient_client().test_url_loader_factory());
+
   // Need to reset first and then assign the TestPhotoClient because can only
   // have one instance of AmbientBackendController.
   ambient_controller()->set_backend_controller_for_testing(nullptr);
@@ -215,6 +275,7 @@ void AmbientAshTestBase::SetUp() {
 }
 
 void AmbientAshTestBase::TearDown() {
+  fake_photo_download_server_.reset();
   AshTestBase::TearDown();
   AmbientPhotoCache::SetFactoryForTesting(base::NullCallback());
 }
@@ -674,7 +735,7 @@ AmbientContainerView* AmbientAshTestBase::GetContainerView() {
 }
 
 AmbientAccessTokenController* AmbientAshTestBase::token_controller() {
-  return ambient_controller()->access_token_controller_for_testing();
+  return ambient_controller()->access_token_controller();
 }
 
 FakeAmbientBackendControllerImpl* AmbientAshTestBase::backend_controller() {
@@ -698,7 +759,9 @@ void AmbientAshTestBase::SetDownloadPhotoData(std::string data) {
   auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
       ambient_controller()->ambient_photo_cache());
 
-  photo_cache->SetDownloadData(std::make_unique<std::string>(std::move(data)));
+  photo_cache->SetDownloadData(std::make_unique<std::string>(data));
+  fake_photo_download_server_->set_download_data(
+      std::make_unique<std::string>(data));
 }
 
 void AmbientAshTestBase::ClearDownloadPhotoData() {
@@ -734,6 +797,7 @@ void AmbientAshTestBase::SetPhotoDownloadDelay(base::TimeDelta delay) {
       ambient_controller()->ambient_photo_cache());
 
   photo_cache->SetPhotoDownloadDelay(delay);
+  fake_photo_download_server_->set_download_delay(delay);
 }
 
 void AmbientAshTestBase::CreateTestImageJpegFile(base::FilePath path,

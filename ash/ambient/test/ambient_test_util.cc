@@ -4,7 +4,10 @@
 
 #include "ash/ambient/test/ambient_test_util.h"
 
+#include <vector>
+
 #include "ash/ambient/model/ambient_animation_photo_config.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/utility/lottie_util.h"
 #include "base/check.h"
 #include "base/strings/strcat.h"
@@ -12,6 +15,11 @@
 #include "base/strings/stringprintf.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_util.h"
 
 namespace ash {
 
@@ -37,6 +45,20 @@ AmbientPhotoConfig GenerateAnimationConfigWithNAssets(int num_assets) {
         /*size=*/absl::nullopt));
   }
   return CreateAmbientAnimationPhotoConfig(resource_metadata);
+}
+
+std::string CreateEncodedImageForTesting(gfx::Size size,
+                                         gfx::ImageSkia* image_out) {
+  gfx::ImageSkia test_image = CreateSolidColorTestImage(size, SK_ColorGREEN);
+  CHECK(!test_image.isNull());
+  if (image_out) {
+    *image_out = test_image;
+  }
+  std::vector<unsigned char> encoded_image;
+  CHECK(gfx::JPEG1xEncodedDataFromImage(gfx::Image(test_image), 100,
+                                        &encoded_image));
+  return std::string(reinterpret_cast<const char*>(encoded_image.data()),
+                     encoded_image.size());
 }
 
 }  // namespace ash

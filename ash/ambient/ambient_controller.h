@@ -192,6 +192,10 @@ class ASH_EXPORT AmbientController
 
   AmbientPhotoCache* ambient_photo_cache() { return photo_cache_.get(); }
 
+  AmbientAccessTokenController* access_token_controller() {
+    return &access_token_controller_;
+  }
+
   void set_backend_controller_for_testing(
       std::unique_ptr<AmbientBackendController> backend_controller) {
     ambient_backend_controller_ = std::move(backend_controller);
@@ -284,10 +288,6 @@ class ASH_EXPORT AmbientController
   // registrar when the user is logged in, when the user is not logged in
   // this will return the `sign_in_pref_change_registrar_`.
   PrefChangeRegistrar* GetActivePrefChangeRegistrar();
-
-  AmbientAccessTokenController* access_token_controller_for_testing() {
-    return &access_token_controller_;
-  }
 
   AmbientViewDelegateImpl delegate_{this};
   AmbientUiModel ambient_ui_model_;

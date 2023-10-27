@@ -15,6 +15,7 @@
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
+#include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/ambient/test/test_ambient_client.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
@@ -449,6 +450,7 @@ TEST_F(AmbientControllerTest, NotShowAmbientWhenLockSecondaryUser) {
 
 TEST_P(AmbientControllerTestForAnyUiSettings,
        ShouldRequestAccessTokenWhenLockingScreen) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -475,6 +477,7 @@ TEST_F(AmbientControllerTest, ShouldNotRequestAccessTokenWhenPrefNotEnabled) {
 }
 
 TEST_P(AmbientControllerTestForAnyUiSettings, ShouldReturnCachedAccessToken) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -515,6 +518,7 @@ TEST_P(AmbientControllerTestForAnyUiSettings,
 }
 
 TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -557,6 +561,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
 }
 
 TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenAfterFailure) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -574,6 +579,7 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenAfterFailure) {
 }
 
 TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenWithBackoffPolicy) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -599,6 +605,7 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenWithBackoffPolicy) {
 }
 
 TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenOnlyThreeTimes) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.

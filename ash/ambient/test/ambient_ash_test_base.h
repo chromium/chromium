@@ -271,6 +271,8 @@ class AmbientAshTestBase : public AshTestBase {
   int GetScreenSaverDuration();
 
  private:
+  class FakePhotoDownloadServer;
+
   // Waits for the ambient UI to start rendering (i.e. a widget is created and
   // the ambient UI is visible to the user). A fatal error occurs if the
   // `timeout` elapses before the UI starts rendering.
@@ -283,6 +285,7 @@ class AmbientAshTestBase : public AshTestBase {
   power_manager::PowerSupplyProperties proto_;
   TestImageDownloader image_downloader_;
   std::unique_ptr<ash::AuthEventsRecorder> recorder_;
+  std::unique_ptr<FakePhotoDownloadServer> fake_photo_download_server_;
 };
 
 }  // namespace ash

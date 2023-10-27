@@ -9,6 +9,11 @@
 
 #include "base/strings/string_piece.h"
 
+namespace gfx {
+class ImageSkia;
+class Size;
+}  // namespace gfx
+
 namespace ash {
 
 struct AmbientPhotoConfig;
@@ -25,6 +30,14 @@ std::string GenerateLottieDynamicAssetIdForTesting(base::StringPiece position,
 // Returns an AmbientPhotoConfig for a lottie animation with the number of
 // assets specified by |num_assets|,
 AmbientPhotoConfig GenerateAnimationConfigWithNAssets(int num_assets);
+
+// Creates a solid color (hard-coded) image with the given `size`, and returns
+// its encoded representation. `image_out` is filled with the raw decoded image
+// if provided.
+//
+// This function can never fail.
+std::string CreateEncodedImageForTesting(gfx::Size size,
+                                         gfx::ImageSkia* image_out = nullptr);
 
 }  // namespace ash
 
