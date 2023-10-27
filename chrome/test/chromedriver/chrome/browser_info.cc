@@ -119,8 +119,7 @@ Status BrowserInfo::ParseBrowserString(bool has_android_package,
 
     if (build_no != 0) {
       if (headless_shell) {
-        browser_info->browser_name =
-            base::StringPrintf("headless %s", kBrowserCapabilityName);
+        browser_info->browser_name = kHeadlessShellShortName;
         browser_info->is_headless_shell = true;
       } else {
         browser_info->browser_name = kBrowserCapabilityName;

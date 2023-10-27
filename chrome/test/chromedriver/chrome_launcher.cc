@@ -130,9 +130,10 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
                                  base::FilePath& user_data_dir) {
   base::FilePath program = capabilities.binary;
   if (program.empty()) {
-    if (!FindChrome(&program))
+    if (!FindBrowser(capabilities.browser_name, program)) {
       return Status(kUnknownError, base::StringPrintf("cannot find %s binary",
                                                       kBrowserShortName));
+    }
   } else if (!base::PathExists(program)) {
     return Status(
         kUnknownError,
