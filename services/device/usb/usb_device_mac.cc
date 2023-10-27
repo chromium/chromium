@@ -50,7 +50,7 @@ void UsbDeviceMac::Open(OpenCallback callback) {
   base::mac::ScopedIOPluginInterface<IOCFPlugInInterface> plugin_interface;
   int32_t score;
   IOReturn kr = IOCreatePlugInInterfaceForService(
-      usb_device, kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID,
+      usb_device.get(), kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID,
       plugin_interface.InitializeInto(), &score);
   if ((kr != kIOReturnSuccess) || !plugin_interface) {
     USB_LOG(ERROR) << "Unable to create a plug-in: " << std::hex << kr;
@@ -59,7 +59,7 @@ void UsbDeviceMac::Open(OpenCallback callback) {
   }
 
   base::mac::ScopedIOPluginInterface<IOUSBDeviceInterface187> device_interface;
-  kr = (*plugin_interface)
+  kr = (*plugin_interface.get())
            ->QueryInterface(
                plugin_interface.get(),
                CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
@@ -70,7 +70,7 @@ void UsbDeviceMac::Open(OpenCallback callback) {
     return;
   }
 
-  kr = (*device_interface)->USBDeviceOpen(device_interface);
+  kr = (*device_interface.get())->USBDeviceOpen(device_interface.get());
   if (kr != kIOReturnSuccess) {
     USB_LOG(ERROR) << "Failed to open device: " << std::hex << kr;
     std::move(callback).Run(nullptr);

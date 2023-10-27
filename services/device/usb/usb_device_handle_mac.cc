@@ -153,7 +153,8 @@ void UsbDeviceHandleMac::Close() {
                           kCFRunLoopDefaultMode);
   }
 
-  IOReturn kr = (*device_interface_)->USBDeviceClose(device_interface_);
+  IOReturn kr =
+      (*device_interface_.get())->USBDeviceClose(device_interface_.get());
   if (kr != kIOReturnSuccess) {
     USB_LOG(DEBUG) << "Failed to close device: " << std::hex << kr;
   }
@@ -178,8 +179,8 @@ void UsbDeviceHandleMac::SetConfiguration(int configuration_value,
   Clear();
 
   IOReturn kr =
-      (*device_interface_)
-          ->SetConfiguration(device_interface_,
+      (*device_interface_.get())
+          ->SetConfiguration(device_interface_.get(),
                              static_cast<uint8_t>(configuration_value));
   if (kr != kIOReturnSuccess) {
     std::move(callback).Run(false);
@@ -211,8 +212,8 @@ void UsbDeviceHandleMac::ClaimInterface(int interface_number,
 
   base::mac::ScopedIOObject<io_iterator_t> interface_iterator;
   IOReturn kr =
-      (*device_interface_)
-          ->CreateInterfaceIterator(device_interface_, &request,
+      (*device_interface_.get())
+          ->CreateInterfaceIterator(device_interface_.get(), &request,
                                     interface_iterator.InitializeInto());
   if (kr != kIOReturnSuccess) {
     std::move(callback).Run(false);
@@ -220,13 +221,13 @@ void UsbDeviceHandleMac::ClaimInterface(int interface_number,
   }
 
   base::mac::ScopedIOObject<io_service_t> usb_interface;
-  while (usb_interface.reset(IOIteratorNext(interface_iterator)),
+  while (usb_interface.reset(IOIteratorNext(interface_iterator.get())),
          usb_interface) {
     base::mac::ScopedIOPluginInterface<IOCFPlugInInterface> plugin_interface;
     int32_t score;
     kr = IOCreatePlugInInterfaceForService(
-        usb_interface, kIOUSBInterfaceUserClientTypeID, kIOCFPlugInInterfaceID,
-        plugin_interface.InitializeInto(), &score);
+        usb_interface.get(), kIOUSBInterfaceUserClientTypeID,
+        kIOCFPlugInInterfaceID, plugin_interface.InitializeInto(), &score);
 
     if (kr != kIOReturnSuccess || !plugin_interface) {
       USB_LOG(ERROR) << "Unable to create a plug-in: " << std::hex << kr;
@@ -234,7 +235,7 @@ void UsbDeviceHandleMac::ClaimInterface(int interface_number,
     }
 
     ScopedIOUSBInterfaceInterface interface_interface;
-    kr = (*plugin_interface)
+    kr = (*plugin_interface.get())
              ->QueryInterface(plugin_interface.get(),
                               CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID),
                               reinterpret_cast<LPVOID*>(
@@ -246,8 +247,8 @@ void UsbDeviceHandleMac::ClaimInterface(int interface_number,
     }
 
     uint8_t retrieved_interface_number;
-    kr = (*interface_interface)
-             ->GetInterfaceNumber(interface_interface,
+    kr = (*interface_interface.get())
+             ->GetInterfaceNumber(interface_interface.get(),
                                   &retrieved_interface_number);
     if (kr != kIOReturnSuccess) {
       USB_LOG(ERROR) << "Could not retrieve an interface number: " << std::hex
@@ -258,7 +259,8 @@ void UsbDeviceHandleMac::ClaimInterface(int interface_number,
     if (retrieved_interface_number != interface_number)
       continue;
 
-    kr = (*interface_interface)->USBInterfaceOpen(interface_interface);
+    kr = (*interface_interface.get())
+             ->USBInterfaceOpen(interface_interface.get());
     if (kr != kIOReturnSuccess) {
       USB_LOG(ERROR) << "Could not open interface: " << std::hex << kr;
       break;
@@ -266,12 +268,13 @@ void UsbDeviceHandleMac::ClaimInterface(int interface_number,
 
     interfaces_[interface_number] = interface_interface;
     base::apple::ScopedCFTypeRef<CFRunLoopSourceRef> run_loop_source;
-    kr = (*interface_interface)
+    kr = (*interface_interface.get())
              ->CreateInterfaceAsyncEventSource(
-                 interface_interface, run_loop_source.InitializeInto());
+                 interface_interface.get(), run_loop_source.InitializeInto());
     if (kr != kIOReturnSuccess) {
       USB_LOG(ERROR) << "Could not retrieve port: " << std::hex << kr;
-      (*interface_interface)->USBInterfaceClose(interface_interface);
+      (*interface_interface.get())
+          ->USBInterfaceClose(interface_interface.get());
       break;
     }
     RefreshEndpointMap();
@@ -309,7 +312,8 @@ void UsbDeviceHandleMac::ReleaseInterface(int interface_number,
     sources_.erase(source_it);
   }
 
-  IOReturn kr = (*released_interface)->USBInterfaceClose(released_interface);
+  IOReturn kr =
+      (*released_interface.get())->USBInterfaceClose(released_interface.get());
   if (kr != kIOReturnSuccess) {
     std::move(callback).Run(false);
     return;
@@ -334,8 +338,8 @@ void UsbDeviceHandleMac::SetInterfaceAlternateSetting(int interface_number,
   const auto& interface_interface = interface_it->second;
 
   IOReturn kr =
-      (*interface_interface)
-          ->SetAlternateInterface(interface_interface, alternate_setting);
+      (*interface_interface.get())
+          ->SetAlternateInterface(interface_interface.get(), alternate_setting);
   if (kr != kIOReturnSuccess) {
     std::move(callback).Run(false);
     return;
@@ -352,8 +356,9 @@ void UsbDeviceHandleMac::ResetDevice(ResultCallback callback) {
 
   // TODO(https://crbug.com/1096743): Figure out if open interfaces need to be
   // closed as well.
-  IOReturn kr = (*device_interface_)
-                    ->USBDeviceReEnumerate(device_interface_, /*options=*/0);
+  IOReturn kr =
+      (*device_interface_.get())
+          ->USBDeviceReEnumerate(device_interface_.get(), /*options=*/0);
   if (kr != kIOReturnSuccess) {
     std::move(callback).Run(false);
     return;
@@ -389,8 +394,8 @@ void UsbDeviceHandleMac::ClearHalt(mojom::UsbTransferDirection direction,
   }
 
   const auto& interface_interface = interface_it->second;
-  IOReturn kr = (*interface_interface)
-                    ->ClearPipeStall(interface_interface,
+  IOReturn kr = (*interface_interface.get())
+                    ->ClearPipeStall(interface_interface.get(),
                                      endpoint_it->second.pipe_reference);
   if (kr != kIOReturnSuccess) {
     std::move(callback).Run(false);
@@ -424,9 +429,10 @@ void UsbDeviceHandleMac::ControlTransfer(
   }
 
   if (!device_source_) {
-    IOReturn kr = (*device_interface_)
-                      ->CreateDeviceAsyncEventSource(
-                          device_interface_, device_source_.InitializeInto());
+    IOReturn kr =
+        (*device_interface_.get())
+            ->CreateDeviceAsyncEventSource(device_interface_.get(),
+                                           device_source_.InitializeInto());
     if (kr != kIOReturnSuccess) {
       USB_LOG(ERROR) << "Unable to create device async event source: "
                      << std::hex << kr;
@@ -455,10 +461,11 @@ void UsbDeviceHandleMac::ControlTransfer(
 
   Transfer* transfer_ptr = transfer.get();
   auto result = transfers_.insert(std::move(transfer));
-  IOReturn kr = (*device_interface_)
-                    ->DeviceRequestAsyncTO(
-                        device_interface_, &device_request, &AsyncIoCallback,
-                        reinterpret_cast<void*>(transfer_ptr));
+  IOReturn kr =
+      (*device_interface_.get())
+          ->DeviceRequestAsyncTO(device_interface_.get(), &device_request,
+                                 &AsyncIoCallback,
+                                 reinterpret_cast<void*>(transfer_ptr));
 
   if (kr != kIOReturnSuccess) {
     USB_LOG(ERROR) << "Failed to send control request: " << std::hex << kr;
@@ -507,8 +514,9 @@ void UsbDeviceHandleMac::IsochronousTransferIn(
 
   uint64_t bus_frame;
   AbsoluteTime time;
-  IOReturn kr = (*interface_interface)
-                    ->GetBusFrameNumber(interface_interface, &bus_frame, &time);
+  IOReturn kr =
+      (*interface_interface.get())
+          ->GetBusFrameNumber(interface_interface.get(), &bus_frame, &time);
   if (kr != kIOReturnSuccess) {
     ReportIsochronousTransferError(std::move(callback), packet_lengths,
                                    mojom::UsbTransferStatus::TRANSFER_ERROR);
@@ -539,8 +547,8 @@ void UsbDeviceHandleMac::IsochronousTransferIn(
   }
   transfer_data->frame_list = frame_list;
 
-  kr = (*interface_interface)
-           ->ReadIsochPipeAsync(interface_interface,
+  kr = (*interface_interface.get())
+           ->ReadIsochPipeAsync(interface_interface.get(),
                                 endpoint_it->second.pipe_reference,
                                 buffer->front_as<void*>(), bus_frame,
                                 static_cast<uint32_t>(packet_lengths.size()),
@@ -592,8 +600,9 @@ void UsbDeviceHandleMac::IsochronousTransferOut(
 
   uint64_t bus_frame;
   AbsoluteTime time;
-  IOReturn kr = (*interface_interface)
-                    ->GetBusFrameNumber(interface_interface, &bus_frame, &time);
+  IOReturn kr =
+      (*interface_interface.get())
+          ->GetBusFrameNumber(interface_interface.get(), &bus_frame, &time);
   if (kr != kIOReturnSuccess) {
     ReportIsochronousTransferError(std::move(callback), packet_lengths,
                                    mojom::UsbTransferStatus::TRANSFER_ERROR);
@@ -624,8 +633,8 @@ void UsbDeviceHandleMac::IsochronousTransferOut(
   }
   transfer_data->frame_list = frame_list;
 
-  kr = (*interface_interface)
-           ->WriteIsochPipeAsync(interface_interface,
+  kr = (*interface_interface.get())
+           ->WriteIsochPipeAsync(interface_interface.get(),
                                  endpoint_it->second.pipe_reference,
                                  buffer->front_as<void*>(), bus_frame,
                                  static_cast<uint32_t>(packet_lengths.size()),
@@ -738,8 +747,8 @@ void UsbDeviceHandleMac::BulkIn(
     std::unique_ptr<Transfer> transfer) {
   Transfer* transfer_data = transfer.get();
   auto result = transfers_.insert(std::move(transfer));
-  IOReturn kr = (*interface_interface)
-                    ->ReadPipeAsyncTO(interface_interface, pipe_reference,
+  IOReturn kr = (*interface_interface.get())
+                    ->ReadPipeAsyncTO(interface_interface.get(), pipe_reference,
                                       buffer->front_as<void*>(),
                                       static_cast<uint32_t>(buffer->size()),
                                       timeout, timeout, &AsyncIoCallback,
@@ -761,12 +770,13 @@ void UsbDeviceHandleMac::BulkOut(
     std::unique_ptr<Transfer> transfer) {
   Transfer* transfer_data = transfer.get();
   auto result = transfers_.insert(std::move(transfer));
-  IOReturn kr = (*interface_interface)
-                    ->WritePipeAsyncTO(interface_interface, pipe_reference,
-                                       buffer->front_as<void*>(),
-                                       static_cast<uint32_t>(buffer->size()),
-                                       timeout, timeout, &AsyncIoCallback,
-                                       reinterpret_cast<void*>(transfer_data));
+  IOReturn kr =
+      (*interface_interface.get())
+          ->WritePipeAsyncTO(interface_interface.get(), pipe_reference,
+                             buffer->front_as<void*>(),
+                             static_cast<uint32_t>(buffer->size()), timeout,
+                             timeout, &AsyncIoCallback,
+                             reinterpret_cast<void*>(transfer_data));
 
   if (kr != kIOReturnSuccess) {
     USB_LOG(ERROR) << "Failed to write to device: " << std::hex << kr;
@@ -783,8 +793,8 @@ void UsbDeviceHandleMac::InterruptIn(
     std::unique_ptr<Transfer> transfer) {
   Transfer* transfer_data = transfer.get();
   auto result = transfers_.insert(std::move(transfer));
-  IOReturn kr = (*interface_interface)
-                    ->ReadPipeAsync(interface_interface, pipe_reference,
+  IOReturn kr = (*interface_interface.get())
+                    ->ReadPipeAsync(interface_interface.get(), pipe_reference,
                                     buffer->front_as<void*>(),
                                     static_cast<uint32_t>(buffer->size()),
                                     &AsyncIoCallback,
@@ -804,8 +814,8 @@ void UsbDeviceHandleMac::InterruptOut(
     std::unique_ptr<Transfer> transfer) {
   Transfer* transfer_data = transfer.get();
   auto result = transfers_.insert(std::move(transfer));
-  IOReturn kr = (*interface_interface)
-                    ->WritePipeAsync(interface_interface, pipe_reference,
+  IOReturn kr = (*interface_interface.get())
+                    ->WritePipeAsync(interface_interface.get(), pipe_reference,
                                      buffer->front_as<void*>(),
                                      static_cast<uint32_t>(buffer->size()),
                                      &AsyncIoCallback,
@@ -827,8 +837,8 @@ void UsbDeviceHandleMac::RefreshEndpointMap() {
   for (const auto& map_entry : interfaces_) {
     uint8_t alternate_setting;
     IOReturn kr =
-        (*map_entry.second)
-            ->GetAlternateSetting(map_entry.second, &alternate_setting);
+        (*map_entry.second.get())
+            ->GetAlternateSetting(map_entry.second.get(), &alternate_setting);
     if (kr != kIOReturnSuccess)
       continue;
     CombinedInterfaceInfo interface_info =

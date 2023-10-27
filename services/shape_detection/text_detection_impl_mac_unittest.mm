@@ -57,12 +57,12 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
   const int height = 50;
   base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       nullptr, width, height, 8 /* bitsPerComponent */,
-      width * 4 /* rowBytes */, rgb_colorspace,
+      width * 4 /* rowBytes */, rgb_colorspace.get(),
       uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Host));
 
   // Draw a white background.
-  CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);
-  CGContextFillRect(context, CGRectMake(0.0, 0.0, width, height));
+  CGContextSetRGBFillColor(context.get(), 1.0, 1.0, 1.0, 1.0);
+  CGContextFillRect(context.get(), CGRectMake(0.0, 0.0, width, height));
 
   // Create a line of Helvetica 16 text, and draw it in the |context|.
   NSDictionary* attributes =
@@ -75,17 +75,17 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
   base::apple::ScopedCFTypeRef<CTLineRef> line(
       CTLineCreateWithAttributedString(base::apple::NSToCFPtrCast(info)));
 
-  CGContextSetTextPosition(context, 10.0, height / 2.0);
-  CTLineDraw(line, context);
+  CGContextSetTextPosition(context.get(), 10.0, height / 2.0);
+  CTLineDraw(line.get(), context.get());
 
   // Extract a CGImage and its raw pixels from |context|.
   base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
-      CGBitmapContextCreateImage(context));
-  EXPECT_EQ(static_cast<size_t>(width), CGImageGetWidth(cg_image));
-  EXPECT_EQ(static_cast<size_t>(height), CGImageGetHeight(cg_image));
+      CGBitmapContextCreateImage(context.get()));
+  EXPECT_EQ(static_cast<size_t>(width), CGImageGetWidth(cg_image.get()));
+  EXPECT_EQ(static_cast<size_t>(height), CGImageGetHeight(cg_image.get()));
 
   SkBitmap bitmap;
-  ASSERT_TRUE(SkCreateBitmapFromCGImage(&bitmap, cg_image));
+  ASSERT_TRUE(SkCreateBitmapFromCGImage(&bitmap, cg_image.get()));
 
   base::RunLoop run_loop;
   // Send the image to Detect() and expect the response in callback.

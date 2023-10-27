@@ -72,7 +72,7 @@ UsbServiceMac::~UsbServiceMac() = default;
 void UsbServiceMac::FirstMatchCallback(void* context, io_iterator_t iterator) {
   DCHECK_EQ(CFRunLoopGetMain(), CFRunLoopGetCurrent());
   UsbServiceMac* service = reinterpret_cast<UsbServiceMac*>(context);
-  DCHECK_EQ(service->devices_added_iterator_, iterator);
+  DCHECK_EQ(service->devices_added_iterator_.get(), iterator);
   service->AddDevices();
 }
 
@@ -80,14 +80,14 @@ void UsbServiceMac::FirstMatchCallback(void* context, io_iterator_t iterator) {
 void UsbServiceMac::TerminatedCallback(void* context, io_iterator_t iterator) {
   DCHECK_EQ(CFRunLoopGetMain(), CFRunLoopGetCurrent());
   UsbServiceMac* service = reinterpret_cast<UsbServiceMac*>(context);
-  DCHECK_EQ(service->devices_removed_iterator_, iterator);
+  DCHECK_EQ(service->devices_removed_iterator_.get(), iterator);
   service->RemoveDevices();
 }
 
 void UsbServiceMac::AddDevices() {
   base::mac::ScopedIOObject<io_service_t> device;
-  while (device.reset(IOIteratorNext(devices_added_iterator_)), device) {
-    AddDevice(device);
+  while (device.reset(IOIteratorNext(devices_added_iterator_.get())), device) {
+    AddDevice(device.get());
   }
 }
 
@@ -107,7 +107,7 @@ void UsbServiceMac::AddDevice(io_service_t device) {
   }
 
   base::mac::ScopedIOPluginInterface<IOUSBDeviceInterface182> device_interface;
-  kr = (*plugin_interface)
+  kr = (*plugin_interface.get())
            ->QueryInterface(
                plugin_interface.get(),
                CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
@@ -119,7 +119,8 @@ void UsbServiceMac::AddDevice(io_service_t device) {
   }
 
   uint8_t device_class;
-  if ((*device_interface)->GetDeviceClass(device_interface, &device_class) !=
+  if ((*device_interface.get())
+          ->GetDeviceClass(device_interface.get(), &device_class) !=
       kIOReturnSuccess) {
     return;
   }
@@ -129,40 +130,43 @@ void UsbServiceMac::AddDevice(io_service_t device) {
     return;
 
   uint16_t vendor_id;
-  if ((*device_interface)->GetDeviceVendor(device_interface, &vendor_id) !=
+  if ((*device_interface.get())
+          ->GetDeviceVendor(device_interface.get(), &vendor_id) !=
       kIOReturnSuccess) {
     return;
   }
 
   uint16_t product_id;
-  if ((*device_interface)->GetDeviceProduct(device_interface, &product_id) !=
+  if ((*device_interface.get())
+          ->GetDeviceProduct(device_interface.get(), &product_id) !=
       kIOReturnSuccess) {
     return;
   }
 
   uint8_t device_protocol;
-  if ((*device_interface)
-          ->GetDeviceProtocol(device_interface, &device_protocol) !=
+  if ((*device_interface.get())
+          ->GetDeviceProtocol(device_interface.get(), &device_protocol) !=
       kIOReturnSuccess) {
     return;
   }
 
   uint8_t device_subclass;
-  if ((*device_interface)
-          ->GetDeviceSubClass(device_interface, &device_subclass) !=
+  if ((*device_interface.get())
+          ->GetDeviceSubClass(device_interface.get(), &device_subclass) !=
       kIOReturnSuccess) {
     return;
   }
 
   uint16_t device_version;
-  if ((*device_interface)
-          ->GetDeviceReleaseNumber(device_interface, &device_version) !=
+  if ((*device_interface.get())
+          ->GetDeviceReleaseNumber(device_interface.get(), &device_version) !=
       kIOReturnSuccess) {
     return;
   }
 
   uint32_t location_id;
-  if ((*device_interface)->GetLocationID(device_interface, &location_id) !=
+  if ((*device_interface.get())
+          ->GetLocationID(device_interface.get(), &location_id) !=
       kIOReturnSuccess) {
     return;
   }
@@ -203,8 +207,8 @@ void UsbServiceMac::AddDevice(io_service_t device) {
     product_string = property_string16.value();
 
   uint8_t num_config;
-  if ((*device_interface)
-          ->GetNumberOfConfigurations(device_interface, &num_config) !=
+  if ((*device_interface.get())
+          ->GetNumberOfConfigurations(device_interface.get(), &num_config) !=
       kIOReturnSuccess) {
     return;
   }
@@ -213,8 +217,8 @@ void UsbServiceMac::AddDevice(io_service_t device) {
   auto descriptor = std::make_unique<UsbDeviceDescriptor>();
   IOUSBConfigurationDescriptorPtr desc;
   for (uint8_t i = 0; i < num_config; i++) {
-    if ((*device_interface)
-            ->GetConfigurationDescriptorPtr(device_interface, i, &desc) !=
+    if ((*device_interface.get())
+            ->GetConfigurationDescriptorPtr(device_interface.get(), i, &desc) !=
         kIOReturnSuccess) {
       return;
     }
@@ -252,11 +256,12 @@ void UsbServiceMac::AddDevice(io_service_t device) {
 
 void UsbServiceMac::RemoveDevices() {
   base::mac::ScopedIOObject<io_service_t> device;
-  while (device.reset(IOIteratorNext(devices_removed_iterator_)), device) {
+  while (device.reset(IOIteratorNext(devices_removed_iterator_.get())),
+         device) {
     uint64_t entry_id;
 
     if (kIOReturnSuccess !=
-        IORegistryEntryGetRegistryEntryID(device, &entry_id)) {
+        IORegistryEntryGetRegistryEntryID(device.get(), &entry_id)) {
       continue;
     }
 

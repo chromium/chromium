@@ -111,12 +111,12 @@ std::vector<mojom::BatteryStatus> GetInternalBatteriesStates() {
 
   base::apple::ScopedCFTypeRef<CFTypeRef> info(IOPSCopyPowerSourcesInfo());
   base::apple::ScopedCFTypeRef<CFArrayRef> power_sources_list(
-      IOPSCopyPowerSourcesList(info));
-  CFIndex count = CFArrayGetCount(power_sources_list);
+      IOPSCopyPowerSourcesList(info.get()));
+  CFIndex count = CFArrayGetCount(power_sources_list.get());
 
   for (CFIndex i = 0; i < count; ++i) {
     CFDictionaryRef description = IOPSGetPowerSourceDescription(
-        info, CFArrayGetValueAtIndex(power_sources_list, i));
+        info.get(), CFArrayGetValueAtIndex(power_sources_list.get(), i));
 
     if (!description)
       continue;
@@ -179,7 +179,7 @@ class BatteryStatusObserver {
     }
 
     CallOnBatteryStatusChanged(static_cast<void*>(&callback_));
-    CFRunLoopAddSource(CFRunLoopGetCurrent(), notifier_run_loop_source_,
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), notifier_run_loop_source_.get(),
                        kCFRunLoopDefaultMode);
   }
 
@@ -187,7 +187,8 @@ class BatteryStatusObserver {
     if (!notifier_run_loop_source_)
       return;
 
-    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), notifier_run_loop_source_,
+    CFRunLoopRemoveSource(CFRunLoopGetCurrent(),
+                          notifier_run_loop_source_.get(),
                           kCFRunLoopDefaultMode);
     notifier_run_loop_source_.reset();
   }

@@ -38,7 +38,7 @@ CIImage* CIImageFromSkBitmap(const SkBitmap& bitmap) {
     return nil;
   }
 
-  CIImage* ci_image = [[CIImage alloc] initWithCGImage:cg_image];
+  CIImage* ci_image = [[CIImage alloc] initWithCGImage:cg_image.get()];
   if (!ci_image) {
     DLOG(ERROR) << "Failed to create CIImage";
     return nil;

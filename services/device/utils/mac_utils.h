@@ -27,8 +27,9 @@ absl::optional<T> GetIntegerProperty(io_service_t service,
 
   if (!cf_number)
     return absl::nullopt;
-  if (CFGetTypeID(cf_number) != CFNumberGetTypeID())
+  if (CFGetTypeID(cf_number.get()) != CFNumberGetTypeID()) {
     return absl::nullopt;
+  }
 
   T value;
   CFNumberType type;
@@ -44,8 +45,10 @@ absl::optional<T> GetIntegerProperty(io_service_t service,
     NOTREACHED();
     return absl::nullopt;
   }
-  if (!CFNumberGetValue(static_cast<CFNumberRef>(cf_number), type, &value))
+  if (!CFNumberGetValue(static_cast<CFNumberRef>(cf_number.get()), type,
+                        &value)) {
     return absl::nullopt;
+  }
   return value;
 }
 
@@ -64,9 +67,9 @@ absl::optional<T> GetStringProperty(io_service_t service,
     return absl::nullopt;
 
   if constexpr (std::is_same_v<T, std::string>)
-    return base::SysCFStringRefToUTF8(ref);
+    return base::SysCFStringRefToUTF8(ref.get());
   if constexpr (std::is_same_v<T, std::u16string>)
-    return base::SysCFStringRefToUTF16(ref);
+    return base::SysCFStringRefToUTF16(ref.get());
 
   NOTREACHED();
   return absl::nullopt;

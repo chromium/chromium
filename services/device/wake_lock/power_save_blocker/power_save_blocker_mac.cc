@@ -84,8 +84,8 @@ void PowerSaveBlocker::Delegate::ApplyBlock() {
   if (level) {
     base::apple::ScopedCFTypeRef<CFStringRef> cf_description(
         base::SysUTF8ToCFStringRef(description_));
-    IOReturn result = IOPMAssertionCreateWithName(level, kIOPMAssertionLevelOn,
-                                                  cf_description, &assertion_);
+    IOReturn result = IOPMAssertionCreateWithName(
+        level, kIOPMAssertionLevelOn, cf_description.get(), &assertion_);
     LOG_IF(ERROR, result != kIOReturnSuccess)
         << "IOPMAssertionCreate: " << result;
   }
