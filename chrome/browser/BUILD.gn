@@ -1847,6 +1847,8 @@ static_library("browser") {
     "tpcd/heuristics/opener_heuristic_tab_helper.h",
     "tpcd/heuristics/opener_heuristic_utils.cc",
     "tpcd/heuristics/opener_heuristic_utils.h",
+    "tpcd/http_error_observer/http_error_tab_helper.cc",
+    "tpcd/http_error_observer/http_error_tab_helper.h",
     "tpcd/metadata/devtools_observer.cc",
     "tpcd/metadata/devtools_observer.h",
     "tpcd/metadata/updater_service.cc",

@@ -1638,6 +1638,7 @@ if (!is_android) {
       "//chrome/browser/storage_access_api",
       "//chrome/browser/top_level_storage_access_api:permissions",
       "//chrome/browser/tpcd/heuristics:browser_tests",
+      "//chrome/browser/tpcd/http_error_observer:browser_tests",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/side_panel:side_panel_enums",
       "//chrome/browser/ui/tabs:tab_enums",
