@@ -61,8 +61,8 @@ interface Handler {
   // been completed and the reports have been cleared from storage.
   SendReports(array<AggregatableReportRequestID> ids) => ();
 
-  // Deletes all persisted data for the aggregation service, returning when the
-  // operation has been completed.
+  // Deletes all persisted data for the aggregation service and private
+  // aggregation, returning when the operation has been completed.
   ClearStorage() => ();
 };
 

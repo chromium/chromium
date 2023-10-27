@@ -26,6 +26,7 @@
 #include "content/browser/aggregation_service/aggregation_service_observer.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
+#include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -108,13 +109,22 @@ class AggregationServiceInternalsHandlerImplTest
     RenderViewHostTestHarness::SetUp();
     web_ui_.set_web_contents(web_contents());
 
+    StoragePartitionImpl* storage_partition_impl =
+        static_cast<StoragePartitionImpl*>(web_ui_.GetWebContents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition());
+
     auto aggregation_service = std::make_unique<MockAggregationService>();
     aggregation_service_ = aggregation_service.get();
+    storage_partition_impl->OverrideAggregationServiceForTesting(
+        std::move(aggregation_service));
 
-    static_cast<StoragePartitionImpl*>(web_ui_.GetWebContents()
-                                           ->GetBrowserContext()
-                                           ->GetDefaultStoragePartition())
-        ->OverrideAggregationServiceForTesting(std::move(aggregation_service));
+    auto private_aggregation_manager =
+        std::make_unique<MockPrivateAggregationManagerImpl>(
+            storage_partition_impl);
+    private_aggregation_manager_ = private_aggregation_manager.get();
+    storage_partition_impl->OverridePrivateAggregationManagerForTesting(
+        std::move(private_aggregation_manager));
 
     internals_handler_ =
         std::make_unique<AggregationServiceInternalsHandlerImpl>(
@@ -127,6 +137,7 @@ class AggregationServiceInternalsHandlerImplTest
     // `aggregation_service_` before it's destroyed.
     internals_handler_.reset();
     aggregation_service_ = nullptr;
+    private_aggregation_manager_ = nullptr;
     web_ui_.set_web_contents(nullptr);
     RenderViewHostTestHarness::TearDown();
   }
@@ -146,6 +157,7 @@ class AggregationServiceInternalsHandlerImplTest
 
   TestWebUI web_ui_;
   raw_ptr<MockAggregationService> aggregation_service_;
+  raw_ptr<MockPrivateAggregationManagerImpl> private_aggregation_manager_;
   mojo::Remote<aggregation_service_internals::mojom::Handler> remote_handler_;
   MockObserver observer_;
   mojo::Receiver<aggregation_service_internals::mojom::Observer> receiver_;
@@ -198,6 +210,8 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, SendReports) {
 
 TEST_F(AggregationServiceInternalsHandlerImplTest, ClearStorage) {
   EXPECT_CALL(*aggregation_service_, ClearData)
+      .WillOnce(base::test::RunOnceCallback<3>());
+  EXPECT_CALL(*private_aggregation_manager_, ClearBudgetData)
       .WillOnce(base::test::RunOnceCallback<3>());
 
   base::RunLoop run_loop;

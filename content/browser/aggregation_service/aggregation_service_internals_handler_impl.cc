@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -21,6 +22,7 @@
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_internals.mojom.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
+#include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
@@ -30,6 +32,13 @@ namespace {
 
 AggregationService* GetAggregationService(WebContents* web_contents) {
   return AggregationService::GetService(web_contents->GetBrowserContext());
+}
+
+PrivateAggregationManager* GetPrivateAggregationManager(
+    WebContents* web_contents) {
+  BrowserContext* browser_context = web_contents->GetBrowserContext();
+  DCHECK_NE(browser_context, nullptr);
+  return PrivateAggregationManager::GetManager(*browser_context);
 }
 
 aggregation_service_internals::mojom::WebUIAggregatableReportPtr
@@ -153,14 +162,29 @@ void AggregationServiceInternalsHandlerImpl::SendReports(
 void AggregationServiceInternalsHandlerImpl::ClearStorage(
     aggregation_service_internals::mojom::Handler::ClearStorageCallback
         callback) {
+  // Only run `callback` after we've cleared the aggregation service data *and*
+  // the private aggregation budget data.
+  auto barrier = base::BarrierClosure(/*num_closures=*/2, std::move(callback));
+
   if (AggregationService* aggregation_service =
           GetAggregationService(web_ui_->GetWebContents())) {
     aggregation_service->ClearData(/*delete_begin=*/base::Time::Min(),
                                    /*delete_end=*/base::Time::Max(),
-                                   /*filter=*/base::NullCallback(),
-                                   std::move(callback));
+                                   /*filter=*/base::NullCallback(), barrier);
   } else {
-    std::move(callback).Run();
+    barrier.Run();
+  }
+
+  // TODO(https://crbug.com/1496401) Resolve this layering violation;
+  // aggregation_service should not depend on private_aggregation.
+  if (PrivateAggregationManager* private_aggregation_manager =
+          GetPrivateAggregationManager(web_ui_->GetWebContents())) {
+    private_aggregation_manager->ClearBudgetData(
+        /*delete_begin=*/base::Time::Min(),
+        /*delete_end=*/base::Time::Max(),
+        /*filter=*/base::NullCallback(), std::move(barrier));
+  } else {
+    std::move(barrier).Run();
   }
 }
 
