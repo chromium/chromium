@@ -387,6 +387,10 @@ std::unique_ptr<LayerTreeHostImpl> LayerTreeHostImpl::Create(
     int id,
     scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
     LayerTreeHostSchedulingClient* scheduling_client) {
+
+  recordreplay::CommandDiagnostic(
+    "[RUN-2110-2761] LayerTreeHostImpl::Create %d", id);
+
   return base::WrapUnique(new LayerTreeHostImpl(
       settings, client, task_runner_provider, rendering_stats_instrumentation,
       task_graph_runner, std::move(mutator_host), dark_mode_filter, id,
@@ -501,6 +505,10 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 }
 
 LayerTreeHostImpl::~LayerTreeHostImpl() {
+  
+  recordreplay::CommandDiagnostic(
+    "[RUN-2110-2761] ~LayerTreeHostImpl %d", id());
+
   DCHECK(task_runner_provider_->IsImplThread());
   TRACE_EVENT0("cc", "LayerTreeHostImpl::~LayerTreeHostImpl()");
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(TRACE_DISABLED_BY_DEFAULT("cc.debug"),

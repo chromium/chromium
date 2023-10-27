@@ -67,6 +67,10 @@ class ScopedCommitCompletionEvent {
         proxy_main_weak_ptr_(proxy_main_weak_ptr) {}
   ScopedCommitCompletionEvent(const ScopedCommitCompletionEvent&) = delete;
   ~ScopedCommitCompletionEvent() {
+
+    recordreplay::CommandDiagnosticTrace(
+      "[RUN-2110-2761] ~ScopedCommitCompletionEvent");
+
     event_.ExtractAsDangling()->Signal();
     main_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ProxyMain::DidCompleteCommit,
@@ -807,6 +811,10 @@ void ProxyImpl::ScheduledActionCommit() {
   if (data_for_commit_->commit_timestamps)
     data_for_commit_->commit_timestamps->finish = finish_time;
   data_for_commit_->commit_completion_event->SetFinishTime(finish_time);
+
+  recordreplay::CommandDiagnosticTrace(
+    "[RUN-2110-2761] ProxyImpl::ScheduledActionCommit %d",
+    commit_state->commit_waits_for_activation);
 
   if (commit_state->commit_waits_for_activation) {
     // For some layer types in impl-side painting, the commit is held until the

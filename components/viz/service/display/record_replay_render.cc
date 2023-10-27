@@ -221,6 +221,7 @@ void OnCommitPaint() {
 }
 
 void OnReadyToCommit() {
+  recordreplay::CommandDiagnosticTrace("[RUN-2110-2761] OnReadyToCommit");
   gLastCommitBookmark = gCurrentPaintBookmark;
 }
 
