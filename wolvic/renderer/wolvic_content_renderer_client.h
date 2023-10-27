@@ -23,6 +23,7 @@ class WolvicContentRendererClient : public content::ContentRendererClient {
   // ContentRendererClient implementation.
   void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
   void RenderThreadStarted() override;
+  void ExposeInterfacesToBrowser(mojo::BinderMap* binders) override;
 
   uint64_t VisitedLinkHash(const char* canonical_url, size_t length) override;
   bool IsLinkVisited(uint64_t link_hash) override;
