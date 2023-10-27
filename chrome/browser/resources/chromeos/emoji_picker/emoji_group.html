@@ -305,9 +305,8 @@
       </template>
     </div>
   </template>
-  <template is="dom-repeat" items="[[data]]">
-      <template is="dom-if"
-        if="[[!isVisual(category)]]">
+  <template is="dom-if" if="[[!isVisual(category)]]">
+      <template is="dom-repeat" items="[[data]]">
         <div class="emoji-button-container">
         <button id="emoji-[[index]]" data-index$="[[index]]"
           class$="emoji-button [[getEmojiButtonClassName(item)]]"
