@@ -100,10 +100,8 @@ void DlpCopyOrMoveHookDelegate::OnBeginProcessFile(
       base::BindPostTaskToCurrentDefault(std::move(callback));
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &RequestCopyAccess,
-          base::SupportsWeakPtr<DlpCopyOrMoveHookDelegate>::AsWeakPtr(),
-          source_url, destination_url, std::move(continuation)));
+      base::BindOnce(&RequestCopyAccess, weak_ptr_factory_.GetWeakPtr(),
+                     source_url, destination_url, std::move(continuation)));
 }
 
 void DlpCopyOrMoveHookDelegate::OnEndCopy(
