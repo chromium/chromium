@@ -2577,7 +2577,6 @@ crbug.com/958381 external/wpt/css/CSS2/tables/table-anonymous-objects-204.xht [ 
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/anonymous-table-box-width-001.xht [ Failure ]
 
 # Custom-elements
-crbug.com/1351482 external/wpt/custom-elements/form-associated/ElementInternals-target-element-is-held-strongly.html [ Timeout ]
 crbug.com/1365604 external/wpt/custom-elements/form-associated/ElementInternals-setFormValue.html [ Pass Timeout ]
 
 # unblock roll wpt
