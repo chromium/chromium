@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.widget.scrim;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -144,6 +143,34 @@ public class ScrimTest {
 
         int callCount = mVisibilityChangeCallbackHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        mVisibilityChangeCallbackHelper.waitForCallback(callCount, 1);
+        assertScrimVisibility(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Scrim"})
+    public void testVisibilityWithForceToFinish() throws TimeoutException {
+        showScrim(buildModel(true, false, true, Color.RED), true);
+
+        ScrimView scrimView = mScrimCoordinator.getViewForTesting();
+        assertEquals(
+                "Scrim should be completely visible.",
+                1.0f,
+                scrimView.getAlpha(),
+                MathUtils.EPSILON);
+
+        int callCount = mVisibilityChangeCallbackHelper.getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mScrimCoordinator.hideScrim(true);
+                    mScrimCoordinator.forceAnimationToFinish();
+                    assertEquals(
+                            "Scrim should be completely invisible.",
+                            0.0f,
+                            scrimView.getAlpha(),
+                            MathUtils.EPSILON);
+                });
         mVisibilityChangeCallbackHelper.waitForCallback(callCount, 1);
         assertScrimVisibility(false);
     }
@@ -497,12 +524,18 @@ public class ScrimTest {
                     // Animations are disabled for these types of tests, so just make sure the
                     // animation was created then continue as if we weren't running animation.
                     if (animate) {
-                        assertNotNull(
+                        assertTrue(
                                 "Animations should be running.",
                                 mScrimCoordinator.areAnimationsRunning());
                     }
 
-                    mScrimCoordinator.setAlpha(1.0f);
+                    mScrimCoordinator.forceAnimationToFinish();
+                    assertFalse(mScrimCoordinator.areAnimationsRunning());
+                    assertEquals(
+                            "Scrim should be completely visible.",
+                            1.0f,
+                            mScrimCoordinator.getViewForTesting().getAlpha(),
+                            MathUtils.EPSILON);
                 });
 
         mVisibilityChangeCallbackHelper.waitForCallback(callCount, 1);

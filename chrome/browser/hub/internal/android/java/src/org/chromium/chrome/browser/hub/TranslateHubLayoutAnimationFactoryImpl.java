@@ -21,13 +21,18 @@ public class TranslateHubLayoutAnimationFactoryImpl {
      * long)}.
      */
     public static HubLayoutAnimatorProvider createTranslateUpAnimatorProvider(
-            @NonNull HubContainerView hubContainerView, long durationMs) {
+            @NonNull HubContainerView hubContainerView,
+            @NonNull ScrimController scrimController,
+            long durationMs) {
         AnimatorSet animatorSet = new AnimatorSet();
 
         HubLayoutAnimationListener listener =
                 new HubLayoutAnimationListener() {
                     @Override
                     public void beforeStart() {
+                        hubContainerView.setY(hubContainerView.getHeight());
+                        hubContainerView.setVisibility(View.VISIBLE);
+
                         // Defer setting an animation until beforeStart() because we need to be
                         // certain the hubContainerView will have a dimension before starting the
                         // animation.
@@ -41,8 +46,7 @@ public class TranslateHubLayoutAnimationFactoryImpl {
                         animator.setDuration(durationMs);
                         animatorSet.play(animator);
 
-                        hubContainerView.setY(hubContainerView.getHeight());
-                        hubContainerView.setVisibility(View.VISIBLE);
+                        scrimController.startShowingScrim();
                     }
 
                     @Override
@@ -62,7 +66,9 @@ public class TranslateHubLayoutAnimationFactoryImpl {
      * long)}.
      */
     public static HubLayoutAnimatorProvider createTranslateDownAnimatorProvider(
-            @NonNull HubContainerView hubContainerView, long durationMs) {
+            @NonNull HubContainerView hubContainerView,
+            @NonNull ScrimController scrimController,
+            long durationMs) {
         ObjectAnimator animator =
                 ObjectAnimator.ofFloat(
                         hubContainerView, View.TRANSLATION_Y, 0f, hubContainerView.getHeight());
@@ -74,6 +80,11 @@ public class TranslateHubLayoutAnimationFactoryImpl {
 
         HubLayoutAnimationListener listener =
                 new HubLayoutAnimationListener() {
+                    @Override
+                    public void beforeStart() {
+                        scrimController.startHidingScrim();
+                    }
+
                     @Override
                     public void afterEnd() {
                         // Reset the Y offset for the next animation.

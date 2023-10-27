@@ -215,10 +215,17 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         return mModel != null;
     }
 
+    /** Force the current animation to run to completion immediately. */
+    void forceAnimationToFinish() {
+        if (mOverlayAnimator != null) {
+            mOverlayAnimator.end();
+        }
+    }
+
     /** "Destroy" the mediator and clean up any state. */
     void destroy() {
         // If the scrim was active, ending the animation will clean up any state, otherwise noop.
-        if (mOverlayAnimator != null) mOverlayAnimator.end();
+        forceAnimationToFinish();
     }
 
     void disableAnimationForTesting(boolean disable) {

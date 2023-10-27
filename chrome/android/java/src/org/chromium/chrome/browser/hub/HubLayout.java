@@ -65,6 +65,7 @@ public class HubLayout extends Layout {
     private final ViewGroup mRootView;
     private final HubController mHubController;
     private final PaneManager mPaneManager;
+    private final @Nullable HubLayoutScrimController mScrimController;
 
     private HubLayoutAnimationRunner mCurrentAnimationRunner;
 
@@ -84,6 +85,7 @@ public class HubLayout extends Layout {
      * @param rootView The {@link ViewGroup} to attach the Hub to.
      * @param hubController The {@link HubController} for controlling the Hub.
      * @param paneManager The {@link PaneManager} for managing Hub panes.
+     * @param scrimController The {@link HubLayoutScrimController} for controlling scrims.
      */
     public HubLayout(
             @NonNull Context context,
@@ -92,12 +94,18 @@ public class HubLayout extends Layout {
             @NonNull LayoutStateProvider layoutStateProvider,
             @NonNull ViewGroup rootView,
             @NonNull HubController hubController,
-            @NonNull PaneManager paneManager) {
+            @NonNull PaneManager paneManager,
+            @Nullable HubLayoutScrimController scrimController) {
         super(context, updateHost, renderHost);
         mLayoutStateProvider = layoutStateProvider;
         mRootView = rootView;
         mHubController = hubController;
         mPaneManager = paneManager;
+        mScrimController = scrimController;
+
+        assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                        || mScrimController != null
+                : "A scrimController is required for large form factor UI.";
     }
 
     /** Returns the current {@link HubLayoutAnimationType}. */
@@ -294,6 +302,10 @@ public class HubLayout extends Layout {
         // Force the animation to run to completion.
         mCurrentAnimationRunner.forceAnimationToFinish();
         mCurrentAnimationRunner = null;
+
+        if (mScrimController != null) {
+            mScrimController.forceAnimationToFinish();
+        }
     }
 
     @Override
@@ -406,7 +418,7 @@ public class HubLayout extends Layout {
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return TranslateHubLayoutAnimationFactory.createTranslateUpAnimatorProvider(
-                    containerView, TRANSLATE_DURATION_MS);
+                    containerView, mScrimController, TRANSLATE_DURATION_MS);
         } else if (mPreviousLayoutType == LayoutType.START_SURFACE || pane == null) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                     containerView, FADE_DURATION_MS);
@@ -421,7 +433,7 @@ public class HubLayout extends Layout {
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return TranslateHubLayoutAnimationFactory.createTranslateDownAnimatorProvider(
-                    containerView, TRANSLATE_DURATION_MS);
+                    containerView, mScrimController, TRANSLATE_DURATION_MS);
         } else if (nextLayoutType == LayoutType.START_SURFACE || pane == null) {
             return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                     containerView, FADE_DURATION_MS);

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -20,6 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -42,6 +44,8 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Spy private HubLayoutAnimationListener mListener;
+
+    @Mock private ScrimController mScrimController;
 
     private Activity mActivity;
     private FrameLayout mRootView;
@@ -72,7 +76,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
     public void testTranslateUp() {
         HubLayoutAnimatorProvider animatorProvider =
                 TranslateHubLayoutAnimationFactory.createTranslateUpAnimatorProvider(
-                        mHubContainerView, DURATION_MS);
+                        mHubContainerView, mScrimController, DURATION_MS);
         assertEquals(
                 HubLayoutAnimationType.TRANSLATE_UP, animatorProvider.getPlannedAnimationType());
 
@@ -84,6 +88,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
                         new HubLayoutAnimationListener() {
                             @Override
                             public void beforeStart() {
+                                verify(mScrimController).startShowingScrim();
                                 assertEquals(View.VISIBLE, mHubContainerView.getVisibility());
                                 assertEquals(
                                         mHubContainerView.getHeight(),
@@ -105,6 +110,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
 
         verify(mListener).beforeStart();
         verify(mListener).onEnd(eq(false));
+        verify(mScrimController, never()).startHidingScrim();
     }
 
     @Test
@@ -116,7 +122,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
 
         HubLayoutAnimatorProvider animatorProvider =
                 TranslateHubLayoutAnimationFactory.createTranslateDownAnimatorProvider(
-                        mHubContainerView, DURATION_MS);
+                        mHubContainerView, mScrimController, DURATION_MS);
         assertEquals(
                 HubLayoutAnimationType.TRANSLATE_DOWN, animatorProvider.getPlannedAnimationType());
 
@@ -128,6 +134,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
                         new HubLayoutAnimationListener() {
                             @Override
                             public void beforeStart() {
+                                verify(mScrimController).startHidingScrim();
                                 assertEquals(0.0f, mHubContainerView.getY(), FLOAT_TOLERANCE);
                             }
 
@@ -153,5 +160,6 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
         verify(mListener).beforeStart();
         verify(mListener).onEnd(eq(false));
         verify(mListener).afterEnd();
+        verify(mScrimController, never()).startShowingScrim();
     }
 }

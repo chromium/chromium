@@ -106,6 +106,7 @@ public class HubLayoutUnitTest {
     @Mock private StaticTabSceneLayer.Natives mStaticTabSceneLayerJni;
     @Mock private HubController mHubController;
     @Mock private PaneManager mPaneManager;
+    @Mock private HubLayoutScrimController mScrimController;
     @Mock private Pane mPane;
     @Mock private HubLayoutAnimator mHubLayoutAnimatorMock;
     @Mock private HubLayoutAnimatorProvider mHubLayoutAnimatorProviderMock;
@@ -170,7 +171,8 @@ public class HubLayoutUnitTest {
                                                     mLayoutStateProvider,
                                                     mFrameLayout,
                                                     mHubController,
-                                                    mPaneManager));
+                                                    mPaneManager,
+                                                    mScrimController));
                             mHubLayout.setTabModelSelector(mTabModelSelector);
                             mHubLayout.setTabContentManager(mTabContentManager);
                             mHubLayout.onFinishNativeInitialization();
@@ -510,6 +512,7 @@ public class HubLayoutUnitTest {
         startHiding(LayoutType.BROWSING, NEW_TAB_ID);
         verify(mHubLayout).doneShowing();
         verify(mTab, never()).hide(anyInt());
+        verify(mScrimController).forceAnimationToFinish();
 
         assertEquals(HubLayoutAnimationType.FADE_OUT, mHubLayout.getCurrentAnimationType());
         assertTrue(mHubLayout.isRunningAnimations());
@@ -550,6 +553,7 @@ public class HubLayoutUnitTest {
         assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
         verify(mHubLayout).doneShowing();
         verify(mTab).hide(eq(TabHidingType.TAB_SWITCHER_SHOWN));
+        verify(mScrimController, never()).forceAnimationToFinish();
     }
 
     private void hide(
@@ -578,6 +582,7 @@ public class HubLayoutUnitTest {
         verify(mHubController, times(1)).onHubLayoutDoneHiding();
         assertEquals(0, mFrameLayout.getChildCount());
         verify(mHubLayout).doneHiding();
+        verify(mScrimController, never()).forceAnimationToFinish();
     }
 
     private void startShowing(@LayoutType int fromLayout, boolean animate) {

@@ -18,6 +18,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationType.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimator.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimatorProvider.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutScrimController.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManager.java",
     "android/java/src/org/chromium/chrome/browser/hub/Pane.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneId.java",
@@ -27,6 +28,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/PresetHubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayout.java",
     "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/hub/ScrimController.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimator.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageView.java",
   ]
@@ -35,14 +37,20 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
 android_library_factory("factory_java") {
-  deps = [ ":java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//components/browser_ui/widget/android:java",
+  ]
 
   sources = [
     "internal/android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
@@ -55,6 +63,7 @@ android_library_factory("factory_java") {
 robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrialTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutScrimControllerUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilderUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegateUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageViewUnitTest.java",
@@ -67,13 +76,18 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
