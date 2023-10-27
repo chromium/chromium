@@ -150,7 +150,8 @@
       "files": [
         "tools/run-wpt.mjs",
         "wpt/tools/webdriver/**/*.py",
-        "wpt/webdriver/tests/**.*.py"
+        "wpt/webdriver/tests/**/*.py",
+        "wpt-metadata/**/*.ini"
       ],
       "dependencies": [
         "rollup"
@@ -162,7 +163,8 @@
         "tools/run-wpt.mjs",
         "tools/runWPTAll.sh",
         "wpt/tools/webdriver/**/*.py",
-        "wpt/webdriver/tests/**.*.py"
+        "wpt/webdriver/tests/**/*.py",
+        "wpt-metadata/**/*.ini"
       ],
       "dependencies": [
         "rollup"
