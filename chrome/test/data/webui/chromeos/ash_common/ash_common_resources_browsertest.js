@@ -107,3 +107,16 @@ var AshCommonResourcesShortcutInputKeyTest =
 TEST_F('AshCommonResourcesShortcutInputKeyTest', 'All', function() {
   mocha.run();
 });
+
+var AshCommonResourcesShortcutInputTest =
+    class extends AshCommonResourcesBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=' +
+        'chromeos/ash_common/shortcut_input_test.js';
+  }
+};
+
+TEST_F('AshCommonResourcesShortcutInputTest', 'All', function() {
+  mocha.run();
+});

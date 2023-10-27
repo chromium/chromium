@@ -150,6 +150,7 @@ web_component_files_ts = [
   "quick_unlock/pin_keyboard.ts",
   "quick_unlock/setup_pin_keyboard.ts",
   "quick_unlock/fingerprint_progress.ts",
+  "shortcut_input_ui/shortcut_input.ts",
   "shortcut_input_ui/shortcut_input_key.ts",
 ]
 
@@ -160,11 +161,21 @@ non_web_component_files_ts = [
   "quick_unlock/utils.ts",
   "typescript_utils/strict_query.ts",
   "quick_unlock/lock_screen_constants.ts",
+  "shortcut_input_ui/fake_shortcut_input_provider.ts",
+  "shortcut_input_ui/shortcut_utils.ts",
 ]
 
 mojo_files_ts = [
   "connectivity/passpoint.mojom-webui.ts",
   "hotspot/cros_hotspot_config.mojom-webui.ts",
+  "shortcut_input_ui/accelerator_actions.mojom-webui.ts",
+  "shortcut_input_ui/accelerator_keys.mojom-webui.ts",
+  "shortcut_input_ui/input_device_settings.mojom-webui.ts",
+  "shortcut_input_ui/shortcut_input_provider.mojom-webui.ts",
+  "shortcut_input_ui/extended_fkeys_modifier.mojom-webui.ts",
+  "shortcut_input_ui/modifier_key.mojom-webui.ts",
+  "shortcut_input_ui/simulate_right_click_modifier.mojom-webui.ts",
+  "shortcut_input_ui/six_pack_shortcut_modifier.mojom-webui.ts",
 ]
 
 icons_html_files = [
@@ -262,6 +273,7 @@ ts_library("build_ts") {
     ":preprocess_ts",
     "connectivity:copy_mojo_files",
     "hotspot:copy_mojo_files",
+    "shortcut_input_ui:copy_mojo_files",
   ]
 }
 
@@ -432,6 +444,7 @@ generate_definitions_js_files = [
   "quick_unlock/setup_pin_keyboard.html.js",
   "shortcut_input_ui/shortcut_input_key.html.js",
   "shortcut_input_ui/icons.html.js",
+  "shortcut_input_ui/shortcut_input.html.js",
   "traffic_counters/traffic_counters_adapter.js",
   "util.js",
 ]

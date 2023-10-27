@@ -13,62 +13,10 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './shortcut_input_key.html.js';
+import {KeyInputState, KeyToIconNameMap} from './shortcut_utils.js';
 
 export const META_KEY = 'meta';
 export const LWIN_KEY = 'Meta';
-
-// The keys in this map are pulled from the file:
-// ui/events/keycodes/dom/dom_code_data.inc
-export const KeyToIconNameMap: {[key: string]: string|undefined} = {
-  'ArrowDown': 'arrow-down',
-  'ArrowLeft': 'arrow-left',
-  'ArrowRight': 'arrow-right',
-  'ArrowUp': 'arrow-up',
-  'AudioVolumeDown': 'volume-down',
-  'AudioVolumeMute': 'volume-mute',
-  'AudioVolumeUp': 'volume-up',
-  'BrightnessDown': 'display-brightness-down',
-  'BrightnessUp': 'display-brightness-up',
-  'BrowserBack': 'back',
-  'BrowserForward': 'forward',
-  'BrowserHome': 'browser-home',
-  'BrowserRefresh': 'refresh',
-  'BrowserSearch': 'browser-search',
-  'ContextMenu': 'menu',
-  'EmojiPicker': 'emoji-picker',
-  'EnableOrToggleDictation': 'dictation-toggle',
-  'KeyboardBacklightToggle': 'keyboard-brightness-toggle',
-  'KeyboardBrightnessUp': 'keyboard-brightness-up',
-  'KeyboardBrightnessDown': 'keyboard-brightness-down',
-  'LaunchApplication1': 'overview',
-  'LaunchApplication2': 'calculator',
-  'LaunchAssistant': 'assistant',
-  'LaunchMail': 'launch-mail',
-  'MediaFastForward': 'fast-forward',
-  'MediaPause': 'pause',
-  'MediaPlay': 'play',
-  'MediaPlayPause': 'play-pause',
-  'MediaTrackNext': 'next-track',
-  'MediaTrackPrevious': 'last-track',
-  'MicrophoneMuteToggle': 'microphone-mute',
-  'ModeChange': 'globe',
-  'ViewAllApps': 'view-all-apps',
-  'Power': 'power',
-  'PrintScreen': 'screenshot',
-  'PrivacyScreenToggle': 'electronic-privacy-screen',
-  'Settings': 'settings',
-  'Standby': 'lock',
-  'ZoomToggle': 'fullscreen',
-};
-
-/**
- * Refers to the state of an 'input-key' item.
- */
-export enum KeyInputState {
-  NOT_SELECTED = 'not-selected',
-  MODIFIER_SELECTED = 'modifier-selected',
-  ALPHANUMERIC_SELECTED = 'alpha-numeric-selected',
-}
 
 /**
  * @fileoverview

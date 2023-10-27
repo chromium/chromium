@@ -30,6 +30,7 @@ ts_library("build_ts") {
     "post_message_api/post_message_api_client_test.js",
     "post_message_api/post_message_api_test.js",
     "shortcut_input_key_test.ts",
+    "shortcut_input_test.ts",
     "typescript_utils/strict_query_test.ts",
   ]
   deps = [

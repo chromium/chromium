@@ -1,0 +1,68 @@
+<style>
+  .flex-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  #confirmContainer {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #container:focus {
+    outline: none;
+  }
+
+  #keySeparator {
+    align-items: center;
+    display: flex;
+    padding-inline-end: 8px;
+  }
+</style>
+
+<div id="container" class="flex-row" tabindex="-1">
+  <template is="dom-if" if="[[shouldShowConfirmView(isCapturing)]]">
+    <div id="confirmContainer">
+      <template is="dom-repeat" items="[[modifiers]]">
+        <shortcut-input-key key="[[item]]" key-state="modifier-selected">
+        </shortcut-input-key>
+      </template>
+      <template is="dom-if"
+          if="[[shouldShowSeparator(showSeparator, modifiers)]]">
+        <div id="keySeparator"> + </div>
+      </template>
+      <template is="dom-if" if="[[shouldShowSelectedKey(pendingKeyEvent.*)]]">
+        <shortcut-input-key id="confirmKey"
+            key="[[getKey(pendingKeyEvent.*)]]"
+            key-state="alpha-numeric-selected">
+        </shortcut-input-key>
+      </template>
+    </div>
+  </template>
+  <template is="dom-if" if="[[shouldShowEditView(isCapturing)]]">
+    <div id="editContainer" class="flex-row">
+      <shortcut-input-key id="ctrlKey"
+          key="ctrl"
+          key-state="[[getCtrlState(pendingKeyEvent.*)]]">
+      </shortcut-input-key>
+      <shortcut-input-key id="altKey"
+          key="alt"
+          key-state="[[getAltState(pendingKeyEvent.*)]]">
+      </shortcut-input-key>
+      <shortcut-input-key id="shiftKey"
+          key="shift"
+          key-state="[[getShiftState(pendingKeyEvent.*)]]">
+      </shortcut-input-key>
+      <shortcut-input-key id="searchKey"
+          key="meta"
+          key-state="[[getSearchState(pendingKeyEvent.*)]]">
+      </shortcut-input-key>
+      <div id="keySeparator"> + </div>
+      <shortcut-input-key id="pendingKey"
+          key="[[getKey(pendingKeyEvent.*)]]"
+          key-state="[[getKeyState(pendingKeyEvent.*)]]">
+      </shortcut-input-key>
+    </div>
+  </template>
+</div>
