@@ -33,7 +33,8 @@ class ScriptResultQueue;
 //  For compatibility with legacy scripts, background page contexts can choose
 //  send results via window.domAutomationController.send(). New code should not
 //  do this.
-// This class is designed for single-use executions.
+// This class is designed for single-use executions and is only meant to be used
+// in tests.
 class BackgroundScriptExecutor {
  public:
   // The manner in which the script will use to send the result.
