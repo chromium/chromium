@@ -1848,8 +1848,13 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
-                       Permission_AutodeniedUnderServiceDomain) {
+                       Permission_PromptOrDenyUnderServiceDomain) {
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  EnsureUserInteractionOn(kHostA);
   SetBlockThirdPartyCookies(true);
+
   base::HistogramTester histogram_tester;
 
   NavigateToPageWithFrame(kHostD);
@@ -1861,6 +1866,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
   // The promise should be rejected; `kHostD` is a service domain.
   EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(prompt_factory()->TotalRequestCount(),
+            PermissionStorageAccessAPIFeatureEnabled() ? 1 : 0);
 
   NavigateFrameTo(EchoCookiesURL(kHostA));
 
@@ -1868,10 +1875,12 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   content::FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(
-      histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
-                                      RequestOutcome::kDeniedByPrerequisites),
-      Gt(0));
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kRequestOutcomeHistogram,
+                  PermissionStorageAccessAPIFeatureEnabled()
+                      ? RequestOutcome::kDeniedByUser
+                      : RequestOutcome::kDeniedByFirstPartySet),
+              Gt(0));
   // Ensure that the denied state is not exposed to developers, per the spec.
   EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
 }
