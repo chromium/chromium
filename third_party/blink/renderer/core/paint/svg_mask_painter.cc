@@ -51,6 +51,32 @@ LayoutSVGResourceMasker* ResolveElementReference(SVGResource* mask_resource,
   return masker;
 }
 
+void PaintSVGMask(LayoutSVGResourceMasker* masker,
+                  const LayoutObject& layout_object,
+                  GraphicsContext& context) {
+  const ComputedStyle& style = layout_object.StyleRef();
+  const gfx::RectF reference_box =
+      SVGResources::ReferenceBoxForEffects(layout_object);
+  const AffineTransform content_transformation = MaskToContentTransform(
+      *masker, reference_box,
+      layout_object.IsSVGForeignObject() ? style.EffectiveZoom() : 1);
+  SubtreeContentTransformScope content_transform_scope(content_transformation);
+  PaintRecord record = masker->CreatePaintRecord();
+
+  context.Save();
+  context.ConcatCTM(content_transformation);
+  bool needs_luminance_layer =
+      masker->StyleRef().MaskType() == EMaskType::kLuminance;
+  if (needs_luminance_layer) {
+    context.BeginLayer(cc::ColorFilter::MakeLuma());
+  }
+  context.DrawRecord(std::move(record));
+  if (needs_luminance_layer) {
+    context.EndLayer();
+  }
+  context.Restore();
+}
+
 }  // namespace
 
 void SVGMaskPainter::Paint(GraphicsContext& context,
@@ -90,25 +116,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   SECURITY_DCHECK(!masker->SelfNeedsFullLayout());
   masker->ClearInvalidationMask();
 
-  const gfx::RectF reference_box =
-      SVGResources::ReferenceBoxForEffects(layout_object);
-  const AffineTransform content_transformation = MaskToContentTransform(
-      *masker, reference_box,
-      layout_object.IsSVGForeignObject() ? style.EffectiveZoom() : 1);
-  SubtreeContentTransformScope content_transform_scope(content_transformation);
-  PaintRecord record = masker->CreatePaintRecord();
-
-  context.Save();
-  context.ConcatCTM(content_transformation);
-  bool needs_luminance_layer =
-      masker->StyleRef().MaskType() == EMaskType::kLuminance;
-  if (needs_luminance_layer) {
-    context.BeginLayer(cc::ColorFilter::MakeLuma());
-  }
-  context.DrawRecord(std::move(record));
-  if (needs_luminance_layer)
-    context.EndLayer();
-  context.Restore();
+  PaintSVGMask(masker, layout_object, context);
 }
 
 PaintRecord SVGMaskPainter::PaintResource(SVGResource* mask_resource,
