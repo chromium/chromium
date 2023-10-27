@@ -39,10 +39,10 @@ bool FindEthernetInterfaces(io_iterator_t* matching_services) {
   if (!primary_interface)
     return false;
 
-  CFDictionarySetValue(
-      primary_interface, CFSTR(kIOPrimaryInterface), kCFBooleanTrue);
-  CFDictionarySetValue(
-      matching_dict, CFSTR(kIOPropertyMatchKey), primary_interface);
+  CFDictionarySetValue(primary_interface.get(), CFSTR(kIOPrimaryInterface),
+                       kCFBooleanTrue);
+  CFDictionarySetValue(matching_dict.get(), CFSTR(kIOPropertyMatchKey),
+                       primary_interface.get());
 
   kern_return_t kern_result = IOServiceGetMatchingServices(
       kIOMasterPortDefault, matching_dict.release(), matching_services);
@@ -63,7 +63,7 @@ bool GetMACAddressFromIterator(io_iterator_t primary_interface_iterator,
          primary_interface) {
     io_object_t primary_interface_parent;
     kern_return_t kern_result = IORegistryEntryGetParentEntry(
-        primary_interface, kIOServicePlane, &primary_interface_parent);
+        primary_interface.get(), kIOServicePlane, &primary_interface_parent);
     base::mac::ScopedIOObject<io_object_t> primary_interface_parent_deleter(
         primary_interface_parent);
     success = kern_result == KERN_SUCCESS;
@@ -75,7 +75,7 @@ bool GetMACAddressFromIterator(io_iterator_t primary_interface_iterator,
         IORegistryEntryCreateCFProperty(primary_interface_parent,
                                         CFSTR(kIOMACAddress),
                                         kCFAllocatorDefault, 0));
-    CFDataRef mac_data_data = base::apple::CFCast<CFDataRef>(mac_data);
+    CFDataRef mac_data_data = base::apple::CFCast<CFDataRef>(mac_data.get());
     if (mac_data_data) {
       CFDataGetBytes(
           mac_data_data, CFRangeMake(0, kIOEthernetAddressSize), buffer);
