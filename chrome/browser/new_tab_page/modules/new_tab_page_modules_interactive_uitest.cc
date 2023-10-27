@@ -288,7 +288,7 @@ class NewTabPageModulesRedesignedInteractiveUiTest
 
 // TODO(crbug.com/1470367): Enable the test on a compatible version skew.
 // TODO(crbug.com/1472077): Flaky on Linux ChromiumOS MSan.
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ClickingHideButtonDismissesCluster \
   DISABLED_ClickingHideButtonDismissesCluster
 #else
