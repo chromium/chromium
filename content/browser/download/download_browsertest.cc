@@ -4229,10 +4229,9 @@ class DownloadContentSameSiteCookieTest
       public ::testing::WithParamInterface<bool> {
  public:
   DownloadContentSameSiteCookieTest() {
-    if (DoesCookieSameSiteConsiderRedirectChain()) {
-      inner_feature_list_.InitAndEnableFeature(
-          net::features::kCookieSameSiteConsidersRedirectChain);
-    }
+    inner_feature_list_.InitWithFeatureState(
+        net::features::kCookieSameSiteConsidersRedirectChain,
+        DoesCookieSameSiteConsiderRedirectChain());
   }
 
   bool DoesCookieSameSiteConsiderRedirectChain() { return GetParam(); }

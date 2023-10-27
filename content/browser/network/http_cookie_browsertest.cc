@@ -44,10 +44,9 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
                               public ::testing::WithParamInterface<bool> {
  public:
   HttpCookieBrowserTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    if (DoesSameSiteConsiderRedirectChain()) {
-      feature_list_.InitAndEnableFeature(
-          net::features::kCookieSameSiteConsidersRedirectChain);
-    }
+    feature_list_.InitWithFeatureState(
+        net::features::kCookieSameSiteConsidersRedirectChain,
+        DoesSameSiteConsiderRedirectChain());
   }
 
   ~HttpCookieBrowserTest() override = default;
