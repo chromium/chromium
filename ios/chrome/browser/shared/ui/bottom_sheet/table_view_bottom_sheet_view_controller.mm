@@ -17,12 +17,6 @@ CGFloat const kTableViewEstimatedRowHeight = 75;
 // Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
 
-// TableView's width constraint multiplier in Portrait mode for iPhone only.
-CGFloat const kPortraitIPhoneTableViewWidthMultiplier = 0.95;
-
-// TableView's width constraint multiplier in all mode (except iPhone Portrait).
-CGFloat const kTableViewWidthMultiplier = 0.65;
-
 // Custom height for the gradient view of the bottom sheet.
 CGFloat const kCustomGradientViewHeight = 30;
 
@@ -37,12 +31,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 @interface TableViewBottomSheetViewController () {
   // Table view for the list of suggestions.
   UITableView* _tableView;
-
-  // TableView's width constraint in portrait mode.
-  NSLayoutConstraint* _portraitTableWidthConstraint;
-
-  // TableView's width constraint in landscape mode.
-  NSLayoutConstraint* _landscapeTableWidthConstraint;
 }
 
 @end
@@ -142,16 +130,11 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
   // Assign table view's width anchor now that it is in the same hierarchy as
   // the top view.
-  [self createTableViewWidthConstraint:self.view.layoutMarginsGuide];
+  [_tableView.widthAnchor
+      constraintEqualToAnchor:self.primaryActionButton.widthAnchor]
+      .active = YES;
 
   [self setUpBottomSheet];
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size
-       withTransitionCoordinator:
-           (id<UIViewControllerTransitionCoordinator>)coordinator {
-  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-  [self adjustTableViewWidthConstraint];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -243,29 +226,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         UISheetPresentationControllerDetentIdentifierMedium;
   }
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
-}
-
-// Creates the tableview's width constraints and set their initial active state.
-- (void)createTableViewWidthConstraint:(UILayoutGuide*)margins {
-  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-  _portraitTableWidthConstraint = [_tableView.widthAnchor
-      constraintGreaterThanOrEqualToAnchor:margins.widthAnchor
-                                multiplier:
-                                    (idiom == UIUserInterfaceIdiomPad)
-                                        ? kTableViewWidthMultiplier
-                                        : kPortraitIPhoneTableViewWidthMultiplier];
-  _landscapeTableWidthConstraint = [_tableView.widthAnchor
-      constraintGreaterThanOrEqualToAnchor:margins.widthAnchor
-                                multiplier:kTableViewWidthMultiplier];
-  [self adjustTableViewWidthConstraint];
-}
-
-// Change the tableview's width constraint based on the screen's orientation.
-- (void)adjustTableViewWidthConstraint {
-  BOOL isLandscape =
-      UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation);
-  _landscapeTableWidthConstraint.active = isLandscape;
-  _portraitTableWidthConstraint.active = !isLandscape;
 }
 
 @end
