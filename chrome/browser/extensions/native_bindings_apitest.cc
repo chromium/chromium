@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
-#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
@@ -30,7 +29,6 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/script_result_queue.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -137,11 +135,8 @@ class NativeBindingsRestrictedToDeveloperModeApiTest
   ~NativeBindingsRestrictedToDeveloperModeApiTest() override = default;
 
  private:
-  // The userScripts API is currently behind a channel and feature restriction.
-  // TODO(crbug.com/1472902): Remove channel override when user scripts API goes
-  // to stable.
-  ScopedCurrentChannel current_channel_override_{
-      version_info::Channel::UNKNOWN};
+  // The userScripts API is currently behind a feature restriction.
+  // TODO(crbug.com/1472902): Remove once the feature is stable for awhile.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

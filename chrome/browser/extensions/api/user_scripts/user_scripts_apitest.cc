@@ -6,7 +6,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_util.h"
@@ -55,11 +54,8 @@ class UserScriptsAPITest : public ExtensionApiTest {
   // for most tests because the `userScripts` API is restricted to dev mode.
   virtual bool ShouldEnableDevMode() { return true; }
 
-  // The userScripts API is currently behind a channel and feature restriction.
-  // TODO(crbug.com/1472902): Remove channel override when user scripts API goes
-  // to stable.
-  ScopedCurrentChannel current_channel_override_{
-      version_info::Channel::UNKNOWN};
+  // The userScripts API is currently behind a feature restriction.
+  // TODO(crbug.com/1472902): Remove once the feature is stable for awhile.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

@@ -733,11 +733,8 @@ class ScriptingAndUserScriptsAPITest : public ScriptingAPITest {
   }
 
  private:
-  // The userScripts API is currently behind a channel and feature restriction.
-  // TODO(crbug.com/1472902): Remove channel override when user scripts API goes
-  // to stable.
-  ScopedCurrentChannel current_channel_override_{
-      version_info::Channel::UNKNOWN};
+  // The userScripts API is currently behind a feature restriction.
+  // TODO(crbug.com/1472902): Remove once the feature is stable for awhile.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

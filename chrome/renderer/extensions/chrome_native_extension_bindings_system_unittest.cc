@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "components/version_info/channel.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/dispatcher.h"
@@ -65,15 +63,13 @@ TEST_F(NativeExtensionBindingsSystemUnittest, InitializeContext) {
 
 TEST_F(NativeExtensionBindingsSystemUnittest,
        RestrictDeveloperModeAPIsUserIsInDeveloperMode) {
-  // The userScripts API is currently behind a channel and feature restriction.
-  // TODO(crbug.com/1472902): Remove channel override when user scripts API goes
-  // to stable.
+  // The userScripts API is currently behind a feature restriction.
+  // TODO(crbug.com/1472902): Remove once the feature is stable for awhile.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {extensions_features::kApiUserScripts,
        extensions_features::kRestrictDeveloperModeAPIs},
       /*disabled_features=*/{});
-  ScopedCurrentChannel current_channel_override(version_info::Channel::UNKNOWN);
 
   // With kDeveloperModeRestriction enabled, developer mode-only APIs
   // should be available if and only if the user is in dev mode.
@@ -130,15 +126,13 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 
 TEST_F(NativeExtensionBindingsSystemUnittest,
        RestrictDeveloperModeAPIsUserIsNotInDeveloperModeAndHasPermission) {
-  // The userScripts API is currently behind a channel and feature restriction.
-  // TODO(crbug.com/1472902): Remove channel override when user scripts API goes
-  // to stable.
+  // The userScripts API is currently behind a feature restriction.
+  // TODO(crbug.com/1472902): Remove once the feature is stable for awhile.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {extensions_features::kApiUserScripts,
        extensions_features::kRestrictDeveloperModeAPIs},
       /*disabled_features=*/{});
-  ScopedCurrentChannel current_channel_override(version_info::Channel::UNKNOWN);
 
   // With kDeveloperModeRestriction enabled, developer mode-only APIs
   // should not be available if the user is not in dev mode.
@@ -176,15 +170,13 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 TEST_F(
     NativeExtensionBindingsSystemUnittest,
     RestrictDeveloperModeAPIsUserIsNotInDeveloperModeAndDoesNotHavePermission) {
-  // The userScripts API is currently behind a channel and feature restriction.
-  // TODO(crbug.com/1472902): Remove channel override when user scripts API goes
-  // to stable.
+  // The userScripts API is currently behind a feature restriction.
+  // TODO(crbug.com/1472902): Remove once the feature is stable for awhile.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {extensions_features::kApiUserScripts,
        extensions_features::kRestrictDeveloperModeAPIs},
       /*disabled_features=*/{});
-  ScopedCurrentChannel current_channel_override(version_info::Channel::UNKNOWN);
 
   SetCurrentDeveloperMode(kRendererProfileId, false);
 
