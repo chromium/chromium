@@ -591,7 +591,7 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_NetworkIsolationKeyIsTransient) {
 
   ASSERT_TRUE(CanServeFromMemoryCache(request));
   ASSERT_FALSE(CanServeFromMemoryCache(
-      request, net::NetworkIsolationKey::CreateTransient()));
+      request, net::NetworkIsolationKey::CreateTransientForTesting()));
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_InvalidURL) {

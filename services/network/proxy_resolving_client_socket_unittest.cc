@@ -172,9 +172,9 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyWithH2Proxy) {
       net::SpdySessionDependencies::SpdyCreateSession(&session_deps);
 
   net::NetworkIsolationKey kNetworkIsolationKey1 =
-      net::NetworkIsolationKey::CreateTransient();
+      net::NetworkIsolationKey::CreateTransientForTesting();
   net::NetworkIsolationKey kNetworkIsolationKey2 =
-      net::NetworkIsolationKey::CreateTransient();
+      net::NetworkIsolationKey::CreateTransientForTesting();
   net::NetworkAnonymizationKey kNetworkAnonymizationKey1 =
       net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
           kNetworkIsolationKey1);

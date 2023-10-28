@@ -67,8 +67,7 @@ NetworkIsolationKey& NetworkIsolationKey::operator=(
 NetworkIsolationKey& NetworkIsolationKey::operator=(
     NetworkIsolationKey&& network_isolation_key) = default;
 
-// TODO(awillia): Rename to `CreateTransientForTesting()`.
-NetworkIsolationKey NetworkIsolationKey::CreateTransient() {
+NetworkIsolationKey NetworkIsolationKey::CreateTransientForTesting() {
   SchemefulSite site_with_opaque_origin;
   return NetworkIsolationKey(site_with_opaque_origin, site_with_opaque_origin);
 }

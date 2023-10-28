@@ -71,7 +71,7 @@ TEST_P(NetworkIsolationKeyMojomTraitsTestWithNikMode, SerializeAndDeserialize) {
   base::UnguessableToken token = base::UnguessableToken::Create();
   std::vector<net::NetworkIsolationKey> keys = {
       net::NetworkIsolationKey(),
-      net::NetworkIsolationKey::CreateTransient(),
+      net::NetworkIsolationKey::CreateTransientForTesting(),
       net::NetworkIsolationKey(url::Origin::Create(GURL("http://a.test/")),
                                url::Origin()),
       net::NetworkIsolationKey(url::Origin::Create(GURL("http://a.test/")),
