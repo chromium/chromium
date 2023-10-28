@@ -4968,6 +4968,8 @@ static_library("browser") {
       "metrics/perf/windowed_incognito_observer.h",
       "metrics/profile_pref_names.cc",
       "metrics/profile_pref_names.h",
+      "metrics/structured/ash_event_storage.cc",
+      "metrics/structured/ash_event_storage.h",
       "metrics/structured/ash_structured_metrics_recorder.cc",
       "metrics/structured/ash_structured_metrics_recorder.h",
       "metrics/structured/cros_events_processor.cc",

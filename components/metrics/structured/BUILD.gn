@@ -10,6 +10,7 @@ import("//third_party/protobuf/proto_library.gni")
 # events with several attached metrics.
 static_library("structured") {
   sources = [
+    "event_storage.h",
     "key_data.cc",
     "key_data.h",
     "key_data_provider.h",
@@ -41,11 +42,11 @@ static_library("structured") {
   public_deps = [
     ":common",
     ":events",
+    ":storage",
     "//third_party/metrics_proto",
   ]
 
   deps = [
-    ":storage",
     ":structured_events",
     ":structured_metrics_validator",
     "//base",

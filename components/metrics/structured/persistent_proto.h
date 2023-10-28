@@ -11,8 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 // The result of reading a backing file from disk.
 enum class ReadStatus {
   kOk = 0,
@@ -121,7 +120,6 @@ class PersistentProto {
   base::WeakPtrFactory<PersistentProto> weak_factory_{this};
 };
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured
 
 #endif  // COMPONENTS_METRICS_STRUCTURED_PERSISTENT_PROTO_H_
