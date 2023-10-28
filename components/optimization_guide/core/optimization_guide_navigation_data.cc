@@ -52,7 +52,7 @@ void OptimizationGuideNavigationData::RecordOptimizationGuideUKM() const {
   if (!registered_optimization_types_.empty()) {
     int64_t types_bitmask = 0;
     for (const auto& optimization_type : registered_optimization_types_) {
-      types_bitmask |= (1 << static_cast<int>(optimization_type));
+      types_bitmask |= (int64_t{1} << static_cast<int>(optimization_type));
     }
     builder.SetRegisteredOptimizationTypes(types_bitmask);
     did_record_metric = true;
@@ -60,7 +60,7 @@ void OptimizationGuideNavigationData::RecordOptimizationGuideUKM() const {
   if (!registered_optimization_targets_.empty()) {
     int64_t targets_bitmask = 0;
     for (const auto& optimization_target : registered_optimization_targets_) {
-      targets_bitmask |= (1 << static_cast<int>(optimization_target));
+      targets_bitmask |= (int64_t{1} << static_cast<int>(optimization_target));
     }
     builder.SetRegisteredOptimizationTargets(targets_bitmask);
     did_record_metric = true;
