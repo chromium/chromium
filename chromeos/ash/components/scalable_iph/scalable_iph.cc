@@ -23,6 +23,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/scalable_iph/config.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -276,6 +277,15 @@ UiType ParseUiType(Logger* logger, const base::Feature& feature) {
   return UiType::kNone;
 }
 
+UiType GetUiType(Logger* logger, const base::Feature& feature) {
+  std::unique_ptr<Config> config = GetConfig(feature);
+  if (config) {
+    return config->ui_type;
+  }
+
+  return ParseUiType(logger, feature);
+}
+
 ActionType ParseActionType(const std::string& action_type_string) {
   auto it = GetActionTypesMap().find(action_type_string);
   if (it == GetActionTypesMap().end()) {
@@ -420,6 +430,17 @@ std::unique_ptr<NotificationParams> ParseNotificationParams(
   return param;
 }
 
+std::unique_ptr<NotificationParams> GetNotificationParams(
+    Logger* logger,
+    const base::Feature& feature) {
+  std::unique_ptr<Config> config = GetConfig(feature);
+  if (config) {
+    return std::move(config->notification_params);
+  }
+
+  return ParseNotificationParams(logger, feature);
+}
+
 BubbleIcon ParseBubbleIcon(const std::string& icon_string) {
   auto it = GetBubbleIconsMap().find(icon_string);
   if (it == GetBubbleIconsMap().end()) {
@@ -490,7 +511,22 @@ std::unique_ptr<BubbleParams> ParseBubbleParams(Logger* logger,
   return param;
 }
 
+std::unique_ptr<BubbleParams> GetBubbleParams(Logger* logger,
+                                              const base::Feature& feature) {
+  std::unique_ptr<Config> config = GetConfig(feature);
+  if (config) {
+    return std::move(config->bubble_params);
+  }
+
+  return ParseBubbleParams(logger, feature);
+}
+
 bool ValidateVersionNumber(const base::Feature& feature) {
+  std::unique_ptr<Config> config = GetConfig(feature);
+  if (config) {
+    return config->version_number == kCurrentVersionNumber;
+  }
+
   std::string version_number_value =
       GetParamValue(feature, kCustomParamsVersionNumberParamName);
   if (version_number_value.empty()) {
@@ -861,11 +897,11 @@ void ScalableIph::CheckTriggerConditions(
            "for "
         << feature->name;
 
-    UiType ui_type = ParseUiType(GetLogger(), *feature);
+    UiType ui_type = GetUiType(GetLogger(), *feature);
     switch (ui_type) {
       case UiType::kNotification: {
         std::unique_ptr<NotificationParams> notification_params =
-            ParseNotificationParams(GetLogger(), *feature);
+            GetNotificationParams(GetLogger(), *feature);
         if (!notification_params) {
           SCALABLE_IPH_LOG(GetLogger())
               << "Failed to parse notification params for " << feature->name
@@ -880,7 +916,7 @@ void ScalableIph::CheckTriggerConditions(
       }
       case UiType::kBubble: {
         std::unique_ptr<BubbleParams> bubble_params =
-            ParseBubbleParams(GetLogger(), *feature);
+            GetBubbleParams(GetLogger(), *feature);
         if (!bubble_params) {
           SCALABLE_IPH_LOG(GetLogger())
               << "Failed to parse bubble params for " << feature->name

@@ -2325,6 +2325,16 @@ BASE_FEATURE(kScalableIphDebug,
              "ScalableIphDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Set all ScalableIph client side config to tracking only config.
+BASE_FEATURE(kScalableIphTrackingOnly,
+             "ScalableIphTrackingOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use client side config.
+BASE_FEATURE(kScalableIphClientConfig,
+             "ScalableIphClientConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the jelly colors will be used in the scanning app. Requires
 // jelly-colors flag to also be enabled.
 BASE_FEATURE(kScanningAppJelly,
@@ -4049,6 +4059,14 @@ bool IsScalableIphEnabled() {
 
 bool IsScalableIphDebugEnabled() {
   return base::FeatureList::IsEnabled(kScalableIphDebug);
+}
+
+bool IsScalableIphTrackingOnlyEnabled() {
+  return base::FeatureList::IsEnabled(kScalableIphTrackingOnly);
+}
+
+bool IsScalableIphClientConfigEnabled() {
+  return base::FeatureList::IsEnabled(kScalableIphClientConfig);
 }
 
 bool IsSeaPenEnabled() {

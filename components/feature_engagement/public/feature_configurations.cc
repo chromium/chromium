@@ -13,6 +13,9 @@
 #if BUILDFLAG(IS_IOS)
 #include "components/feature_engagement/public/ios_promo_feature_configuration.h"
 #endif  // BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/feature_engagement/public/scalable_iph_feature_configurations.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -1871,6 +1874,13 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return ios_promo_feature_config;
   }
 #endif  // BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (absl::optional<FeatureConfig> scalable_iph_feature_config =
+          GetScalableIphFeatureConfig(feature)) {
+    return scalable_iph_feature_config;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (kIPHDummyFeature.name == feature->name) {
     // Only used for tests. Various magic tricks are used below to ensure this
