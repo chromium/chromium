@@ -1357,9 +1357,6 @@ bool SplitViewController::BoundsChangeIsFromVKAndAllowed(
 }
 
 void SplitViewController::AddObserver(SplitViewObserver* observer) {
-  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
-    return;
-  }
   observers_.AddObserver(observer);
 }
 

@@ -654,6 +654,10 @@ bool ShouldRoundThumbnailWindow(views::View* backdrop_view,
 }
 
 bool IsFasterSplitScreenOrSnapGroupArm1Enabled() {
+  if (Shell::Get()->IsInTabletMode()) {
+    // FasterSplitScreen is not supported in tablet mode.
+    return false;
+  }
   if (features::IsFasterSplitScreenSetupEnabled()) {
     return true;
   }

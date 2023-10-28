@@ -555,7 +555,11 @@ void WindowState::OnWMEvent(const WMEvent* event) {
   if (snap_event && IsSnapped()) {
     const WindowSnapActionSource snap_action_source =
         snap_event->snap_action_source();
-    if (features::IsFasterSplitScreenSetupEnabled()) {
+    if (features::IsFasterSplitScreenSetupEnabled() &&
+        !Shell::Get()->IsInTabletMode()) {
+      // SplitViewController will start the partial overview session, no need
+      // for SplitViewOverviewSession.
+      // TODO(sophiewen): See if checking tablet mode is necessary.
       window_util::MaybeStartSplitViewOverview(window_, snap_action_source);
       return;
     }

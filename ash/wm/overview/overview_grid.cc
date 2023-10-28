@@ -2309,10 +2309,9 @@ void OverviewGrid::OnSplitViewStateChanged(
   }
 
   if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
-    // When an activated is auto snapped, it will send a state change and try to
-    // end overview here. Ignore split view state when `kFasterSplitScreenSetup`
-    // or `kSnapGroup` arm1 is enabled.
-    RefreshGridBounds(/*animate=*/false);
+    // When an activated window is auto snapped, it will send a state change and
+    // try to end overview here. Ignore split view state when
+    // `kFasterSplitScreenSetup` or `kSnapGroup` arm1 is enabled.
     return;
   }
 
@@ -2346,6 +2345,13 @@ void OverviewGrid::OnSplitViewStateChanged(
 }
 
 void OverviewGrid::OnSplitViewDividerPositionChanged() {
+  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+    // If `IsFasterSplitScreenOrSnapGroupArm1Enabled` is true,
+    // `SplitViewOverviewSession` will manually update the bounds so we don't
+    // need to update here.
+    return;
+  }
+
   SetBoundsAndUpdatePositions(
       GetGridBoundsInScreen(root_window_,
                             /*window_dragging_state=*/absl::nullopt,

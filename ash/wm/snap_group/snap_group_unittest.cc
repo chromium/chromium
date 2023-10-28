@@ -229,8 +229,11 @@ SplitViewOverviewSession* VerifySplitViewOverviewSession(aura::Window* window) {
   EXPECT_TRUE(expected_grid_bounds.Contains(GetOverviewGridBounds()));
   // Hotseat may be on the bottom of the work area.
   EXPECT_TRUE(work_area_bounds().Contains(expected_grid_bounds));
-  EXPECT_TRUE(
-      GetOverviewGridForRoot(window->GetRootWindow())->no_windows_widget());
+
+  if (!Shell::Get()->IsInTabletMode()) {
+    EXPECT_TRUE(
+        GetOverviewGridForRoot(window->GetRootWindow())->no_windows_widget());
+  }
 
   return split_view_overview_session;
 }
@@ -635,8 +638,10 @@ TEST_F(FasterSplitScreenTest,
 
 // Tests the histograms for the split view overview session exit points are
 // recorded correctly in tablet mode.
+// SplitViewOverviewSession should not support tablet mode.
+// TODO(sophiewen): Re-enable or delete this.
 TEST_F(FasterSplitScreenTest,
-       SplitViewOverviewSessionExitPointTabletHistograms) {
+       DISABLED_SplitViewOverviewSessionExitPointTabletHistograms) {
   UpdateDisplay("800x600");
   SwitchToTabletMode();
   EXPECT_TRUE(Shell::Get()->IsInTabletMode());
