@@ -593,10 +593,18 @@ void av1_warp_affine_neon(const int32_t *mat, const uint8_t *ref, int width, int
 #define av1_warp_affine av1_warp_affine_neon
 
 void av1_wedge_compute_delta_squares_c(int16_t *d, const int16_t *a, const int16_t *b, int N);
-#define av1_wedge_compute_delta_squares av1_wedge_compute_delta_squares_c
+void av1_wedge_compute_delta_squares_neon(int16_t* d,
+                                          const int16_t* a,
+                                          const int16_t* b,
+                                          int N);
+#define av1_wedge_compute_delta_squares av1_wedge_compute_delta_squares_neon
 
 int8_t av1_wedge_sign_from_residuals_c(const int16_t *ds, const uint8_t *m, int N, int64_t limit);
-#define av1_wedge_sign_from_residuals av1_wedge_sign_from_residuals_c
+int8_t av1_wedge_sign_from_residuals_neon(const int16_t* ds,
+                                          const uint8_t* m,
+                                          int N,
+                                          int64_t limit);
+#define av1_wedge_sign_from_residuals av1_wedge_sign_from_residuals_neon
 
 uint64_t av1_wedge_sse_from_residuals_c(const int16_t *r1, const int16_t *d, const uint8_t *m, int N);
 uint64_t av1_wedge_sse_from_residuals_neon(const int16_t *r1, const int16_t *d, const uint8_t *m, int N);
