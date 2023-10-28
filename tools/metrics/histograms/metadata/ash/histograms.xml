@@ -6473,6 +6473,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ShortcutCustomization.ModifyType.{ActionName}"
+    enum="ShortcutCustomizationModificationType" expires_after="2024-08-17">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record what modification actions that were done for {ActionName}.
+  </summary>
+  <token key="ActionName" variants="AcceleratorActionName"/>
+</histogram>
+
 <histogram
     name="Ash.ShortcutCustomization.RemoveDefaultAccelerator.{ActionName}"
     units="Shortcuts" expires_after="2024-08-17">

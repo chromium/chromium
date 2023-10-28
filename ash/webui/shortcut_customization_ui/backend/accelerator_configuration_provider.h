@@ -50,6 +50,16 @@ enum class ShortcutCustomizationAction {
   kMaxValue = kResetAll,
 };
 
+// Enum for histograms, must be kept in sync with the equivalent enum in
+// enums.xml - `ShortcutCustomizationModificationType`.
+enum class ModificationType {
+  kAdd,
+  kEdit,
+  kRemove,
+  kReset,
+  kMaxValue = kReset,
+};
+
 class AcceleratorConfigurationProvider
     : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
       public ui::InputDeviceEventObserver,

@@ -100579,6 +100579,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Developer"/>
 </enum>
 
+<enum name="ShortcutCustomizationModificationType">
+  <summary>
+    The modification actions that can be done for an accelerator action.
+  </summary>
+  <int value="0" label="Add"/>
+  <int value="1" label="Edit"/>
+  <int value="2" label="Remove"/>
+  <int value="3" label="Reset"/>
+</enum>
+
 <enum name="ShortcutsCreationResult">
   <summary>Result of creating shortcuts for PWA.</summary>
   <int value="0" label="Success"/>

@@ -34,6 +34,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -1206,6 +1207,11 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAccelerator) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kRemoveAccelerator, 0);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kSwitchToNextIme)}),
+      shortcut_ui::ModificationType::kRemove, 0);
 
   // Initialize with all custom accelerators.
   const AcceleratorData test_data[] = {
@@ -1253,6 +1259,11 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAccelerator) {
             "Ash.ShortcutCustomization.CustomizationAction",
             ash::shortcut_ui::ShortcutCustomizationAction::kRemoveAccelerator,
             1);
+        histogram_tester_->ExpectBucketCount(
+            base::StrCat({"Ash.ShortcutCustomization.ModifyType.",
+                          GetAcceleratorActionName(
+                              AcceleratorAction::kSwitchToNextIme)}),
+            shortcut_ui::ModificationType::kRemove, 1);
       }));
   base::RunLoop().RunUntilIdle();
 }
@@ -1393,6 +1404,16 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreDefault) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kResetAction, 0);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kRemove, 0);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kReset, 0);
 
   // Initialize with all custom accelerators.
   const AcceleratorData test_data[] = {
@@ -1450,6 +1471,16 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreDefault) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kResetAction, 1);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kRemove, 1);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kReset, 1);
 
   // Verify the accelerator was restored.
   updated_accelerators = config->GetAllAccelerators();
@@ -1962,6 +1993,11 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNoConflict) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kAddAccelerator, 0);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kAdd, 0);
 
   // Initialize default accelerators.
   const AcceleratorData test_data[] = {
@@ -2005,6 +2041,11 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNoConflict) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kAddAccelerator, 1);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kAdd, 1);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddHiddenAccelerator) {
@@ -2594,6 +2635,11 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceDefaultAccelerator) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kReplaceAccelerator, 0);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kEdit, 0);
 
   // Initialize default accelerators.
   const AcceleratorData test_data[] = {
@@ -2632,6 +2678,11 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceDefaultAccelerator) {
       GetEncodedShortcut(new_accelerator.modifiers(),
                          new_accelerator.key_code()),
       1);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kEdit, 1);
 
   const AcceleratorData updated_test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
