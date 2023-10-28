@@ -88,7 +88,8 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
     friend class Lock;
     friend class base::RefCounted<LockHandle>;
 
-    explicit LockHandle(base::WeakPtr<Lock> lock);
+    LockHandle(base::WeakPtr<Lock> lock,
+               scoped_refptr<LockHandle> parent_lock_handle);
 
     // On destruction, lets its `lock_` know it is no longer held.
     ~LockHandle();
@@ -98,6 +99,8 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
     base::WeakPtr<Lock> lock_ GUARDED_BY_CONTEXT(sequence_checker_);
     const LockType type_;
     const bool is_exclusive_;
+
+    const scoped_refptr<LockHandle> parent_lock_handle_;
   };
 
   explicit FileSystemAccessLockManager(
@@ -131,8 +134,7 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
  private:
   friend Lock;
 
-  scoped_refptr<LockHandle> TakeLockImpl(const EntryLocator& entry_locator,
-                                         LockType lock_type);
+  Lock* TakeLockImpl(const EntryLocator& entry_locator, LockType lock_type);
 
   bool IsContentiousImpl(const EntryLocator& entry_locator, LockType lock_type);
 
