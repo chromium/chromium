@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -16,7 +16,7 @@
 
 from __future__ import print_function
 
-import imp
+import importlib.util
 import optparse
 import os
 import shlex
@@ -24,7 +24,10 @@ import shlex
 ycm_module_path = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)),
     '../vim/chromium.ycm_extra_conf.py'))
-ycm_extra_conf = imp.load_source('ycm_extra_conf', ycm_module_path)
+spec = importlib.util.spec_from_file_location("ycm_extra_conf", ycm_module_path)
+ycm_extra_conf = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(ycm_extra_conf)
+
 
 def main():
   usage = "usage: %prog [options] file"

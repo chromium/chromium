@@ -10,7 +10,7 @@ Currently the tests only run on Linux and require 'ninja' to be available on
 PATH. Due to these requirements, the tests should only be run on upload.
 """
 
-import imp
+import importlib.util
 import os
 import shutil
 import stat
@@ -123,8 +123,10 @@ class Chromium_ycmExtraConfTest(unittest.TestCase):
     sys.path.append(os.path.join(self.actual_chrome_root, 'tools', 'vim'))
     self.test_data_path = os.path.join(self.actual_chrome_root, 'tools', 'vim',
                                        'tests', 'data')
-    self.ycm_extra_conf = imp.load_source('ycm_extra_conf',
-                                          'chromium.ycm_extra_conf.py')
+    ycm_extra_conf_spec = importlib.util.spec_from_file_location(
+        'ycm_extra_conf', 'chromium.ycm_extra_conf.py')
+    self.ycm_extra_conf = importlib.util.module_from_spec(ycm_extra_conf_spec)
+    ycm_extra_conf_spec.loader.exec_module(self.ycm_extra_conf)
     self.test_root = tempfile.mkdtemp()
     self.SetUpFakeChromeTreeBelowPath()
 
