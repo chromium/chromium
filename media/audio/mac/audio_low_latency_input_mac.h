@@ -134,14 +134,10 @@ class MEDIA_EXPORT AUAudioInputStream
   base::TimeTicks GetCaptureTime(const AudioTimeStamp* input_time_stamp);
 
   // Gets the number of channels for a stream of audio data.
-  int GetNumberOfChannelsFromStream();
+  int GetNumberOfChannelsForDevice();
 
   // Issues the OnError() callback to the |sink_|.
   void HandleError(OSStatus err);
-
-  // Helper function to check if the volume control is available on specific
-  // channel.
-  bool IsVolumeSettableOnChannel(int channel);
 
   // Helper methods to set and get atomic |input_callback_is_active_|.
   void SetInputCallbackIsActive(bool active);
@@ -207,10 +203,6 @@ class MEDIA_EXPORT AUAudioInputStream
 
   // Fixed capture hardware latency.
   base::TimeDelta hardware_latency_;
-
-  // The number of channels in each frame of audio data, which is used
-  // when querying the volume of each channel.
-  int number_of_channels_in_frame_;
 
   // FIFO used to accumulates recorded data.
   media::AudioBlockFifo fifo_;

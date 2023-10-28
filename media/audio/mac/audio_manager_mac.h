@@ -108,6 +108,19 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
   static AudioDeviceID GetAudioDeviceIdByUId(bool is_input,
                                              const std::string& device_id);
 
+  // Returns the maximum microphone analog volume or 0.0 if device does not
+  // have volume control.
+  static double GetMaxInputVolume(AudioDeviceID device_id);
+
+  // Sets the microphone analog volume, with range [0.0, 1.0] inclusive.
+  static void SetInputVolume(AudioDeviceID device_id, double volume);
+
+  // Returns the microphone analog volume, with range [0.0, 1.0] inclusive.
+  static double GetInputVolume(AudioDeviceID device_id);
+
+  // Returns the current muting state for the microphone.
+  static bool IsMuted(AudioDeviceID device_id);
+
   // Returns a vector with the IDs of all devices related to the given
   // |device_id|. The vector is empty if there are no related devices or
   // if there is an error.
@@ -205,6 +218,14 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase,
 
   // Returns true if any active input stream is using the specified |device_id|.
   bool AudioDeviceIsUsedForInput(AudioDeviceID device_id);
+
+  // Helper function to check if the volume control is available on specific
+  // channel of a device.
+  static bool IsVolumeSettableOnChannel(AudioDeviceID device_id, int channel);
+
+  // Return the number of channels in each frame of audio data, which is used
+  // when querying the volume of each channel.
+  static int GetNumberOfChannelsForDevice(AudioDeviceID device_id);
 
   std::string GetDefaultDeviceID(bool is_input);
 
