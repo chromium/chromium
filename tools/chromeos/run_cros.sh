@@ -163,6 +163,11 @@ function start_lacros_chrome {
     --enable-ui-devtools --gpu-sandbox-start-early
 }
 
+# Start wayland client binary on ash-chrome
+function start_wayland_client {
+  exec $*
+}
+
 function lacros_log {
   exec tail -f ${LACROS_LOG_FILE}
 }
@@ -175,6 +180,8 @@ command
   lacros                 start lacros chrome. You must have ash-chrome running.
   lacros-log             tail lacros chrome log.
   show-xinput-device-id  shows the device id that can be used to emulate touch.
+  wayland-client         start wayland-client on ash-chrome. This command passes
+                         all options to the client.
   help                   print this message.
 
 [options]
@@ -197,7 +204,10 @@ EOF
 }
 
 # Retrieve command.
-if [ ${#} -eq 0 -o "${1:0:2}" == "--" ]; then
+if [ "${1}" == "wayland-client" ]; then
+  shift
+  start_wayland_client $*
+elif [ ${#} -eq 0 -o "${1:0:2}" == "--" ]; then
   command=ash-chrome
 else
   command=$1
