@@ -84,6 +84,7 @@ export function toNumber(str) {
 }
 
 export function syncRepo(dir, treeish) {
+  log(`Syncing ${dir} to ${treeish}`);
   try {
     spawnChecked("git", ["fetch", "--all"], { cwd: dir, stdio: "inherit" });
   } catch (e) {
@@ -111,16 +112,25 @@ function runGnGen() {
   spawnChecked(gn(), ["gen", "out/Release"], { stdio: "inherit" });
 }
 
-export function updateRepo() {
-  const chromium = process.cwd();
+function updateRepo(repo, branch) {
+  log(`Updating ${repo} to branch ${branch}`);
   // delete git lock file if it exists on Windows
   if (currentPlatform() == Platform.windows) {
-    maybeDeleteGitLockFile(chromium);
+    maybeDeleteGitLockFile(repo);
   }
 
-  const branch = process.env["BUILDKITE_BRANCH"];
+  syncRepo(repo, `origin/${branch}`);
+}
 
-  syncRepo(chromium, `origin/${branch}`);
+export function updateBackendRepo() {
+  const backend = getBackendDir();
+  updateRepo(backend, "master");
+}
+
+export function updateChromiumRepo() {
+  const chromium = process.cwd();
+  const branch = process.env["BUILDKITE_BRANCH"];
+  updateRepo(chromium, branch);
 
   const deps = getChromiumDeps();
 
