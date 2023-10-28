@@ -1881,12 +1881,14 @@ void AutocompleteController::MaybeRemoveCompanyEntityImages(
     }
     // Check that entity domain has a matching history domain.
     if (history_domains.contains(GetDomain(*result->match_at(i))) &&
-        !result->match_at(i)->image_url.is_empty()) {
+        (!result->match_at(i)->image_url.is_empty() ||
+         !result->match_at(i)->image_dominant_color.empty())) {
       provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
           metrics::OmniboxEventProto_Feature_COMPANY_ENTITY_ADJUSTMENT);
       if (!OmniboxFieldTrial::kCompanyEntityIconAdjustmentCounterfactual
                .Get()) {
         result->match_at(i)->image_url = GURL();
+        result->match_at(i)->image_dominant_color.clear();
       }
     }
   }

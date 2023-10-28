@@ -70,8 +70,11 @@ class AutocompleteControllerTest : public testing::Test {
     controller_->MaybeRemoveCompanyEntityImages(&controller_->internal_result_);
   }
 
-  bool ImageURLIsEmpty(size_t index) {
-    return controller_->internal_result_.match_at(index)->image_url.is_empty();
+  bool ImageURLAndImageDominantColorIsEmpty(size_t index) {
+    return controller_->internal_result_.match_at(index)
+               ->image_url.is_empty() &&
+           controller_->internal_result_.match_at(index)
+               ->image_dominant_color.empty();
   }
 
   AutocompleteMatch CreateHistoryURLMatch(std::string destination_url) {
@@ -86,6 +89,7 @@ class AutocompleteControllerTest : public testing::Test {
     match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST_ENTITY;
     match.website_uri = website_uri;
     match.image_url = GURL("https://url");
+    match.image_dominant_color = "#000000";
     return match;
   }
 
@@ -124,10 +128,10 @@ TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage_LeastAggressive) {
   matches.push_back(CreateSearchSuggestion());
 
   set_autocomplete_matches(matches);
-  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/1));
+  ASSERT_FALSE(ImageURLAndImageDominantColorIsEmpty(/*index=*/1));
 
   MaybeRemoveCompanyEntityImages();
-  ASSERT_TRUE(ImageURLIsEmpty(/*index=*/1));
+  ASSERT_TRUE(ImageURLAndImageDominantColorIsEmpty(/*index=*/1));
   EXPECT_TRUE(
       provider_client()
           ->GetOmniboxTriggeredFeatureService()
@@ -152,11 +156,11 @@ TEST_F(AutocompleteControllerTest,
       CreateCompanyEntityMatch(/*website_uri=*/"https://www.wellsfargo.com/"));
 
   set_autocomplete_matches(matches);
-  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/2));
+  ASSERT_FALSE(ImageURLAndImageDominantColorIsEmpty(/*index=*/2));
 
   MaybeRemoveCompanyEntityImages();
   // The entity's image_url should remain as is.
-  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/2));
+  ASSERT_FALSE(ImageURLAndImageDominantColorIsEmpty(/*index=*/2));
   EXPECT_FALSE(
       provider_client()
           ->GetOmniboxTriggeredFeatureService()
@@ -181,10 +185,10 @@ TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage_Moderate) {
       CreateCompanyEntityMatch(/*website_uri=*/"https://www.wellsfargo.com/"));
 
   set_autocomplete_matches(matches);
-  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/2));
+  ASSERT_FALSE(ImageURLAndImageDominantColorIsEmpty(/*index=*/2));
 
   MaybeRemoveCompanyEntityImages();
-  ASSERT_TRUE(ImageURLIsEmpty(/*index=*/2));
+  ASSERT_TRUE(ImageURLAndImageDominantColorIsEmpty(/*index=*/2));
   EXPECT_TRUE(
       provider_client()
           ->GetOmniboxTriggeredFeatureService()
@@ -209,11 +213,11 @@ TEST_F(AutocompleteControllerTest, CompanyEntityImageNotRemoved_Moderate) {
   matches.push_back(CreateSearchSuggestion());
 
   set_autocomplete_matches(matches);
-  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/0));
+  ASSERT_FALSE(ImageURLAndImageDominantColorIsEmpty(/*index=*/0));
 
   MaybeRemoveCompanyEntityImages();
   // The entity's image_url should remain as is.
-  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/0));
+  ASSERT_FALSE(ImageURLAndImageDominantColorIsEmpty(/*index=*/0));
   EXPECT_FALSE(
       provider_client()
           ->GetOmniboxTriggeredFeatureService()
@@ -238,10 +242,10 @@ TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage_MostAggressive) {
       CreateHistoryURLMatch(/*destination_url=*/"https://www.wellsfargo.com/"));
 
   set_autocomplete_matches(matches);
-  ASSERT_FALSE(ImageURLIsEmpty(/*index=*/0));
+  ASSERT_FALSE(ImageURLAndImageDominantColorIsEmpty(/*index=*/0));
 
   MaybeRemoveCompanyEntityImages();
-  ASSERT_TRUE(ImageURLIsEmpty(/*index=*/0));
+  ASSERT_TRUE(ImageURLAndImageDominantColorIsEmpty(/*index=*/0));
   EXPECT_TRUE(
       provider_client()
           ->GetOmniboxTriggeredFeatureService()
