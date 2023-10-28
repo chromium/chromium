@@ -5,6 +5,7 @@
 #include "extensions/browser/api/user_scripts/user_scripts_api.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -515,8 +516,7 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 
-  // TODO(crbug.com/1385165): Retrieve csp, once it is added to API method.
-  absl::optional<std::string> csp = absl::nullopt;
+  absl::optional<std::string> csp = params->properties.csp;
   bool enable_messaging = params->properties.messaging.value_or(false);
 
   util::SetUserScriptWorldInfo(*extension(), browser_context(), csp,

@@ -8,6 +8,15 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
 const noConnectionError =
     'Error: Could not establish connection. Receiving end does not exist.';
 
+// Script that changes the tab title corresponding to whether eval() is allowed.
+const evalScript = `let result;
+    try {
+      eval('result = "eval allowed"');
+      document.title = 'eval allowed';
+    } catch (e) {
+      document.title = 'eval disallowed';
+    }`;
+
 // Script that changes the tab title when messaging is not enabled.
 const messagingDisabledScript =
     `let message = (chrome.runtime?.sendMessage === undefined)
@@ -171,5 +180,70 @@ chrome.test.runTests([
     // Navigate to a requested page, where the user scripts should send messages
     // back.
     await navigateToRequestedUrl();
-  }
+  },
+
+  // Tests that configuring the user script world affects scripts registered in
+  // the USER_SCRIPT world.
+  async function configureCsp_UserScriptWorld() {
+    await chrome.userScripts.unregister();
+
+    // Register a user script in the USER_SCRIPT world (default).
+    let userScripts =
+        [{id: 'us1', matches: ['*://*/*'], js: [{code: evalScript}]}];
+    await chrome.userScripts.register(userScripts);
+
+    let tab = await navigateToRequestedUrl()
+
+    // User script defaults to the extension's csp (which disallows eval()).
+    chrome.test.assertEq('eval disallowed', tab.title);
+
+    // Update the user script world csp to allow eval().
+    await chrome.userScripts.configureWorld({csp: `script-src 'unsafe-eval'`});
+    tab = await navigateToRequestedUrl()
+
+    // User script uses the customized csp.
+    chrome.test.assertEq('eval allowed', tab.title);
+
+    // Reset the csp. Currently this is only achievable by calling
+    // userScripts.configureWorld with no csp value (crbug.com/1497059).
+    await chrome.userScripts.configureWorld({});
+    tab = await navigateToRequestedUrl()
+
+    // User script eses the extension's csp.
+    chrome.test.assertEq('eval disallowed', tab.title);
+
+    chrome.test.succeed();
+  },
+
+  // Tests that configuring the user script world does not affect scripts
+  // registered in the MAIN world.
+  async function configureCsp_MainWorldNotAffected() {
+    await chrome.userScripts.unregister();
+
+    // Register a user script in the USER_SCRIPT world (default) with a script
+    // that changes the doc title if it can eval() some code.
+    let userScripts = [{
+      id: 'us1',
+      matches: ['*://*/*'],
+      js: [{code: evalScript}],
+      world: chrome.userScripts.ExecutionWorld.MAIN
+    }];
+    await chrome.userScripts.register(userScripts);
+
+    // Update the user script to allow eval().
+    await chrome.userScripts.configureWorld({csp: `script-src 'unsafe-eval'`});
+
+    // Navigate to a site whose page csp disallows eval().
+    const config = await chrome.test.getConfig();
+    const url =
+        `http://requested.com:${config.testServer.port}/csp-script-src.html`;
+    let tab = await openTab(url);
+
+    // User script in the MAIN wold should use the page csp.
+    chrome.test.assertEq('eval disallowed', tab.title);
+
+    chrome.test.succeed();
+  },
+
+
 ]);

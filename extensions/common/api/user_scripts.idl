@@ -75,9 +75,12 @@ namespace userScripts {
   };
 
   // An object used to update the <code>`USER_SCRIPT`</code> world
-  // configuration.
-  [nodoc] dictionary WorldProperties{
-    // TODO(crbug.com/1385165): Add csp field.
+  // configuration. If a propertie is not specified, it will reset it to its
+  // default value.
+  dictionary WorldProperties{
+    // Specifies the world csp. The default is the <code>`ISOLATED`</code>
+    // world csp.
+    DOMString? csp;
     // Specifies whether messaging APIs are exposed. The default is
     // <code>false</code>.
     boolean? messaging;
@@ -134,7 +137,7 @@ namespace userScripts {
     // Configures the <code>`USER_SCRIPT`</code> execution environment.
     // |properties|: Contains the user script world configuration.
     // |callback|: Called once world hase been configured.
-    [supportsPromises, nodoc] static void configureWorld(
+    [supportsPromises] static void configureWorld(
         WorldProperties properties,
         optional ConfigureWorldCallback callback);
   };

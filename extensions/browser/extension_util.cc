@@ -43,6 +43,7 @@ namespace {
 
 const char kDefaultUserScriptWorldKey[] = "_default";
 const char kUserScriptWorldMessagingKey[] = "messaging";
+const char kUserScriptWorldCspKey[] = "csp";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
@@ -155,6 +156,9 @@ void SetUserScriptWorldInfo(const Extension& extension,
 
   base::Value::Dict world_info;
   world_info.Set(kUserScriptWorldMessagingKey, messaging);
+  if (csp.has_value()) {
+    world_info.Set(kUserScriptWorldCspKey, *csp);
+  }
   update_dict->SetKey(kDefaultUserScriptWorldKey,
                       base::Value(std::move(world_info)));
 
@@ -176,9 +180,14 @@ mojom::UserScriptWorldInfoPtr GetUserScriptWorldInfo(
     const base::Value::Dict* world_info =
         worlds_configuration->FindDict(kDefaultUserScriptWorldKey);
 
-    enable_messaging =
-        world_info &&
-        world_info->FindBool(kUserScriptWorldMessagingKey).value_or(false);
+    if (world_info) {
+      enable_messaging =
+          world_info->FindBool(kUserScriptWorldMessagingKey).value_or(false);
+
+      const std::string* csp_pref =
+          world_info->FindString(kUserScriptWorldCspKey);
+      csp = csp_pref ? absl::make_optional(*csp_pref) : absl::nullopt;
+    }
   }
 
   return mojom::UserScriptWorldInfo::New(extension_id, csp, enable_messaging);

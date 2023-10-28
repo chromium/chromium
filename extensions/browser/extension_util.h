@@ -77,7 +77,7 @@ content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 
-// Sets the `extension_id` user script world configuration for `browser_context`
+// Sets the `extension` user script world configuration for `browser_context`
 // in the state store and notifies the renderer.
 void SetUserScriptWorldInfo(const Extension& extension,
                             content::BrowserContext* browser_context,

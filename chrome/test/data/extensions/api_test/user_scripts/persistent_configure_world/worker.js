@@ -2,11 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {openTab} from '/_test_resources/test_util/tabs_util.js';
+import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_util.js';
 
 // Error when messaging is not allowed.
 const noConnectionError =
     'Error: Could not establish connection. Receiving end does not exist.';
+
+// Script that adds a div when eval() is not allowed.
+const evalScript = `let result;
+   let div = document.createElement('div');
+   try {
+     eval('result = "allowed eval"');
+     div.id = 'customized_csp';
+   } catch (e) {
+     div.id = 'extension_csp';
+   };
+   document.body.appendChild(div); `;
+
 
 // Script that listens for a message and sends a response.
 const receiveMessageScript =
@@ -31,18 +43,22 @@ async function navigateToRequestedUrl() {
   return tab;
 }
 
-// For the first session, register a user scripts in the USER_SCRIPT world
-// (default) with messaging enabled.
+// For the first session, register a user script in the USER_SCRIPT world
+// (default) with messaging enabled and customized csp.
 async function runFirstSession() {
   const userScripts = [{
     id: 'us1',
     matches: ['*://*/*'],
-    js: [{code: receiveMessageScript}, {code: updateTitleScript}],
+    js: [
+      {code: receiveMessageScript}, {code: updateTitleScript},
+      {code: evalScript}
+    ],
     runAt: 'document_end'
   }];
 
   await chrome.userScripts.register(userScripts);
-  chrome.userScripts.configureWorld({messaging: true});
+  chrome.userScripts.configureWorld(
+    { messaging: true, csp: `script-src 'unsafe-eval'` });
 
   const tab = await navigateToRequestedUrl();
 
@@ -52,6 +68,9 @@ async function runFirstSession() {
   // Verify user script can receive messages.
   let response = await chrome.tabs.sendMessage(tab.id, 'ping');
   chrome.test.assertEq('pong', response);
+
+  // Verify user script uses the customized csp.
+  chrome.test.assertEq(['customized_csp'], await getInjectedElementIds(tab.id));
 
   chrome.test.succeed();
 }
@@ -72,7 +91,10 @@ async function runSecondSession() {
   let response = await chrome.tabs.sendMessage(tab.id, 'ping');
   chrome.test.assertEq('pong', response);
 
-  // Disable messaging.
+  // Verify user script still uses the customized csp.
+  chrome.test.assertEq(['customized_csp'], await getInjectedElementIds(tab.id));
+
+  // Disable messaging and csp (by omitting its entry).
   chrome.userScripts.configureWorld({messaging: false});
   chrome.test.succeed();
 }
@@ -92,6 +114,9 @@ async function runThirdSession() {
   // Verify user script cannot receive messages.
   await chrome.test.assertPromiseRejects(
       chrome.tabs.sendMessage(tab.id, 'ping'), noConnectionError);
+
+  // Verify user script uses the extension's csp.
+  chrome.test.assertEq(['extension_csp'], await getInjectedElementIds(tab.id));
 
   chrome.test.succeed();
 }

@@ -8,6 +8,7 @@
     "type": "module"
   },
   "permissions": [
+    "scripting",
     "userScripts"
   ],
   "host_permissions": [
