@@ -14,8 +14,10 @@ source_set("config") {
     "config.h",
   ]
   deps = [
+    ":constants",
     ":scalable_iph_delegate",
     "//ash/constants",
+    "//base",
     "//components/feature_engagement/public",
   ]
 }

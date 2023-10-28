@@ -228,6 +228,11 @@ std::string GetEventName(ScalableIph::Event event, Logger* logger) {
 
 std::string GetParamValue(const base::Feature& feature,
                           const std::string& param_name) {
+  std::unique_ptr<Config> config = GetConfig(feature);
+  if (config && config->params.contains(param_name)) {
+    return config->params.at(param_name);
+  }
+
   std::string fully_qualified_param_name =
       base::StrCat({feature.name, "_", param_name});
   std::string value = base::GetFieldTrialParamValueByFeature(
