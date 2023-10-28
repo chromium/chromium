@@ -97,11 +97,16 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
     return;
   }
 
-  // If ScalableIph feature is off, do not set up mock as ScalableIph is not
-  // available.
-  if (!enable_scalable_iph_) {
+  // If we don't intend to enforce ScalableIph setup (i.e. the user profile
+  // doesn't qualify for ScalableIph), do not set up mocks as ScalableIph
+  // should not be available for the profile.
+  if (!setup_scalable_iph_) {
     return;
   }
+
+  CHECK(enable_scalable_iph_)
+      << "ScalableIph feature flag must be intended to be enabled to set up "
+         "fakes and mocks of ScalableIph";
 
   SetUpMocks();
 }
