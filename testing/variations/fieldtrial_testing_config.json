@@ -21021,21 +21021,6 @@
             ]
         }
     ],
-    "WebViewMetricsFiltering": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "WebViewMetricsFiltering",
-                    "enable_features": [
-                        "WebViewMetricsFiltering"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewRecordAppDataDirectorySize": [
         {
             "platforms": [
