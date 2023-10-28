@@ -25,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
 using testing::Return;
 
 namespace {
@@ -196,6 +197,32 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageTest) {
       test_profile_, &mock_translate_manager));
 }
 
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageBypassTest) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {compose::features::kEnableCompose,
+       compose::features::kEnableComposeLanguageBypass},
+      {});
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable everything.
+  compose_enabling.SetEnabledForTesting();
+
+  // Set the mock language to something we don't support. "eo" is Esperanto.
+  // Not expected to be called.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  ON_CALL(mock_translate_language_provider, GetSourceLanguage(_))
+      .WillByDefault(Return(std::string("eo")));
+
+  // Although the language is unsupported, ShouldTrigger should return true as
+  // the bypass is enabled.
+  EXPECT_TRUE(compose_enabling.ShouldTriggerContextMenu(
+      test_profile_, &mock_translate_manager));
+}
+
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLangugeTest) {
   testing::NiceMock<MockTranslateLanguageProvider>
       mock_translate_language_provider;
@@ -298,6 +325,37 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTest) {
       .WillOnce(Return(std::string("eo")));
 
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+      autocomplete_attribute, test_profile_, &mock_translate_manager,
+      has_saved_state));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageBypassTest) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {compose::features::kEnableCompose,
+       compose::features::kEnableComposeNudge,
+       compose::features::kEnableComposeLanguageBypass},
+      {});
+
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable the feature.
+  compose_enabling.SetEnabledForTesting();
+  std::string autocomplete_attribute;
+  bool has_saved_state = false;
+
+  // Set the mock language to something we don't support. "eo" is Esperanto.
+  // Not expected to be called.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  ON_CALL(mock_translate_language_provider, GetSourceLanguage(_))
+      .WillByDefault(Return(std::string("eo")));
+
+  // Although the language is unsupported, ShouldTrigger should return true as
+  // the bypass is enabled.
+  EXPECT_TRUE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, test_profile_, &mock_translate_manager,
       has_saved_state));
 }

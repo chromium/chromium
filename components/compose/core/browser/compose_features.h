@@ -25,6 +25,8 @@ BASE_DECLARE_FEATURE(kEnableComposeNudge);
 // chrome:flags switch for the multi line fill feature.
 BASE_DECLARE_FEATURE(kFillMultiLine);
 
+// Controls whether the language check is bypassed for Compose.
+BASE_DECLARE_FEATURE(kEnableComposeLanguageBypass);
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_

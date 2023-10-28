@@ -130,7 +130,9 @@ bool ComposeEnabling::PageLevelChecks(
     return false;
   }
 
-  if (!translate_language_provider_->IsLanguageSupported(translate_manager)) {
+  if (!base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeLanguageBypass) &&
+      !translate_language_provider_->IsLanguageSupported(translate_manager)) {
     DVLOG(2) << "language not supported";
     return false;
   }
