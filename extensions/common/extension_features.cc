@@ -29,7 +29,7 @@ BASE_FEATURE(kApiSidePanelOpen,
 // Controls the availability of the userScripts API.
 BASE_FEATURE(kApiUserScripts,
              "ApiUserScripts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the availability of navigation to file URLs.
 BASE_FEATURE(kRestrictFileURLNavigation,
