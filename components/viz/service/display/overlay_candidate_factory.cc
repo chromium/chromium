@@ -169,9 +169,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
     return CandidateStatus::kFailBlending;
   }
 
-  if (!sqs->mask_filter_info.IsEmpty() &&
-      (!context_.supports_mask_filter ||
-       sqs->mask_filter_info.HasGradientMask())) {
+  if (sqs->mask_filter_info.HasGradientMask()) {
     return CandidateStatus::kFailMaskFilterNotSupported;
   }
 
@@ -218,6 +216,9 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
   // FromDrawQuadResource() that covers all of delegated compositing.
   if (context_.disable_wire_size_optimization ||
       ShouldApplyRoundedCorner(candidate, sqs)) {
+    if (!context_.supports_mask_filter) {
+      return CandidateStatus::kFailMaskFilterNotSupported;
+    }
     candidate.rounded_corners = sqs->mask_filter_info.rounded_corner_bounds();
   }
 

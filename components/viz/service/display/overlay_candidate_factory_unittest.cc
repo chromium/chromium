@@ -457,7 +457,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
       .is_delegated_context = true,
       .disable_wire_size_optimization = true,
       .supports_clip_rect = true,
-      .supports_arbitrary_transform = true};
+      .supports_arbitrary_transform = true,
+      .supports_mask_filter = true};
   OverlayCandidateFactory factory = CreateCandidateFactory(
       render_pass, gfx::RectF(render_pass.output_rect), context);
 

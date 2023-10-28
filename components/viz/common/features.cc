@@ -33,6 +33,15 @@ const char kDynamicSchedulerPercentile[] = "percentile";
 
 namespace features {
 
+BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
+             "UseDrmBlackFullscreenOptimization",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 BASE_FEATURE(kUseMultipleOverlays,
              "UseMultipleOverlays",
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -6,8 +6,10 @@
 
 #include <vector>
 
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/overlay_candidate_factory.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -35,7 +37,6 @@ void OverlayStrategyFullscreen::Propose(
     std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
-
   // First non invisible quad of quad_list is the top most quad.
   auto front = quad_list->begin();
   while (front != quad_list->end()) {
@@ -48,8 +49,9 @@ void OverlayStrategyFullscreen::Propose(
     return;
 
   const DrawQuad* quad = *front;
-  if (quad->ShouldDrawWithBlending())
+  if (quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter()) {
     return;
+  }
 
   OverlayCandidate candidate;
   const OverlayCandidateFactory::OverlayContext context = {
@@ -67,8 +69,35 @@ void OverlayStrategyFullscreen::Propose(
   if (!candidate.display_rect.origin().IsOrigin() ||
       gfx::ToRoundedSize(candidate.display_rect.size()) !=
           render_pass->output_rect.size()) {
-    return;
+    // Candidate Quad does not fully cover display but fullscreen is still
+    // possible if all the other quads do not contribute to primary plane or
+    // their contribution will simply result in the default black of DRM. The
+    // best example here is the black bars for aspect ratio found in fullscreen
+    // video.
+    if (!base::FeatureList::IsEnabled(
+            features::kUseDrmBlackFullscreenOptimization)) {
+      return;
+    }
+
+    auto after_front = front;
+    ++after_front;
+    while (after_front != quad_list->end()) {
+      if (!(*after_front)->visible_rect.IsEmpty() &&
+          !OverlayCandidate::IsInvisibleQuad(*after_front)) {
+        auto* solid_color_quad =
+            (*after_front)->DynamicCast<SolidColorDrawQuad>();
+        if (!solid_color_quad) {
+          return;
+        }
+
+        if (solid_color_quad->color != SkColors::kBlack) {
+          return;
+        }
+      }
+      ++after_front;
+    }
   }
+
   candidate.is_opaque = true;
   candidate.plane_z_order = 0;
   candidates->emplace_back(front, candidate, this);
