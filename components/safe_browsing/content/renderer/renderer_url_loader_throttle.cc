@@ -179,7 +179,10 @@ void RendererURLLoaderThrottle::WillRedirectRequest(
       redirect_info->new_url.SchemeIsHTTPOrHTTPS()) {
     extension_web_request_reporter_->SendWebRequestData(
         origin_extension_id_, redirect_info->new_url,
-        mojom::WebRequestProtocolType::kHttpHttps);
+        mojom::WebRequestProtocolType::kHttpHttps,
+        initiated_from_content_script_
+            ? mojom::WebRequestContactInitiatorType::kContentScript
+            : mojom::WebRequestContactInitiatorType::kExtension);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -374,13 +377,32 @@ void RendererURLLoaderThrottle::MaybeSendExtensionWebRequestData(
     network::ResourceRequest* request) {
   BindExtensionWebRequestReporterPipeIfDetached();
 
+  // Skip if request destination isn't HTTP/HTTPS (ex. extension scheme).
+  if (!request->url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  // Populate |origin_extension_id_| if request is initiated from an extension
+  // page/service worker or content script.
   if (request->request_initiator &&
-      request->request_initiator->scheme() == extensions::kExtensionScheme &&
-      request->url.SchemeIsHTTPOrHTTPS()) {
+      request->request_initiator->scheme() == extensions::kExtensionScheme) {
     origin_extension_id_ = request->request_initiator->host();
+  } else if (request->isolated_world_origin &&
+             request->isolated_world_origin->scheme() ==
+                 extensions::kExtensionScheme) {
+    origin_extension_id_ = request->isolated_world_origin->host();
+    initiated_from_content_script_ = true;
+  }
+
+  // Send data only if |origin_extension_id_| is populated, which means the
+  // request originated from an extension.
+  if (!origin_extension_id_.empty()) {
     extension_web_request_reporter_->SendWebRequestData(
         origin_extension_id_, request->url,
-        mojom::WebRequestProtocolType::kHttpHttps);
+        mojom::WebRequestProtocolType::kHttpHttps,
+        initiated_from_content_script_
+            ? mojom::WebRequestContactInitiatorType::kContentScript
+            : mojom::WebRequestContactInitiatorType::kExtension);
   }
 }
 #endif

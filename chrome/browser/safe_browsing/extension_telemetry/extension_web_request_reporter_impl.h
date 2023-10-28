@@ -42,9 +42,11 @@ class ExtensionWebRequestReporterImpl
   // mojom::ExtensionWebRequestReporter implementation.
   // |telemetry_url| is untrustworthy and should only be used for telemetry
   // purposes.
-  void SendWebRequestData(const std::string& origin_extension_id,
-                          const GURL& telemetry_url,
-                          mojom::WebRequestProtocolType protocol_type) override;
+  void SendWebRequestData(
+      const std::string& origin_extension_id,
+      const GURL& telemetry_url,
+      mojom::WebRequestProtocolType protocol_type,
+      mojom::WebRequestContactInitiatorType contact_initiator_type) override;
   void Clone(mojo::PendingReceiver<mojom::ExtensionWebRequestReporter> receiver)
       override;
 

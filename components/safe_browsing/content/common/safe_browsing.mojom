@@ -224,6 +224,12 @@ enum WebRequestProtocolType {
   kWebSocket = 1,
 };
 
+// Enum representing contact initiator type of an extension web request.
+enum WebRequestContactInitiatorType {
+  kExtension = 0,
+  kContentScript = 1,
+};
+
 // Interface to send extension web request data from the renderer to the
 // browser.
 interface ExtensionWebRequestReporter {
@@ -237,7 +243,8 @@ interface ExtensionWebRequestReporter {
   // telemetry purposes. Untrustworthy to use otherwise.
   SendWebRequestData(string origin_extension_id,
                      url.mojom.Url telemetry_url,
-                     WebRequestProtocolType protocol_type);
+                     WebRequestProtocolType protocol_type,
+                     WebRequestContactInitiatorType contact_initiator_type);
 
   // Bind an additional pipe to this instance of the ExtensionWebRequestReporter
   // interface.
