@@ -6420,6 +6420,16 @@ chromium-metrics-reviews@google.com.
   <token key="ActionName" variants="AcceleratorActionName"/>
 </histogram>
 
+<histogram name="Ash.ShortcutCustomization.AddAcceleratorSubactions"
+    enum="ShortcutCustomizationSubactions" expires_after="2024-08-17">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Tracks the subactions that can occur when the user attempts to add a custom
+    accelerator.
+  </summary>
+</histogram>
+
 <histogram name="Ash.ShortcutCustomization.CustomizationAction"
     enum="ShortcutCustomizationAction" expires_after="2024-08-17">
   <owner>jimmyxgong@chromium.org</owner>
@@ -6446,6 +6456,16 @@ chromium-metrics-reviews@google.com.
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Record the number of customized accelerator modifications on startup.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ShortcutCustomization.EditAcceleratorSubactions"
+    enum="ShortcutCustomizationSubactions" expires_after="2024-08-17">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Tracks the subactions that can occur when the user attempts to edit an
+    accelerator.
   </summary>
 </histogram>
 

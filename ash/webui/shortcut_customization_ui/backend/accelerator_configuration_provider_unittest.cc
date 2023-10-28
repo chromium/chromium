@@ -65,6 +65,7 @@ using shortcut_customization::mojom::AcceleratorResultDataPtr;
 using shortcut_customization::mojom::EditDialogCompletedActions;
 using shortcut_customization::mojom::SimpleAccelerator;
 using shortcut_customization::mojom::SimpleAcceleratorPtr;
+using shortcut_customization::mojom::Subactions;
 using shortcut_customization::mojom::UserAction;
 
 using mojom::AcceleratorConfigResult;
@@ -3269,6 +3270,43 @@ TEST_F(AcceleratorConfigurationProviderTest, MainNavigationCategoryMetrics) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.MainCategoryNavigation",
       mojom::AcceleratorCategory::kAccessibility, 1);
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, SubactionsMetrics) {
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAcceleratorSubactions",
+      Subactions::kErrorCancel, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAcceleratorSubactions",
+      Subactions::kNoErrorSuccess, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditAcceleratorSubactions",
+      Subactions::kErrorCancel, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditAcceleratorSubactions",
+      Subactions::kNoErrorSuccess, 0);
+
+  provider_->RecordAddOrEditSubactions(/*is_add=*/true,
+                                       Subactions::kErrorCancel);
+  provider_->RecordAddOrEditSubactions(/*is_add=*/true,
+                                       Subactions::kNoErrorSuccess);
+  provider_->RecordAddOrEditSubactions(/*is_add=*/false,
+                                       Subactions::kErrorCancel);
+  provider_->RecordAddOrEditSubactions(/*is_add=*/false,
+                                       Subactions::kNoErrorSuccess);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAcceleratorSubactions",
+      Subactions::kErrorCancel, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAcceleratorSubactions",
+      Subactions::kNoErrorSuccess, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditAcceleratorSubactions",
+      Subactions::kErrorCancel, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditAcceleratorSubactions",
+      Subactions::kNoErrorSuccess, 1);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest,

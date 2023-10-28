@@ -15,7 +15,7 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AcceleratorResultData, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, Subactions, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
@@ -98,6 +98,15 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         type: Boolean,
         value: false,
         notify: true,
+        observer: AcceleratorViewElement.prototype.onErrorUpdated,
+      },
+
+      // Keeps track if there was ever an error when interacting with this
+      // accelerator.
+      recordedError: {
+        type: Boolean,
+        value: false,
+        notify: true,
       },
 
       action: {
@@ -141,6 +150,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   viewState: ViewState;
   statusMessage: string;
   hasError: boolean;
+  recordedError: boolean;
   action: number;
   source: AcceleratorSource;
   sourceIsLocked: boolean;
@@ -463,6 +473,10 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       }
       case AcceleratorConfigResult.kSuccess: {
         this.fireEditCompletedActionEvent(this.editAction);
+        getShortcutProvider().recordAddOrEditSubactions(
+            this.viewState === ViewState.ADD,
+            this.recordedError ? Subactions.kErrorSuccess :
+                                 Subactions.kNoErrorSuccess);
         getShortcutProvider().recordUserAction(
             UserAction.kSuccessfulModification);
         const message = (this.viewState == ViewState.ADD) ?
@@ -729,6 +743,14 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private computeIsDisabled(): boolean {
     return this.acceleratorInfo.state === AcceleratorState.kDisabledByUser ||
         this.acceleratorInfo.state === AcceleratorState.kDisabledByConflict;
+  }
+
+  private onErrorUpdated(): void {
+    // `recordedError` will only update if it was previously false and
+    // an error has been detected.
+    if (!this.recordedError && this.hasError) {
+      this.recordedError = true;
+    }
   }
 }
 

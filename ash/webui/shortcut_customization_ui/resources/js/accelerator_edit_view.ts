@@ -16,7 +16,7 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {Subactions, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {getTemplate} from './accelerator_edit_view.html.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
@@ -100,6 +100,13 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         reflectToAttribute: true,
       },
 
+      // Keeps track if there was ever an error when interacting with this
+      // accelerator.
+      recordedError: {
+        type: Boolean,
+        value: false,
+      },
+
       action: {
         type: Number,
         value: 0,
@@ -116,6 +123,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   isEditView: boolean;
   viewState: number;
   hasError: boolean;
+  recordedError: boolean;
   action: number;
   source: AcceleratorSource;
   restoreDefaultHasError: boolean;
@@ -216,6 +224,10 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
   }
 
   protected onCancelButtonClicked(): void {
+    this.shortcutProvider.recordAddOrEditSubactions(
+        this.viewState === ViewState.ADD,
+        this.recordedError ? Subactions.kErrorCancel :
+                             Subactions.kNoErrorCancel);
     this.cancelButtonClicked = true;
     this.endCapture();
   }

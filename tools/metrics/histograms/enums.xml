@@ -100591,6 +100591,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Reset"/>
 </enum>
 
+<enum name="ShortcutCustomizationSubactions">
+  <summary>
+    The subactions that can happen within adding or editing a custom
+    accelerator. The enum names are formatted in order of actions taken place.
+    E.g. `ErrorSuccess` indicates and error has occured before the action was
+    successful.
+  </summary>
+  <int value="0" label="NoErrorCancel"/>
+  <int value="1" label="NoErrorSuccess"/>
+  <int value="2" label="ErrorCancel"/>
+  <int value="3" label="ErrorSuccess"/>
+</enum>
+
 <enum name="ShortcutsCreationResult">
   <summary>Result of creating shortcuts for PWA.</summary>
   <int value="0" label="Success"/>

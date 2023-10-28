@@ -1210,6 +1210,15 @@ void AcceleratorConfigurationProvider::RecordEditDialogCompletedActions(
       completed_actions);
 }
 
+void AcceleratorConfigurationProvider::RecordAddOrEditSubactions(
+    bool is_add,
+    shortcut_customization::mojom::Subactions subactions) {
+  const std::string histogram_name =
+      is_add ? "Ash.ShortcutCustomization.AddAcceleratorSubactions"
+             : "Ash.ShortcutCustomization.EditAcceleratorSubactions";
+  base::UmaHistogramEnumeration(histogram_name, subactions);
+}
+
 void AcceleratorConfigurationProvider::BindInterface(
     mojo::PendingReceiver<
         shortcut_customization::mojom::AcceleratorConfigurationProvider>

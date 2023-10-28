@@ -140,6 +140,9 @@ class AcceleratorConfigurationProvider
       shortcut_customization::mojom::UserAction user_action) override;
   void RecordMainCategoryNavigation(
       mojom::AcceleratorCategory category) override;
+  void RecordAddOrEditSubactions(
+      bool is_add,
+      shortcut_customization::mojom::Subactions subactions) override;
 
   void RecordEditDialogCompletedActions(
       shortcut_customization::mojom::EditDialogCompletedActions
