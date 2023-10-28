@@ -503,6 +503,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3105917916468784889">Tomar captura de pantalla</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Destacar el elemento anterior en la barra</translation>
+<translation id="311799651966070385">Cerrar sugerencia</translation>
 <translation id="3120421559657122717">¿Quieres apagar el dispositivo?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo de trabajo en clase</translation>
@@ -592,6 +593,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
+<translation id="3454555520521576458">Redimensionable</translation>
 <translation id="3455468639467374593">Plantilla, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">Se conectó 1 dispositivo al hotspot de <ph name="DEVICE_NAME" />.</translation>
 <translation id="346243998268439747">Restablecer el nivel de zoom</translation>
@@ -708,6 +710,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3899995891769452915">Entrada de voz</translation>
 <translation id="3900355044994618856">Tu sesión finalizará en <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Conectando con: <ph name="NAME" /></translation>
+<translation id="3906954721959377182">Tablet</translation>
 <translation id="3922427723338465344">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de 1 minuto}other{Cambia el dispositivo a la versión anterior en el transcurso de # minutos}}</translation>
 <translation id="3923494859158167397">No se configuró ninguna red móvil.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, cargando eventos.</translation>
@@ -830,6 +833,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4364101114148522660"><ph name="DURATION" /> Grabando</translation>
 <translation id="4371348193907997655">Configuración de transmisión</translation>
 <translation id="4375482231364171368">Buscar en la barra de direcciones</translation>
+<translation id="4378154925671717803">Teléfono</translation>
 <translation id="4378479437904450384">Intensidad de la señal de <ph name="WIRELESS_PROVIDER" />: <ph name="SIGNAL_STRENGTH" /> por ciento</translation>
 <translation id="4378551569595875038">Conectando…</translation>
 <translation id="4379531060876907730">Estas son las herramientas de la pluma stylus</translation>
@@ -887,6 +891,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4585337515783392668">Dejar de transmitir en un receptor desconocido</translation>
 <translation id="4596144739579517758">El Tema oscuro está desactivado</translation>
 <translation id="4611292653554630842">Acceder</translation>
+<translation id="462160925400706389"><ph name="NAME" /> está conectado</translation>
 <translation id="4623167406982293031">Verificar cuenta</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, calificación por estrellas: <ph name="RATING_SCORE" /></translation>
@@ -1313,6 +1318,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6284232397434400372">Se cambió la resolución</translation>
 <translation id="6288235558961782912">Puedes volver a agregar a <ph name="USER_EMAIL_ADDRESS" /> más tarde con el permiso de tu madre o padre.</translation>
 <translation id="6291221004442998378">No se está cargando</translation>
+<translation id="6298183524022479114">Personaliza este dispositivo en la app</translation>
 <translation id="6309219492973062892">Hacer clic o presionar los íconos de la barra del 1 al 8</translation>
 <translation id="6315170314923504164">Voz</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>
@@ -1536,10 +1542,6 @@ Nueva instalación</translation>
 <translation id="726276584504105859">Arrastra hasta aquí para usar la pantalla dividida</translation>
 <translation id="7262906531272962081">Crear un recordatorio</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + retroceso</translation>
-<translation id="7297440678881127227"><ph name="START_TIME" /> a
-        <ph name="END_TIME" />,
-        <ph name="TIME_ZONE" />,
-        <ph name="EVENT_SUMMARY" />. Selecciona un evento para ver más detalles en el Calendario de Google.</translation>
 <translation id="7302889331339392448">El Subtitulado instantáneo está desactivado.</translation>
 <translation id="7303365578352795231">Se responderá en otro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>

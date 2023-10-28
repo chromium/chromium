@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Lítill sendistyrkur</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Uppfærir (<ph name="PERCENTAGE_VALUE" />% lokið)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> mínútur</translation>
 <translation id="1310380015393971138">Ekkert <ph name="NETWORK_NAME" /> netkerfi er tiltækt</translation>
 <translation id="131421566576084655">Dagsetning síðustu gagnaendurstillingar er ekki tiltæk</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Nota sem veggfóður</translation>
 <translation id="1578784163189013834">Velja bakgrunn skjávara</translation>
 <translation id="160633243685262989">Forskoða mynd</translation>
+<translation id="1611649489706141841">áfram</translation>
 <translation id="1615335640928990664">Gagnanotkun síðan <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
 <translation id="1639239467298939599">Hleður</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Hengja skrá við</translation>
 <translation id="8230672074305416752">Ping-prófun sjálfvalinnar netkerfisgáttar mistókst</translation>
 <translation id="8246209727385807362">Óþekkt símafyrirtæki</translation>
+<translation id="8262870577632766028">1 klukkustund</translation>
 <translation id="827422111966801947">Dimmfjólublár</translation>
 <translation id="8286154143153872371">Tengstu neti og endurhladdu síðuna til að sjá veggfóður.</translation>
 <translation id="8291967909914612644">Land heimaveitu</translation>

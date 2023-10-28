@@ -287,7 +287,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2499505845365628575">Celú históriu prehliadania nájdete pomocou možnosti <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">Možnosti uloženia hesla</translation>
 <translation id="2511117522375201202">Máte niekoľko (<ph name="NUMBER_OF_PASSWORDS" />) odhalených hesiel, ktoré môžu ohroziť vaše zabezpečenie.</translation>
-<translation id="2523363575747517183">Tento web sa opakovane pokúša otvoriť ďalšiu aplikáciu.</translation>
 <translation id="2529021024822217800">Otvoriť všetky</translation>
 <translation id="2536991091671391962">Uložené heslá môžete používať v ľubovoľnom zariadení. Sú uložené v Správcovi hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Skryť položku Kontrola bezpečnosti</translation>
@@ -592,6 +591,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4148023517926189160">Tento web chce stiahnuť súbor a pridať ho do vášho kalendára.</translation>
 <translation id="4152011295694446843">Tu nájdete svoje záložky</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> s koncovým štvorčíslím <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169535189173047238">Nepovoliť</translation>
 <translation id="4172051516777682613">Vždy zobraziť</translation>
 <translation id="417442848889487144">Štítok bol vytvorený. Dátum zatiaľ nie je k dispozícii.</translation>
 <translation id="418156467088430727">Zobraziť offline verziu na novej karte</translation>
@@ -628,11 +628,11 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4342054591427973606">{count,plural, =1{Táto adresa bude odstránená z tohto zariadenia aj ďalších prihlásených.}few{Tieto adresy budú odstránené z tohto zariadenia a ďalších prihlásených.}many{Tieto adresy budú odstránené z tohto zariadenia a ďalších prihlásených.}other{Tieto adresy budú odstránené z tohto zariadenia a ďalších prihlásených.}}</translation>
 <translation id="4342946437867096381">Heslo tohto webu ste už uložili vo svojom účte Google. Google pre vás môže najnovšie heslo vybrať.</translation>
 <translation id="4343046787186034850">Prístup ku kamere a mikrofónu je povolený</translation>
-<translation id="4359125752503270327">Táto stránka sa otvorí v ďalšej aplikácii.</translation>
 <translation id="4371526908359194219">E‑mailové upozornenia</translation>
 <translation id="4371591986692297148">Neaktívne</translation>
 <translation id="4375040482473363939">Vyhľadávanie QR kódov</translation>
 <translation id="4378154925671717803">Telefón</translation>
+<translation id="4388983683160515185"><ph name="FULL_NAME" /> s vami zdieľal(a) heslo webu <ph name="WEBSITE" />.</translation>
 <translation id="4389019817280890563">Klepnutím zmeníte jazyk.</translation>
 <translation id="4405320213589929829">Pomocou adries na webových stránkach môžete získať miestne informácie a trasy.</translation>
 <translation id="4420409367264901497">Upraviť záložku</translation>
@@ -1161,7 +1161,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7016070607649558507">Máte jedno slabé heslo. Tento problém odstráňte, aby ste boli v bezpečí.</translation>
 <translation id="7029809446516969842">Heslá</translation>
 <translation id="704692552158601232">Predvolený prehliadač</translation>
-<translation id="7053983685419859001">Blokovať</translation>
 <translation id="7062545763355031412">Prijať a prepnúť účty</translation>
 <translation id="7063811929043357292">Tvoj účet spravuje tvoj rodič.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -1371,6 +1370,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8197543752516192074">Preložiť stránku</translation>
 <translation id="8205564605687841303">Zrušiť</translation>
 <translation id="8206354486702514201">Toto nastavenie je vynútené správcom.</translation>
+<translation id="8211030355252954494">Dostali ste heslá webu <ph name="WEBSITE" /></translation>
 <translation id="8214293972734702249">Pripnuté, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Obrázky a súbory vo vyrovnávacej pamäti</translation>
 <translation id="823133356836493038">Čitateľský zoznam je skrytý</translation>
@@ -1460,6 +1460,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="8693663554456874301">{count,plural, =1{Zavrieť kartu}few{Zavrieť karty}many{Close Tabs}other{Zavrieť karty}}</translation>
 <translation id="8703536910991780768">Zdá sa, že vaše heslá sú silné</translation>
 <translation id="8706253136355675497">Teplota</translation>
+<translation id="8712637175834984815">Dobre</translation>
 <translation id="8717864919010420084">Kopírovať odkaz</translation>
 <translation id="8721297211384281569">Ponuka Nástroje</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>
@@ -1539,6 +1540,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="9079935439869366234">Označiť všetko ako neprečítané</translation>
 <translation id="9081058212938299310">Chcete aktualizovať heslo používateľa <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Ak chcete synchronizovať a prispôsobovať viaceré zariadenia, zapnite synchronizáciu.</translation>
+<translation id="9087339162317338348">Používajte protokol HTTPS vždy, keď je to možné, a dostávajte upozornenia pred načítaním webov, ktoré ho nepodporujú.</translation>
 <translation id="9093271241977565440">V hornej časti obrazovky klepnite na ikonu vyhľadávania</translation>
 <translation id="9094033019050270033">Aktualizovať heslo</translation>
 <translation id="9097506547406246598">Nedá sa prestať sledovať. Niečo sa pokazilo.</translation>
@@ -1547,6 +1549,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="9100610230175265781">Vyžaduje sa prístupová fráza</translation>
 <translation id="9106655997975673326">Zo zariadenia <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Kontroluje, či neboli prelomené heslá</translation>
+<translation id="9109699888944026290">{count,plural, =1{Nové heslo tohto webu}few{Nové heslá tohto webu}many{Nové heslá tohto webu}other{Nové heslá tohto webu}}</translation>
 <translation id="9120217828624527905">Prepnite na preklad celej stránky</translation>
 <translation id="9124387962554796433">Google môže pomocou vašej histórie prispôsobiť Vyhľadávanie a ďalšie služby Googlu.</translation>
 <translation id="9137526406337347448">Služby Google</translation>

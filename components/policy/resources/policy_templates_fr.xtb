@@ -129,6 +129,7 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="DEVICE_AUTH
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier.</translation>
 <translation id="1123650965531933634">Refuse par défaut l'autorisation de positionnement des fenêtres sur tous les sites</translation>
+<translation id="1126037943895692096">Autoriser les utilisateurs à inclure dans leurs commentaires les données de débogage Wi-Fi de bas niveau</translation>
 <translation id="1126456433590366966">Automatiser le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="GOOGLE_DRIVE_NAME" /> et <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="112794759469625182">Cette règle a été supprimée dans M118. Elle permettait d'activer et de désactiver l'attestation à distance pour l'utilisateur, mais l'attestation à distance a été activée par défaut.
 
@@ -766,7 +767,6 @@ Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, aucun
 <translation id="1705215165572785706">Considérer les touches supérieures comme des touches multimédias, mais autoriser l'utilisateur à modifier ce paramètre</translation>
 <translation id="1708496595873025510">Définir la restriction liée à la récupération de la valeur de départ des variantes</translation>
 <translation id="1709154322133526432">Activer le contrôle du navigateur par défaut au démarrage</translation>
-<translation id="1710245398478550276">Activer l'API Desk pour une liste de domaines tiers</translation>
 <translation id="1713829924716792485">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs connectés à un hôte d'accès à distance peuvent transférer des fichiers entre le client et l'hôte. Cela ne s'applique pas aux connexions d'assistance à distance, qui ne sont pas compatibles avec le transfert de fichiers.
 
       Si cette règle est désactivée, ces utilisateurs ne peuvent pas transférer de fichiers.</translation>
@@ -4330,7 +4330,6 @@ Les utilisateurs peuvent activer ou désactiver les services de localisation Goo
 <translation id="467449052039111439">Ouvrir une liste d'URL</translation>
 <translation id="4674542060943819878">Activer la fermeture des alertes de mot de passe compromis</translation>
 <translation id="4674871290487541952">Autoriser les algorithmes non sécurisés dans les vérifications de l'intégrité des mises à jour et des installations d'extension</translation>
-<translation id="4676118751789104029">Si cette règle est activée, les applis Web tierces peuvent utiliser l'API Desk pour contrôler les bureaux Chrome OS. Si elle n'est pas configurée ou est désactivée, l'API Desk ne sera pas disponible. Cette règle ne s'applique qu'aux appareils enregistrés.</translation>
 <translation id="4680961954980851756">Activer la saisie automatique</translation>
 <translation id="4685721728282448265">Algorithme clé-contrat post-quantique CECPQ2 activé pour TLS</translation>
 <translation id="468822697351680932">Utiliser la règle SiteList d'Internet Explorer comme source des règles</translation>
@@ -5015,6 +5014,7 @@ Si cette règle est désactivée, ces deux historiques ne peuvent pas être supp
 <translation id="5323200200131319468">Activer les commentaires audio sur l'écran de connexion</translation>
 <translation id="5323271643727095577">Ne pas afficher de boîte de dialogue d'annulation quand event.preventDefault() est appelé pour l'événement beforeunload. Afficher la boîte de dialogue d'annulation quand beforeunload event.returnValue est la chaîne vide de l'événement beforeunload.</translation>
 <translation id="5323355956693037267">Activer le clavier à l'écran sur l'écran de connexion</translation>
+<translation id="5324430722441910403">Paramètres de recherche sur site</translation>
 <translation id="532848608876725157">Activer DNS-over-HTTPS avec solution de secours à risque</translation>
 <translation id="5328965694451556034">Signaler une connexion/déconnexion</translation>
 <translation id="5329018127554115226">Le mode Haute efficacité sera désactivé.</translation>
@@ -5967,7 +5967,6 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
 <translation id="6181783961196084973">Valeur du paramètre de collecte de l'activité dans les applis. Si la règle est définie sur "True", l'activité de l'utilisateur dans les applications est transmise au serveur afin d'être affichée dans l'appli <ph name="PRODUCT_NAME" /> utilisée par l'enfant et les parents. Si la règle est définie sur "False", les limites de temps spécifiques à chaque application sont quand même applicables, mais aucune donnée n'est transmise au serveur ni affichée dans <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">Désactiver les mises à niveau HTTPS</translation>
 <translation id="6182563940865917569">Autoriser Chrome à lire automatiquement le contenu multimédia</translation>
-<translation id="6184385589352532028">Ne pas activer l'API Desk pour le contrôle ChromeOS tiers</translation>
 <translation id="6190367314942602985">Enregistrer les informations d'identification de l'utilisateur</translation>
 <translation id="6191963383731098056">Cette règle permet aux administrateurs de configurer la couleur du thème de <ph name="PRODUCT_NAME" />. La chaîne saisie doit être une couleur hexadécimale valide, comme "#RRGGBB".
 
@@ -8223,7 +8222,6 @@ Si cette règle n'est pas définie, la règle <ph name="ASK_MIDI_POLICY_NAME" />
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'inactivité.</translation>
 <translation id="7992613144342460685">Accorder l'autorisation de positionnement des fenêtres sur ces sites</translation>
-<translation id="7994034037344330969">Spécifie la liste des domaines d'applis Web tiers autorisés à utiliser l'API Desk pour contrôler les bureaux ChromeOS. Ces formats d'URL doivent respecter le format défini pour la propriété "matches" dans https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference</translation>
 <translation id="7995610550667275367">Numérisation (compatible depuis la version 87)</translation>
 <translation id="7999023147219236247">Cette règle permet d'accorder ou non aux applis les autorisations demandées. PERMISSION_POLICY_UNSPECIFIED : la règle n'est pas configurée. Si aucune règle n'est configurée pour une autorisation à quelque niveau que ce soit, l'utilisateur peut, par défaut, accorder ou non l'autorisation demandée. PROMPT : l'utilisateur est invité à accorder ou non l'autorisation demandée. GRANT : l'autorisation demandée est accordée automatiquement. DENY : l'autorisation demandée est refusée.</translation>
 <translation id="7999336306414770162">Désactiver les rapports sur les données VPD de l'appareil</translation>
@@ -8253,7 +8251,6 @@ Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dan
 
       Si elle est activée, l'utilisateur peut se servir du navigateur <ph name="LACROS_NAME" />.</translation>
 <translation id="8016036090567963459">Ne pas autoriser Chrome à lire automatiquement le contenu multimédia</translation>
-<translation id="8020222525161221827">Activer l'API Desk pour le contrôle ChromeOS tiers</translation>
 <translation id="802147957407376460">Faire pivoter l'écran de 0 degré</translation>
 <translation id="8021777486638359878">Considérer l'utilisateur comme inactif pendant la lecture audio</translation>
 <translation id="8022597231371051452">Liste d'autorisation de rapports de télémétrie de site Web</translation>
@@ -8276,6 +8273,17 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="802776363472387903">Hachage SHA-256 de l'image <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Activer le moteur de recherche par défaut et autoriser les utilisateurs à modifier la liste des moteurs de recherche</translation>
 <translation id="8029201909194194377">Durée maximale des sessions autorisée pour les connexions d'accès à distance</translation>
+<translation id="8030797562351896051">Cette règle liste des recherches que l'utilisateur peut effectuer sur un site spécifique. L'utilisateur peut lancer une recherche en saisissant dans la barre d'adresse le raccourci ou le raccourci précédé du caractère @ (par exemple, @travail).
+
+Les champs liés au nom, au raccourci et à l'URL sont obligatoires pour chaque entrée. Les raccourcis listés doivent être uniques et sans espaces. L'ajout du caractère @ avant un raccourci est facultatif. Avec ou sans ce caractère, le résultat est considéré comme identique (par exemple, "travail" et "@travail" sont considérés comme le même raccourci).
+
+Pour chaque entrée, le champ "URL" indique l'URL du moteur de recherche utilisé lors d'une recherche avec le mot clé correspondant. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur. Les entrées non valides et celles comportant des raccourcis en double sont ignorées.
+
+Les entrées de recherche sur site configurées comme mises en avant sont affichées dans la barre d'adresse quand l'utilisateur saisit "@". Jusqu'à trois entrées peuvent être sélectionnées comme mises en avant.
+
+L'utilisateur ne peut pas modifier ni désactiver les entrées de recherche sur site définies par la règle, mais il peut ajouter des raccourcis pour la même URL. De plus, il ne peut pas créer d'entrées de recherche sur site avec un raccourci créé précédemment via une règle.
+
+En cas de conflit avec un raccourci que l'utilisateur a créé précédemment, le paramètre de l'utilisateur est respecté. Toutefois, l'utilisateur peut toujours déclencher l'option créée par une règle en saisissant le caractère @ dans la barre de recherche. Par exemple, si l'utilisateur a déjà défini "travail" comme raccourci vers l'URL1 et que la règle définit "travail" comme raccourci vers l'URL2, saisir "travail" dans la barre de recherche déclenchera une recherche sur l'URL1, mais saisir "@travail" dans la barre de recherche déclenchera une recherche sur l'URL2.</translation>
 <translation id="8035570672225663428">Activez le modèle de recharge adaptative pour suspendre le processus de charge et allonger la durée de vie de la batterie.</translation>
 <translation id="8038007682032315784">Désactiver <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sur toutes les pages Web</translation>
 <translation id="8044493735196713914">Indiquer le mode de démarrage de l'appareil</translation>

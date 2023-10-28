@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Signal de faible intensité</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Mise à jour (effectuée à <ph name="PERCENTAGE_VALUE" /> %)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minutes</translation>
 <translation id="1310380015393971138">Aucun réseau <ph name="NETWORK_NAME" /> disponible</translation>
 <translation id="131421566576084655">La date de la dernière réinitialisation des données n'est pas disponible</translation>
 <translation id="1314565355471455267">VPN Android</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1578784163189013834">Sélectionner l'arrière-plan pour l'économiseur d'écran</translation>
 <translation id="160633243685262989">Prévisualiser l'image</translation>
+<translation id="1611649489706141841">suivant</translation>
 <translation id="1615335640928990664">Consommation des données depuis le <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Lancer le test de recharge</translation>
 <translation id="1639239467298939599">Chargement en cours…</translation>
@@ -679,7 +681,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6184793017104303157">B4</translation>
-<translation id="6189418609903030344">L'autonomie de la batterie diminue au fur et à mesure de son utilisation</translation>
+<translation id="6189418609903030344">La capacité de la batterie diminue au fur et à mesure de son utilisation</translation>
 <translation id="6191293864534840972">Serveurs de noms non valides</translation>
 <translation id="6205145102504628069">Flux nuageux</translation>
 <translation id="6213737986933151570">CDMA 1xRTT</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>
+<translation id="8262870577632766028">1 heure</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Connectez-vous à un réseau et actualisez la page pour voir le fond d'écran.</translation>
 <translation id="8291967909914612644">Pays du fournisseur personnel</translation>

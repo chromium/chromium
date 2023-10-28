@@ -251,6 +251,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="2299218006564889602">As palavras-passe são encriptadas no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • N.º <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Alterar palavra-passe no Website</translation>
+<translation id="230956208401264723">Veja todas as embalagens acompanhadas aqui neste carrossel</translation>
 <translation id="2310154074101836012">Edite o carrossel</translation>
 <translation id="2316709634732130529">Usar palavra-passe sugerida</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
@@ -287,7 +288,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2499505845365628575">Pode encontrar todo o seu histórico de navegação através do botão <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">Opções para Guardar palavra-passe</translation>
 <translation id="2511117522375201202">Tem <ph name="NUMBER_OF_PASSWORDS" /> palavras-passe comprometidas que podem pôr a sua segurança em risco.</translation>
-<translation id="2523363575747517183">Este Website está a tentar repetidamente abrir outra aplicação.</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Pode usar palavras-passe guardadas em qualquer dispositivo. São guardadas no Gestor de Palavras-passe da Google de <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Oculte a opção "Verificação de segurança"</translation>
@@ -592,6 +592,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4148023517926189160">Este Website quer transferir um ficheiro e adicioná-lo ao seu calendário.</translation>
 <translation id="4152011295694446843">Os seus marcadores serão apresentados aqui</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> terminado em <ph name="LAST_FOUR_DIGITS" />.</translation>
+<translation id="4169535189173047238">Não permitir</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="417442848889487144">Etiqueta criada. Data pendente</translation>
 <translation id="418156467088430727">Ver versão offline num novo separador</translation>
@@ -628,7 +629,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4342054591427973606">{count,plural, =1{Esta morada vai ser eliminada deste e de outros dispositivos com sessão iniciada}other{Estas moradas vão ser eliminadas deste e de outros dispositivos com sessão iniciada}}</translation>
 <translation id="4342946437867096381">Já guardou uma palavra-passe para este site na sua Conta Google. A Google pode escolher a palavra-passe mais recente para si.</translation>
 <translation id="4343046787186034850">Acesso à câmara e ao microfone permitido</translation>
-<translation id="4359125752503270327">Esta página abre noutra aplicação.</translation>
 <translation id="4371526908359194219">Notificações por email</translation>
 <translation id="4371591986692297148">Inativo</translation>
 <translation id="4375040482473363939">Pesquisa de códigos QR</translation>
@@ -1162,7 +1162,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7016070607649558507">Tem 1 palavra-passe fraca. Corrija-a agora para manter a sua segurança.</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="704692552158601232">App de navegador predefinida</translation>
-<translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceitar e mudar de contas</translation>
 <translation id="7063811929043357292">A conta é gerida pelos teus pais.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1303,6 +1302,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="785938070103630874">Abra palavras-passe, métodos de pagamento, moradas e muito mais</translation>
 <translation id="7859704718976024901">Histórico de navegação</translation>
 <translation id="7866501058614003444">O acompanhamento desta embalagem foi desativado com êxito.</translation>
+<translation id="7866993391592926595">Se ocultar este cartão, desativa o acompanhamento de embalagens e remove todos os seus dados</translation>
 <translation id="7870750252270996949">Imagem copiada do Lens</translation>
 <translation id="7879275349003161544">Mostrar transferências</translation>
 <translation id="7883882164760409935">Tem palavras-passe reutilizadas.</translation>
@@ -1462,6 +1462,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="8693663554456874301">{count,plural, =1{Fechar o separador}other{Fechar os separadores}}</translation>
 <translation id="8703536910991780768">As suas palavras-passe parecem fortes</translation>
 <translation id="8706253136355675497">Temperatura</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8717864919010420084">Copiar link</translation>
 <translation id="8721297211384281569">Menu Ferramentas</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>

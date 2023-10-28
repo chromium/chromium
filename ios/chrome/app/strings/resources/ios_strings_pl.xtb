@@ -251,6 +251,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2299218006564889602">Przed zapisaniem w menedżerze haseł Google hasła są szyfrowane na urządzeniu.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • Numer <ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">Zmień hasło na stronie</translation>
+<translation id="230956208401264723">Wszystkie śledzone przesyłki zobaczysz w tej karuzeli</translation>
 <translation id="2310154074101836012">Edytuj karuzelę</translation>
 <translation id="2316709634732130529">Użyj proponowanego hasła</translation>
 <translation id="2320166752086256636">Ukryj klawiaturę</translation>
@@ -287,7 +288,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2499505845365628575">Całą historię przeglądania znajdziesz w <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">Opcje zapisania hasła</translation>
 <translation id="2511117522375201202">Masz hasła, które zostały przejęte (<ph name="NUMBER_OF_PASSWORDS" />), a to może narazić Cię na niebezpieczeństwo.</translation>
-<translation id="2523363575747517183">Ta strona internetowa wielokrotnie próbuje otworzyć inną aplikację.</translation>
 <translation id="2529021024822217800">Otwórz wszystkie</translation>
 <translation id="2536991091671391962">Zapisanych haseł możesz używać na dowolnym urządzeniu. Menedżer haseł Google zapisuje je na koncie <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Ukryj „Kontrolę zabezpieczeń”</translation>
@@ -592,6 +592,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4148023517926189160">Ta witryna chce pobrać plik i dodać go do Twojego kalendarza.</translation>
 <translation id="4152011295694446843">Tu znajdziesz swoje zakładki</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> – numer zakończony na: <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169535189173047238">Nie zezwalaj</translation>
 <translation id="4172051516777682613">Zawsze pokazuj</translation>
 <translation id="417442848889487144">Etykieta została utworzona. Data nie została jeszcze potwierdzona.</translation>
 <translation id="418156467088430727">Wyświetl wersję offline w nowej karcie</translation>
@@ -628,7 +629,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4342054591427973606">{count,plural, =1{Ten adres zostanie usunięty z tego urządzenia i innych urządzeń, na których się logujesz.}few{Ter adresy zostaną usunięte z tego urządzenia i innych urządzeń, na których się logujesz.}many{Ter adresy zostaną usunięte z tego urządzenia i innych urządzeń, na których się logujesz.}other{Ter adresy zostaną usunięte z tego urządzenia i innych urządzeń, na których się logujesz.}}</translation>
 <translation id="4342946437867096381">Na koncie Google masz już zapisane hasło do tej witryny Google może wybrać najnowsze hasło.</translation>
 <translation id="4343046787186034850">Przyznano dostęp do aparatu i mikrofonu</translation>
-<translation id="4359125752503270327">Strona zostanie otwarta w innej aplikacji.</translation>
 <translation id="4371526908359194219">Powiadomienia e-mail</translation>
 <translation id="4371591986692297148">Nieaktywna</translation>
 <translation id="4375040482473363939">Wyszukiwanie z użyciem kodu QR</translation>
@@ -1162,7 +1162,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7016070607649558507">Masz 1 słabe hasło. Dla bezpieczeństwa zmień je jak najszybciej.</translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="704692552158601232">Domyślna przeglądarka</translation>
-<translation id="7053983685419859001">Blokuj</translation>
 <translation id="7062545763355031412">Zaakceptuj i przełącz konta</translation>
 <translation id="7063811929043357292">Twoim kontem zarządza rodzic.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -1303,6 +1302,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="785938070103630874">Otwórz sekcje Hasła, Formy płatności lub Adres i inne</translation>
 <translation id="7859704718976024901">Historia przeglądania</translation>
 <translation id="7866501058614003444">Śledzenie tej przesyłki zostało anulowane.</translation>
+<translation id="7866993391592926595">Ukrycie tej karty spowoduje wyłączenie śledzenia przesyłek i usunięcie wszystkich danych</translation>
 <translation id="7870750252270996949">Wyszukaj skopiowany obraz za pomocą Obiektywu</translation>
 <translation id="7879275349003161544">Wyświetl pobrane pliki</translation>
 <translation id="7883882164760409935">Masz hasła użyte ponownie.</translation>
@@ -1462,6 +1462,7 @@ Dane zostały zaszyfrowane hasłem <ph name="TIME" />. Podaj hasło, aby korzyst
 <translation id="8693663554456874301">{count,plural, =1{Zamknij kartę}few{Zamknij karty}many{Zamknij karty}other{Zamknij karty}}</translation>
 <translation id="8703536910991780768">Twoje hasła wyglądają na silne</translation>
 <translation id="8706253136355675497">Temperatura</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8717864919010420084">Skopiuj link</translation>
 <translation id="8721297211384281569">Menu Narzędzia</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>

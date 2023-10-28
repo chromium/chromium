@@ -31,7 +31,6 @@
 <translation id="1129510026454351943">အသေးစိတ်များ− <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">ဤဝဘ်ဆိုက်များကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="1145536944570833626">လက်ရှိဒေတာများကို ဖျက်ပါ</translation>
-<translation id="1149401351239820326">သက်တမ်းကုန်ဆုံးမည့်လ</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။</translation>
 <translation id="1173894706177603556">အမည်ပြောင်းရန်</translation>
 <translation id="1174479719160874822">ဖန်သားပြင်ကျဉ်းသွားသောအခါ Chrome သည် မိုဘိုင်းဝဘ်ဆိုက်ကို တောင်းဆိုပါမည်</translation>
@@ -901,6 +900,7 @@
 <translation id="5753139477036638699">Chrome တွင် ရှာဖွေရန် သင့်အသံကို သုံးနိုင်သည်</translation>
 <translation id="5754350196967618083">Discover ပြန်လည် စတင်၍မရပါ</translation>
 <translation id="5755162682436943950">အကောင့်ထွက်ထားသည်။ လက်မှတ်ထိုးဝင်ရန်နှင့် စင့်ခ်လုပ်ခြင်းဖွင့်ရန် ဒိုင်ယာလော့ ဖွင့်ပေးသည်။</translation>
+<translation id="5759897675466110265">ဝဘ်ဆိုက် အလုပ်မလုပ်ဘူးလား။ ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ယာယီခွင့်ပြုကြည့်ပါ</translation>
 <translation id="5763382633136178763">ရုပ်ဖျက် တဲဘ်များ</translation>
 <translation id="5763514718066511291">ဤအက်ပ်အတွက် URL ကို မိတ္တူကူးရန် တို့ပါ</translation>
 <translation id="5765517223145864268">သင့်အတွေ့အကြုံကို ကျွန်ုပ်တို့အား ပြောပြပါ။ သို့မဟုတ် <ph name="BEGIN_LINK" />သင့်ဆက်တင်များကို ပြောင်းရန်<ph name="END_LINK" />။</translation>
@@ -1343,6 +1343,7 @@
 <translation id="7887174313503389866">အဓိကကျသော ကိုယ်ရေးအချက်အလက်နှင့် လုံခြုံရေး ထိန်းချုပ်မှုများ လမ်းညွှန်ပြသမှုကို ကြည့်ရှုပါ။ အခြားရွေးချယ်စရာများအတွက် သီးခြားဆက်တင်များသို့ သွားပါ။</translation>
 <translation id="7896724475402191389">ငယ်ရွယ်သူများအတွက် အကြောင်းအရာ - ပိတ်</translation>
 <translation id="7903184275147100332">တစ်မိနစ်ခန့် ကြာနိုင်သည်</translation>
+<translation id="7907478394153853634">အဓိပ္ပာယ်မဲ့ စာသား</translation>
 <translation id="7914399737746719723">အက်ပ်ထည့်သွင်းပြီးပြီ</translation>
 <translation id="7919123827536834358">ဤဘာသာစကားများကို အလိုအလျောက် ပြန်ဆိုပါ</translation>
 <translation id="7926975587469166629">ကတ်နာမည်ပြောင်</translation>
@@ -1378,7 +1379,6 @@
 <translation id="804335162455518893">SD ကတ် မတွေ့ပါ</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{ရုပ်ဖျက်တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{ရုပ်ဖျက်တဘ် <ph name="TAB_COUNT_NORMAL" /> ခု}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> မီဂါဘိုက် (MB) သိမ်းနိုင်သည်</translation>
-<translation id="8058655154417507695">သက်တမ်းကုန်ဆုံးမည့်နှစ်</translation>
 <translation id="8058746566562539958">Chrome တဘ်အသစ်တွင် ဖွင့်ပါ</translation>
 <translation id="8062594758852531064">တိုးချဲ့ထားသော ကြိုဖွင့်မှု-</translation>
 <translation id="8063895661287329888">စာညှပ်ကို ထည့်မရခဲ့ပါ။</translation>

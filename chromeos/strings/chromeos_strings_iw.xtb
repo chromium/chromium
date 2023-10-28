@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">אות חלש</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">מתבצע עדכון (%‏<ph name="PERCENTAGE_VALUE" /> הושלמו)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> דקות</translation>
 <translation id="1310380015393971138">אין רשת <ph name="NETWORK_NAME" /> זמינה</translation>
 <translation id="131421566576084655">התאריך של איפוס הנתונים האחרון לא זמין</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">הגדרה כטפט</translation>
 <translation id="1578784163189013834">בחירת רקע לשומר המסך</translation>
 <translation id="160633243685262989">התצוגה המקדימה של התמונה</translation>
+<translation id="1611649489706141841">קדימה</translation>
 <translation id="1615335640928990664">שימוש בחבילת הגלישה מאז <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
 <translation id="1639239467298939599">בטעינה</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">צירוף קובץ</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
 <translation id="8246209727385807362">ספק לא ידוע</translation>
+<translation id="8262870577632766028">שעה אחת</translation>
 <translation id="827422111966801947">כחול כהה</translation>
 <translation id="8286154143153872371">כדי לצפות בטפט, מתחברים לרשת וטוענים מחדש את הדף.</translation>
 <translation id="8291967909914612644">המדינה של הספק הביתי</translation>

@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Silpnas signalas</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Atnaujinama (atlikta <ph name="PERCENTAGE_VALUE" /> %)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> min.</translation>
 <translation id="1310380015393971138">Nėra jokių pasiekiamų „<ph name="NETWORK_NAME" />“ tinklų</translation>
 <translation id="131421566576084655">Pastarojo duomenų nustatymo iš naujo data nepasiekiama</translation>
 <translation id="1314565355471455267">„Android“ VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Nustatyti kaip foną</translation>
 <translation id="1578784163189013834">Pasirinkti ekrano užsklandos foną</translation>
 <translation id="160633243685262989">Peržiūrėti vaizdą</translation>
+<translation id="1611649489706141841">persiųsti</translation>
 <translation id="1615335640928990664">Duomenų naudojimas nuo <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
 <translation id="1639239467298939599">Įkeliama</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Pridėtas failas</translation>
 <translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>
 <translation id="8246209727385807362">Nežinomas operatorius</translation>
+<translation id="8262870577632766028">Viena valanda</translation>
 <translation id="827422111966801947">Indigo spalva</translation>
 <translation id="8286154143153872371">Jei norite peržiūrėti ekrano foną, prisijunkite prie tinklo ir iš naujo įkelkite puslapį.</translation>
 <translation id="8291967909914612644">Namų paslaugos teikėjo šalis</translation>

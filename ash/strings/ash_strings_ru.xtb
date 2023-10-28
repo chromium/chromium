@@ -29,7 +29,7 @@
 <translation id="109942774857561566">Мне скучно</translation>
 <translation id="1104084341931202936">Показать настройки специальных возможностей</translation>
 <translation id="1104621072296271835">Вместе ваши устройства будут работать ещё лучше</translation>
-<translation id="1106446201446919638">Подключено 1 устройство. While using hotspot, Wi-Fi will stay off.</translation>
+<translation id="1106446201446919638">Подключено 1 устройство. Wi-Fi не будет включен, пока вы используете точку доступа.</translation>
 <translation id="1111021433905331574">Изменить цвет подсветки клавиатуры можно в разделе "Настройки" &gt; "<ph name="APP_TITLE" />".</translation>
 <translation id="1117719261843403176">Включить или отключить мобильный интернет. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Автоматически скрывать панель запуска</translation>
@@ -519,7 +519,7 @@
 <translation id="3160929076476941240">2 часа</translation>
 <translation id="3161500364292033097">Закрыть рабочий стол и окна</translation>
 <translation id="316356270129335934">По требованию <ph name="MANAGER" /> на вашем устройстве <ph name="DEVICE_TYPE" /> выполняется откат. Настройки устройства будут сброшены, а все данные – удалены.</translation>
-<translation id="3170769098533255179">Нет подключенных устройств. While using hotspot, Wi-Fi will stay off.</translation>
+<translation id="3170769098533255179">Нет подключенных устройств. Wi-Fi не будет включен, пока вы используете точку доступа.</translation>
 <translation id="3171170659304083361">Настройки способов ввода</translation>
 <translation id="3176221688814061633">На одном из ваших устройств устаревшая версия Bluetooth. Включите функцию Bluetooth Super Resolution или используйте встроенный микрофон для более высокого качества звука.</translation>
 <translation id="3181441307743005334">Перезапуск может занять несколько минут</translation>
@@ -554,7 +554,7 @@
 <translation id="3306386552969601301">К точке доступа <ph name="DEVICE_NAME" /> подключено несколько устройств (<ph name="DEVICECOUNT" />)</translation>
 <translation id="3307642347673023554">Вы перешли в режим ноутбука.</translation>
 <translation id="3308453408813785101">Пользователь <ph name="USER_EMAIL_ADDRESS" /> сможет войти в аккаунт позже.</translation>
-<translation id="3317779231018057649">Подключено несколько устройств (<ph name="DEVICECOUNT" />). While using hotspot, Wi-Fi will stay off.</translation>
+<translation id="3317779231018057649">Подключено несколько устройств (<ph name="DEVICECOUNT" />). Wi-Fi не будет включен, пока вы используете точку доступа.</translation>
 <translation id="3321628682574733415">Неверный родительский код доступа</translation>
 <translation id="332827762492701193">Уведомления скрыты</translation>
 <translation id="3333674550998107387">Развернуть уведомление "<ph name="NOTIFICATION_TITLE" />"</translation>
@@ -593,6 +593,7 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">Устройство USB-C</translation>
+<translation id="3454555520521576458">Изменяемые</translation>
 <translation id="3455468639467374593">Шаблон "<ph name="TEMPLATE_NAME" />"</translation>
 <translation id="3456931972722214204">К точке доступа <ph name="DEVICE_NAME" /> подключено 1 устройство</translation>
 <translation id="346243998268439747">Установить исходный масштаб</translation>
@@ -708,6 +709,7 @@
 <translation id="3899995891769452915">Голосовой ввод</translation>
 <translation id="3900355044994618856">Сеанс закончится через <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Подключение к <ph name="NAME" /></translation>
+<translation id="3906954721959377182">Планшет</translation>
 <translation id="3922427723338465344">{0,plural, =1{Вернитесь к предыдущей версии ОС в течение 1 минуты}one{Вернитесь к предыдущей версии ОС в течение # минуты}few{Вернитесь к предыдущей версии ОС в течение # минут}many{Вернитесь к предыдущей версии ОС в течение # минут}other{Вернитесь к предыдущей версии ОС в течение # минуты}}</translation>
 <translation id="3923494859158167397">Нет настроенных мобильных сетей</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, загрузка мероприятий</translation>
@@ -830,6 +832,7 @@
 <translation id="4364101114148522660">Идет запись (<ph name="DURATION" />)</translation>
 <translation id="4371348193907997655">Настройки трансляции</translation>
 <translation id="4375482231364171368">Искать в адресной строке</translation>
+<translation id="4378154925671717803">Телефон</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Подключение…</translation>
 <translation id="4379531060876907730">Инструменты для работы со стилусом</translation>
@@ -879,7 +882,7 @@
 <translation id="4566144812051858745">Мне неинтересны эти подсказки</translation>
 <translation id="4569753163207712681">Просматривайте недавние фотографии, медиафайлы и приложения с телефона.</translation>
 <translation id="4573176682887762361">"Напечатать [слово или фраза]"</translation>
-<translation id="4577188182049003486">With hotspot on, Wi-Fi is off</translation>
+<translation id="4577188182049003486">Когда используется точка доступа, Wi-Fi отключается</translation>
 <translation id="4577274620589681794">Время истекло · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Включить предпросмотр</translation>
 <translation id="4578906031062871102">Меню настроек открыто</translation>
@@ -1538,10 +1541,6 @@
 <translation id="726276584504105859">Перетащите сюда, чтобы разделить экран</translation>
 <translation id="7262906531272962081">Создать напоминание</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
-<translation id="7297440678881127227">С <ph name="START_TIME" /> до
-        <ph name="END_TIME" />,
-        <ph name="TIME_ZONE" />,
-        <ph name="EVENT_SUMMARY" />. Выберите мероприятие, чтобы посмотреть дополнительные сведения о нем в Google Календаре.</translation>
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
 <translation id="7303365578352795231">Ассистент отвечает на другом устройстве.</translation>
 <translation id="7305884605064981971">EDGE</translation>

@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">신호 약함</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">업데이트 중(<ph name="PERCENTAGE_VALUE" />% 완료)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" />분</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> 네트워크를 사용할 수 없음</translation>
 <translation id="131421566576084655">마지막 데이터 재설정 날짜가 없음</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">배경화면으로 설정</translation>
 <translation id="1578784163189013834">화면 보호기 배경 선택</translation>
 <translation id="160633243685262989">미리보기 이미지</translation>
+<translation id="1611649489706141841">앞으로</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 이후 데이터 사용량</translation>
 <translation id="1621067168122174824">충전 테스트 실행</translation>
 <translation id="1639239467298939599">로드 중</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">파일 첨부</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="8246209727385807362">알 수 없는 이동통신사</translation>
+<translation id="8262870577632766028">1시간</translation>
 <translation id="827422111966801947">인디고</translation>
 <translation id="8286154143153872371">배경화면을 보려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="8291967909914612644">홈 공급자 국가</translation>

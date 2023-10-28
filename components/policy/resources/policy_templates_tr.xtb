@@ -129,6 +129,7 @@ Politika ayarlanmadan bırakılırsa <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLI
 
       Bu politikayı ayarlarsanız kullanıcılar tarafından değiştirilemez.</translation>
 <translation id="1123650965531933634">Pencere yerleşimi iznini tüm sitelerde varsayılan olarak reddeder</translation>
+<translation id="1126037943895692096">Kullanıcıların, kullanıcı geri bildirimine kablosuz alt düzey hata ayıklama verileri eklemesine izin ver</translation>
 <translation id="1126456433590366966"><ph name="GOOGLE_DRIVE_NAME" /> ve <ph name="GOOGLE_WORKSPACE_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışını otomatikleştir</translation>
 <translation id="112794759469625182">Bu politika M118'de kaldırıldı. Kullanıcının uzaktan doğrulamayı etkinleştirmesi ve devre dışı bırakması için kullanılıyordu ancak uzaktan doğrulama varsayılan olarak etkinleştirildi.
 
@@ -766,7 +767,6 @@ Politika, Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa hiçbir
 <translation id="1705215165572785706">Üst sıradaki tuşlara medya tuşu olarak davran, ancak kullanıcının değişiklik yapmasına izin ver</translation>
 <translation id="1708496595873025510">Varyasyon temelini alma sınırlamasını ayarla</translation>
 <translation id="1709154322133526432">Başlangıçta varsayılan tarayıcı kontrolünü etkinleştir</translation>
-<translation id="1710245398478550276">Üçüncü taraf alanlarının listesi için Desk API'yi etkinleştir</translation>
 <translation id="1713829924716792485">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa uzaktan erişim ana makinesine bağlı kullanıcıların istemci ile ana makine arasında dosya aktarımı yapmasına izin verilir. Bu durum, dosya aktarımını desteklemeyen uzaktan yardım bağlantıları için geçerli değildir.
 
       Politika, Devre Dışı değerine ayarlanırsa dosya aktarımına izin verilmez.</translation>
@@ -4396,7 +4396,6 @@ Kullanıcılar, ilk kurulumdan sonra Google konum hizmetlerini açabilir veya ka
 <translation id="467449052039111439">URL listesi aç</translation>
 <translation id="4674542060943819878">Güvenliği ihlal edilmiş şifre uyarılarını kapatmayı etkinleştir</translation>
 <translation id="4674871290487541952">Uzantı güncelleme ve yükleme işlemleriyle ilgili bütünlük kontrollerinde güvenli olmayan algoritmalara izin verme</translation>
-<translation id="4676118751789104029">Politika, Etkin değerine ayarlanırsa üçüncü taraf web uygulamaları, ChromeOS masalarını kontrol etmek için Desk API'yi kullanabilir. Politika ayarlanmaz veya devre dışı bırakılırsa Desk API kullanılamaz. Politika yalnızca kayıtlı cihazlarda geçerli olur.</translation>
 <translation id="4680961954980851756">Otomatik Doldurmayı etkinleştir</translation>
 <translation id="4685721728282448265">CECPQ2 kuantum sonrası anahtar anlaşması, TLS için etkinleştirildi</translation>
 <translation id="468822697351680932">Internet Explorer SiteList politikasını kural kaynağı olarak kullan</translation>
@@ -5102,6 +5101,7 @@ Politika, Devre Dışı değerine ayarlanırsa tarayıcı geçmişi ve indirme g
 <translation id="5323200200131319468">Giriş ekranında sözlü geri bildirimi etkinleştir</translation>
 <translation id="5323271643727095577">beforeunload etkinliği için event.preventDefault() çağrıldığında iptal iletişim kutusunu gösterme beforeunload event.returnValue, beforeunload etkinliği için boş dize olduğunda iptal iletişim kutusunu göster.</translation>
 <translation id="5323355956693037267">Giriş ekranında dokunmatik klavyeyi etkinleştir</translation>
+<translation id="5324430722441910403">Site arama ayarları</translation>
 <translation id="532848608876725157">DNS-over-HTTPS'i güvenli olmayan geçişle etkinleştir</translation>
 <translation id="5328965694451556034">Girişi/çıkışı raporla</translation>
 <translation id="5329018127554115226">Yüksek Verimlilik Modu devre dışı bırakılır.</translation>
@@ -6043,7 +6043,6 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
 <translation id="6181783961196084973">Uygulama etkinliği toplama düğmesinin değeri. Doğru değerine ayarlanırsa kullanıcının uygulama etkinliği, çocuk ve ebeveyne ait <ph name="PRODUCT_NAME" /> uygulamasında görüntülenmek amacıyla sunucuya bildirilir. Yanlış değerine ayarlanırsa Uygulama başına süre sınırları özelliği çalışmaya devam eder, ancak sunucuya hiçbir veri bildirilmeyeceğinden <ph name="PRODUCT_NAME" /> içinde de görüntülenmez.</translation>
 <translation id="6182206125906000651">HTTPS Yükseltmelerini devre dışı bırak.</translation>
 <translation id="6182563940865917569">Chrome'un medyayı otomatik oynatmasına izin ver</translation>
-<translation id="6184385589352532028">Üçüncü taraf ChromeOS kontrolü için Desk API'yi etkinleştirme</translation>
 <translation id="6190367314942602985">Kullanıcı Kimlik bilgilerini bildir</translation>
 <translation id="6191963383731098056">Bu politika, yöneticilere <ph name="PRODUCT_NAME" /> temasının rengini yapılandırma imkanı tanır. Giriş dizesi, "#RRGGBB" biçimine uygun geçerli bir onaltılık renk dizesi olmalıdır.
 
@@ -8334,7 +8333,6 @@ Politikayı ayarlamadan bırakırsanız <ph name="ASK_MIDI_POLICY_NAME" /> polit
 
           Politika değeri milisaniye olarak belirtilmelidir. Değerler boşta kalma gecikmesinin altında veya o gecikmeye eşit olacak şekilde ayarlanır.</translation>
 <translation id="7992613144342460685">Bu sitelere pencere yerleşimi izni ver</translation>
-<translation id="7994034037344330969">ChromeOS masalarını kontrol etmek için Desk API'yi kullanmasına izin verilen üçüncü taraf web uygulaması alanlarının listesini belirtir. Bu URL kalıpları, https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference adresinde bulunan "eşleşir" özelliği için tanımlanan biçime uymalıdır</translation>
 <translation id="7995610550667275367">Tarama (87 sürümünden itibaren desteklenir)</translation>
 <translation id="7999023147219236247">Uygulamalar için yapılan izin istekleriyle ilgili politika. PERMISSION_POLICY_UNSPECIFIED: Politika belirtilmemiştir. Herhangi bir düzeyde bir izin için politika belirtilmemişse varsayılan olarak "PROMPT" davranışı kullanılır. PROMPT: Kullanıcıdan izin vermesi istenir. GRANT: Otomatik olarak izin verilir. DENY: İzin isteği otomatik olarak reddedilir.</translation>
 <translation id="7999336306414770162">Cihazın VPD bilgileri raporlamasını devre dışı bırak</translation>
@@ -8364,7 +8362,6 @@ Politika ayarlanırsa kullanıcılar bunu <ph name="PRODUCT_NAME" /> ürününde
 
       Bu politika Etkin değerine ayarlanırsa kullanıcı <ph name="LACROS_NAME" /> tarayıcıyı kullanabilir.</translation>
 <translation id="8016036090567963459">Chrome'un medyayı otomatik oynatmasına izin verme</translation>
-<translation id="8020222525161221827">Üçüncü taraf ChromeOS kontrolü için Desk API'yi etkinleştirme</translation>
 <translation id="802147957407376460">Ekranı 0 derece döndür</translation>
 <translation id="8021777486638359878">Ses çalarken kullanıcıyı işlem yapmıyor olarak değerlendir</translation>
 <translation id="8022597231371051452">Web sitesi telemetri raporlaması izin verilenler listesi</translation>
@@ -8399,6 +8396,17 @@ yapmak da güvenli seçeneklerden biridir.</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> resminin SHA-256 karması.</translation>
 <translation id="8028814157747157754">Varsayılan arama sağlayıcısını etkinleştir ve kullanıcıların arama sağlayıcısı listesini değiştirmesine izin ver</translation>
 <translation id="8029201909194194377">Uzaktan erişim bağlantıları için izin verilen maksimum oturum süresi</translation>
+<translation id="8030797562351896051">Bu politika, kullanıcının belirli bir sitede arama yapabileceği site aramalarının listesini sağlar. Kullanıcılar adres çubuğuna kısayol veya @kısayol (ör. @iş) yazarak aramayı başlatabilir.
+
+Her giriş için şu alanlar gereklidir: ad, kısayol, url. Listedeki kısayollar benzersiz olmalı ve boşluk içermemelidir. Bir kısayolun başına @ işaretinin eklenmesi isteğe bağlı olduğu için gösterilen kısayollar, @ işareti içermeyen kısayollarla aynıdır. Örneğin, "iş" ve "@iş" yazdığınızda aynı kısayolları görürsünüz.
+
+URL alanı, her giriş için karşılık gelen anahtar kelimeyle arama sırasında kullanılan arama motorunun URL'sini belirtir. URL, sorguda kullanıcının arama terimi ile değiştirilen <ph name="SEARCH_TERM_MARKER" /> dizesini içermelidir. Geçersiz girişler ve yinelenen kısayollara sahip girişler yoksayılır.
+
+Kullanıcı "@" yazdığında, öne çıkan olarak yapılandırılmış site arama girişleri adres çubuğunda gösterilir. Öne çıkan olarak en fazla üç giriş seçilebilir.
+
+Kullanıcılar, politika tarafından belirlenen site arama girişlerini düzenleyemez veya devre dışı bırakamaz, ancak aynı URL için yeni kısayollar ekleyebilir. Ayrıca, kullanıcılar daha önce politika aracılığıyla oluşturulmuş bir kısayolla yeni site arama girişleri oluşturamaz.
+
+Kullanıcının daha önce oluşturduğu bir kısayolla çakışma olması durumunda kullanıcı ayarı dikkate alınır. Ancak kullanıcılar arama çubuğuna "@" yazarak politika tarafından oluşturulan seçeneği tetikleyebilir. Örneğin, kullanıcı URL1 kısayolu olarak daha önce "iş" kelimesini tanımladıysa ve politika "iş" kelimesini URL2 kısayolu olarak tanımlıyorsa arama çubuğuna "iş" yazıldığında URL1 araması tetiklenir ancak "@iş" yazıldığında URL2 araması tetiklenir.</translation>
 <translation id="8035570672225663428">Uyarlanabilir şarj modelinin, pil ömrünü uzatmak için şarj sürecini geçici olarak durdurmasına izin ver</translation>
 <translation id="8038007682032315784"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> öğesini tüm web sayfalarında devre dışı bırak</translation>
 <translation id="8044493735196713914">Rapor cihazı önyükleme modu</translation>

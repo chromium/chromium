@@ -227,6 +227,7 @@
 <translation id="1413809658975081374">Купуялык катасы</translation>
 <translation id="1414134146594747368">Мектепке чейинки</translation>
 <translation id="141826476809826269">Чыгарылган тексттин аягы</translation>
+<translation id="1418611192881166179">Параметрлерден үчүнчү тараптын cookie файлдарын бөгөттөбөсөңүз, Chrome'до бул функция жаңыртылып жатканда сайттар аларды убактылуу колдоно алышат.</translation>
 <translation id="1419305130220238697">"Chrome'до жүктөлүп алынгандарды башкаруу" баскычы, Chrome'до жүктөлүп алынган файлдарды башкаруу үчүн иштетиңиз</translation>
 <translation id="1422930527989633628">Жакын жердеги Bluetooth түзмөктөрүн табууга уруксат сурай алат</translation>
 <translation id="1426410128494586442">Ооба</translation>
@@ -452,6 +453,7 @@
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1856713167556118146">Жашыруун режимде эмнелер сакталат:</translation>
 <translation id="1862788842908766795">Аткаруучу жана башкаруу жумуштары</translation>
+<translation id="1863047423483329595">Көз салуудан коргоо азырынча жеткиликсиз. Үчүнчү тараптын cookie файлдарын бөгөттөбөсөңүз, Chrome'до бул функция жаңыртылып жатканда сайттар аларды убактылуу колдоно алышат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="1863257867908022953">12-түпкүч</translation>
 <translation id="1864927262126810325">Төмөнкүдөн: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Кабелдик жана спутниктик камсыздоочулар</translation>
@@ -476,7 +478,6 @@
 <translation id="1913037223029790376">Ушул виртуалдык картанын CVC кодун колдонуңуз</translation>
 <translation id="191374271204266022">JSON форматында көчүрүү</translation>
 <translation id="1914326953223720820">Файлдарды архивден чыгаруу кызматы</translation>
-<translation id="1916770123977586577">Бул сайттагы жаңырган параметрлерди колдонуп баштоо үчүн баракты жаңыртыңыз</translation>
 <translation id="1919367280705858090">Белгилүү бир каталар боюнча жардам алуу</translation>
 <translation id="1919526244108283799">400 x 600 мм.</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Бирөө да жок}=1{1 сайт}other{# сайт}}</translation>
@@ -634,6 +635,7 @@
 <translation id="2226636330183131181">WiFi тармагына <ph name="BEGIN_LINK" />кирүү<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">Учурда бул дарек Chrome'го сакталды. Аны Google кызматтарында колдонуу үчүн Google аккаунтуңузга (<ph name="ACCOUNT" />) сактаңыз.</translation>
 <translation id="2233745931693710080">Компакт диск</translation>
+<translation id="2235344399760031203">Үчүнчү тараптын cookie файлдары бөгөттөлдү</translation>
 <translation id="2239100178324503013">Азыр жөнөтүү</translation>
 <translation id="2241693394036365668">Файл жүктөлүп алынды</translation>
 <translation id="2246264294482514010">10 x 12 дюйм</translation>
@@ -1108,6 +1110,7 @@
 <translation id="3266793032086590337">Маани (карама-каршы)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Бир да сайт, анын ичинде байланыштырылган сайттар бөгөттөлгөн жок}=1{1 сайт, анын ичинде байланыштырылган сайттар бөгөттөлдү}other{# сайт, анын ичинде байланыштырылган сайттар бөгөттөлдү}}</translation>
 <translation id="3268451620468152448">Ачык өтмөктөр</translation>
+<translation id="3270041629388773465">CVC коддору сакталса, тезирээк төлөйсүз</translation>
 <translation id="3270156322180235608">Аба каттамдары</translation>
 <translation id="3270847123878663523">Иреттештирүүнү &amp;жасабоо</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> туташканы жатат</translation>
@@ -1201,7 +1204,6 @@
 <translation id="3447884698081792621">Тастыктаманы көрсөтүү (чыгарган тарап: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Алуу аралыгы:</translation>
 <translation id="3453962258458347894">Кайталоолордун саны</translation>
-<translation id="3454555520521576458">Өлчөмүн өзгөртүүгө болот</translation>
 <translation id="3461266716147554923"><ph name="URL" /> алмашуу буферине көчүрүлгөн текстти жана сүрөттөрдү көргөнү жатат</translation>
 <translation id="3461824795358126837">Бөлүп көрсөткүч</translation>
 <translation id="3462200631372590220">Өркүндөтүлгөндөрдү жашыруу</translation>
@@ -1437,7 +1439,6 @@
 <translation id="3942048175062210325">Файлдарыңызды кайра ачып көрүңүз</translation>
 <translation id="3943857333388298514">Чаптоо</translation>
 <translation id="3946209740501886391">Бул сайтта ар дайым суралсын</translation>
-<translation id="3947595700203588284">MIDI түзмөктөрүнө туташууга уруксат сурай алат</translation>
 <translation id="3948588869002647271">Бул колдонмо жок же бузулган</translation>
 <translation id="3949571496842715403">Бул сервер <ph name="DOMAIN" /> домени экендигин далилдей алган жок. Анын коопсуздук тастыктамасында альтернативдүү аталыштар көрсөтүлгөн эмес. Сервер туура эмес жөндөлгөн окшойт же кимдир-бирөө маалыматыңызды ортодон кармап калганга аракет кылып жатат.</translation>
 <translation id="3949601375789751990">Серептөө таржымалыңыз бул жерде көрүнөт</translation>
@@ -1848,6 +1849,7 @@
 <translation id="4761104368405085019">Микрофонуңузду колдонуңуз</translation>
 <translation id="4761326898079498987">Толук маалымат алуу үчүн карап чыгыңыз</translation>
 <translation id="4761869838909035636">Chrome'дун коопсуздугун текшерүү</translation>
+<translation id="4763196677855776703"><ph name="URL" /> cайтындагы шарттар жана жоболор</translation>
 <translation id="4764680219299728632">Плиталар жана мештер</translation>
 <translation id="4764776831041365478"><ph name="URL" /> дарегиндеги веб-баракча убактылуу иштебейт же жаңы веб дарекке биротоло көчүрүлгөн окшойт.</translation>
 <translation id="4766713847338118463">Төмөн жагын эки жолу илмек менен бекитүү</translation>
@@ -2276,6 +2278,7 @@
 <translation id="5633259641094592098">Культтук жана инди фильмдери</translation>
 <translation id="563371367637259496">Мобилдик</translation>
 <translation id="5635237618724097525">Смартфондор</translation>
+<translation id="5635478143789726479">Сатуучунун шарттары жана жоболору</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стерео тутумдары жана компоненттери</translation>
 <translation id="5644090287519800334">1-тараптын X сүрөтүн жылдыруу</translation>
@@ -2395,6 +2398,7 @@
 <translation id="5911110632211230665">Ачуу аракети бөгөттөлгөн</translation>
 <translation id="59174027418879706">Иштетилген</translation>
 <translation id="5918373444239520146">Гаджеттер жана портативдик электроника</translation>
+<translation id="5918847752193018339">CVC коддору сакталса, тезирээк төлөйсүз. <ph name="LINK_BEGIN" />Сакталган коопсуздук коддорун өчүрүү<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 колдонулууда}other{# колдонулууда}}</translation>
 <translation id="592031860219554105">Коньки тебүү</translation>
@@ -2708,6 +2712,7 @@
 <translation id="6529602333819889595">Жок кылууну &amp;кайталоо</translation>
 <translation id="6535751101619004418">Валюталар жана чет элдик валюталар</translation>
 <translation id="6536221421038631327">Passpoint жазылуусун <ph name="DEVICE_TYPE" /> түзмөгүңүздөн өчүрсөңүз, бардык байланыштырылган тармактар да өчүрүлөт. Жазылуу планын өзгөртүү үчүн "<ph name="FRIENDLY_NAME" />" менен байланышыңыз. <ph name="LEARN_MORE" /></translation>
+<translation id="6540488083026747005">Бул сайтта үчүнчү тараптын cookie файлдарына уруксат бердиңиз</translation>
 <translation id="6540534463546766581">Өз ара инвестфонддор</translation>
 <translation id="6545864417968258051">Bluetooth түзмөктөрүн издөө</translation>
 <translation id="6547208576736763147">Муштум менен сол жакка эки жолу уруу</translation>
@@ -3471,6 +3476,7 @@
 <translation id="8041089156583427627">Пикириңизди билдириңиз</translation>
 <translation id="8041940743680923270">Дүйнөлүк демейкини колдонуу (Суроо)</translation>
 <translation id="8042577181291637092">MIDI түзмөктөрүн колдоносузбу?</translation>
+<translation id="8043255123207491407">Сатуучунун шарттарын жана жоболорун көрүү</translation>
 <translation id="8046360364391076336">Өнөр жай материалдары жана жабдуулары</translation>
 <translation id="8052898407431791827">Буферге көчүрүлдү</translation>
 <translation id="8055534648776115597">Кесиптик жана үзгүлтүксүз билим берүү</translation>
@@ -3535,6 +3541,7 @@
 <translation id="8183800802493617952">Үй-бүлөгө багытталган оюндар жана иш-чаралар</translation>
 <translation id="8184538546369750125">Дүйнөлүк демейки жөндөөнү колдонуу (Уруксат берүү)</translation>
 <translation id="8186706823560132848">Программа</translation>
+<translation id="8189557652711717875">Сиз тандаган издөө каражаты дарек тилкесинен жана веб беттердеги сүрөттөрдөн издөө сыяктуу функциялар үчүн колдонулат.</translation>
 <translation id="8190193880870196235">Кеңейтүү аркылуу башкарылат</translation>
 <translation id="8194412401381329820">Башкарылбаган бул түзмөктө бул баракты башкарылган аккаунттан колдоно албайсыз. Эгер бул баракты колдонсоңуз, байланышкан аккаунттардан (бул түзмөк таандык болгон уюм башкарган аккаунттар) башка бардык башкарылган аккаунттар кулпуланат.</translation>
 <translation id="8194797478851900357">Жылдырууну &amp;жасабоо</translation>
@@ -3554,6 +3561,7 @@
 <translation id="8217240300496046857">Сайттар Интернеттеги аракеттериңизге көз салган cookie файлдарын колдоно албайт. Функциялар айрым сайттарда туура иштебеши мүмкүн.</translation>
 <translation id="8217748145574471584">Жумуш менен камсыздоо</translation>
 <translation id="8218327578424803826">Дайындалган жайгашкан жер:</translation>
+<translation id="8220833680085771143">Көз салуудан коргоо азырынча жеткиликсиз</translation>
 <translation id="8228419419708659934">Эки барак көрүнүшү</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> тармагыңыздагы түзмөккө киргиси келет:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм.</translation>
@@ -3917,6 +3925,7 @@
 <translation id="8975012916872825179">Телефон номерлери, электрондук почта даректери жана жеткирүү даректери сыяктуу маалымат камтылган</translation>
 <translation id="8975263830901772334">Кагазга басып чыгарган файлдардын аталыштары</translation>
 <translation id="8978053250194585037">Google Коопсуз Серепчи жакында <ph name="SITE" /> сайтынан <ph name="BEGIN_LINK" />фишинг тапты<ph name="END_LINK" />. Фишинг сайттары башка вебсайттардын кейпин кийип, колдонуучуларды алдашат.</translation>
+<translation id="8982884016487650216">PDF жүктөлдү</translation>
 <translation id="8983369100812962543">Эми колдонмонун өлчөмүн өзгөртө аласыз</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'до көрүлгөн вебсайттарды көрүү үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="8987663052629670333">Сүрөт басып чыгаруу кызматтары</translation>
@@ -3943,6 +3952,7 @@
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Бул өтмөктү шилтеме аркылуу бөлүшүү, QR кодду түзүү, тышкы экранга чыгаруу жана башка аракеттерди аткаруу үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="9023536760430404133">Унаанын дөңгөлөктөрү жана шиналары</translation>
 <translation id="9025348182339809926">(Жараксыз)</translation>
+<translation id="902590795160480390">PDF жүктөлүүдө</translation>
 <translation id="9030265603405983977">Монохром</translation>
 <translation id="9035022520814077154">Коопсуздук катасы</translation>
 <translation id="9035824888276246493">Коопсуздук коддорун сактоо</translation>

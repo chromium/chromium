@@ -453,6 +453,7 @@
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1856713167556118146">Инкогнито режимінде орындалмайды</translation>
 <translation id="1862788842908766795">Атқарушы және басқарушы жұмыс орындары</translation>
+<translation id="1863047423483329595">Бақылаудан қорғау функциясы уақытша қолжетімді емес. Chrome бұл функцияны жаңартқан кезде, үшінші тарап cookie файлдарын блоктамасаңыз, сайттар оларды уақытша қолдана алады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="1863257867908022953">12-науа</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> дереккөзінен</translation>
 <translation id="186539747722034544">Кабельдік және жерсеріктік провайдерлер</translation>
@@ -477,7 +478,6 @@
 <translation id="1913037223029790376">Бұл виртуалдық карта үшін CVC кодын пайдаланыңыз.</translation>
 <translation id="191374271204266022">JSON етіп көшіру</translation>
 <translation id="1914326953223720820">Мұрағаттан шығару қызметі</translation>
-<translation id="1916770123977586577">Жаңартылған параметрлерді бұл сайтқа қолдану үшін осы бетті қайта жүктеңіз</translation>
 <translation id="1919367280705858090">Арнайы қате туралы хабар арқылы көмек алу</translation>
 <translation id="1919526244108283799">400 x 600 мм</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Жоқ}=1{1 сайт}other{# сайт}}</translation>
@@ -635,6 +635,7 @@
 <translation id="2226636330183131181">WiFi желісіне <ph name="BEGIN_LINK" />кіріп жатыр<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">Қазіргі уақытта бұл мекенжай Chrome браузерінде сақталған. Оны Google өнімдерінде пайдалану үшін оны Google аккаунтыңызда (<ph name="ACCOUNT" />) сақтаңыз.</translation>
 <translation id="2233745931693710080">Компакт диск</translation>
+<translation id="2235344399760031203">Үшінші тараптың cookie файлдары бөгелді</translation>
 <translation id="2239100178324503013">Қазір жіберу</translation>
 <translation id="2241693394036365668">Файл жүктеп алынды</translation>
 <translation id="2246264294482514010">10 x 12 дюйм</translation>
@@ -1201,7 +1202,6 @@
 <translation id="3447884698081792621">Сертификатты көрсету (шығарушы: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Аралықты алу:</translation>
 <translation id="3453962258458347894">Қайталаулар саны</translation>
-<translation id="3454555520521576458">Өлшемін өзгертуге болады</translation>
 <translation id="3461266716147554923"><ph name="URL" /> беті буферге көшірілген мәтін мен кескіндерді көргісі келеді</translation>
 <translation id="3461824795358126837">Ерекшелеу құралы</translation>
 <translation id="3462200631372590220">Кеңейтілген мәліметті жасыру</translation>
@@ -1438,7 +1438,6 @@
 <translation id="3942048175062210325">Файлдарды қайта ашып көріңіз</translation>
 <translation id="3943857333388298514">Қою</translation>
 <translation id="3946209740501886391">Осы сайтта әрқашан сұралсын</translation>
-<translation id="3947595700203588284">MIDI құрылғыларына қосылуға рұқсат сұрайды</translation>
 <translation id="3948588869002647271">Бұл қолданба жоқ немесе зақымдалған</translation>
 <translation id="3949571496842715403">Бұл сервер <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты нысанның балама атауларын көрсетпейді. Бұл дұрыс конфигурацияланбағаннан немесе шабуылдаушының байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="3949601375789751990">Браузер журналы осында шығады</translation>
@@ -2709,6 +2708,7 @@
 <translation id="6529602333819889595">Жоюды &amp;қайталау</translation>
 <translation id="6535751101619004418">Валюталар және шетел валютасы</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> құрылғысынан Passpoint жазылымын өшіру әрекеті байланысты желілерді өшіреді. Жазылым жоспарыңызға өзгерістер жасау үшін "<ph name="FRIENDLY_NAME" />" дегенге хабарласыңыз. <ph name="LEARN_MORE" /></translation>
+<translation id="6540488083026747005">Сіз осы сайтта үшінші тарап cookie файлдарына рұқсат еттіңіз.</translation>
 <translation id="6540534463546766581">Инвестициялық жарна қорлары</translation>
 <translation id="6545864417968258051">Bluetooth құрылғыларын іздеу</translation>
 <translation id="6547208576736763147">Сол жағын екі рет тесу</translation>
@@ -3920,6 +3920,7 @@
 <translation id="8975012916872825179">Телефон нөмірлері, электрондық мекенжайлар және жеткізу мекенжайлары сияқты ақпараттан тұрады</translation>
 <translation id="8975263830901772334">Басып шығарылатын файлдардың атаулары</translation>
 <translation id="8978053250194585037">Google Safe Browsing қызметі жақында <ph name="SITE" /> сайтынан <ph name="BEGIN_LINK" />фишингті анықтады<ph name="END_LINK" />. Фишинг сайттары сізді алдау үшін басқа вебсайттар болып көрінуі мүмкін.</translation>
+<translation id="8982884016487650216">PDF жүктелді.</translation>
 <translation id="8983369100812962543">Енді қолданбаның өлшемін өзгерте аласыз.</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузерін қолдану тарихын көру үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="8987663052629670333">Фотосуретті басып шығару қызметтері</translation>
@@ -3946,6 +3947,7 @@
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Сілтемені бөлісу, QR кодын жасау, трансляциялау және т.б. арқылы осы қойындыны бөлісу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="9023536760430404133">Көлік дөңгелектері мен шиналары</translation>
 <translation id="9025348182339809926">(жарамсыз)</translation>
+<translation id="902590795160480390">PDF жүктеліп жатыр.</translation>
 <translation id="9030265603405983977">Бір түсті</translation>
 <translation id="9035022520814077154">Қауіпсіздік қатесі</translation>
 <translation id="9035824888276246493">Қауіпсіздік кодтарын сақтау</translation>

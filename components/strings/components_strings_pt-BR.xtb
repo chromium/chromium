@@ -453,6 +453,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1855370856221982654">Boxe</translation>
 <translation id="1856713167556118146">O que a navegação anônima não faz</translation>
 <translation id="1862788842908766795">Vagas de liderança e gerenciamento</translation>
+<translation id="1863047423483329595">A "Proteção antirrastreamento" está temporariamente indisponível. Enquanto o Chrome atualiza esse recurso, os sites podem usar cookies de terceiros temporariamente, a menos que você os bloqueie. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1863257867908022953">Bandeja 12</translation>
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Provedores de TV a cabo e por satélite</translation>
@@ -477,7 +478,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1913037223029790376">Usar o CVC para este cartão virtual</translation>
 <translation id="191374271204266022">Copiar como JSON</translation>
 <translation id="1914326953223720820">Serviço Descompactar</translation>
-<translation id="1916770123977586577">Para aplicar as configurações atualizadas a este site, recarregue a página</translation>
 <translation id="1919367280705858090">Receber ajuda com uma mensagem de erro específica</translation>
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}one{# site}other{# sites}}</translation>
@@ -635,6 +635,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Fazendo login<ph name="END_LINK" /> na rede Wi-Fi</translation>
 <translation id="2228057197024893428">Este endereço está salvo no Chrome. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="ACCOUNT" />.</translation>
 <translation id="2233745931693710080">Disco compacto</translation>
+<translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
 <translation id="2241693394036365668">Um arquivo é transferido por download</translation>
 <translation id="2246264294482514010">10 x 12 pol.</translation>
@@ -1109,6 +1110,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3266793032086590337">Valor (conflitante)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nenhum site bloqueado, incluindo páginas relacionadas}=1{1 site bloqueado, incluindo páginas relacionadas}one{# site bloqueado, incluindo páginas relacionadas}other{# sites bloqueados, incluindo páginas relacionadas}}</translation>
 <translation id="3268451620468152448">Guias abertas</translation>
+<translation id="3270041629388773465">Finalizar compras mais rapidamente quando seus CVCs forem salvos</translation>
 <translation id="3270156322180235608">Empresas aéreas</translation>
 <translation id="3270847123878663523">&amp;Desfazer reordenar</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> deseja se conectar</translation>
@@ -1189,6 +1191,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3433111389595862568">Software para conferências e colaboração</translation>
 <translation id="3433144818443565002">Chat por voz e vídeo</translation>
+<translation id="343474037147570563">Os arquivos transferidos por upload ou anexados são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
 <translation id="3435557549311968410">Contínua (curta)</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3438829137925142401">Usar senhas salvas na sua Conta do Google</translation>
@@ -1201,7 +1204,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Buscar intervalo:</translation>
 <translation id="3453962258458347894">Número de novas tentativas</translation>
-<translation id="3454555520521576458">Redimensionável</translation>
 <translation id="3461266716147554923"><ph name="URL" /> quer ver os textos e imagens copiados para a área de transferência</translation>
 <translation id="3461824795358126837">Marcador</translation>
 <translation id="3462200631372590220">Ocultar detalhes</translation>
@@ -1438,7 +1440,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3942048175062210325">Tente abrir seus arquivos de novo</translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="3946209740501886391">Sempre perguntar neste site</translation>
-<translation id="3947595700203588284">Pode pedir para se conectar a dispositivos MIDI</translation>
 <translation id="3948588869002647271">O app está ausente ou danificado</translation>
 <translation id="3949571496842715403">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele não especifica a extensão Nomes alternativos do requerente. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="3949601375789751990">Seu histórico de navegação aparece aqui</translation>
@@ -1849,6 +1850,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4761104368405085019">Usar microfone</translation>
 <translation id="4761326898079498987">Revise para conferir mais detalhes</translation>
 <translation id="4761869838909035636">Executar a confirmação de segurança do Chrome</translation>
+<translation id="4763196677855776703">Termos e Condições fornecidos por <ph name="URL" /></translation>
 <translation id="4764680219299728632">Fogões, cooktops e fornos</translation>
 <translation id="4764776831041365478">A página <ph name="URL" /> pode estar temporariamente indisponível ou pode ter sido movida permanentemente para um novo endereço da Web.</translation>
 <translation id="4766713847338118463">Dois grampos na parte inferior</translation>
@@ -1932,6 +1934,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e "Enter" para pesquisar</translation>
 <translation id="4930153903256238152">Grande capacidade</translation>
+<translation id="4932035752129140860">O texto colado ou anexado é enviado ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
 <translation id="4934780484581617878">Gerenciamento de janelas</translation>
 <translation id="4936134414789135531">Não foi possível localizar o valor de <ph name="VALUE_NAME" /> inserido.</translation>
 <translation id="4936675324097895694">Finanças</translation>
@@ -2276,6 +2279,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5633259641094592098">Filmes cult e indie</translation>
 <translation id="563371367637259496">Celular</translation>
 <translation id="5635237618724097525">Smartphones</translation>
+<translation id="5635478143789726479">Termos e Condições do vendedor</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Componentes e sistemas estéreos</translation>
 <translation id="5644090287519800334">Mudança X no lado 1 da imagem</translation>
@@ -2395,6 +2399,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5911110632211230665">A abertura de arquivos está bloqueada</translation>
 <translation id="59174027418879706">Ativado</translation>
 <translation id="5918373444239520146">Gadgets e aparelhos eletrônicos portáteis</translation>
+<translation id="5918847752193018339">Finalizar compras mais rapidamente quando seus CVCs forem salvos. <ph name="LINK_BEGIN" />Excluir os códigos de segurança salvos<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 em uso}one{# em uso}other{# em uso}}</translation>
 <translation id="592031860219554105">Patinação no gelo</translation>
@@ -2708,6 +2713,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6529602333819889595">&amp;Refazer excluir</translation>
 <translation id="6535751101619004418">Moedas e câmbio</translation>
 <translation id="6536221421038631327">A remoção de uma assinatura do Passpoint do <ph name="DEVICE_TYPE" /> também remove as redes associadas. Entre em contato com "<ph name="FRIENDLY_NAME" />" para fazer mudanças no seu plano de assinatura. <ph name="LEARN_MORE" /></translation>
+<translation id="6540488083026747005">Você permitiu cookies de terceiros neste site</translation>
 <translation id="6540534463546766581">Fundos mútuos</translation>
 <translation id="6545864417968258051">Busca por Bluetooth</translation>
 <translation id="6547208576736763147">Perfuração dupla no lado esquerdo</translation>
@@ -3070,6 +3076,7 @@ Mais detalhes:
 <translation id="725866823122871198">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu computador (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
 <translation id="7260075294900977274">Uma nova pasta inteligente que ajuda você a salvar todas as suas páginas de compras em um só lugar e a monitorar preços automaticamente, além de receber informações de preços e muito mais</translation>
 <translation id="7265608370113700582">O endereço está disponível somente neste dispositivo</translation>
+<translation id="7273111226200291353">Os arquivos transferidos por download são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
 <translation id="7275334191706090484">Favoritos gerenciados</translation>
 <translation id="7277998515889183784">Maquiagem e cosméticos</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para mudar a senha da sua Conta do Google</translation>
@@ -3470,6 +3477,7 @@ Mais detalhes:
 <translation id="8041089156583427627">Enviar comentários</translation>
 <translation id="8041940743680923270">Usar padrão global (Perguntar)</translation>
 <translation id="8042577181291637092">Usar dispositivos MIDI?</translation>
+<translation id="8043255123207491407">Consulte os Termos e Condições do vendedor</translation>
 <translation id="8046360364391076336">Materiais e equipamentos industriais</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8055534648776115597">Ensino técnico e complementar</translation>
@@ -3545,6 +3553,7 @@ Mais detalhes:
 <translation id="8202370299023114387">Conflito</translation>
 <translation id="8207625368992715508">Esportes motorizados</translation>
 <translation id="8208363704094329105">300 x 400 mm</translation>
+<translation id="8208629719488976364">As informações sobre sua impressora e o conteúdo das páginas que você imprime são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
 <translation id="8210490490377416373">Selecionar o nome da política</translation>
 <translation id="8210604850413485128">Hospedagem na Web</translation>
 <translation id="8211406090763984747">A conexão é segura</translation>
@@ -3918,6 +3927,7 @@ Mais detalhes:
 <translation id="8975012916872825179">Inclui informações como números de telefone, endereços de e-mail e endereços de entrega</translation>
 <translation id="8975263830901772334">Nomes de arquivos impressos</translation>
 <translation id="8978053250194585037">Recentemente, o recurso "Navegação segura" do Google <ph name="BEGIN_LINK" />detectou phishing<ph name="END_LINK" /> em <ph name="SITE" />. Os sites de phishing fingem ser outros sites para enganar você.</translation>
+<translation id="8982884016487650216">O PDF foi carregado</translation>
 <translation id="8983369100812962543">Agora você pode redimensionar o app</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para ver seu histórico de navegação no Chrome</translation>
 <translation id="8987663052629670333">Serviços de impressão de fotos</translation>
@@ -3944,6 +3954,7 @@ Mais detalhes:
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para compartilhar esta guia com um link, um código QR, uma transmissão, entre outras opções</translation>
 <translation id="9023536760430404133">Rodas e pneus de veículos</translation>
 <translation id="9025348182339809926">(inválido)</translation>
+<translation id="902590795160480390">Carregando PDF</translation>
 <translation id="9030265603405983977">Monocromático</translation>
 <translation id="9035022520814077154">Erro de segurança</translation>
 <translation id="9035824888276246493">Salvar códigos de segurança</translation>

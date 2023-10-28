@@ -478,7 +478,6 @@
 <translation id="1913037223029790376">Χρήση CVC για αυτή την εικονική κάρτα</translation>
 <translation id="191374271204266022">Αντιγραφή ως JSON</translation>
 <translation id="1914326953223720820">Υπηρεσία αποσυμπίεσης</translation>
-<translation id="1916770123977586577">Προκειμένου να εφαρμοστούν οι ενημερωμένες ρυθμίσεις σας σε αυτόν τον ιστότοπο, επαναλάβετε τη φόρτωση αυτής της σελίδες</translation>
 <translation id="1919367280705858090">Λήψη βοήθειας για συγκεκριμένο μήνυμα σφάλματος</translation>
 <translation id="1919526244108283799">400 x 600 χιλ.</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Κανένας}=1{1 ιστότοπος}other{# ιστότοποι}}</translation>
@@ -636,6 +635,7 @@
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Σύνδεση<ph name="END_LINK" /> στο δίκτυο Wi-Fi</translation>
 <translation id="2228057197024893428">Αυτή η διεύθυνση είναι αποθηκευμένη στο Chrome. Για να τη χρησιμοποιήσετε σε όλα τα προϊόντα Google, αποθηκεύστε τη στον Λογαριασμό σας Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2233745931693710080">Compact Disc (CD)</translation>
+<translation id="2235344399760031203">Τα cookie τρίτου μέρους αποκλείστηκαν.</translation>
 <translation id="2239100178324503013">Αποστολή τώρα</translation>
 <translation id="2241693394036365668">Το αρχείο κατέβηκε</translation>
 <translation id="2246264294482514010">10 x 12 ίντσες</translation>
@@ -1203,7 +1203,6 @@
 <translation id="3447884698081792621">Εμφάνιση πιστοποιητικού (εκδόθηκε από <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Διάστημα ανάκτησης:</translation>
 <translation id="3453962258458347894">Αριθμός επαναλήψεων</translation>
-<translation id="3454555520521576458">Δυνατότητα αλλαγής μεγέθους</translation>
 <translation id="3461266716147554923">Το <ph name="URL" /> θέλει να δει κείμενο και εικόνες που αντιγράφηκαν στο πρόχειρο</translation>
 <translation id="3461824795358126837">Μαρκαδόρος υπογράμμισης</translation>
 <translation id="3462200631372590220">Απόκρυψη σύνθετων</translation>
@@ -1440,7 +1439,6 @@
 <translation id="3942048175062210325">Δοκιμάστε να ανοίξετε ξανά τα αρχεία σας</translation>
 <translation id="3943857333388298514">Επικόλληση</translation>
 <translation id="3946209740501886391">Να γίνεται πάντα ερώτηση σε αυτόν τον ιστότοπο</translation>
-<translation id="3947595700203588284">Μπορεί να ζητά να συνδεθεί σε συσκευές MIDI.</translation>
 <translation id="3948588869002647271">Η συγκεκριμένη εφαρμογή λείπει ή έχει καταστραφεί</translation>
 <translation id="3949571496842715403">Αυτός ο διακομιστής δεν μπορεί να αποδείξει ότι είναι ο τομέας <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας δεν προσδιορίζει Εναλλακτικά ονόματα θέματος. Αυτό μπορεί να οφείλεται σε εσφαλμένη διαμόρφωση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
 <translation id="3949601375789751990">Το ιστορικό περιήγησής σας εμφανίζεται εδώ</translation>
@@ -2712,6 +2710,7 @@
 <translation id="6529602333819889595">&amp;Επανάληψη διαγραφής</translation>
 <translation id="6535751101619004418">Νομίσματα και συνάλλαγμα</translation>
 <translation id="6536221421038631327">Με την κατάργηση μιας συνδρομής Passpoint από τη συσκευή <ph name="DEVICE_TYPE" />, θα καταργηθούν τα συσχετισμένα δίκτυα. Επικοινωνήστε με το <ph name="FRIENDLY_NAME" /> για να κάνετε αλλαγές στο πρόγραμμα συνδρομής σας. <ph name="LEARN_MORE" /></translation>
+<translation id="6540488083026747005">Επιτρέψατε τα cookie τρίτου μέρους σε αυτόν τον ιστότοπο</translation>
 <translation id="6540534463546766581">Αμοιβαία κεφάλαια</translation>
 <translation id="6545864417968258051">Σάρωση Bluetooth</translation>
 <translation id="6547208576736763147">Διπλό τρύπημα στα αριστερά</translation>
@@ -3924,6 +3923,7 @@
 <translation id="8975012916872825179">Περιλαμβάνει πληροφορίες, όπως αριθμούς τηλεφώνου, διευθύνσεις ηλεκτρονικού ταχυδρομείου και διευθύνσεις αποστολής</translation>
 <translation id="8975263830901772334">Ονόματα των αρχείων που εκτυπώνετε</translation>
 <translation id="8978053250194585037">Πρόσφατα, η Ασφαλής περιήγηση Google <ph name="BEGIN_LINK" />εντόπισε εκδηλώσεις ηλεκτρονικού ψαρέματος (phishing)<ph name="END_LINK" /> στον ιστότοπο <ph name="SITE" />. Οι ιστότοποι ηλεκτρονικού ψαρέματος (phishing) παρουσιάζονται ψευδώς σαν άλλου τύπου ιστότοποι, για να σας εξαπατήσουν.</translation>
+<translation id="8982884016487650216">Η φόρτωση του PDF ολοκληρώθηκε</translation>
 <translation id="8983369100812962543">Μπορείτε πλέον να αλλάξετε το μέγεθος της εφαρμογής</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δείτε το ιστορικό περιήγησής σας στο Chrome.</translation>
 <translation id="8987663052629670333">Υπηρεσίες εκτύπωσης φωτογραφιών</translation>
@@ -3950,6 +3950,7 @@
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να μοιραστείτε αυτή την καρτέλα μέσω κοινοποίησης του συνδέσμου, δημιουργίας κωδικού QR, μετάδοσης κ.ά.</translation>
 <translation id="9023536760430404133">Τροχοί και ελαστικά οχημάτων</translation>
 <translation id="9025348182339809926">(Μη έγκυρο)</translation>
+<translation id="902590795160480390">Φόρτωση PDF</translation>
 <translation id="9030265603405983977">Μονόχρωμο</translation>
 <translation id="9035022520814077154">Σφάλμα ασφάλειας</translation>
 <translation id="9035824888276246493">Αποθήκευση κωδικών ασφαλείας</translation>

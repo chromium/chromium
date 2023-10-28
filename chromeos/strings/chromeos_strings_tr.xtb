@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Zayıf sinyal</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Güncelleniyor (%<ph name="PERCENTAGE_VALUE" /> tamamlandı)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> dakika</translation>
 <translation id="1310380015393971138">Kullanılabilir <ph name="NETWORK_NAME" /> ağı yok</translation>
 <translation id="131421566576084655">Son veri sıfırlama tarihi kullanılamıyor</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Duvar kağıdı yap</translation>
 <translation id="1578784163189013834">Ekran koruyucu arka planı seç</translation>
 <translation id="160633243685262989">Resmi Önizle</translation>
+<translation id="1611649489706141841">ileri</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sonrası veri kullanımı</translation>
 <translation id="1621067168122174824">Şarj testini çalıştır</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Dosya ekle</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>
 <translation id="8246209727385807362">Bilinmeyen operatör</translation>
+<translation id="8262870577632766028">1 saat</translation>
 <translation id="827422111966801947">Çivit Mavisi</translation>
 <translation id="8286154143153872371">Duvar kağıdını görmek için lütfen bir ağa bağlanıp sayfayı yeniden yükleyin.</translation>
 <translation id="8291967909914612644">Ev sağlayıcısının ülkesi</translation>

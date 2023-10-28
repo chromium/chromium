@@ -131,6 +131,7 @@ Si no estableces la política, no se permitirán excepciones a <ph name="DEVICE_
 
       Si estableces esta política, los usuarios no podrán cambiarla.</translation>
 <translation id="1123650965531933634">Rechazar el permiso de Ubicación de ventanas para todos los sitios de forma predeterminada</translation>
+<translation id="1126037943895692096">Permitir que los usuarios incluyan datos de depuración de bajo nivel de Wi-Fi en los comentarios de los usuarios</translation>
 <translation id="1126456433590366966">Automatizar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="112794759469625182">Se quitó esta política en la versión M118. Permitía habilitar e inhabilitar la Certificación remota para el usuario, pero ahora este mecanismo está habilitado de forma predeterminada.
 
@@ -771,7 +772,6 @@ Si la estableces como falsa o no la estableces, no se capturará ningún evento.
 <translation id="1705215165572785706">Tratar las teclas de la fila superior como teclas multimedia, pero permitir que el usuario las modifique</translation>
 <translation id="1708496595873025510">Establece la restricción en la obtención del valor de inicialización de las variaciones.</translation>
 <translation id="1709154322133526432">Habilitar la verificación de navegador predeterminado en el inicio</translation>
-<translation id="1710245398478550276">Habilitar la API de Desk para una lista de dominios de terceros</translation>
 <translation id="1713829924716792485">Si habilitas la política o no la estableces, los usuarios conectados con un host de acceso remoto podrán transferir archivos entre el cliente y el host. Esta acción no se aplicará a las conexiones de asistencia remota, las cuales no admiten la transferencia de archivos.
 
       Si inhabilitas la política, no se podrá transferir archivos.</translation>
@@ -4457,7 +4457,6 @@ Después de la configuración inicial, los usuarios podrán activar o desactivar
 <translation id="467449052039111439">Abrir una lista de direcciones URL</translation>
 <translation id="4674542060943819878">Habilitar la opción de descartar las alertas de contraseña hackeada</translation>
 <translation id="4674871290487541952">Permitir los algoritmos no seguros en las verificaciones de integridad de las instalaciones y actualizaciones de extensiones</translation>
-<translation id="4676118751789104029">Si habilitas la política, las aplicaciones web de terceros podrán usar la API de Desk para controlar los escritorios de ChromeOS. Si no la estableces o la inhabilitas, la API de Desk no estará disponible. La política solo tendrá efecto en los dispositivos inscritos.</translation>
 <translation id="4680961954980851756">Habilitar Autocompletar</translation>
 <translation id="4685721728282448265">Se habilitó el establecimiento de claves poscuántico CECPQ2 para TLS</translation>
 <translation id="468822697351680932">Usar la política SiteList de Internet Explorer como fuente de reglas</translation>
@@ -5174,6 +5173,7 @@ Si inhabilitas la política, no podrán borrarse los historiales de navegación 
 <translation id="5323200200131319468">Habilita los comentarios por voz en la pantalla de acceso</translation>
 <translation id="5323271643727095577">No mostrar el diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload Mostrar el diálogo de cancelación cuando beforeunload event.returnValue sea la cadena vacía del evento beforeunload</translation>
 <translation id="5323355956693037267">Habilitar el teclado en pantalla en la pantalla de acceso</translation>
+<translation id="5324430722441910403">Configuración de las búsquedas en sitios</translation>
 <translation id="532848608876725157">Habilitar DNS-over-HTTPS con resguardo inseguro</translation>
 <translation id="5328965694451556034">Informar accesos y salidas</translation>
 <translation id="5329018127554115226">Se inhabilitará el modo de alta eficiencia</translation>
@@ -6130,7 +6130,6 @@ El tiempo de espera de inactividad para iniciar el protector de pantalla y el in
 <translation id="6181783961196084973">El valor del botón de activación de la recopilación de actividades en apps. Si lo estableces como verdadero, se enviará al servidor la información de la actividad del usuario en apps para que se muestre en la app de <ph name="PRODUCT_NAME" /> del hijo y del padre o la madre. Si lo estableces como falso, seguirá activa la función de Límites de tiempo por app, pero no se enviarán datos al servidor y, por lo tanto, tampoco se mostrarán en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">Inhabilitar actualizaciones de HTTPS</translation>
 <translation id="6182563940865917569">Permitir que Chrome reproduzca contenido multimedia de forma automática</translation>
-<translation id="6184385589352532028">No habilitar la API de Desk para el control de terceros de ChromeOS</translation>
 <translation id="6190367314942602985">Enviar la información de identificación del usuario</translation>
 <translation id="6191963383731098056">Esta política permite a los administradores configurar el color del tema de <ph name="PRODUCT_NAME" />. La string de entrada debe ser una string válida de un código hexadecimal de color que coincida con el formato "#RRGGBB".
 
@@ -8470,7 +8469,6 @@ Si no la estableces, se aplicará la política <ph name="ASK_MIDI_POLICY_NAME" /
 
           El valor de la política debe especificarse en milisegundos. Los valores deben ser menores o iguales que la demora de inactividad.</translation>
 <translation id="7992613144342460685">Otorgar el permiso de Ubicación de ventanas a estos sitios</translation>
-<translation id="7994034037344330969">Especifica la lista de dominios de aplicaciones web de terceros que pueden usar la API de Desk para controlar los escritorios de ChromeOS. Estos patrones de URL deben seguir el formato definido para la propiedad "coincidencias" en https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference</translation>
 <translation id="7995610550667275367">Análisis (compatible a partir de la versión 87)</translation>
 <translation id="7999023147219236247">Esta política solicita al usuario que otorgue permisos a las apps. PERMISSION_POLICY_UNSPECIFIED: La política no está especificada. Si no se especifican políticas para un permiso en ningún nivel, se usará el comportamiento "PROMPT" de forma predeterminada. PROMPT: Le solicita al usuario que otorgue un permiso. GRANT: Otorga un permiso de forma automática. DENY: Rechaza un permiso de forma automática.</translation>
 <translation id="7999336306414770162">Inhabilitar los informes de los VPD del dispositivo</translation>
@@ -8500,7 +8498,6 @@ Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRO
 
       Si habilitas esta política, el usuario podrá usar el navegador <ph name="LACROS_NAME" />.</translation>
 <translation id="8016036090567963459">No permitir que Chrome reproduzca contenido multimedia de forma automática</translation>
-<translation id="8020222525161221827">Habilitar la API de Desk para el control de terceros de ChromeOS</translation>
 <translation id="802147957407376460">Rotar la pantalla 0 grados</translation>
 <translation id="8021777486638359878">Considerar al usuario como inactivo mientras se reproduce un audio</translation>
 <translation id="8022597231371051452">Lista de entidades permitidas para informes de telemetría de sitios web</translation>
@@ -8537,6 +8534,17 @@ también es seguro.</translation>
 <translation id="802776363472387903">El hash SHA-256 de la imagen del <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir que los usuarios modifiquen la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima de la sesión que se permite para las conexiones de acceso remoto</translation>
+<translation id="8030797562351896051">Esta política proporciona una lista de búsquedas de sitios en las que el usuario puede realizar una búsqueda en un sitio específico. Para iniciar la búsqueda, los usuarios pueden escribir el atajo o @atajo (p.ej., @trabajo) en la barra de direcciones.
+
+Los siguientes campos son obligatorios para cada entrada: nombre, atajo y URL. Los atajos de la lista deben ser únicos y no deben contener espacios. Es opcional poner @ antes de un atajo, por lo que el atajo resultante se considera igual que el atajo sin @; por ejemplo, "trabajo" y "@trabajo" se consideran el mismo atajo.
+
+Para cada entrada, el campo URL especifica la URL del motor de búsqueda utilizado durante una búsqueda con la palabra clave correspondiente. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que se reemplazará en la búsqueda por los términos del usuario. Se ignoran las entradas no válidas y las entradas con atajos duplicados.
+
+Las entradas de búsquedas en el sitio configuradas como destacadas se muestran en la barra de direcciones cuando el usuario escribe "@". Se pueden seleccionar hasta tres entradas como destacadas.
+
+Los usuarios no pueden editar ni inhabilitar las entradas de búsquedas en el sitio establecidas por la política, pero pueden agregar nuevos atajos para la misma URL. Además, los usuarios no podrán crear nuevas entradas de búsquedas en el sitio con un atajo creado anteriormente mediante una política.
+
+En caso de conflicto con un atajo creado anteriormente por el usuario, se respeta la configuración del usuario. Sin embargo, los usuarios aún pueden activar la opción creada por la política escribiendo "@" en la barra de búsqueda. Por ejemplo, si el usuario ya definió "trabajo" como atajo a URL1 y la política define "trabajo" como atajo a URL2, al escribir "trabajo" en la barra de búsqueda se activará una búsqueda en URL1, pero si escribes "@trabajo" en la barra de búsqueda se activará una búsqueda en URL2.</translation>
 <translation id="8035570672225663428">Habilitar el modelo de carga adaptable para detener el proceso de carga y así extender la duración de la batería</translation>
 <translation id="8038007682032315784">Inhabilitar el <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web</translation>
 <translation id="8044493735196713914">Modo de notificación de inicio de dispositivo</translation>

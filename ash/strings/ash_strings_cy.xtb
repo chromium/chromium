@@ -503,6 +503,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3105917916468784889">Tynnu sgrinlun</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Amlygu'r eitem flaenorol ar y silff</translation>
+<translation id="311799651966070385">Cau'r ysgogiad</translation>
 <translation id="3120421559657122717">Diffodd y ddyfais?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Math o waith dosbarth</translation>
@@ -592,6 +593,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> munud</translation>
 <translation id="3445925074670675829">Dyfais USB-C</translation>
+<translation id="3454555520521576458">Ailfeintiol</translation>
 <translation id="3455468639467374593">Templed, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">Mae 1 ddyfais wedi'i chysylltu â phoethfan <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Ailosod lefel chwyddo</translation>
@@ -707,6 +709,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3899995891769452915">Mewnbwn llais</translation>
 <translation id="3900355044994618856">Bydd eich sesiwn yn dod i ben mewn <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Cysylltu â <ph name="NAME" /></translation>
+<translation id="3906954721959377182">Llechen</translation>
 <translation id="3922427723338465344">{0,plural, =1{Newid dyfais i'r fersiwn flaenorol o fewn 1 funud}zero{Newid dyfais i'r fersiwn flaenorol o fewn # munud}two{Newid dyfais i'r fersiwn flaenorol o fewn # funud}few{Newid dyfais i'r fersiwn flaenorol o fewn # munud}many{Newid dyfais i'r fersiwn flaenorol o fewn # munud}other{Newid dyfais i'r fersiwn flaenorol o fewn # munud}}</translation>
 <translation id="3923494859158167397">Ni osodwyd unrhyw rwydweithiau symudol</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Wrthi'n llwytho digwyddiadau.</translation>
@@ -829,6 +832,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Wrthi'n recordio</translation>
 <translation id="4371348193907997655">Gosodiadau Castio</translation>
 <translation id="4375482231364171368">Chwilio yn y bar cyfeiriad</translation>
+<translation id="4378154925671717803">Ffôn</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, cryfder signal <ph name="SIGNAL_STRENGTH" /> y cant</translation>
 <translation id="4378551569595875038">Yn cysylltu...</translation>
 <translation id="4379531060876907730">Dyma'ch offer pwyntil</translation>
@@ -886,6 +890,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4585337515783392668">Stopio castio ar dderbynnydd anhysbys</translation>
 <translation id="4596144739579517758">Mae'r thema dywyll wedi'i diffodd</translation>
 <translation id="4611292653554630842">Mewngofnodi</translation>
+<translation id="462160925400706389">Mae <ph name="NAME" /> wedi'i chysylltu</translation>
 <translation id="4623167406982293031">Dilyswch eich cyfrif</translation>
 <translation id="4628757576491864469">Dyfeisiau</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Sgôr seren <ph name="RATING_SCORE" /></translation>
@@ -1311,6 +1316,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="6284232397434400372">Newidiwyd y Cydraniad</translation>
 <translation id="6288235558961782912">Gall <ph name="USER_EMAIL_ADDRESS" /> gael ei ychwanegu eto yn nes ymlaen gyda chaniatâd rhiant.</translation>
 <translation id="6291221004442998378">Ddim yn gwefru</translation>
+<translation id="6298183524022479114">Addasu'r ddyfais hon yn yr ap</translation>
 <translation id="6309219492973062892">Clicio neu dapio eiconau silff 1-8</translation>
 <translation id="6315170314923504164">Llais</translation>
 <translation id="6324916366299863871">Golygu'r llwybr byr</translation>
@@ -1534,10 +1540,6 @@ Gosodiad newydd</translation>
 <translation id="726276584504105859">Llusgwch yma i ddefnyddio sgrîn hollt</translation>
 <translation id="7262906531272962081">Creu nodyn atgoffa</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + ôl-nod</translation>
-<translation id="7297440678881127227"><ph name="START_TIME" /> i
-        <ph name="END_TIME" />,
-        <ph name="TIME_ZONE" />,
-        <ph name="EVENT_SUMMARY" />. Dewiswch i weld rhagor o fanylion yn Google Calendar.</translation>
 <translation id="7302889331339392448">Mae Capsiynau Byw wedi'u diffodd.</translation>
 <translation id="7303365578352795231">Yn ateb ar ddyfais arall.</translation>
 <translation id="7305884605064981971">EDGE</translation>

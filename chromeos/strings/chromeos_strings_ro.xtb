@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Semnal slab</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Se actualizează (<ph name="PERCENTAGE_VALUE" /> % finalizat)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minute</translation>
 <translation id="1310380015393971138">Nicio rețea <ph name="NETWORK_NAME" /> disponibilă</translation>
 <translation id="131421566576084655">Data ultimei resetări a datelor nu este disponibilă</translation>
 <translation id="1314565355471455267">VPN Android</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Setează ca imagine de fundal</translation>
 <translation id="1578784163189013834">Alege fundalul screensaverului</translation>
 <translation id="160633243685262989">Previzualizează imaginea</translation>
+<translation id="1611649489706141841">înainte</translation>
 <translation id="1615335640928990664">Utilizarea datelor începând de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Atașează un fișier</translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
 <translation id="8246209727385807362">Operator necunoscut</translation>
+<translation id="8262870577632766028">O oră</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Conectează-te la o rețea și reîncarcă pagina pentru a vedea imaginea de fundal.</translation>
 <translation id="8291967909914612644">Țara furnizorului local</translation>

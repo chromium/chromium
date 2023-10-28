@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Signal faible</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Mise à jour en cours… (<ph name="PERCENTAGE_VALUE" /> %)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minutes</translation>
 <translation id="1310380015393971138">Aucun réseau <ph name="NETWORK_NAME" /> accessible</translation>
 <translation id="131421566576084655">La date de la dernière réinitialisation des données n'est pas disponible</translation>
 <translation id="1314565355471455267">RPV Android</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1578784163189013834">Choisir l'arrière-plan de l'écran de veille</translation>
 <translation id="160633243685262989">Aperçu de l'image</translation>
+<translation id="1611649489706141841">suivant</translation>
 <translation id="1615335640928990664">Utilisation de données depuis le <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>
+<translation id="8262870577632766028">1 heure</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Veuillez vous connecter au réseau et actualiser la page pour afficher le fond d'écran.</translation>
 <translation id="8291967909914612644">Pays du propriétaire</translation>

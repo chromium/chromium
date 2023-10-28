@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Po përditësohet (<ph name="PERCENTAGE_VALUE" />% e përfunduar)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minuta</translation>
 <translation id="1310380015393971138">Nuk ofrohet asnjë rrjet <ph name="NETWORK_NAME" /></translation>
 <translation id="131421566576084655">Data e rivendosjes së fundit të të dhënave nuk ofrohet</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Vendose si imazh sfondi</translation>
 <translation id="1578784163189013834">Zgjidh imazhin e sfondit të mbrojtësit të ekranit</translation>
 <translation id="160633243685262989">Shiko paraprakisht imazhin</translation>
+<translation id="1611649489706141841">përpara</translation>
 <translation id="1615335640928990664">Përdorimi i të dhënave që prej ditës: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Bashkëngjit skedarin</translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
 <translation id="8246209727385807362">Operator celular i panjohur</translation>
+<translation id="8262870577632766028">1 orë</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Lidhu në një rrjet dhe ringarko faqen për të parë imazhin e sfondit.</translation>
 <translation id="8291967909914612644">Shteti i ofruesit të rrjetit bazë</translation>

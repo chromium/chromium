@@ -249,6 +249,7 @@
 <translation id="2299218006564889602">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員。</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">變更網站上的密碼</translation>
+<translation id="230956208401264723">使用這個輪轉介面查看你追蹤的所有包裹</translation>
 <translation id="2310154074101836012">編輯輪轉介面</translation>
 <translation id="2316709634732130529">使用建議的密碼</translation>
 <translation id="2320166752086256636">隱藏鍵盤</translation>
@@ -285,7 +286,6 @@
 <translation id="2499505845365628575">你可以在<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />中查看所有瀏覽記錄。</translation>
 <translation id="2500374554657206846">儲存密碼的選項</translation>
 <translation id="2511117522375201202">你有 <ph name="NUMBER_OF_PASSWORDS" /> 組遭外洩的密碼，可能導致安全性風險。</translation>
-<translation id="2523363575747517183">這個網站不斷嘗試開啟其他應用程式。</translation>
 <translation id="2529021024822217800">全部開啟</translation>
 <translation id="2536991091671391962">你可以在任何裝置上使用儲存的密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理工具。</translation>
 <translation id="2542268842667970959">隱藏「安全檢查」</translation>
@@ -590,6 +590,7 @@
 <translation id="4148023517926189160">這個網站想要下載檔案並將其新增至你的日曆中。</translation>
 <translation id="4152011295694446843">這裡會顯示你的書籤</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，末四碼為 <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169535189173047238">不允許</translation>
 <translation id="4172051516777682613">一律顯示</translation>
 <translation id="417442848889487144">已建立標籤，目前無法提供日期資訊</translation>
 <translation id="418156467088430727">在新分頁中檢視離線版本</translation>
@@ -626,11 +627,11 @@
 <translation id="4342054591427973606">{count,plural, =1{這個地址將從這部裝置和其他已登入帳戶的裝置中刪除。}other{這些地址將從這部裝置和其他已登入帳戶的裝置中刪除。}}</translation>
 <translation id="4342946437867096381">你已在 Google 帳戶中儲存這個網站的密碼，Google 可幫你保留最新的密碼。</translation>
 <translation id="4343046787186034850">已允許存取相機和麥克風</translation>
-<translation id="4359125752503270327">這個網頁會在其他應用程式中開啟。</translation>
 <translation id="4371526908359194219">電子郵件通知</translation>
 <translation id="4371591986692297148">未啟用</translation>
 <translation id="4375040482473363939">QR 圖碼搜尋</translation>
 <translation id="4378154925671717803">電話</translation>
+<translation id="4388983683160515185"><ph name="FULL_NAME" /> 已將「<ph name="WEBSITE" />」的密碼分享給你</translation>
 <translation id="4389019817280890563">輕觸即可變更語言。</translation>
 <translation id="4405320213589929829">使用網頁上的地址取得當地資訊和路線。</translation>
 <translation id="4420409367264901497">編輯書籤</translation>
@@ -1159,7 +1160,6 @@
 <translation id="7016070607649558507">你有 1 組低強度密碼，請立即修正以確保安全。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="704692552158601232">預設瀏覽器 App</translation>
-<translation id="7053983685419859001">封鎖</translation>
 <translation id="7062545763355031412">接受並切換帳戶</translation>
 <translation id="7063811929043357292">你的帳戶是由家長管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -1369,6 +1369,7 @@
 <translation id="8197543752516192074">翻譯網頁</translation>
 <translation id="8205564605687841303">取消</translation>
 <translation id="8206354486702514201">這項設定由管理員執行。</translation>
+<translation id="8211030355252954494">你收到「<ph name="WEBSITE" />」的密碼</translation>
 <translation id="8214293972734702249">「<ph name="TAB_TITLE" />」已固定</translation>
 <translation id="8225985093977202398">快取圖片和檔案</translation>
 <translation id="823133356836493038">閱讀清單已隱藏</translation>
@@ -1458,6 +1459,7 @@
 <translation id="8693663554456874301">{count,plural, =1{關閉分頁}other{關閉多個分頁}}</translation>
 <translation id="8703536910991780768">你的密碼強度夠高</translation>
 <translation id="8706253136355675497">溫度</translation>
+<translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8717864919010420084">複製連結</translation>
 <translation id="8721297211384281569">工具選單</translation>
 <translation id="8725066075913043281">再試一次</translation>
@@ -1537,6 +1539,7 @@
 <translation id="9079935439869366234">全部標示為未讀取</translation>
 <translation id="9081058212938299310">要更新 <ph name="USERNAME" /> 的密碼嗎？</translation>
 <translation id="9083838294503912307">想在所有裝置上保持同步並享有個人化體驗，請開啟同步功能。</translation>
+<translation id="9087339162317338348">盡可能使用 HTTPS，並在載入不支援該通訊協定的網站前發出警告。</translation>
 <translation id="9093271241977565440">輕觸畫面頂端的「搜尋」圖示</translation>
 <translation id="9094033019050270033">更新密碼</translation>
 <translation id="9097506547406246598">無法取消追蹤，發生錯誤。</translation>
@@ -1545,6 +1548,7 @@
 <translation id="9100610230175265781">請提供通關密語</translation>
 <translation id="9106655997975673326">來源：<ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">檢查是否有遭外洩的密碼</translation>
+<translation id="9109699888944026290">{count,plural, =1{這個網站的新密碼}other{這個網站的新密碼}}</translation>
 <translation id="9120217828624527905">切換成整頁翻譯</translation>
 <translation id="9124387962554796433">Google 可能會使用你的歷史記錄，為你提供個人化的 Google 搜尋和其他服務。</translation>
 <translation id="9137526406337347448">Google 服務</translation>

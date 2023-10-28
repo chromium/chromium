@@ -227,6 +227,7 @@
 <translation id="1413809658975081374">隐私设置错误</translation>
 <translation id="1414134146594747368">学龄前教育</translation>
 <translation id="141826476809826269">已提取文本的末尾</translation>
+<translation id="1418611192881166179">当 Chrome 更新此功能时，网站可暂时使用第三方 Cookie，除非您在设置中屏蔽第三方 Cookie。</translation>
 <translation id="1419305130220238697">“管理 Chrome 中的下载内容”按钮，激活它即可管理您已在 Chrome 中下载的文件</translation>
 <translation id="1422930527989633628">可以询问能否发现附近的蓝牙设备</translation>
 <translation id="1426410128494586442">是</translation>
@@ -452,6 +453,7 @@
 <translation id="1855370856221982654">拳击</translation>
 <translation id="1856713167556118146">无痕模式不会做什么</translation>
 <translation id="1862788842908766795">行政和管理职位</translation>
+<translation id="1863047423483329595">暂时无法使用“跟踪保护”功能。在 Chrome 更新此功能期间，网站可暂时使用第三方 Cookie，除非您屏蔽了这类 Cookie。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1863257867908022953">纸匣 12</translation>
 <translation id="1864927262126810325">来自<ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">有线电视和卫星电视提供商</translation>
@@ -476,7 +478,6 @@
 <translation id="1913037223029790376">使用此虚拟卡的银行卡验证码 (CVC)</translation>
 <translation id="191374271204266022">以 JSON 格式复制</translation>
 <translation id="1914326953223720820">解压缩服务</translation>
-<translation id="1916770123977586577">要将您更新后的设置应用到此网站，请重新加载此页面</translation>
 <translation id="1919367280705858090">了解如何解决特定错误消息指出的错误</translation>
 <translation id="1919526244108283799">400 x 600 毫米</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{无}=1{1 个网站}other{# 个网站}}</translation>
@@ -634,6 +635,7 @@
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />登录<ph name="END_LINK" /> Wi-Fi 网络</translation>
 <translation id="2228057197024893428">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2233745931693710080">CD</translation>
+<translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2239100178324503013">立即发送</translation>
 <translation id="2241693394036365668">下载文件</translation>
 <translation id="2246264294482514010">10 x 12 英寸</translation>
@@ -1199,7 +1201,6 @@
 <translation id="3447884698081792621">显示证书（由<ph name="ISSUER" />签发）</translation>
 <translation id="3452404311384756672">抓取时间间隔：</translation>
 <translation id="3453962258458347894">重试次数</translation>
-<translation id="3454555520521576458">可调整大小</translation>
 <translation id="3461266716147554923"><ph name="URL" /> 想查看复制到剪贴板的文字和图片</translation>
 <translation id="3461824795358126837">荧光笔</translation>
 <translation id="3462200631372590220">隐藏详情</translation>
@@ -1434,7 +1435,6 @@
 <translation id="3942048175062210325">尝试重新打开文件</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3946209740501886391">在该网站上一律询问</translation>
-<translation id="3947595700203588284">可以询问能否连接到 MIDI 设备</translation>
 <translation id="3948588869002647271">此应用不存在或已损坏</translation>
 <translation id="3949571496842715403">此服务器无法证实它就是 <ph name="DOMAIN" /> - 它的安全证书没有指定主题备用名称。这可能是因为某项配置有误或某个攻击者拦截了您的连接。</translation>
 <translation id="3949601375789751990">您的浏览记录会显示在此处</translation>
@@ -2704,6 +2704,7 @@
 <translation id="6529602333819889595">恢复删除(&amp;R)</translation>
 <translation id="6535751101619004418">货币与外汇兑换</translation>
 <translation id="6536221421038631327">从<ph name="DEVICE_TYPE" />移除 Passpoint 订阅后，关联的网络也会一并移除。如需更改订阅方案，请与“<ph name="FRIENDLY_NAME" />”联系。<ph name="LEARN_MORE" /></translation>
+<translation id="6540488083026747005">您已允许此网站使用第三方 Cookie</translation>
 <translation id="6540534463546766581">共同基金</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
 <translation id="6547208576736763147">双孔（左侧）</translation>
@@ -3531,6 +3532,7 @@
 <translation id="8183800802493617952">面向家庭的游戏和活动</translation>
 <translation id="8184538546369750125">使用全局默认设置（允许）</translation>
 <translation id="8186706823560132848">软件</translation>
+<translation id="8189557652711717875">您选择的搜索引擎将用于多种功能，例如从地址栏中进行搜索和使用网页上的图片进行搜索。</translation>
 <translation id="8190193880870196235">由一款扩展程序管理</translation>
 <translation id="8194412401381329820">您无法在这部非受管设备上通过受管账号使用该网页。如果您使用该网页，除了由这部设备所属的实体管理的账号（即关联账号）之外的所有受管账号都将被锁定。</translation>
 <translation id="8194797478851900357">撤消移动(&amp;U)</translation>
@@ -3550,6 +3552,7 @@
 <translation id="8217240300496046857">网站无法使用 Cookie 来跟踪您在网上的活动。某些网站上的功能可能会无法正常运作。</translation>
 <translation id="8217748145574471584">人力资源</translation>
 <translation id="8218327578424803826">分配的位置：</translation>
+<translation id="8220833680085771143">暂时无法使用跟踪保护功能</translation>
 <translation id="8228419419708659934">双页视图</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> 想访问您网络中的设备：</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 毫米</translation>
@@ -3914,6 +3917,7 @@
 <translation id="8975012916872825179">包括电话号码、电子邮件地址和送货地址等信息</translation>
 <translation id="8975263830901772334">已打印的文件的名称</translation>
 <translation id="8978053250194585037">Google 安全浏览功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />检测到网上诱骗行为<ph name="END_LINK" />。网上诱骗网站会假冒其他网站来欺骗您。</translation>
+<translation id="8982884016487650216">PDF 已加载完毕</translation>
 <translation id="8983369100812962543">现在，您可以调整应用大小</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可查看您在 Chrome 中的浏览记录</translation>
 <translation id="8987663052629670333">照片打印服务</translation>
@@ -3940,6 +3944,7 @@
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可通过分享链接、创建二维码、投放等操作分享此标签页</translation>
 <translation id="9023536760430404133">汽车轮毂与轮胎</translation>
 <translation id="9025348182339809926">（无效）</translation>
+<translation id="902590795160480390">正在加载 PDF</translation>
 <translation id="9030265603405983977">单色</translation>
 <translation id="9035022520814077154">安全错误</translation>
 <translation id="9035824888276246493">保存安全码</translation>

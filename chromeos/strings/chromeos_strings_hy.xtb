@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Թույլ ազդանշան</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Թարմացում (<ph name="PERCENTAGE_VALUE" />%-ը կատարված է)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> րոպե</translation>
 <translation id="1310380015393971138">Հասանելի <ph name="NETWORK_NAME" /> ցանց չկա</translation>
 <translation id="131421566576084655">Վերջին զրոյացման ամսաթվի մասին տեղեկությունները հասանելի չեն</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Օգտագործել որպես պաստառ</translation>
 <translation id="1578784163189013834">Ընտրել էկրանապահի ֆոն</translation>
 <translation id="160633243685262989">Պատկերի նախադիտում</translation>
+<translation id="1611649489706141841">փոխանցել</translation>
 <translation id="1615335640928990664">Տվյալների օգտագործում <ph name="FRIENDLY_DATE" />-ից ի վեր</translation>
 <translation id="1621067168122174824">Փորձարկել լիցքավորումը</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Կցել ֆայլ</translation>
 <translation id="8230672074305416752">Չհաջողվեց փինգ ուղարկել կանխադրված ցանցի անցախուցին</translation>
 <translation id="8246209727385807362">Անհայտ օպերատոր</translation>
+<translation id="8262870577632766028">1 ժամ</translation>
 <translation id="827422111966801947">Ինդիգո</translation>
 <translation id="8286154143153872371">Միացեք որևէ ցանցի և վերաբեռնեք էջը՝ պաստառը դիտելու համար։</translation>
 <translation id="8291967909914612644">Տան ծառայությունների մատակարարի երկիրը</translation>

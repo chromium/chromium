@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Slab signal</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Ažuriranje (dovršeno <ph name="PERCENTAGE_VALUE" />%)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
 <translation id="1310380015393971138">Nije dostupna nijedna <ph name="NETWORK_NAME" /> mreža</translation>
 <translation id="131421566576084655">Datum zadnjeg poništavanja podatkovnog prometa nije dostupan</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Postavi kao pozadinu</translation>
 <translation id="1578784163189013834">Odabir pozadine čuvara zaslona</translation>
 <translation id="160633243685262989">Pregled slike</translation>
+<translation id="1611649489706141841">prosljeđivanje</translation>
 <translation id="1615335640928990664">Potrošnja podatkovnog prometa od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Pokreni test napunjenosti</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Priloži datoteku</translation>
 <translation id="8230672074305416752">Pinganje pristupnika zadane mreže nije uspjelo</translation>
 <translation id="8246209727385807362">Nepoznat mobilni operater</translation>
+<translation id="8262870577632766028">1 h</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Povežite se s mrežom i ponovo učitajte stranicu da biste pregledali pozadinu.</translation>
 <translation id="8291967909914612644">Zemlja davatelja usluge kućne mreže</translation>

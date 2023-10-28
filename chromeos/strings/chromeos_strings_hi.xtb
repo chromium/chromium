@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">कमज़ोर सिग्नल</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">अपडेट हो रहा है (<ph name="PERCENTAGE_VALUE" />% हो गया)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> मिनट</translation>
 <translation id="1310380015393971138">कोई भी <ph name="NETWORK_NAME" /> नेटवर्क मौजूद नहीं है</translation>
 <translation id="131421566576084655">आखिरी बार डेटा किस तारीख को रीसेट किया गया था, इसकी जानकारी उपलब्ध नहीं है</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">वॉलपेपर के तौर पर सेट करें</translation>
 <translation id="1578784163189013834">स्क्रीन सेवर का बैकग्राउंड चुनें</translation>
 <translation id="160633243685262989">इमेज की झलक देखें</translation>
+<translation id="1611649489706141841">आगे जाएं</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> से लेकर अब तक इस्तेमाल किया गया डेटा</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
 <translation id="1639239467298939599">लोड हो रही है</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">फ़ाइल अटैच करें</translation>
 <translation id="8230672074305416752">डिफ़ॉल्ट नेटवर्क गेटवे को पिंग नहीं किया जा सका</translation>
 <translation id="8246209727385807362">अज्ञात वाहक</translation>
+<translation id="8262870577632766028">1 घंटा</translation>
 <translation id="827422111966801947">गहरा नीला</translation>
 <translation id="8286154143153872371">वॉलपेपर देखने के लिए, नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>
 <translation id="8291967909914612644">'होम' पर काम करने वाली सेवाएं देने वाला देश</translation>

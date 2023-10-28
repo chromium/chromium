@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">信号较弱</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">正在更新（已完成 <ph name="PERCENTAGE_VALUE" />%）</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> 分钟</translation>
 <translation id="1310380015393971138">无可用的“<ph name="NETWORK_NAME" />”网络</translation>
 <translation id="131421566576084655">无法获取上次重置流量使用情况的日期</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">设为壁纸</translation>
 <translation id="1578784163189013834">选择屏保背景</translation>
 <translation id="160633243685262989">预览图片</translation>
+<translation id="1611649489706141841">前进</translation>
 <translation id="1615335640928990664">自 <ph name="FRIENDLY_DATE" />开始的流量使用情况</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
 <translation id="1639239467298939599">正在加载</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">附上文件</translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
 <translation id="8246209727385807362">未知运营商</translation>
+<translation id="8262870577632766028">1 小时</translation>
 <translation id="827422111966801947">靛青色</translation>
 <translation id="8286154143153872371">若要查看壁纸，请连接到网络并重新加载这个页面。</translation>
 <translation id="8291967909914612644">家用移动网络提供商所属国家/地区</translation>

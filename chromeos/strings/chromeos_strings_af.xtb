@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Swak sein</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Opdatering is (<ph name="PERCENTAGE_VALUE" />% voltooi)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minute</translation>
 <translation id="1310380015393971138">Geen <ph name="NETWORK_NAME" />-netwerk beskikbaar nie</translation>
 <translation id="131421566576084655">Datum van laaste dataterugstelling is nie beskikbaar nie</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Stel as muurpapier</translation>
 <translation id="1578784163189013834">Kies sluimerskermagtergrond</translation>
 <translation id="160633243685262989">Voorbeskou prent</translation>
+<translation id="1611649489706141841">vorentoe</translation>
 <translation id="1615335640928990664">Datagebruik sedert <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
 <translation id="1639239467298939599">Laai tans</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Heg lêer aan</translation>
 <translation id="8230672074305416752">Kon nie die versteknetwerkdeurgang pieng nie</translation>
 <translation id="8246209727385807362">Onbekende diensverskaffer</translation>
+<translation id="8262870577632766028">1 uur</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Koppel asseblief aan 'n netwerk en herlaai die bladsy om muurpapier te bekyk.</translation>
 <translation id="8291967909914612644">Tuisverskafferland</translation>

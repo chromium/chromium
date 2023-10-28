@@ -593,6 +593,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C device</translation>
+<translation id="3454555520521576458">Resizable</translation>
 <translation id="3455468639467374593">Template, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 device connected to <ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="346243998268439747">Reset zoom level</translation>
@@ -708,6 +709,7 @@ Connect your device to power.</translation>
 <translation id="3899995891769452915">Voice input</translation>
 <translation id="3900355044994618856">Your session will end in <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connecting to <ph name="NAME" /></translation>
+<translation id="3906954721959377182">Tablet</translation>
 <translation id="3922427723338465344">{0,plural, =1{Change device to previous version within 1 minute}other{Change device to previous version within # minutes}}</translation>
 <translation id="3923494859158167397">No mobile networks set up</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Loading events.</translation>
@@ -830,6 +832,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Recording</translation>
 <translation id="4371348193907997655">Cast settings</translation>
 <translation id="4375482231364171368">Search in address bar</translation>
+<translation id="4378154925671717803">Phone</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signal strength <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
 <translation id="4378551569595875038">Connecting...</translation>
 <translation id="4379531060876907730">These are your stylus tools</translation>
@@ -1538,10 +1541,6 @@ New install</translation>
 <translation id="726276584504105859">Drag here to use split screen</translation>
 <translation id="7262906531272962081">Create reminder</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7297440678881127227"><ph name="START_TIME" /> to
-        <ph name="END_TIME" />,
-        <ph name="TIME_ZONE" />,
-        <ph name="EVENT_SUMMARY" />. Select for more details in Google Calendar.</translation>
 <translation id="7302889331339392448">Live Caption is off.</translation>
 <translation id="7303365578352795231">Answering on another device.</translation>
 <translation id="7305884605064981971">EDGE</translation>

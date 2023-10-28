@@ -453,6 +453,7 @@
 <translation id="1855370856221982654">კრივი</translation>
 <translation id="1856713167556118146">რა არის მიუწვდომელი ინკოგნიტო რეჟიმში</translation>
 <translation id="1862788842908766795">ვაკანსიები აღმასრულებელ და მართვის სფეროში</translation>
+<translation id="1863047423483329595">თვალის დევნებისგან დაცვა დროებით მიუწვდომელია. სანამ Chrome აახლებს ამ ფუნქციას, საიტებმა, შესაძლოა, დროებით გამოიყენონ მესამე მხარის ქუქი-ჩანაწერები, თუ მათ არ დაბლოკავთ. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="1863257867908022953">ლანგარი 12</translation>
 <translation id="1864927262126810325">წყარო: <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">საკაბელო და თანამგზავრული ტელევიზიის პროვაიდერები</translation>
@@ -477,7 +478,6 @@
 <translation id="1913037223029790376">ამ ვირტუალური ბარათის CVC-ს გამოყენება</translation>
 <translation id="191374271204266022">JSON-ის სახით კოპირება</translation>
 <translation id="1914326953223720820">არქივიდან ამოღების სერვისი</translation>
-<translation id="1916770123977586577">განახლებული პარამეტრების ამ საიტისთვის მისასადაგებლად საჭიროა გვერდის გადატვირთვა</translation>
 <translation id="1919367280705858090">შეცდომის შესახებ კონკრეტულ შეტყობინებებთან დაკავშირებული დახმარება</translation>
 <translation id="1919526244108283799">400 x 600 მმ</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{არცერთი}=1{1 საიტი}other{# საიტი}}</translation>
@@ -635,6 +635,7 @@
 <translation id="2226636330183131181">Wi-Fi ქსელში <ph name="BEGIN_LINK" />შესვლა<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">ეს მისამართი ამჟამად შენახულია Chrome-ში. სხვადასხვა Google პროდუქტში მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში (<ph name="ACCOUNT" />).</translation>
 <translation id="2233745931693710080">კომპაქტდისკი</translation>
+<translation id="2235344399760031203">მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია</translation>
 <translation id="2239100178324503013">ახლავე გაგზავნა</translation>
 <translation id="2241693394036365668">ფაილის ჩამოტვირთვა</translation>
 <translation id="2246264294482514010">10 x 12 დუიმი</translation>
@@ -1202,7 +1203,6 @@
 <translation id="3447884698081792621">სერტიფიკატის ჩვენება (გამომცემელი: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">შერჩევის ინტერვალი:</translation>
 <translation id="3453962258458347894">ხელახლა მცდელობების რაოდენობა</translation>
-<translation id="3454555520521576458">ზომაცვლადი</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ითხოვს გაცვლის ბუფერში კოპირებული ტექსტისა და სურათების ნახვას</translation>
 <translation id="3461824795358126837">გამომყოფი</translation>
 <translation id="3462200631372590220">გაფართოებულების დამალვა</translation>
@@ -1439,7 +1439,6 @@
 <translation id="3942048175062210325">ცადეთ თქვენი ფაილების ხელახლა გახსნა</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
 <translation id="3946209740501886391">ყოველთვის შეკითხვა ამ საიტზე</translation>
-<translation id="3947595700203588284">შეუძლია MIDI-მოწყობილობებთან დაკავშირების თხოვნა</translation>
 <translation id="3948588869002647271">ეს აპლიკაცია არ არის ან ის დაზიანებულია</translation>
 <translation id="3949571496842715403">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატი არ განსაზღვრავს სუბიექტის დამატებით სახელებს. ამის მიზეზი შეიძლება იყოს არასწორი კონფიგურაცია ან თავდამსხმელის მიერ თქვენი კავშირის ხელში ჩაგდება.</translation>
 <translation id="3949601375789751990">თქვენი დათვალიერების ისტორია აქ გამოჩნდება</translation>
@@ -2710,6 +2709,7 @@
 <translation id="6529602333819889595">წაშლის &amp;გამეორება</translation>
 <translation id="6535751101619004418">ვალუტა და ვალუტის გადაცვლა</translation>
 <translation id="6536221421038631327">თქვენი <ph name="DEVICE_TYPE" />-იდან Passpoint გამოწერის წაშლის შემთხვევაში წაიშლება დაკავშირებული ქსელებიც. დაუკავშირდით „<ph name="FRIENDLY_NAME" />“-ს, თქვენს გამოწერაში ცვლილებები რომ შეიტანოთ. <ph name="LEARN_MORE" /></translation>
+<translation id="6540488083026747005">თქვენ დაუშვით მესამე მხარის ქუქი-ჩანაწერები ამ საიტზე</translation>
 <translation id="6540534463546766581">საინვესტიციო ფონდები</translation>
 <translation id="6545864417968258051">Bluetooth სკანირება</translation>
 <translation id="6547208576736763147">ორმაგად გახვრეტა მარცხნივ</translation>
@@ -3921,6 +3921,7 @@
 <translation id="8975012916872825179">მოიცავს ისეთ ინფორმაციას, როგორიცაა ტელეფონის ნომრები, ელფოსტის მისამართები და მიწოდების მისამართები</translation>
 <translation id="8975263830901772334">თქვენ მიერ ბეჭდვაზე გაშვებული ფაილების სახელები</translation>
 <translation id="8978053250194585037">Google-ის უსაფრთხო დათვალიერების ფუნქციამ <ph name="SITE" />-ზე ახლახან გამოავლინა <ph name="BEGIN_LINK" />ფიშინგის მცდელობა<ph name="END_LINK" />. ფიშინგ-საიტები თავს ასაღებენ სხვა საიტებად თქვენი მოტყუების მიზნით.</translation>
+<translation id="8982884016487650216">PDF-ის ჩატვირთვა დასრულდა</translation>
 <translation id="8983369100812962543">ახლა შეგიძლიათ ფანჯრის ზომის შეცვლა</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ში თქვენი დათვალიერების ისტორიის სანახავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="8987663052629670333">ფოტოების ბეჭდვის მომსახურება</translation>
@@ -3947,6 +3948,7 @@
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს ამ ჩანართის გასაზიარებლად ისეთი რამეების მეშვეობით, როგორიცაა ბმულის გაზიარება, QR კოდის შექმნა, ტრანსლირება და სხვა</translation>
 <translation id="9023536760430404133">სატრანსპორტო საშუალებების ბორბლები და საბურავები</translation>
 <translation id="9025348182339809926">(არასწორია)</translation>
+<translation id="902590795160480390">მიმდინარეობს PDF-ის ჩატვირთვა</translation>
 <translation id="9030265603405983977">მონოქრომული</translation>
 <translation id="9035022520814077154">უსაფრთხოების შეცდომა</translation>
 <translation id="9035824888276246493">უსაფრთხოების კოდების შენახვა</translation>

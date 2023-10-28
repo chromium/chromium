@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Señal débil</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" />% completo)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
 <translation id="1310380015393971138">No hay redes <ph name="NETWORK_NAME" /> disponibles</translation>
 <translation id="131421566576084655">La fecha del último restablecimiento de datos no está disponible</translation>
 <translation id="1314565355471455267">VPN de Android</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Establecer como fondo de pantalla</translation>
 <translation id="1578784163189013834">Elegir el fondo del protector de pantalla</translation>
 <translation id="160633243685262989">Obtener vista previa de la imagen</translation>
+<translation id="1611649489706141841">adelante</translation>
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Ejecutar prueba de carga</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Adjuntar un archivo</translation>
 <translation id="8230672074305416752">no se pudo hacer ping en la puerta de enlace de la red predeterminada</translation>
 <translation id="8246209727385807362">El proveedor es desconocido</translation>
+<translation id="8262870577632766028">1 hora</translation>
 <translation id="827422111966801947">Índigo</translation>
 <translation id="8286154143153872371">Conéctate a una red y vuelve a cargar la página para ver el fondo de pantalla.</translation>
 <translation id="8291967909914612644">País del proveedor de origen</translation>

@@ -2,7 +2,9 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1178581264944972037">일시중지</translation>
+<translation id="2558806128245168542">뒤로 이동</translation>
 <translation id="3523426587027570423">'이 페이지의 내용 듣기'를 탭하여 종료합니다.</translation>
+<translation id="4431240646217225907">텍스트 강조 표시 및 자동 스크롤</translation>
 <translation id="4654641641922242357">'이 페이지의 내용 듣기' 플레이어입니다.</translation>
 <translation id="4731877163452936634">재생 속도는 <ph name="PLAYBACK_SPEED" />입니다. 변경하려면 클릭하세요.</translation>
 <translation id="5234971936051226002">'이 페이지의 내용 듣기' 플레이어가 최소화되었습니다.</translation>

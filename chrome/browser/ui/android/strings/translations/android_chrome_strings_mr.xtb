@@ -31,7 +31,6 @@
 <translation id="1129510026454351943">तपशील: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">या साइटचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="1145536944570833626">विद्यमान डेटा हटवा.</translation>
-<translation id="1149401351239820326">कालबाह्य होण्याचा महिना:</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व ChromeOS च्या अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता.</translation>
 <translation id="1173894706177603556">नाव बदला</translation>
 <translation id="1174479719160874822">स्क्रीन अरुंद असल्यास, Chrome मोबाइल साइटला विनंती करेल</translation>
@@ -193,6 +192,7 @@
 <translation id="204321170514947529"><ph name="APP_NAME" />चा Chrome मध्ये देखील डेटा आहे</translation>
 <translation id="2046634576464120978">नोंदणी करता आली नाही</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
+<translation id="2051669996101374349">शक्य असेल, तेव्ह HTTPS वापरा आणि त्याला सपोर्ट न करणारी साइट लोड करण्यापूर्वी चेतावणी मिळवा. प्रगत संरक्षण सुरू केल्यामुळे, तुम्ही हे सेटिंग बदलू शकत नाही.</translation>
 <translation id="2053105195397337973">आम्ही साइट जाहिरात स्पॅम आणि घोटाळा थांबवण्यासाठी सक्षम करत असताना ट्रॅकिंग प्रतिबंधित करण्याचे मार्ग एक्सप्लोर करत आहोत.</translation>
 <translation id="2056878612599315956">साइट थांबवली</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{एक डाउनलोड करता आले नाही}other{# डाउनलोड करता आले नाहीत}}</translation>
@@ -900,6 +900,7 @@
 <translation id="5753139477036638699">तुम्ही Chrome मध्ये शोधण्यासाठी तुमचा आवाज वापरू शकता</translation>
 <translation id="5754350196967618083">Discover रिफ्रेश करू शकत नाही</translation>
 <translation id="5755162682436943950">साइन आउट केले. साइन इन करण्यासाठी आणि सिंक सुरू करण्यासाठी डायलॉग उघडते.</translation>
+<translation id="5759897675466110265">साइट काम करत नाही का? तृतीय पक्ष कुकीना तात्पुरती अनुमती देऊन पहा</translation>
 <translation id="5763382633136178763">गुप्त टॅब</translation>
 <translation id="5763514718066511291">या ॲपची URL कॉपी करण्यासाठी टॅप करा</translation>
 <translation id="5765517223145864268">तुमच्या अनुभवाबद्दल आम्हाला सांगा. किंवा <ph name="BEGIN_LINK" />तुमची सेटिंग्ज बदलणे<ph name="END_LINK" /> हे करा.</translation>
@@ -1343,6 +1344,7 @@
 <translation id="7887174313503389866">महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचा डेमो पहा. अधिक पर्यायांसाठी, वैयक्तिक सेटिंग्जवर जा.</translation>
 <translation id="7896724475402191389">लहान मुलांसाठीचा आशय - बंद केला आहे</translation>
 <translation id="7903184275147100332">यासाठी एक मिनिट लागू शकतो</translation>
+<translation id="7907478394153853634">Lorem Ipsum</translation>
 <translation id="7914399737746719723">अ‍ॅप इंस्टॉल केले</translation>
 <translation id="7919123827536834358">या भाषांचे आपोआप भाषांतर करा</translation>
 <translation id="7926975587469166629">कार्डावरील टोपणनाव</translation>
@@ -1378,7 +1380,6 @@
 <translation id="804335162455518893">SD कार्ड आढळले नाही</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> गुप्त मोड टॅब}other{<ph name="TAB_COUNT_NORMAL" /> गुप्त मोड टॅब}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB उपलब्ध</translation>
-<translation id="8058655154417507695">कालबाह्य होण्याचे वर्ष</translation>
 <translation id="8058746566562539958">नवीन Chrome टॅबमध्‍ये उघडा</translation>
 <translation id="8062594758852531064">विस्तारित प्रीलोडिंग:</translation>
 <translation id="8063895661287329888">बुकमार्क जोडण्यात अयशस्वी झाले.</translation>
@@ -1433,6 +1434,7 @@
 <translation id="831192587911042850">तुम्ही फॉलो करत असलेल्या वेबसाइटच्या सूचीमध्ये सध्याची वेबसाइट जोडते.</translation>
 <translation id="8333340769932050274">तुम्हाला साइटसोबत शेअर करायचे नसलेले विषय तुम्ही ब्लॉक करू शकता. Chrome तुमचे चार आठवड्यांपेक्षा जुने विषयदेखील ऑटो-डिलीट करते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="834313815369870491">साइटचे कधीही भाषांतर करू नका</translation>
+<translation id="8348430946834215779">शक्य असेल, तेव्ह HTTPS वापरा आणि त्याला सपोर्ट न करणारी साइट लोड करण्यापूर्वी चेतावणी मिळवा</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />आम्ही हा डेटा कसा वापरतो:<ph name="END_BOLD" /> साइट तुमच्या स्वारस्यांबद्दलची माहिती Chrome वापरून स्टोअर करू शकतात. उदाहरणार्थ, तुम्ही मॅरेथॉनसाठी शूज खरेदी करण्यासाठी एखाद्या साइटला भेट दिल्यास, ती साइट तुमचे स्वारस्य मॅरेथॉनमध्ये धावणे म्हणून परिभाषित करू शकते. त्यानंतर, तुम्ही एखाद्या शर्यतीसाठी नोंदणी करण्याकरिता वेगळ्या साइटला भेट दिल्यास, ती साइट तुम्हाला तुमच्या स्वारस्यांनुसार धावण्यासाठीच्या शूजची जाहिरात दाखवू शकते.</translation>
 <translation id="8354977102499939946">तुमचा आवाज वापरून झटपट शोधा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड रिस्टोअर केले</translation>

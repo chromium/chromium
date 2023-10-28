@@ -287,7 +287,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2499505845365628575">Pots trobar tot l'historial de navegació a <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">Opcions per desar la contrasenya</translation>
 <translation id="2511117522375201202">Tens <ph name="NUMBER_OF_PASSWORDS" /> contrasenyes en perill que podrien posar en risc la teva seguretat.</translation>
-<translation id="2523363575747517183">Aquest lloc web està provant d'obrir una altra aplicació repetidament.</translation>
 <translation id="2529021024822217800">Obre-les totes</translation>
 <translation id="2536991091671391962">Pots utilitzar les contrasenyes desades en qualsevol dispositiu. Es desen al gestor de contrasenyes de Google de <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Amaga Comprovació de seguretat</translation>
@@ -592,6 +591,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4148023517926189160">Aquest lloc web vol baixar un fitxer i afegir-lo al teu calendari.</translation>
 <translation id="4152011295694446843">Trobaràs les adreces d'interès aquí</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, que acaba en <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169535189173047238">No permetis</translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="417442848889487144">L'etiqueta s'ha creat. La data està pendent.</translation>
 <translation id="418156467088430727">Mostra versió sense connexió en una pestanya nova</translation>
@@ -628,11 +628,11 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4342054591427973606">{count,plural, =1{Aquesta adreça se suprimirà d'aquest dispositiu i dels altres en què tinguis la sessió iniciada.}other{Aquestes adreces se suprimiran d'aquest dispositiu i dels altres en què tinguis la sessió iniciada.}}</translation>
 <translation id="4342946437867096381">Ja has desat una contrasenya per a aquest lloc web al teu Compte de Google. Google pot triar la contrasenya més recent.</translation>
 <translation id="4343046787186034850">S'ha permès l'accés a la càmera i el micròfon</translation>
-<translation id="4359125752503270327">Aquesta pàgina s'obrirà en una altra aplicació.</translation>
 <translation id="4371526908359194219">Notificacions per correu electrònic</translation>
 <translation id="4371591986692297148">inactiu</translation>
 <translation id="4375040482473363939">Cerca mitjançant un codi QR</translation>
 <translation id="4378154925671717803">Telèfon</translation>
+<translation id="4388983683160515185"><ph name="FULL_NAME" /> ha compartit una contrasenya amb tu per a <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Toca per canviar l'idioma.</translation>
 <translation id="4405320213589929829">Utilitza adreces a les pàgines web per obtenir informació i indicacions locals.</translation>
 <translation id="4420409367264901497">Edita l'adreça d'interès</translation>
@@ -1161,7 +1161,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7016070607649558507">Tens 1 contrasenya poc segura. Corregeix el problema per protegir-te.</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="704692552158601232">Aplicació de navegació predeterminada</translation>
-<translation id="7053983685419859001">Bloqueja</translation>
 <translation id="7062545763355031412">Accepta i canvia de compte</translation>
 <translation id="7063811929043357292">El teu pare o mare gestiona el teu compte.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -1371,6 +1370,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8197543752516192074">Tradueix la pàgina</translation>
 <translation id="8205564605687841303">Cancel·la</translation>
 <translation id="8206354486702514201">L'administrador aplica aquesta opció de configuració.</translation>
+<translation id="8211030355252954494">Has rebut contrasenyes per a <ph name="WEBSITE" /></translation>
 <translation id="8214293972734702249">Fixada, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Fitxers i imatges a memòria cau</translation>
 <translation id="823133356836493038">La llista de lectura està amagada</translation>
@@ -1460,6 +1460,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="8693663554456874301">{count,plural, =1{Tanca la pestanya}other{Tanca les pestanyes}}</translation>
 <translation id="8703536910991780768">Les teves contrasenyes semblen segures</translation>
 <translation id="8706253136355675497">Temperatura</translation>
+<translation id="8712637175834984815">Entesos</translation>
 <translation id="8717864919010420084">Copia l'enllaç</translation>
 <translation id="8721297211384281569">Menú Eines</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>
@@ -1539,6 +1540,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="9079935439869366234">Marca-ho tot com a no llegit</translation>
 <translation id="9081058212938299310">Vols actualitzar la contrasenya per a <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Per sincronitzar i personalitzar el contingut en tots els dispositius, activa la sincronització.</translation>
+<translation id="9087339162317338348">Utilitza HTTPS sempre que puguis i rep un advertiment abans de carregar llocs web que no admeten aquest protocol.</translation>
 <translation id="9093271241977565440">A la part superior de la pantalla, toca la icona de cerca</translation>
 <translation id="9094033019050270033">Actualitza la contrasenya</translation>
 <translation id="9097506547406246598">No es pot deixar de seguir. S'ha produït un error.</translation>
@@ -1547,6 +1549,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="9100610230175265781">S'ha d'introduir una frase de contrasenya </translation>
 <translation id="9106655997975673326">De <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Comprova que no hi hagi contrasenyes en perill</translation>
+<translation id="9109699888944026290">{count,plural, =1{Contrasenya nova per a aquest lloc web}other{Contrasenyes noves per a aquest lloc web}}</translation>
 <translation id="9120217828624527905">Canvia a la traducció de pàgina completa</translation>
 <translation id="9124387962554796433">És possible que Google utilitzi el teu historial per personalitzar la Cerca i altres serveis de Google.</translation>
 <translation id="9137526406337347448">Serveis de Google</translation>

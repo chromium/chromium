@@ -503,6 +503,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3105917916468784889">Faire une capture d'écran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Mettre en évidence l'article précédent sur l'étagère</translation>
+<translation id="311799651966070385">Fermer le coup de coude</translation>
 <translation id="3120421559657122717">Éteindre l'appareil?</translation>
 <translation id="3122464029669770682">Processeur</translation>
 <translation id="3125690294288312932">Type de travaux et devoirs</translation>
@@ -592,6 +593,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB-C</translation>
+<translation id="3454555520521576458">Redimensionnable</translation>
 <translation id="3455468639467374593">Modèle, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">Un appareil connecté au point d'accès sans fil <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Restaurer le niveau de zoom</translation>
@@ -707,6 +709,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3899995891769452915">Entrée vocale</translation>
 <translation id="3900355044994618856">Votre session se terminera dans <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connexion à <ph name="NAME" /> en cours...</translation>
+<translation id="3906954721959377182">Tablette</translation>
 <translation id="3922427723338465344">{0,plural, =1{Restaurez la version antérieure de l'appareil dans un délai de 1 minute}one{Restaurez la version antérieure de l'appareil dans un délai de # minute}other{Restaurez la version antérieure de l'appareil dans un délai de # minutes}}</translation>
 <translation id="3923494859158167397">Aucun réseau cellulaire n'est configuré</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, chargement des événements en cours…</translation>
@@ -828,6 +831,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4364101114148522660">Enregistrement de <ph name="DURATION" /></translation>
 <translation id="4371348193907997655">Paramètres de diffusion</translation>
 <translation id="4375482231364171368">Recherche dans la barre d'adresse</translation>
+<translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Connexion...</translation>
 <translation id="4379531060876907730">Voici vos outils de stylet</translation>
@@ -885,6 +889,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4585337515783392668">Arrêter la diffusion sur un récepteur inconnu</translation>
 <translation id="4596144739579517758">Le thème sombre est désactivé</translation>
 <translation id="4611292653554630842">Connexion</translation>
+<translation id="462160925400706389"><ph name="NAME" /> connecté</translation>
 <translation id="4623167406982293031">Valider le compte</translation>
 <translation id="4628757576491864469">Appareils</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, note <ph name="RATING_SCORE" /></translation>
@@ -1311,6 +1316,7 @@ Certaines fonctionnalités sont limitées pour augmenter l'autonomie de la pile.
 <translation id="6284232397434400372">Résolution modifiée</translation>
 <translation id="6288235558961782912">L'utilisateur <ph name="USER_EMAIL_ADDRESS" /> peut être ajouté de nouveau plus tard, avec l'autorisation d'un parent.</translation>
 <translation id="6291221004442998378">La pile n'est pas en train d'être rechargée</translation>
+<translation id="6298183524022479114">Personnalisez cet appareil dans l'application</translation>
 <translation id="6309219492973062892">Cliquer sur les icônes d'étagère 1 à 8 ou les toucher</translation>
 <translation id="6315170314923504164">Voix</translation>
 <translation id="6324916366299863871">Modifier un raccourci</translation>
@@ -1534,10 +1540,6 @@ Nouvelle installation</translation>
 <translation id="726276584504105859">Glissez l'élément ici pour utiliser l'écran partagé</translation>
 <translation id="7262906531272962081">Créer un rappel</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />+retour arrière</translation>
-<translation id="7297440678881127227"><ph name="START_TIME" /> à
-        <ph name="END_TIME" />,
-        <ph name="TIME_ZONE" />,
-        <ph name="EVENT_SUMMARY" />. Sélectionnez cet événement pour voir davantage d'information dans Google Agenda.</translation>
 <translation id="7302889331339392448">Les sous-titres instantanés sont désactivés.</translation>
 <translation id="7303365578352795231">Réponse sur un autre appareil.</translation>
 <translation id="7305884605064981971">EDGE</translation>

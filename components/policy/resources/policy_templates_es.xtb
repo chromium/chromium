@@ -768,7 +768,6 @@ Si se le asigna el valor False a esta política o no se define, no se capturará
 <translation id="1705215165572785706">Tratar las teclas de la fila superior como teclas multimedia, pero permitir que el usuario cambie este ajuste</translation>
 <translation id="1708496595873025510">Establecer restricción en obtención de base de variaciones</translation>
 <translation id="1709154322133526432">Habilitar la comprobación de navegador predeterminado al iniciar</translation>
-<translation id="1710245398478550276">Habilitar la API Desk para una lista de dominios de terceros</translation>
 <translation id="1713829924716792485">Si se habilita esta política o no se le asigna ningún valor, los usuarios conectados a un host de acceso remoto podrán transferir archivos entre el cliente y el host. Esto no se aplica a las conexiones de asistencia remota, ya que no admiten la transferencia de archivos.
 
       Si se inhabilita esta política, no se permitirá la transferencia de archivos.</translation>
@@ -4344,7 +4343,6 @@ Tras la configuración inicial, los usuarios podrán activar y desactivar los se
 <translation id="467449052039111439">Abrir una lista de URLs</translation>
 <translation id="4674542060943819878">Habilitar la opción de cerrar alertas de contraseñas vulneradas</translation>
 <translation id="4674871290487541952">Permite los algoritmos no seguros en las comprobaciones de integridad de las actualizaciones e instalaciones de extensiones</translation>
-<translation id="4676118751789104029">Si se habilita esta política, las aplicaciones web de terceros podrán usar la Desk API para controlar los escritorios de ChromeOS. Si esta política no se establece o se inhabilita, la Desk API no estará disponible. La política solo aplica a los dispositivos registrados.</translation>
 <translation id="4680961954980851756">Habilitar Autocompletar</translation>
 <translation id="4685721728282448265">Acuerdo de claves poscuántico CECPQ2 habilitado para TLS</translation>
 <translation id="468822697351680932">Usar la política de lista de sitios de Internet Explorer como fuente de reglas</translation>
@@ -5987,7 +5985,6 @@ El tiempo de espera de inactividad para que se inicie el salvapantallas y el int
 <translation id="6181783961196084973">El valor del interruptor de recogida de actividad en las aplicaciones. Si se le asigna el valor true, se enviará información de la actividad en las aplicaciones del usuario al servidor para mostrarse en la aplicación <ph name="PRODUCT_NAME" /> del niño/a y del padre o madre. Si se le asigna el valor false, la función "Límites de tiempo por aplicación" seguirá funcionando, pero no se enviarán datos al servidor ni se mostrarán en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">Inhabilitar los cambios a HTTPS</translation>
 <translation id="6182563940865917569">Permitir que Chrome reproduzca automáticamente el contenido multimedia</translation>
-<translation id="6184385589352532028">No habilitar Desk API para el control de Chrome OS por terceros</translation>
 <translation id="6190367314942602985">Proporcionar información de identificación de usuarios</translation>
 <translation id="6191963383731098056">Esta política permite a los administradores configurar el color del tema de <ph name="PRODUCT_NAME" />. La cadena de entrada debe ser un color hexadecimal válido que coincida con el formato "#RRGGBB".
 
@@ -8269,7 +8266,6 @@ Si la política no se establece, se aplicará la política <ph name="ASK_MIDI_PO
 
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de inactividad.</translation>
 <translation id="7992613144342460685">Permite la colocación de ventanas en estos sitios</translation>
-<translation id="7994034037344330969">Especifica la lista de dominios de aplicaciones web de terceros que están autorizados a usar la API Desk para controlar escritorios de ChromeOS. Estos patrones de URL deben tener el formato definido para la propiedad "matches" en https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference</translation>
 <translation id="7995610550667275367">Análisis (compatible desde la versión 87)</translation>
 <translation id="7999023147219236247">Política para conceder solicitudes de permiso a aplicaciones. PERMISSION_POLICY_UNSPECIFIED: política no especificada. Si no se especifica ninguna política para un permiso a cualquier nivel, se usará el comportamiento "PROMPT" de forma predeterminada. PROMPT: solicita al usuario que conceda un permiso. GRANT: concede un permiso de forma automática. DENY: deniega un permiso de forma automática.</translation>
 <translation id="7999336306414770162">Inhabilitar los informes sobre VPD del dispositivo</translation>
@@ -8299,7 +8295,6 @@ Si se define esta política, los usuarios no podrán modificarla en <ph name="PR
 
       Si esta política se habilita, el usuario podrá usar el navegador <ph name="LACROS_NAME" />.</translation>
 <translation id="8016036090567963459">No permitir que Chrome reproduzca automáticamente el contenido multimedia</translation>
-<translation id="8020222525161221827">Habilitar la Desk API para el control de Chrome OS por terceros</translation>
 <translation id="802147957407376460">Girar la pantalla 0 grados</translation>
 <translation id="8021777486638359878">Considerar que el usuario está inactivo mientras se reproduce audio</translation>
 <translation id="8022597231371051452">Lista de permitidos para informes de telemetría de sitios web</translation>

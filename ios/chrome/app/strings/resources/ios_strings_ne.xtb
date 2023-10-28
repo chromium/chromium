@@ -251,6 +251,7 @@
 <translation id="2299218006564889602">तपाईंका पासवर्डहरू तपाईंको डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गरिन्छ।</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
 <translation id="2302742851632557585">वेबसाइटमा गई पासवर्ड बदल्नुहोस्</translation>
+<translation id="230956208401264723">तपाईंले ट्र्याक गरेका सबै प्याकेजहरू यो क्यारोसेलमा यहाँ देखिन्छन्</translation>
 <translation id="2310154074101836012">क्यारोसेल बदल्नुहोस्</translation>
 <translation id="2316709634732130529">सुझाव दिइएको पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="2320166752086256636">किबोर्ड लुकाउनुहोस्</translation>
@@ -287,7 +288,6 @@
 <translation id="2499505845365628575">तपाई <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> मा गई आफ्ना सबै ब्राउजिङ हिस्ट्री भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="2500374554657206846">पासवर्ड सुरक्षित गर्ने विकल्पहरू</translation>
 <translation id="2511117522375201202">तपाईंको सुरक्षा जोखिममा पार्न सक्ने ह्याक वा चोरी भएका <ph name="NUMBER_OF_PASSWORDS" /> वटा पासवर्ड छन्।</translation>
-<translation id="2523363575747517183">यो वेबसाइटले बारम्बार अर्को एप खोल्ने प्रयास गर्दैछ।</translation>
 <translation id="2529021024822217800">सबै खोल्नुहोस्</translation>
 <translation id="2536991091671391962">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्।</translation>
 <translation id="2542268842667970959">"सुरक्षा जाँच" लुकाइयोस्</translation>
@@ -592,6 +592,7 @@
 <translation id="4148023517926189160">यो वेबसाइट कुनै फाइल डाउनलोड गर्न र उक्त फाइल तपाईंको पात्रोमा हाल्न चाहन्छ।</translation>
 <translation id="4152011295694446843">तपाईंका बुकमार्कहरू यहाँ देखिने छन्</translation>
 <translation id="4168651806173792090">अन्तिमका अङ्क <ph name="LAST_FOUR_DIGITS" /> भएको <ph name="NETWORK_NAME" /></translation>
+<translation id="4169535189173047238">अनुमति नदिनुहोस्</translation>
 <translation id="4172051516777682613">सधैँ देखाउनुहोस्</translation>
 <translation id="417442848889487144">लेबल बनाइयो। मिति हाल्न बाँकी छ</translation>
 <translation id="418156467088430727">नयाँ ट्याबमा अफलाइन संस्करण हेर्नुहोस्</translation>
@@ -628,11 +629,11 @@
 <translation id="4342054591427973606">{count,plural, =1{यो डिभाइस र तपाईंले साइन इन गरेका अन्य डिभाइसबाट यो ठेगाना मेटाइने छ।}other{यो डिभाइस र तपाईंले साइन इन गरेका अन्य डिभाइसबाट यी ठेगानाहरू मेटाइने छन्।}}</translation>
 <translation id="4342946437867096381">तपाईंले आफ्नो Google खातामा यो साइटको पासवर्ड सेभ गरिसक्नुभएको छ। Google ले तपाईंका लागि हालसालैका पासवर्डहरू चयन गर्न सक्छ।</translation>
 <translation id="4343046787186034850">क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
-<translation id="4359125752503270327">यो पृष्ठ अर्को एपमा खुल्नेछ।</translation>
 <translation id="4371526908359194219">इमेलमार्फत पठाइने सूचनाहरू</translation>
 <translation id="4371591986692297148">निष्क्रिय</translation>
 <translation id="4375040482473363939">QR कोड खोज्नुहोस्‌</translation>
 <translation id="4378154925671717803">फोन</translation>
+<translation id="4388983683160515185"><ph name="FULL_NAME" /> ले तपाईंसँग <ph name="WEBSITE" /> को पासवर्ड सेयर गर्नुभएको छ</translation>
 <translation id="4389019817280890563">भाषा परिवर्तन गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="4405320213589929829">स्थानीय जानकारी र जाने बाटो प्राप्त गर्न वेबपेजमा ठेगानाहरू प्रयोग गर्नुहोस्।</translation>
 <translation id="4420409367264901497">बुकमार्क सम्पादन गर्नुहोस्</translation>
@@ -1161,7 +1162,6 @@
 <translation id="7016070607649558507">तपाईंको एउटा पासवर्ड कमजोर छ। सुरक्षित रहन अहिले नै यो समस्या निवारण गर्नुहोस्।</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="704692552158601232">डिफल्ट ब्राउजर एप</translation>
-<translation id="7053983685419859001">रोक्नुहोस्</translation>
 <translation id="7062545763355031412">स्वीकार गरी खाताहरू स्विच गर्नुहोस्</translation>
 <translation id="7063811929043357292">तपाईंका अभिभावक तपाईंको खाता व्यवस्थापन गर्नुहुन्छ।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -1371,6 +1371,7 @@
 <translation id="8197543752516192074">पृष्ठ अनुवाद गर्नुहोस्</translation>
 <translation id="8205564605687841303">रद्द गर्नुहोस्</translation>
 <translation id="8206354486702514201">यो सेटिङ तपाईंको प्रशासकद्वारा जोड दिएको छ।</translation>
+<translation id="8211030355252954494">तपाईंले <ph name="WEBSITE" /> का पासवर्डहरू प्राप्त गर्नुभएको छ</translation>
 <translation id="8214293972734702249">पिन गरिएको ट्याब: <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">क्यास गरिएका छवि र फाइलहरू</translation>
 <translation id="823133356836493038">पछि पढ्न सेभ गरिएका वेबपेजको सूची लुकाइएको छ</translation>
@@ -1460,6 +1461,7 @@
 <translation id="8693663554456874301">{count,plural, =1{ट्याब बन्द गर्नुहोस्}other{ट्याबहरू बन्द गर्नुहोस्}}</translation>
 <translation id="8703536910991780768">तपाईंका पासवर्डहरू भरपर्दा देखिन्छन्</translation>
 <translation id="8706253136355675497">तापक्रम</translation>
+<translation id="8712637175834984815">भयो</translation>
 <translation id="8717864919010420084">लिंक प्रतिलिपि गर्नुहोस्</translation>
 <translation id="8721297211384281569">उपकरणहरू मेनु</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
@@ -1548,6 +1550,7 @@
 <translation id="9100610230175265781">पासफ्रेज आवश्यक छ</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" मा भएको</translation>
 <translation id="9107664647686727385">अरूले पासवर्डहरू देखेका छन् कि छैनन् भनी जाँच्नुहोस्</translation>
+<translation id="9109699888944026290">{count,plural, =1{यो साइटको नयाँ पासवर्ड}other{यो साइटका नयाँ पासवर्डहरू}}</translation>
 <translation id="9120217828624527905">पूरै पेज अनुवाद गर्ने विकल्प प्रयोग गर्नुहोस्</translation>
 <translation id="9124387962554796433">Google ले Search तथा Google का अन्य सेवाहरूमा तपाईंका आवश्यकताअनुसारका सुविधा उपलब्ध गराउन तपाईंको गतिविधिसम्बन्धी इतिहास प्रयोग गर्न सक्छ।</translation>
 <translation id="9137526406337347448">Google का सेवाहरू</translation>

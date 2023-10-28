@@ -31,7 +31,6 @@
 <translation id="1129510026454351943">विवरणहरू: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">यी साइटहरू अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>
 <translation id="1145536944570833626">विद्यमान डेटा मेट्नुहोस्।</translation>
-<translation id="1149401351239820326">म्याद सकिने महिना</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1174479719160874822">स्क्रिन सानो भएका खण्डमा Chrome ले मोबाइल साइट प्रयोग गर्न अनुरोध गर्ने छ</translation>
@@ -900,6 +899,7 @@
 <translation id="5753139477036638699">तपाईं Chrome मा बोलेर खोज्न सक्नुहुन्छ</translation>
 <translation id="5754350196967618083">Discover पुनः ताजा गर्न सकिएन</translation>
 <translation id="5755162682436943950">साइन आउट गरिएको छ। साइन इन गर्न र सिंक गर्ने सुविधा अन गर्न डायलग खोल्छ।</translation>
+<translation id="5759897675466110265">साइटले काम गरिरहेको छैन? केही समयका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिई हेर्नुहोस्</translation>
 <translation id="5763382633136178763">इनकग्निटो ट्याबहरू</translation>
 <translation id="5763514718066511291">यस एपको URL कपी गर्न ट्याप गर्नुहोस्</translation>
 <translation id="5765517223145864268">हामीलाई तपाईंको अनुभव सुनाउनुहोस्। वा <ph name="BEGIN_LINK" />आफूले तोकेका सेटिङ परिवर्तन गर्नुहोस्<ph name="END_LINK" />।</translation>
@@ -1378,7 +1378,6 @@
 <translation id="804335162455518893">SD कार्ड फेला परेन</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> इन्कोग्निटो ट्याब}other{<ph name="TAB_COUNT_NORMAL" /> वटा इन्कोग्निटो ट्याब}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> एम.बि.उपलब्ध छ</translation>
-<translation id="8058655154417507695">म्याद सकिने वर्ष</translation>
 <translation id="8058746566562539958">Chrome को नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="8062594758852531064">अझ धेरै पेजहरू प्रिलोड गर्ने मोड:</translation>
 <translation id="8063895661287329888">पुस्तक चिन्ह थप्न सकिएन।</translation>

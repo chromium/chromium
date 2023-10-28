@@ -503,6 +503,7 @@
 <translation id="3105917916468784889">Зробити знімок екрана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Виділити попередній елемент на панелі запуску</translation>
+<translation id="311799651966070385">Закрити нагадування</translation>
 <translation id="3120421559657122717">Завершити роботу пристрою?</translation>
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="3125690294288312932">Тип завдання</translation>
@@ -592,6 +593,7 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="3445925074670675829">Пристрій із портом USB типу C</translation>
+<translation id="3454555520521576458">Можна змінювати розмір</translation>
 <translation id="3455468639467374593">Шаблон, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">До точки доступу <ph name="DEVICE_NAME" /> підключено 1 пристрій</translation>
 <translation id="346243998268439747">Скинути масштабування</translation>
@@ -707,6 +709,7 @@
 <translation id="3899995891769452915">Голосовий ввід</translation>
 <translation id="3900355044994618856">Сеанс закінчиться через <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Під’єднання до <ph name="NAME" /></translation>
+<translation id="3906954721959377182">Планшет</translation>
 <translation id="3922427723338465344">{0,plural, =1{Поверніться до попередньої версії на пристрої протягом 1 хвилини}one{Поверніться до попередньої версії на пристрої протягом # хвилини}few{Поверніться до попередньої версії на пристрої протягом # хвилин}many{Поверніться до попередньої версії на пристрої протягом # хвилин}other{Поверніться до попередньої версії на пристрої протягом # хвилини}}</translation>
 <translation id="3923494859158167397">Мобільні мережі не налаштовано</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, завантаження подій.</translation>
@@ -829,6 +832,7 @@
 <translation id="4364101114148522660"><ph name="DURATION" />  Записується</translation>
 <translation id="4371348193907997655">Налаштування трансляції</translation>
 <translation id="4375482231364171368">Шукати в адресному рядку</translation>
+<translation id="4378154925671717803">Телефон</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Підключення…</translation>
 <translation id="4379531060876907730">Це ваші інструменти стилуса</translation>
@@ -886,6 +890,7 @@
 <translation id="4585337515783392668">Зупинити трансляцію на невідомий пристрій</translation>
 <translation id="4596144739579517758">Темну тему вимкнено</translation>
 <translation id="4611292653554630842">Увійти</translation>
+<translation id="462160925400706389"><ph name="NAME" /> підключено</translation>
 <translation id="4623167406982293031">Підтвердьте обліковий запис</translation>
 <translation id="4628757576491864469">Пристрої</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, оцінка – <ph name="RATING_SCORE" /></translation>
@@ -1312,6 +1317,7 @@
 <translation id="6284232397434400372">Роздільну здатність змінено</translation>
 <translation id="6288235558961782912">Користувача <ph name="USER_EMAIL_ADDRESS" /> можна буде знову додати з дозволу батьків.</translation>
 <translation id="6291221004442998378">Не заряджається</translation>
+<translation id="6298183524022479114">Налаштуйте цей пристрій у додатку</translation>
 <translation id="6309219492973062892">Натиснути значки 1–8 на панелі запуску</translation>
 <translation id="6315170314923504164">Голос</translation>
 <translation id="6324916366299863871">Змінити ярлик</translation>
@@ -1535,10 +1541,6 @@
 <translation id="726276584504105859">Перетягніть сюди, щоб розділити екран</translation>
 <translation id="7262906531272962081">Створити нагадування</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7297440678881127227">З <ph name="START_TIME" /> до
-        <ph name="END_TIME" />,
-        <ph name="TIME_ZONE" />,
-        <ph name="EVENT_SUMMARY" />. Виберіть подію, щоб переглянути відомості про неї в Google Календарі.</translation>
 <translation id="7302889331339392448">Живі субтитри вимкнено.</translation>
 <translation id="7303365578352795231">Відповідь на іншому пристрої.</translation>
 <translation id="7305884605064981971">EDGE</translation>

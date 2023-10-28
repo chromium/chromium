@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Signal gwan</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Wrthi'n diweddaru (<ph name="PERCENTAGE_VALUE" />% wedi'i gwblhau)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> o funudau</translation>
 <translation id="1310380015393971138">Nid oes unrhyw rwydwaith <ph name="NETWORK_NAME" /> ar gael</translation>
 <translation id="131421566576084655">Nid yw dyddiad ailosod y data diwethaf ar gael</translation>
 <translation id="1314565355471455267">VPN Android</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Gosod fel papur wal</translation>
 <translation id="1578784163189013834">Dewis cefndir yr arbedydd sgrîn</translation>
 <translation id="160633243685262989">Rhagolwg o'r Llun</translation>
+<translation id="1611649489706141841">ymlaen</translation>
 <translation id="1615335640928990664">Defnydd data ers <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Rhedeg prawf Gwefru</translation>
 <translation id="1639239467298939599">Wrthi'n llwytho</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Atodi ffeil</translation>
 <translation id="8230672074305416752">Wedi methu â phingio porth y rhwydwaith diofyn</translation>
 <translation id="8246209727385807362">Cludwr anhysbys</translation>
+<translation id="8262870577632766028">1 awr</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Cysylltwch â rhwydwaith ac ail-lwythwch y dudalen i weld y papur wal.</translation>
 <translation id="8291967909914612644">Gwlad darparwr cartref</translation>

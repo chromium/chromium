@@ -287,7 +287,6 @@
 <translation id="2499505845365628575"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> からすべての閲覧履歴を確認できます。</translation>
 <translation id="2500374554657206846">パスワードの保存オプション</translation>
 <translation id="2511117522375201202">不正使用されたパスワードが <ph name="NUMBER_OF_PASSWORDS" /> 件あるため、セキュリティが危険にさらされる可能性があります。</translation>
-<translation id="2523363575747517183">このウェブサイトは別のアプリケーションを繰り返し開こうとしています。</translation>
 <translation id="2529021024822217800">すべて開く</translation>
 <translation id="2536991091671391962">保存したパスワードは他のデバイスで使用できます。パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="2542268842667970959">[安全チェック] を非表示にする</translation>
@@ -592,6 +591,7 @@
 <translation id="4148023517926189160">このウェブサイトがファイルをダウンロードしてカレンダーに追加する許可を求めています。</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />（末尾 4 桁: <ph name="LAST_FOUR_DIGITS" />）</translation>
+<translation id="4169535189173047238">許可しない</translation>
 <translation id="4172051516777682613">常に表示</translation>
 <translation id="417442848889487144">ラベル作成。到着未定</translation>
 <translation id="418156467088430727">オフライン版を新しいタブで表示</translation>
@@ -628,11 +628,11 @@
 <translation id="4342054591427973606">{count,plural, =1{この住所は、このデバイスとログインしている他のデバイスから削除されます。}other{これらの住所は、このデバイスとログインしている他のデバイスから削除されます。}}</translation>
 <translation id="4342946437867096381">このサイトのパスワードは Google アカウントにすでに保存されています。Google では最新のパスワードが自動的に選択されます。</translation>
 <translation id="4343046787186034850">カメラとマイクへのアクセスが許可されています</translation>
-<translation id="4359125752503270327">このページは別のアプリケーションで開かれます。</translation>
 <translation id="4371526908359194219">メール通知</translation>
 <translation id="4371591986692297148">無効</translation>
 <translation id="4375040482473363939">QR コード検索</translation>
 <translation id="4378154925671717803">電話</translation>
+<translation id="4388983683160515185"><ph name="FULL_NAME" /> さんが <ph name="WEBSITE" /> のパスワードをあなたと共有しました</translation>
 <translation id="4389019817280890563">タップして言語を変更できます。</translation>
 <translation id="4405320213589929829">ウェブページ上の住所を使用してローカル情報や経路を確認できます。</translation>
 <translation id="4420409367264901497">ブックマークを編集</translation>
@@ -1161,7 +1161,6 @@
 <translation id="7016070607649558507">脆弱なパスワードが 1 件あります。安全を確保するため、今すぐ修正してください。</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="704692552158601232">デフォルトのブラウザ App</translation>
-<translation id="7053983685419859001">ブロック</translation>
 <translation id="7062545763355031412">同意してアカウントを切り替える</translation>
 <translation id="7063811929043357292">ご利用のアカウントは保護者によって管理されています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -1371,6 +1370,7 @@
 <translation id="8197543752516192074">ページを翻訳する</translation>
 <translation id="8205564605687841303">キャンセル</translation>
 <translation id="8206354486702514201">この設定は管理者によって制御されています。</translation>
+<translation id="8211030355252954494"><ph name="WEBSITE" /> のパスワードを受信しました</translation>
 <translation id="8214293972734702249">固定しました、<ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">キャッシュされた画像とファイル</translation>
 <translation id="823133356836493038">リーディング リストは非表示になっています</translation>
@@ -1460,6 +1460,7 @@
 <translation id="8693663554456874301">{count,plural, =1{タブを閉じる}other{タブを閉じる}}</translation>
 <translation id="8703536910991780768">安全なパスワードが使用されています</translation>
 <translation id="8706253136355675497">温度</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8717864919010420084">リンクをコピー</translation>
 <translation id="8721297211384281569">ツールメニュー</translation>
 <translation id="8725066075913043281">やり直し</translation>
@@ -1539,6 +1540,7 @@
 <translation id="9079935439869366234">すべて未読にする</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> のパスワードを更新しますか？</translation>
 <translation id="9083838294503912307">カスタマイズした設定を複数のデバイスで同期して使用するには、同期を有効にします。</translation>
+<translation id="9087339162317338348">可能な限り HTTPS を使用し、HTTPS をサポートしていないサイトは読み込む前に警告を表示します。</translation>
 <translation id="9093271241977565440">画面上部の検索アイコンをタップします</translation>
 <translation id="9094033019050270033">パスワードを更新</translation>
 <translation id="9097506547406246598">フォローを解除できません。エラーが発生しました。</translation>
@@ -1547,6 +1549,7 @@
 <translation id="9100610230175265781">パスフレーズを入力してください</translation>
 <translation id="9106655997975673326">「<ph name="SOURCE_DEVICE" />」から</translation>
 <translation id="9107664647686727385">不正使用されたパスワードがないか確認します</translation>
+<translation id="9109699888944026290">{count,plural, =1{このサイトの新しいパスワード}other{このサイトの新しいパスワード}}</translation>
 <translation id="9120217828624527905">ページ全体の翻訳に切り替え</translation>
 <translation id="9124387962554796433">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
 <translation id="9137526406337347448">Google サービス</translation>

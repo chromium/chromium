@@ -129,6 +129,7 @@ Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph na
 
       Als je dit beleid instelt, kunnen gebruikers het niet wijzigen.</translation>
 <translation id="1123650965531933634">Het recht voor vensterplaatsing wordt automatisch geweigerd voor alle sites.</translation>
+<translation id="1126037943895692096">Gebruikers toestaan om wifi-foutopsporingsgegevens op laag niveau op te nemen in gebruikersfeedback</translation>
 <translation id="1126456433590366966">Het <ph name="CLOUD_UPLOAD_NAME" />-proces automatiseren voor <ph name="GOOGLE_DRIVE_NAME" /> en <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="112794759469625182">Dit beleid is verwijderd in M118. Dit werd gebruikt om attest op afstand aan en uit te zetten voor de gebruiker, maar attest op afstand staat nu standaard aan.
 
@@ -766,7 +767,6 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 <translation id="1705215165572785706">Toetsen op de bovenste rij gebruiken als mediatoetsen, maar de gebruiker toestaan dit te wijzigen</translation>
 <translation id="1708496595873025510">De beperking voor het ophalen van de seed voor varianten instellen</translation>
 <translation id="1709154322133526432">De check voor de standaardbrowser bij het opstarten aanzetten</translation>
-<translation id="1710245398478550276">Desk API aanzetten voor een lijst met domeinen van derden</translation>
 <translation id="1713829924716792485">Als je dit beleid toepast of niet instelt, kunnen gebruikers die met een host voor externe toegang zijn verbonden, bestanden overzetten tussen de client en de host. Dit is niet van toepassing op verbindingen voor hulp op afstand, die geen bestandsoverdracht ondersteunen.
 
       Als je het beleid niet toepast, is er geen bestandsoverdracht toegestaan.</translation>
@@ -4313,7 +4313,6 @@ Na de eerste configuratie kunnen gebruikers Google-locatieservices aan- of uitze
 <translation id="467449052039111439">Een lijst met URL's openen</translation>
 <translation id="4674542060943819878">Afwijzen van meldingen over gehackte wachtwoorden aanzetten</translation>
 <translation id="4674871290487541952">Onbeveiligde algoritmen toestaan in integriteitscontroles bij updates en installaties van extensies</translation>
-<translation id="4676118751789104029">Als je het beleid toepast, kunnen web-apps van derden Desk API gebruiken om ChromeOS-bureaus te beheren. Als je het beleid niet instelt of niet toepast, is Desk API niet beschikbaar. Het beleid geldt alleen voor ingeschreven apparaten.</translation>
 <translation id="4680961954980851756">Automatisch invullen aanzetten</translation>
 <translation id="4685721728282448265">CECPQ2 (post-quantum sleutelovereenkomst) staat aan voor TLS</translation>
 <translation id="468822697351680932">Het SiteList-beleid van Internet Explorer gebruiken als bron van regels</translation>
@@ -5939,7 +5938,6 @@ De time-out voor inactiviteit waarna de screensaver wordt gestart en het interva
 <translation id="6181783961196084973">De waarde van de schakelaar voor de verzameling van app-activiteit. Als de schakelaar is ingesteld op True, wordt app-activiteit gerapporteerd aan de server zodat het te zien is in de <ph name="PRODUCT_NAME" />-app van het kind en de ouder. Als ingesteld op False, werkt de functie voor tijdslimieten per app nog steeds, maar worden er geen gegevens gerapporteerd aan de server en getoond in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">HTTPS-upgrades uitzetten.</translation>
 <translation id="6182563940865917569">Toestaan dat Chrome media automatisch afspeelt</translation>
-<translation id="6184385589352532028">Desk API niet aanzetten voor ChromeOS-beheer door derden</translation>
 <translation id="6190367314942602985">Gegevens over de identiteit van gebruikers rapporteren</translation>
 <translation id="6191963383731098056">Met dit beleid kunnen beheerders de kleur voor het thema van <ph name="PRODUCT_NAME" /> instellen. Je moet een geldige hexadecimale kleur opgeven in de vorm van een tekenreeks met de indeling #RRGGBB.
 
@@ -8192,7 +8190,6 @@ Als je het beleid niet instelt, is het beleid <ph name="ASK_MIDI_POLICY_NAME" />
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de inactieve vertraging.</translation>
 <translation id="7992613144342460685">Het recht voor vensterplaatsing toestaan voor deze sites</translation>
-<translation id="7994034037344330969">Hiermee geef je de lijst met web-app-domeinen van derden op die Desk API mogen gebruiken om ChromeOS-bureaus te beheren. Deze URL-patronen moeten de indeling hebben die is gedefinieerd voor de eigenschap 'matches' (komt overeen met) in https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference</translation>
 <translation id="7995610550667275367">Scannen (ondersteund vanaf versie 87)</translation>
 <translation id="7999023147219236247">Beleid om rechten aan apps te verlenen. PERMISSION_POLICY_UNSPECIFIED: Beleid niet gespecificeerd. Als er geen beleid is gespecificeerd voor een recht op een bepaald niveau, wordt het gedrag PROMPT standaard gebruikt. PROMPT: De gebruiker vragen een recht te verlenen. GRANT: Een recht automatisch verlenen. DENY: Een recht automatisch weigeren.</translation>
 <translation id="7999336306414770162">Rapportage van VPD-informatie van apparaat uitzetten</translation>
@@ -8222,7 +8219,6 @@ Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PROD
 
       Als je dit beleid aanzet, kunnen gebruikers de <ph name="LACROS_NAME" />-browser gebruiken.</translation>
 <translation id="8016036090567963459">Niet toestaan dat Chrome media automatisch afspeelt</translation>
-<translation id="8020222525161221827">Desk API aanzetten voor ChromeOS-beheer door derden</translation>
 <translation id="802147957407376460">Scherm 0 graden draaien</translation>
 <translation id="8021777486638359878">Gebruiker als inactief beschouwen tijdens afspelen van audio</translation>
 <translation id="8022597231371051452">Toelatingslijst voor rapportage van websitetelemetrie</translation>

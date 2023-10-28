@@ -287,7 +287,6 @@
 <translation id="2499505845365628575">Можете да намерите цялата си история на сърфиране чрез „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="2500374554657206846">Опции за запазване на паролата</translation>
 <translation id="2511117522375201202">Имате <ph name="NUMBER_OF_PASSWORDS" /> компрометирани пароли, които могат да представляват риск за сигурността ви.</translation>
-<translation id="2523363575747517183">Този уебсайт многократно се опитва да отвори друго приложение.</translation>
 <translation id="2529021024822217800">Отваряне на всички</translation>
 <translation id="2536991091671391962">Можете да използвате запазените пароли на което и да е устройство. Те се запазват в Google Мениджър на пароли за <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Скриване на „Проверка на безопасността“</translation>
@@ -592,6 +591,7 @@
 <translation id="4148023517926189160">Този уебсайт иска да изтегли файл и да го добави към календара ви.</translation>
 <translation id="4152011295694446843">Тук ще се показват отметките ви</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, завършваща на <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169535189173047238">Забраняване</translation>
 <translation id="4172051516777682613">Показване винаги</translation>
 <translation id="417442848889487144">Създаден бе етикет. Предстои добавяне на дата.</translation>
 <translation id="418156467088430727">Преглед на офлайн версията в нов раздел</translation>
@@ -628,11 +628,11 @@
 <translation id="4342054591427973606">{count,plural, =1{Този адрес ще бъде изтрит от това устройство и от другите, на които сте влезли в профила си.}other{Тези адреси ще бъдат изтрити от това устройство и от другите, на които сте влезли в профила си.}}</translation>
 <translation id="4342946437867096381">Вече запазихте парола за този сайт в профила си в Google. Можем да изберем най-новата вместо вас.</translation>
 <translation id="4343046787186034850">Достъпът до камерата и микрофона е разрешен</translation>
-<translation id="4359125752503270327">Тази страница ще се отвори в друго приложение.</translation>
 <translation id="4371526908359194219">Известия по имейл</translation>
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4375040482473363939">Търсене по код за бърза реакция</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="4388983683160515185"><ph name="FULL_NAME" /> сподели с вас парола за <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Докоснете за смяна на езика.</translation>
 <translation id="4405320213589929829">Използвайте адресите в уеб страници, за да получавате местна информация и упътвания.</translation>
 <translation id="4420409367264901497">Редактиране на отметката</translation>
@@ -1161,7 +1161,6 @@
 <translation id="7016070607649558507">Имате 1 ненадеждна парола. Коригирайте я сега, за да сте в безопасност.</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="704692552158601232">Стандартно приложение за браузър</translation>
-<translation id="7053983685419859001">Блокиране</translation>
 <translation id="7062545763355031412">Приемане и превключване на профилите</translation>
 <translation id="7063811929043357292">Профилът ви се управлява от родителя ви.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -1371,6 +1370,7 @@
 <translation id="8197543752516192074">Превод на страницата</translation>
 <translation id="8205564605687841303">Отказ</translation>
 <translation id="8206354486702514201">Тази настройка е наложена от администратора ви.</translation>
+<translation id="8211030355252954494">Получихте пароли за <ph name="WEBSITE" /></translation>
 <translation id="8214293972734702249">Фиксирано, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Кеширани изображения и файлове</translation>
 <translation id="823133356836493038">Списъкът за четене е скрит</translation>
@@ -1460,6 +1460,7 @@
 <translation id="8693663554456874301">{count,plural, =1{Затваряне на раздела}other{Затваряне на разделите}}</translation>
 <translation id="8703536910991780768">Паролите ви изглеждат надеждни</translation>
 <translation id="8706253136355675497">Температура</translation>
+<translation id="8712637175834984815">Разбрах</translation>
 <translation id="8717864919010420084">Копиране на връзката</translation>
 <translation id="8721297211384281569">Меню „Инструменти“</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
@@ -1539,6 +1540,7 @@
 <translation id="9079935439869366234">Означаване на всичко като непрочетено</translation>
 <translation id="9081058212938299310">Да се актуализира ли паролата за <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Включете синхронизирането, за да се възползвате от синхронизиране и персонализиране на всички устройства.</translation>
+<translation id="9087339162317338348">Използвайте HTTPS при възможност и получавайте предупреждения, преди да бъдат заредени сайтове, които не поддържат този протокол.</translation>
 <translation id="9093271241977565440">Докоснете иконата за търсене в горната част на екрана.</translation>
 <translation id="9094033019050270033">Актуализиране на паролата</translation>
 <translation id="9097506547406246598">Прекратяването на следенето не е възможно. Нещо се обърка.</translation>
@@ -1547,6 +1549,7 @@
 <translation id="9100610230175265781">Изисква се пропуск</translation>
 <translation id="9106655997975673326">От <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Проверка за компрометирани пароли</translation>
+<translation id="9109699888944026290">{count,plural, =1{Нова парола за този сайт}other{Нови пароли за този сайт}}</translation>
 <translation id="9120217828624527905">Превключване към превод на цяла страница</translation>
 <translation id="9124387962554796433">Възможно е да използваме историята ви, за да персонализираме търсенето и други услуги на Google.</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>

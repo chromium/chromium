@@ -478,7 +478,6 @@
 <translation id="1913037223029790376">यो भर्चुअल कार्डमा CVC प्रयोग गर्नुहोस्</translation>
 <translation id="191374271204266022">JSON ढाँचामा कपी गर्नुहोस्</translation>
 <translation id="1914326953223720820">सेवा अन्जिप गर्नुहोस्</translation>
-<translation id="1916770123977586577">यस साइटमा आफ्ना अद्यावधिक गरिएका सेटिङहरू लागू गर्न यो पृष्ठलाई पुनः लोड गर्नुहोस्</translation>
 <translation id="1919367280705858090">निर्दिष्ट त्रुटिसम्बन्धी सन्देशमार्फत मद्दत प्राप्त गर्नुहोस्।</translation>
 <translation id="1919526244108283799">४०० x ६०० मिलिमिटर</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{कुनै पनि होइन}=1{१ साइट}other{# साइटहरू}}</translation>
@@ -636,6 +635,7 @@
 <translation id="2226636330183131181">Wi-Fi नेटवर्कमा <ph name="BEGIN_LINK" />साइन इन गर्ने तरिका<ph name="END_LINK" /></translation>
 <translation id="2228057197024893428">यो ठेगाना हाल Chrome मा सेभ गरिएको छ। तपाईं यो ठेगाना Google का विभिन्न उत्पादनहरूमा प्रयोग गर्न चाहनुहुन्छ भने यसलाई आफ्नो Google खाता (<ph name="ACCOUNT" />) मा सेभ गर्नुहोस्।</translation>
 <translation id="2233745931693710080">कम्प्याक्ट डिस्क</translation>
+<translation id="2235344399760031203">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाइएको छ</translation>
 <translation id="2239100178324503013">अहिले पठाउनुहोस्</translation>
 <translation id="2241693394036365668">फाइल डाउनलोड गरिँदा</translation>
 <translation id="2246264294482514010">१० x १२ इन्च</translation>
@@ -1107,6 +1107,7 @@
 <translation id="3266793032086590337">मान (बेमेल)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{सम्बन्धित साइटलगायतका कुनै पनि साइट ब्लक गरिएको छैन}=1{एउटा साइटका साथै सम्बन्धित साइटहरू ब्लक गरिएका छन्}other{# वटा साइटका साथै सम्बन्धित साइटहरू ब्लक गरिएका छन्}}</translation>
 <translation id="3268451620468152448">ट्याबहरू खोल्नुहोस्</translation>
+<translation id="3270041629388773465">CVC सेभ भएपछि द्रुत रूपमा चेक आउट गरियोस्</translation>
 <translation id="3270156322180235608">हवाई यात्रा</translation>
 <translation id="3270847123878663523">क्रम परिवर्तन &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> जडान गर्न चाहन्छ</translation>
@@ -1187,6 +1188,7 @@
 <translation id="3432601291244612633">पृष्ठ बन्द गर्नुहोस्</translation>
 <translation id="3433111389595862568">सहकार्य तथा सम्मेलन कलसम्बन्धु सुविधा उपलब्ध गराउने सफ्टवेयर</translation>
 <translation id="3433144818443565002">भ्वाइस तथा भिडियो च्याट</translation>
+<translation id="343474037147570563">तपाईंले अपलोड वा एट्याच गर्ने फाइलहरू विश्लेषण गर्ने प्रयोजनका लागि Google क्लाउडमा वा तेस्रो पक्षकहाँ पठाइन्छ। उदाहरणका लागि, ती फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा फाइल भण्डारण गरिन सक्छ र ती फाइलहरू एडमिनले हेर्न मिल्छ।</translation>
 <translation id="3435557549311968410">कन्टिन्युअस (सर्ट)</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3438829137925142401">आफ्नो Google खातामा सुरक्षित गरिएका पासवर्डहरू प्रयोग गर्नुहोस्</translation>
@@ -1199,7 +1201,6 @@
 <translation id="3447884698081792621">प्रमाणपत्र देखाउनुहोस् (<ph name="ISSUER" /> द्वारा जारी गरिएको)</translation>
 <translation id="3452404311384756672">अन्तराल तान्नुहोस्:</translation>
 <translation id="3453962258458347894">कति पटक पुन: प्रयास गरियो</translation>
-<translation id="3454555520521576458">आकार मिलाउन सकिने</translation>
 <translation id="3461266716147554923"><ph name="URL" /> क्लिपबोर्डमा प्रतिलिपि गरिएको पाठ र छवि हेर्न चाहन्छ</translation>
 <translation id="3461824795358126837">हाइलाइटर</translation>
 <translation id="3462200631372590220">उन्नत लुकाउनुहोस्</translation>
@@ -1436,7 +1437,6 @@
 <translation id="3942048175062210325">आफ्ना फाइलहरू फेरि खोली हेर्नुहोस्</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
 <translation id="3946209740501886391">यस साइटमा सधैं सोध्नुहोस्</translation>
-<translation id="3947595700203588284">MIDI डिभाइसहरूमा कनेक्ट हुने अनुमति माग्न सक्छ</translation>
 <translation id="3948588869002647271">यो एप उपलब्ध छैन वा बिग्रेको छ</translation>
 <translation id="3949571496842715403">यस सर्भरले यो <ph name="DOMAIN" /> हो भन्ने प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रले Subject Alternative Names को उल्लेख गर्दैन। यो कुनै त्रुटिपूर्ण कन्फिगुरेसन वा कुनै आक्रमणकारीले तपाईंको जडानलाई अवरोध गरेकोले हुनसक्छ।</translation>
 <translation id="3949601375789751990">तपाईंको ब्राउजिङ इतिहास यहाँ देखिन्छ</translation>
@@ -1848,6 +1848,7 @@
 <translation id="4761104368405085019">आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्</translation>
 <translation id="4761326898079498987">थप विवरणका लागी समीक्षा गर्नुहोस्</translation>
 <translation id="4761869838909035636">Chrome को सुरक्षा जाँच गर्नुहोस्</translation>
+<translation id="4763196677855776703"><ph name="URL" /> ले उपलब्ध गराएका सर्तहरू</translation>
 <translation id="4764680219299728632">रेन्ज, कुकटप तथा ओभनहरू</translation>
 <translation id="4764776831041365478"><ph name="URL" /> को वेबपेज अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
 <translation id="4766713847338118463">फेदमा दुई स्टिच</translation>
@@ -1931,6 +1932,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, खोज्नका लागि Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4930153903256238152">धेरै क्षमता भएको</translation>
+<translation id="4932035752129140860">तपाईंले पेस्ट वा एट्याच गर्ने टेक्स्ट विश्लेषण गर्ने प्रयोजनका लागि Google क्लाउडमा वा तेस्रो पक्षकहाँ पठाइन्छ। उदाहरणका लागि, उक्त फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा फाइल भण्डारण गरिन सक्छ र ती फाइलहरू एडमिनले हेर्न मिल्छ।</translation>
 <translation id="4934780484581617878">विन्डो व्यवस्थापन</translation>
 <translation id="4936134414789135531">हालिएको <ph name="VALUE_NAME" /> भेट्टाउन सकिएन।</translation>
 <translation id="4936675324097895694">अर्थ वाणिज्य</translation>
@@ -2275,6 +2277,7 @@
 <translation id="5633259641094592098">प्रशंसकको जमात भएका तथा इन्डी चलचित्रहरू</translation>
 <translation id="563371367637259496">मोबाइल</translation>
 <translation id="5635237618724097525">स्मार्टफोन</translation>
+<translation id="5635478143789726479">विक्रेताका सर्तहरू</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />। <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">स्टेरियो सिस्टम तथा कम्पोनेन्ट</translation>
 <translation id="5644090287519800334">सतह १ मा रहेको छविको X सिफ्ट</translation>
@@ -2394,6 +2397,7 @@
 <translation id="5911110632211230665">फाइल खोल्न पाइँदैन</translation>
 <translation id="59174027418879706">सक्षम गरिएको</translation>
 <translation id="5918373444239520146">ग्याजेट तथा पोर्टेबल इलेक्ट्रोनिक</translation>
+<translation id="5918847752193018339">तपाईंको CVC सेभ भएपछि तपाईं द्रुत रूपमा चेक आउट गर्न सक्नुहुन्छ। <ph name="LINK_BEGIN" />सेभ गरिएका सेक्युरिटी कोडहरू मेटाउनुहोस्<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{१ प्रयोगमा छ}other{# प्रयोगमा छन्}}</translation>
 <translation id="592031860219554105">आइस स्केटिङ</translation>
@@ -2707,6 +2711,7 @@
 <translation id="6529602333819889595">मेटाउने कार्य &amp;पुन: गर्नुहोस्</translation>
 <translation id="6535751101619004418">मुद्रा तथा विदेशी विनिमय</translation>
 <translation id="6536221421038631327">तपाईंले आफ्नो <ph name="DEVICE_TYPE" /> बाट पासपोइन्टको सदस्यता हटाउनुभयो भने सम्बन्धित नेटवर्कहरू पनि हट्ने छन्। तपाईं आफ्नो सदस्यताको योजना परिवर्तन गर्न चाहनुहुन्छ भने "<ph name="FRIENDLY_NAME" />" मा सम्पर्क गर्नुहोस्। <ph name="LEARN_MORE" /></translation>
+<translation id="6540488083026747005">तपाईंले यो साइटमा तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुभएको छ</translation>
 <translation id="6540534463546766581">सामूहिक लगानी कोषहरू</translation>
 <translation id="6545864417968258051">ब्लुटुथ स्क्यान गर्दै</translation>
 <translation id="6547208576736763147">बायाँपट्टि दुई प्वाल</translation>
@@ -3069,6 +3074,7 @@
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />मा एक निजी जडान स्थापना गर्न सक्दैन किनकि तपाईँको कम्प्युटरको मिति र समय (<ph name="DATE_AND_TIME" />) गलत छन्।</translation>
 <translation id="7260075294900977274">तपाईंलाई किनमेलसम्बन्धी आफ्ना सबै पेजहरू एकै ठाउँमा सेभ गर्ने, मूल्यहरू स्वतः ट्र्याक गर्ने र मूल्यसम्बन्धी विश्लेषणात्मक जानकारी प्राप्त गर्नेलगायतका अन्य कुराहरू गर्न सघाउने एउटा नयाँ स्मार्ट फोल्डर</translation>
 <translation id="7265608370113700582">यो ठेगाना यस डिभाइसमा मात्र उपलब्ध छ</translation>
+<translation id="7273111226200291353">तपाईंले डाउनलोड गर्ने फाइलहरू विश्लेषण गर्ने प्रयोजनका लागि Google Cloud मा वा तेस्रा पक्ष समक्ष पठाइन्छन्। उदाहरणका लागि, ती फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा फाइल भण्डारण गरिन सक्छ र ती फाइलहरू एडमिनले हेर्न मिल्छ।</translation>
 <translation id="7275334191706090484">व्यवस्थित पृष्ठमञ्जूषाहरू</translation>
 <translation id="7277998515889183784">मेकअप र सौन्दर्य प्रसाधन</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Google खाताको पासवर्ड बदल्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -3469,6 +3475,7 @@
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="8041940743680923270">विश्वव्यापी डिफल्ट प्रयोग गर्नुहोस् (सोध्नुहोस्)</translation>
 <translation id="8042577181291637092">MIDI डिभाइसहरू प्रयोग गर्ने हो?</translation>
+<translation id="8043255123207491407">विक्रेताका सर्तहरू हेर्नुहोस्</translation>
 <translation id="8046360364391076336">औद्योगिक सामग्री तथा उपकरण</translation>
 <translation id="8052898407431791827">कपी गरेर क्लिपबोर्डमा पेस्ट गरियो</translation>
 <translation id="8055534648776115597">व्यावसायिक तथा निरन्तर शिक्षा</translation>
@@ -3544,6 +3551,7 @@
 <translation id="8202370299023114387">बेमेल</translation>
 <translation id="8207625368992715508">मोटर स्पोर्ट</translation>
 <translation id="8208363704094329105">३०० x ४०० मिलिमिटर</translation>
+<translation id="8208629719488976364">तपाईंले प्रिन्ट गर्ने पेजका सामग्री र तपाईंको प्रिन्टरसम्बन्धी जानकारी विश्लेषण गर्ने प्रयोजनका लागि Google क्लाउड वा तेस्रो पक्षकहाँ पठाइन्छ। उदाहरणका लागि, उक्त फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा फाइल भण्डारण गरिन सक्छ र ती फाइलहरू एडमिनले हेर्न मिल्छ।</translation>
 <translation id="8210490490377416373">नीतिको नाम चयन गर्नुहोस्</translation>
 <translation id="8210604850413485128">वेब होस्टिङ</translation>
 <translation id="8211406090763984747">जडान सुरक्षित छ</translation>
@@ -3916,6 +3924,7 @@
 <translation id="8975012916872825179">फोन नम्बर, इमेल ठेगाना र ढुवानी गर्नु पर्ने ठेगाना जस्ता जानकारी समावेश हुन्छ</translation>
 <translation id="8975263830901772334">तपाईंले प्रिन्ट गर्ने फाइलका नामहरू</translation>
 <translation id="8978053250194585037">Google Safe Browsing ले हालै <ph name="SITE" /> मा <ph name="BEGIN_LINK" />फिसिङ पत्ता लगायो<ph name="END_LINK" />। फिसिङमार्फत आक्रमण गर्ने साइटहरूले तपाईंलाई झुक्याउन आफूलाई अन्य बेवसाइटका रूपमा प्रस्तुत गर्दछन्।</translation>
+<translation id="8982884016487650216">PDF लोड गरिसकियो</translation>
 <translation id="8983369100812962543">तपाईं अब एपको आकार बदल्न सक्नुहुन्छ</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा आफ्नो ब्राउजिङ इतिहास हेर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8987663052629670333">फोटो प्रिन्टसम्बन्धी सेवाहरू</translation>
@@ -3942,6 +3951,7 @@
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं लिंक सेयर गरेर, QR कोड बनाएर, कास्ट गरेर वा अन्य तरिकाले यो ट्याब सेयर गर्न चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="9023536760430404133">सवारी साधनका पाङ्ग्रा तथा टायर</translation>
 <translation id="9025348182339809926">(अमान्य)</translation>
+<translation id="902590795160480390">PDF लोड गरिँदै छ</translation>
 <translation id="9030265603405983977">श्यामश्वेत</translation>
 <translation id="9035022520814077154">सुरक्षा त्रुटी</translation>
 <translation id="9035824888276246493">सेक्युरिटी कोडहरू सेभ गर्नुहोस्</translation>

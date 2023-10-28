@@ -173,6 +173,7 @@
 <translation id="1876851015978093044">Ќе се прикаже ставкава</translation>
 <translation id="1882901927376062252">{count,plural, =1{Обележувачот е зачуван во вашата сметка на Google, {email}}one{{count} обележувач се зачувани во вашата сметка на Google, {email}}other{{count} обележувачи се зачувани во вашата сметка на Google, {email}}}</translation>
 <translation id="1883255238294161206">Собери список</translation>
+<translation id="1889872080060107187">Ќе се најавите на <ph name="URL" /></translation>
 <translation id="1890237935065108104">Оваа поставка е недостапна.</translation>
 <translation id="1894023287452300670">Следете ја цената тука</translation>
 <translation id="189531189292803889">Вашиот iPad е вратен неодамна, што можеби го променило вашиот стандарден прелистувач.</translation>
@@ -286,7 +287,6 @@
 <translation id="2499505845365628575">Сета ваша историја на прелистувањето може да ја најдете од <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">Опции за зачувување лозинка</translation>
 <translation id="2511117522375201202">Имате <ph name="NUMBER_OF_PASSWORDS" /> компромитирани лозинки што би можеле да претставуваат ризик за вашата безбедност.</translation>
-<translation id="2523363575747517183">Веб-сајтов постојано се обидува да отвори друга апликација.</translation>
 <translation id="2529021024822217800">Отвори ги сите</translation>
 <translation id="2536991091671391962">Зачуваните лозинки може да ги користите на кој било уред. Зачувани се во Google Password Manager за <ph name="EMAIL" />.</translation>
 <translation id="2542268842667970959">Скриј „Безбедносна проверка“</translation>
@@ -591,6 +591,7 @@
 <translation id="4148023517926189160">Веб-сајтов сака да преземе датотека и да ја додаде во вашиот календар.</translation>
 <translation id="4152011295694446843">Вашите обележувачи ќе ги најдете тука</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> што завршува на <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169535189173047238">Не дозволувај</translation>
 <translation id="4172051516777682613">Секогаш прикажувај</translation>
 <translation id="417442848889487144">Етикетата е создадена. Се чека датум</translation>
 <translation id="418156467088430727">Офлајн верзија во нова картичка</translation>
@@ -627,11 +628,11 @@
 <translation id="4342054591427973606">{count,plural, =1{Адресава ќе се избрише од овој и другите ваши најавени уреди.}one{Адресиве ќе се избришат од овој и другите ваши најавени уреди.}other{Адресиве ќе се избришат од овој и другите ваши најавени уреди.}}</translation>
 <translation id="4342946437867096381">Веќе зачувавте лозинка за сајтов во сметката на Google. Google може да ја избере најновата лозинка за вас.</translation>
 <translation id="4343046787186034850">Дозволен е пристап до „Камерата“ и „Микрофонот“</translation>
-<translation id="4359125752503270327">Страницава ќе се отвори во друга апликација.</translation>
 <translation id="4371526908359194219">Известувања по е-пошта</translation>
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4375040482473363939">Пребарување QR-кодови</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="4388983683160515185"><ph name="FULL_NAME" /> сподели лозинка со вас за <ph name="WEBSITE" /></translation>
 <translation id="4389019817280890563">Допрете за да го смените јазикот.</translation>
 <translation id="4405320213589929829">Користете адреси на веб-страници за да добивате локални информации и насоки.</translation>
 <translation id="4420409367264901497">Измени го обележувачот</translation>
@@ -1160,7 +1161,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7016070607649558507">Имате 1 слаба лозинка. Решете го проблемот со неа сега за да се заштитите.</translation>
 <translation id="7029809446516969842">Лозинки</translation>
 <translation id="704692552158601232">Стандардна апликација за прелистување</translation>
-<translation id="7053983685419859001">Блокирај</translation>
 <translation id="7062545763355031412">Прифати и замени ги сметките</translation>
 <translation id="7063811929043357292">Твојот родител управува со твојата сметка.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -1370,6 +1370,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8197543752516192074">Преведи ја страницата</translation>
 <translation id="8205564605687841303">Откажи</translation>
 <translation id="8206354486702514201">Поставката ја наметнува администраторот.</translation>
+<translation id="8211030355252954494">Добивте лозинки за <ph name="WEBSITE" /></translation>
 <translation id="8214293972734702249">Закачени, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Кеш: слики, датотеки</translation>
 <translation id="823133356836493038">Дестинацијата „Список за читање“ е скриена</translation>
@@ -1459,6 +1460,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8693663554456874301">{count,plural, =1{Затвори ја картичката}one{Затвори ги картичките}other{Затвори ги картичките}}</translation>
 <translation id="8703536910991780768">Лозинките изгледаат силно</translation>
 <translation id="8706253136355675497">Температура</translation>
+<translation id="8712637175834984815">Сфатив</translation>
 <translation id="8717864919010420084">Копирај го линкот</translation>
 <translation id="8721297211384281569">Мени со алатки</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
@@ -1538,6 +1540,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9079935439869366234">Означи ги сите како непрочитани</translation>
 <translation id="9081058212938299310">Да се ажурира лозинката за <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">За да ги синхронизирате и персонализирате уредите, вклучете синхронизација.</translation>
+<translation id="9087339162317338348">Користете HTTPS секогаш кога е возможно и добивајте известувања пред вчитувањето сајтови што не ја поддржуваат.</translation>
 <translation id="9093271241977565440">Најгоре на екранот, допрете ја иконата „Пребарување“</translation>
 <translation id="9094033019050270033">Ажурирај ја лозинката</translation>
 <translation id="9097506547406246598">Не може да се отследи. Нешто тргна наопаку.</translation>
@@ -1546,6 +1549,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9100610230175265781">Потребна е лозинка-фраза</translation>
 <translation id="9106655997975673326">Од „<ph name="SOURCE_DEVICE" />“</translation>
 <translation id="9107664647686727385">Проверува дали има компромитирани лозинки</translation>
+<translation id="9109699888944026290">{count,plural, =1{Нова лозинка за сајтов}one{Нови лозинки за сајтов}other{Нови лозинки за сајтов}}</translation>
 <translation id="9120217828624527905">Префрлање на превод на целата страница</translation>
 <translation id="9124387962554796433">Google може да ја користи вашата историја за да ги персонализира „Пребарувањето“ и другите услуги на Google.</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>

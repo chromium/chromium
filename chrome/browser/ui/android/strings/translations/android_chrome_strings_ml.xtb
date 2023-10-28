@@ -31,7 +31,6 @@
 <translation id="1129510026454351943">വിശദാംശങ്ങള്‍: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">ഈ സൈറ്റുകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
 <translation id="1145536944570833626">നിലവിലുള്ള വിവരങ്ങൾ ഇല്ലാതാക്കുക.</translation>
-<translation id="1149401351239820326">കാലാവധി കഴിയുന്ന മാസം</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു.</translation>
 <translation id="1173894706177603556">പേരുമാറ്റുക</translation>
 <translation id="1174479719160874822">സ്‌ക്രീൻ ഇടുങ്ങിയിരിക്കുമ്പോൾ Chrome മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കും</translation>
@@ -901,6 +900,7 @@
 <translation id="5753139477036638699">നിങ്ങളുടെ ശബ്‌ദം ഉപയോഗിച്ച് Chrome-ൽ തിരയാം</translation>
 <translation id="5754350196967618083">Discover റീഫ്രഷ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="5755162682436943950">സൈൻ ഔട്ട് ചെയ്‌തു. സൈൻ ഇൻ ചെയ്യാനും സമന്വയം ഓണാക്കാനും ഡയലോഗ് തുറക്കുക.</translation>
+<translation id="5759897675466110265">സൈറ്റ് പ്രവർത്തിക്കുന്നില്ലേ? മൂന്നാം കക്ഷി കുക്കികൾ താൽക്കാലികമായി അനുവദിക്കാൻ ശ്രമിക്കുക</translation>
 <translation id="5763382633136178763">ആൾമാറാട്ട ടാബുകൾ</translation>
 <translation id="5763514718066511291">ഈ ആപ്പിനായുള്ള URL പകർത്താൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5765517223145864268">നിങ്ങളുടെ അനുഭവം ഞങ്ങളോട് പറയൂ. അല്ലെങ്കിൽ <ph name="BEGIN_LINK" />നിങ്ങളുടെ ക്രമീകരണം മാറ്റുക<ph name="END_LINK" />.</translation>
@@ -1379,7 +1379,6 @@
 <translation id="804335162455518893">SD കാർഡ് കണ്ടെത്തിയില്ല</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> അദൃശ്യ ടാബ്}other{<ph name="TAB_COUNT_NORMAL" /> അദൃശ്യ ടാബുകൾ}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB ലഭ്യമാണ്</translation>
-<translation id="8058655154417507695">കാലാവധി കഴിയുന്ന വർഷം</translation>
 <translation id="8058746566562539958">പുതിയ Chrome ടാബിൽ തുറക്കുക</translation>
 <translation id="8062594758852531064">വിപുലീകരിച്ച മുൻകൂട്ടി ലോഡ് ചെയ്യൽ:</translation>
 <translation id="8063895661287329888">ബുക്ക്‌മാർക്ക് ചേർക്കാനായില്ല.</translation>

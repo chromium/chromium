@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Opcje dostępne u dołu ekranu</translation>
 <translation id="7250468141469952378">Wybrano <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dozwolone: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Witryny nie mogą używać plików cookie innych firm, aby uzyskiwać informacje na temat przeglądania przez Ciebie internetu. Aby <ph name="BEGIN_LINK" />zarządzać ochroną przed śledzeniem<ph name="END_LINK" />, otwórz ustawienia.</translation>
 <translation id="7302486331832100261">Zazwyczaj blokujesz powiadomienia. Aby na nie zezwolić, kliknij Szczegóły.</translation>
 <translation id="7366415735885268578">Dodawanie strony</translation>
 <translation id="7368695150573390554">Wszystkie dane offline zostaną usunięte</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryny <ph name="FPS_OWNER" />}few{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryn <ph name="FPS_OWNER" />}many{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryn <ph name="FPS_OWNER" />}other{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryny <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Dozwolone (zalecane)</translation>
 <translation id="8609465669617005112">W górę</translation>
+<translation id="8649036394979866943">Chrome ogranicza większości witryn możliwość uzyskiwania informacji na temat przeglądania przez Ciebie internetu za pomocą plików cookie innych firm. Aby <ph name="BEGIN_LINK" />zarządzać ochroną przed śledzeniem<ph name="END_LINK" />, otwórz ustawienia</translation>
 <translation id="8676374126336081632">Wyczyść wpisany tekst</translation>
 <translation id="8681886425883659911">Reklamy są blokowane w witrynach, o których wiadomo, że wyświetlają reklamy uciążliwe lub wprowadzające w błąd</translation>
 <translation id="868929229000858085">Wyszukaj w kontaktach</translation>

@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">সিগন্যালটি ভাল নয়</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">আপডেট হচ্ছে (<ph name="PERCENTAGE_VALUE" />% সম্পূর্ণ হয়েছে)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="1310380015393971138">কোনও <ph name="NETWORK_NAME" /> নেটওয়ার্ক উপলভ্য নেই</translation>
 <translation id="131421566576084655">ডেটা রিসেট করার শেষ তারিখ উপলভ্য নেই</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">ওয়ালপেপার হিসেবে সেট করুন</translation>
 <translation id="1578784163189013834">স্ক্রিন সেভারের ব্যাকগ্রাউন্ড বেছে নিন</translation>
 <translation id="160633243685262989">ছবির প্রিভিউ দেখুন</translation>
+<translation id="1611649489706141841">ফরওয়ার্ড</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> পর্যন্ত ডেটার ব্যবহার</translation>
 <translation id="1621067168122174824">চার্জ টেস্ট করুন</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">ফাইল সংযুক্ত করুন</translation>
 <translation id="8230672074305416752">ডিফল্ট নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
 <translation id="8246209727385807362">অজানা পরিষেবা প্রদানকারী</translation>
+<translation id="8262870577632766028">১ ঘণ্টা</translation>
 <translation id="827422111966801947">নীল</translation>
 <translation id="8286154143153872371">ওয়ালপেপার দেখার জন্য কোনও নেটওয়ার্কে কানেক্ট করে পৃষ্ঠা আবার লোড করুন।</translation>
 <translation id="8291967909914612644">হোম পরিষেবা প্রদানকারী দেশ</translation>

@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Slabý signál</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Aktualizace (dokončeno <ph name="PERCENTAGE_VALUE" /> %)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
 <translation id="1310380015393971138">Není dostupná žádná síť <ph name="NETWORK_NAME" /></translation>
 <translation id="131421566576084655">Datum posledního resetování dat není k dispozici</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Nastavit jako tapetu</translation>
 <translation id="1578784163189013834">Vybrat pozadí spořiče obrazovky</translation>
 <translation id="160633243685262989">Náhled obrázku</translation>
+<translation id="1611649489706141841">vpřed</translation>
 <translation id="1615335640928990664">Využití dat od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Spustit test nabití</translation>
 <translation id="1639239467298939599">Načítání</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Přiložit soubor</translation>
 <translation id="8230672074305416752">Nepodařilo se pingnout bránu výchozí sítě</translation>
 <translation id="8246209727385807362">Neznámý operátor</translation>
+<translation id="8262870577632766028">1 hodina</translation>
 <translation id="827422111966801947">Indigová</translation>
 <translation id="8286154143153872371">Pokud chcete zobrazit tapetu, připojte se k síti a znovu načtěte stránku.</translation>
 <translation id="8291967909914612644">Země domácího poskytovatele</translation>

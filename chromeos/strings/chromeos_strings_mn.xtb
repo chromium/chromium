@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Муу дохио</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Шинэчилж байна (<ph name="PERCENTAGE_VALUE" />% дууссан)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> минут</translation>
 <translation id="1310380015393971138">Боломжтой <ph name="NETWORK_NAME" /> сүлжээ байхгүй байна</translation>
 <translation id="131421566576084655">Сүүлийн дата шинэчлэлтийн огноо боломжгүй байна</translation>
 <translation id="1314565355471455267">Андройд VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Дэлгэцийн зураг болгох</translation>
 <translation id="1578784163189013834">Дэлгэц амраагчийн арын дэвсгэрийг сонгох</translation>
 <translation id="160633243685262989">Зургийг урьдчилан үзэх</translation>
+<translation id="1611649489706141841">цааш</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />-с хойших дата ашиглалт</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Файл хавсаргах</translation>
 <translation id="8230672074305416752">Сүлжээний өгөгдмөл гэйтвэйд пин илгээж чадсангүй</translation>
 <translation id="8246209727385807362">Тодорхойгүй оператор компани</translation>
+<translation id="8262870577632766028">1 цаг</translation>
 <translation id="827422111966801947">Хөхөвтөр нил ягаан</translation>
 <translation id="8286154143153872371">Дэлгэцийн зургийг үзэхийн тулд сүлжээнд холбогдож, хуудсыг дахин ачаална уу.</translation>
 <translation id="8291967909914612644">Нүүр хуудас бэлтгэх хост</translation>

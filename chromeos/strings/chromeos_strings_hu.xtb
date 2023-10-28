@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Gyenge jel</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Frissítés (<ph name="PERCENTAGE_VALUE" />% kész)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> perc</translation>
 <translation id="1310380015393971138">Nincs hozzáférhető <ph name="NETWORK_NAME" />-hálózat</translation>
 <translation id="131421566576084655">Az adathasználat legutóbbi visszaállítási dátuma nem áll rendelkezésre</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">Beállítás háttérként</translation>
 <translation id="1578784163189013834">A képernyővédő hátterének kiválasztása</translation>
 <translation id="160633243685262989">Előnézeti kép</translation>
+<translation id="1611649489706141841">következő</translation>
 <translation id="1615335640928990664">Adathasználat <ph name="FRIENDLY_DATE" /> óta</translation>
 <translation id="1621067168122174824">Töltési teszt futtatása</translation>
 <translation id="1639239467298939599">Betöltés</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">Fájl csatolása</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
 <translation id="8246209727385807362">Ismeretlen szolgáltató</translation>
+<translation id="8262870577632766028">1 óra</translation>
 <translation id="827422111966801947">Indigókék</translation>
 <translation id="8286154143153872371">A háttérkép megtekintése érdekében csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="8291967909914612644">Otthoni szolgáltató országa</translation>

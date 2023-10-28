@@ -593,6 +593,7 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
+<translation id="3454555520521576458">可調整大小</translation>
 <translation id="3455468639467374593">範本，<ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">有 1 部裝置已連線至 <ph name="DEVICE_NAME" /> 熱點</translation>
 <translation id="346243998268439747">重設縮放等級</translation>
@@ -708,6 +709,7 @@
 <translation id="3899995891769452915">語音輸入</translation>
 <translation id="3900355044994618856">您的工作階段將於 <ph name="SESSION_TIME_REMAINING" />後結束</translation>
 <translation id="3901991538546252627">正在連線至 <ph name="NAME" /></translation>
+<translation id="3906954721959377182">平板電腦</translation>
 <translation id="3922427723338465344">{0,plural, =1{在 1 分鐘內將裝置回復為先前的版本}other{在 # 分鐘內將裝置回復為先前的版本}}</translation>
 <translation id="3923494859158167397">未設定流動網絡</translation>
 <translation id="3925540965556789199"><ph name="DATE" />，正在載入活動。</translation>
@@ -830,6 +832,7 @@
 <translation id="4364101114148522660"><ph name="DURATION" />  正在錄製</translation>
 <translation id="4371348193907997655">投放設定</translation>
 <translation id="4375482231364171368">在網址列中搜尋</translation>
+<translation id="4378154925671717803">電話號碼</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，訊號強度為 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">連線中…</translation>
 <translation id="4379531060876907730">這是您的觸控筆工具</translation>
@@ -887,7 +890,7 @@
 <translation id="4585337515783392668">停止投放到不明嘅接收器</translation>
 <translation id="4596144739579517758">深色主題背景已關閉</translation>
 <translation id="4611292653554630842">登入</translation>
-<translation id="462160925400706389">已連結「<ph name="NAME" />」</translation>
+<translation id="462160925400706389">已連結 <ph name="NAME" /></translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
 <translation id="4628757576491864469">裝置</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />，<ph name="RATING_SCORE" /> 星</translation>
@@ -1313,7 +1316,7 @@
 <translation id="6284232397434400372">解像度已變更</translation>
 <translation id="6288235558961782912">您可稍後在家長許可下重新新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">非充電中</translation>
-<translation id="6298183524022479114">在應用程式中自訂這部裝置</translation>
+<translation id="6298183524022479114">在應用程式中自訂此裝置</translation>
 <translation id="6309219492973062892">點擊或輕按捷徑列圖示 1-8</translation>
 <translation id="6315170314923504164">語音</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
@@ -1536,10 +1539,6 @@
 <translation id="726276584504105859">拖曳到此處即可分割畫面</translation>
 <translation id="7262906531272962081">建立提醒</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />鍵 + Backspace 鍵</translation>
-<translation id="7297440678881127227"><ph name="START_TIME" /> 至
-        <ph name="END_TIME" />，
-        <ph name="TIME_ZONE" />，
-        <ph name="EVENT_SUMMARY" />。揀活動就可以喺 Google 日曆度睇詳情。</translation>
 <translation id="7302889331339392448">「即時字幕」功能已關閉。</translation>
 <translation id="7303365578352795231">正在透過其他裝置回應。</translation>
 <translation id="7305884605064981971">EDGE</translation>

@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">ደካማ ሲግናል</translation>
 <translation id="1301069673413256657">ጂኤስኤም</translation>
 <translation id="1308754910631152188">በማዘመን ላይ (<ph name="PERCENTAGE_VALUE" />% ተጠናቅቋል)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> ደቂቃዎች</translation>
 <translation id="1310380015393971138">የሚገኝ ምንም <ph name="NETWORK_NAME" /> አውታረ መረብ የለም</translation>
 <translation id="131421566576084655">የመጨረሻው የውሂብ ዳግም ማስጀመር ቀን የለም</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -86,6 +87,7 @@
 <translation id="1572585716423026576">እንደ ልጣፍ አዘጋጅ</translation>
 <translation id="1578784163189013834">የማያ ገፅ ማቆያ ዳራን ይምረጡ</translation>
 <translation id="160633243685262989">የቅድመ ዕይታ ምስል</translation>
+<translation id="1611649489706141841">ወደ ፊት</translation>
 <translation id="1615335640928990664">የውሂብ አጠቃቀም ከ<ph name="FRIENDLY_DATE" /> ጀምሮ</translation>
 <translation id="1621067168122174824">የባትሪ መሙላት ሙከራን አሂድ</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
@@ -946,6 +948,7 @@
 <translation id="8227119283605456246">ፋይል አያይዝ</translation>
 <translation id="8230672074305416752">ነባሪ የሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
 <translation id="8246209727385807362">የማይታወቅ አገልግሎት አቅራቢ</translation>
+<translation id="8262870577632766028">1 ሰዓት</translation>
 <translation id="827422111966801947">ወይን ጠጅ</translation>
 <translation id="8286154143153872371">ልጣፍን ለማየት እባክዎን ከአውታረ መረብ ጋር ይገናኙ እና ገጹን እንደገና ይጫኑ።</translation>
 <translation id="8291967909914612644">የመነሻ አቅራቢ አገር</translation>
