@@ -302,6 +302,12 @@ bool ClipboardCommands::ExecuteCut(LocalFrame& frame,
                                    Event*,
                                    EditorCommandSource source,
                                    const String&) {
+  // document.execCommand("cut") is a no-op in EditContext
+  if (source == EditorCommandSource::kDOM &&
+      frame.GetInputMethodController().GetActiveEditContext()) {
+    return true;
+  }
+
   if (!DispatchCopyOrCutEvent(frame, source, event_type_names::kCut))
     return true;
   if (!frame.GetEditor().CanCut())
@@ -426,6 +432,12 @@ void ClipboardCommands::PasteFromClipboard(LocalFrame& frame,
 
 void ClipboardCommands::Paste(LocalFrame& frame, EditorCommandSource source) {
   DCHECK(frame.GetDocument());
+
+  // document.execCommand("paste") is a no-op in EditContext
+  if (source == EditorCommandSource::kDOM &&
+      frame.GetInputMethodController().GetActiveEditContext()) {
+    return;
+  }
 
   // The code below makes multiple calls to SystemClipboard methods which
   // implies multiple IPC calls to the ClipboardHost in the browaser process.
