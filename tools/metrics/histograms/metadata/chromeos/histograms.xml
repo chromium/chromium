@@ -1366,6 +1366,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="ArcDnsResolution"/>
     <variant name="ArcHttp"/>
     <variant name="ArcPing"/>
+    <variant name="AudioDriver"/>
     <variant name="AudioSetGain"/>
     <variant name="AudioSetVolume"/>
     <variant name="BatteryCapacity"/>
@@ -1384,6 +1385,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="DnsResolution"/>
     <variant name="DnsResolverPresent"/>
     <variant name="EmmcLifetime"/>
+    <variant name="Fan"/>
     <variant name="Fingerprint"/>
     <variant name="FingerprintAlive"/>
     <variant name="FloatingPointAccuracy"/>
@@ -1397,12 +1399,14 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="Memory"/>
     <variant name="NvmeSelfTest"/>
     <variant name="NvmeWearLevel"/>
+    <variant name="PowerButton"/>
     <variant name="PrimeSearch"/>
     <variant name="PrivacyScreen"/>
     <variant name="SensitiveSensor"/>
     <variant name="SignalStrength"/>
     <variant name="SmartctlCheck"/>
     <variant name="SmartctlCheckWithPercentageUsed"/>
+    <variant name="UfsLifetime"/>
     <variant name="Urandom"/>
     <variant name="VideoConferencing"/>
   </token>
