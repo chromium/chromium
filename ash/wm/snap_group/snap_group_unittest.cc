@@ -228,6 +228,8 @@ SplitViewOverviewSession* VerifySplitViewOverviewSession(aura::Window* window) {
   EXPECT_TRUE(expected_grid_bounds.Contains(GetOverviewGridBounds()));
   // Hotseat may be on the bottom of the work area.
   EXPECT_TRUE(work_area_bounds().Contains(expected_grid_bounds));
+  EXPECT_TRUE(
+      GetOverviewGridForRoot(window->GetRootWindow())->no_windows_widget());
 
   return split_view_overview_session;
 }
@@ -310,6 +312,11 @@ TEST_F(FasterSplitScreenTest, Basic) {
             WindowState::Get(w2.get())->GetStateType());
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             WindowState::Get(w3.get())->GetStateType());
+
+  // Enter overview normally. Test no widget.
+  ToggleOverview();
+  EXPECT_FALSE(
+      GetOverviewGridForRoot(w1->GetRootWindow())->no_windows_widget());
 }
 
 TEST_F(FasterSplitScreenTest, CycleSnap) {

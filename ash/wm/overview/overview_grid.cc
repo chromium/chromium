@@ -2010,10 +2010,15 @@ bool OverviewGrid::IsSavedDeskNameBeingModified() const {
 void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
                                          bool animate,
                                          bool is_continuous_enter) {
-  // Hide the widget if there is an item in overview or the saved desk grid is
-  // visible.
-  if (!window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled() &&
-      (!no_items || IsShowingSavedDeskLibrary())) {
+  // If `kFasterSplitScreenSetup` or `kSnapGroup` is enabled, hide the widget if
+  // we aren't in split view, otherwise hide the widget if there is an item in
+  // overview or the saved desk grid is visible.
+  // TODO(b/307812315): Rename to `faster_splitscreen_widget_` if we'll always
+  // show this.
+  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()
+          ? !RootWindowController::ForWindow(root_window())
+                 ->split_view_overview_session()
+          : !no_items || IsShowingSavedDeskLibrary()) {
     no_windows_widget_.reset();
     return;
   }
