@@ -256,11 +256,13 @@ class AppStorageTest : public testing::Test {
   void OnApps(std::vector<AppPtr> deltas,
               apps::AppType app_type,
               bool should_notify_initialized) {
-    app_registry_cache_.OnApps(std::move(deltas), kAppType1,
+    app_registry_cache_.OnApps(std::move(deltas), app_type,
                                /*should_notify_initialized=*/false);
   }
 
   const base::ScopedTempDir& tmp_dir() { return tmp_dir_; }
+
+  AppRegistryCache& app_registry_cache() { return app_registry_cache_; }
 
   FakeAppStorage* app_storage() { return app_storage_.get(); }
 
@@ -434,6 +436,40 @@ TEST_F(AppStorageTest, AddAndRemoveApp) {
   // Verify the app has been added.
   auto apps3 = CreateOneApp(kAppType1, kAppId1);
   VerifySavedApps(apps3);
+}
+
+// Test AppStorageTest can remove the app when the app is uninstalled.
+TEST_F(AppStorageTest, UninstallApp) {
+  CreateAppStorage();
+  EXPECT_TRUE(app_storage()->GetAppInfo().empty());
+
+  // Add 1 app.
+  OnApps(CreateOneApp(kAppType1, kAppId1), kAppType1,
+         /*should_notify_initialized=*/false);
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/1);
+
+  // Verify the app is saved correctly.
+  auto apps1 = CreateOneApp(kAppType1, kAppId1);
+  VerifySavedApps(apps1, /*should_verify_app_type_init=*/true);
+
+  // Uninstall the app.
+  RemoveOneApp(kAppType1, kAppId1);
+  // Though the app is uninstalled, it is still saved in `app_registry_cache_`,
+  // so `expect_app_count` should be 1. But the apps saved in the AppStorage
+  // file should be empty, so we verify that with an empty vector, `apps2`.
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/1);
+  std::vector<AppPtr> apps2;
+  VerifySavedApps(apps2);
+
+  // Reinstall the app again and change the app type to simulate the system
+  // restarts.
+  app_registry_cache().ReinitializeForTesting();
+  OnApps(CreateOneApp(kAppType2, kAppId1), kAppType2,
+         /*should_notify_initialized=*/true);
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/1);
+
+  auto apps3 = CreateOneApp(kAppType2, kAppId1);
+  VerifySavedApps(apps3, /*should_verify_app_type_init=*/true);
 }
 
 }  // namespace apps

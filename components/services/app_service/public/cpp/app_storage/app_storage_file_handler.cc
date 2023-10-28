@@ -56,12 +56,62 @@ absl::optional<std::string> GetStringValueFromDict(
 }
 
 template <typename T>
-void SetKeyForEnum(const AppPtr& app,
-                   T App::*field,
-                   const std::string& key,
-                   base::Value::Dict& app_details_dict) {
-  if (app.get()->*field != T::kUnknown) {
-    app_details_dict.Set(key, static_cast<int>(app.get()->*field));
+bool FieldHasValue(const AppPtr& app, T App::*field) {
+  return app.get()->*field != T::kUnknown;
+}
+
+template <typename T>
+bool FieldHasValue(const AppPtr& app, absl::optional<T> App::*field) {
+  return (app.get()->*field).has_value();
+}
+
+template <typename T>
+bool FieldHasValue(const AppPtr& app, std::vector<T> App::*field) {
+  return !(app.get()->*field).empty();
+}
+
+template <typename T>
+base::Value GetValue(const AppPtr& app, T App::*field) {
+  return base::Value(static_cast<int>(app.get()->*field));
+}
+
+template <typename T>
+base::Value GetValue(const AppPtr& app, absl::optional<T> App::*field) {
+  return base::Value((app.get()->*field).value());
+}
+
+template <>
+base::Value GetValue(const AppPtr& app,
+                     absl::optional<base::Time> App::*field) {
+  return base::TimeToValue((app.get()->*field).value());
+}
+
+template <>
+base::Value GetValue(const AppPtr& app, std::vector<std::string> App::*field) {
+  base::Value::List items;
+  for (const auto& item : app.get()->*field) {
+    items.Append(item);
+  }
+  return base::Value(std::move(items));
+}
+
+template <>
+base::Value GetValue(const AppPtr& app,
+                     std::vector<IntentFilterPtr> App::*field) {
+  base::Value::List intent_filters;
+  for (const auto& intent_filter : app.get()->*field) {
+    intent_filters.Append(apps_util::ConvertIntentFilterToDict(intent_filter));
+  }
+  return base::Value(std::move(intent_filters));
+}
+
+template <typename T>
+void SetKey(const AppPtr& app,
+            T App::*field,
+            const std::string& key,
+            base::Value::Dict& app_details_dict) {
+  if (FieldHasValue(app, field)) {
+    app_details_dict.Set(key, GetValue(app, field));
   }
 }
 
@@ -78,11 +128,6 @@ void GetEnumFromKey(base::Value::Dict* value,
 }
 
 }  // namespace
-
-#define SET_KEY_FOR_OPTIONAL_VALUE(FIELD, KEY)     \
-  if (app->FIELD.has_value()) {                    \
-    app_details_dict.Set(KEY, app->FIELD.value()); \
-  }
 
 AppStorageFileHandler::AppInfo::AppInfo() = default;
 AppStorageFileHandler::AppInfo::~AppInfo() = default;
@@ -154,77 +199,41 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
     std::vector<AppPtr> apps) {
   base::Value::Dict app_info_dict;
   for (const auto& app : apps) {
-    base::Value::Dict app_details_dict;
+    base::Value::Dict dict;
 
-    app_details_dict.Set(kTypeKey, static_cast<int>(app->app_type));
+    dict.Set(kTypeKey, static_cast<int>(app->app_type));
 
-    SetKeyForEnum(app, &App::readiness, kReadinessKey, app_details_dict);
-
-    SET_KEY_FOR_OPTIONAL_VALUE(name, kNameKey)
-    SET_KEY_FOR_OPTIONAL_VALUE(short_name, kShortNameKey)
-    SET_KEY_FOR_OPTIONAL_VALUE(description, kDescriptionKey)
-    SET_KEY_FOR_OPTIONAL_VALUE(version, kVersionKey)
-
-    if (!app->additional_search_terms.empty()) {
-      base::Value::List additional_search_terms;
-      for (const auto& additional_search_term : app->additional_search_terms) {
-        additional_search_terms.Append(additional_search_term);
-      }
-      app_details_dict.Set(kAdditionalSearchTermsKey,
-                           std::move(additional_search_terms));
-    }
+    SetKey(app, &App::readiness, kReadinessKey, dict);
+    SetKey(app, &App::name, kNameKey, dict);
+    SetKey(app, &App::short_name, kShortNameKey, dict);
+    SetKey(app, &App::description, kDescriptionKey, dict);
+    SetKey(app, &App::version, kVersionKey, dict);
+    SetKey(app, &App::additional_search_terms, kAdditionalSearchTermsKey, dict);
 
     if (app->icon_key.has_value() &&
         app->icon_key->resource_id != IconKey::kInvalidResourceId) {
-      app_details_dict.Set(kIconResourceIdKey, app->icon_key->resource_id);
+      dict.Set(kIconResourceIdKey, app->icon_key->resource_id);
     }
 
-    if (app->last_launch_time.has_value()) {
-      app_details_dict.Set(kLastLaunchTimeKey,
-                           base::TimeToValue(app->last_launch_time.value()));
-    }
-
-    if (app->install_time.has_value()) {
-      app_details_dict.Set(kInstallTimeKey,
-                           base::TimeToValue(app->install_time.value()));
-    }
-
-    SetKeyForEnum(app, &App::install_reason, kInstallReasonKey,
-                  app_details_dict);
-    SetKeyForEnum(app, &App::install_source, kInstallSourceKey,
-                  app_details_dict);
-
-    if (!app->policy_ids.empty()) {
-      base::Value::List policy_ids;
-      for (const auto& policy_id : app->policy_ids) {
-        policy_ids.Append(policy_id);
-      }
-      app_details_dict.Set(kPolicyIdsKey, std::move(policy_ids));
-    }
-
-    SET_KEY_FOR_OPTIONAL_VALUE(is_platform_app, kIsPlatformAppKey);
-    SET_KEY_FOR_OPTIONAL_VALUE(recommendable, kRecommendableKey);
-    SET_KEY_FOR_OPTIONAL_VALUE(searchable, kSearchableKey);
-    SET_KEY_FOR_OPTIONAL_VALUE(show_in_launcher, kShowInLauncherKey);
-    SET_KEY_FOR_OPTIONAL_VALUE(show_in_shelf, kShowInShelfKey);
-    SET_KEY_FOR_OPTIONAL_VALUE(show_in_search, kShowInSearchKey);
-    SET_KEY_FOR_OPTIONAL_VALUE(show_in_management, kShowInManagementKey);
-    SET_KEY_FOR_OPTIONAL_VALUE(handles_intents, kHandlesIntentsKey);
-    SET_KEY_FOR_OPTIONAL_VALUE(allow_uninstall, kAllowUninstallKey);
-
-    if (!app->intent_filters.empty()) {
-      base::Value::List intent_filters;
-      for (const auto& intent_filter : app->intent_filters) {
-        intent_filters.Append(
-            apps_util::ConvertIntentFilterToDict(intent_filter));
-      }
-      app_details_dict.Set(kIntentFiltersKey, std::move(intent_filters));
-    }
-
-    SetKeyForEnum(app, &App::window_mode, kWindowModeKey, app_details_dict);
+    SetKey(app, &App::last_launch_time, kLastLaunchTimeKey, dict);
+    SetKey(app, &App::install_time, kInstallTimeKey, dict);
+    SetKey(app, &App::install_reason, kInstallReasonKey, dict);
+    SetKey(app, &App::install_source, kInstallSourceKey, dict);
+    SetKey(app, &App::policy_ids, kPolicyIdsKey, dict);
+    SetKey(app, &App::is_platform_app, kIsPlatformAppKey, dict);
+    SetKey(app, &App::recommendable, kRecommendableKey, dict);
+    SetKey(app, &App::searchable, kSearchableKey, dict);
+    SetKey(app, &App::show_in_launcher, kShowInLauncherKey, dict);
+    SetKey(app, &App::show_in_shelf, kShowInShelfKey, dict);
+    SetKey(app, &App::show_in_search, kShowInSearchKey, dict);
+    SetKey(app, &App::show_in_management, kShowInManagementKey, dict);
+    SetKey(app, &App::handles_intents, kHandlesIntentsKey, dict);
+    SetKey(app, &App::allow_uninstall, kAllowUninstallKey, dict);
+    SetKey(app, &App::intent_filters, kIntentFiltersKey, dict);
+    SetKey(app, &App::window_mode, kWindowModeKey, dict);
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
-    app_info_dict.Set(app->app_id, std::move(app_details_dict));
+    app_info_dict.Set(app->app_id, std::move(dict));
   }
 
   return base::Value(std::move(app_info_dict));
