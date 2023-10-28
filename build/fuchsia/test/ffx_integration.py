@@ -132,7 +132,8 @@ class FfxTestRunner(AbstractContextManager):
     def run_test(self,
                  component_uri: str,
                  test_args: Optional[Iterable[str]] = None,
-                 node_name: Optional[str] = None) -> subprocess.Popen:
+                 node_name: Optional[str] = None,
+                 test_realm: Optional[str] = None) -> subprocess.Popen:
         """Starts a subprocess to run a test on a target.
         Args:
             component_uri: The test component URI.
@@ -143,8 +144,11 @@ class FfxTestRunner(AbstractContextManager):
         """
         command = [
             'test', 'run', '--output-directory', self._results_dir,
-            component_uri
         ]
+        if test_realm:
+            command.append("--realm")
+            command.append(test_realm)
+        command.append(component_uri)
         if test_args:
             command.append('--')
             command.extend(test_args)
