@@ -189,7 +189,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   // Called when the extension's initial set of dynamic scripts have been
   // loaded.
   void OnInitialExtensionScriptsLoaded(
-      std::unique_ptr<UserScriptList> initial_dynamic_scripts,
+      UserScriptList initial_dynamic_scripts,
       ScriptsLoadedCallback callback,
       UserScriptLoader* loader,
       const absl::optional<std::string>& error);

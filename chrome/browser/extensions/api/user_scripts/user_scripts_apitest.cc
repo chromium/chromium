@@ -9,7 +9,9 @@
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -27,14 +29,32 @@ class UserScriptsAPITest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
 
-    // The userScripts API is only available to users in developer mode.
-    util::SetDeveloperModeForProfile(profile(), true);
+    if (ShouldEnableDevMode()) {
+      util::SetDeveloperModeForProfile(profile(), true);
+    }
 
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
+  content::RenderFrameHost* OpenInNewTab(const GURL& url) {
+    return ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+  content::EvalJsResult GetInjectedElements(content::RenderFrameHost* host) {
+    static constexpr char kGetInjectedScripts[] =
+        R"(const divs = document.body.getElementsByTagName('div');
+           JSON.stringify(Array.from(divs).map(div => div.id).sort());)";
+    return content::EvalJs(host, kGetInjectedScripts);
+  }
+
  private:
+  // Whether to enable developer mode at the start of the test. We do this
+  // for most tests because the `userScripts` API is restricted to dev mode.
+  virtual bool ShouldEnableDevMode() { return true; }
+
   // The userScripts API is currently behind a channel and feature restriction.
   // TODO(crbug.com/1472902): Remove channel override when user scripts API goes
   // to stable.
@@ -101,40 +121,29 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITest,
   const GURL url =
       embedded_test_server()->GetURL("example.com", "/simple.html");
 
-  auto open_new_tab = [this, &url]() {
-    return ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  };
-
   // Open a new tab.
-  content::RenderFrameHost* new_tab = open_new_tab();
-
-  static constexpr char kGetInjectedScripts[] =
-      R"(const divs = document.body.getElementsByTagName('div');
-         JSON.stringify(Array.from(divs).map(div => div.id).sort());)";
+  content::RenderFrameHost* new_tab = OpenInNewTab(url);
 
   // Since dev mode is enabled (as part of this test suite's setup), both the
   // user script and the content script should inject.
   EXPECT_EQ(R"(["content-script","user-script-code","user-script-file"])",
-            content::EvalJs(new_tab, kGetInjectedScripts));
+            GetInjectedElements(new_tab));
 
   // Disable dev mode.
   util::SetDeveloperModeForProfile(profile(), false);
 
   // Open a new tab. Now, user scripts should be disabled. However, content
   // scripts should still inject.
-  new_tab = open_new_tab();
-  EXPECT_EQ(R"(["content-script"])",
-            content::EvalJs(new_tab, kGetInjectedScripts));
+  new_tab = OpenInNewTab(url);
+  EXPECT_EQ(R"(["content-script"])", GetInjectedElements(new_tab));
 
   // Re-enable dev mode.
   util::SetDeveloperModeForProfile(profile(), true);
 
   // Open a new tab. The user script should inject again.
-  new_tab = open_new_tab();
+  new_tab = OpenInNewTab(url);
   EXPECT_EQ(R"(["content-script","user-script-code","user-script-file"])",
-            content::EvalJs(new_tab, kGetInjectedScripts));
+            GetInjectedElements(new_tab));
 }
 
 // Base test fixture for tests spanning multiple sessions where a custom arg is
@@ -240,11 +249,8 @@ class UserScriptsAPITestWithoutDeveloperMode : public UserScriptsAPITest {
       const UserScriptsAPITestWithoutDeveloperMode&) = delete;
   ~UserScriptsAPITestWithoutDeveloperMode() override = default;
 
-  void SetUpOnMainThread() override {
-    // Note: We explicitly do *not* call UserScriptsAPITest::SetUpOnMainThread()
-    // here. This ensures the user is not in developer mode.
-    ExtensionApiTest::SetUpOnMainThread();
-  }
+ private:
+  bool ShouldEnableDevMode() override { return false; }
 };
 
 // Verifies that the `chrome.userScripts` API is unavailable if the user doesn't
@@ -282,6 +288,58 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITestWithoutDeveloperMode,
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
 
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
+// Tests that registered user scripts are properly ignored when loading
+// stored dynamic scripts if developer mode is disabled.
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITestWithoutDeveloperMode,
+                       PRE_UserScriptsDisabledOnStartupIfDevModeOff) {
+  // Load an extension and register user scripts and a dynamic content script.
+  util::SetDeveloperModeForProfile(profile(), true);
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("user_scripts/dev_mode_tests"));
+  ASSERT_TRUE(extension);
+
+  EXPECT_EQ("success",
+            BackgroundScriptExecutor::ExecuteScript(
+                profile(), extension->id(), "registerUserScripts();",
+                BackgroundScriptExecutor::ResultCapture::kSendScriptResult));
+  EXPECT_EQ("success",
+            BackgroundScriptExecutor::ExecuteScript(
+                profile(), extension->id(), "registerContentScript();",
+                BackgroundScriptExecutor::ResultCapture::kSendScriptResult));
+
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+
+  // To start, all scripts should inject.
+  content::RenderFrameHost* new_tab = OpenInNewTab(url);
+  EXPECT_EQ(R"(["content-script","user-script-code","user-script-file"])",
+            GetInjectedElements(new_tab));
+
+  // Disable dev mode, and re-open the browser...
+  util::SetDeveloperModeForProfile(profile(), false);
+}
+
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITestWithoutDeveloperMode,
+                       UserScriptsDisabledOnStartupIfDevModeOff) {
+  // ... dev mode should remain disabled.
+  EXPECT_FALSE(GetCurrentDeveloperMode(util::GetBrowserContextId(profile())));
+
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+
+  // And, to start, only the content script should inject.
+  content::RenderFrameHost* new_tab = OpenInNewTab(url);
+  EXPECT_EQ(R"(["content-script"])", GetInjectedElements(new_tab));
+
+  // Enable dev mode.
+  util::SetDeveloperModeForProfile(profile(), true);
+
+  // All scripts should once again inject.
+  new_tab = OpenInNewTab(url);
+  EXPECT_EQ(R"(["content-script","user-script-code","user-script-file"])",
+            GetInjectedElements(new_tab));
 }
 
 }  // namespace extensions

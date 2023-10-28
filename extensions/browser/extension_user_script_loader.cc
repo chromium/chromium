@@ -930,41 +930,43 @@ void ExtensionUserScriptLoader::OnExtensionSystemReady() {
 }
 
 void ExtensionUserScriptLoader::OnInitialDynamicScriptsReadFromStateStore(
-    std::unique_ptr<UserScriptList> scripts,
+    std::unique_ptr<UserScriptList> manifest_scripts,
     UserScriptLoader::ScriptsLoadedCallback callback,
     UserScriptList initial_dynamic_scripts) {
-  auto dynamic_scripts_metadata = std::make_unique<UserScriptList>();
+  std::unique_ptr<UserScriptList> scripts_to_add = std::move(manifest_scripts);
   for (const std::unique_ptr<UserScript>& script : initial_dynamic_scripts) {
-    dynamic_scripts_metadata->push_back(CopyDynamicScriptInfo(*script));
-    pending_dynamic_script_ids_.insert(script->id());
+    // Only add the script to the `UserScriptLoader`'s set (thus sending it to
+    // renderers) if the script source type is enabled.
+    if (!base::Contains(disabled_sources_, script->GetSource())) {
+      scripts_to_add->push_back(CopyDynamicScriptInfo(*script));
+      pending_dynamic_script_ids_.insert(script->id());
+    }
   }
 
-  scripts->insert(scripts->end(),
-                  std::make_move_iterator(initial_dynamic_scripts.begin()),
-                  std::make_move_iterator(initial_dynamic_scripts.end()));
-
-  AddScripts(std::move(scripts),
+  AddScripts(std::move(scripts_to_add),
              base::BindOnce(
                  &ExtensionUserScriptLoader::OnInitialExtensionScriptsLoaded,
-                 weak_factory_.GetWeakPtr(),
-                 std::move(dynamic_scripts_metadata), std::move(callback)));
+                 weak_factory_.GetWeakPtr(), std::move(initial_dynamic_scripts),
+                 std::move(callback)));
 }
 
 void ExtensionUserScriptLoader::OnInitialExtensionScriptsLoaded(
-    std::unique_ptr<UserScriptList> initial_dynamic_scripts,
+    UserScriptList initial_dynamic_scripts,
     UserScriptLoader::ScriptsLoadedCallback callback,
     UserScriptLoader* loader,
     const absl::optional<std::string>& error) {
-  for (const std::unique_ptr<UserScript>& script : *initial_dynamic_scripts)
+  for (const std::unique_ptr<UserScript>& script : initial_dynamic_scripts) {
     pending_dynamic_script_ids_.erase(script->id());
+  }
 
   if (!error.has_value()) {
-    for (const std::unique_ptr<UserScript>& script : *initial_dynamic_scripts)
+    for (const std::unique_ptr<UserScript>& script : initial_dynamic_scripts) {
       persistent_dynamic_script_ids_.insert(script->id());
+    }
     loaded_dynamic_scripts_.insert(
         loaded_dynamic_scripts_.end(),
-        std::make_move_iterator(initial_dynamic_scripts->begin()),
-        std::make_move_iterator(initial_dynamic_scripts->end()));
+        std::make_move_iterator(initial_dynamic_scripts.begin()),
+        std::make_move_iterator(initial_dynamic_scripts.end()));
   }
 
   std::move(callback).Run(loader, error);
