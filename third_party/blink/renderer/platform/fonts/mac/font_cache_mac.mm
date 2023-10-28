@@ -53,6 +53,8 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
+#include "base/record_replay.h"
+
 // Forward declare Mac SPIs.
 // Request for public API: rdar://13803570
 @interface NSFont (WebKitSPI)
@@ -125,6 +127,11 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
         GetFontData(font_description, AtomicString(kColorEmojiFontMac));
     if (emoji_font)
       return emoji_font;
+  }
+
+  if (recordreplay::AreEventsDisallowed("PlatformFallbackFontForCharacter")) {
+    // [RUN-2765] Circumvent a rabbit hole of MAC-related font calls.
+    return nullptr;
   }
 
   // FIXME: We should fix getFallbackFamily to take a UChar32
