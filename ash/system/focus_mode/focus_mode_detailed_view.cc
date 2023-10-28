@@ -568,7 +568,7 @@ void FocusModeDetailedView::OnClockMinutePassed() {
   // subheading to display the correct session end time and restart the clock
   // timer. If we are in focus mode, then `FocusModeController::end_time()` will
   // tell us the time at which the session will end.
-  UpdateEndTimeLabelUI();
+  UpdateTimerSettingViewUI();
   StartClockTimer();
 }
 

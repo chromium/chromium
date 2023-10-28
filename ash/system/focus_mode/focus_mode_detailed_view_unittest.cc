@@ -254,11 +254,8 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
               GetToggleRowSubLabel() && GetToggleRowSubLabel()->GetVisible());
 
     if (active) {
-      EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
-                    "Until %s",
-                    base::UTF16ToUTF8(focus_mode_util::GetFormattedClockString(
-                                          focus_mode_controller->end_time()))
-                        .c_str())),
+      EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(
+                    focus_mode_controller->end_time()),
                 GetToggleRowSubLabel()->GetText());
     }
     EXPECT_EQ(active ? u"End" : u"Start", GetToggleRowButton()->GetText());
@@ -488,11 +485,14 @@ TEST_F(FocusModeDetailedViewTest, TimerViewVisibility) {
 
   const base::TimeDelta session_duration =
       focus_mode_controller->session_duration();
-  EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
-                "Until %s",
-                base::UTF16ToUTF8(focus_mode_util::GetFormattedClockString(
-                                      base::Time::Now() + session_duration))
-                    .c_str())),
+  EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(base::Time::Now() +
+                                                       session_duration),
+            GetEndTimeLabel()->GetText());
+
+  // Wait a minute to test that the end time label updates.
+  task_environment()->FastForwardBy(base::Seconds(61));
+  EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(base::Time::Now() +
+                                                       session_duration),
             GetEndTimeLabel()->GetText());
 
   // In a focus session the countdown view should be visible and the timer view
@@ -512,11 +512,8 @@ TEST_F(FocusModeDetailedViewTest, TimerViewVisibility) {
   EXPECT_FALSE(focus_mode_controller->in_focus_session());
   EXPECT_FALSE(countdown_view->GetVisible());
   EXPECT_TRUE(timer_setting_view->GetVisible());
-  EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
-                "Until %s",
-                base::UTF16ToUTF8(focus_mode_util::GetFormattedClockString(
-                                      base::Time::Now() + session_duration))
-                    .c_str())),
+  EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(base::Time::Now() +
+                                                       session_duration),
             GetEndTimeLabel()->GetText());
 }
 
