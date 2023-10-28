@@ -71,6 +71,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTailCall);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyInlining);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyGenericWrapper);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyMultipleMemories);
+GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTurboshaft);
 
 }  // namespace features
 
