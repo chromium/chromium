@@ -39,7 +39,8 @@ constexpr ActionChoice kMouseButtonOptions[] = {
     {IDS_SETTINGS_MEDIA_PLAY_PAUSE_OPTION_LABEL,
      AcceleratorAction::kMediaPlayPause},
     {IDS_SETTINGS_OVERVIEW_OPTION_LABEL, AcceleratorAction::kToggleOverview},
-    {IDS_SETTINGS_SCREENSHOT_OPTION_LABEL, AcceleratorAction::kTakeScreenshot},
+    {IDS_SETTINGS_SCREENSHOT_OPTION_LABEL,
+     AcceleratorAction::kTakePartialScreenshot},
     {IDS_SETTINGS_PREVIOUS_PAGE_OPTION_LABEL,
      ::ash::mojom::StaticShortcutAction::kPreviousPage},
     {IDS_SETTINGS_NEXT_PAGE_OPTION_LABEL,
@@ -73,7 +74,8 @@ constexpr ActionChoice kGraphicsTabletOptions[] = {
      ::ash::mojom::StaticShortcutAction::kZoomIn},
     {IDS_SETTINGS_ZOOM_OUT_OPTION_LABEL,
      ::ash::mojom::StaticShortcutAction::kZoomOut},
-    {IDS_SETTINGS_SCREENSHOT_OPTION_LABEL, AcceleratorAction::kTakeScreenshot},
+    {IDS_SETTINGS_SCREENSHOT_OPTION_LABEL,
+     AcceleratorAction::kTakePartialScreenshot},
 };
 
 mojom::ActionTypePtr GetActionType(AcceleratorAction accelerator_action) {
