@@ -33,7 +33,7 @@ class Profile;
 namespace crostini {
 
 inline constexpr char kCrostiniImageAliasPattern[] = "debian/%s";
-inline constexpr char kCrostiniContainerDefaultVersion[] = "bullseye";
+inline constexpr char kCrostiniContainerDefaultVersion[] = "bookworm";
 inline constexpr char kCrostiniContainerFlag[] =
     "crostini-container-install-version";
 

@@ -214,8 +214,8 @@ class CrostiniManagerTest : public testing::Test {
 
     vm_tools::cicerone::OsRelease os_release;
     base::HistogramTester histogram_tester{};
-    os_release.set_pretty_name("Debian GNU/Linux 10 (bullseye)");
-    os_release.set_version_id("11");
+    os_release.set_pretty_name("Debian GNU/Linux 12 (bookworm)");
+    os_release.set_version_id("12");
     os_release.set_id("debian");
     fake_cicerone_client_->set_lxd_container_os_release(os_release);
   }
@@ -1492,8 +1492,8 @@ TEST_F(CrostiniManagerRestartTest, InstallHistogramEntries) {
 TEST_F(CrostiniManagerRestartTest, OsReleaseSetCorrectly) {
   vm_tools::cicerone::OsRelease os_release;
   base::HistogramTester histogram_tester{};
-  os_release.set_pretty_name("Debian GNU/Linux 10 (buster)");
-  os_release.set_version_id("10");
+  os_release.set_pretty_name("Debian GNU/Linux 12 (bookworm)");
+  os_release.set_version_id("12");
   os_release.set_id("debian");
   fake_cicerone_client_->set_lxd_container_os_release(os_release);
 
@@ -1509,14 +1509,14 @@ TEST_F(CrostiniManagerRestartTest, OsReleaseSetCorrectly) {
   EXPECT_EQ(os_release.SerializeAsString(),
             stored_os_release->SerializeAsString());
   histogram_tester.ExpectUniqueSample("Crostini.ContainerOsVersion",
-                                      ContainerOsVersion::kDebianBuster, 1);
+                                      ContainerOsVersion::kDebianBookworm, 1);
 
   // The data for this container should also be stored in prefs.
   const base::Value* os_release_pref_value = GetContainerPrefValue(
       profile(), container_id(), guest_os::prefs::kContainerOsVersionKey);
   EXPECT_NE(os_release_pref_value, nullptr);
   EXPECT_EQ(os_release_pref_value->GetInt(),
-            static_cast<int>(ContainerOsVersion::kDebianBuster));
+            static_cast<int>(ContainerOsVersion::kDebianBookworm));
 }
 
 TEST_F(CrostiniManagerRestartTest, RestartThenUninstall) {
