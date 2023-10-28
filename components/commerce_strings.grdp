@@ -366,6 +366,9 @@
     <message name="IDS_TWO_STRINGS_CONNECTOR" desc="This is used to connect two sentences together by using a ending period and a space. The first sentence does not contain an ending period, but the second sentence will.">
       <ph name="FIRST_STRING">$1<ex>Use this code at checkout</ex></ph>. <ph name="SECOND_STRING">$2<ex>Valid until Aug 15 2023.</ex></ph>
     </message>
+    <message name="IDS_TWO_STRINGS_CONNECTOR_WITH_SPACE" desc="This is used to connect two sentences together with a space.">
+      <ph name="FIRST_STRING">$1<ex>Use this code at checkout. Valid until Aug 15 2023.</ex></ph> <ph name="SECOND_STRING">$2<ex>See Seller's terms and conditions</ex></ph>
+    </message>
     <message name="IDS_SELLER_TERMS_AND_CONDITIONS_DIALOG_TITLE" desc="This is the title for the 'Terms and condition' dialog which shows users the additional qualification of the discount from the seller.">
       Seller's terms and conditions
     </message>
