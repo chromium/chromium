@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <script type="text/javascript">
+      function send_and_submit() {
+        var form = document.forms[0];
+        var token = form.elements['RelayState'].value;
+        window.setTimeout(function() {
+          window.postMessage({
+              type: 'gaia_saml_api',
+              call: {method: 'createaccount', token: token}}, '/');
+        }, 0);
+
+        window.setTimeout(function() {
+          window.postMessage({
+              type: 'gaia_saml_api',
+              call: {method: 'confirm', token: token}}, '/');
+          form.submit();
+        }, 0);
+      }
+    </script>
+  </head>
+  <body onload="send_and_submit();">
+    <form method=post action="$Post">
+      <input type=hidden name=SAMLResponse value="fake_response"/>
+      <input type=hidden name=RelayState value="$RelayState">
+    </form>
+  </body>
+</html>

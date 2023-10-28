@@ -248,6 +248,13 @@ import {WebviewEventManager} from './webview_event_manager.js';
       this.verifiedAccessChallengeResponse_ = null;
 
       /**
+       * If set, this should handle the account creation message.
+       * If not set, this will log any account creation message as invalid call.
+       * @public {?boolean}
+       */
+      this.shouldHandleAccountCreationMessage = false;
+
+      /**
        * Certificate that were extracted from the SAMLResponse.
        * @public {?string}
        */
@@ -872,6 +879,18 @@ import {WebviewEventManager} from './webview_event_manager.js';
         // TODO(b/261613412): Change warn to info.
         console.warn('SamlHandler.onAPICall_: password added');
         this.dispatchEvent(new CustomEvent('apiPasswordAdded'));
+      } else if (call.method === 'createaccount') {
+        if (!this.shouldHandleAccountCreationMessage) {
+          console.warn('SamlHandler.onAPICall_: message not supported');
+          return;
+        }
+        if (!(call.token in this.apiTokenStore_)) {
+          console.error('SamlHandler.onAPICall_: token mismatch');
+          return;
+        }
+        // TODO(b/261613412): Change warn to info.
+        console.warn('SamlHandler.onAPICall_: new account created');
+        this.dispatchEvent(new CustomEvent('apiAccountCreated'));
       } else if (call.method === 'confirm') {
         if (!(call.token in this.apiTokenStore_)) {
           console.error('SamlHandler.onAPICall_: token mismatch');

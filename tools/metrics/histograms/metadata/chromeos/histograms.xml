@@ -1248,6 +1248,18 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Gaia.CreateAccount.IsFirstUser" enum="Boolean"
+    expires_after="2024-05-30">
+  <owner>thv@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Records the event of new Gaia account creation. Recorded during user sign in
+    when Chrome receives account creation message from Gaia. True is recorded if
+    the account creation happens on first login on the device. False is recorded
+    if another account existed on the device.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Gaia.Done.ElapsedTime" units="ms"
     expires_after="2024-03-17">
   <owner>bchikhaoui@google.com</owner>

@@ -496,6 +496,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.Set("extractSamlPasswordAttributes",
              login::ExtractSamlPasswordAttributesEnabled());
 
+  params.Set("recordAccountCreation",
+             ash::features::IsGaiaRecordAccountCreationEnabled());
+
   if (public_saml_url_fetcher_) {
     params.Set("startsOnSamlPage", true);
     DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(

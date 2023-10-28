@@ -1288,6 +1288,11 @@ BASE_FEATURE(kGlanceablesTimeManagementStableLaunch,
              "GlanceablesTimeManagementStableLaunch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables logging new Gaia account creation event.
+BASE_FEATURE(kGaiaRecordAccountCreation,
+             "GaiaRecordAccountCreation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the Gaia reauth endpoint for all online reauth flows on login screen.
 // Note that the reauth endpoint is used when the user is a child user or in
 // potential recovery flows, regardless of the flag value.
@@ -3404,6 +3409,10 @@ bool IsFullscreenAlertBubbleEnabled() {
 
 bool IsBlockFwupdClientEnabled() {
   return base::FeatureList::IsEnabled(kBlockFwupdClient);
+}
+
+bool IsGaiaRecordAccountCreationEnabled() {
+  return base::FeatureList::IsEnabled(kGaiaRecordAccountCreation);
 }
 
 bool IsGaiaReauthEndpointEnabled() {

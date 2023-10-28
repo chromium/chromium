@@ -109,6 +109,8 @@ export let AuthCompletedCredentials;
  *   ssoProfile: string,
  *   urlParameterToAutofillSAMLUsername: string,
  *   frameUrl: URL,
+ *   isFirstUser : (boolean|undefined),
+ *   recordAccountCreation : (boolean|undefined),
  * }}
  */
 export let AuthParams;
@@ -121,6 +123,8 @@ const SAML_REDIRECTION_PATH = 'samlredirect';
 const BLANK_PAGE_URL = 'about:blank';
 
 const GAIA_DONE_ELAPSED_TIME = 'ChromeOS.Gaia.Done.ElapsedTime';
+const GAIA_CREATE_ACCOUNT_FIRST_USER =
+      'ChromeOS.Gaia.CreateAccount.IsFirstUser';
 
 // Metric names for messages we get from Gaia.
 const GAIA_MESSAGE_SAML_USER_INFO = 'ChromeOS.Gaia.Message.Saml.UserInfo';
@@ -229,6 +233,8 @@ export const SUPPORTED_PARAMS = [
   // A tri-state value which indicates the support level for passwordless login.
   // Refer to `GaiaView::PasswordlessSupportLevel` for details.
   'pwl',
+  // Control if the account creation during sign in flow should be handled.
+  'recordAccountCreation',
 ];
 
 // Timeout in ms to wait for the message from Gaia indicating end of the flow.
@@ -404,6 +410,7 @@ export class Authenticator extends EventTarget {
     /** @type {AuthMode} */
     this.authMode = AuthMode.DEFAULT;
     this.dontResizeNonEmbeddedPages = false;
+    this.isFirstUser_ = false;
 
     /**
      * @type {!SamlHandler|undefined}
@@ -596,6 +603,9 @@ export class Authenticator extends EventTarget {
         this.samlHandler_, 'apiPasswordAdded',
         e => this.onSamlApiPasswordAdded_(e));
     this.webviewEventManager_.addEventListener(
+          this.samlHandler_, 'apiAccountCreated',
+          e => this.onSamlApiAccountCreated_(e));
+    this.webviewEventManager_.addEventListener(
         this.samlHandler_, 'apiPasswordConfirmed',
         e => this.onSamlApiPasswordConfirmed_(e));
     this.webviewEventManager_.addEventListener(
@@ -725,6 +735,14 @@ export class Authenticator extends EventTarget {
     if (data.startsOnSamlPage) {
       this.samlHandler_.startsOnSamlPage = true;
     }
+
+    // True if this is non-enterprise device and there are no users yet.
+    this.isFirstUser_ = !!data.isFirstUser;
+
+    // Enable or disable handling account create message from Gaia.
+    this.samlHandler_.shouldHandleAccountCreationMessage =
+        !!data.recordAccountCreation;
+
     // Don't block insecure content for desktop flow because it lands on
     // http. Otherwise, block insecure content as long as gaia is https.
     this.samlHandler_.blockInsecureContent =
@@ -1313,6 +1331,14 @@ export class Authenticator extends EventTarget {
   }
 
   /**
+   * Invoked when |samlHandler_| fires 'apiAccountCreated' event.
+   * @private
+   */
+  onSamlApiAccountCreated_(e) {
+    this.recordAccountCreated_();
+  }
+
+  /**
    * Invoked when |samlHandler_| fires 'apiPasswordConfirmed' event. Could be
    * from 3rd-party SAML IdP or Gaia which also uses the API.
    * @private
@@ -1482,6 +1508,21 @@ export class Authenticator extends EventTarget {
       Date.now() - this.gaiaStartTime,
     ]);
     this.gaiaStartTime = null;
+  }
+
+  /**
+   * Record new account creation.
+   * @private
+   */
+  recordAccountCreated_() {
+    // Record true account is created during the first sign in event
+    // and false if another account existed.
+    // TODO (b/307591058): add metric to track if account is created
+    // during login or not.
+    chrome.send('metricsHandler:recordBooleanHistogram',[
+      GAIA_CREATE_ACCOUNT_FIRST_USER,
+      this.isFirstUser_
+    ]);
   }
 
   /**
