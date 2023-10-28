@@ -185,7 +185,9 @@ void SplitViewOverviewSession::OnResizeLoopEnded(aura::Window* window) {
   // TODO(sophiewen): Only used by metrics. See if we can remove this.
   split_view_controller->NotifyWindowResized();
 
-  split_view_controller->MaybeEndOverviewOnWindowResize(window);
+  if (!window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
+    split_view_controller->MaybeEndOverviewOnWindowResize(window);
+  }
 }
 
 void SplitViewOverviewSession::OnWindowBoundsChanged(
