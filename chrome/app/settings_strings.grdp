@@ -4443,13 +4443,13 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION" desc="The unused site permissions module of Safety Hub revokes permissions of sites that the user hasn't visited in a while. This label is for the notification in Chrome's three-dot menu indicating for how many sites the permission was revoked.">
     {NUM_SITES, plural,
-      =1 {Permissions removed from 1 unused site}
-      other {Permissions removed from {NUM_SITES} sites}}
+      =1 {Removed permissions for 1 unused site}
+      other {Removed permissions for {NUM_SITES} unused sites}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION" desc="The review notification permissions module of Safety Hub marks sites that send a lot of notifications for review by the user. This label is for the notification in Chrome's three-dot menu indicating how many sites should be reviewed.">
     {NUM_SITES, plural,
-      =1 {Review 1 website with lots of notifications}
-      other {Review {NUM_SITES} websites with lots of notifications}}
+      =1 {Found 1 site with lots of notifications}
+      other {Found {NUM_SITES} sites with lots of notifications}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" desc="The password check module of Safety Hub warns users if there is any insecure credential. This label is for the notification in Chrome's three-dot menu indicating how many passwords are compromised.">
     {NUM_SITES, plural,
@@ -4460,6 +4460,9 @@
     {NUM_SITES, plural,
       =1 {Turned off 1 unsafe extension}
       other {Turned off {NUM_SITES} unsafe extensions}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION" desc="When Safe Browsing is disabled, the proactive Safety Hub feature encourages users to turn on the feature. This label is for the notification in Chrome's three-dot menu.">
+    Safe Browsing is off
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of passwords module.">
     Passwords
@@ -4487,9 +4490,6 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations using a separator between them (in English it is a comma used between all items in a series). This string is the separator between the module names and is used like 'Passwords, extensions, notifications'.">
     ,
-  </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION" desc="When Safe Browsing is disabled, the proactive Safety Hub feature encourages users to turn on the feature. This label is for the notification in Chrome's three-dot menu.">
-    Turn on Safe Browsing
   </message>
 
   <!-- Experimental enterprise plus_addresses settings strings -->
