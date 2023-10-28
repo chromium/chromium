@@ -205869,34 +205869,6 @@
       ]
      ]
     },
-    "css-toggle": {
-     "toggle-visibility-z-ordering-001.tentative.html": [
-      "50f5d35f19296bcc2d47a6d8490d0d3ce0549466",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square.xht",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "toggle-visibility-z-ordering-002.tentative.html": [
-      "cc1ecb2a9cf7bab8edfd1ec018c6bdbb765288ff",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square.xht",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ]
-    },
     "css-transforms": {
      "2d-rotate-001.html": [
       "ffba5b9c95dbede3c4dd0d2bbcbe0273d23a1666",
@@ -280504,6 +280476,21 @@
         {}
        ]
       ]
+     },
+     "scripted": {
+      "pattern-transform-clear.svg": [
+       "6800fd8d20dfe3222f782140ca6106f3864e3db6",
+       [
+        null,
+        [
+         [
+          "/svg/pservers/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
      }
     },
     "render": {
@@ -285319,16 +285306,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "a7a65cfdd0ad379b72bcfe157ec1575e9d532754",
-     []
-    ],
-    "mtime.json": [
-     "6f5a7fc45037e978d2e8a1c9b0c127d3b6f981ac",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -306124,7 +306101,7 @@
       []
      ],
      "all-prop-revert-layer-expected.txt": [
-      "17ba1b5271628cbd6fc75dd28927169f65469a8b",
+      "f61c98aa569ed9347fe9b224fc7fbb77e5e1e422",
       []
      ],
      "all-prop-revert-layer.html.ini": [
@@ -321936,7 +321913,7 @@
       []
      ],
      "highlight-pseudo-computed-expected.txt": [
-      "65a20d981b3b8a8c378f1df27fe09a46bb266c64",
+      "59636de7ed9fe99840a55ae5b6a55d292350b17b",
       []
      ],
      "highlight-pseudo-computed.html.ini": [
@@ -325678,7 +325655,7 @@
       []
      ],
      "inheritance.sub-expected.txt": [
-      "ce214422851e4f0cd86820553c3e41356be778b8",
+      "a831878af4cd60b613d9857cd60c889446c8a2df",
       []
      ],
      "inheritance.sub.html.ini": [
@@ -325999,10 +325976,6 @@
        ]
       }
      },
-     "mask-shorthand-subproperties-reset.html.ini": [
-      "2c869640eeef054c2032d3cedadd9cfa4e4f164d",
-      []
-     ],
      "mask-svg-content": {
       "mask-with-rotation.svg.ini": [
        "64b09229af393866928a8f75cc31e6426e3726f7",
@@ -326032,12 +326005,8 @@
        "fc46becef3feaf98bd081a3f3af36ba76df98df0",
        []
       ],
-      "mask-computed-expected.txt": [
-       "a58627f11b947d4c5465a5cf26968d862ead5bb8",
-       []
-      ],
       "mask-valid.sub-expected.txt": [
-       "730c089de7e933c9dfc2bdfc2945341c73c24f4e",
+       "1f469c2738134736e102455cd9344e2012b14507",
        []
       ],
       "mask-valid.sub.html.ini": [
@@ -340772,26 +340741,6 @@
       ]
      }
     },
-    "css-toggle": {
-     "parsing": {
-      "support": {
-       "toggle-root-values.js": [
-        "de2061107a72e46905363f46a1c26ba290b1cf66",
-        []
-       ]
-      }
-     },
-     "support": {
-      "toggle-helpers.js": [
-       "48f0916b4e6dc35d6c805747756250d1d09de45c",
-       []
-      ]
-     },
-     "toggle-aria-roles.tentative.html.ini": [
-      "9f91a55d1fa72ce0d20795b7c2edbe43f5d32f64",
-      []
-     ]
-    },
     "css-transforms": {
      "3d-scene-with-iframe-001-ref.html": [
       "d984f8a6e9d6f9c221affc07628f8b353dccb010",
@@ -346967,10 +346916,6 @@
      ],
      "will-change-fixpos-cb-position-1.html.ini": [
       "24fab86d34003f68f37b2e98b79f0f1c7e3d220e",
-      []
-     ],
-     "will-change-stacking-context-mask-1.html.ini": [
-      "5b9c4b0bdac9c56b572ec1ed41f4bc4588c7a4a4",
       []
      ],
      "will-change-transform-add-content-ref.html": [
@@ -388790,10 +388735,6 @@
      "3759199fc14d66c4045915f1404f742fe7513590",
      []
     ],
-    "css-toggle.tentative.idl": [
-     "5587019a290c2b90d0e46c05acf557916fb7db20",
-     []
-    ],
     "css-transitions-2.idl": [
      "223810f761e452fb3cf63e8a17b4625cc36090ae",
      []
@@ -411813,7 +411754,7 @@
        []
       ],
       "accumulation-per-property-002-expected.txt": [
-       "92907fd4cc3828f2f779a8ccb7711541f83fb3dc",
+       "9dda1e04210444e99b706020ad3446e804595bce",
        []
       ],
       "accumulation-per-property-002.html.ini": [
@@ -411829,7 +411770,7 @@
        []
       ],
       "addition-per-property-002-expected.txt": [
-       "fe3c8049dcda9d45f1e90e989d31a87a32333fcd",
+       "c063d4206fb062165d17bb2697ee415e7dee0e7a",
        []
       ],
       "addition-per-property-002.html.ini": [
@@ -411845,7 +411786,7 @@
        []
       ],
       "interpolation-per-property-002-expected.txt": [
-       "e99e0873c457a158788d02935297033ec93d06e9",
+       "ddce1f40c203d924507716f275e8e0daac40d7ba",
        []
       ],
       "interpolation-per-property-002.html.ini": [
@@ -485100,226 +485041,6 @@
       ]
      ]
     },
-    "css-toggle": {
-     "animations": {
-      "toggle-group-interpolation.tentative.html": [
-       "bde6c2978c70c5f1b0a382cf66946b71297944c7",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-root-interpolation.tentative.html": [
-       "855b7e6551cc7b38eea1e8683a43e21874d8f611",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-trigger-interpolation.tentative.html": [
-       "1ebec55ef0dd998584bc620423b6b9d0d49f8e0d",
-       [
-        null,
-        {}
-       ]
-      ]
-     },
-     "idlharness.tentative.html": [
-      "1f0cf22e815c332ebe6700902cc7c864ff6a449c",
-      [
-       null,
-       {}
-      ]
-     ],
-     "parsing": {
-      "toggle-computed.tentative.html": [
-       "36445d312a5758358a117408c9ebc24006cd092c",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-group-computed.tentative.html": [
-       "39548ecaa8a187171e606b67217643563ca83947",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-group-invalid.tentative.html": [
-       "faff3483f1e266fd90d9099860451174b323600d",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-group-valid.tentative.html": [
-       "53587d3b09f882eafbdee6e6d5ca7d080381cde9",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-invalid.tentative.html": [
-       "8f460ff1446c70c06e568f203650a324e7b1d6c9",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-root-computed.tentative.html": [
-       "fa7fd7ad51091ed96a5ffb0df0b8bcae377ca687",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-root-invalid.tentative.html": [
-       "76e208a3e599f30a307092499e5506846d68d47f",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-root-valid.tentative.html": [
-       "8f943f1cb9eb755e22c5e2fb1f19b00a0e522313",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-trigger-computed.tentative.html": [
-       "4dab2b604545f1826a4e9d07bc8edd757559cad4",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-trigger-invalid.tentative.html": [
-       "584c4986f7a5b278993d2cba6233436b0aa5fa11",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-trigger-valid.tentative.html": [
-       "1b4a896f20ecc96e79eff65a11021b0ed4de0864",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-valid.tentative.html": [
-       "a02099c996e9719e7ac4b500a2db275695d2ebb8",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-visibility-computed.tentative.html": [
-       "89cc80aa704cab163678ec222008b996f710d3e3",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-visibility-invalid.tentative.html": [
-       "c238834901841c41e079c361468a0212c6963259",
-       [
-        null,
-        {}
-       ]
-      ],
-      "toggle-visibility-valid.tentative.html": [
-       "3541a6f13701cb6f279a043bd7268d884d41b1be",
-       [
-        null,
-        {}
-       ]
-      ]
-     },
-     "toggle-activation-with-groups.tentative.html": [
-      "d8aeeb4275050b0f2a58b6a54bada62e7d8344a5",
-      [
-       null,
-       {}
-      ]
-     ],
-     "toggle-activation.tentative.html": [
-      "20064605668da8dde7e847408360fb92fbf3b7b9",
-      [
-       null,
-       {}
-      ]
-     ],
-     "toggle-api.tentative.html": [
-      "f47ec55ed01e13bdd5c4cf8c07271a6c0e83b943",
-      [
-       null,
-       {}
-      ]
-     ],
-     "toggle-aria-roles.tentative.html": [
-      "9ba545f21a770473e34350e0129e6433f7cf680f",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "toggle-creation.tentative.html": [
-      "583e1631d3c8da97bd8682415507d8c306ec08db",
-      [
-       null,
-       {}
-      ]
-     ],
-     "toggle-events.tentative.html": [
-      "bc4db7d5f66c1bcaadee715ab494052115ffa793",
-      [
-       null,
-       {}
-      ]
-     ],
-     "toggle-pseudo-class.tentative.html": [
-      "7fb5c26d91b847dab9f3fa597bbab535fc38afe3",
-      [
-       null,
-       {}
-      ]
-     ],
-     "toggle-shorthand-serialization.tentative.html": [
-      "682945c2e2bf930f8cbba606a1c7e7be37d6e7a4",
-      [
-       null,
-       {}
-      ]
-     ],
-     "toggle-trigger-focus.tentative.html": [
-      "bc93ba3631bd348848d621b00c43f41a412d358d",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "toggle-trigger-multiple.tentative.html": [
-      "bc972bd729dd264787211e8914a955341bd3c7d4",
-      [
-       null,
-       {}
-      ]
-     ],
-     "toggle-visibility.tentative.html": [
-      "0704996e356cb9ffa55322ec02e307f2e39b7697",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
     "css-transforms": {
      "2d-rotate-js.html": [
       "11597fb31995880ef333e5fcafe488c349cbd01d",
@@ -496576,10 +496297,12 @@
       ]
      ],
      "ElementInternals-target-element-is-held-strongly.html": [
-      "a747c04c5c92b0ac681960a054f13b08cb846ddc",
+      "714f929e0657113f3341cfe498d3c506b5676c3a",
       [
        null,
-       {}
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "ElementInternals-validation.html": [
@@ -502120,6 +501843,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "edit-context-execCommand.tentative.https.html": [
+      "daa9df3ccedc7b7307dc5d3fdbc1a6f116927395",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "edit-context-inheritability.tentative.html": [
