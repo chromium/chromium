@@ -796,7 +796,7 @@ void ToolbarView::Layout() {
   // In the first pass turn off overflow button right before each layout.
   // TODO(pengchaocai): Explore possible optimizations.
   views::ManualLayoutUtil manual_layout_util(layout_manager_);
-  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
+  if (toolbar_controller_) {
     manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
                                      true);
   }
@@ -805,8 +805,7 @@ void ToolbarView::Layout() {
   // happen.
   AccessiblePaneView::Layout();
 
-  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar) &&
-      toolbar_controller_->ShouldShowOverflowButton()) {
+  if (toolbar_controller_ && toolbar_controller_->ShouldShowOverflowButton()) {
     // This is the second pass layout that shows overflow button if necessary.
     manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
                                      false);

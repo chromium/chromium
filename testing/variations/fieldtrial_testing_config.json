@@ -14374,6 +14374,22 @@
             ]
         }
     ],
+    "ResponsiveToolbar": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ResponsiveToolbar"
+                    ]
+                }
+            ]
+        }
+    ],
     "RestoreSyncedPlaceholderTabs": [
         {
             "platforms": [
