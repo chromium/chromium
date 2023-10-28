@@ -251,10 +251,6 @@ void FieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
   // TODO(ssid): Make GetSubsegmentName as a ModelProvider API so that clients
   // can simply implement it instead of adding conditions here, once the
   // subsegment process is more stable.
-  if (segment_id == SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
-    group_name = FeedUserSegment::GetSubsegmentName(subsegment_rank);
-  }
-
   if (!group_name) {
     return;
   }

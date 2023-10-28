@@ -604,7 +604,6 @@ bool SegmentUsesLegacyOutput(proto::SegmentId segment_id) {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2};
 
   return segment_ids_use_legacy.contains(segment_id);

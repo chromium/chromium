@@ -75,9 +75,6 @@ void IOSFieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
   // Per target checks should be replaced by making this as a ModelProvider
   // method.
   absl::optional<std::string> group_name;
-  if (segment_id == SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
-    group_name = FeedUserSegment::GetSubsegmentName(subsegment_rank);
-  }
 
   if (!group_name) {
     return;

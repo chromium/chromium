@@ -278,7 +278,6 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestLowUserEngagementModel) {
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestCrossDeviceModel) {
   InitServiceAndCacheResults(segmentation_platform::kCrossDeviceUserKey);
-
   segmentation_platform::PredictionOptions prediction_options;
 
   ExpectGetClassificationResult(
@@ -378,6 +377,18 @@ TEST_F(SegmentationPlatformServiceFactoryTest, MostVisitedTilesUser) {
       /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
       /*expected_labels=*/
       std::vector<std::string>(1, "None"));
+}
+
+TEST_F(SegmentationPlatformServiceFactoryTest, TestFeedUserModel) {
+  InitServiceAndCacheResults(segmentation_platform::kFeedUserSegmentationKey);
+  segmentation_platform::PredictionOptions prediction_options;
+
+  ExpectGetClassificationResult(
+      segmentation_platform::kFeedUserSegmentationKey, prediction_options,
+      nullptr,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/
+      std::vector<std::string>(1, kLegacyNegativeLabel));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
