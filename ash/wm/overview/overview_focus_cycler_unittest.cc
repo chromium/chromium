@@ -156,11 +156,17 @@ TEST_P(OverviewFocusCyclerTest, BasicArrowKeyNavigation) {
         GetOverviewItemsForRoot(0);
     for (size_t i = 0; i < test_windows + 1; ++i) {
       SendKeyUntilOverviewItemIsFocused(arrow_keys[key_index]);
-      // TODO(flackr): Add a more readable error message by constructing a
-      // string from the window IDs.
+
       const int index = index_path_for_direction[key_index][i];
       EXPECT_EQ(GetOverviewFocusedWindow()->GetId(),
-                overview_windows[index - 1]->GetWindow()->GetId());
+                overview_windows[index - 1]->GetWindow()->GetId())
+          << "Focused window id(" +
+                 base::NumberToString(GetOverviewFocusedWindow()->GetId()) +
+                 ") did not match overview item window at index " +
+                 base::NumberToString(index) + "'s id(" +
+                 base::NumberToString(
+                     overview_windows[index - 1]->GetWindow()->GetId()) +
+                 ")";
     }
     ToggleOverview();
   }

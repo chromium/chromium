@@ -970,8 +970,7 @@ void OverviewGrid::RemoveDropTarget() {
   CHECK(drop_target_);
 
   // Copy to a local first to avoid a dangling pointer.
-  OverviewDropTarget* drop_target_ptr = drop_target_;
-  drop_target_ = nullptr;
+  OverviewDropTarget* drop_target_ptr = std::exchange(drop_target_, nullptr);
 
   size_t erased_count = base::EraseIf(
       window_list_, base::MatchesUniquePtr<OverviewItemBase>(drop_target_ptr));

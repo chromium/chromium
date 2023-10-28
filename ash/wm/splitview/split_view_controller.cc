@@ -1578,36 +1578,41 @@ void SplitViewController::OnOverviewModeEnding(
   }
 
   for (const auto& overview_item : current_grid->window_list()) {
-    // TODO(michelefan|sammiequon): See if we should use
-    // `OverviewItemBase::GetWindows()` to cover snap group item case.
-    aura::Window* window = overview_item->GetWindow();
-    if (window && window != GetDefaultSnappedWindow()) {
-      absl::optional<float> snap_ratio = ComputeSnapRatio(window);
-      if (snap_ratio) {
-        const bool was_active =
-            overview_session->IsWindowActiveWindowBeforeOverview(window);
-        // Remove the overview item before snapping because the overview session
-        // is unavailable to retrieve outside this function after
-        // OnOverviewEnding is notified.
-        overview_item->RestoreWindow(/*reset_transform=*/false,
-                                     /*animate=*/true);
-        overview_session->RemoveItem(overview_item.get());
+    for (aura::Window* window : overview_item->GetWindows()) {
+      CHECK(window);
 
-        SnapWindow(window,
-                   (default_snap_position_ == SnapPosition::kPrimary)
-                       ? SnapPosition::kSecondary
-                       : SnapPosition::kPrimary,
-                   WindowSnapActionSource::kAutoSnapInSplitView,
-                   /*activate_window=*/false, *snap_ratio);
-        if (was_active) {
-          wm::ActivateWindow(window);
-        }
-
-        // If ending overview causes a window to snap, also do not do exiting
-        // overview animation.
-        overview_session->SetWindowListNotAnimatedWhenExiting(root_window_);
-        return;
+      if (window == GetDefaultSnappedWindow()) {
+        continue;
       }
+
+      absl::optional<float> snap_ratio = ComputeSnapRatio(window);
+      if (!snap_ratio.has_value()) {
+        continue;
+      }
+
+      const bool was_active =
+          overview_session->IsWindowActiveWindowBeforeOverview(window);
+      // Remove the overview item before snapping because the overview session
+      // is unavailable to retrieve outside this function after
+      // OnOverviewEnding is notified.
+      overview_item->RestoreWindow(/*reset_transform=*/false,
+                                   /*animate=*/true);
+      overview_session->RemoveItem(overview_item.get());
+
+      SnapWindow(window,
+                 (default_snap_position_ == SnapPosition::kPrimary)
+                     ? SnapPosition::kSecondary
+                     : SnapPosition::kPrimary,
+                 WindowSnapActionSource::kAutoSnapInSplitView,
+                 /*activate_window=*/false, *snap_ratio);
+      if (was_active) {
+        wm::ActivateWindow(window);
+      }
+
+      // If ending overview causes a window to snap, also do not do exiting
+      // overview animation.
+      overview_session->SetWindowListNotAnimatedWhenExiting(root_window_);
+      return;
     }
   }
 
