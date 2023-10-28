@@ -5362,7 +5362,7 @@ class LayerTreeHostImplTestScrollbarAnimation : public LayerTreeHostImplTest {
 
     auto* scrollbar = AddLayer<SolidColorScrollbarLayerImpl>(
         host_impl_->active_tree(), ScrollbarOrientation::kVertical, 10, 0,
-        false, absl::nullopt);
+        false);
     SetupScrollbarLayer(OuterViewportScrollLayer(), scrollbar);
 
     host_impl_->active_tree()->DidBecomeActive();
@@ -5583,7 +5583,7 @@ class LayerTreeHostImplTestScrollbarOpacity : public LayerTreeHostImplTest {
         host_impl_->pending_tree()->OuterViewportScrollLayerForTesting();
     auto* scrollbar = AddLayer<SolidColorScrollbarLayerImpl>(
         host_impl_->pending_tree(), ScrollbarOrientation::kVertical, 10, 0,
-        false, absl::nullopt);
+        false);
     SetupScrollbarLayer(scroll, scrollbar);
     scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(90, 0));
 
@@ -5684,8 +5684,8 @@ class LayerTreeHostImplTestMultiScrollable : public LayerTreeHostImplTest {
 
     // scrollbar_1 on root scroll.
     scrollbar_1_ = AddLayer<SolidColorScrollbarLayerImpl>(
-        host_impl_->active_tree(), ScrollbarOrientation::kVertical, 15, 0, true,
-        absl::nullopt);
+        host_impl_->active_tree(), ScrollbarOrientation::kVertical, 15, 0,
+        true);
     SetupScrollbarLayer(root_scroll, scrollbar_1_);
     scrollbar_1_->SetBounds(scrollbar_size_1);
     TouchActionRegion touch_action_region;
@@ -5698,8 +5698,8 @@ class LayerTreeHostImplTestMultiScrollable : public LayerTreeHostImplTest {
     GetTransformNode(child)->post_translation = gfx::Vector2dF(50, 50);
 
     scrollbar_2_ = AddLayer<SolidColorScrollbarLayerImpl>(
-        host_impl_->active_tree(), ScrollbarOrientation::kVertical, 15, 0, true,
-        absl::nullopt);
+        host_impl_->active_tree(), ScrollbarOrientation::kVertical, 15, 0,
+        true);
     SetupScrollbarLayer(child, scrollbar_2_);
     scrollbar_2_->SetBounds(scrollbar_size_2);
 
@@ -5928,8 +5928,8 @@ TEST_F(LayerTreeHostImplTest, ScrollbarVisibilityChangeCausesRedrawAndCommit) {
   LayerImpl* scroll =
       host_impl_->pending_tree()->OuterViewportScrollLayerForTesting();
   auto* scrollbar = AddLayer<SolidColorScrollbarLayerImpl>(
-      host_impl_->pending_tree(), ScrollbarOrientation::kVertical, 10, 0, false,
-      absl::nullopt);
+      host_impl_->pending_tree(), ScrollbarOrientation::kVertical, 10, 0,
+      false);
   SetupScrollbarLayer(scroll, scrollbar);
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(90, 0));
 
@@ -6047,23 +6047,19 @@ TEST_F(LayerTreeHostImplTest, ScrollbarRegistration) {
   auto* container = InnerViewportScrollLayer();
   auto* root_scroll = OuterViewportScrollLayer();
   auto* vert_1_scrollbar = AddLayer<SolidColorScrollbarLayerImpl>(
-      host_impl_->active_tree(), ScrollbarOrientation::kVertical, 5, 5, true,
-      absl::nullopt);
+      host_impl_->active_tree(), ScrollbarOrientation::kVertical, 5, 5, true);
   CopyProperties(container, vert_1_scrollbar);
 
   auto* horiz_1_scrollbar = AddLayer<SolidColorScrollbarLayerImpl>(
-      host_impl_->active_tree(), ScrollbarOrientation::kHorizontal, 5, 5, true,
-      absl::nullopt);
+      host_impl_->active_tree(), ScrollbarOrientation::kHorizontal, 5, 5, true);
   CopyProperties(container, horiz_1_scrollbar);
 
   auto* vert_2_scrollbar = AddLayer<SolidColorScrollbarLayerImpl>(
-      host_impl_->active_tree(), ScrollbarOrientation::kVertical, 5, 5, true,
-      absl::nullopt);
+      host_impl_->active_tree(), ScrollbarOrientation::kVertical, 5, 5, true);
   CopyProperties(container, vert_2_scrollbar);
 
   auto* horiz_2_scrollbar = AddLayer<SolidColorScrollbarLayerImpl>(
-      host_impl_->active_tree(), ScrollbarOrientation::kHorizontal, 5, 5, true,
-      absl::nullopt);
+      host_impl_->active_tree(), ScrollbarOrientation::kHorizontal, 5, 5, true);
   CopyProperties(container, horiz_2_scrollbar);
 
   UpdateDrawProperties(host_impl_->active_tree());
@@ -6147,7 +6143,7 @@ TEST_F(LayerTreeHostImplTest, ScrollBeforeMouseMove) {
   const int kScrollbarThickness = 5;
   auto* vert_scrollbar = AddLayer<SolidColorScrollbarLayerImpl>(
       host_impl_->active_tree(), ScrollbarOrientation::kVertical,
-      kScrollbarThickness, 0, false, absl::nullopt);
+      kScrollbarThickness, 0, false);
   SetupScrollbarLayer(root_scroll, vert_scrollbar);
   vert_scrollbar->SetBounds(gfx::Size(10, 200));
   vert_scrollbar->SetOffsetToTransformParent(
@@ -6230,7 +6226,7 @@ void LayerTreeHostImplTest::SetupMouseMoveAtWithDeviceScale(
   // The scrollbar is on the left side.
   auto* scrollbar = AddLayer<SolidColorScrollbarLayerImpl>(
       host_impl_->active_tree(), ScrollbarOrientation::kVertical,
-      thumb_thickness, 0, true, absl::nullopt);
+      thumb_thickness, 0, true);
   SetupScrollbarLayer(root_scroll, scrollbar);
   scrollbar->SetBounds(scrollbar_size);
   TouchActionRegion touch_action_region;
@@ -7308,7 +7304,7 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
   gfx::Size scrollbar_size(gfx::Size(50, 15));
   auto* scrollbar_layer = AddLayer<SolidColorScrollbarLayerImpl>(
       host_impl_->active_tree(), ScrollbarOrientation::kHorizontal, 3, 20,
-      false, absl::nullopt);
+      false);
   SetupScrollbarLayer(OuterViewportScrollLayer(), scrollbar_layer);
   scrollbar_layer->SetBounds(scrollbar_size);
   TouchActionRegion touch_action_region;
@@ -16175,7 +16171,7 @@ void LayerTreeHostImplTest::SetupMouseMoveAtTestScrollbarStates(
   // scrollbar_1 on root scroll.
   auto* scrollbar_1 = AddLayer<SolidColorScrollbarLayerImpl>(
       host_impl_->active_tree(), ScrollbarOrientation::kVertical,
-      thumb_thickness, 0, true, absl::nullopt);
+      thumb_thickness, 0, true);
   SetupScrollbarLayer(root_scroll, scrollbar_1);
   scrollbar_1->SetBounds(scrollbar_size_1);
   TouchActionRegion touch_action_region;
@@ -16269,7 +16265,7 @@ void LayerTreeHostImplTest::SetupMouseMoveAtTestScrollbarStates(
   // scrollbar_2 on child.
   auto* scrollbar_2 = AddLayer<SolidColorScrollbarLayerImpl>(
       host_impl_->active_tree(), ScrollbarOrientation::kVertical,
-      thumb_thickness, 0, true, absl::nullopt);
+      thumb_thickness, 0, true);
   LayerImpl* child =
       AddScrollableLayer(root_scroll, gfx::Size(100, 100), child_layer_size);
   child->SetOffsetToTransformParent(gfx::Vector2dF(50, 50));
@@ -17459,8 +17455,7 @@ TEST_F(LayerTreeHostImplTest, TouchScrollOnAndroidScrollbar) {
                                           viewport_size, scroll_content_size);
 
   auto* scrollbar = AddLayer<SolidColorScrollbarLayerImpl>(
-      layer_tree_impl, ScrollbarOrientation::kVertical, 10, 0, false,
-      absl::nullopt);
+      layer_tree_impl, ScrollbarOrientation::kVertical, 10, 0, false);
   SetupScrollbarLayer(content, scrollbar);
   scrollbar->SetBounds(scrollbar_size);
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));

@@ -74,7 +74,7 @@ class SingleScrollbarAnimationControllerThinningTest
 
     scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
         ScrollbarOrientation::kVertical, kThumbThickness, kTrackStart,
-        kIsLeftSideVerticalScrollbar, absl::nullopt);
+        kIsLeftSideVerticalScrollbar);
 
     scrollbar_layer_->SetBounds(gfx::Size(kThumbThickness, kTrackLength));
     scrollbar_layer_->SetScrollElementId(scroll_layer->element_id());

@@ -51,7 +51,7 @@
 namespace cc {
 class AnimationHost;
 class AnimationTimeline;
-class ScrollbarLayerBase;
+class SolidColorScrollbarLayer;
 }
 
 namespace blink {
@@ -325,6 +325,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   EScrollbarWidth CSSScrollbarWidth() const;
   int ScrollbarThickness() const;
   void UpdateScrollbarLayer(ScrollbarOrientation);
+  void UpdateScrollbarColor(cc::SolidColorScrollbarLayer&);
 
   void NotifyRootFrameViewport() const;
 
@@ -352,8 +353,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   Member<Page> page_;
 
   scoped_refptr<cc::Layer> scroll_layer_;
-  scoped_refptr<cc::ScrollbarLayerBase> scrollbar_layer_horizontal_;
-  scoped_refptr<cc::ScrollbarLayerBase> scrollbar_layer_vertical_;
+  scoped_refptr<cc::SolidColorScrollbarLayer> scrollbar_layer_horizontal_;
+  scoped_refptr<cc::SolidColorScrollbarLayer> scrollbar_layer_vertical_;
 
   PropertyTreeStateOrAlias parent_property_tree_state_;
   scoped_refptr<TransformPaintPropertyNode> device_emulation_transform_node_;

@@ -48,13 +48,15 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual ScrollbarOrientation Orientation() const = 0;
   virtual bool IsLeftSideVerticalScrollbar() const = 0;
   virtual bool IsSolidColor() const = 0;
+  // The color for a solid color scrollbar. This is meaningful only
+  // when IsSolidColor() is true.
+  virtual SkColor4f GetSolidColor() const = 0;
   virtual bool IsOverlay() const = 0;
   virtual bool IsFluentOverlayScrollbarMinimalMode() const = 0;
   virtual bool HasThumb() const = 0;
   virtual bool SupportsDragSnapBack() const = 0;
   virtual bool JumpOnTrackClick() const = 0;
   virtual bool IsOpaque() const = 0;
-  virtual absl::optional<SkColor4f> ThumbColor() const = 0;
 
   // The following rects are all relative to the scrollbar's origin.
   // The location of ThumbRect reflects scroll offset, but cc will ignore it

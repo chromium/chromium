@@ -20,8 +20,7 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
       ScrollbarOrientation orientation,
       int thumb_thickness,
       int track_start,
-      bool is_left_side_vertical_scrollbar,
-      absl::optional<SkColor4f> thumb_color);
+      bool is_left_side_vertical_scrollbar);
   ~SolidColorScrollbarLayerImpl() override;
 
   // LayerImpl overrides.
@@ -34,14 +33,15 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
 
   int ThumbThickness() const override;
 
+  void set_color(SkColor4f color) { color_ = color; }
+
  protected:
   SolidColorScrollbarLayerImpl(LayerTreeImpl* tree_impl,
                                int id,
                                ScrollbarOrientation orientation,
                                int thumb_thickness,
                                int track_start,
-                               bool is_left_side_vertical_scrollbar,
-                               absl::optional<SkColor4f> thumb_color);
+                               bool is_left_side_vertical_scrollbar);
 
   // ScrollbarLayerImplBase implementation.
   int ThumbLength() const override;
@@ -54,8 +54,7 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
 
   int thumb_thickness_;
   int track_start_;
-  absl::optional<SkColor4f> thumb_color_;
-  SkColor4f default_color_;
+  SkColor4f color_ = SkColors::kTransparent;
 };
 
 }  // namespace cc

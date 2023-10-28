@@ -28,8 +28,7 @@ class CC_EXPORT SolidColorScrollbarLayer : public ScrollbarLayerBase {
       ScrollbarOrientation orientation,
       int thumb_thickness,
       int track_start,
-      bool is_left_side_vertical_scrollbar,
-      absl::optional<SkColor4f> thumb_color);
+      bool is_left_side_vertical_scrollbar);
 
   SolidColorScrollbarLayer(const SolidColorScrollbarLayer&) = delete;
   SolidColorScrollbarLayer& operator=(const SolidColorScrollbarLayer&) = delete;
@@ -38,10 +37,16 @@ class CC_EXPORT SolidColorScrollbarLayer : public ScrollbarLayerBase {
   bool OpacityCanAnimateOnImplThread() const override;
   void SetOpacity(float opacity) override;
   void SetNeedsDisplayRect(const gfx::Rect& rect) override;
+  void SetLayerTreeHost(LayerTreeHost* host) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   int thumb_thickness() const { return thumb_thickness_; }
   int track_start() const { return track_start_; }
-  absl::optional<SkColor4f> thumb_color() const { return thumb_color_; }
+
+  void SetColor(SkColor4f color);
+  SkColor4f color() const { return color_.Read(*this); }
 
   ScrollbarLayerType GetScrollbarLayerType() const override;
 
@@ -49,13 +54,12 @@ class CC_EXPORT SolidColorScrollbarLayer : public ScrollbarLayerBase {
   SolidColorScrollbarLayer(ScrollbarOrientation orientation,
                            int thumb_thickness,
                            int track_start,
-                           bool is_left_side_vertical_scrollbar,
-                           absl::optional<SkColor4f> thumb_color);
+                           bool is_left_side_vertical_scrollbar);
   ~SolidColorScrollbarLayer() override;
 
   int thumb_thickness_;
   int track_start_;
-  absl::optional<SkColor4f> thumb_color_;
+  ProtectedSequenceReadable<SkColor4f> color_;
 };
 
 }  // namespace cc

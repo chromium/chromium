@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "cc/trees/layer_tree_impl.h"
-#include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/occlusion.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 
@@ -21,11 +19,10 @@ SolidColorScrollbarLayerImpl::Create(LayerTreeImpl* tree_impl,
                                      ScrollbarOrientation orientation,
                                      int thumb_thickness,
                                      int track_start,
-                                     bool is_left_side_vertical_scrollbar,
-                                     absl::optional<SkColor4f> thumb_color) {
+                                     bool is_left_side_vertical_scrollbar) {
   return base::WrapUnique(new SolidColorScrollbarLayerImpl(
       tree_impl, id, orientation, thumb_thickness, track_start,
-      is_left_side_vertical_scrollbar, thumb_color));
+      is_left_side_vertical_scrollbar));
 }
 
 SolidColorScrollbarLayerImpl::~SolidColorScrollbarLayerImpl() = default;
@@ -34,7 +31,7 @@ std::unique_ptr<LayerImpl> SolidColorScrollbarLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return SolidColorScrollbarLayerImpl::Create(
       tree_impl, id(), orientation(), thumb_thickness_, track_start_,
-      is_left_side_vertical_scrollbar(), thumb_color_);
+      is_left_side_vertical_scrollbar());
 }
 
 SolidColorScrollbarLayerImpl::SolidColorScrollbarLayerImpl(
@@ -43,21 +40,19 @@ SolidColorScrollbarLayerImpl::SolidColorScrollbarLayerImpl(
     ScrollbarOrientation orientation,
     int thumb_thickness,
     int track_start,
-    bool is_left_side_vertical_scrollbar,
-    absl::optional<SkColor4f> thumb_color)
+    bool is_left_side_vertical_scrollbar)
     : ScrollbarLayerImplBase(tree_impl,
                              id,
                              orientation,
                              is_left_side_vertical_scrollbar,
                              /*is_overlay*/ true),
       thumb_thickness_(thumb_thickness),
-      track_start_(track_start),
-      thumb_color_(thumb_color),
-      default_color_(tree_impl->settings().solid_color_scrollbar_color) {}
+      track_start_(track_start) {}
 
 void SolidColorScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   ScrollbarLayerImplBase::PushPropertiesTo(layer);
   CHECK(!layer->HitTestable());
+  static_cast<SolidColorScrollbarLayerImpl*>(layer)->set_color(color_);
 }
 
 int SolidColorScrollbarLayerImpl::ThumbThickness() const {
@@ -111,8 +106,8 @@ void SolidColorScrollbarLayerImpl::AppendQuads(
     return;
 
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  quad->SetNew(shared_quad_state, thumb_quad_rect, visible_quad_rect,
-               thumb_color_.value_or(default_color_), false);
+  quad->SetNew(shared_quad_state, thumb_quad_rect, visible_quad_rect, color_,
+               false);
 }
 
 const char* SolidColorScrollbarLayerImpl::LayerTypeAsString() const {
