@@ -1553,7 +1553,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     NSUInteger moduleIndexToReplace =
         [[viewIndicesToRemove lastObject] integerValue];
     // Do not remove the replaced module.
-    [viewIndicesToRemove removeObjectAtIndex:moduleIndexToReplace];
+    [viewIndicesToRemove removeLastObject];
     [self replaceModuleAtIndex:moduleIndexToReplace
                     withModule:newModule
           additionalAnimations:fadeOtherSetUpListItemsOut
