@@ -135,6 +135,9 @@ ToolbarController::GetDefaultElementInfoMap() {
         kToolbarDownloadBubbleElementId}},
       {kToolbarForwardButtonElementId,
        {IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, kToolbarForwardButtonElementId}},
+      {kToolbarAvatarButtonElementId,
+       {IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE, kToolbarAvatarButtonElementId,
+        kToolbarAvatarBubbleElementId}},
   });
 }
 

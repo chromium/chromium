@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -14,6 +15,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -63,6 +65,8 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
     bubble = std::make_unique<ProfileMenuView>(avatar_toolbar_button, &browser);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
+  bubble->SetProperty(views::kElementIdentifierKey,
+                      kToolbarAvatarBubbleElementId);
 
   auto* bubble_ptr = bubble.get();
   DCHECK_EQ(nullptr, bubble_tracker_.view());

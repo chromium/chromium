@@ -946,9 +946,9 @@ void ToolbarView::InitLayout() {
     // TODO(crbug.com/1479588): Ignore containers till issue addressed.
     toolbar_controller_ = std::make_unique<ToolbarController>(
         std::vector<ui::ElementIdentifier>{
-            kToolbarForwardButtonElementId, kToolbarDownloadButtonElementId,
-            kToolbarMediaButtonElementId, kToolbarHomeButtonElementId,
-            kToolbarChromeLabsButtonElementId},
+            kToolbarAvatarButtonElementId, kToolbarForwardButtonElementId,
+            kToolbarDownloadButtonElementId, kToolbarMediaButtonElementId,
+            kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId},
         ToolbarController::GetDefaultElementInfoMap(), kToolbarFlexOrderStart,
         container_view_, overflow_button_);
 

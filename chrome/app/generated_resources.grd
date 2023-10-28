@@ -16267,6 +16267,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Responsive Toolbar -->
+    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE" desc="Overflow menu item text of profile button">
+      Profile
+    </message>
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS" desc="Overflow menu item text of download button">
       Downloads
     </message>
