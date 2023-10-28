@@ -86,6 +86,7 @@
 #include "components/commerce/core/flag_descriptions.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_search/core/browser/contextual_search_field_trial.h"
 #include "components/contextual_search/core/browser/public.h"
@@ -11190,6 +11191,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kAttachLogsToAutofillRaterExtensionReport)},
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    {"fill-multi-line", flag_descriptions::kFillMultiLineName,
+     flag_descriptions::kFillMultiLineDescription, kOsWin | kOsLinux | kOsMac,
+     FEATURE_VALUE_TYPE(compose::features::kFillMultiLine)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

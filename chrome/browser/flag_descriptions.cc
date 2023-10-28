@@ -7715,6 +7715,9 @@ const char kAttachLogsToAutofillRaterExtensionReportDescription[] =
     "are normally recorded in chrome://password-manager-internals and "
     "chrome://autofill-internals will be recorded on files on the disk. At the "
     "end of the report, these files will be attached to the report.";
+
+const char kFillMultiLineName[] = "Multi Line Fill";
+const char kFillMultiLineDescription[] = "Enables multi line fill feature";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

@@ -22,6 +22,9 @@ extern const base::FeatureParam<int> kEnableComposeInputMaxChars;
 // Controls whether or not the Nudge UI entrypoint is enabled for Compose.
 BASE_DECLARE_FEATURE(kEnableComposeNudge);
 
+// chrome:flags switch for the multi line fill feature.
+BASE_DECLARE_FEATURE(kFillMultiLine);
+
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_

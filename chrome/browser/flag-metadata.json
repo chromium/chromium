@@ -4249,6 +4249,11 @@
     "expiry_milestone": 129
   },
   {
+    "name": "fill-multi-line",
+    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "fill-on-account-select",
     "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
     "expiry_milestone": 125
