@@ -3814,7 +3814,15 @@ TEST_F(HistoryBackendTest, QueryMostVisitedURLs) {
                   MostVisitedURL(GURL("http://example5.com"), kSomeTitle)));
 }
 
-TEST_F(HistoryBackendTest, QueryMostRepeatedQueriesForKeyword) {
+// https://crbug.com/1488458#c16
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_QueryMostRepeatedQueriesForKeyword \
+  DISABLED_QueryMostRepeatedQueriesForKeyword
+#else
+#define MAYBE_QueryMostRepeatedQueriesForKeyword \
+  QueryMostRepeatedQueriesForKeyword
+#endif  // BUILDFLAG(IS_ANDROID)
+TEST_F(HistoryBackendTest, MAYBE_QueryMostRepeatedQueriesForKeyword) {
   ASSERT_TRUE(backend_.get());
 
   // Choose the local midnight of today last week as the baseline for the last
