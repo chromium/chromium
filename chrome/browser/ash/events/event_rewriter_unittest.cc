@@ -621,7 +621,7 @@ TEST_F(EventRewriterTest, TestRewriteCommandToControl) {
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_LWIN, ui::DomCode::META_RIGHT,
+       {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META}},
   });
 }
@@ -692,7 +692,7 @@ TEST_F(EventRewriterTest, TestRewriteExternalMetaKey) {
       {ui::ET_KEY_PRESSED,
        {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META},
-       {ui::VKEY_LWIN, ui::DomCode::META_RIGHT,
+       {ui::VKEY_RWIN, ui::DomCode::META_RIGHT,
         ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::DomKey::META}},
   });
 
