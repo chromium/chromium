@@ -216,8 +216,11 @@ TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
       views::BubbleDialogDelegate::CreateBubble(std::move(setting_view));
   widget->Show();
 
-  // Verify that the bubble title contains the origin.
-  EXPECT_EQ(origin_text, u"localhost");
+  // Verify that the bubble title contains the URL spec.
+  const auto origin_text_without_ellipsis = origin_text.substr(
+      0, origin_text.length() - std::u16string(gfx::kEllipsisUTF16).length());
+  EXPECT_TRUE(base::StartsWith(base::UTF8ToUTF16(origin.spec()),
+                               origin_text_without_ellipsis));
 }
 
 const struct TestParams kTestParams[] = {{UiResult::kAllowOnce},
