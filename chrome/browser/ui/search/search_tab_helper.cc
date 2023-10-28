@@ -336,10 +336,10 @@ void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
       GURL(chrome::kChromeUINewTabPageURL)) {
     return;
   }
-  auto* browser_window =
-      BrowserWindow::FindBrowserWindowWithWebContents(web_contents());
-  if (browser_window) {
-    browser_window->CloseFeaturePromo(
+  Browser* const browser = chrome::FindBrowserWithTab(web_contents());
+  if (browser && browser->window() &&
+      browser->tab_strip_model()->GetActiveWebContents() == web_contents()) {
+    browser->window()->CloseFeaturePromo(
         customize_chrome_feature,
         user_education::FeaturePromoCloseReason::kAbortPromo);
   }
