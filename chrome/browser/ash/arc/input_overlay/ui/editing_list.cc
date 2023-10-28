@@ -232,7 +232,7 @@ void EditingList::AddActionAddRow() {
 
   // Add title for `add_container_`.
   add_title_ = add_container_->AddChildView(ash::bubble_utils::CreateLabel(
-      ash::TypographyToken::kCrosButton2, u"", cros_tokens::kCrosSysWhite));
+      ash::TypographyToken::kCrosButton2, u"", cros_tokens::kCrosSysOnSurface));
 
   // Add `add_button_` and apply design style.
   add_button_ = add_container_->AddChildView(

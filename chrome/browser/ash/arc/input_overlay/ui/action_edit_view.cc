@@ -18,9 +18,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
-#include "ui/views/layout/table_layout.h"
+#include "ui/views/layout/table_layout_view.h"
 
 namespace arc::input_overlay {
+
+namespace {
+constexpr float corner_radius = 16.0f;
+}  // namespace
 
 ActionEditView::ActionEditView(DisplayOverlayController* controller,
                                Action* action,
@@ -32,16 +36,20 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
   // TODO(b/279117180): Replace with proper accessible name.
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA));
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(14, 16)));
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetUseDefaultFillLayout(true);
+  SetNotifyEnterExitOnChild(true);
+  auto* container = AddChildView(std::make_unique<views::TableLayoutView>());
+  container->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(14, 16)));
+  container->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase,
       /*top_radius=*/container_type ==
               ash::RoundedContainer::Behavior::kBottomRounded
-          ? 0
-          : 16,
-      /*bottom_radius=*/16,
+          ? 0.0f
+          : corner_radius,
+      /*bottom_radius=*/corner_radius,
       /*for_border_thickness=*/0));
-  SetLayoutManager(std::make_unique<views::TableLayout>())
+
+  container
       ->AddColumn(/*h_align=*/views::LayoutAlignment::kStart,
                   /*v_align=*/views::LayoutAlignment::kStart,
                   /*horizontal_resize=*/1.0f,
@@ -55,8 +63,8 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
       .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
 
   // TODO(b/274690042): Replace placeholder text with localized strings.
-  name_tag_ = AddChildView(NameTag::CreateNameTag(u"Unassigned"));
-  labels_view_ = AddChildView(EditLabels::CreateEditLabels(
+  name_tag_ = container->AddChildView(NameTag::CreateNameTag(u"Unassigned"));
+  labels_view_ = container->AddChildView(EditLabels::CreateEditLabels(
       controller_, action_, name_tag_, /*should_update_title=*/true));
 }
 
