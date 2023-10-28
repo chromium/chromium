@@ -74,6 +74,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -479,6 +480,39 @@ TEST_F(FasterSplitScreenTest, MultiDisplay) {
   // Disconnect the second display. Test no crash.
   UpdateDisplay("800x600");
   base::RunLoop().RunUntilIdle();
+}
+
+// Verifies that there will be no crash when transitioning the
+// `SplitViewOverviewSession` between clamshell and tablet mode.
+TEST_F(FasterSplitScreenTest, ClamshellTabletTransition) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  VerifySplitViewOverviewSession(w1.get());
+
+  SwitchToTabletMode();
+  TabletModeControllerTestApi().LeaveTabletMode();
+}
+
+// Tests that double tap to swap windows doesn't crash after transition to
+// tablet mode (b/308216746).
+TEST_F(FasterSplitScreenTest, NoCrashWhenDoubleTapAfterTransition) {
+  // Use non-zero to start an animation, which will notify
+  // `SplitViewOverviewSession::OnWindowBoundsChanged()`.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  SwitchToTabletMode();
+  EXPECT_TRUE(split_view_divider());
+
+  // Double tap on the divider. This will start a drag and notify
+  // SplitViewOverviewSession.
+  const gfx::Point divider_center =
+      split_view_divider()
+          ->GetDividerBoundsInScreen(/*is_dragging=*/false)
+          .CenterPoint();
+  GetEventGenerator()->GestureTapAt(divider_center);
+  GetEventGenerator()->GestureTapAt(divider_center);
 }
 
 // Tests the histograms for the split view overview session exit points are

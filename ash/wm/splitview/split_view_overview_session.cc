@@ -43,13 +43,20 @@ constexpr char kClamshellSplitViewResizeWithOverviewMaxLatencyHistogram[] =
     "Ash.SplitViewResize.PresentationTime.MaxLatency.ClamshellMode."
     "WithOverview";
 
+// Normally if we are not in clamshell or overview has ended,
+// SplitViewOverviewSession would have been ended, however this can be notified
+// during mid-drag or mid-resize, so bail out here.
+// TODO(b/307631336): Eventually this will be removed in tablet mode.
 bool InClamshellSplitViewMode(SplitViewController* controller) {
   // If `kFasterSplitScreenSetup` is enabled, clamshell split view does *not*
   // have to be active.
   // TODO(sophiewen): Consolidate with `kSnapGroup` flag.
-  return (features::IsFasterSplitScreenSetupEnabled() ||
-          (controller && controller->InClamshellSplitViewMode())) &&
-         GetOverviewSession();
+  if (features::IsFasterSplitScreenSetupEnabled()) {
+    return chromeos::TabletState::Get()->state() ==
+           display::TabletState::kInClamshellMode;
+  }
+  return controller && controller->InClamshellSplitViewMode() &&
+         IsInOverviewSession();
 }
 
 }  // namespace
@@ -146,6 +153,7 @@ void SplitViewOverviewSession::OnResizeLoopStarted(aura::Window* window) {
     return;
   }
 
+  is_resizing_ = true;
   if (IsSnapGroupEnabledInClamshellMode() &&
       split_view_controller->state() ==
           SplitViewController::State::kBothSnapped) {
@@ -188,6 +196,7 @@ void SplitViewOverviewSession::OnResizeLoopEnded(aura::Window* window) {
   if (!window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
     split_view_controller->MaybeEndOverviewOnWindowResize(window);
   }
+  is_resizing_ = false;
 }
 
 void SplitViewOverviewSession::OnWindowBoundsChanged(
@@ -219,6 +228,9 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
       // `SnapGroupController::IsArm1AutomaticallyLockEnabled()` returns true.
       Shell::Get()->overview_controller()->EndOverview(
           OverviewEndAction::kSplitView);
+      return;
+    }
+    if (!is_resizing_) {
       return;
     }
     CHECK(window_state->drag_details()->bounds_change &

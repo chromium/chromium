@@ -1247,7 +1247,6 @@ void SplitViewController::InitDividerPositionForTransition(
     int divider_position) {
   // This should only be called before the actual carry-over happens.
   DCHECK(!InSplitViewMode());
-  DCHECK_EQ(divider_position_, -1);
   divider_position_ = divider_position;
 }
 

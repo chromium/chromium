@@ -98,6 +98,9 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   }
 
  private:
+  // True while we are processing a window resize event.
+  bool is_resizing_ = false;
+
   // Records the presentation time of resize operation in clamshell split view
   // mode.
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
