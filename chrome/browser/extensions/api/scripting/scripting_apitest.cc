@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -724,6 +725,12 @@ class ScriptingAndUserScriptsAPITest : public ScriptingAPITest {
   ScriptingAndUserScriptsAPITest& operator=(
       const ScriptingAndUserScriptsAPITest&) = delete;
   ~ScriptingAndUserScriptsAPITest() override = default;
+
+  void SetUpOnMainThread() override {
+    ScriptingAPITest::SetUpOnMainThread();
+    // The userScripts API is only available to users in developer mode.
+    util::SetDeveloperModeForProfile(profile(), true);
+  }
 
  private:
   // The userScripts API is currently behind a channel and feature restriction.
