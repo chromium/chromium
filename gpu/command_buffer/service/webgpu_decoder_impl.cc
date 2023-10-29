@@ -1391,6 +1391,8 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
   // --enable-webgpu-developer-features is used.
   if (!enable_webgpu_developer_features_) {
     require_device_enabled_toggles.push_back("timestamp_quantization");
+  } else {
+    require_device_disabled_toggles.push_back("timestamp_quantization");
   }
   // Disable the blob cache if we don't have an isolation key.
   if (isolation_key_->empty()) {
