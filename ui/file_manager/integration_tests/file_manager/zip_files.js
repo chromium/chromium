@@ -870,7 +870,7 @@ testcase.zipExtractFromReadOnly = async () => {
 
   // Navigate to Shared with me.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.selectItemByType('drive_shared_with_me');
+  await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait for the navigation to complete.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');

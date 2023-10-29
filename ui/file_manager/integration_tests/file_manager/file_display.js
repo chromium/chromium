@@ -302,12 +302,12 @@ testcase.fileDisplayUsbPartition = async () => {
   // Wait for removable partition-1 to appear in the directory tree.
   const partitionOne = await directoryTree.waitForItemByLabel('partition-1');
   chrome.test.assertEq(
-      'removable', directoryTree.getItemIconType(partitionOne));
+      'removable', directoryTree.getItemVolumeType(partitionOne));
 
   // Wait for removable partition-2 to appear in the directory tree.
   const partitionTwo = await directoryTree.waitForItemByLabel('partition-2');
   chrome.test.assertEq(
-      'removable', directoryTree.getItemIconType(partitionTwo));
+      'removable', directoryTree.getItemVolumeType(partitionTwo));
 
   // Check partitions are children of the root label.
   const childEntries =
@@ -318,14 +318,14 @@ testcase.fileDisplayUsbPartition = async () => {
 
   // Wait for USB to appear in the directory tree.
   const fakeUsb = await directoryTree.waitForItemByLabel('fake-usb');
-  chrome.test.assertEq('removable', directoryTree.getItemIconType(fakeUsb));
+  chrome.test.assertEq('removable', directoryTree.getItemVolumeType(fakeUsb));
 
   if (await isSinglePartitionFormat(appId)) {
     // Check unpartitioned USB has single partition as tree child.
     const itemEntries =
         await directoryTree.getChildItemsByParentLabel('FAKEUSB');
     chrome.test.assertEq(1, itemEntries.length);
-    const childVolumeType = directoryTree.getItemIconType(itemEntries[0]);
+    const childVolumeType = directoryTree.getItemVolumeType(itemEntries[0]);
 
     chrome.test.assertTrue('removable' == childVolumeType);
   } else {
@@ -333,7 +333,7 @@ testcase.fileDisplayUsbPartition = async () => {
     const itemEntries =
         await directoryTree.getChildItemsByParentLabel('fake-usb');
     chrome.test.assertEq(1, itemEntries.length);
-    const childVolumeType = directoryTree.getItemIconType(itemEntries[0]);
+    const childVolumeType = directoryTree.getItemVolumeType(itemEntries[0]);
     chrome.test.assertTrue('removable' !== childVolumeType);
   }
 };
@@ -711,7 +711,6 @@ testcase.fileDisplayWithHiddenVolume = async () => {
 
 /**
  * Tests Files app resisting the urge to switch to Downloads when mounts change.
- * re-enabling Drive.
  */
 testcase.fileDisplayMountWithFakeItemSelected = async () => {
   // Open Files app on Drive with the given test files.
@@ -723,7 +722,7 @@ testcase.fileDisplayMountWithFakeItemSelected = async () => {
 
   // Navigate to My files.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.selectGroupRootItemByType('my_files');
+  await directoryTree.selectItemByLabel('My files');
 
   // Wait for the navigation to complete.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
@@ -750,7 +749,7 @@ testcase.fileDisplayUnmountDriveWithSharedWithMeSelected = async () => {
 
   // Navigate to Shared with me.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.selectItemByType('drive_shared_with_me');
+  await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait for the navigation to complete.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');
@@ -898,7 +897,7 @@ testcase.fileDisplayCheckReadOnlyIconOnFakeDirectory = async () => {
 
   // Navigate to Shared with me.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.selectItemByType('drive_shared_with_me');
+  await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait for the navigation to complete.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');

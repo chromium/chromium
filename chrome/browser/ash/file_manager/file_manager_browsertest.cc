@@ -339,12 +339,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .NewDirectoryTree()
             .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3"}),
         // TODO(b/301341566): enable the tests
-        // TestCase("fileDisplayUsbPartition").NewDirectoryTree(),
-        // TestCase("fileDisplayUsbPartition")
-        //     .EnableSinglePartitionFormat()
-        //     .NewDirectoryTree(),
-        // TestCase("fileDisplayUsbPartitionSort").NewDirectoryTree(),
-        // TestCase("fileDisplayPartitionFileTable").NewDirectoryTree(),
+        TestCase("fileDisplayUsbPartition").NewDirectoryTree(),
+        TestCase("fileDisplayUsbPartition")
+            .EnableSinglePartitionFormat()
+            .NewDirectoryTree(),
+        TestCase("fileDisplayUsbPartitionSort").NewDirectoryTree(),
+        TestCase("fileDisplayPartitionFileTable").NewDirectoryTree(),
         // TestCase("fileDisplayWithoutVolumesThenMountDownloads")
         //     .DontMountVolumes()
         //     .NewDirectoryTree(),
@@ -355,17 +355,17 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         //     .DontMountVolumes()
         //     .NewDirectoryTree(),
         TestCase("fileDisplayWithHiddenVolume").NewDirectoryTree(),
-        // TestCase("fileDisplayMountWithFakeItemSelected").NewDirectoryTree(),
-        // TestCase("fileDisplayUnmountDriveWithSharedWithMeSelected")
-        //     .NewDirectoryTree(),
-        // TestCase("fileDisplayCheckReadOnlyIconOnFakeDirectory")
-        //     .NewDirectoryTree(),
+        TestCase("fileDisplayMountWithFakeItemSelected").NewDirectoryTree(),
+        TestCase("fileDisplayUnmountDriveWithSharedWithMeSelected")
+            .NewDirectoryTree(),
+        TestCase("fileDisplayCheckReadOnlyIconOnFakeDirectory")
+            .NewDirectoryTree(),
         TestCase("fileDisplayCheckNoReadOnlyIconOnLinuxFiles")
             .NewDirectoryTree(),
         TestCase("fileDisplayCheckNoReadOnlyIconOnGuestOs").NewDirectoryTree(),
-        // TestCase("fileDisplayUnmountRemovableRoot").NewDirectoryTree(),
-        // TestCase("fileDisplayUnmountFirstPartition").NewDirectoryTree(),
-        // TestCase("fileDisplayUnmountLastPartition").NewDirectoryTree(),
+        TestCase("fileDisplayUnmountRemovableRoot").NewDirectoryTree(),
+        TestCase("fileDisplayUnmountFirstPartition").NewDirectoryTree(),
+        TestCase("fileDisplayUnmountLastPartition").NewDirectoryTree(),
         // Section end - browser tests for new directory tree
         TestCase("fileDisplayDownloads")
             .FeatureIds({"screenplay-ade01078-3b79-41d2-953e-e22a544a28b3"}),
@@ -465,8 +465,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("zipFileOpenUsb").NewDirectoryTree(),
         TestCase("zipCreateFileUsb").NewDirectoryTree(),
-        // TODO(b/307657930): enable the test
-        // TestCase("zipExtractFromReadOnly").NewDirectoryTree(),
+        TestCase("zipExtractFromReadOnly").NewDirectoryTree(),
         // Section end - browser tests for new directory tree
         TestCase("zipFileOpenDownloads"),
         TestCase("zipFileOpenDownloads").InGuestMode(),
@@ -2004,7 +2003,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchDriveWithRecencyOptions").NewDirectoryTree(),
         TestCase("searchDriveWithTypeOptions").NewDirectoryTree(),
         TestCase("searchRemovableDevice").NewDirectoryTree(),
-        // TestCase("searchPartitionedRemovableDevice").NewDirectoryTree(),
+        TestCase("searchPartitionedRemovableDevice").NewDirectoryTree(),
         TestCase("resetSearchOptionsOnFolderChange").NewDirectoryTree(),
         TestCase("searchFromMyFiles").NewDirectoryTree(),
         TestCase("searchHierarchy").NewDirectoryTree(),
