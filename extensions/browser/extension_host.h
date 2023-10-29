@@ -129,6 +129,10 @@ class ExtensionHost : public DeferredStartRenderHost,
   // Returns true if the ExtensionHost is allowed to be navigated.
   bool ShouldAllowNavigations() const;
 
+  std::size_t GetUnackedMessagesSizeForTesting() const {
+    return unacked_messages_.size();
+  }
+
   // content::WebContentsObserver:
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   bool OnMessageReceived(const IPC::Message& message,

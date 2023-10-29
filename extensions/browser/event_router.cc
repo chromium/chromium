@@ -1270,7 +1270,8 @@ void EventRouter::IncrementInFlightEvents(BrowserContext* context,
   if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
     ProcessManager* pm = ProcessManager::Get(context);
     ExtensionHost* host = pm->GetBackgroundHostForExtension(extension->id());
-    if (host) {
+    // Confirm that the event is meant to be executed in the extension process.
+    if (host && host->render_process_host() == process) {
       pm->IncrementLazyKeepaliveCount(extension, Activity::EVENT, event_name);
       host->OnBackgroundEventDispatched(event_name, dispatch_start_time,
                                         event_id, dispatch_source);
