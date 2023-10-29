@@ -9439,6 +9439,15 @@ void WebContentsImpl::OnFrameAudioStateChanged(RenderFrameHostImpl* host,
                              host, is_audible);
 }
 
+void WebContentsImpl::OnFrameVisibilityChanged(
+    RenderFrameHostImpl* host,
+    blink::mojom::FrameVisibility visibility) {
+  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::OnFrameVisibilityChanged",
+                        "render_frame_host", host, "visibility", visibility);
+  observers_.NotifyObservers(&WebContentsObserver::OnFrameVisibilityChanged,
+                             host, visibility);
+}
+
 media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
 WebContentsImpl::GetRecordAggregateWatchTimeCallback(
     const GURL& page_main_frame_last_committed_url) {

@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -688,6 +689,13 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
 
   // Called when the audio state of an individual frame changes.
   virtual void OnFrameAudioStateChanged(RenderFrameHost* rfh, bool audible) {}
+
+  // Called when an individual frame's visibility inside the viewport of the
+  // page changes. Note that this value is independent from the visibility of
+  // the page.
+  virtual void OnFrameVisibilityChanged(
+      RenderFrameHost* rfh,
+      blink::mojom::FrameVisibility visibility) {}
 
   // Called when the connected to USB device state changes.
   virtual void OnIsConnectedToUsbDeviceChanged(

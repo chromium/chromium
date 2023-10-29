@@ -6900,6 +6900,7 @@ void RenderFrameHostImpl::UpdateUserGestureCarryoverInfo() {
 void RenderFrameHostImpl::VisibilityChanged(
     blink::mojom::FrameVisibility visibility) {
   visibility_ = visibility;
+  delegate_->OnFrameVisibilityChanged(this, visibility_);
 }
 
 void RenderFrameHostImpl::DidChangeThemeColor(
