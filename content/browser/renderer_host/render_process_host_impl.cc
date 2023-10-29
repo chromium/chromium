@@ -1825,11 +1825,9 @@ void RenderProcessHostImpl::ResetChannelProxy() {
 
 void RenderProcessHostImpl::CreateMessageFilters() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  MediaInternals* media_internals = MediaInternals::GetInstance();
-
   scoped_refptr<RenderMessageFilter> render_message_filter =
-      base::MakeRefCounted<RenderMessageFilter>(
-          GetID(), GetBrowserContext(), widget_helper_.get(), media_internals);
+      base::MakeRefCounted<RenderMessageFilter>(GetID(), GetBrowserContext(),
+                                                widget_helper_.get());
   AddFilter(render_message_filter.get());
 
 #if BUILDFLAG(ENABLE_PPAPI)
