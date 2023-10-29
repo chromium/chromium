@@ -539,8 +539,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Whether `item_menu_model_adapter_` was shown via key event.
   bool menu_show_initiated_from_key_ = false;
 
-  std::u16string tooltip_text_;
-
   // A timer to defer showing drag UI when mouse is pressed.
   base::OneShotTimer mouse_drag_timer_;
   // A timer to defer showing drag UI when the app item is touch pressed.

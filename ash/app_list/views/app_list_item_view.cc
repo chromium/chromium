@@ -1124,8 +1124,6 @@ void AppListItemView::SetItemName(const std::u16string& display_name,
     title_->SetText(display_name);
   }
 
-  tooltip_text_ = display_name == full_name ? std::u16string() : full_name;
-
   // Use full name for accessibility.
   SetAccessibleName(
       is_folder_ ? l10n_util::GetStringFUTF16(
@@ -1716,7 +1714,6 @@ std::u16string AppListItemView::GetTooltipText(const gfx::Point& p) const {
   // tooltip, so we only temporarily enable it to get the tooltip text from the
   // label, then disable it again.
   title_->SetHandlesTooltips(true);
-  title_->SetTooltipText(tooltip_text_);
   std::u16string tooltip = title_->GetTooltipText(p);
   title_->SetHandlesTooltips(false);
   if (new_install_dot_ && new_install_dot_->GetVisible() && !is_folder_) {
