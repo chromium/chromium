@@ -979,7 +979,7 @@
       // Tracking bug: https://crbug.com/1418401
       // Spec: https://drafts.fxtf.org/css-masking/#the-mask
       name: "CSSMaskingInterop",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSMixBlendModePlusLighter",
