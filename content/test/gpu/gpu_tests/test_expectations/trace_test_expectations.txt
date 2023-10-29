@@ -246,10 +246,8 @@ crbug.com/1446057 [ win10 amd-0x7340 angle-d3d11 ] VideoPathTraceTest_DirectComp
 
 
 # Canvas capture trace tests on M1 Mac
-crbug.com/1493530 [ mac apple angle-metal ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ RetryOnFailure ]
-crbug.com/1493530 [ mac apple angle-metal ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture_Accelerated [ RetryOnFailure ]
-crbug.com/1493530 [ mac apple angle-metal ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture_Hidden [ RetryOnFailure ]
-crbug.com/1493530 [ mac apple angle-metal no-asan ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture [ RetryOnFailure ]
+crbug.com/1493530 [ angle-metal apple-angle-metal-renderer:-apple-m1 mac ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ RetryOnFailure ]
+crbug.com/1493530 [ angle-metal apple-angle-metal-renderer:-apple-m2 mac ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture_Hidden [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
