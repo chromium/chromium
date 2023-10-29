@@ -4987,6 +4987,13 @@ fuzzer_test("file_path_fuzzer") {
   deps = [ "//base" ]
 }
 
+if (is_linux || is_chromeos) {
+  fuzzer_test("mime_util_xdg_fuzzer") {
+    sources = [ "nix/mime_util_xdg_fuzzer.cc" ]
+    deps = [ "//base" ]
+  }
+}
+
 fuzzer_test("string_number_conversions_fuzzer") {
   sources = [ "strings/string_number_conversions_fuzzer.cc" ]
   deps = [ "//base" ]
