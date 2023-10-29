@@ -1109,6 +1109,7 @@
 <translation id="3266793032086590337">Мән (қарама-қайшы)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Ешбір сайт (қатысты сайттарды қоса алғанда) бөгелмеген}=1{1 сайт (қатысты сайттарды қоса алғанда) блокталған}other{# сайт (қатысты сайттарды қоса алғанда) блокталған}}</translation>
 <translation id="3268451620468152448">Ашық қойындылар</translation>
+<translation id="3270041629388773465">CVC кодтарыңыз сақталған кезде, жылдамырақ төлеңіз.</translation>
 <translation id="3270156322180235608">Әуе саяхаты</translation>
 <translation id="3270847123878663523">&amp;Қайта тәртіпке келтіруді болдырмау</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> сайты байланыс орнатқысы келеді</translation>
@@ -1848,6 +1849,7 @@
 <translation id="4761104368405085019">Микрофоныңызды пайдалану</translation>
 <translation id="4761326898079498987">Қосымша мәліметтерді қарап шығу</translation>
 <translation id="4761869838909035636">Chrome қауіпсіздік шарасын іске қосу</translation>
+<translation id="4763196677855776703"><ph name="URL" /> ұсынған шарттар мен талаптар</translation>
 <translation id="4764680219299728632">Плиталар, пісіру панельдері және пештер</translation>
 <translation id="4764776831041365478"><ph name="URL" /> мекенжайындағы веб-бет уақытша істен шыққан немесе тұрақты түрде басқа мекенжайға көшкен болуы мүмкін.</translation>
 <translation id="4766713847338118463">Төменгі жағын екі рет қапсыру</translation>
@@ -2276,6 +2278,7 @@
 <translation id="5633259641094592098">Культтік және инди фильмдер</translation>
 <translation id="563371367637259496">Мобильдік</translation>
 <translation id="5635237618724097525">Смартфондар</translation>
+<translation id="5635478143789726479">Сатушының шарттары мен талаптары</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стерео жүйелер және құрамдастар</translation>
 <translation id="5644090287519800334">Кескіннің Х осі бойынша 1-жағында ығысуы</translation>
@@ -2395,6 +2398,7 @@
 <translation id="5911110632211230665">Ашуға тыйым салынған</translation>
 <translation id="59174027418879706">Қосылған</translation>
 <translation id="5918373444239520146">Гаджеттер және портативті электроника</translation>
+<translation id="5918847752193018339">CVC кодтарыңыз сақталған кезде, жылдамырақ төлеңіз. <ph name="LINK_BEGIN" />Сақталған қауіпсіздік кодтарын жою<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 пайдаланылуда}other{# пайдаланылуда}}</translation>
 <translation id="592031860219554105">Мұзда коньки тебу</translation>
@@ -3472,6 +3476,7 @@
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8041940743680923270">Ғаламдық әдепкі мәнді (Сұрау) пайдалану</translation>
 <translation id="8042577181291637092">MIDI құрылғыларын пайдалану керек пе?</translation>
+<translation id="8043255123207491407">Сатушының шарттары мен талаптарын көру</translation>
 <translation id="8046360364391076336">Өнеркәсіптік материалдар мен жабдық</translation>
 <translation id="8052898407431791827">Буферге көшірілді.</translation>
 <translation id="8055534648776115597">Кәсіби және үздіксіз білім беру</translation>

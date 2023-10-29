@@ -972,6 +972,7 @@
 <translation id="175772926354468439">Тақырыпты қосу</translation>
 <translation id="1757786065507923842">Ата-ана рұқсатының сұрауы орындалмады.</translation>
 <translation id="17584710573359123">Chrome Web Store дүкенінен көру</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" /> түймесіне қайта тағайындалды.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> атты пайдаланушының аккаунттары</translation>
 <translation id="176272781006230109">сатып алу ұсыныстары</translation>
 <translation id="1763046204212875858">Қолданба таңбашаларын жасау</translation>
@@ -1350,6 +1351,7 @@
 <translation id="2037486735086318591">Маңайдағы адамдармен файл алмасу үшін <ph name="FEATURE_NAME" /> параметрлерін реттеңіз.</translation>
 <translation id="2039464276165755892">Әлдебіреу экранға қарағанда хабарландыруды жасыру</translation>
 <translation id="2040460856718599782">Сізді аутентификациялау кезінде бірдеңе дұрыс болмады. Есептік деректеріңізді қайта тексеріп, әрекетті қайталап көріңіз.</translation>
+<translation id="2040822390690632244">Жаңартулар, анықтама, әзірлеуші опциялары</translation>
 <translation id="2040894699575719559">Орын блокталған</translation>
 <translation id="2041246176170574368">Қауіпсіздік жаңартулары жақында аяқталады. Жаңа Chromebook сатып алу кезінде $50 немесе одан көп үнемдеңіз.</translation>
 <translation id="2042279886444479655">Белсенді профильдер</translation>
@@ -2714,6 +2716,7 @@
 <translation id="3076977359333237641">Кіру деректері жойылды</translation>
 <translation id="3080933187214341848">Бұл желі аккаунтыңызға синхрондалмайды. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">кеңейтімдер</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Қауіпсіздігіңізді қорғау уақытша бөгелді</translation>
 <translation id="3083899879156272923">Тінтуірді экранның ортасында ұстау арқылы экранды жылжыту</translation>
@@ -2873,6 +2876,7 @@
 <translation id="3229412050601871341">Құрылғы құпия сөзі</translation>
 <translation id="3230539834943294477">Анықтамалық мақалаларды көріңіз немесе құрылғының қолдауын табыңыз.</translation>
 <translation id="3232168089952388105">Құрылғыңыз туралы ақпаратты бөлісу керек пе?</translation>
+<translation id="3232368113895801406">Қауіпсіздік параметрлері бойынша сізге оқшау қолданбаларды орнатуға рұқсат берілмейді. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">Оң жаққа туралау</translation>
 <translation id="3232754137068452469">Веб-қолданба</translation>
 <translation id="3233271424239923319">Linux қолданбалары мен файлдарының сақтық көшірмесін жасау</translation>
@@ -4583,6 +4587,7 @@
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> электрондық поштасына ешбір құрылғы сақталмаған.</translation>
 <translation id="4592891116925567110">Стилуспен сурет салу қолданбасы</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" /> мекенжайына өту</translation>
+<translation id="4593962599442730215">Параметрлерді өзгерту</translation>
 <translation id="4594218792629569101">Бетті тізімнің төменгі жағына жылжыту үшін "Оқылды деп белгілеу" параметрін таңдаңыз.</translation>
 <translation id="4594577641390224176">Жүйе туралы бетті іздеп жатырсыз ба? Келесіге бетке өтіңіз:</translation>
 <translation id="4595560905247879544">Қолданбалар мен кеңейтімдерді басқарушы (<ph name="CUSTODIAN_NAME" />) ғана өзгерте алады.</translation>
@@ -4597,6 +4602,7 @@
 <translation id="460190672235687855">Құпия сөздерді көру</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> хостына әрқашан камераңыз бен микрофоныңызға кіру рұқсатын беру</translation>
 <translation id="4602776638371779614">Бұл қойынды Bluetooth құрылғыларын белсенді түрде іздеп жатыр</translation>
+<translation id="4605026046465576953">Бұл қолданбаны ашу мүмкін емес, себебі оқшау веб-қолданбаларды іске қосуға рұқсатыңыз жоқ.</translation>
 <translation id="4606551464649945562">Сайттарға айналаңыздың 3D картасын жасауға немесе камераңыздың орнын бақылауға рұқсат бермеу</translation>
 <translation id="4608500690299898628">&amp;Табу…</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> плагинінде қате шықты</translation>
@@ -4720,6 +4726,7 @@
 <translation id="4693155481716051732">Суши</translation>
 <translation id="4694024090038830733">Принтер конфигурациясын әкімші реттейді.</translation>
 <translation id="4694604912444486114">Маймыл</translation>
+<translation id="4694820450536519583">рұқсаттар</translation>
 <translation id="4695318956047767909">Қараңғы режим, скринсейвер</translation>
 <translation id="4697071790493980729">Нәтижелер табылмады.</translation>
 <translation id="4697551882387947560">Шолу сеансы аяқталғанда</translation>
@@ -6635,6 +6642,7 @@
 <translation id="6264060420924719834">Бұл қолданбада басқа сайттардың веб-контенті бар.</translation>
 <translation id="6264365405983206840">&amp;Барлығын таңдау</translation>
 <translation id="6264376385120300461">Сонда да жүктеп алу</translation>
+<translation id="6264520534872750757">Құрылғыны пайдалануды жалғастыру</translation>
 <translation id="6265159465845424232">Microsoft файлдарын Microsoft OneDrive-ға көшіру немесе тасымалдау алдында сұрау</translation>
 <translation id="6265687851677020761">Портты өшіру</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> құрылғысына жалғануда</translation>
@@ -7398,6 +7406,7 @@
 <translation id="6876469544038980967">Пайдалы емес</translation>
 <translation id="6878422606530379992">Датчиктерге рұқсат етілді</translation>
 <translation id="6880587130513028875">Кескіндерге осы бетте тыйым салынған.</translation>
+<translation id="6881845890692344060">Әкімші аккаунттан шығып кетті. Енді өзіңіз басқарасыз.</translation>
 <translation id="6882210908253838664">Сайт жұмыс істемесе, оған үшінші тарап cookie файлдарын пайдалануға уақытша рұқсат беріп көрсеңіз болады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Қап! Жүйе құрылғы конфигурациясын сақтай алмады.</translation>
 <translation id="6884474387073389421">Таңдалған кіру деректерін шынымен жойғыңыз келе ме?</translation>
@@ -8294,6 +8303,7 @@
 <translation id="7616214729753637086">Құрылғы тіркелуде ...</translation>
 <translation id="7617263010641145920">Play Store қызметін қосу</translation>
 <translation id="7617648809369507487">Дыбыссыз хабарландыру</translation>
+<translation id="7619937211696316184">Техникалық қызмет көрсетілді</translation>
 <translation id="7621382409404463535">Жүйе құрылғы конфигурациясын сақтай алмады.</translation>
 <translation id="7621480263311228380">Сіз туралы сақталған ақпаратты пайдалануға рұқсаты жоқ</translation>
 <translation id="7621595347123595643">Құпия сөзді немесе PIN кодын ұмытып қалсаңыз, жергілікті деректерді қалпына келтіре алмайсыз.</translation>
@@ -9640,6 +9650,7 @@
 <translation id="8662795692588422978">Байланыстар</translation>
 <translation id="8662911384982557515">Негізгі бетті келесіге өзгерту: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome тұсқағазды орната алмайды.</translation>
+<translation id="8663051876219324457">Қолданбалардың, веб-сайттардың және жүйелік қызметтердің локацияңызды пайдалануына рұқсат беріңіз. Құрылғының орналасқан жерін анықтау үшін Wi-Fi, мобильдік желілер және датчиктер пайдаланылуы мүмкін. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" /> хостында бірнеше автоматтық жүктеуге әрқашан тыйым салу</translation>
 <translation id="8664389313780386848">&amp;Бет дереккөзін көру</translation>
 <translation id="8665110742939124773">Қате рұқсат кодын енгіздіңіз. Қайталап көріңіз.</translation>
@@ -9732,6 +9743,7 @@
 <translation id="87254326763805752">Кіру кілтін растаңыз</translation>
 <translation id="8726206820263995930">Серверден саясат параметрлерін алу кезіндегі қате: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Chrome мүмкіндіктерін барынша пайдалану</translation>
+<translation id="8727333994464775697">Осы беттегі элементтерді бейімдеңіз.</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />Автотолтыру метадеректерін<ph name="END_LINK1" /> жіберу
           <ph name="LINE_BREAK" />
           (автотолтыру деректері берілмейді)</translation>

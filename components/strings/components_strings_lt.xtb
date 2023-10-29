@@ -1111,6 +1111,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3266793032086590337">Vertė (nesuderinama)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nėra užblokuotų svetainių, įskaitant susijusias svetaines}=1{Užblokuota viena svetainė, įskaitant susijusias svetaines}one{Užblokuota # svetainė, įskaitant susijusias svetaines}few{Užblokuotos # svetainės, įskaitant susijusias svetaines}many{Užblokuota # svetainės, įskaitant susijusias svetaines}other{Užblokuota # svetainių, įskaitant susijusias svetaines}}</translation>
 <translation id="3268451620468152448">Atidaryti skirtukai</translation>
+<translation id="3270041629388773465">Sparčiau atsiskaitykite naudodami išsaugotus kortelės saugos kodus (CVC)</translation>
 <translation id="3270156322180235608">Kelionės lėktuvu</translation>
 <translation id="3270847123878663523">&amp;Anuliuoti pertvarkymą</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> nori prisijungti</translation>
@@ -1850,6 +1851,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4761104368405085019">Naudoti mikrofoną</translation>
 <translation id="4761326898079498987">Peržiūrėkite, jei reikia išsamesnės informacijos</translation>
 <translation id="4761869838909035636">Paleisti „Chrome“ Saugos patikrą</translation>
+<translation id="4763196677855776703">Taisykles ir nuostatas pateikė <ph name="URL" /></translation>
 <translation id="4764680219299728632">Viryklės, kaitlentės ir orkaitės</translation>
 <translation id="4764776831041365478">Tinklalapis šiuo adresu <ph name="URL" /> gali laikinai neveikti arba visam laikui būti perkeltas kitu žiniatinklio adresu.</translation>
 <translation id="4766713847338118463">Dvi sankabėlės apačioje</translation>
@@ -2278,6 +2280,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5633259641094592098">Kultiniai ir nepriklausomų kūrėjų filmai</translation>
 <translation id="563371367637259496">Mobiliojo ryšio tinklas</translation>
 <translation id="5635237618724097525">Išmanieji telefonai</translation>
+<translation id="5635478143789726479">Pardavėjo taisyklės ir nuostatos</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereofoninės sistemos ir komponentai</translation>
 <translation id="5644090287519800334">1 pusė: sukti vaizdą pagal X ašį</translation>
@@ -2397,6 +2400,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5911110632211230665">Užblokuotas atidarymas</translation>
 <translation id="59174027418879706">Įjungta</translation>
 <translation id="5918373444239520146">Programėlės ir nešiojamieji elektronikos prietaisai</translation>
+<translation id="5918847752193018339">Sparčiau atsiskaitykite naudodami išsaugotus kortelės saugos kodus (CVC). <ph name="LINK_BEGIN" />Ištrinkite išsaugotus saugos kodus<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Naudojamas 1 slapukas}one{Naudojamas # slapukas}few{Naudojami # slapukai}many{Naudojama # slapuko}other{Naudojama # slapukų}}</translation>
 <translation id="592031860219554105">Čiuožimas ant ledo</translation>
@@ -3474,6 +3478,7 @@ Papildoma išsami informacija:
 <translation id="8041089156583427627">Siųsti atsiliepimą</translation>
 <translation id="8041940743680923270">Naudoti visuotinį numatytąjį nustatymą (klausti)</translation>
 <translation id="8042577181291637092">Naudoti MIDI įrenginius?</translation>
+<translation id="8043255123207491407">Žr. pardavėjo taisykles ir nuostatas</translation>
 <translation id="8046360364391076336">Gamybos medžiagos ir įranga</translation>
 <translation id="8052898407431791827">Nukopijuota į iškarpinę</translation>
 <translation id="8055534648776115597">Profesinis ir tęstinis mokymasis</translation>
