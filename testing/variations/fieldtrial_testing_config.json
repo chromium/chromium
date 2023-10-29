@@ -19808,6 +19808,32 @@
             ]
         }
     ],
+    "V8WasmTurboshaft": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebAssemblyTurboshaft"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "WebAssemblyTurboshaft"
+                    ]
+                }
+            ]
+        }
+    ],
     "VSyncDecoding": [
         {
             "platforms": [
