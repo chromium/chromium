@@ -110,7 +110,7 @@ class ChromeNetworkServiceBrowserTest
     context_params->file_paths->data_directory =
         browser()->profile()->GetPath();
     context_params->file_paths->cookie_database_name =
-        base::FilePath(FILE_PATH_LITERAL("cookies"));
+        base::FilePath(FILE_PATH_LITERAL("test-cookies"));
     context_params->cert_verifier_params = content::GetCertVerifierParams(
         cert_verifier::mojom::CertVerifierCreationParams::New());
     content::CreateNetworkContextInNetworkService(
@@ -137,8 +137,8 @@ IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
   FlushCookies(cookie_manager.get());
 }
 
-// This flakes on Mac10.12 and Windows: http://crbug.com/868667
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// This flakes on Mac10.12: http://crbug.com/868667
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_EncryptedCookies DISABLED_EncryptedCookies
 #else
 #define MAYBE_EncryptedCookies EncryptedCookies
