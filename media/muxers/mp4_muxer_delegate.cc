@@ -4,6 +4,7 @@
 
 #include "media/muxers/mp4_muxer_delegate.h"
 
+#include "base/logging.h"
 #include "components/version_info/version_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/formats/mp4/avc.h"
@@ -342,6 +343,8 @@ void Mp4MuxerDelegate::AddVideoFrame(
     base::TimeTicks timestamp,
     bool is_key_frame) {
   if (!video_track_index_.has_value()) {
+    DVLOG(1) << __func__ << ", " << params.AsHumanReadableString();
+
     CHECK(codec_description.has_value());
     CHECK(is_key_frame);
     CHECK(start_video_time_.is_null());
@@ -353,8 +356,12 @@ void Mp4MuxerDelegate::AddVideoFrame(
     video_frame_rate_ = params.frame_rate;
 
     video_track_index_ = GetNextTrackIndex();
+    DVLOG(1) << __func__
+             << ", video track index:" << video_track_index_.value();
+
     uint32_t timescale = video_frame_rate_ * kMillisecondsTimeScale;
     context_->SetVideoTrack({video_track_index_.value(), timescale});
+    DVLOG(1) << __func__ << ", video track timescale:" << timescale;
 
     mp4::writable_boxes::Track track;
     moov_->tracks.emplace_back(std::move(track));
@@ -415,6 +422,8 @@ void Mp4MuxerDelegate::BuildVideoTrackWithKeyframe(
   // `vmhd`
   mp4::writable_boxes::VideoMediaHeader video_header = {};
   video_track.media.information.video_header = std::move(video_header);
+
+  DVLOG(1) << __func__ << ", video track created";
 }
 
 void Mp4MuxerDelegate::BuildVideoFragment(std::string encoded_data,
@@ -427,7 +436,7 @@ void Mp4MuxerDelegate::BuildVideoFragment(std::string encoded_data,
 
   Fragment* fragment = fragments_.back().get();
   if (!fragment) {
-    // Don't add if the first frame does not have SPS/PPS.
+    DVLOG(1) << __func__ << ", no valid video fragment exists";
     return;
   }
 
@@ -461,6 +470,8 @@ void Mp4MuxerDelegate::AddAudioFrame(
     absl::optional<AudioEncoder::CodecDescription> codec_description,
     base::TimeTicks timestamp) {
   if (!audio_track_index_.has_value()) {
+    DVLOG(1) << __func__ << ", " << params.AsHumanReadableString();
+
     CHECK(codec_description.has_value());
     CHECK(start_audio_time_.is_null());
 
@@ -517,6 +528,7 @@ void Mp4MuxerDelegate::BuildAudioTrack(
   // `smhd`
   mp4::writable_boxes::SoundMediaHeader sound_header = {};
   audio_track.media.information.sound_header = std::move(sound_header);
+  DVLOG(1) << __func__ << ", audio track created";
 }
 
 void Mp4MuxerDelegate::BuildAudioFragment(std::string encoded_data) {
@@ -528,7 +540,7 @@ void Mp4MuxerDelegate::BuildAudioFragment(std::string encoded_data) {
 
   Fragment* fragment = fragments_.back().get();
   if (!fragment) {
-    // Don't add if the first frame does not have SPS/PPS.
+    DVLOG(1) << __func__ << ", no valid audio fragment exists";
     return;
   }
 
@@ -571,6 +583,9 @@ bool Mp4MuxerDelegate::Flush() {
 
   // Finish movie box and write.
   BuildMovieBox();
+
+  // Log blob info.
+  LogBoxInfo();
 
   // Write `moov` box and its children.
   Mp4MovieBoxWriter movie_box_writer(*context_, *moov_);
@@ -767,6 +782,31 @@ void Mp4MuxerDelegate::Reset() {
 
 int Mp4MuxerDelegate::GetNextTrackIndex() {
   return next_track_index_++;
+}
+
+void Mp4MuxerDelegate::LogBoxInfo() const {
+  std::ostringstream s;
+
+  s << "movie timescale:" << moov_->header.timescale
+    << ", duration in seconds:" << moov_->header.duration.InSeconds();
+  if (video_track_index_.has_value()) {
+    mp4::writable_boxes::Track& track = moov_->tracks[*video_track_index_];
+    s << ", video track index:" << *video_track_index_
+      << ", video track timescale:"
+      << context_->GetVideoTrack().value().timescale
+      << ", video track duration:" << track.header.duration;
+  }
+
+  if (audio_track_index_.has_value()) {
+    mp4::writable_boxes::Track& track = moov_->tracks[*audio_track_index_];
+    s << ", audio track index:" << *audio_track_index_
+      << ", audio track timescale:"
+      << context_->GetAudioTrack().value().timescale
+      << ", audio track duration:" << track.header.duration;
+  }
+  s << ", Fragment counts:" << fragments_.size();
+
+  DVLOG(1) << __func__ << ", " << s.str();
 }
 
 Mp4MuxerDelegate::Fragment::Fragment() = default;

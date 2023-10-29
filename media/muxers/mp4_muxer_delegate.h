@@ -106,6 +106,7 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   int GetNextTrackIndex();
   void EnsureInitialized();
   void Reset();
+  void LogBoxInfo() const;
 
   std::unique_ptr<Mp4MuxerContext> context_;
   Muxer::WriteDataCB write_callback_;

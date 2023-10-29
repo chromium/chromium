@@ -40,6 +40,10 @@ class MEDIA_EXPORT Muxer {
                     absl::optional<gfx::ColorSpace> color_space);
     VideoParameters(const VideoParameters&);
     ~VideoParameters();
+    // Returns a human-readable string describing `*this`.
+    // For debugging & test output only.
+    std::string AsHumanReadableString() const;
+
     gfx::Size visible_rect_size;
     double frame_rate;
     VideoCodec codec;

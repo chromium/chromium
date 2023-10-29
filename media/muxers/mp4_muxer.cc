@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/logging.h"
 #include "base/time/time.h"
-
 namespace media {
 
 namespace {
@@ -29,6 +29,9 @@ Mp4Muxer::Mp4Muxer(AudioCodec audio_codec,
       has_audio_(has_audio) {
   CHECK(has_video_ || has_audio_);
   CHECK(!has_audio || audio_codec == AudioCodec::kAAC);
+
+  DVLOG(1) << __func__ << ", Max output interval in seconds: "
+           << max_data_output_interval_.InSeconds();
 
   // Creation can be done on a different sequence than main activities.
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -94,8 +97,10 @@ void Mp4Muxer::MaybeForceFlush() {
 
 bool Mp4Muxer::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << __func__ << ", Flush called ";
 
   if (!mp4_muxer_delegate_->Flush()) {
+    DVLOG(1) << __func__ << ", Flush failed ";
     return false;
   }
 
