@@ -233,6 +233,10 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1317961): Remove once launched. This feature is
        // disabled since it is not supported on iOS.
        features::kAutofillAlwaysParsePlaceholders,
+       // TODO(crbug.com/1493145): Remove when/if launched. This feature changes
+       // default parsing behavior, so must be disabled to avoid
+       // fieldtrial_testing_config interference.
+       features::kAutofillEnableEmailHeuristicOnlyAddressForms,
        // TODO(crbug.com/1427131): Remove once launched.
        blink::features::kAutofillUseDomNodeIdForRendererId});
 }
