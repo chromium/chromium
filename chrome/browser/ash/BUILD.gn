@@ -4197,7 +4197,7 @@ source_set("ash") {
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/common:common_constants",
     "//extensions/common:mojom",
-    "//gpu/command_buffer/client:gles2_interface",
+    "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/service",
     "//gpu/config",
