@@ -506,8 +506,7 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
     const ServerFieldTypeSet& available_field_types,
     bool form_was_autofilled,
     const base::StringPiece& login_form_signature,
-    bool observed_submission,
-    bool is_raw_metadata_uploading_enabled) const {
+    bool observed_submission) const {
   DCHECK_EQ(FirstNonCapturedType(*this, available_field_types),
             MAX_VALID_FIELD_TYPE);
 
@@ -559,17 +558,6 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
                                  &upload);
   }
 
-  if (is_raw_metadata_uploading_enabled) {
-    upload.set_action_signature(StrToHash64Bit(target_url_.host_piece()));
-    if (!form_name().empty())
-      upload.set_form_name(base::UTF16ToUTF8(form_name()));
-    for (const ButtonTitleInfo& e : button_titles_) {
-      auto* button_title = upload.add_button_title();
-      button_title->set_title(base::UTF16ToUTF8(e.first));
-      button_title->set_type(static_cast<ButtonTitleType>(e.second));
-    }
-  }
-
   if (!login_form_signature.empty()) {
     uint64_t login_sig;
     if (base::StringToUint64(login_form_signature, &login_sig))
@@ -584,8 +572,7 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
                                    upload.mutable_randomized_form_metadata());
   }
 
-  EncodeFormFieldsForUpload(is_raw_metadata_uploading_enabled, absl::nullopt,
-                            &upload);
+  EncodeFormFieldsForUpload(/*filter_renderer_form_id=*/absl::nullopt, &upload);
 
   std::vector<AutofillUploadContents> uploads = {std::move(upload)};
 
@@ -609,8 +596,7 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
     uploads.back().set_form_signature(subform_signature.value());
     uploads.back().set_autofill_used(form_was_autofilled);
     uploads.back().set_data_present(data_present);
-    EncodeFormFieldsForUpload(is_raw_metadata_uploading_enabled, subform_id,
-                              &uploads.back());
+    EncodeFormFieldsForUpload(subform_id, &uploads.back());
   }
 
   return uploads;
@@ -1411,7 +1397,6 @@ void FormStructure::EncodeFormForQuery(
 
 // static
 void FormStructure::EncodeFormFieldsForUpload(
-    bool is_raw_metadata_uploading_enabled,
     absl::optional<FormGlobalId> filter_renderer_form_id,
     AutofillUploadContents* upload) const {
   DCHECK(!IsMalformed());
@@ -1476,23 +1461,6 @@ void FormStructure::EncodeFormFieldsForUpload(
     if (field->single_username_vote_type()) {
       added_field->set_single_username_vote_type(
           field->single_username_vote_type().value());
-    }
-
-    if (is_raw_metadata_uploading_enabled) {
-      added_field->set_type(
-          std::string(FormControlTypeToString(field->form_control_type)));
-
-      if (!field->name.empty())
-        added_field->set_name(base::UTF16ToUTF8(field->name));
-
-      if (!field->id_attribute.empty())
-        added_field->set_id(base::UTF16ToUTF8(field->id_attribute));
-
-      if (!field->autocomplete_attribute.empty())
-        added_field->set_autocomplete(field->autocomplete_attribute);
-
-      if (!field->css_classes.empty())
-        added_field->set_css_classes(base::UTF16ToUTF8(field->css_classes));
     }
   }
 }

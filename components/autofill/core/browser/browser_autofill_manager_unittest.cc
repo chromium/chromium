@@ -296,7 +296,6 @@ class MockAutofillDownloadManager : public AutofillDownloadManager {
   explicit MockAutofillDownloadManager(AutofillClient* client)
       : AutofillDownloadManager(client,
                                 /*api_key=*/"",
-                                /*is_raw_metadata_uploading_enabled=*/false,
                                 /*log_manager=*/nullptr) {}
 
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;

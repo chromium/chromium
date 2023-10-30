@@ -833,29 +833,11 @@ void InitializePossibleTypesAndValidities(
   }
 }
 
-void BasicFillUploadField(AutofillUploadContents::Field* field,
-                          unsigned signature,
-                          const char* name,
-                          const char* control_type,
-                          const char* autocomplete) {
-  field->set_signature(signature);
-  if (name)
-    field->set_name(name);
-  if (control_type)
-    field->set_type(control_type);
-  if (autocomplete)
-    field->set_autocomplete(autocomplete);
-}
-
 void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned signature,
-                     const char* name,
-                     const char* control_type,
-                     const char* autocomplete,
                      unsigned autofill_type,
                      unsigned validity_state) {
-  BasicFillUploadField(field, signature, name, control_type, autocomplete);
-
+  field->set_signature(signature);
   field->add_autofill_type(autofill_type);
 
   auto* type_validities = field->add_autofill_type_validities();
@@ -865,12 +847,9 @@ void FillUploadField(AutofillUploadContents::Field* field,
 
 void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned signature,
-                     const char* name,
-                     const char* control_type,
-                     const char* autocomplete,
                      const std::vector<unsigned>& autofill_types,
                      const std::vector<unsigned>& validity_states) {
-  BasicFillUploadField(field, signature, name, control_type, autocomplete);
+  field->set_signature(signature);
 
   for (unsigned i = 0; i < autofill_types.size(); ++i) {
     field->add_autofill_type(autofill_types[i]);
@@ -887,14 +866,11 @@ void FillUploadField(AutofillUploadContents::Field* field,
 
 void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned signature,
-                     const char* name,
-                     const char* control_type,
-                     const char* autocomplete,
                      unsigned autofill_type,
                      const std::vector<unsigned>& validity_states) {
-  BasicFillUploadField(field, signature, name, control_type, autocomplete);
-
+  field->set_signature(signature);
   field->add_autofill_type(autofill_type);
+
   auto* type_validities = field->add_autofill_type_validities();
   type_validities->set_type(autofill_type);
   for (unsigned i = 0; i < validity_states.size(); ++i)

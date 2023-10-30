@@ -115,8 +115,7 @@ class FormStructure {
       const ServerFieldTypeSet& available_field_types,
       bool form_was_autofilled,
       const base::StringPiece& login_form_signature,
-      bool observed_submission,
-      bool is_raw_metadata_uploading_enabled) const;
+      bool observed_submission) const;
 
   // Encodes the proto |query| request for the list of |forms| and their fields
   // that are valid. The queried FormSignatures and FieldSignatures are stored
@@ -507,7 +506,6 @@ class FormStructure {
   // from the given renderer form are encoded. See EncodeUploadRequest() for
   // details.
   void EncodeFormFieldsForUpload(
-      bool is_raw_metadata_uploading_enabled,
       absl::optional<FormGlobalId> filter_renderer_form_id,
       AutofillUploadContents* upload) const;
 

@@ -292,14 +292,10 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
 
   // Enabling raw form data uploading (e.g., field name) is too complicated in
   // this test. So, don't expect it in the upload.
-  test::FillUploadField(upload->add_field(), 2594484045U, nullptr, nullptr,
-                        nullptr, 2U);
-  test::FillUploadField(upload->add_field(), 2750915947U, nullptr, nullptr,
-                        nullptr, 2U);
-  test::FillUploadField(upload->add_field(), 3494787134U, nullptr, nullptr,
-                        nullptr, 2U);
-  test::FillUploadField(upload->add_field(), 1236501728U, nullptr, nullptr,
-                        nullptr, 2U);
+  test::FillUploadField(upload->add_field(), 2594484045U, 2U);
+  test::FillUploadField(upload->add_field(), 2750915947U, 2U);
+  test::FillUploadField(upload->add_field(), 3494787134U, 2U);
+  test::FillUploadField(upload->add_field(), 1236501728U, 2U);
 
   WindowedNetworkObserver upload_network_observer(EqualsUploadProto(request));
   content::WebContents* web_contents =

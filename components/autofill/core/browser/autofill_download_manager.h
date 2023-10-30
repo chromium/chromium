@@ -129,7 +129,6 @@ class AutofillDownloadManager {
  protected:
   AutofillDownloadManager(AutofillClient* client,
                           const std::string& api_key,
-                          bool is_raw_metadata_uploading_enabled,
                           LogManager* log_manager);
 
   // Gets the length of the payload from request data. Used to simulate
@@ -224,10 +223,6 @@ class AutofillDownloadManager {
 
   // Used for exponential backoff of requests.
   net::BackoffEntry loader_backoff_;
-
-  // Whether form data (e.g. form and field names) can be uploaded in clear
-  // text.
-  bool is_raw_metadata_uploading_enabled_ = false;
 
   base::WeakPtrFactory<AutofillDownloadManager> weak_factory_{this};
 };
