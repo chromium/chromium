@@ -131,8 +131,7 @@ class VideoCaptureTest : public testing::Test,
   }
 
   void OpenSession() {
-    const int render_process_id = 1;
-    const int render_frame_id = 1;
+    const GlobalRenderFrameHostId render_frame_host_id{1, 1};
     const int requester_id = 1;
     const int page_request_id = 1;
     const url::Origin security_origin =
@@ -148,9 +147,7 @@ class VideoCaptureTest : public testing::Test,
       devices_to_enumerate[static_cast<size_t>(
           blink::mojom::MediaDeviceType::kMediaVideoInput)] = true;
       base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
-      GetMediaDeviceSaltAndOrigin(
-          GlobalRenderFrameHostId(render_process_id, render_frame_id),
-          future.GetCallback());
+      GetMediaDeviceSaltAndOrigin(render_frame_host_id, future.GetCallback());
       MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
       media_stream_manager_->media_devices_manager()->EnumerateDevices(
           devices_to_enumerate,
@@ -163,14 +160,12 @@ class VideoCaptureTest : public testing::Test,
     // Open the first device.
     {
       base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
-      GetMediaDeviceSaltAndOrigin(
-          GlobalRenderFrameHostId(render_process_id, render_frame_id),
-          future.GetCallback());
+      GetMediaDeviceSaltAndOrigin(render_frame_host_id, future.GetCallback());
       MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
 
       base::RunLoop run_loop;
       media_stream_manager_->OpenDevice(
-          render_process_id, render_frame_id, requester_id, page_request_id,
+          render_frame_host_id, requester_id, page_request_id,
           video_devices[0].device_id,
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt_and_origin,
           base::BindOnce(&VideoCaptureTest::OnDeviceOpened,

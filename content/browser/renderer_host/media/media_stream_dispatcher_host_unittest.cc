@@ -72,8 +72,7 @@ namespace content {
 
 namespace {
 
-constexpr int kProcessId = 5;
-constexpr int kRenderId = 6;
+const GlobalRenderFrameHostId kRenderFrameHostId{5, 6};
 constexpr int kRequesterId = 7;
 constexpr int kPageRequestId = 8;
 constexpr const char* kRegularVideoDeviceId1 = "stub_device_1";
@@ -335,7 +334,8 @@ class MediaStreamDispatcherHostTest : public testing::Test {
     salt_and_origin_.set_has_focus(true);
     salt_and_origin_.set_is_background(false);
     host_ = std::make_unique<MockMediaStreamDispatcherHost>(
-        kProcessId, kRenderId, media_stream_manager_.get());
+        kRenderFrameHostId.child_id, kRenderFrameHostId.frame_routing_id,
+        media_stream_manager_.get());
     host_->set_get_salt_and_origin_cb_for_testing(
         base::BindRepeating(&MediaStreamDispatcherHostTest::GetSaltAndOrigin,
                             base::Unretained(this)));
@@ -619,7 +619,7 @@ TEST_F(MediaStreamDispatcherHostTest,
   EXPECT_CALL(
       *this,
       MockOnBadMessage(
-          kProcessId,
+          kRenderFrameHostId.child_id,
           bad_message::
               MSDH_SUPPRESS_LOCAL_AUDIO_PLAYBACK_BUT_AUDIO_NOT_REQUESTED))
       .Times(1);
@@ -639,7 +639,7 @@ TEST_F(MediaStreamDispatcherHostTest,
 
   EXPECT_CALL(*this,
               MockOnBadMessage(
-                  kProcessId,
+                  kRenderFrameHostId.child_id,
                   bad_message::MSDH_HOTWORD_ENABLED_BUT_AUDIO_NOT_REQUESTED))
       .Times(1);
   host_->OnGenerateStreams(kPageRequestId, controls);
@@ -658,7 +658,7 @@ TEST_F(MediaStreamDispatcherHostTest,
 
   EXPECT_CALL(*this,
               MockOnBadMessage(
-                  kProcessId,
+                  kRenderFrameHostId.child_id,
                   bad_message::MSDH_DISABLE_LOCAL_ECHO_BUT_AUDIO_NOT_REQUESTED))
       .Times(1);
   host_->OnGenerateStreams(kPageRequestId, controls);
@@ -805,7 +805,8 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsDifferentRenderId) {
 
   // Generate second stream from another render frame.
   host_ = std::make_unique<MockMediaStreamDispatcherHost>(
-      kProcessId, kRenderId + 1, media_stream_manager_.get());
+      kRenderFrameHostId.child_id, kRenderFrameHostId.frame_routing_id + 1,
+      media_stream_manager_.get());
   host_->set_get_salt_and_origin_cb_for_testing(
       base::BindRepeating(&MediaStreamDispatcherHostTest::GetSaltAndOrigin,
                           base::Unretained(this)));
@@ -1141,7 +1142,7 @@ TEST_F(MediaStreamDispatcherHostTest, CancelPendingStreams) {
                              run_loop.QuitClosure());
   }
 
-  media_stream_manager_->CancelAllRequests(kProcessId, kRenderId, kRequesterId);
+  media_stream_manager_->CancelAllRequests(kRenderFrameHostId, kRequesterId);
   run_loop.RunUntilIdle();
 }
 
@@ -1160,7 +1161,7 @@ TEST_F(MediaStreamDispatcherHostTest, StopGeneratedStreams) {
     GenerateStreamAndWaitForResult(kPageRequestId + i, controls, expectation);
   }
 
-  media_stream_manager_->CancelAllRequests(kProcessId, kRenderId, kRequesterId);
+  media_stream_manager_->CancelAllRequests(kRenderFrameHostId, kRequesterId);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1273,7 +1274,7 @@ TEST_F(MediaStreamDispatcherHostTest, Salt) {
 TEST_F(MediaStreamDispatcherHostTest, GetOpenDeviceWithoutFeatureFails) {
   EXPECT_CALL(
       *this,
-      MockOnBadMessage(kProcessId,
+      MockOnBadMessage(kRenderFrameHostId.child_id,
                        bad_message::MSDH_GET_OPEN_DEVICE_USE_WITHOUT_FEATURE));
 
   base::RunLoop loop;
@@ -1345,9 +1346,9 @@ TEST_F(MediaStreamDispatcherHostTest,
        RegisterAndUnregisterWithMediaStreamManager) {
   {
     mojo::Remote<blink::mojom::MediaStreamDispatcherHost> client;
-    MediaStreamDispatcherHost::Create(kProcessId, kRenderId,
-                                      media_stream_manager_.get(),
-                                      client.BindNewPipeAndPassReceiver());
+    MediaStreamDispatcherHost::Create(
+        kRenderFrameHostId.child_id, kRenderFrameHostId.frame_routing_id,
+        media_stream_manager_.get(), client.BindNewPipeAndPassReceiver());
     EXPECT_TRUE(client.is_bound());
     EXPECT_EQ(media_stream_manager_->num_dispatcher_hosts(), 1u);
   }
@@ -1399,9 +1400,9 @@ TEST_P(MediaStreamDispatcherHostStreamTypeCombinationTest,
       static_cast<MediaStreamType>(std::get<1>(GetParam()));
 
   SetupFakeUI(true);
-  EXPECT_CALL(
-      *this, MockOnBadMessage(
-                 kProcessId, bad_message::MSDH_INVALID_STREAM_TYPE_COMBINATION))
+  EXPECT_CALL(*this, MockOnBadMessage(
+                         kRenderFrameHostId.child_id,
+                         bad_message::MSDH_INVALID_STREAM_TYPE_COMBINATION))
       .Times(!kValidCombinations.count(std::make_tuple(
           controls.audio.stream_type, controls.video.stream_type)));
   host_->OnGenerateStreams(kPageRequestId, controls);
@@ -1454,7 +1455,7 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
   int render_frame_id = main_rfh_global_id.frame_routing_id - 1;
 
   EXPECT_FALSE(MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
-      main_render_process_id, render_frame_id));
+      {main_render_process_id, render_frame_id}));
 }
 
 TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
@@ -1464,7 +1465,7 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
   int render_frame_id = main_rfh_global_id.frame_routing_id;
 
   EXPECT_FALSE(MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
-      main_render_process_id, render_frame_id));
+      {main_render_process_id, render_frame_id}));
 }
 
 TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
@@ -1476,7 +1477,7 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
       .WillOnce(Return(true));
 
   EXPECT_TRUE(MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
-      main_render_process_id, render_frame_id));
+      {main_render_process_id, render_frame_id}));
 }
 
 }  // namespace content

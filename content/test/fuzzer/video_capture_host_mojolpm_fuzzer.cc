@@ -445,7 +445,7 @@ void VideoCaptureHostTestcase::OpenSessionOnIOThread(
        device_index++) {
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
     media_stream_manager_->OpenDevice(
-        render_process_id, render_frame_id, requester_id, page_request_id,
+        {render_process_id, render_frame_id}, requester_id, page_request_id,
         video_devices[device_index].device_id,
         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt_and_origin,
         base::BindOnce(&VideoCaptureHostTestcase::OnDeviceOpened,
