@@ -7,6 +7,7 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -58,6 +59,9 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
 
     test_web_state_->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
+
+    AutofillBottomSheetTabHelper::CreateForWebState(test_web_state_.get(), nil);
+
     web_state_list_.InsertWebState(0, std::move(test_web_state_),
                                    WebStateList::INSERT_ACTIVATE,
                                    WebStateOpener());

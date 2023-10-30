@@ -14,6 +14,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 namespace autofill {
+class AutofillBottomSheetObserver;
 struct FormActivityParams;
 }  // namespace autofill
 
@@ -40,6 +41,10 @@ class AutofillBottomSheetTabHelper
       delete;
 
   ~AutofillBottomSheetTabHelper() override;
+
+  // Observer registration methods.
+  void AddObserver(autofill::AutofillBottomSheetObserver* observer);
+  void RemoveObserver(autofill::AutofillBottomSheetObserver* observer);
 
   // Handler for JavaScript messages. Dispatch to more specific handler.
   void OnFormMessageReceived(const web::ScriptMessage& message);
@@ -146,6 +151,9 @@ class AutofillBottomSheetTabHelper
   // TODO(crbug.com/1441921): Migrate to FieldGlobalIds.
   std::map<std::string, std::set<autofill::FieldRendererId>>
       registered_payments_renderer_ids_;
+
+  base::ObserverList<autofill::AutofillBottomSheetObserver>::Unchecked
+      observers_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
