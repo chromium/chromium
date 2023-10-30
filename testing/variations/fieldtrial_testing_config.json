@@ -14499,6 +14499,21 @@
             ]
         }
     ],
+    "RunTasksByBatches": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RunTasksByBatches"
+                    ]
+                }
+            ]
+        }
+    ],
     "RustyJSONParser": [
         {
             "platforms": [
