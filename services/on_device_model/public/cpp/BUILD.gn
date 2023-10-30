@@ -7,18 +7,6 @@ component("cpp") {
   sources = [
     "features.cc",
     "features.h",
-    "on_device_model.h",
-  ]
-  public_deps = [
-    ":model_assets",
-    "//base",
-    "//services/on_device_model/public/mojom",
-  ]
-  defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
-}
-
-component("model_assets") {
-  sources = [
     "model_assets.cc",
     "model_assets.h",
     "model_assets_mojom_traits.cc",
@@ -29,5 +17,5 @@ component("model_assets") {
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//services/on_device_model/public/mojom:mojom_shared",
   ]
-  defines = [ "IS_ON_DEVICE_MODEL_ASSETS_CPP_IMPL" ]
+  defines = [ "IS_ON_DEVICE_MODEL_CPP_IMPL" ]
 }

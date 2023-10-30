@@ -25,8 +25,7 @@ mojom("mojom") {
       traits_headers = [
         "//services/on_device_model/public/cpp/model_assets_mojom_traits.h",
       ]
-      traits_public_deps =
-          [ "//services/on_device_model/public/cpp:model_assets" ]
+      traits_public_deps = [ "//services/on_device_model/public/cpp" ]
     },
   ]
 }

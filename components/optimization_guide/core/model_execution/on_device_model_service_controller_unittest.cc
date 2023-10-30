@@ -13,29 +13,17 @@
 
 namespace optimization_guide {
 
-class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel,
-                          public on_device_model::mojom::Session {
+class FakeOnDeviceModel : public on_device_model::mojom::OnDeviceModel {
   // on_device_model::mojom::OnDeviceModel:
-  void StartSession(
-      mojo::PendingReceiver<on_device_model::mojom::Session> session) override {
-    receivers_.Add(this, std::move(session));
-  }
-
-  // on_device_model::mojom::Session:
-  void AddContext(on_device_model::mojom::InputOptionsPtr input) override {}
-
-  void Execute(on_device_model::mojom::InputOptionsPtr input,
+  void Execute(const std::string& input,
                mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
                    response) override {
     mojo::Remote<on_device_model::mojom::StreamingResponder> remote(
         std::move(response));
     remote->OnResponse("Model starting\n");
-    remote->OnResponse("Input: " + input->text + "\n");
+    remote->OnResponse("Input: " + input + "\n");
     remote->OnComplete();
   }
-
- private:
-  mojo::ReceiverSet<on_device_model::mojom::Session> receivers_;
 };
 
 class FakeOnDeviceModelService

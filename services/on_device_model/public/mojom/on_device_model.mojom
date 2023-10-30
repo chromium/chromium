@@ -18,35 +18,12 @@ interface StreamingResponder {
   OnComplete();
 };
 
-// Options to control how the model handles input.
-struct InputOptions {
-  // The text for this input.
-  string text;
-
-  // The maximum number of tokens that should be processed. If not set, will
-  // process all tokens from this input.
-  int32? max_tokens;
-};
-
-// A session for a model that allows adding context and then executing an input
-// with that context.
-interface Session {
-  // Adds context to this session. Any context added here will build off of
-  // previous calls to |AddContext()|.
-  AddContext(InputOptions input);
-
-  // Executes model on the given input. The input will be added on top of the
-  // context provided by |AddContext()|. The response will be streamed to
-  // |response|.
-  Execute(InputOptions input, pending_remote<StreamingResponder> response);
-};
-
 // A loaded model which can be queried. This interface must be controlled by the
 // browser and consumers must take care to sanitize inputs.
 interface OnDeviceModel {
-  // Starts a session with this model. If a session starts before the previous
-  // one has completed, the previous session will be canceled.
-  StartSession(pending_receiver<Session> session);
+  // Executes model on the given input. The response will be streamed to
+  // |response|.
+  Execute(string input, pending_remote<StreamingResponder> response);
 };
 
 // Opened file resources needed to define the model.

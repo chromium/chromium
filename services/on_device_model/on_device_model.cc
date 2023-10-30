@@ -2,59 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/on_device_model/public/cpp/on_device_model.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/on_device_model_service.h"
 
 namespace on_device_model {
 namespace {
 
-class SessionImpl : public OnDeviceModel::Session {
+class OnDeviceModel : public mojom::OnDeviceModel {
  public:
-  SessionImpl() = default;
-  ~SessionImpl() override = default;
+  OnDeviceModel() = default;
+  ~OnDeviceModel() override = default;
 
-  SessionImpl(const SessionImpl&) = delete;
-  SessionImpl& operator=(const SessionImpl&) = delete;
-
-  void AddContext(mojom::InputOptionsPtr input) override {
-    context_.push_back(input->text);
-  }
+  OnDeviceModel(const OnDeviceModel&) = delete;
+  OnDeviceModel& operator=(const OnDeviceModel&) = delete;
 
   void Execute(
-      mojom::InputOptionsPtr input,
+      const std::string& input,
       mojo::PendingRemote<mojom::StreamingResponder> response) override {
     mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
-    for (const std::string& context : context_) {
-      remote->OnResponse("Context: " + context + "\n");
-    }
-    remote->OnResponse("Input: " + input->text + "\n");
+    remote->OnResponse("Input: " + input + "\n");
     remote->OnComplete();
-  }
-
- private:
-  std::vector<std::string> context_;
-};
-
-class OnDeviceModelImpl : public OnDeviceModel {
- public:
-  OnDeviceModelImpl() = default;
-  ~OnDeviceModelImpl() override = default;
-
-  OnDeviceModelImpl(const OnDeviceModelImpl&) = delete;
-  OnDeviceModelImpl& operator=(const OnDeviceModelImpl&) = delete;
-
-  std::unique_ptr<Session> CreateSession() override {
-    return std::make_unique<SessionImpl>();
   }
 };
 
 }  // namespace
 
 // static
-std::unique_ptr<OnDeviceModel> OnDeviceModelService::CreateModel(
+std::unique_ptr<mojom::OnDeviceModel> OnDeviceModelService::CreateModel(
     ModelAssets assets) {
-  return std::make_unique<OnDeviceModelImpl>();
+  return std::make_unique<OnDeviceModel>();
 }
 
 // static

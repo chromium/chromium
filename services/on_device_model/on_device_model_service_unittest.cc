@@ -13,8 +13,6 @@
 namespace on_device_model {
 namespace {
 
-using ::testing::ElementsAre;
-
 class ResponseHolder : public mojom::StreamingResponder {
  public:
   mojo::PendingRemote<mojom::StreamingResponder> BindRemote() {
@@ -59,10 +57,6 @@ class OnDeviceModelServiceTest : public testing::Test {
     return remote;
   }
 
-  mojom::InputOptionsPtr MakeInput(const std::string& input) {
-    return mojom::InputOptions::New(input, std::nullopt);
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<mojom::OnDeviceModelService> service_;
@@ -73,9 +67,7 @@ TEST_F(OnDeviceModelServiceTest, Responds) {
   auto model = LoadModel();
   {
     ResponseHolder response;
-    mojo::Remote<mojom::Session> session;
-    model->StartSession(session.BindNewPipeAndPassReceiver());
-    session->Execute(MakeInput("bar"), response.BindRemote());
+    model->Execute("bar", response.BindRemote());
     response.WaitForCompletion();
     const auto& responses = response.responses();
     EXPECT_EQ(responses.size(), 1u);
@@ -84,58 +76,12 @@ TEST_F(OnDeviceModelServiceTest, Responds) {
   // Try another input on  the same model.
   {
     ResponseHolder response;
-    mojo::Remote<mojom::Session> session;
-    model->StartSession(session.BindNewPipeAndPassReceiver());
-    session->Execute(MakeInput("cat"), response.BindRemote());
+    model->Execute("cat", response.BindRemote());
     response.WaitForCompletion();
     const auto& responses = response.responses();
     EXPECT_EQ(responses.size(), 1u);
     EXPECT_EQ(responses[0], "Input: cat\n");
   }
-}
-
-TEST_F(OnDeviceModelServiceTest, AddContext) {
-  auto model = LoadModel();
-
-  ResponseHolder response;
-  mojo::Remote<mojom::Session> session;
-  model->StartSession(session.BindNewPipeAndPassReceiver());
-  session->AddContext(MakeInput("cheese"));
-  session->AddContext(MakeInput("more"));
-  session->Execute(MakeInput("cheddar"), response.BindRemote());
-  response.WaitForCompletion();
-
-  EXPECT_THAT(
-      response.responses(),
-      ElementsAre("Context: cheese\n", "Context: more\n", "Input: cheddar\n"));
-}
-
-TEST_F(OnDeviceModelServiceTest, CancelsPreviousSession) {
-  auto model = LoadModel();
-
-  ResponseHolder response1;
-  mojo::Remote<mojom::Session> session1;
-  model->StartSession(session1.BindNewPipeAndPassReceiver());
-  session1->Execute(MakeInput("1"), response1.BindRemote());
-
-  mojo::Remote<mojom::Session> session2;
-  model->StartSession(session2.BindNewPipeAndPassReceiver());
-
-  // First session should get canceled.
-  base::RunLoop run_loop;
-  session1.set_disconnect_handler(run_loop.QuitClosure());
-  run_loop.Run();
-
-  // Response from first session should still work since it was sent before
-  // cancel.
-  response1.WaitForCompletion();
-  EXPECT_THAT(response1.responses(), ElementsAre("Input: 1\n"));
-
-  // Second session still works.
-  ResponseHolder response2;
-  session2->Execute(MakeInput("2"), response2.BindRemote());
-  response2.WaitForCompletion();
-  EXPECT_THAT(response2.responses(), ElementsAre("Input: 2\n"));
 }
 
 }  // namespace

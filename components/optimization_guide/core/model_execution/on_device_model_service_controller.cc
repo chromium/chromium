@@ -20,10 +20,7 @@ void OnDeviceModelServiceController::Execute(
     mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
         streaming_responder) {
   if (model_remote_) {
-    model_remote_->StartSession(session_remote_.BindNewPipeAndPassReceiver());
-    session_remote_->Execute(on_device_model::mojom::InputOptions::New(
-                                 std::string(input), std::nullopt),
-                             std::move(streaming_responder));
+    model_remote_->Execute(std::string(input), std::move(streaming_responder));
     return;
   }
   LaunchService();
