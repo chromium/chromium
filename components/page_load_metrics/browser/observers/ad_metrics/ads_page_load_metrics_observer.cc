@@ -909,6 +909,9 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
       GetExponentialBucketForDistributionMoment(moments.excess_kurtosis));
   custom_sampling_builder.Record(ukm_recorder->Get());
 
+  ADS_HISTOGRAM("AverageViewportAdDensity", base::UmaHistogramPercentage,
+                FrameVisibility::kAnyVisibility, std::llround(moments.mean));
+
   // Only records histograms on pages that have some ad bytes.
   if (resource_data.ad_bytes() == 0)
     return;

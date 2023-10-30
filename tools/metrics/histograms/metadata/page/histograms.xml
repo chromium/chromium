@@ -310,6 +310,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.Ads.AverageViewportAdDensity" units="%"
+    expires_after="2024-04-29">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The estimated average viewport ad density. Each density sample value is
+    calculated as the area of (iframe and img) ads within the viewport * 100 /
+    viewport area, where each overlapping area is counted once. And this metric
+    takes the average of the densities accumulated over the page load time
+    rounded to the nearest integer. Recorded when the page is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Clients.Ads.HeavyAds.DisallowedByBlocklist"
     enum="BooleanBlocked" expires_after="2024-04-17">
   <owner>johnidel@chromium.org</owner>

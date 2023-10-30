@@ -1274,10 +1274,15 @@ TEST_P(AdsPageLoadMetricsObserverTest, MainFrameResource) {
   histogram_tester().ExpectUniqueSample(
       "PageLoad.Clients.Ads.AllPages.NonAdNetworkBytes", 10, 1);
 
-  // There are three FrameCounts.AdFrames.Total and two AllPages histograms
-  // recorded for each page load, one for each visibility type. There shouldn't
-  // be any other histograms for a page with no ad resources.
-  EXPECT_EQ(6u, histogram_tester()
+  // Verify that the average-viewport-ad-density was recorded as zero.
+  histogram_tester().ExpectUniqueSample(
+      "PageLoad.Clients.Ads.AverageViewportAdDensity", 0, 1);
+
+  // There are three FrameCounts.AdFrames.Total histograms (one for each
+  // visibility type), three AllPages histograms, and one
+  // AverageViewportAdDensity histogram recorded for each page load. There
+  // shouldn't be any other histograms for a page with no ad resources.
+  EXPECT_EQ(7u, histogram_tester()
                     .GetTotalCountsForPrefix("PageLoad.Clients.Ads.")
                     .size());
   EXPECT_EQ(0u, test_ukm_recorder()
@@ -1294,8 +1299,11 @@ TEST_P(AdsPageLoadMetricsObserverTest, NoBytesLoaded_NoHistogramsRecorded) {
 
   NavigateMainFrame(kNonAdUrl);
 
-  // Histograms should not be recorded for a page with no bytes.
-  EXPECT_EQ(0u, histogram_tester()
+  histogram_tester().ExpectUniqueSample(
+      "PageLoad.Clients.Ads.AverageViewportAdDensity", 0, 1);
+
+  // Other histograms should not be recorded for a page with no bytes.
+  EXPECT_EQ(1u, histogram_tester()
                     .GetTotalCountsForPrefix("PageLoad.Clients.Ads.")
                     .size());
   EXPECT_EQ(0u, test_ukm_recorder()
@@ -1727,6 +1735,9 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityDistributionMoments) {
       entries.front(),
       ukm::builders::AdPageLoadCustomSampling3::kKurtosisViewportAdDensityName,
       /*-ukm::GetExponentialBucketMin(-std::llround(-0.666667), 1.3)=*/-1);
+
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("AverageViewportAdDensity"), 20, 1);
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, AdDensityOnPageWithoutAdBytes) {
@@ -1762,6 +1773,9 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityOnPageWithoutAdBytes) {
       entries.front(),
       ukm::builders::AdPageLoadCustomSampling3::kKurtosisViewportAdDensityName,
       -3);
+
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("AverageViewportAdDensity"), 0, 1);
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowedActivated) {
