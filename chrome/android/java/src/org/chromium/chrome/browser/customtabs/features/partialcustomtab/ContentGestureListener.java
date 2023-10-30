@@ -121,7 +121,7 @@ class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
             // 2) Start dragging up/down at expanded state -> state gets set to DRAG_TAB first,
             //    and then immediately switched to SCROLL_CONTENT here.
             if ((draggingUp || !contentReachedTop) && isMovingTab) startContentScrolling(e2);
-        } else if (!contentReachedTop && draggingDown && mState == GestureState.NONE) {
+        } else if (draggingDown && mState == GestureState.NONE) {
             // Drag down at peeked state -> SCROLL_CONTENT, but unlike in |startContentScrolling|,
             // no need to inject an additional ACTION_DOWN in this case.
             mState = GestureState.SCROLL_CONTENT;

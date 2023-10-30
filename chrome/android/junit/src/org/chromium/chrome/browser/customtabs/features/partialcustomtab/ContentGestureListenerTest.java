@@ -116,4 +116,16 @@ public class ContentGestureListenerTest {
         mListener.onScroll(mEventSrc, mEventTo, DISTX, -50.f);
         assertEquals(GestureState.SCROLL_CONTENT, mListener.getStateForTesting());
     }
+
+    @Test
+    public void dragUpFromInitialState_movesTab() {
+        mListener.onScroll(mEventSrc, mEventTo, DISTX, 50.f);
+        assertEquals(GestureState.DRAG_TAB, mListener.getStateForTesting());
+    }
+
+    @Test
+    public void dragDownFromInitialState_scrollsContents() {
+        mListener.onScroll(mEventSrc, mEventTo, DISTX, -50.f);
+        assertEquals(GestureState.SCROLL_CONTENT, mListener.getStateForTesting());
+    }
 }
