@@ -214,6 +214,19 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
              frameInBaseView:(CGRect)frameInBaseView {
   DCHECK(baseView);
   DCHECK(!CGRectIsEmpty(frameInBaseView));
+  // Ideally, generate an UIImage by one step with `UIGraphicsImageRenderer`,
+  // however, it generates a black image when the size of `baseView` is larger
+  // than `frameInBaseView`. So this is a workaround to generate an UIImage by
+  // dividing the step into 2 steps; 1) convert an UIView to an UIImage 2) crop
+  // an UIImage with `frameInBaseView`.
+  UIImage* baseImage = [self convertFromBaseView:baseView];
+  return [self cropImage:baseImage frameInBaseView:frameInBaseView];
+}
+
+// Converts an UIView to an UIImage. The size of generated UIImage is the same
+// as `baseView`.
+- (UIImage*)convertFromBaseView:(UIView*)baseView {
+  DCHECK(baseView);
 
   // Disable the automatic view dimming UIKit performs if a view is presented
   // modally over `baseView`.
@@ -229,29 +242,13 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   format.opaque = YES;
 
   UIGraphicsImageRenderer* renderer =
-      [[UIGraphicsImageRenderer alloc] initWithSize:frameInBaseView.size
-                                             format:format];
+      [[UIGraphicsImageRenderer alloc] initWithBounds:baseView.bounds
+                                               format:format];
 
   __block BOOL snapshotSuccess = YES;
   UIImage* image =
       [renderer imageWithActions:^(UIGraphicsImageRendererContext* UIContext) {
-        CGContextRef context = UIContext.CGContext;
-        // This shifts the origin of the context to be the origin of the
-        // snapshot frame.
-        CGContextTranslateCTM(context, -frameInBaseView.origin.x,
-                              -frameInBaseView.origin.y);
-
         if (baseView.window && ViewHierarchyContainsWebView(baseView)) {
-          // Resize the `baseImage` into the size of `frameInBaseView` because
-          // UIGraphicsImageRenderer is initialized with the size of
-          // `frameInBaseView` and it can't render an image beyond that.
-          if (frameInBaseView.size.height < baseView.bounds.size.height) {
-            DCHECK_EQ(frameInBaseView.size.width, baseView.bounds.size.width);
-            CGRect frame = baseView.frame;
-            frame.size.height = frameInBaseView.size.height;
-            baseView.frame = frame;
-          }
-
           // `-renderInContext:` is the preferred way to render a snapshot, but
           // it's buggy for WKWebView, which is used for some WebUI pages such
           // as "No internet" or "Site can't be reached". If a
@@ -266,7 +263,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
           // `-drawViewHierarchyInRect:afterScreenUpdates:` is buggy causing GPU
           // glitches, screen redraws during animations, broken pinch to dismiss
           // on tablet, etc.
-          snapshotSuccess = [baseView drawViewHierarchyInRect:frameInBaseView
+          snapshotSuccess = [baseView drawViewHierarchyInRect:baseView.bounds
                                            afterScreenUpdates:YES];
         } else {
           // Render the view's layer via `-renderInContext:`.
@@ -278,7 +275,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
           if (isnan(pos.x) || isnan(pos.y)) {
             snapshotSuccess = NO;
           } else {
-            [layer renderInContext:context];
+            [layer renderInContext:UIContext.CGContext];
           }
         }
       }];
@@ -289,6 +286,36 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 
   // Set the mode to UIViewTintAdjustmentModeAutomatic.
   baseView.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
+
+  return image;
+}
+
+// Crops an UIImage to `frameInBaseView`.
+- (UIImage*)cropImage:(UIImage*)baseImage
+      frameInBaseView:(CGRect)frameInBaseView {
+  if (!baseImage) {
+    return nil;
+  }
+  DCHECK(!CGRectIsEmpty(frameInBaseView));
+
+  // Scale `frameInBaseView` to handle an image with 2x scale.
+  CGFloat scale = baseImage.scale;
+  frameInBaseView.origin.x *= scale;
+  frameInBaseView.origin.y *= scale;
+  frameInBaseView.size.width *= scale;
+  frameInBaseView.size.height *= scale;
+
+  // Perform cropping.
+  CGImageRef imageRef =
+      CGImageCreateWithImageInRect(baseImage.CGImage, frameInBaseView);
+
+  // Convert back to an UIImage.
+  UIImage* image = [UIImage imageWithCGImage:imageRef
+                                       scale:scale
+                                 orientation:baseImage.imageOrientation];
+
+  // Clean up a reference pointer.
+  CGImageRelease(imageRef);
 
   return image;
 }
