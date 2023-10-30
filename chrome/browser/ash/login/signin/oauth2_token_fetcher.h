@@ -23,8 +23,7 @@ namespace ash {
 // OAuth2TokenFetcher is used to convert authenticated cookie jar from the
 // authentication profile into OAuth2 tokens and GAIA credentials that will be
 // used to kick off other token retrieval tasks.
-class OAuth2TokenFetcher : public base::SupportsWeakPtr<OAuth2TokenFetcher>,
-                           public GaiaAuthConsumer {
+class OAuth2TokenFetcher : public GaiaAuthConsumer {
  public:
   class Delegate {
    public:
@@ -45,6 +44,10 @@ class OAuth2TokenFetcher : public base::SupportsWeakPtr<OAuth2TokenFetcher>,
 
   void StartExchangeFromAuthCode(const std::string& auth_code,
                                  const std::string& signin_scoped_device_id);
+
+  base::WeakPtr<OAuth2TokenFetcher> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   // Decides how to proceed on GAIA `error`. If the error looks temporary,
@@ -68,6 +71,7 @@ class OAuth2TokenFetcher : public base::SupportsWeakPtr<OAuth2TokenFetcher>,
   std::string session_index_;
   std::string signin_scoped_device_id_;
   std::string auth_code_;
+  base::WeakPtrFactory<OAuth2TokenFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
