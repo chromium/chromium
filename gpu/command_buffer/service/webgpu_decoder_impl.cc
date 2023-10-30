@@ -129,7 +129,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   void Destroy(bool have_context) override;
   bool MakeCurrent() override {
     if (gl_context_.get()) {
-      gl_context_->MakeCurrent(gl_surface_.get());
+      gl_context_->MakeCurrentDefault();
     }
     return true;
   }
@@ -943,7 +943,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool destroyed_ = false;
 
   scoped_refptr<gl::GLContext> gl_context_;
-  scoped_refptr<gl::GLSurface> gl_surface_;
 
   base::WeakPtrFactory<WebGPUDecoderImpl> weak_ptr_factory_{this};
 };
@@ -1187,14 +1186,15 @@ ContextResult WebGPUDecoderImpl::Initialize(
   // but it prevents rendering artifacts in Chrome. This workaround should
   // be revisited once EGL context creation is reworked. See crbug.com/1465911
   if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
-    gl_surface_ = new gl::SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
-                                         gfx::Size(1, 1));
+    scoped_refptr<gl::GLSurface> gl_surface(new gl::SurfacelessEGL(
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(1, 1)));
     gl::GLContextAttribs attribs;
     attribs.client_major_es_version = 3;
     attribs.client_minor_es_version = 1;
     gl_context_ = new gl::GLContextEGL(nullptr);
-    gl_context_->Initialize(gl_surface_.get(), attribs);
-    gl_context_->MakeCurrent(gl_surface_.get());
+    gl_context_->Initialize(gl_surface.get(), attribs);
+    DCHECK(gl_context_->default_surface());
+    gl_context_->MakeCurrentDefault();
   }
   return ContextResult::kSuccess;
 }

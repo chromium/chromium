@@ -62,20 +62,22 @@ class CodecImageTest : public testing::Test {
         /*init_extensions=*/false,
         /*gpu_preference=*/gl::GpuPreference::kDefault);
 
-    surface_ = new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
-                                           gfx::Size(320, 240));
-    surface_->Initialize();
+    scoped_refptr<gl::GLSurface> surface(new gl::PbufferGLSurfaceEGL(
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(320, 240)));
+    surface->Initialize();
     share_group_ = new gl::GLShareGroup();
     context_ = new gl::GLContextEGL(share_group_.get());
-    context_->Initialize(surface_.get(), gl::GLContextAttribs());
-    ASSERT_TRUE(context_->MakeCurrent(surface_.get()));
+    context_->Initialize(surface.get(), gl::GLContextAttribs());
+    ASSERT_TRUE(context_->default_surface());
+    ASSERT_TRUE(context_->MakeCurrentDefault());
 
     glGenTextures(1, &texture_id_);
     // The tests rely on this texture being bound.
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture_id_);
 
     auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-        texture_id_, context_.get(), surface_.get(), BindsTextureOnUpdate());
+        texture_id_, context_.get(), context_->default_surface(),
+        BindsTextureOnUpdate());
     ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
         .WillByDefault(
             Invoke([](gfx::Size rotated_visible_size, gfx::Size* coded_size,
@@ -91,11 +93,11 @@ class CodecImageTest : public testing::Test {
   }
 
   void TearDown() override {
-    if (texture_id_ && context_->MakeCurrent(surface_.get()))
+    if (texture_id_ && context_->MakeCurrentDefault()) {
       glDeleteTextures(1, &texture_id_);
+    }
     context_ = nullptr;
     share_group_ = nullptr;
-    surface_ = nullptr;
     gl::init::ShutdownGL(display_, false);
     wrapper_->TakeCodecSurfacePair();
   }
@@ -147,7 +149,6 @@ class CodecImageTest : public testing::Test {
       codec_buffer_wait_coordinator_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<gl::GLShareGroup> share_group_;
-  scoped_refptr<gl::GLSurface> surface_;
   GLuint texture_id_ = 0;
   raw_ptr<gl::GLDisplay> display_ = nullptr;
 
@@ -297,7 +298,8 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresGLContext) {
   scoped_refptr<gl::GLShareGroup> share_group(new gl::GLShareGroup());
   scoped_refptr<gl::GLContext> context(new gl::GLContextEGL(share_group.get()));
   context->Initialize(surface.get(), gl::GLContextAttribs());
-  ASSERT_TRUE(context->MakeCurrent(surface.get()));
+  ASSERT_TRUE(context->default_surface());
+  ASSERT_TRUE(context->MakeCurrentDefault());
 
   auto i = NewImage(kTextureOwner);
   // UpdateTexImage sets it's own context.
@@ -311,7 +313,6 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresGLContext) {
 
   context = nullptr;
   share_group = nullptr;
-  surface = nullptr;
 }
 
 TEST_F(CodecImageTest, GetAHardwareBuffer) {

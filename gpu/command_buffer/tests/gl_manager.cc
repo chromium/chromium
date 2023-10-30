@@ -343,32 +343,31 @@ void GLManager::InitializeWithWorkaroundsImpl(
 
   command_buffer_->set_handler(decoder_.get());
 
-  surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
-                                                gfx::Size());
-  ASSERT_TRUE(surface_.get() != nullptr)
-      << "could not create offscreen surface";
+  auto surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                                    gfx::Size());
+  ASSERT_TRUE(surface.get() != nullptr) << "could not create offscreen surface";
 
   if (base_context_) {
     context_ = scoped_refptr<gl::GLContext>(new gpu::GLContextVirtual(
         share_group_.get(), base_context_->get(), decoder_->AsWeakPtr()));
     ASSERT_TRUE(context_->Initialize(
-        surface_.get(), GenerateGLContextAttribs(attribs, context_group)));
+        surface.get(), GenerateGLContextAttribs(attribs, context_group)));
   } else {
     if (real_gl_context) {
       context_ = scoped_refptr<gl::GLContext>(new gpu::GLContextVirtual(
           share_group_.get(), real_gl_context, decoder_->AsWeakPtr()));
       ASSERT_TRUE(context_->Initialize(
-          surface_.get(), GenerateGLContextAttribs(attribs, context_group)));
+          surface.get(), GenerateGLContextAttribs(attribs, context_group)));
     } else {
       context_ = gl::init::CreateGLContext(
-          share_group_.get(), surface_.get(),
+          share_group_.get(), surface.get(),
           GenerateGLContextAttribs(attribs, context_group));
       g_gpu_feature_info.ApplyToGLContext(context_.get());
     }
   }
   ASSERT_TRUE(context_.get() != nullptr) << "could not create GL context";
-
-  ASSERT_TRUE(context_->MakeCurrent(surface_.get()));
+  ASSERT_TRUE(context_->default_surface() == surface.get());
+  ASSERT_TRUE(context_->MakeCurrentDefault());
 
   // if (gpu_preferences_.use_passthrough_cmd_decoder) {
   //   auto* apit = g_current_gl_context;
@@ -377,7 +376,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
   // }
 
   auto result =
-      decoder_->Initialize(surface_.get(), context_.get(), true,
+      decoder_->Initialize(context_->default_surface(), context_.get(), true,
                            ::gpu::gles2::DisallowedFeatures(), attribs);
   if (result != gpu::ContextResult::kSuccess)
     return;
@@ -509,8 +508,9 @@ void GLManager::Destroy() {
   transfer_buffer_.reset();
   gles2_helper_.reset();
   if (decoder_.get()) {
-    bool have_context = decoder_->GetGLContext() &&
-                        decoder_->GetGLContext()->MakeCurrent(surface_.get());
+    bool have_context =
+        decoder_->GetGLContext() &&
+        decoder_->GetGLContext()->MakeCurrent(context_->default_surface());
     decoder_->Destroy(have_context);
     decoder_.reset();
   }

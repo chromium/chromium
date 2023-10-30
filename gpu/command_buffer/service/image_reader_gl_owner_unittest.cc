@@ -45,18 +45,19 @@ class ImageReaderGLOwnerTest : public testing::Test {
         /*init_extensions=*/true,
         /*gpu_preference=*/gl::GpuPreference::kDefault);
 
-    surface_ = new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
-                                           gfx::Size(320, 240));
-    surface_->Initialize();
+    scoped_refptr<gl::GLSurface> surface(new gl::PbufferGLSurfaceEGL(
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(320, 240)));
+    surface->Initialize();
 
     share_group_ = new gl::GLShareGroup();
     context_ = new gl::GLContextEGL(share_group_.get());
-    context_->Initialize(surface_.get(), gl::GLContextAttribs());
-    ASSERT_TRUE(context_->MakeCurrent(surface_.get()));
+    context_->Initialize(surface.get(), gl::GLContextAttribs());
+    ASSERT_TRUE(context_->default_surface());
+    ASSERT_TRUE(context_->MakeCurrentDefault());
 
     GpuDriverBugWorkarounds workarounds;
     auto context_state = base::MakeRefCounted<SharedContextState>(
-        share_group_, surface_, context_,
+        share_group_, surface, context_,
         false /* use_virtualized_gl_contexts */, base::DoNothing(),
         GrContextType::kGL);
     context_state->InitializeSkia(GpuPreferences(), workarounds);
@@ -81,12 +82,12 @@ class ImageReaderGLOwnerTest : public testing::Test {
   }
 
   void TearDown() override {
-    if (texture_id_ && context_->MakeCurrent(surface_.get()))
+    if (texture_id_ && context_->MakeCurrentDefault()) {
       glDeleteTextures(1, &texture_id_);
+    }
     image_reader_ = nullptr;
     context_ = nullptr;
     share_group_ = nullptr;
-    surface_ = nullptr;
     gl::init::ShutdownGL(display_, false);
   }
 
@@ -101,7 +102,6 @@ class ImageReaderGLOwnerTest : public testing::Test {
 
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<gl::GLShareGroup> share_group_;
-  scoped_refptr<gl::GLSurface> surface_;
   base::test::TaskEnvironment task_environment_;
   raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
@@ -138,7 +138,7 @@ TEST_F(ImageReaderGLOwnerTest, ContextAndSurfaceAreCaptured) {
     return;
 
   ASSERT_EQ(context_, image_reader_->GetContext());
-  ASSERT_EQ(surface_, image_reader_->GetSurface());
+  ASSERT_EQ(context_->default_surface(), image_reader_->GetSurface());
 }
 
 // Verify that destruction works even if some other context is current.
@@ -154,17 +154,17 @@ TEST_F(ImageReaderGLOwnerTest, DestructionWorksWithWrongContext) {
   scoped_refptr<gl::GLContext> new_context(
       new gl::GLContextEGL(new_share_group.get()));
   new_context->Initialize(new_surface.get(), gl::GLContextAttribs());
-  ASSERT_TRUE(new_context->MakeCurrent(new_surface.get()));
+  new_surface = nullptr;
+  ASSERT_TRUE(new_context->MakeCurrentDefault());
 
   image_reader_ = nullptr;
   EXPECT_FALSE(abstract_texture_);
 
   // |new_context| should still be current.
-  ASSERT_TRUE(new_context->IsCurrent(new_surface.get()));
+  ASSERT_TRUE(new_context->IsCurrent(new_context->default_surface()));
 
   new_context = nullptr;
   new_share_group = nullptr;
-  new_surface = nullptr;
 }
 
 // The max number of images used by the ImageReader must be 2 for non-Surface
