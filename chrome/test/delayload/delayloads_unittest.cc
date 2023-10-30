@@ -476,9 +476,9 @@ TEST_F(MinimumWindowsSupportTest, ChromeDll) {
 
 TEST_F(MinimumWindowsSupportTest, ChromeExtraDlls) {
   std::vector<std::wstring> extra_dlls = {
-      L"d3dcompiler_47.dll", L"dxil.dll",      L"libEGL.dll",
-      L"libGLESv2.dll",      L"mojo_core.dll", L"vk_swiftshader.dll",
-      L"vulkan-1.dll"};
+      L"d3dcompiler_47.dll", L"dxcompiler.dll", L"dxil.dll",
+      L"libEGL.dll",         L"libGLESv2.dll",  L"mojo_core.dll",
+      L"vk_swiftshader.dll", L"vulkan-1.dll"};
   for (const auto& dll : extra_dlls) {
     Validate(dll);
   }
