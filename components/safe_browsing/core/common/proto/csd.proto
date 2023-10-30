@@ -129,6 +129,9 @@ message ChromeUserPopulation {
   // If user has signed in. The user may or may not have sync enabled. For sync
   // status, check is_history_sync_enabled instead.
   optional bool is_signed_in = 18;
+
+  // Server-side only field.
+  reserved 19;
 }
 
 message ImageFeatureEmbedding {
