@@ -822,8 +822,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   demuxer_manager_->SetLoadedUrl(GURL(url));
   load_type_ = load_type;
 
-  ReportMetrics(load_type, demuxer_manager_->LoadedUrl(), *frame_,
-                media_log_.get());
+  ReportMetrics(load_type, demuxer_manager_->LoadedUrl(), media_log_.get());
 
   // Set subresource URL for crash reporting; will be truncated to 256 bytes.
   static base::debug::CrashKeyString* subresource_url =

@@ -516,8 +516,7 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
   if (internal_frame_->web_frame()) {
     WebURL url = source.GetAsURL();
     // Report UMA metrics.
-    ReportMetrics(load_type, url, *internal_frame_->web_frame(),
-                  media_log_.get());
+    ReportMetrics(load_type, url, media_log_.get());
   }
 
   audio_renderer_ = renderer_factory_->GetAudioRenderer(
