@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/barrier_callback.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/types/optional_util.h"
@@ -199,7 +200,11 @@ bool ContentAutofillDriver::CanShowAutofillUi() const {
 }
 
 bool ContentAutofillDriver::RendererIsAvailable() {
-  return render_frame_host_->GetRenderViewHost() != nullptr;
+  if (!render_frame_host_->GetRenderViewHost()) {
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+  return true;
 }
 
 void ContentAutofillDriver::PopupHidden() {
