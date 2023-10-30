@@ -136,6 +136,35 @@ EvalJsResult GetLocalStorage(RenderFrameHostImpl* rfh, std::string key) {
   return EvalJs(rfh, JsReplace("localStorage.getItem($1)", key));
 }
 
+// Because we are dealing with multiple renderer processes and the storage
+// service, we sometimes need to wait for the storage changes to show up the
+// renderer. See https://crbug.com/1494646.
+// Returns whether the expected value was found (so timeouts can be recognized).
+[[nodiscard]] bool WaitForLocalStorage(RenderFrameHostImpl* rfh,
+                                       std::string key,
+                                       std::string expected_value) {
+  auto value = EvalJs(rfh, JsReplace(R"(
+    new Promise((resolve) => {
+      let key = $1;
+      let expected_value = $2;
+      if (localStorage.getItem(key) == expected_value) {
+        resolve(localStorage.getItem(key));
+        return;
+      }
+      let listener = window.addEventListener("storage", e => {
+        if (e.storageArea == localStorage && e.key == key
+                && e.newValue == expected_value) {
+          resolve(localStorage.getItem(key));
+          removeEventListener("storage", listener);
+          return;
+        }
+      });
+    });
+    )",
+                                     key, expected_value));
+  return value == expected_value;
+}
+
 BackForwardCacheBrowserTest::BackForwardCacheBrowserTest() = default;
 
 BackForwardCacheBrowserTest::~BackForwardCacheBrowserTest() {
@@ -1798,10 +1827,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Check that the value for 'pagehide_storage' and 'visibilitychange_storage'
   // are set correctly.
-  EXPECT_EQ("dispatched_once",
-            GetLocalStorage(main_frame_3, "pagehide_storage"));
-  EXPECT_EQ("not_dispatched",
-            GetLocalStorage(main_frame_3, "visibilitychange_storage"));
+  EXPECT_TRUE(
+      WaitForLocalStorage(main_frame_3, "pagehide_storage", "dispatched_once"));
+  EXPECT_TRUE(WaitForLocalStorage(main_frame_3, "visibilitychange_storage",
+                                  "not_dispatched"));
 }
 
 // Tests that we're getting the correct TextInputState and focus updates when a
