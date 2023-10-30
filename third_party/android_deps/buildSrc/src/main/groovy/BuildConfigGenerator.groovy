@@ -54,11 +54,12 @@ class BuildConfigGenerator extends DefaultTask {
         'androidx_profileinstaller_profileinstaller',
     ]
 
-    // These targets will no be downloaded from maven. Deps onto them will be made
+    // These targets will not be downloaded from maven. Deps onto them will be made
     // to point to the existing targets instead.
     static final Map<String, String> EXISTING_LIBS = [
         com_ibm_icu_icu4j: '//third_party/icu4j:icu4j_java',
         com_almworks_sqlite4java_sqlite4java: '//third_party/sqlite4java:sqlite4java_java',
+        com_google_guava_listenablefuture: ':guava_android_java',
         com_jakewharton_android_repackaged_dalvik_dx: '//third_party/aosp_dalvik:aosp_dalvik_dx_java',
         junit_junit: '//third_party/junit:junit',
         net_bytebuddy_byte_buddy_android: '//third_party/byte_buddy:byte_buddy_android_java',
@@ -81,11 +82,27 @@ class BuildConfigGenerator extends DefaultTask {
     // These targets will still be downloaded from maven. Any deps onto them will be made
     // to point to the aliased target instead.
     static final Map<String, String> ALIASED_LIBS = [
-        // Theese libs are pulled in via doubledown, should
-        // use the alias instead of the real target.
-        com_google_guava_guava_android: '//third_party/android_deps:guava_android_java',
-        com_google_android_material_material: '//third_party/android_deps:material_design_java',
-        com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
+        com_google_android_material_material: ':material_design_java',
+        com_google_android_play_feature_delivery: ':playcore_java',
+        com_google_dagger_dagger_compiler: ':dagger_processor',
+        com_google_dagger_dagger: ':dagger_java',
+        com_google_guava_failureaccess: ':guava_android_java',
+        com_google_guava_guava_android: ':guava_android_java',
+        com_google_protobuf_protobuf_javalite: ':protobuf_lite_runtime_java',
+        // Logic for google_play_services_package added below.
+    ]
+
+    // Targets that are disabled when enable_chrome_android_internal=true.
+    static final Map<String, String> CONDITIONAL_LIBS = [
+        com_google_android_material_material: '!defined(material_design_target)',
+        com_google_android_play_feature_delivery: '!defined(playcore_target)',
+        com_google_dagger_dagger_compiler: '!defined(dagger_annotation_processor_target)',
+        com_google_dagger_dagger_producers: '!defined(dagger_annotation_processor_target)',
+        com_google_dagger_dagger_spi: '!defined(dagger_annotation_processor_target)',
+        com_google_dagger_dagger: '!defined(dagger_java_target)',
+        com_google_guava_guava_android: '!defined(guava_android_target)',
+        com_google_protobuf_protobuf_javalite: '!defined(android_proto_runtime)',
+        // Logic for google_play_services_package added below.
     ]
 
     /**
@@ -480,40 +497,64 @@ class BuildConfigGenerator extends DefaultTask {
 
         String targetName = translateTargetName(dependency.id) + '_java'
         List<String> javaDeps = computeJavaGroupForwardingTargets(dependency) ?: dependency.children
+        Set<String> addedDeps = new HashSet<String>();
 
         String depsStr = ''
         javaDeps?.each { childDep ->
-            if (childDep.startsWith('//')) {
-                depsStr += "\"${childDep}\","
-                return
-            }
             ChromiumDepGraph.DependencyDescription dep = allDependencies[childDep]
-            if (dep.exclude) {
+            if (dep.exclude || dep.id in DISALLOW_DEPS) {
                 return
             }
             // Special case: If a child dependency is an existing lib, rather than skipping
             // it, replace the child dependency with the existing lib.
-            String existingLib = EXISTING_LIBS.get(dep.id)
             String aliasedLib = ALIASED_LIBS.get(dep.id)
-            String depTargetName = translateTargetName(dep.id) + '_java'
+            aliasedLib = aliasedLib != null ? aliasedLib : EXISTING_LIBS.get(dep.id)
 
-            /* groovylint-disable-next-line EmptyIfStatement */
-            if (dep.id in DISALLOW_DEPS || dep.exclude) {
-                // Do not depend on excluded or disallowed deps.
-            } else if (existingLib) {
-                depsStr += "\"${existingLib}\","
+            // The failureaccess alias needs to map to -jre or -android guava.
+            if (aliasedLib == ':guava_android_java' && !dependency.supportsAndroid) {
+                aliasedLib = ':com_google_guava_guava_java'
+            }
+
+            String depTargetName = translateTargetName(dep.id) + '_java'
+            String gnTarget;
+            if (targetName.startsWith('org_robolectric') && dep.id.contains('guava')) {
+                // Change from guava-jre to guava-android so that we don't get two copies of Guava
+                // in robolectric tests (since code-under-test might depend on guava-android).
+                gnTarget = ':guava_android_java'
             } else if (aliasedLib) {
-                depsStr += "\"${aliasedLib}\","
+                gnTarget = aliasedLib
             } else if (isInDifferentRepo(dep)) {
                 String thirdPartyDir = (dep.id.startsWith('androidx')) ? 'androidx' : 'android_deps'
-                depsStr += "\"//third_party/${thirdPartyDir}:${depTargetName}\","
+                gnTarget = "//third_party/${thirdPartyDir}:${depTargetName}"
             } else {
-                depsStr += "\":${depTargetName}\","
+                gnTarget = ":${depTargetName}"
             }
+
+            if (targetName.contains('guava') && (
+                    gnTarget == ':guava_android_java' || gnTarget == ':com_google_guava_guava_java')) {
+                // Prevent circular dep caused by having listenablefuture aliased to guava_android.
+                return
+            }
+            if (gnTarget.startsWith(':google_play_services_') || gnTarget.startsWith(':google_firebase_')) {
+              gnTarget = '$google_play_services_package' + gnTarget
+            }
+            // Target aliases can cause dupes.
+            if (addedDeps.add(gnTarget)) {
+                depsStr += "\"${gnTarget}\","
+            }
+        }
+
+        String condition = CONDITIONAL_LIBS.get(dependency.id)
+        if (isPlayServicesTarget(dependency.id)) {
+          assert condition == null : dependency.id
+          condition = 'google_play_services_package == "//third_party/android_deps"'
         }
 
         String libPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
         sb.append(GEN_REMINDER)
+        if (condition != null) {
+          sb.append("if ($condition) {\n")
+        }
         if (dependency.extension == 'jar') {
             String targetType = targetName.startsWith('androidx') ? 'androidx_java_prebuilt' : 'java_prebuilt'
             sb.append("""\
@@ -559,7 +600,10 @@ class BuildConfigGenerator extends DefaultTask {
         }
         addSpecialTreatment(sb, dependency.id, dependency.extension)
 
-        sb.append('}\n\n')
+        sb.append('}\n')
+        if (condition != null) {
+          sb.append("}\n")
+        }
     }
 
     String generateBuildTargetVisibilityDeclaration(ChromiumDepGraph.DependencyDescription dependency) {
@@ -643,7 +687,8 @@ class BuildConfigGenerator extends DefaultTask {
         }
         if (dependencyExtension == 'jar' && (
                 dependencyId.startsWith('io_grpc_') ||
-                dependencyId == 'com_google_firebase_firebase_encoders')) {
+                dependencyId == 'com_google_firebase_firebase_encoders' ||
+                dependencyId == 'com_google_guava_guava_android')) {
             sb.append('  # https://crbug.com/1412551\n')
             sb.append('  requires_android = true\n')
         }
@@ -743,26 +788,14 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  extract_native_libraries = true\n')
                 break
             case 'com_google_guava_guava':
-                sb.append('\n')
-                sb.append('  # Need to exclude class and replace it with class library as\n')
-                sb.append('  # com_google_guava_listenablefuture has support_androids=true.\n')
-                sb.append('  deps += [":com_google_guava_listenablefuture_java"]\n')
-                sb.append('  jar_excluded_patterns = ["*/ListenableFuture.class"]\n')
-                break
             case 'com_google_guava_guava_android':
-                sb.with {
-                    append('\n')
-                    append('  # Add a dep to com_google_guava_listenablefuture_java\n')
-                    append('  # because androidx_concurrent_futures also depends on it and to avoid\n')
-                    append('  # defining ListenableFuture.class twice.\n')
-                    append('  deps += [":com_google_guava_listenablefuture_java"]\n')
-                    append('  jar_excluded_patterns += ["*/ListenableFuture.class"]\n')
-                }
-                break
-            case 'com_google_guava_listenablefuture':
                 sb.append('\n')
-                sb.append('  # This dep should be used when ListenableFuture is needed.\n')
-                sb.append('  preferred_dep = true\n')
+                sb.append('  # Dep needed to fix:\n')
+                sb.append('  #   warning: unknown enum constant ReflectionSupport$Level.FULL\n')
+                sb.append('  deps += [":com_google_j2objc_j2objc_annotations_java"]\n')
+                sb.append('\n')
+                sb.append('  # Always bundle this part of guava in with the main target.\n')
+                sb.append('  public_deps = [":com_google_guava_failureaccess_java"]\n')
                 break
             case 'com_google_protobuf_protobuf_javalite':
                 sb.with {
@@ -805,10 +838,6 @@ class BuildConfigGenerator extends DefaultTask {
         switch (targetName) {
           case 'com_google_guava_guava_android':
           case 'google_play_services_basement':
-                if (targetName == 'com_google_guava_guava_android') {
-                    // com_google_guava_guava_android is java_prebuilt().
-                    sb.append('bypass_platform_checks = true')
-                }
                 String libraryDep = '//third_party/android_deps/local_modifications/preconditions:' +
                         computePreconditionsStubLibraryForDep(dependencyId)
                 sb.append("""

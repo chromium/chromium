@@ -38,10 +38,29 @@ if (!limit_android_deps) {
   java_group("guava_android_java") {
     preferred_dep = true
     if (defined(guava_android_target)) {
-      deps = [ guava_android_target ]
+      deps = [
+        ":com_google_guava_listenablefuture_java",
+        guava_android_target,
+      ]
     } else {
       deps =
           [ "//third_party/android_deps:com_google_guava_guava_android_java" ]
+    }
+  }
+
+  # TODO(crbug.com/1493346): Remove when not referenced downstream.
+  if (defined(guava_android_target) &&
+      (!defined(clank_needs_listenable_future) ||
+       clank_needs_listenable_future)) {
+    java_prebuilt("com_google_guava_listenablefuture_java") {
+      jar_path = "libs/com_google_guava_guava_android/guava-32.1.3-android.jar"
+      output_name = "listenable_future"
+      supports_android = true
+      jar_included_patterns =
+          [ "com/google/common/util/concurrent/ListenableFuture.class" ]
+    }
+  } else {
+    java_group("com_google_guava_listenablefuture_java") {
     }
   }
 
@@ -76,7 +95,11 @@ if (!limit_android_deps) {
 
   java_group("protobuf_lite_runtime_java") {
     preferred_dep = true
-    deps = [ android_proto_runtime ]
+    if (defined(android_proto_runtime)) {
+      deps = [ android_proto_runtime ]
+    } else {
+      deps = [ ":com_google_protobuf_protobuf_javalite_java" ]
+    }
   }
 
   android_library("chromium_play_services_availability_java") {
@@ -188,35 +211,46 @@ java_prebuilt("com_google_code_gson_gson_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_google_dagger_dagger_java") {
-  jar_path = "libs/com_google_dagger_dagger/dagger-2.30.jar"
-  output_name = "com_google_dagger_dagger"
-  supports_android = true
-  enable_bytecode_checks = false
-  deps = [ ":javax_inject_javax_inject_java" ]
+if (!defined(dagger_java_target)) {
+  java_prebuilt("com_google_dagger_dagger_java") {
+    jar_path = "libs/com_google_dagger_dagger/dagger-2.30.jar"
+    output_name = "com_google_dagger_dagger"
+    supports_android = true
+    enable_bytecode_checks = false
+
+    # Target is swapped out when internal code is enabled.
+    # Please depend on :dagger_java instead.
+    visibility = [ ":*" ]
+    deps = [ ":javax_inject_javax_inject_java" ]
+  }
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_google_dagger_dagger_compiler_java") {
-  jar_path = "libs/com_google_dagger_dagger_compiler/dagger-compiler-2.30.jar"
-  output_name = "com_google_dagger_dagger_compiler"
-  enable_bytecode_checks = false
-  deps = [
-    ":com_google_code_findbugs_jsr305_java",
-    ":com_google_dagger_dagger_java",
-    ":com_google_dagger_dagger_producers_java",
-    ":com_google_dagger_dagger_spi_java",
-    ":com_google_googlejavaformat_google_java_format_java",
-    ":com_google_guava_failureaccess_java",
-    ":com_google_guava_guava_java",
-    ":com_squareup_javapoet_java",
-    ":javax_annotation_jsr250_api_java",
-    ":javax_inject_javax_inject_java",
-    ":net_ltgt_gradle_incap_incap_java",
-    ":org_checkerframework_checker_compat_qual_java",
-    ":org_jetbrains_kotlinx_kotlinx_metadata_jvm_java",
-    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-  ]
+if (!defined(dagger_annotation_processor_target)) {
+  java_prebuilt("com_google_dagger_dagger_compiler_java") {
+    jar_path = "libs/com_google_dagger_dagger_compiler/dagger-compiler-2.30.jar"
+    output_name = "com_google_dagger_dagger_compiler"
+    enable_bytecode_checks = false
+
+    # Target is swapped out when internal code is enabled.
+    # Please depend on :dagger_processor instead.
+    visibility = [ ":*" ]
+    deps = [
+      ":com_google_code_findbugs_jsr305_java",
+      ":com_google_dagger_dagger_producers_java",
+      ":com_google_dagger_dagger_spi_java",
+      ":com_google_googlejavaformat_google_java_format_java",
+      ":com_google_guava_guava_java",
+      ":com_squareup_javapoet_java",
+      ":dagger_java",
+      ":javax_annotation_jsr250_api_java",
+      ":javax_inject_javax_inject_java",
+      ":net_ltgt_gradle_incap_incap_java",
+      ":org_checkerframework_checker_compat_qual_java",
+      ":org_jetbrains_kotlinx_kotlinx_metadata_jvm_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -282,51 +316,22 @@ java_prebuilt("com_google_errorprone_javac_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_google_guava_failureaccess_java") {
-  jar_path = "libs/com_google_guava_failureaccess/failureaccess-1.0.1.jar"
-  output_name = "com_google_guava_failureaccess"
-  supports_android = true
-  enable_bytecode_checks = false
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_guava_guava_java") {
-  jar_path = "libs/com_google_guava_guava/guava-31.1-jre.jar"
+  jar_path = "libs/com_google_guava_guava/guava-32.1.3-jre.jar"
   output_name = "com_google_guava_guava"
   enable_bytecode_checks = false
   deps = [
     ":com_google_code_findbugs_jsr305_java",
     ":com_google_errorprone_error_prone_annotations_java",
-    ":com_google_guava_failureaccess_java",
-    ":com_google_guava_listenablefuture_java",
-    ":com_google_j2objc_j2objc_annotations_java",
     ":org_checkerframework_checker_qual_java",
   ]
 
-  # Need to exclude class and replace it with class library as
-  # com_google_guava_listenablefuture has support_androids=true.
-  deps += [ ":com_google_guava_listenablefuture_java" ]
-  jar_excluded_patterns = [ "*/ListenableFuture.class" ]
-}
+  # Dep needed to fix:
+  #   warning: unknown enum constant ReflectionSupport$Level.FULL
+  deps += [ ":com_google_j2objc_j2objc_annotations_java" ]
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_google_guava_listenablefuture_java") {
-  jar_path = "libs/com_google_guava_listenablefuture/listenablefuture-1.0.jar"
-  output_name = "com_google_guava_listenablefuture"
-  supports_android = true
-  enable_bytecode_checks = false
-
-  # This dep should be used when ListenableFuture is needed.
-  preferred_dep = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
-  jar_path =
-      "libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-1.3.jar"
-  output_name = "com_google_j2objc_j2objc_annotations"
-  supports_android = true
-  enable_bytecode_checks = false
+  # Always bundle this part of guava in with the main target.
+  public_deps = [ ":com_google_guava_failureaccess_java" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -362,7 +367,7 @@ java_prebuilt("org_checkerframework_checker_compat_qual_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_checkerframework_checker_qual_java") {
-  jar_path = "libs/org_checkerframework_checker_qual/checker-qual-3.25.0.jar"
+  jar_path = "libs/org_checkerframework_checker_qual/checker-qual-3.37.0.jar"
   output_name = "org_checkerframework_checker_qual"
   supports_android = true
   enable_bytecode_checks = false
@@ -468,47 +473,50 @@ java_prebuilt("com_google_auto_value_auto_value_annotations_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_google_dagger_dagger_producers_java") {
-  jar_path = "libs/com_google_dagger_dagger_producers/dagger-producers-2.30.jar"
-  output_name = "com_google_dagger_dagger_producers"
-  enable_bytecode_checks = false
+if (!defined(dagger_annotation_processor_target)) {
+  java_prebuilt("com_google_dagger_dagger_producers_java") {
+    jar_path =
+        "libs/com_google_dagger_dagger_producers/dagger-producers-2.30.jar"
+    output_name = "com_google_dagger_dagger_producers"
+    enable_bytecode_checks = false
 
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [
-    ":*",
-    "//third_party/androidx:*",
-  ]
-  deps = [
-    ":com_google_dagger_dagger_java",
-    ":com_google_guava_failureaccess_java",
-    ":com_google_guava_guava_java",
-    ":javax_inject_javax_inject_java",
-    ":org_checkerframework_checker_compat_qual_java",
-  ]
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [
+      ":com_google_guava_guava_java",
+      ":dagger_java",
+      ":javax_inject_javax_inject_java",
+      ":org_checkerframework_checker_compat_qual_java",
+    ]
+  }
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("com_google_dagger_dagger_spi_java") {
-  jar_path = "libs/com_google_dagger_dagger_spi/dagger-spi-2.30.jar"
-  output_name = "com_google_dagger_dagger_spi"
-  enable_bytecode_checks = false
+if (!defined(dagger_annotation_processor_target)) {
+  java_prebuilt("com_google_dagger_dagger_spi_java") {
+    jar_path = "libs/com_google_dagger_dagger_spi/dagger-spi-2.30.jar"
+    output_name = "com_google_dagger_dagger_spi"
+    enable_bytecode_checks = false
 
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [
-    ":*",
-    "//third_party/androidx:*",
-  ]
-  deps = [
-    ":com_google_code_findbugs_jsr305_java",
-    ":com_google_dagger_dagger_java",
-    ":com_google_dagger_dagger_producers_java",
-    ":com_google_guava_failureaccess_java",
-    ":com_google_guava_guava_java",
-    ":com_squareup_javapoet_java",
-    ":javax_inject_javax_inject_java",
-  ]
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    deps = [
+      ":com_google_code_findbugs_jsr305_java",
+      ":com_google_dagger_dagger_producers_java",
+      ":com_google_guava_guava_java",
+      ":com_squareup_javapoet_java",
+      ":dagger_java",
+      ":javax_inject_javax_inject_java",
+    ]
+  }
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -556,6 +564,18 @@ java_prebuilt("com_google_googlejavaformat_google_java_format_java") {
     ":com_google_errorprone_javac_shaded_java",
     ":com_google_guava_guava_java",
   ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+java_prebuilt("com_google_guava_failureaccess_java") {
+  jar_path = "libs/com_google_guava_failureaccess/failureaccess-1.0.1.jar"
+  output_name = "com_google_guava_failureaccess"
+  supports_android = true
+  enable_bytecode_checks = false
+
+  # Target is swapped out when internal code is enabled.
+  # Please depend on :guava_android_java instead.
+  visibility = [ ":*" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -673,7 +693,6 @@ java_prebuilt("org_pcollections_pcollections_java") {
     "//third_party/androidx:*",
   ]
 }
-
 if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("com_android_support_drawerlayout_java") {
@@ -755,11 +774,11 @@ if (!limit_android_deps) {
     testonly = true
     deps = [
       ":com_google_errorprone_error_prone_annotations_java",
+      ":guava_android_java",
+      ":material_design_java",
       ":org_checkerframework_checker_qual_java",
       ":org_jsoup_jsoup_java",
-      "//third_party/android_deps:guava_android_java",
-      "//third_party/android_deps:material_design_java",
-      "//third_party/android_deps:protobuf_lite_runtime_java",
+      ":protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_test_services_storage_java",
       "//third_party/hamcrest:hamcrest_core_java",
@@ -768,362 +787,417 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_auth_java") {
-    aar_path = "libs/com_google_android_gms_play_services_auth/play-services-auth-20.1.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_auth/com_google_android_gms_play_services_auth.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_auth_api_phone_java",
-      ":google_play_services_auth_base_java",
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_tasks_java",
-      "//third_party/androidx:androidx_fragment_fragment_java",
-      "//third_party/androidx:androidx_loader_loader_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_auth_api_phone_java") {
-    aar_path = "libs/com_google_android_gms_play_services_auth_api_phone/play-services-auth-api-phone-18.0.1.aar"
-    info_path = "libs/com_google_android_gms_play_services_auth_api_phone/com_google_android_gms_play_services_auth_api_phone.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_tasks_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_auth_base_java") {
-    aar_path = "libs/com_google_android_gms_play_services_auth_base/play-services-auth-base-18.0.2.aar"
-    info_path = "libs/com_google_android_gms_play_services_auth_base/com_google_android_gms_play_services_auth_base.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_tasks_java",
-      "//third_party/androidx:androidx_collection_collection_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_base_java") {
-    aar_path = "libs/com_google_android_gms_play_services_base/play-services-base-18.0.1.aar"
-    info_path = "libs/com_google_android_gms_play_services_base/com_google_android_gms_play_services_base.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_basement_java",
-      ":google_play_services_tasks_java",
-      "//third_party/androidx:androidx_collection_collection_java",
-      "//third_party/androidx:androidx_core_core_java",
-      "//third_party/androidx:androidx_fragment_fragment_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_basement_java") {
-    aar_path = "libs/com_google_android_gms_play_services_basement/play-services-basement-18.1.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_basement/com_google_android_gms_play_services_basement.info"
-    enable_bytecode_checks = false
-    deps = [
-      "//third_party/androidx:androidx_collection_collection_java",
-      "//third_party/androidx:androidx_core_core_java",
-      "//third_party/androidx:androidx_fragment_fragment_java",
-    ]
-
-    jar_excluded_patterns = []
-    if (!enable_java_asserts) {
-      # Omit the file since we use our own copy.
-      jar_excluded_patterns +=
-          [ "com/google/android/gms/common/internal/Preconditions.class" ]
-      deps += [ "//third_party/android_deps/local_modifications/preconditions:gms_stub_preconditions_java" ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_auth_java") {
+      aar_path = "libs/com_google_android_gms_play_services_auth/play-services-auth-20.1.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_auth/com_google_android_gms_play_services_auth.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_auth_api_phone_java",
+        "$google_play_services_package:google_play_services_auth_base_java",
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_fragment_fragment_java",
+        "//third_party/androidx:androidx_loader_loader_java",
+      ]
     }
-
-    # https://crbug.com/989505
-    jar_excluded_patterns += [ "META-INF/proguard/*" ]
-    input_jars_paths = [ "$android_sdk/optional/org.apache.http.legacy.jar" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_cast_java") {
-    aar_path = "libs/com_google_android_gms_play_services_cast/play-services-cast-17.0.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_cast/com_google_android_gms_play_services_cast.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_flags_java",
-      ":google_play_services_tasks_java",
-      "//third_party/androidx:androidx_core_core_java",
-      "//third_party/androidx:androidx_mediarouter_mediarouter_java",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_auth_api_phone_java") {
+      aar_path = "libs/com_google_android_gms_play_services_auth_api_phone/play-services-auth-api-phone-18.0.1.aar"
+      info_path = "libs/com_google_android_gms_play_services_auth_api_phone/com_google_android_gms_play_services_auth_api_phone.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_cast_framework_java") {
-    aar_path = "libs/com_google_android_gms_play_services_cast_framework/play-services-cast-framework-17.0.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_cast_framework/com_google_android_gms_play_services_cast_framework.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_cast_java",
-      "//third_party/androidx:androidx_appcompat_appcompat_java",
-      "//third_party/androidx:androidx_collection_collection_java",
-      "//third_party/androidx:androidx_core_core_java",
-      "//third_party/androidx:androidx_fragment_fragment_java",
-      "//third_party/androidx:androidx_media_media_java",
-      "//third_party/androidx:androidx_mediarouter_mediarouter_java",
-      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_auth_base_java") {
+      aar_path = "libs/com_google_android_gms_play_services_auth_base/play-services-auth-base-18.0.2.aar"
+      info_path = "libs/com_google_android_gms_play_services_auth_base/com_google_android_gms_play_services_auth_base.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_collection_collection_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_gcm_java") {
-    aar_path = "libs/com_google_android_gms_play_services_gcm/play-services-gcm-17.0.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_gcm/com_google_android_gms_play_services_gcm.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_iid_java",
-      ":google_play_services_stats_java",
-      "//third_party/androidx:androidx_collection_collection_java",
-      "//third_party/androidx:androidx_core_core_java",
-      "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_base_java") {
+      aar_path = "libs/com_google_android_gms_play_services_base/play-services-base-18.0.1.aar"
+      info_path = "libs/com_google_android_gms_play_services_base/com_google_android_gms_play_services_base.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_collection_collection_java",
+        "//third_party/androidx:androidx_core_core_java",
+        "//third_party/androidx:androidx_fragment_fragment_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_iid_java") {
-    aar_path = "libs/com_google_android_gms_play_services_iid/play-services-iid-17.0.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_iid/com_google_android_gms_play_services_iid.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_stats_java",
-      ":google_play_services_tasks_java",
-      "//third_party/androidx:androidx_collection_collection_java",
-      "//third_party/androidx:androidx_core_core_java",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_basement_java") {
+      aar_path = "libs/com_google_android_gms_play_services_basement/play-services-basement-18.1.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_basement/com_google_android_gms_play_services_basement.info"
+      enable_bytecode_checks = false
+      deps = [
+        "//third_party/androidx:androidx_collection_collection_java",
+        "//third_party/androidx:androidx_core_core_java",
+        "//third_party/androidx:androidx_fragment_fragment_java",
+      ]
+
+      jar_excluded_patterns = []
+      if (!enable_java_asserts) {
+        # Omit the file since we use our own copy.
+        jar_excluded_patterns +=
+            [ "com/google/android/gms/common/internal/Preconditions.class" ]
+        deps += [ "//third_party/android_deps/local_modifications/preconditions:gms_stub_preconditions_java" ]
+      }
+
+      # https://crbug.com/989505
+      jar_excluded_patterns += [ "META-INF/proguard/*" ]
+      input_jars_paths = [ "$android_sdk/optional/org.apache.http.legacy.jar" ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_instantapps_java") {
-    aar_path = "libs/com_google_android_gms_play_services_instantapps/play-services-instantapps-18.0.1.aar"
-    info_path = "libs/com_google_android_gms_play_services_instantapps/com_google_android_gms_play_services_instantapps.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_tasks_java",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_cast_java") {
+      aar_path = "libs/com_google_android_gms_play_services_cast/play-services-cast-17.0.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_cast/com_google_android_gms_play_services_cast.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_flags_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_core_core_java",
+        "//third_party/androidx:androidx_mediarouter_mediarouter_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_location_java") {
-    aar_path = "libs/com_google_android_gms_play_services_location/play-services-location-19.0.1.aar"
-    info_path = "libs/com_google_android_gms_play_services_location/com_google_android_gms_play_services_location.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_places_placereport_java",
-      ":google_play_services_tasks_java",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_cast_framework_java") {
+      aar_path = "libs/com_google_android_gms_play_services_cast_framework/play-services-cast-framework-17.0.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_cast_framework/com_google_android_gms_play_services_cast_framework.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_cast_java",
+        "//third_party/androidx:androidx_appcompat_appcompat_java",
+        "//third_party/androidx:androidx_collection_collection_java",
+        "//third_party/androidx:androidx_core_core_java",
+        "//third_party/androidx:androidx_fragment_fragment_java",
+        "//third_party/androidx:androidx_media_media_java",
+        "//third_party/androidx:androidx_mediarouter_mediarouter_java",
+        "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_tasks_java") {
-    aar_path = "libs/com_google_android_gms_play_services_tasks/play-services-tasks-18.0.2.aar"
-    info_path = "libs/com_google_android_gms_play_services_tasks/com_google_android_gms_play_services_tasks.info"
-    enable_bytecode_checks = false
-    deps = [ ":google_play_services_basement_java" ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_gcm_java") {
+      aar_path = "libs/com_google_android_gms_play_services_gcm/play-services-gcm-17.0.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_gcm/com_google_android_gms_play_services_gcm.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_iid_java",
+        "$google_play_services_package:google_play_services_stats_java",
+        "//third_party/androidx:androidx_collection_collection_java",
+        "//third_party/androidx:androidx_core_core_java",
+        "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_vision_java") {
-    aar_path = "libs/com_google_android_gms_play_services_vision/play-services-vision-20.1.3.aar"
-    info_path = "libs/com_google_android_gms_play_services_vision/com_google_android_gms_play_services_vision.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_vision_common_java",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_iid_java") {
+      aar_path = "libs/com_google_android_gms_play_services_iid/play-services-iid-17.0.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_iid/com_google_android_gms_play_services_iid.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_stats_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_collection_collection_java",
+        "//third_party/androidx:androidx_core_core_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_vision_common_java") {
-    aar_path = "libs/com_google_android_gms_play_services_vision_common/play-services-vision-common-19.1.3.aar"
-    info_path = "libs/com_google_android_gms_play_services_vision_common/com_google_android_gms_play_services_vision_common.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_clearcut_java",
-      ":google_play_services_flags_java",
-      ":google_play_services_phenotype_java",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_instantapps_java") {
+      aar_path = "libs/com_google_android_gms_play_services_instantapps/play-services-instantapps-18.0.1.aar"
+      info_path = "libs/com_google_android_gms_play_services_instantapps/com_google_android_gms_play_services_instantapps.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_google_android_material_material_java") {
-    aar_path =
-        "libs/com_google_android_material_material/material-1.7.0-alpha02.aar"
-    info_path = "libs/com_google_android_material_material/com_google_android_material_material.info"
-    enable_bytecode_checks = false
-
-    # Target is swapped out when internal code is enabled.
-    # Please depend on //third_party/android_deps:material_design_java instead.
-    visibility = [ "//third_party/android_deps:*" ]
-    deps = [
-      "//third_party/androidx:androidx_annotation_annotation_experimental_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/androidx:androidx_appcompat_appcompat_java",
-      "//third_party/androidx:androidx_cardview_cardview_java",
-      "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
-      "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
-      "//third_party/androidx:androidx_core_core_java",
-      "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
-      "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_java",
-      "//third_party/androidx:androidx_fragment_fragment_java",
-      "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
-      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
-      "//third_party/androidx:androidx_transition_transition_java",
-      "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
-      "//third_party/androidx:androidx_viewpager2_viewpager2_java",
-    ]
-
-    # Reduce binary size. https:crbug.com/954584
-    ignore_proguard_configs = true
-    proguard_configs = [ "material_design.flags" ]
-
-    # Ensure ConstraintsLayout is not included by unused layouts:
-    # https://crbug.com/1292510
-    resource_exclusion_globs = [
-      "res/layout*/*calendar*",
-      "res/layout*/*chip_input*",
-      "res/layout*/*clock*",
-      "res/layout*/*picker*",
-      "res/layout*/*time*",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_location_java") {
+      aar_path = "libs/com_google_android_gms_play_services_location/play-services-location-19.0.1.aar"
+      info_path = "libs/com_google_android_gms_play_services_location/com_google_android_gms_play_services_location.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_places_placereport_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_google_android_play_feature_delivery_java") {
-    aar_path = "libs/com_google_android_play_feature_delivery/feature-delivery-2.0.1.aar"
-    info_path = "libs/com_google_android_play_feature_delivery/com_google_android_play_feature_delivery.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":com_google_android_play_core_common_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_tasks_java",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_tasks_java") {
+      aar_path = "libs/com_google_android_gms_play_services_tasks/play-services-tasks-18.0.2.aar"
+      info_path = "libs/com_google_android_gms_play_services_tasks/com_google_android_gms_play_services_tasks.info"
+      enable_bytecode_checks = false
+      deps =
+          [ "$google_play_services_package:google_play_services_basement_java" ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_firebase_firebase_iid_java") {
-    aar_path = "libs/com_google_firebase_firebase_iid/firebase-iid-21.0.1.aar"
-    info_path = "libs/com_google_firebase_firebase_iid/com_google_firebase_firebase_iid.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_firebase_firebase_common_java",
-      ":google_firebase_firebase_components_java",
-      ":google_firebase_firebase_iid_interop_java",
-      ":google_firebase_firebase_installations_interop_java",
-      ":google_firebase_firebase_installations_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_cloud_messaging_java",
-      ":google_play_services_stats_java",
-      ":google_play_services_tasks_java",
-      "//third_party/androidx:androidx_collection_collection_java",
-      "//third_party/androidx:androidx_core_core_java",
-      "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_vision_java") {
+      aar_path = "libs/com_google_android_gms_play_services_vision/play-services-vision-20.1.3.aar"
+      info_path = "libs/com_google_android_gms_play_services_vision/com_google_android_gms_play_services_vision.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_vision_common_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_firebase_firebase_messaging_java") {
-    aar_path = "libs/com_google_firebase_firebase_messaging/firebase-messaging-21.0.1.aar"
-    info_path = "libs/com_google_firebase_firebase_messaging/com_google_firebase_firebase_messaging.info"
-    enable_bytecode_checks = false
-    deps = [
-      ":google_android_datatransport_transport_api_java",
-      ":google_firebase_firebase_common_java",
-      ":google_firebase_firebase_components_java",
-      ":google_firebase_firebase_encoders_java",
-      ":google_firebase_firebase_encoders_json_java",
-      ":google_firebase_firebase_iid_java",
-      ":google_firebase_firebase_installations_interop_java",
-      ":google_firebase_firebase_installations_java",
-      ":google_firebase_firebase_measurement_connector_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_cloud_messaging_java",
-      ":google_play_services_stats_java",
-      ":google_play_services_tasks_java",
-      "//third_party/androidx:androidx_collection_collection_java",
-      "//third_party/androidx:androidx_core_core_java",
-    ]
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_vision_common_java") {
+      aar_path = "libs/com_google_android_gms_play_services_vision_common/play-services-vision-common-19.1.3.aar"
+      info_path = "libs/com_google_android_gms_play_services_vision_common/com_google_android_gms_play_services_vision_common.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_clearcut_java",
+        "$google_play_services_package:google_play_services_flags_java",
+        "$google_play_services_package:google_play_services_phenotype_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("com_google_guava_guava_android_java") {
-    jar_path = "libs/com_google_guava_guava_android/guava-31.1-android.jar"
-    output_name = "com_google_guava_guava_android"
+  if (!defined(material_design_target)) {
+    android_aar_prebuilt("com_google_android_material_material_java") {
+      aar_path =
+          "libs/com_google_android_material_material/material-1.7.0-alpha02.aar"
+      info_path = "libs/com_google_android_material_material/com_google_android_material_material.info"
+      enable_bytecode_checks = false
+
+      # Target is swapped out when internal code is enabled.
+      # Please depend on :material_design_java instead.
+      visibility = [ ":*" ]
+      deps = [
+        "//third_party/androidx:androidx_annotation_annotation_experimental_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
+        "//third_party/androidx:androidx_appcompat_appcompat_java",
+        "//third_party/androidx:androidx_cardview_cardview_java",
+        "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
+        "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
+        "//third_party/androidx:androidx_core_core_java",
+        "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
+        "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_java",
+        "//third_party/androidx:androidx_fragment_fragment_java",
+        "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
+        "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+        "//third_party/androidx:androidx_transition_transition_java",
+        "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+        "//third_party/androidx:androidx_viewpager2_viewpager2_java",
+      ]
+
+      # Reduce binary size. https:crbug.com/954584
+      ignore_proguard_configs = true
+      proguard_configs = [ "material_design.flags" ]
+
+      # Ensure ConstraintsLayout is not included by unused layouts:
+      # https://crbug.com/1292510
+      resource_exclusion_globs = [
+        "res/layout*/*calendar*",
+        "res/layout*/*chip_input*",
+        "res/layout*/*clock*",
+        "res/layout*/*picker*",
+        "res/layout*/*time*",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (!defined(playcore_target)) {
+    android_aar_prebuilt("com_google_android_play_feature_delivery_java") {
+      aar_path = "libs/com_google_android_play_feature_delivery/feature-delivery-2.0.1.aar"
+      info_path = "libs/com_google_android_play_feature_delivery/com_google_android_play_feature_delivery.info"
+      enable_bytecode_checks = false
+
+      # Target is swapped out when internal code is enabled.
+      # Please depend on :playcore_java instead.
+      visibility = [ ":*" ]
+      deps = [
+        ":com_google_android_play_core_common_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_iid_java") {
+      aar_path = "libs/com_google_firebase_firebase_iid/firebase-iid-21.0.1.aar"
+      info_path = "libs/com_google_firebase_firebase_iid/com_google_firebase_firebase_iid.info"
+      enable_bytecode_checks = false
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_common_java",
+        "$google_play_services_package:google_firebase_firebase_components_java",
+        "$google_play_services_package:google_firebase_firebase_iid_interop_java",
+        "$google_play_services_package:google_firebase_firebase_installations_interop_java",
+        "$google_play_services_package:google_firebase_firebase_installations_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_cloud_messaging_java",
+        "$google_play_services_package:google_play_services_stats_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_collection_collection_java",
+        "//third_party/androidx:androidx_core_core_java",
+        "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_messaging_java") {
+      aar_path = "libs/com_google_firebase_firebase_messaging/firebase-messaging-21.0.1.aar"
+      info_path = "libs/com_google_firebase_firebase_messaging/com_google_firebase_firebase_messaging.info"
+      enable_bytecode_checks = false
+      deps = [
+        ":google_android_datatransport_transport_api_java",
+        "$google_play_services_package:google_firebase_firebase_common_java",
+        "$google_play_services_package:google_firebase_firebase_components_java",
+        "$google_play_services_package:google_firebase_firebase_encoders_java",
+        "$google_play_services_package:google_firebase_firebase_encoders_json_java",
+        "$google_play_services_package:google_firebase_firebase_iid_java",
+        "$google_play_services_package:google_firebase_firebase_installations_interop_java",
+        "$google_play_services_package:google_firebase_firebase_installations_java",
+        "$google_play_services_package:google_firebase_firebase_measurement_connector_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_cloud_messaging_java",
+        "$google_play_services_package:google_play_services_stats_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_collection_collection_java",
+        "//third_party/androidx:androidx_core_core_java",
+      ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  if (!defined(guava_android_target)) {
+    java_prebuilt("com_google_guava_guava_android_java") {
+      jar_path = "libs/com_google_guava_guava_android/guava-32.1.3-android.jar"
+      output_name = "com_google_guava_guava_android"
+      supports_android = true
+      enable_bytecode_checks = false
+
+      # Target is swapped out when internal code is enabled.
+      # Please depend on :guava_android_java instead.
+      visibility = [ ":*" ]
+      deps = [
+        ":com_google_code_findbugs_jsr305_java",
+        ":com_google_errorprone_error_prone_annotations_java",
+        ":org_checkerframework_checker_qual_java",
+      ]
+
+      jar_excluded_patterns = []
+      if (!enable_java_asserts) {
+        # Omit the file since we use our own copy.
+        jar_excluded_patterns +=
+            [ "com/google/common/base/Preconditions.class" ]
+        deps += [ "//third_party/android_deps/local_modifications/preconditions:guava_stub_preconditions_java" ]
+      }
+
+      # https://crbug.com/1412551
+      requires_android = true
+
+      # Dep needed to fix:
+      #   warning: unknown enum constant ReflectionSupport$Level.FULL
+      deps += [ ":com_google_j2objc_j2objc_annotations_java" ]
+
+      # Always bundle this part of guava in with the main target.
+      public_deps = [ ":com_google_guava_failureaccess_java" ]
+    }
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
+    jar_path =
+        "libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-2.8.jar"
+    output_name = "com_google_j2objc_j2objc_annotations"
     supports_android = true
     enable_bytecode_checks = false
-
-    # Target is swapped out when internal code is enabled.
-    # Please depend on //third_party/android_deps:guava_android_java instead.
-    visibility = [ "//third_party/android_deps:*" ]
-    deps = [
-      ":com_google_code_findbugs_jsr305_java",
-      ":com_google_errorprone_error_prone_annotations_java",
-      ":com_google_guava_failureaccess_java",
-      ":com_google_guava_listenablefuture_java",
-      ":com_google_j2objc_j2objc_annotations_java",
-      ":org_checkerframework_checker_qual_java",
-    ]
-    bypass_platform_checks = true
-
-    jar_excluded_patterns = []
-    if (!enable_java_asserts) {
-      # Omit the file since we use our own copy.
-      jar_excluded_patterns += [ "com/google/common/base/Preconditions.class" ]
-      deps += [ "//third_party/android_deps/local_modifications/preconditions:guava_stub_preconditions_java" ]
-    }
-
-    # Add a dep to com_google_guava_listenablefuture_java
-    # because androidx_concurrent_futures also depends on it and to avoid
-    # defining ListenableFuture.class twice.
-    deps += [ ":com_google_guava_listenablefuture_java" ]
-    jar_excluded_patterns += [ "*/ListenableFuture.class" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
-    jar_path = "libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-3.21.1.jar"
-    output_name = "com_google_protobuf_protobuf_javalite"
-    supports_android = true
-    enable_bytecode_checks = false
+  if (!defined(android_proto_runtime)) {
+    java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
+      jar_path = "libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-3.21.1.jar"
+      output_name = "com_google_protobuf_protobuf_javalite"
+      supports_android = true
+      enable_bytecode_checks = false
 
-    # Target is swapped out when internal code is enabled.
-    # Please depend on //third_party/android_deps:protobuf_lite_runtime_java instead.
-    visibility = [ "//third_party/android_deps:*" ]
+      # Target is swapped out when internal code is enabled.
+      # Please depend on :protobuf_lite_runtime_java instead.
+      visibility = [ ":*" ]
 
-    # Prebuilt protos in the runtime library.
-    # If you want to use these protos, you should create a proto_java_library
-    # target for them. See crbug.com/1103399 for discussion.
-    jar_excluded_patterns = [
-      "com/google/protobuf/Any*",
-      "com/google/protobuf/Duration*",
-      "com/google/protobuf/FieldMask*",
-      "com/google/protobuf/Timestamp*",
-    ]
+      # Prebuilt protos in the runtime library.
+      # If you want to use these protos, you should create a proto_java_library
+      # target for them. See crbug.com/1103399 for discussion.
+      jar_excluded_patterns = [
+        "com/google/protobuf/Any*",
+        "com/google/protobuf/Duration*",
+        "com/google/protobuf/FieldMask*",
+        "com/google/protobuf/Timestamp*",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1160,8 +1234,8 @@ if (!limit_android_deps) {
     deps = [
       ":com_google_code_findbugs_jsr305_java",
       ":com_google_errorprone_error_prone_annotations_java",
+      ":guava_android_java",
       ":io_grpc_grpc_context_java",
-      "//third_party/android_deps:guava_android_java",
     ]
 
     # https://crbug.com/1412551
@@ -1174,8 +1248,8 @@ if (!limit_android_deps) {
     info_path = "libs/io_grpc_grpc_binder/io_grpc_grpc_binder.info"
     enable_bytecode_checks = false
     deps = [
+      ":guava_android_java",
       ":io_grpc_grpc_core_java",
-      "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
@@ -1201,9 +1275,9 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
     deps = [
       ":com_google_code_findbugs_jsr305_java",
+      ":guava_android_java",
       ":io_grpc_grpc_api_java",
-      "//third_party/android_deps:guava_android_java",
-      "//third_party/android_deps:protobuf_lite_runtime_java",
+      ":protobuf_lite_runtime_java",
     ]
 
     # https://crbug.com/1412551
@@ -1218,8 +1292,8 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
     deps = [
       ":com_google_errorprone_error_prone_annotations_java",
+      ":guava_android_java",
       ":io_grpc_grpc_api_java",
-      "//third_party/android_deps:guava_android_java",
     ]
 
     # https://crbug.com/1412551
@@ -1315,7 +1389,6 @@ if (!limit_android_deps) {
     deps = [
       ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
       ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
-      "//third_party/android_deps:guava_android_java",
     ]
     requires_android = true
   }
@@ -1410,7 +1483,7 @@ if (!limit_android_deps) {
     testonly = true
     deps = [
       ":com_google_errorprone_error_prone_annotations_java",
-      ":com_google_guava_guava_java",
+      ":guava_android_java",
       ":javax_annotation_javax_annotation_api_java",
       ":javax_inject_javax_inject_java",
       ":org_robolectric_annotations_java",
@@ -1847,128 +1920,143 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_android_datatransport_transport_api_java") {
-    aar_path = "libs/com_google_android_datatransport_transport_api/transport-api-2.2.1.aar"
-    info_path = "libs/com_google_android_datatransport_transport_api/com_google_android_datatransport_transport_api.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_android_datatransport_transport_api_java") {
+      aar_path = "libs/com_google_android_datatransport_transport_api/transport-api-2.2.1.aar"
+      info_path = "libs/com_google_android_datatransport_transport_api/com_google_android_datatransport_transport_api.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_clearcut_java") {
-    aar_path = "libs/com_google_android_gms_play_services_clearcut/play-services-clearcut-17.0.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_clearcut/com_google_android_gms_play_services_clearcut.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_clearcut_java") {
+      aar_path = "libs/com_google_android_gms_play_services_clearcut/play-services-clearcut-17.0.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_clearcut/com_google_android_gms_play_services_clearcut.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_phenotype_java",
-      ":google_play_services_tasks_java",
-      "//third_party/androidx:androidx_core_core_java",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_phenotype_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_core_core_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_cloud_messaging_java") {
-    aar_path = "libs/com_google_android_gms_play_services_cloud_messaging/play-services-cloud-messaging-16.0.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_cloud_messaging/com_google_android_gms_play_services_cloud_messaging.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_cloud_messaging_java") {
+      aar_path = "libs/com_google_android_gms_play_services_cloud_messaging/play-services-cloud-messaging-16.0.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_cloud_messaging/com_google_android_gms_play_services_cloud_messaging.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_play_services_basement_java",
-      ":google_play_services_tasks_java",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_flags_java") {
-    aar_path = "libs/com_google_android_gms_play_services_flags/play-services-flags-17.0.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_flags/com_google_android_gms_play_services_flags.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_flags_java") {
+      aar_path = "libs/com_google_android_gms_play_services_flags/play-services-flags-17.0.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_flags/com_google_android_gms_play_services_flags.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_phenotype_java") {
-    aar_path = "libs/com_google_android_gms_play_services_phenotype/play-services-phenotype-17.0.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_phenotype/com_google_android_gms_play_services_phenotype.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_phenotype_java") {
+      aar_path = "libs/com_google_android_gms_play_services_phenotype/play-services-phenotype-17.0.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_phenotype/com_google_android_gms_play_services_phenotype.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_tasks_java",
-      "//third_party/androidx:androidx_core_core_java",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+        "//third_party/androidx:androidx_core_core_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_places_placereport_java") {
-    aar_path = "libs/com_google_android_gms_play_services_places_placereport/play-services-places-placereport-17.0.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_places_placereport/com_google_android_gms_play_services_places_placereport.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_places_placereport_java") {
+      aar_path = "libs/com_google_android_gms_play_services_places_placereport/play-services-places-placereport-17.0.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_places_placereport/com_google_android_gms_play_services_places_placereport.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [ ":google_play_services_basement_java" ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps =
+          [ "$google_play_services_package:google_play_services_basement_java" ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_play_services_stats_java") {
-    aar_path = "libs/com_google_android_gms_play_services_stats/play-services-stats-17.0.0.aar"
-    info_path = "libs/com_google_android_gms_play_services_stats/com_google_android_gms_play_services_stats.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_play_services_stats_java") {
+      aar_path = "libs/com_google_android_gms_play_services_stats/play-services-stats-17.0.0.aar"
+      info_path = "libs/com_google_android_gms_play_services_stats/com_google_android_gms_play_services_stats.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_play_services_basement_java",
-      "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_play_services_basement_java",
+        "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1986,164 +2074,185 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("google_firebase_firebase_annotations_java") {
-    jar_path = "libs/com_google_firebase_firebase_annotations/firebase-annotations-16.0.0.jar"
-    output_name = "com_google_firebase_firebase_annotations"
-    supports_android = true
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    java_prebuilt("google_firebase_firebase_annotations_java") {
+      jar_path = "libs/com_google_firebase_firebase_annotations/firebase-annotations-16.0.0.jar"
+      output_name = "com_google_firebase_firebase_annotations"
+      supports_android = true
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_firebase_firebase_common_java") {
-    aar_path =
-        "libs/com_google_firebase_firebase_common/firebase-common-19.5.0.aar"
-    info_path = "libs/com_google_firebase_firebase_common/com_google_firebase_firebase_common.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_common_java") {
+      aar_path =
+          "libs/com_google_firebase_firebase_common/firebase-common-19.5.0.aar"
+      info_path = "libs/com_google_firebase_firebase_common/com_google_firebase_firebase_common.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_firebase_firebase_components_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_tasks_java",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_components_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_firebase_firebase_components_java") {
-    aar_path = "libs/com_google_firebase_firebase_components/firebase-components-16.1.0.aar"
-    info_path = "libs/com_google_firebase_firebase_components/com_google_firebase_firebase_components.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_components_java") {
+      aar_path = "libs/com_google_firebase_firebase_components/firebase-components-16.1.0.aar"
+      info_path = "libs/com_google_firebase_firebase_components/com_google_firebase_firebase_components.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_firebase_firebase_annotations_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_annotations_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("google_firebase_firebase_encoders_java") {
-    jar_path = "libs/com_google_firebase_firebase_encoders/firebase-encoders-16.1.0.jar"
-    output_name = "com_google_firebase_firebase_encoders"
-    supports_android = true
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    java_prebuilt("google_firebase_firebase_encoders_java") {
+      jar_path = "libs/com_google_firebase_firebase_encoders/firebase-encoders-16.1.0.jar"
+      output_name = "com_google_firebase_firebase_encoders"
+      supports_android = true
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 
-    # https://crbug.com/1412551
-    requires_android = true
+      # https://crbug.com/1412551
+      requires_android = true
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_firebase_firebase_encoders_json_java") {
-    aar_path = "libs/com_google_firebase_firebase_encoders_json/firebase-encoders-json-17.1.0.aar"
-    info_path = "libs/com_google_firebase_firebase_encoders_json/com_google_firebase_firebase_encoders_json.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_encoders_json_java") {
+      aar_path = "libs/com_google_firebase_firebase_encoders_json/firebase-encoders-json-17.1.0.aar"
+      info_path = "libs/com_google_firebase_firebase_encoders_json/com_google_firebase_firebase_encoders_json.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_firebase_firebase_encoders_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_encoders_java",
+        "//third_party/androidx:androidx_annotation_annotation_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_firebase_firebase_iid_interop_java") {
-    aar_path = "libs/com_google_firebase_firebase_iid_interop/firebase-iid-interop-17.0.0.aar"
-    info_path = "libs/com_google_firebase_firebase_iid_interop/com_google_firebase_firebase_iid_interop.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_iid_interop_java") {
+      aar_path = "libs/com_google_firebase_firebase_iid_interop/firebase-iid-interop-17.0.0.aar"
+      info_path = "libs/com_google_firebase_firebase_iid_interop/com_google_firebase_firebase_iid_interop.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_play_services_base_java",
-      ":google_play_services_basement_java",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_firebase_firebase_installations_java") {
-    aar_path = "libs/com_google_firebase_firebase_installations/firebase-installations-16.3.5.aar"
-    info_path = "libs/com_google_firebase_firebase_installations/com_google_firebase_firebase_installations.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt("google_firebase_firebase_installations_java") {
+      aar_path = "libs/com_google_firebase_firebase_installations/firebase-installations-16.3.5.aar"
+      info_path = "libs/com_google_firebase_firebase_installations/com_google_firebase_firebase_installations.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_firebase_firebase_common_java",
-      ":google_firebase_firebase_components_java",
-      ":google_firebase_firebase_installations_interop_java",
-      ":google_play_services_tasks_java",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_common_java",
+        "$google_play_services_package:google_firebase_firebase_components_java",
+        "$google_play_services_package:google_firebase_firebase_installations_interop_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_firebase_firebase_installations_interop_java") {
-    aar_path = "libs/com_google_firebase_firebase_installations_interop/firebase-installations-interop-16.0.1.aar"
-    info_path = "libs/com_google_firebase_firebase_installations_interop/com_google_firebase_firebase_installations_interop.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt(
+        "google_firebase_firebase_installations_interop_java") {
+      aar_path = "libs/com_google_firebase_firebase_installations_interop/firebase-installations-interop-16.0.1.aar"
+      info_path = "libs/com_google_firebase_firebase_installations_interop/com_google_firebase_firebase_installations_interop.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_firebase_firebase_annotations_java",
-      ":google_play_services_tasks_java",
-    ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps = [
+        "$google_play_services_package:google_firebase_firebase_annotations_java",
+        "$google_play_services_package:google_play_services_tasks_java",
+      ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_firebase_firebase_measurement_connector_java") {
-    aar_path = "libs/com_google_firebase_firebase_measurement_connector/firebase-measurement-connector-18.0.0.aar"
-    info_path = "libs/com_google_firebase_firebase_measurement_connector/com_google_firebase_firebase_measurement_connector.info"
-    enable_bytecode_checks = false
+  if (google_play_services_package == "//third_party/android_deps") {
+    android_aar_prebuilt(
+        "google_firebase_firebase_measurement_connector_java") {
+      aar_path = "libs/com_google_firebase_firebase_measurement_connector/firebase-measurement-connector-18.0.0.aar"
+      info_path = "libs/com_google_firebase_firebase_measurement_connector/com_google_firebase_firebase_measurement_connector.info"
+      enable_bytecode_checks = false
 
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [ ":google_play_services_basement_java" ]
+      # To remove visibility constraint, add this dependency to
+      # //third_party/android_deps/build.gradle.
+      visibility = [
+        ":*",
+        "//third_party/androidx:*",
+      ]
+      deps =
+          [ "$google_play_services_package:google_play_services_basement_java" ]
+    }
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2199,10 +2308,10 @@ if (!limit_android_deps) {
       ":com_google_android_annotations_java",
       ":com_google_code_gson_gson_java",
       ":com_google_errorprone_error_prone_annotations_java",
+      ":guava_android_java",
       ":io_grpc_grpc_api_java",
       ":io_perfmark_perfmark_api_java",
       ":org_codehaus_mojo_animal_sniffer_annotations_java",
-      "//third_party/android_deps:guava_android_java",
     ]
 
     # https://crbug.com/1412551
@@ -2371,7 +2480,7 @@ if (!limit_android_deps) {
     ]
     testonly = true
     deps = [
-      ":com_google_guava_guava_java",
+      ":guava_android_java",
       ":org_robolectric_nativeruntime_dist_compat_java",
       ":org_robolectric_utils_java",
       ":org_robolectric_utils_reflector_java",
@@ -2409,7 +2518,7 @@ if (!limit_android_deps) {
     ]
     testonly = true
     deps = [
-      ":com_google_guava_guava_java",
+      ":guava_android_java",
       ":org_robolectric_annotations_java",
     ]
     is_robolectric = true
@@ -2430,7 +2539,7 @@ if (!limit_android_deps) {
     testonly = true
     deps = [
       ":com_google_auto_value_auto_value_annotations_java",
-      ":com_google_guava_guava_java",
+      ":guava_android_java",
       ":org_robolectric_pluginapi_java",
       ":org_robolectric_utils_java",
     ]
@@ -2451,7 +2560,7 @@ if (!limit_android_deps) {
     ]
     testonly = true
     deps = [
-      ":com_google_guava_guava_java",
+      ":guava_android_java",
       ":org_robolectric_annotations_java",
       ":org_robolectric_pluginapi_java",
       ":org_robolectric_utils_java",
@@ -2473,7 +2582,7 @@ if (!limit_android_deps) {
     ]
     testonly = true
     deps = [
-      ":com_google_guava_guava_java",
+      ":guava_android_java",
       ":javax_annotation_javax_annotation_api_java",
       ":javax_inject_javax_inject_java",
       ":org_ow2_asm_asm_commons_java",

@@ -65,7 +65,7 @@ android_library("javascriptengine_java") {
     ":javascriptengine_common_java",
     ":js_sandbox_aidl_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/android_deps:com_google_guava_listenablefuture_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -79,7 +79,6 @@ instrumentation_test_apk("javascriptengine_test") {
   sources = [ "src/androidTest/java/androidx/javascriptengine/WebViewJavaScriptSandboxTest.java" ]
   deps = [
     ":javascriptengine_java",
-    "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_core_java",

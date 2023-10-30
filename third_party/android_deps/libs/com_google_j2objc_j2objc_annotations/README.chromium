@@ -1,8 +1,8 @@
 Name: J2ObjC Annotations
 Short Name: j2objc-annotations
 URL: https://github.com/google/j2objc/
-Version: 1.3
-License: Apache Version 2.0
+Version: 2.8
+License: Apache License, Version 2.0
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes

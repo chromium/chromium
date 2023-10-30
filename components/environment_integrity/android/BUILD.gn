@@ -47,7 +47,6 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
@@ -69,7 +68,7 @@ android_library("integrity_service_bridge_public_impl_java") {
   sources = [ "java/src/org/chromium/components/environment_integrity/IntegrityServiceBridgeDelegateImpl.java" ]
   deps = [
     ":java",
-    "//third_party/android_deps:com_google_guava_listenablefuture_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
   ]
 }
@@ -109,7 +108,6 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

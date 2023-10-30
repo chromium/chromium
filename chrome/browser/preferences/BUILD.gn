@@ -85,7 +85,7 @@ robolectric_library("preferences_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//third_party/android_deps:com_google_guava_guava_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
