@@ -164,7 +164,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         if (!isURLReadAloudSupported(url)) {
             return;
         }
-        String urlSpec = url.getSpec();
+
+        String urlSpec = stripUserData(url).getSpec();
         if (mReadabilityMap.containsKey(urlSpec) || mPendingRequests.contains(urlSpec)) {
             return;
         }
@@ -212,7 +213,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
      */
     public boolean isReadable(Tab tab) {
         if (isAvailable() && tab.getUrl().isValid()) {
-            Boolean isReadable = mReadabilityMap.get(tab.getUrl().getSpec());
+            Boolean isReadable = mReadabilityMap.get(stripUserData(tab.getUrl()).getSpec());
             return isReadable == null ? false : isReadable;
         }
         return false;
@@ -239,7 +240,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
             // TODO Create voice list from settings.
             PlaybackArgs args =
                     new PlaybackArgs(
-                            tab.getUrl().getSpec(),
+                            stripUserData(tab.getUrl()).getSpec(),
                             TranslateBridge.getCurrentLanguage(tab),
                             /* voice= */ null,
                             /* dateModifiedMsSinceEpock= */ 0);
@@ -257,7 +258,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
      */
     public boolean timepointsSupported(Tab tab) {
         if (isAvailable() && tab.getUrl().isValid()) {
-            Boolean timepointsSuported = mTimepointsSupportedMap.get(tab.getUrl().getSpec());
+            Boolean timepointsSuported =
+                    mTimepointsSupportedMap.get(stripUserData(tab.getUrl()).getSpec());
             return timepointsSuported == null ? false : timepointsSuported;
         }
         return false;
@@ -341,6 +343,19 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                 && tab.getUrl().getSpec().equals(newUrl.getSpec())) {
             mHighligher.handleTabReloaded(tab);
         }
+    }
+
+    private GURL stripUserData(GURL in) {
+        if (!in.isValid()
+                || in.isEmpty()
+                || (in.getUsername().isEmpty() && in.getPassword().isEmpty())) {
+            return in;
+        }
+        return in.replaceComponents(
+                /* username= */ null,
+                /* clearUsername= */ true,
+                /* password= */ null,
+                /* clearPassword= */ true);
     }
 
     // Player.Delegate

@@ -286,6 +286,26 @@ public class GURLJavaTest {
         Assert.assertFalse(url1.domainIs("images.google.com"));
     }
 
+    // Test that replaceComponents is hooked up correctly.
+    @SmallTest
+    @Test
+    @SuppressWarnings(value = "AuthLeak")
+    public void testReplaceComponents() {
+        GURL url = new GURL("http://user:pass@google.com:99/foo;bar?q=a#ref");
+
+        GURL unchanged = url.replaceComponents(null, false, null, false);
+        Assert.assertEquals("user", unchanged.getUsername());
+        Assert.assertEquals("pass", unchanged.getPassword());
+
+        GURL cleared = url.replaceComponents(null, true, null, true);
+        Assert.assertTrue(cleared.getUsername().isEmpty());
+        Assert.assertTrue(cleared.getPassword().isEmpty());
+
+        GURL changed = url.replaceComponents("newusername", false, "newpassword", false);
+        Assert.assertEquals("newusername", changed.getUsername());
+        Assert.assertEquals("newpassword", changed.getPassword());
+    }
+
     // Tests Mojom conversion.
     @SmallTest
     @Test

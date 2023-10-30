@@ -401,4 +401,20 @@ public class ReadAloudControllerUnitTest {
 
         verify(mHighlighter).clearHighlights(eq(mGlobalRenderFrameHostId), eq(mTab));
     }
+
+    @Test
+    public void testUserDataStrippedFromReadabilityCheck() {
+        GURL tabUrl = new GURL("http://user:pass@example.com");
+        mTab.setGurlOverrideForTesting(tabUrl);
+
+        mController.maybeCheckReadability(tabUrl);
+
+        String sanitized = "http://example.com/";
+        verify(mHooksImpl, times(1)).isPageReadable(eq(sanitized), mCallbackCaptor.capture());
+        assertFalse(mController.isReadable(mTab));
+
+        mCallbackCaptor.getValue().onSuccess(sanitized, true, true);
+        assertTrue(mController.isReadable(mTab));
+        assertTrue(mController.timepointsSupported(mTab));
+    }
 }
