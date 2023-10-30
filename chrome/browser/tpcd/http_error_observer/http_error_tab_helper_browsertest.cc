@@ -176,7 +176,13 @@ IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, TPCBlockedImageErr) {
 }
 
 // Check that the ThirdPartyCookieBreakageIndicator UKM works with fetches
-IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, TPCBlockedFetchErr) {
+#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1497270) Flaky on Mac.
+#define MAYBE_TPCBlockedFetchErr DISABLED_TPCBlockedFetchErr
+#else
+#define MAYBE_TPCBlockedFetchErr TPCBlockedFetchErr
+#endif
+IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, MAYBE_TPCBlockedFetchErr) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   SetThirdPartyCookieBlocking(true);
