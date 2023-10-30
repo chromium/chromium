@@ -117,9 +117,11 @@ TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
 
 TEST_F(SupervisedUserServiceTest,
        AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagDisabled) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(service_->AreExtensionsPermissionsEnabled());
@@ -130,8 +132,10 @@ TEST_F(SupervisedUserServiceTest,
 
 TEST_F(SupervisedUserServiceTest,
        AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagEnabled) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list(
       kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   EXPECT_TRUE(service_->AreExtensionsPermissionsEnabled());

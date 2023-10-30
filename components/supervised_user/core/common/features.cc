@@ -81,9 +81,6 @@ bool IsRetryMechanismForListFamilyMembersEnabled() {
 BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
              "FilterWebsitesForSupervisedUsersOnDesktopAndIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
-             "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedPrefsControlledBySupervisedStore,
              "SupervisedPrefsControlledBySupervisedStore",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -93,6 +90,12 @@ BASE_FEATURE(kSupervisedPrefsControlledBySupervisedStore,
 BASE_FEATURE(kEnableManagedByParentUi,
              "EnableManagedByParentUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
+             "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // Runs a shadow no-op safe-sites call alongside kids-api call, to compare
 // latencies.
@@ -133,9 +136,11 @@ bool IsChildAccountSupervisionEnabled() {
   return base::FeatureList::IsEnabled(
              supervised_user::
                  kFilterWebsitesForSupervisedUsersOnDesktopAndIOS) ||
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
          base::FeatureList::IsEnabled(
              supervised_user::
                  kEnableExtensionsPermissionsForSupervisedUsersOnDesktop) ||
+#endif
          base::FeatureList::IsEnabled(
              supervised_user::kSupervisedPrefsControlledBySupervisedStore) ||
          base::FeatureList::IsEnabled(

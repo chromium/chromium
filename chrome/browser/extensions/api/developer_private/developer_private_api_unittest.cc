@@ -3076,6 +3076,7 @@ class DeveloperPrivateApiSupervisedUserUnitTest
       public testing::WithParamInterface<bool> {
  public:
   DeveloperPrivateApiSupervisedUserUnitTest() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     if (extensions_permissions_for_supervised_users_on_desktop()) {
       feature_list_.InitAndEnableFeature(
           supervised_user::
@@ -3086,6 +3087,7 @@ class DeveloperPrivateApiSupervisedUserUnitTest
           supervised_user::
               kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
     }
+#endif
   }
 
   DeveloperPrivateApiSupervisedUserUnitTest(

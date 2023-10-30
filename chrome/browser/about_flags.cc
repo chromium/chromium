@@ -8042,6 +8042,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)},
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     {"enable-family-link-extensions-permissions",
      flag_descriptions::
          kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName,
@@ -8051,6 +8052,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          supervised_user::
              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop)},
+#endif
 
     {"enable-family-link-prefs-controls",
      flag_descriptions::kSupervisedPrefsControlledBySupervisedStoreName,
