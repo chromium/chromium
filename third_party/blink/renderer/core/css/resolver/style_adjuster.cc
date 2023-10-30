@@ -548,15 +548,13 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
                       WebFeature::kOverflowClipAlongEitherAxis);
   }
 
-  if (RuntimeEnabledFeatures::OverflowOverlayAliasesAutoEnabled()) {
-    // overlay is a legacy alias of auto.
-    // https://drafts.csswg.org/css-overflow-3/#valdef-overflow-auto
-    if (builder.OverflowY() == EOverflow::kOverlay) {
-      builder.SetOverflowY(EOverflow::kAuto);
-    }
-    if (builder.OverflowX() == EOverflow::kOverlay) {
-      builder.SetOverflowX(EOverflow::kAuto);
-    }
+  // overlay is a legacy alias of auto.
+  // https://drafts.csswg.org/css-overflow-3/#valdef-overflow-auto
+  if (builder.OverflowY() == EOverflow::kOverlay) {
+    builder.SetOverflowY(EOverflow::kAuto);
+  }
+  if (builder.OverflowX() == EOverflow::kOverlay) {
+    builder.SetOverflowX(EOverflow::kAuto);
   }
 }
 
