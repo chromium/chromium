@@ -100,7 +100,7 @@ em {
 
 #cookie-controls {
   align-items: center;
-  background-color: rgb(60, 64, 67); /* --google-grey-800 */
+  background-color: rgb(40, 40, 40); /* var(--neutral-container) */
   border-radius: 4px;
   box-sizing: border-box;
   display: flex;
