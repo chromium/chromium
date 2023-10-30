@@ -11,8 +11,19 @@
 #include "media/gpu/v4l2/v4l2_status.h"
 #endif
 
-namespace media {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "media/mojo/mojom/stable/mojom_traits_test_util.h"
 
+#include <linux/kcmp.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+#include "base/posix/eintr_wrapper.h"
+#include "base/process/process.h"
+#include "base/test/gtest_util.h"  // nogncheck
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+namespace media {
 TEST(StableVideoDecoderTypesMojomTraitsTest, ValidNonEOSDecoderBuffer) {
   stable::mojom::DecoderBufferPtr mojom_decoder_buffer =
       stable::mojom::DecoderBuffer::New();
@@ -967,4 +978,101 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidColorSpace) {
             deserialized_color_space.GetPrimaries());
   EXPECT_EQ(color_space, deserialized_color_space);
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+TEST(StableVideoDecoderTypesMojomTraitsTest, ValidNativeGpuMemoryBufferHandle) {
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.id = gfx::GpuMemoryBufferId(10);
+  gmb_handle.type = gfx::NATIVE_PIXMAP;
+  uint32_t stride = 50;
+  uint64_t offset = 0;
+  uint64_t size = 2500;
+  gmb_handle.native_pixmap_handle.planes.emplace_back(
+      stride, offset, size, CreateValidLookingBufferHandle(size + offset));
+  stride = 25;
+  offset = 2500;
+  size = 625;
+  gmb_handle.native_pixmap_handle.planes.emplace_back(
+      stride, offset, size, CreateValidLookingBufferHandle(size + offset));
+  stride = 25;
+  offset = 3125;
+  size = 625;
+  gmb_handle.native_pixmap_handle.planes.emplace_back(
+      stride, offset, size, CreateValidLookingBufferHandle(size + offset));
+  gmb_handle.native_pixmap_handle.modifier = 123u;
+  gmb_handle.native_pixmap_handle.supports_zero_copy_webgpu_import = true;
+
+  // Mojo serialization can be destructive, so we clone the handle before
+  // serialization in order to use it later to compare it against the handle
+  // in the deserialized message.
+  gfx::GpuMemoryBufferHandle gmb_handle_clone = gmb_handle.Clone();
+  ASSERT_FALSE(gmb_handle_clone.native_pixmap_handle.planes.empty());
+
+  auto message = stable::mojom::NativeGpuMemoryBufferHandle::SerializeAsMessage(
+      &gmb_handle);
+  ASSERT_TRUE(!message.IsNull());
+
+  // Required to pass base deserialize checks.
+  mojo::ScopedMessageHandle handle = message.TakeMojoMessage();
+  ASSERT_TRUE(handle.is_valid());
+  auto received_message = mojo::Message::CreateFromMessageHandle(&handle);
+  ASSERT_TRUE(!received_message.IsNull());
+
+  gfx::GpuMemoryBufferHandle deserialized_gpu_native_pixmap_handle;
+  ASSERT_TRUE(
+      stable::mojom::NativeGpuMemoryBufferHandle::DeserializeFromMessage(
+          std::move(received_message), &deserialized_gpu_native_pixmap_handle));
+
+  EXPECT_EQ(gmb_handle_clone.id, deserialized_gpu_native_pixmap_handle.id);
+  EXPECT_EQ(gfx::NATIVE_PIXMAP, deserialized_gpu_native_pixmap_handle.type);
+
+  ASSERT_EQ(
+      gmb_handle_clone.native_pixmap_handle.planes.size(),
+      deserialized_gpu_native_pixmap_handle.native_pixmap_handle.planes.size());
+  const auto pid = base::Process::Current().Pid();
+  for (size_t i = 0; i < gmb_handle_clone.native_pixmap_handle.planes.size();
+       i++) {
+    EXPECT_EQ(
+        gmb_handle_clone.native_pixmap_handle.planes[i].stride,
+        deserialized_gpu_native_pixmap_handle.native_pixmap_handle.planes[i]
+            .stride);
+    EXPECT_EQ(
+        gmb_handle_clone.native_pixmap_handle.planes[i].offset,
+        deserialized_gpu_native_pixmap_handle.native_pixmap_handle.planes[i]
+            .offset);
+    EXPECT_EQ(
+        gmb_handle_clone.native_pixmap_handle.planes[i].size,
+        deserialized_gpu_native_pixmap_handle.native_pixmap_handle.planes[i]
+            .size);
+    EXPECT_EQ(syscall(SYS_kcmp, pid, pid, KCMP_FILE,
+                      gmb_handle_clone.native_pixmap_handle.planes[i].fd.get(),
+                      deserialized_gpu_native_pixmap_handle.native_pixmap_handle
+                          .planes[i]
+                          .fd.get()),
+              0);
+  }
+  EXPECT_EQ(
+      gmb_handle_clone.native_pixmap_handle.modifier,
+      deserialized_gpu_native_pixmap_handle.native_pixmap_handle.modifier);
+  // The |supports_zero_copy_webgpu_import| field is not intended to cross
+  // process boundaries. It will not be serialized and it is set to false by
+  // default.
+  EXPECT_FALSE(deserialized_gpu_native_pixmap_handle.native_pixmap_handle
+                   .supports_zero_copy_webgpu_import);
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest,
+     NativeGpuMemoryBufferHandleWithInvalidType) {
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.id = gfx::GpuMemoryBufferId(10);
+  gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
+  gmb_handle.region = base::UnsafeSharedMemoryRegion::Create(100);
+  gmb_handle.offset = 2;
+  gmb_handle.stride = 10;
+
+  ASSERT_CHECK_DEATH(
+      stable::mojom::NativeGpuMemoryBufferHandle::SerializeAsMessage(
+          &gmb_handle));
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }  // namespace media
