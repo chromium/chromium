@@ -62,7 +62,7 @@ def main():
       file.write('      case {proto_tag}:\n'
                  '        policies->clear_{name}();\n'
                  '        break;\n'
-                 .format(proto_tag=field.number, name=field.name))
+                 .format(proto_tag=field.number, name=field.name.lower()))
     file.write(file_footer);
   return 0
 
