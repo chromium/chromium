@@ -897,7 +897,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived"
-    enum="BooleanSentOrReceived" expires_after="2023-12-06">
+    enum="BooleanSentOrReceived" expires_after="2024-02-01">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3080,7 +3080,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.WebApiHandshakeCheck.Skipped"
-    enum="BooleanSkipped" expires_after="2023-12-06">
+    enum="BooleanSkipped" expires_after="2024-02-01">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3090,7 +3090,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.WebSocketCheck.Skipped" enum="BooleanSkipped"
-    expires_after="2023-12-06">
+    expires_after="2024-02-01">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
