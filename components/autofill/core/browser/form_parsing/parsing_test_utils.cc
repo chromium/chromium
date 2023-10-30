@@ -121,4 +121,11 @@ FieldRendererId FormFieldTestBase::MakeFieldRendererId() {
   return FieldRendererId(++id_counter_);
 }
 
+void FormFieldTestBase::ClearFieldsAndExpectations() {
+  field_ = nullptr;
+  list_.clear();
+  expected_classifications_.clear();
+  field_candidates_map_.clear();
+}
+
 }  // namespace autofill
