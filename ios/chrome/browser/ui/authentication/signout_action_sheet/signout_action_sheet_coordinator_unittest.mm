@@ -7,15 +7,21 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/mock_callback.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/sync/base/features.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -190,3 +196,89 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithoutSync) {
 
   ASSERT_EQ(nil, signout_coordinator_.title);
 }
+
+class SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled
+    : public SignoutActionSheetCoordinatorTest {
+ public:
+  SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled()
+      : feature_list_(syncer::kReplaceSyncPromosWithSignInPromos) {}
+
+  void SetUp() override {
+    SignoutActionSheetCoordinatorTest::SetUp();
+    snackbar_handler_ = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:snackbar_handler_
+                     forProtocol:@protocol(SnackbarCommands)];
+  }
+
+  // Sign-out coordinator.
+  SignoutActionSheetCoordinator* CreateCoordinator() {
+    SignoutActionSheetCoordinatorTest::CreateCoordinator();
+    signout_coordinator_.completion = ^(BOOL success) {
+      completion_callback_.Run(success);
+    };
+    return signout_coordinator_;
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  id snackbar_handler_;
+  ::testing::StrictMock<base::MockRepeatingCallback<void(bool)>>
+      completion_callback_;
+};
+
+TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
+       ShouldNotShowActionSheetIfNoUnsyncedData) {
+  authentication_service()->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+
+  CreateCoordinator();
+  // Mock returning no unsynced datatype.
+  ON_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
+      .WillByDefault(
+          [](base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
+            std::move(callback).Run(syncer::ModelTypeSet());
+          });
+  EXPECT_CALL(completion_callback_, Run);
+
+  base::HistogramTester histogram_tester;
+
+  [signout_coordinator_ start];
+
+  histogram_tester.ExpectTotalCount("Sync.UnsyncedDataOnSignout", 0u);
+  histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
+}
+
+TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
+       ShouldShowActionSheetIfUnsyncedData) {
+  authentication_service()->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+
+  CreateCoordinator();
+  // Mock returning no unsynced datatype.
+  ON_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
+      .WillByDefault(
+          [](base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
+            std::move(callback).Run(
+                syncer::ModelTypeSet({syncer::BOOKMARKS, syncer::PREFERENCES}));
+          });
+  EXPECT_CALL(completion_callback_, Run);
+
+  base::HistogramTester histogram_tester;
+
+  [signout_coordinator_ start];
+
+  histogram_tester.ExpectTotalCount("Sync.UnsyncedDataOnSignout", 1u);
+  histogram_tester.ExpectBucketCount(
+      "Sync.UnsyncedDataOnSignout",
+      syncer::ModelTypeForHistograms(syncer::BOOKMARKS), 1u);
+  // Only a few "interesting" data types are recorded. PREFERENCES is not.
+  histogram_tester.ExpectBucketCount(
+      "Sync.UnsyncedDataOnSignout",
+      syncer::ModelTypeForHistograms(syncer::PREFERENCES), 0u);
+
+  histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
+}
+
+// TODO(crbug.com/1496731): Add test for recording signout outcome upon warning
+// dialog for unsynced data (i.e. for Sync.SignoutWithUnsyncedData).

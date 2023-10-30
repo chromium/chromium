@@ -1368,6 +1368,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SignoutWithUnsyncedData" enum="Boolean"
+    expires_after="2024-10-26">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Logs whether the user chooses to proceed with signout or not, after a
+    warning dialog about unsynced data is shown. True means the user continued
+    with sign out, False means the action was cancelled.
+
+    Note: iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Sync.Startup.AccountInfoFullyLoaded2" enum="BooleanLoaded"
     expires_after="2024-06-15">
   <owner>mastiz@chromium.org</owner>
@@ -1937,6 +1951,20 @@ chromium-metrics-reviews@google.com.
     Recorded when TypedURLSyncBridge encounters a database error. As a result,
     the bridge stops operating (and tracking metadata) for the rest of the
     runtime of Chrome.
+  </summary>
+</histogram>
+
+<histogram name="Sync.UnsyncedDataOnSignout" enum="SyncModelTypes"
+    expires_after="2024-10-26">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the unsynced data types, when the user clicks on sign out but some
+    data has not been synced yet. Only PASSWORDS, BOOKMARKS, READING_LIST and
+    CONTACT_INFO are considered.
+
+    Note: iOS only.
   </summary>
 </histogram>
 

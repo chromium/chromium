@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/format_macros.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/utf_string_conversions.h"
@@ -279,8 +280,13 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 // data type, otherwise the sign-out is triggered without dialog.
 - (void)continueSignOutWithUnsyncedDataModelTypeSet:(syncer::ModelTypeSet)set {
   [self allowUserInteraction];
-  if (set.HasAny({syncer::BOOKMARKS, syncer::READING_LIST, syncer::PASSWORDS,
-                  syncer::CONTACT_INFO})) {
+  set.RetainAll({syncer::BOOKMARKS, syncer::READING_LIST, syncer::PASSWORDS,
+                 syncer::CONTACT_INFO});
+  if (!set.Empty()) {
+    for (syncer::ModelType type : set) {
+      base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout",
+                                    syncer::ModelTypeForHistograms(type));
+    }
     [self startActionSheetCoordinatorForSignout];
   } else {
     [self handleSignOutWithForceClearData:NO];
@@ -305,18 +311,30 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   __weak SignoutActionSheetCoordinator* weakSelf = self;
   switch (self.signedInUserState) {
     case SignedInUserStateWithNotSyncingAndReplaceSyncWithSignin: {
-      // This dialog is triggered only if there is unsync data.
+      // This dialog is triggered only if there is unsynced data.
       self.actionSheetCoordinator.alertStyle = UIAlertControllerStyleAlert;
       NSString* const signOutButtonTitle = l10n_util::GetNSString(
           IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_AND_DELETE_BUTTON);
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
+                      base::UmaHistogramBoolean("Sync.SignoutWithUnsyncedData",
+                                                true);
                       [weakSelf handleSignOutWithForceClearData:NO];
                       [weakSelf dismissActionSheetCoordinator];
                     }
                      style:UIAlertActionStyleDestructive];
-      break;
+      [self.actionSheetCoordinator
+          addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                    action:^{
+                      base::UmaHistogramBoolean("Sync.SignoutWithUnsyncedData",
+                                                false);
+                      [weakSelf callCompletionBlock:NO];
+                      [weakSelf dismissActionSheetCoordinator];
+                    }
+                     style:UIAlertActionStyleCancel];
+      [self.actionSheetCoordinator start];
+      return;
     }
     case SignedInUserStateWithForcedSigninInfoRequired: {
       NSString* const signOutButtonTitle =
