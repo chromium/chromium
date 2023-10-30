@@ -72,6 +72,7 @@
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/performance_manager/public/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
@@ -862,8 +863,14 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowWebStore(browser_, extension_urls::kAppMenuUtmSource);
       break;
     case IDC_PERFORMANCE:
-      ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
-                          chrome::kPerformanceSubPage);
+      if (base::FeatureList::IsEnabled(
+              performance_manager::features::kPerformanceControlsSidePanel)) {
+        SidePanelUI::GetSidePanelUIForBrowser(browser_)->Show(
+            SidePanelEntryId::kPerformance, SidePanelOpenTrigger::kAppMenu);
+      } else {
+        ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
+                            chrome::kPerformanceSubPage);
+      }
       break;
     case IDC_OPTIONS:
       ShowSettings(browser_->GetBrowserForOpeningWebUi());
