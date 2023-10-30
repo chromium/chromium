@@ -195,12 +195,10 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetrics) {
   foobar->Add(2);
   foobar->Add(3);
 
-  // Detach the global allocator but keep it around until this method exits
-  // so that the memory holding histogram data doesn't get released. Register
-  // a new allocator that duplicates the global one.
-  std::unique_ptr<base::GlobalHistogramAllocator> global_allocator(
+  // Register a new allocator that duplicates the global one.
+  base::GlobalHistogramAllocator* global_allocator(
       base::GlobalHistogramAllocator::ReleaseForTesting());
-  auto duplicate_allocator = CreateDuplicateAllocator(global_allocator.get());
+  auto duplicate_allocator = CreateDuplicateAllocator(global_allocator);
   bool duplicate_allocator_destroyed = false;
   duplicate_allocator->SetDestroyedCallback(base::BindLambdaForTesting(
       [&] { duplicate_allocator_destroyed = true; }));
@@ -272,13 +270,10 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetricsAsync) {
   foobar->Add(2);
   foobar->Add(3);
 
-  // Detach the global allocator but keep it around until this method exits
-  // so that the memory holding histogram data doesn't get released. Register
-  // a new allocator that duplicates the global one.
-  std::unique_ptr<base::GlobalHistogramAllocator> global_allocator(
+  // Register a new allocator that duplicates the global one.
+  base::GlobalHistogramAllocator* global_allocator(
       base::GlobalHistogramAllocator::ReleaseForTesting());
-  RegisterSubprocessAllocator(123,
-                              CreateDuplicateAllocator(global_allocator.get()));
+  RegisterSubprocessAllocator(123, CreateDuplicateAllocator(global_allocator));
 
   // Recording should find the two histograms created in persistent memory.
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting(
@@ -376,12 +371,10 @@ TEST_P(SubprocessMetricsProviderWithParamTest, AllocatorRefCounted) {
   foobar->Add(5);
   foobar->Add(6);
 
-  // Detach the global allocator but keep it around until this method exits
-  // so that the memory holding histogram data doesn't get released. Register
-  // a new allocator that duplicates the global one.
-  std::unique_ptr<base::GlobalHistogramAllocator> global_allocator(
+  // Register a new allocator that duplicates the global one.
+  base::GlobalHistogramAllocator* global_allocator(
       base::GlobalHistogramAllocator::ReleaseForTesting());
-  auto duplicate_allocator = CreateDuplicateAllocator(global_allocator.get());
+  auto duplicate_allocator = CreateDuplicateAllocator(global_allocator);
   bool duplicate_allocator_destroyed = false;
   duplicate_allocator->SetDestroyedCallback(base::BindLambdaForTesting(
       [&] { duplicate_allocator_destroyed = true; }));

@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -247,7 +247,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
     base::File writer(path,
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     // Use DCHECK so the stack-trace will indicate where this was called.
-    DCHECK(writer.IsValid()) << path.value();
+    DCHECK(writer.IsValid()) << path;
     size_t file_size = create_large_files_ ? metrics->size() : metrics->used();
     int written = writer.Write(0, (const char*)metrics->data(), file_size);
     DCHECK_EQ(static_cast<int>(file_size), written);
@@ -260,8 +260,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
     base::TouchFile(path, write_time, write_time);
   }
 
-  std::unique_ptr<base::PersistentHistogramAllocator>
-  CreateMetricsFileWithHistograms(
+  base::GlobalHistogramAllocator* CreateMetricsFileWithHistograms(
       const base::FilePath& file_path,
       base::Time write_time,
       int histogram_count,
@@ -272,16 +271,16 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
 
     CreateGlobalHistograms(histogram_count);
 
-    std::unique_ptr<base::PersistentHistogramAllocator> histogram_allocator =
+    base::GlobalHistogramAllocator* histogram_allocator =
         base::GlobalHistogramAllocator::ReleaseForTesting();
-    std::move(callback).Run(histogram_allocator.get());
+    std::move(callback).Run(histogram_allocator);
 
-    WriteMetricsFileAtTime(file_path, histogram_allocator.get(), write_time);
+    WriteMetricsFileAtTime(file_path, histogram_allocator, write_time);
     return histogram_allocator;
   }
 
-  std::unique_ptr<base::PersistentHistogramAllocator>
-  CreateMetricsFileWithHistograms(int histogram_count) {
+  base::GlobalHistogramAllocator* CreateMetricsFileWithHistograms(
+      int histogram_count) {
     return CreateMetricsFileWithHistograms(
         metrics_file(), base::Time::Now(), histogram_count,
         base::BindOnce([](base::PersistentHistogramAllocator* allocator) {}));
@@ -333,7 +332,7 @@ TEST_P(FileMetricsProviderTest, AccessMetrics) {
   base::HistogramTester histogram_tester;
 
   base::Time metrics_time = base::Time::Now() - base::Minutes(5);
-  std::unique_ptr<base::PersistentHistogramAllocator> histogram_allocator =
+  base::GlobalHistogramAllocator* histogram_allocator =
       CreateMetricsFileWithHistograms(2);
   ASSERT_TRUE(PathExists(metrics_file()));
   base::TouchFile(metrics_file(), metrics_time, metrics_time);
@@ -359,9 +358,8 @@ TEST_P(FileMetricsProviderTest, AccessMetrics) {
   EXPECT_EQ(0U, GetSnapshotHistogramCount());
 
   // File should have been deleted but recreate it to test behavior should
-  // the file not be deleteable by this process.
-  WriteMetricsFileAtTime(metrics_file(), histogram_allocator.get(),
-                         metrics_time);
+  // the file not be deletable by this process.
+  WriteMetricsFileAtTime(metrics_file(), histogram_allocator, metrics_time);
 
   // Second full run on the same file should produce nothing.
   OnDidCreateMetricsLog();
@@ -373,8 +371,7 @@ TEST_P(FileMetricsProviderTest, AccessMetrics) {
 
   // Recreate the file to indicate that it is "new" and must be recorded.
   metrics_time = metrics_time + base::Minutes(1);
-  WriteMetricsFileAtTime(metrics_file(), histogram_allocator.get(),
-                         metrics_time);
+  WriteMetricsFileAtTime(metrics_file(), histogram_allocator, metrics_time);
 
   // This run should again have "new" histograms.
   OnDidCreateMetricsLog();
@@ -389,8 +386,7 @@ TEST_P(FileMetricsProviderTest, AccessTimeLimitedFile) {
   ASSERT_FALSE(PathExists(metrics_file()));
 
   base::Time metrics_time = base::Time::Now() - base::Hours(5);
-  std::unique_ptr<base::PersistentHistogramAllocator> histogram_allocator =
-      CreateMetricsFileWithHistograms(2);
+  CreateMetricsFileWithHistograms(2);
   ASSERT_TRUE(PathExists(metrics_file()));
   base::TouchFile(metrics_file(), metrics_time, metrics_time);
 
@@ -413,8 +409,7 @@ TEST_P(FileMetricsProviderTest, FilterDelaysFile) {
 
   base::Time now_time = base::Time::Now();
   base::Time metrics_time = now_time - base::Minutes(5);
-  std::unique_ptr<base::PersistentHistogramAllocator> histogram_allocator =
-      CreateMetricsFileWithHistograms(2);
+  CreateMetricsFileWithHistograms(2);
   ASSERT_TRUE(PathExists(metrics_file()));
   base::TouchFile(metrics_file(), metrics_time, metrics_time);
   base::File::Info fileinfo;
@@ -453,8 +448,7 @@ TEST_P(FileMetricsProviderTest, FilterSkipsFile) {
 
   base::Time now_time = base::Time::Now();
   base::Time metrics_time = now_time - base::Minutes(5);
-  std::unique_ptr<base::PersistentHistogramAllocator> histogram_allocator =
-      CreateMetricsFileWithHistograms(2);
+  CreateMetricsFileWithHistograms(2);
   ASSERT_TRUE(PathExists(metrics_file()));
   base::TouchFile(metrics_file(), metrics_time, metrics_time);
   base::File::Info fileinfo;
@@ -868,8 +862,7 @@ TEST_P(FileMetricsProviderTest, AccessReadWriteMetrics) {
   base::HistogramBase* h1 = GetCreatedHistogram(1);
   DCHECK(h0);
   DCHECK(h1);
-  std::unique_ptr<base::PersistentHistogramAllocator> histogram_allocator =
-      base::GlobalHistogramAllocator::ReleaseForTesting();
+  base::GlobalHistogramAllocator::ReleaseForTesting();
 
   // Register the file and allow the "checker" task to run.
   provider()->RegisterSource(FileMetricsProvider::Params(
@@ -1130,9 +1123,9 @@ TEST_P(FileMetricsProviderTest,
       "h3", 1, 100, 10,
       /*flags=*/base::HistogramBase::Flags::kUmaTargetedHistogramFlag);
   h3->Add(0);
-  std::unique_ptr<base::PersistentHistogramAllocator> histogram_allocator =
+  base::GlobalHistogramAllocator* histogram_allocator =
       base::GlobalHistogramAllocator::ReleaseForTesting();
-  WriteMetricsFileAtTime(metrics_file(), histogram_allocator.get(),
+  WriteMetricsFileAtTime(metrics_file(), histogram_allocator,
                          base::Time::Now());
   ASSERT_TRUE(PathExists(metrics_file()));
 
@@ -1179,12 +1172,12 @@ TEST_P(FileMetricsProviderTest, IndependentLogContainsUmaHistograms) {
       "h3", 1, 100, 10,
       /*flags=*/base::HistogramBase::Flags::kNoFlags);
   h3->Add(0);
-  std::unique_ptr<base::PersistentHistogramAllocator> histogram_allocator =
+  base::GlobalHistogramAllocator* histogram_allocator =
       base::GlobalHistogramAllocator::ReleaseForTesting();
   // Write a system profile so that an independent log can successfully be
   // created from the metrics file.
-  WriteSystemProfileToAllocator(histogram_allocator.get());
-  WriteMetricsFileAtTime(metrics_file(), histogram_allocator.get(),
+  WriteSystemProfileToAllocator(histogram_allocator);
+  WriteMetricsFileAtTime(metrics_file(), histogram_allocator,
                          base::Time::Now());
   ASSERT_TRUE(PathExists(metrics_file()));
 

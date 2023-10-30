@@ -102,7 +102,7 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
 
   // The allocator that manages histograms inside persistent memory. This is
   // owned externally and is expected to live beyond the life of this object.
-  raw_ptr<PersistentHistogramAllocator, LeakedDanglingUntriaged> allocator_;
+  raw_ptr<PersistentHistogramAllocator> allocator_;
 
   // The object that manages sample records inside persistent memory. The
   // underlying data used is owned by the |allocator_| object (above). This

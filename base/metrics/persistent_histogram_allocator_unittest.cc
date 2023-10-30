@@ -7,13 +7,12 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/metrics/sparse_histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +27,7 @@ class PersistentHistogramAllocatorTest : public testing::Test {
       const PersistentHistogramAllocatorTest&) = delete;
 
  protected:
-  const int32_t kAllocatorMemorySize = 64 << 10;  // 64 KiB
+  constexpr static int32_t kAllocatorMemorySize = 64 << 10;  // 64 KiB
 
   PersistentHistogramAllocatorTest()
       : statistics_recorder_(StatisticsRecorder::CreateTemporaryForTesting()) {
@@ -39,12 +38,15 @@ class PersistentHistogramAllocatorTest : public testing::Test {
   }
 
   void CreatePersistentHistogramAllocator() {
-    allocator_memory_.reset(new char[kAllocatorMemorySize]);
+    // GlobalHistogramAllocator is never deleted, hence intentionally leak
+    // allocated memory in this test.
+    allocator_memory_ = new char[kAllocatorMemorySize];
+    ANNOTATE_LEAKING_OBJECT_PTR(allocator_memory_);
 
     GlobalHistogramAllocator::ReleaseForTesting();
-    memset(allocator_memory_.get(), 0, kAllocatorMemorySize);
+    memset(allocator_memory_, 0, kAllocatorMemorySize);
     GlobalHistogramAllocator::CreateWithPersistentMemory(
-        allocator_memory_.get(), kAllocatorMemorySize, 0, 0,
+        allocator_memory_, kAllocatorMemorySize, 0, 0,
         "PersistentHistogramAllocatorTest");
     allocator_ = GlobalHistogramAllocator::Get()->memory_allocator();
   }
@@ -55,7 +57,7 @@ class PersistentHistogramAllocatorTest : public testing::Test {
   }
 
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
-  std::unique_ptr<char[]> allocator_memory_;
+  raw_ptr<char> allocator_memory_ = nullptr;
   raw_ptr<PersistentMemoryAllocator> allocator_ = nullptr;
 };
 
@@ -111,7 +113,7 @@ TEST_F(PersistentHistogramAllocatorTest, CreateAndIterate) {
   std::unique_ptr<HistogramBase> recovered;
   PersistentHistogramAllocator recovery(
       std::make_unique<PersistentMemoryAllocator>(
-          allocator_memory_.get(), kAllocatorMemorySize, 0, 0, "",
+          allocator_memory_, kAllocatorMemorySize, 0, 0, "",
           PersistentMemoryAllocator::kReadWrite));
   PersistentHistogramAllocator::Iterator histogram_iter(&recovery);
 
@@ -229,7 +231,7 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   std::unique_ptr<StatisticsRecorder> local_sr =
       StatisticsRecorder::CreateTemporaryForTesting();
   EXPECT_EQ(0U, StatisticsRecorder::GetHistogramCount());
-  std::unique_ptr<GlobalHistogramAllocator> old_allocator =
+  GlobalHistogramAllocator* old_allocator =
       GlobalHistogramAllocator::ReleaseForTesting();
   GlobalHistogramAllocator::CreateWithLocalMemory(kAllocatorMemorySize, 0, "");
   ASSERT_TRUE(GlobalHistogramAllocator::Get());
@@ -259,14 +261,14 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   // Destroy the local SR and ensure that we're back to the initial state and
   // restore the global allocator. Histograms created in the local SR will
   // become unmanaged.
-  std::unique_ptr<GlobalHistogramAllocator> new_allocator =
+  GlobalHistogramAllocator* new_allocator =
       GlobalHistogramAllocator::ReleaseForTesting();
   local_sr.reset();
   EXPECT_EQ(global_sr_initial_histogram_count,
             StatisticsRecorder::GetHistogramCount());
   EXPECT_EQ(global_sr_initial_bucket_ranges_count,
             StatisticsRecorder::GetBucketRanges().size());
-  GlobalHistogramAllocator::Set(std::move(old_allocator));
+  GlobalHistogramAllocator::Set(old_allocator);
 
   // Create a "recovery" allocator using the same memory as the local one.
   PersistentHistogramAllocator recovery1(
@@ -375,7 +377,7 @@ TEST_F(PersistentHistogramAllocatorTest,
   std::unique_ptr<StatisticsRecorder> local_sr =
       StatisticsRecorder::CreateTemporaryForTesting();
   EXPECT_EQ(0U, StatisticsRecorder::GetHistogramCount());
-  std::unique_ptr<GlobalHistogramAllocator> old_allocator =
+  GlobalHistogramAllocator* old_allocator =
       GlobalHistogramAllocator::ReleaseForTesting();
   GlobalHistogramAllocator::CreateWithLocalMemory(kAllocatorMemorySize, 0, "");
   ASSERT_TRUE(GlobalHistogramAllocator::Get());
@@ -408,14 +410,14 @@ TEST_F(PersistentHistogramAllocatorTest,
   // Destroy the local SR and ensure that we're back to the initial state and
   // restore the global allocator. Histograms created in the local SR will
   // become unmanaged.
-  std::unique_ptr<GlobalHistogramAllocator> new_allocator =
+  GlobalHistogramAllocator* new_allocator =
       GlobalHistogramAllocator::ReleaseForTesting();
   local_sr.reset();
   EXPECT_EQ(global_sr_initial_histogram_count,
             StatisticsRecorder::GetHistogramCount());
   EXPECT_EQ(global_sr_initial_bucket_ranges_count,
             StatisticsRecorder::GetBucketRanges().size());
-  GlobalHistogramAllocator::Set(std::move(old_allocator));
+  GlobalHistogramAllocator::Set(old_allocator);
 
   // Create a "recovery" allocator using the same memory as the local one.
   PersistentHistogramAllocator recovery1(
@@ -534,7 +536,7 @@ TEST_F(PersistentHistogramAllocatorTest, CustomRangesManager) {
   std::unique_ptr<StatisticsRecorder> local_sr =
       StatisticsRecorder::CreateTemporaryForTesting();
   EXPECT_EQ(0U, StatisticsRecorder::GetHistogramCount());
-  std::unique_ptr<GlobalHistogramAllocator> old_allocator =
+  GlobalHistogramAllocator* old_allocator =
       GlobalHistogramAllocator::ReleaseForTesting();
   GlobalHistogramAllocator::CreateWithLocalMemory(kAllocatorMemorySize, 0, "");
   ASSERT_TRUE(GlobalHistogramAllocator::Get());
@@ -550,12 +552,12 @@ TEST_F(PersistentHistogramAllocatorTest, CustomRangesManager) {
   // Destroy the local SR and ensure that we're back to the initial state and
   // restore the global allocator. The histogram created in the local SR will
   // become unmanaged.
-  std::unique_ptr<GlobalHistogramAllocator> new_allocator =
+  GlobalHistogramAllocator* new_allocator =
       GlobalHistogramAllocator::ReleaseForTesting();
   local_sr.reset();
   EXPECT_EQ(global_sr_initial_bucket_ranges_count,
             StatisticsRecorder::GetBucketRanges().size());
-  GlobalHistogramAllocator::Set(std::move(old_allocator));
+  GlobalHistogramAllocator::Set(old_allocator);
 
   // Create a "recovery" allocator using the same memory as the local one.
   PersistentHistogramAllocator recovery(
