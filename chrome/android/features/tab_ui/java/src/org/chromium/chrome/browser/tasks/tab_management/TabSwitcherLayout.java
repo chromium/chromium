@@ -554,7 +554,13 @@ public class TabSwitcherLayout extends Layout {
 
             clearFinishedShowingRunnable();
 
-            if (!ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
+            boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
+            boolean tabGtsAnimationEnabled =
+                    TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext());
+            boolean expandTabAnimationEnabled = tabGtsAnimationEnabled && !mBackToStartSurface;
+            if (!ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()
+                    || isTablet
+                    || expandTabAnimationEnabled) {
                 LayoutTab sourceLayoutTab =
                         createLayoutTab(sourceTabId, mTabModelSelector.isIncognitoSelected());
                 sourceLayoutTab.setDecorationAlpha(0);
@@ -576,22 +582,21 @@ public class TabSwitcherLayout extends Layout {
                 }
                 updateCacheVisibleIds(tabIds);
                 mLayoutTabs = layoutTabs.toArray(new LayoutTab[0]);
+                mShowEmptyLayer = false;
             } else {
                 LayoutTab emptyLayoutTab = createLayoutTab(
                         Tab.INVALID_TAB_ID, mTabModelSelector.isIncognitoSelected());
                 emptyLayoutTab.setDecorationAlpha(0);
                 mLayoutTabs = new LayoutTab[] {emptyLayoutTab};
+                mShowEmptyLayer = true;
             }
 
             mIsAnimatingHide = true;
-            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+            if (isTablet) {
                 translateDown();
             } else {
-                final boolean tabGtsAnimationEnabled =
-                        TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext());
                 if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
-                    mShowEmptyLayer = true;
-                    if (tabGtsAnimationEnabled && !mBackToStartSurface) {
+                    if (expandTabAnimationEnabled) {
                         mController.prepareHideTabSwitcherView();
                         expandTabJava(sourceTabId, getThumbnailLocationOfCurrentTab(),
                                 mGridTabListDelegate.getThumbnailSize());
