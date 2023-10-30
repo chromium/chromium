@@ -190,7 +190,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "resize_handle.icon",
     "sad_tab.icon",
     "safety_check.icon",
-    "safety_hub.icon",
     "save_group.icon",
     "save_group_refresh.icon",
     "save_page.icon",

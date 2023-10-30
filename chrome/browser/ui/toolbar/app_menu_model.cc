@@ -1482,7 +1482,7 @@ void AppMenuModel::Build() {
         safety_hub_menu_notification_service->GetNotificationToShow();
     if (notification.has_value()) {
       const auto safety_hub_icon = ui::ImageModel::FromVectorIcon(
-          kSafetyHubIcon, ui::kColorMenuIcon, kDefaultIconSize);
+          kSecurityIcon, ui::kColorMenuIcon, kDefaultIconSize);
       AddItemWithIcon(notification->command, notification->label,
                       safety_hub_icon);
       need_separator = true;
