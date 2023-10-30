@@ -125,32 +125,6 @@ TEST_F(ToggleEffectsViewTest, ToggleButtonClickedRecordedHistogram) {
   histogram_tester.ExpectBucketCount(kTestEffectHistogramName, false, 1);
 }
 
-// Tests that a toggled ToggleButton's image is updated.
-TEST_F(ToggleEffectsViewTest, ToggleUpdatesImage) {
-  // Add one toggle effect.
-  controller()->effects_manager().RegisterDelegate(office_bunny());
-  LeftClickOn(toggle_bubble_button());
-
-  // Initially the fake toggle effects icon is set to the video conference
-  // background blur off icon.
-  EXPECT_STREQ(GetFirstToggleEffectIcon()
-                   ->GetImageModel()
-                   .GetVectorIcon()
-                   .vector_icon()
-                   ->name,
-               kVideoConferenceBackgroundBlurOffIcon.name);
-
-  // Toggle the button, the icon should change to the privacy indicators camera
-  // icon.
-  LeftClickOn(GetFirstToggleEffectButton());
-  EXPECT_STREQ(GetFirstToggleEffectIcon()
-                   ->GetImageModel()
-                   .GetVectorIcon()
-                   .vector_icon()
-                   ->name,
-               ash::kPrivacyIndicatorsCameraIcon.name);
-}
-
 // Tests that a toggled ToggleButton's tooltip is updated.
 TEST_F(ToggleEffectsViewTest, TooltipIsUpdated) {
   // Add one toggle effect.

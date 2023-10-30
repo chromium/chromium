@@ -345,7 +345,6 @@ void CameraEffectsController::OnAutozoomControlEnabledChanged(bool enabled) {
                           base::Unretained(this),
                           /*effect_id=*/VcEffectId::kCameraFraming,
                           /*value=*/absl::nullopt));
-  effect_state->set_disabled_icon(&kVideoConferenceCameraFramingOffIcon);
   effect->AddState(std::move(effect_state));
 
   effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
@@ -524,7 +523,6 @@ void CameraEffectsController::InitializeEffectControls() {
                             base::Unretained(this),
                             /*effect_id=*/VcEffectId::kPortraitRelighting,
                             /*value=*/absl::nullopt));
-    effect_state->set_disabled_icon(&kVideoConferencePortraitRelightOffIcon);
     effect->AddState(std::move(effect_state));
 
     effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);

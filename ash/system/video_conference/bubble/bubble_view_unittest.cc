@@ -60,7 +60,6 @@ class SquareCinnamonCereal : public VcEffectsDelegate {
                             base::Unretained(this),
                             /*effect_id=*/VcEffectId::kTestEffect,
                             /*value=*/absl::nullopt));
-    state->set_disabled_icon(&kVideoConferenceBackgroundBlurOffIcon);
     effect->AddState(std::move(state));
 
     AddEffect(std::move(effect));

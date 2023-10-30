@@ -38,8 +38,7 @@ class ToggleEffectsButton : public views::Button {
   METADATA_HEADER(ToggleEffectsButton);
 
   ToggleEffectsButton(views::Button::PressedCallback callback,
-                      const gfx::VectorIcon* enabled_vector_icon,
-                      const gfx::VectorIcon* disabled_vector_icon,
+                      const gfx::VectorIcon* vector_icon,
                       bool toggle_state,
                       const std::u16string& label_text,
                       const int accessible_name_id,
@@ -75,8 +74,7 @@ class ToggleEffectsButton : public views::Button {
   raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> enabled_vector_icon_;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> disabled_vector_icon_;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> vector_icon_;
   const int accessible_name_id_;
 
   raw_ptr<views::FlexLayout> layout_ = nullptr;

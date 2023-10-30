@@ -27,9 +27,7 @@ class ASH_EXPORT VcEffectState {
  public:
   // Arguments:
   //
-  // `enabled_icon` - The icon displayed, used for all effect types (if
-  //                  non-nullptr). Used for the enabled state if this is for a
-  //                  toggle button.
+  // `icon` - The icon displayed.
   //
   // `label_text` - The text displayed.
   //
@@ -41,7 +39,7 @@ class ASH_EXPORT VcEffectState {
   //
   // `state` - The actual state value. Optional because only certain types of
   //           effects (e.g. set-value) actually need it.
-  VcEffectState(const gfx::VectorIcon* enabled_icon,
+  VcEffectState(const gfx::VectorIcon* icon,
                 const std::u16string& label_text,
                 int accessible_name_id,
                 views::Button::PressedCallback button_callback,
@@ -52,15 +50,8 @@ class ASH_EXPORT VcEffectState {
 
   ~VcEffectState();
 
-  void set_disabled_icon(gfx::VectorIcon const* disabled_icon) {
-    disabled_icon_ = disabled_icon;
-  }
-
   absl::optional<int> state_value() const { return state_value_; }
-  const gfx::VectorIcon* icon() const { return enabled_icon_; }
-  const gfx::VectorIcon* disabled_icon() const {
-    return disabled_icon_.value_or(nullptr);
-  }
+  const gfx::VectorIcon* icon() const { return icon_; }
   const std::u16string& label_text() const { return label_text_; }
   int accessible_name_id() const { return accessible_name_id_; }
   const views::Button::PressedCallback& button_callback() const {
@@ -68,13 +59,8 @@ class ASH_EXPORT VcEffectState {
   }
 
  private:
-  // The icon to be displayed when enabled (for toggle effects) or at all times
-  // for set-value effects.
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> enabled_icon_;
-
-  // Icon to display when the effect is toggled off. Only used for toggle
-  // effects, which create one `VcEffectState`.
-  absl::optional<gfx::VectorIcon const*> disabled_icon_;
+  // The icon to be displayed.
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
 
   // The text to be displayed.
   std::u16string label_text_;

@@ -188,7 +188,6 @@ void AudioEffectsController::AddNoiseCancellationEffect() {
                           weak_factory_.GetWeakPtr(),
                           /*effect_id=*/noise_cancellation_id,
                           /*value=*/0));
-  effect_state->set_disabled_icon(&kVideoConferenceNoiseCancellationOffIcon);
   effect->AddState(std::move(effect_state));
 
   effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kMicrophone);
@@ -230,7 +229,6 @@ void AudioEffectsController::AddLiveCaptionEffect() {
                           weak_factory_.GetWeakPtr(),
                           /*effect_id=*/live_caption_id,
                           /*value=*/0));
-  effect_state->set_disabled_icon(&kVideoConferenceLiveCaptionOffIcon);
 
   effect->AddState(std::move(effect_state));
   AddEffect(std::move(effect));

@@ -162,8 +162,7 @@ END_METADATA
 
 ToggleEffectsButton::ToggleEffectsButton(
     views::Button::PressedCallback callback,
-    const gfx::VectorIcon* enabled_vector_icon,
-    const gfx::VectorIcon* disabled_vector_icon,
+    const gfx::VectorIcon* vector_icon,
     bool toggle_state,
     const std::u16string& label_text,
     const int accessible_name_id,
@@ -173,8 +172,7 @@ ToggleEffectsButton::ToggleEffectsButton(
     : callback_(callback),
       toggled_(toggle_state),
       effect_id_(effect_id),
-      enabled_vector_icon_(enabled_vector_icon),
-      disabled_vector_icon_(disabled_vector_icon),
+      vector_icon_(vector_icon),
       accessible_name_id_(accessible_name_id) {
   SetCallback(base::BindRepeating(&ToggleEffectsButton::OnButtonClicked,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -269,8 +267,7 @@ void ToggleEffectsButton::UpdateColorsAndBackground() {
       toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                : cros_tokens::kCrosSysOnSurface;
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      toggled_ ? *enabled_vector_icon_ : *disabled_vector_icon_,
-      foreground_color_id, kIconSize));
+      *vector_icon_, foreground_color_id, kIconSize));
   label_->SetEnabledColorId(foreground_color_id);
 }
 
@@ -320,11 +317,9 @@ ToggleEffectsView::ToggleEffectsView(
       // `current_state` can only be a `bool` for a toggle effect.
       bool toggle_state = current_state.value() != 0;
       const VcEffectState* state = tile->GetState(/*index=*/0);
-      CHECK(state->disabled_icon())
-          << "Toggle effects must define a disabled icon.";
       row_view->AddChildView(std::make_unique<ToggleEffectsButton>(
-          state->button_callback(), state->icon(), state->disabled_icon(),
-          toggle_state, state->label_text(), state->accessible_name_id(),
+          state->button_callback(), state->icon(), toggle_state,
+          state->label_text(), state->accessible_name_id(),
           tile->container_id(), tile->id(), /*num_button_per_row=*/row.size()));
     }
 
