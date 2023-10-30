@@ -30,6 +30,13 @@ void PrerenderWebContentsDelegateImpl::ActivateContents(
   NOTREACHED_NORETURN();
 }
 
+void PrerenderWebContentsDelegateImpl::LoadingStateChanged(
+    content::WebContents* source,
+    bool should_show_loading_ui) {
+  // Loading events should be deferred until prerender activation.
+  NOTREACHED_NORETURN();
+}
+
 bool PrerenderWebContentsDelegateImpl::ShouldSuppressDialogs(
     content::WebContents* source) {
   // Dialogs (JS dialogs and BeforeUnload confirm) should not be shown on a
