@@ -67,7 +67,7 @@ DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
 
 DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
     kIsBookmarked,
-    "SELECT COUNT(metrics.metric_value) "
+    "SELECT SUM(metrics.metric_value) "
     "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
     "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='356B53FF0A1F60AF';",
     PageLoad,
@@ -75,7 +75,7 @@ DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
 
 DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
     kIsPartOfTabGroup,
-    "SELECT COUNT(metrics.metric_value) "
+    "SELECT SUM(metrics.metric_value) "
     "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
     "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='599EC2B0BC1914C1';",
     PageLoad,
@@ -83,7 +83,7 @@ DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
 
 DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
     kUrlCopied,
-    "SELECT COUNT(metrics.metric_value) "
+    "SELECT SUM(metrics.metric_value) "
     "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
     "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='8E3F83DF276E39D1';",
     PageLoad,
