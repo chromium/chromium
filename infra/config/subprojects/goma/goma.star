@@ -255,45 +255,6 @@ fyi_goma_rbe_canary_builder(
     goma_enable_ats = False,
 )
 
-fyi_goma_rbe_canary_builder(
-    name = "Win Builder (dbg) Goma RBE ATS Canary",
-    builder_spec = builder_config.copy_from(
-        "ci/Win Builder (dbg)",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    os = os.WINDOWS_DEFAULT,
-    goma_enable_ats = True,
-)
-
-fyi_goma_rbe_canary_builder(
-    name = "Win Builder Goma RBE ATS Canary",
-    builder_spec = builder_config.copy_from(
-        "ci/Win Builder",
-        lambda spec: structs.evolve(
-            spec,
-            chromium_config = structs.extend(
-                spec.chromium_config,
-                apply_configs = [
-                    "goma_canary",
-                    "goma_use_local",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    os = os.WINDOWS_DEFAULT,
-    goma_enable_ats = True,
-)
-
 def goma_builder(
         *,
         name,
@@ -422,21 +383,4 @@ goma_windows_builder(
     ),
     goma_backend = goma.backend.RBE_STAGING,
     goma_enable_ats = False,
-)
-
-goma_windows_builder(
-    name = "Chromium Win Goma RBE ATS Staging",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_failfast",
-            ],
-            target_bits = 64,
-        ),
-    ),
-    goma_backend = goma.backend.RBE_STAGING,
-    goma_enable_ats = True,
 )
