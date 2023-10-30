@@ -245,11 +245,16 @@ void OnPaintFinished(const SkPixmap& pixmap) {
   gCurrentPixmap = &pixmap;
 
   if (HasDivergedFromRecording()) {
-    // If we've diverged from the recording then we're probably repainting,
-    // and in any case don't need to notify the recorder that the paint finished.
-    if (gRepaintEvent)
+    // If we've diverged from the recording, check if we're running on
+    // behalf of a repaintGraphics command.  If so, encode the bitmap
+    // contents and notify the main thread.
+    if (gRepaintEvent) {
       gRepaintResult = EncodeBitmapContents(gRepaintMimeType, gRepaintJPEGQuality);
+      gRepaintEvent.load()->Signal();
+    }
   } else {
+    // If not diverged from the recording, notify the driver/linker that
+    // a paint has finished.
     size_t bookmark = gLastCommitBookmark;
     if (bookmark) {
       V8RecordReplayPaintFinished(bookmark);
@@ -257,11 +262,6 @@ void OnPaintFinished(const SkPixmap& pixmap) {
   }
 
   gCurrentPixmap = nullptr;
-}
-
-void OnRepaintFinished() {
-  CHECK(HasDivergedFromRecording());
-  gRepaintEvent.load()->Signal();
 }
 
 static cc::ProxyMain* gCurrentCompositorProxy;
