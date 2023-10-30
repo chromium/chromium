@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -24,7 +25,17 @@ using ::privacy_sandbox::tracking_protection::
 using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingStatus;
 
+using ::privacy_sandbox::tracking_protection::
+    TrackingProtectionSentimentSurveyGroup;
+
 using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
+using SentimentSurveyGroup =
+    privacy_sandbox::TrackingProtectionOnboarding::SentimentSurveyGroup;
+
+constexpr base::TimeDelta kHatsImmediateStartTimeDelta = base::Minutes(2);
+constexpr base::TimeDelta kHatsImmediateEndTimeDelta = base::Hours(1);
+constexpr base::TimeDelta kHatsDelayedStartTimeDelta = base::Days(14);
+constexpr base::TimeDelta kHatsDelayedEndTimeDelta = base::Days(15);
 
 TrackingProtectionOnboardingStatus GetInternalOnboardingStatus(
     PrefService* pref_service) {
@@ -45,6 +56,27 @@ TrackingProtectionOnboardingAckAction ToInternalAckAction(
       return TrackingProtectionOnboardingAckAction::kLearnMore;
     case TrackingProtectionOnboarding::NoticeAction::kClosed:
       return TrackingProtectionOnboardingAckAction::kClosed;
+  }
+}
+
+SentimentSurveyGroup GetSurveyGroup(PrefService* pref_service) {
+  auto internal_group = static_cast<TrackingProtectionSentimentSurveyGroup>(
+      pref_service->GetInteger(prefs::kTrackingProtectionSentimentSurveyGroup));
+  switch (internal_group) {
+    case tracking_protection::TrackingProtectionSentimentSurveyGroup::kNotSet:
+      return SentimentSurveyGroup::kNotSet;
+    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
+        kControlImmediate:
+      return SentimentSurveyGroup::kControlImmediate;
+    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
+        kTreatmentImmediate:
+      return SentimentSurveyGroup::kTreatmentImmediate;
+    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
+        kControlDelayed:
+      return SentimentSurveyGroup::kControlDelayed;
+    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
+        kTreatmentDelayed:
+      return SentimentSurveyGroup::kTreatmentDelayed;
   }
 }
 
@@ -188,6 +220,58 @@ void OffboardingNoticeActionTaken(
                            static_cast<int>(ToInternalAckAction(action)));
 }
 
+void MaybeSetStartAndEndSurveyTime(PrefService* pref_service) {
+  if (pref_service->HasPrefPath(
+          prefs::kTrackingProtectionSentimentSurveyStartTime)) {
+    return;
+  }
+
+  auto group = GetSurveyGroup(pref_service);
+  // Setting the start and end time when applicable.
+  // First, start by determining the anchor time. Control should be the first
+  // time this function runs. Treatment should be when the notice was acked.
+  // If the anchor time isn't year ready, return early.
+  base::Time anchor_time;
+  switch (group) {
+    case SentimentSurveyGroup::kNotSet:
+      return;
+    case SentimentSurveyGroup::kControlImmediate:
+    case SentimentSurveyGroup::kControlDelayed:
+      anchor_time = base::Time::Now();
+      break;
+    case SentimentSurveyGroup::kTreatmentImmediate:
+    case SentimentSurveyGroup::kTreatmentDelayed:
+      if (!pref_service->HasPrefPath(
+              prefs::kTrackingProtectionOnboardingAckedSince)) {
+        return;
+      }
+      anchor_time =
+          pref_service->GetTime(prefs::kTrackingProtectionOnboardingAckedSince);
+      break;
+  }
+
+  // Anchor time must be ready. Use it to set the start and end survey time on
+  // the profile.
+  switch (group) {
+    case SentimentSurveyGroup::kNotSet:
+      NOTREACHED_NORETURN();
+    case SentimentSurveyGroup::kControlImmediate:
+    case SentimentSurveyGroup::kTreatmentImmediate:
+      pref_service->SetTime(prefs::kTrackingProtectionSentimentSurveyStartTime,
+                            anchor_time + kHatsImmediateStartTimeDelta);
+      pref_service->SetTime(prefs::kTrackingProtectionSentimentSurveyEndTime,
+                            anchor_time + kHatsImmediateEndTimeDelta);
+      return;
+    case SentimentSurveyGroup::kTreatmentDelayed:
+    case SentimentSurveyGroup::kControlDelayed:
+      pref_service->SetTime(prefs::kTrackingProtectionSentimentSurveyStartTime,
+                            anchor_time + kHatsDelayedStartTimeDelta);
+      pref_service->SetTime(prefs::kTrackingProtectionSentimentSurveyEndTime,
+                            anchor_time + kHatsDelayedEndTimeDelta);
+      return;
+  }
+}
+
 }  // namespace
 
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
@@ -238,6 +322,8 @@ void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
 }
 
 void TrackingProtectionOnboarding::OnOnboardingAckedChanged() const {
+  // Maybe set the Hats start and end time now that the profile is onboarded.
+  MaybeSetStartAndEndSurveyTime(pref_service_);
   for (auto& observer : observers_) {
     observer.OnShouldShowNoticeUpdated();
   }
@@ -282,6 +368,81 @@ void TrackingProtectionOnboarding::MaybeMarkIneligible() {
           TrackingProtectionOnboarding::OnboardingStatus::kIneligible));
   base::UmaHistogramBoolean(
       "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible", true);
+}
+
+bool TrackingProtectionOnboarding::RequiresSentimentSurveyGroup() {
+  // If the pref is in the default value, it means we haven't added this profile
+  // to any of the groups yet.
+  return !pref_service_->HasPrefPath(
+      prefs::kTrackingProtectionSentimentSurveyGroup);
+}
+
+void TrackingProtectionOnboarding::RegisterSentimentSurveyGroup(
+    SentimentSurveyGroup group) {
+  // Setting the group first.
+  tracking_protection::TrackingProtectionSentimentSurveyGroup internal_group;
+  switch (group) {
+    case SentimentSurveyGroup::kNotSet:
+      return;
+    case SentimentSurveyGroup::kControlImmediate:
+      internal_group =
+          TrackingProtectionSentimentSurveyGroup::kControlImmediate;
+      break;
+    case SentimentSurveyGroup::kTreatmentImmediate:
+      internal_group =
+          TrackingProtectionSentimentSurveyGroup::kTreatmentImmediate;
+      break;
+    case SentimentSurveyGroup::kControlDelayed:
+      internal_group = TrackingProtectionSentimentSurveyGroup::kControlDelayed;
+      break;
+    case SentimentSurveyGroup::kTreatmentDelayed:
+      internal_group =
+          TrackingProtectionSentimentSurveyGroup::kTreatmentDelayed;
+      break;
+  }
+
+  pref_service_->SetInteger(prefs::kTrackingProtectionSentimentSurveyGroup,
+                            static_cast<int>(internal_group));
+
+  MaybeSetStartAndEndSurveyTime(pref_service_);
+}
+
+TrackingProtectionOnboarding::SentimentSurveyGroup
+TrackingProtectionOnboarding::GetEligibleSurveyGroup() {
+  SentimentSurveyGroup group = GetSurveyGroup(pref_service_);
+
+  if (group == SentimentSurveyGroup::kNotSet) {
+    return group;
+  }
+
+  // If Start time isn't set, it means the profile isn't yet eligible. This is
+  // because all surveys MUST have a start time.
+  if (!pref_service_->HasPrefPath(
+          prefs::kTrackingProtectionSentimentSurveyStartTime)) {
+    return SentimentSurveyGroup::kNotSet;
+  }
+
+  if (base::Time::Now() <
+      pref_service_->GetTime(
+          prefs::kTrackingProtectionSentimentSurveyStartTime)) {
+    return SentimentSurveyGroup::kNotSet;
+  }
+
+  // No additional filtering if the end time isn't set. This is to support open
+  // ended surveys.
+  if (!pref_service_->HasPrefPath(
+          prefs::kTrackingProtectionSentimentSurveyEndTime)) {
+    return group;
+  }
+
+  // At this point, an end date is set, so we need to use it for filtering.
+  if (base::Time::Now() >
+      pref_service_->GetTime(
+          prefs::kTrackingProtectionSentimentSurveyEndTime)) {
+    return SentimentSurveyGroup::kNotSet;
+  }
+
+  return group;
 }
 
 void TrackingProtectionOnboarding::MaybeResetOnboardingPrefs() {

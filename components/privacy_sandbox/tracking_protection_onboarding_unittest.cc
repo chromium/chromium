@@ -29,6 +29,10 @@ using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingAckAction;
 
 using NoticeType = ::privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
+using NoticeAction =
+    ::privacy_sandbox::TrackingProtectionOnboarding::NoticeAction;
+using SentimentSurveyGroup =
+    ::privacy_sandbox::TrackingProtectionOnboarding::SentimentSurveyGroup;
 
 class MockTrackingProtectionObserver
     : public TrackingProtectionOnboarding::Observer {
@@ -539,6 +543,146 @@ INSTANTIATE_TEST_SUITE_P(
                   TrackingProtectionOnboardingAckAction::kLearnMore),
         std::pair(TrackingProtectionOnboarding::NoticeAction::kClosed,
                   TrackingProtectionOnboardingAckAction::kClosed)));
+
+class TrackingProtectionSentimentTracking
+    : public TrackingProtectionOnboardingTest {};
+
+TEST_F(TrackingProtectionSentimentTracking, RegistersProfileCorrectly) {
+  // Group unset initially.
+  EXPECT_TRUE(tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+
+  // Action: Register the group.
+  tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
+      SentimentSurveyGroup::kControlImmediate);
+
+  // Verification: Registration no longer required.
+  EXPECT_FALSE(
+      tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
+
+  // Registered group not yet returned
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+
+  // Registered group returned once the profile is eligible for the survey:
+  // After the survey start time, but before the survey end time.
+  task_env_.FastForwardBy(base::Minutes(3));
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kControlImmediate);
+}
+
+TEST_F(TrackingProtectionSentimentTracking,
+       ComputeSurveyEligibilityAfterEndTime) {
+  // Action: Register the group.
+  tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
+      SentimentSurveyGroup::kControlDelayed);
+
+  // Verification: Registration no longer required.
+  EXPECT_FALSE(
+      tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
+
+  // Registered group not yet returned
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+
+  // Registered group returned once the profile is eligible for the survey:
+  // After the survey start time, but before the survey end time.
+  task_env_.FastForwardBy(base::Days(14));
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kControlDelayed);
+
+  // Afte the end date, no longer return the registered group.
+  task_env_.FastForwardBy(base::Days(15));
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+}
+
+TEST_F(TrackingProtectionSentimentTracking, RegistersTreatmentBeforeAck) {
+  // Setup
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
+
+  // Action: Register the group.
+  tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
+      SentimentSurveyGroup::kTreatmentImmediate);
+
+  // Verification: Registration no longer required.
+  EXPECT_FALSE(
+      tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
+
+  // Registered group not yet returned
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+
+  // Registered group Still not returned even after the survey start time, and
+  // before the survey end time.
+  task_env_.FastForwardBy(base::Minutes(3));
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+}
+
+TEST_F(TrackingProtectionSentimentTracking, RegistersTreatmentAfterAck) {
+  // Setup
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
+      NoticeAction::kGotIt);
+
+  // Needs registration
+  EXPECT_TRUE(tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
+
+  // Action: Register the group.
+  tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
+      SentimentSurveyGroup::kTreatmentDelayed);
+
+  // Verification: Registration no longer required.
+  EXPECT_FALSE(
+      tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
+
+  // Registered group not yet returned
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+
+  // Registered returned after the survey start time, and before the survey end
+  // time.
+  task_env_.FastForwardBy(base::Days(14));
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kTreatmentDelayed);
+}
+
+TEST_F(TrackingProtectionSentimentTracking, RegistersTreatmentAndAcksLater) {
+  // Setup
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
+
+  // Action: Register the group.
+  tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
+      SentimentSurveyGroup::kTreatmentImmediate);
+
+  // Verification: Registration no longer required.
+  EXPECT_FALSE(
+      tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
+
+  // Action: Ack the notice.
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
+      NoticeAction::kGotIt);
+
+  // Notice still not returned after Acking the notice
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+
+  // Registered returned after the survey start time, and before the survey end
+  // time.
+  task_env_.FastForwardBy(base::Minutes(3));
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kTreatmentImmediate);
+}
 
 class TrackingProtectionOffboardingTest
     : public TrackingProtectionOnboardingTest {
