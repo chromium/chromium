@@ -2259,11 +2259,13 @@ void AddPrivacyGuideStrings(content::WebUIDataSource* html_source) {
     {"privacyGuideSearchSuggestionsCardHeader",
      IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_CARD_HEADER},
     {"privacyGuideSearchSuggestionsFeatureDescription1",
-     IDS_SETTINGS_PRIVACY_SEARCH_SUGGESTIONS_FEATURE_DESCRIPTION1},
+     IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_FEATURE_DESCRIPTION1},
     {"privacyGuideSearchSuggestionsPrivacyDescription1",
-     IDS_SETTINGS_PRIVACY_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION1},
+     IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION1},
     {"privacyGuideSearchSuggestionsPrivacyDescription2",
-     IDS_SETTINGS_PRIVACY_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION2},
+     IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION2},
+    {"privacyGuideSearchSuggestionsPrivacyDescription3",
+     IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION3},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
