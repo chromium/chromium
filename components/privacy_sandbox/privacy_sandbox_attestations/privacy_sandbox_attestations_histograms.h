@@ -7,17 +7,17 @@
 
 namespace privacy_sandbox {
 
-constexpr char kAttestationsFileParsingUMA[] =
+inline constexpr char kAttestationsFileParsingUMA[] =
     "PrivacySandbox.Attestations.InitializationDuration.Parsing";
-constexpr char kAttestationsMapMemoryUsageUMA[] =
+inline constexpr char kAttestationsMapMemoryUsageUMA[] =
     "PrivacySandbox.Attestations.EstimateMemoryUsage.AttestationsMap";
-constexpr char kComponentReadyFromApplicationStartUMA[] =
+inline constexpr char kComponentReadyFromApplicationStartUMA[] =
     "PrivacySandbox.Attestations.InitializationDuration."
     "ComponentReadyFromApplicationStart";
-constexpr char kComponentReadyFromApplicationStartWithInterruptionUMA[] =
+inline constexpr char kComponentReadyFromApplicationStartWithInterruptionUMA[] =
     "PrivacySandbox.Attestations.InitializationDuration."
     "ComponentReadyFromApplicationStartWithInterruption";
-constexpr char kComponentReadyFromBrowserWindowFirstPaintUMA[] =
+inline constexpr char kComponentReadyFromBrowserWindowFirstPaintUMA[] =
     "PrivacySandbox.Attestations.InitializationDuration."
     "ComponentReadyFromBrowserWindowFirstPaint";
 

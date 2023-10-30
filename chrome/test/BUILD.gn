@@ -6734,6 +6734,7 @@ test("unit_tests") {
     "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/privacy_sandbox:tracking_protection_settings",
     "//components/privacy_sandbox/privacy_sandbox_attestations",
+    "//components/privacy_sandbox/privacy_sandbox_attestations:metrics",
     "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
     "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
     "//components/proxy_config",

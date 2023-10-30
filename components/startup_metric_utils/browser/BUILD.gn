@@ -12,6 +12,7 @@ source_set("browser") {
 
   deps = [
     "//base",
+    "//components/privacy_sandbox/privacy_sandbox_attestations:metrics",
     "//components/startup_metric_utils/common",
     "//components/version_info",
   ]
