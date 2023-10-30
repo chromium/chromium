@@ -58,7 +58,8 @@ bool ComposeEnabling::IsEnabled(Profile* profile,
   }
 
   // Check that the feature flag is enabled.
-  if (!base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
+  if (!base::FeatureList::IsEnabled(compose::features::kEnableCompose) &&
+      !base::FeatureList::IsEnabled(compose::features::kFillMultiLine)) {
     DVLOG(2) << "feature not enabled ";
     return false;
   }
