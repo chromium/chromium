@@ -4402,8 +4402,7 @@ void AXNodeObject::AddValidationMessageChild() {
   // event is needed in AXObjectCacheImpl::ValidationMessageObjectIfInvalid().
   DCHECK_EQ(children_.size(), 0U)
       << "Validation message must be the first child";
-  AddChildAndCheckIncluded(AXObjectCache().ValidationMessageObjectIfInvalid(
-      /* suppress children changed, already processing that */ false));
+  AddChildAndCheckIncluded(AXObjectCache().ValidationMessageObjectIfInvalid());
 }
 
 void AXNodeObject::AddImageMapChildren() {
@@ -5254,8 +5253,9 @@ AXObject::AXObjectVector AXNodeObject::ErrorMessageFromHTML() const {
   }
 
   AXObject* native_error_message =
-      AXObjectCache().ValidationMessageObjectIfInvalid(true);
+      AXObjectCache().ValidationMessageObjectIfInvalid();
   if (native_error_message && !native_error_message->IsDetached()) {
+    CHECK_GE(native_error_message->IndexInParent(), 0);
     return AXObjectVector({native_error_message});
   }
 

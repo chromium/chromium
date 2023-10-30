@@ -2768,7 +2768,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
 
     // Update (create or remove) validation child of root, if it is needed, so
     // that the tree can be frozen in the correct state.
-    ValidationMessageObjectIfInvalid(/* notify children changed */ true);
+    ValidationMessageObjectIfInvalid();
 
     // Changes to ids or aria-owns may have resulted in queued up relation
     // cache work; do that now.
@@ -3770,7 +3770,8 @@ AXObject* AXObjectCacheImpl::GetOrCreateValidationMessageObject() {
       return nullptr;
     }
     message_ax_object = MakeGarbageCollected<AXValidationMessage>(*this);
-    DCHECK(message_ax_object);
+    CHECK(message_ax_object);
+    CHECK(!message_ax_object->IsDetached());
     // Cache the validation message container for reuse.
     validation_message_axid_ = AssociateAXID(message_ax_object);
     // Validation message alert object is a child of the document, as not all
@@ -3779,11 +3780,11 @@ AXObject* AXObjectCacheImpl::GetOrCreateValidationMessageObject() {
     // expected to have alerts within AT client code.
     message_ax_object->Init(Root());
   }
+  CHECK(!message_ax_object->IsDetached());
   return message_ax_object;
 }
 
-AXObject* AXObjectCacheImpl::ValidationMessageObjectIfInvalid(
-    bool notify_children_changed) {
+AXObject* AXObjectCacheImpl::ValidationMessageObjectIfInvalid() {
   Element* focused_element = document_->FocusedElement();
   if (focused_element) {
     ListedElement* form_control = ListedElement::From(*focused_element);
@@ -3795,25 +3796,17 @@ AXObject* AXObjectCacheImpl::ValidationMessageObjectIfInvalid(
       bool was_validation_message_already_created = validation_message_axid_;
       if (was_validation_message_already_created ||
           form_control->IsValidationMessageVisible()) {
-        AXObject* focused_object = FocusedObject();
-        if (focused_object) {
-          // Return as long as the focused form control isn't overriding with a
-          // different message via aria-errormessage.
-          AXObject::AXObjectVector aria_error_messages =
-              focused_object->ErrorMessageFromAria();
-          if (aria_error_messages.empty()) {
-            AXObject* message = GetOrCreateValidationMessageObject();
-            DCHECK(message);
-            DCHECK(!message->IsDetached());
-            if (notify_children_changed &&
-                Root()->FirstChildIncludingIgnored() != message) {
-              // Only notify children changed if not already processing new root
-              // children, and the root doesn't already have this child.
-              ChildrenChangedWithCleanLayout(document_);
-            }
-            DCHECK_EQ(message->CachedParentObject(), Root());
-            return message;
-          }
+        HeapVector<Member<Element>> error_messages;
+        // Create the validation message unless the focused form control is
+        // overriding it with a different message via aria-errormessage.
+        if (!AccessibleNode::GetPropertyOrARIAAttribute(
+                focused_element, AOMRelationListProperty::kErrorMessage,
+                error_messages)) {
+          AXObject* message = GetOrCreateValidationMessageObject();
+          CHECK(message);
+          CHECK(!message->IsDetached());
+          CHECK_EQ(message->CachedParentObject(), Root());
+          return message;
         }
       }
     }
@@ -3836,9 +3829,9 @@ void AXObjectCacheImpl::RemoveValidationMessageObjectWithCleanLayout(
     // the same object is hidden and made visible quickly, which occurs if the
     // user submits the form when an alert is already visible.
     Remove(validation_message_axid_, /* notify_parent */ false);
-    ChildrenChangedWithCleanLayout(document_);
     validation_message_axid_ = 0;
   }
+  ChildrenChangedWithCleanLayout(document_);
 }
 
 // Native validation error popup for focused form control in current document.
@@ -3861,10 +3854,11 @@ void AXObjectCacheImpl::HandleValidationMessageVisibilityChangedWithCleanLayout(
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  AXObject* message_ax_object = ValidationMessageObjectIfInvalid(
-      /* Fire children changed on root if it gains message child */ true);
-  if (message_ax_object)  // May be invisible now.
+  if (AXObject* message_ax_object = ValidationMessageObjectIfInvalid()) {
     MarkAXObjectDirtyWithCleanLayout(message_ax_object);
+  }
+
+  ChildrenChangedWithCleanLayout(Root());
 
   // If the form control is invalid, it will now have an error message relation
   // to the message container.

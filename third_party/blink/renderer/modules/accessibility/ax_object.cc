@@ -914,9 +914,7 @@ bool AXObject::IsMissingParent() const {
     // Do not attempt to repair the ParentObject() of a validation message
     // object, because hidden ones are purposely kept around without being in
     // the tree, and without a parent, for potential later reuse.
-    // TODO(accessibility) This is ugly. Consider destroying validation message
-    // objects between uses instead. See GetOrCreateValidationMessageObject().
-    bool is_missing = !IsRoot() && !IsValidationMessage();
+    bool is_missing = !IsRoot();
     CHECK(!is_missing || !AXObjectCache().IsFrozen())
         << "Should not have missing parent in frozen tree: "
         << ToString(true, true);
