@@ -16,7 +16,6 @@
 #include "ui/color/color_recipe.h"
 #include "ui/color/dynamic_color/palette.h"
 #include "ui/color/dynamic_color/palette_factory.h"
-#include "ui/color/temp_palette.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ui {

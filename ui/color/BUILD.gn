@@ -61,8 +61,6 @@ component("color") {
     "color_recipe.h",
     "color_transform.cc",
     "color_transform.h",
-    "temp_palette.cc",
-    "temp_palette.h",
   ]
 
   configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
