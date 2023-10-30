@@ -982,6 +982,7 @@
 <translation id="175772926354468439">Загварыг идэвхжүүлэх</translation>
 <translation id="1757786065507923842">Эцэг эхийн зөвшөөрлийн хүсэлт амжилтгүй боллоо.</translation>
 <translation id="17584710573359123">Chrome Веб Дэлгүүрт харах</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" />-г <ph name="REMAPPING_OPTION" />-д дахин харгалзуулсан.</translation>
 <translation id="1761845175367251960"><ph name="NAME" />-н бүртгэлүүд</translation>
 <translation id="176272781006230109">дэлгүүр хэсэх зөвлөмж</translation>
 <translation id="1763046204212875858">Програмын богино холбоосыг үүсгэ</translation>
@@ -1361,6 +1362,7 @@
 <translation id="2037486735086318591">Эргэн тойрныхоо хүмүүсээс файл хүлээн авах болон тэдэнд илгээхийн тулд <ph name="FEATURE_NAME" />-г тохируулна уу</translation>
 <translation id="2039464276165755892">Өөр хэн нэгэн илэрсэн үед мэдэгдлийн контентыг нуух</translation>
 <translation id="2040460856718599782">Өө! Таныг таниулахыг оролдож байх үед ямар нэг зүйл ажиллахаа больсон байна. Бүртгэлийн мэдээллээ давхар шалгаад дахин оролдож үзнэ үү.</translation>
+<translation id="2040822390690632244">Шинэчлэлт, тусламж, хөгжүүлэгчийн тохиргоо</translation>
 <translation id="2040894699575719559">Байршлыг блоклосон</translation>
 <translation id="2041246176170574368">Аюулгүй байдлын шинэчлэлтүүд удахгүй дуусна. Шинэ Chromebook-д $50 эсвэл үүнээс ихийг хэмнээрэй.</translation>
 <translation id="2042279886444479655">Идэвхтэй профайлууд</translation>
@@ -2728,6 +2730,7 @@
 <translation id="3076977359333237641">Таны нэвтрэх өгөгдлийг устгалаа</translation>
 <translation id="3080933187214341848">Энэ сүлжээг таны бүртгэлтэй синк хийгээгүй байна. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">өргөтгөлүүд</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Таны нууцлалыг хамгаалахын тулд түр блоклосон</translation>
 <translation id="3083899879156272923">Хулганыг дэлгэцийн төвд байлгаж, дэлгэцийг хөдөлгөх</translation>
@@ -2887,6 +2890,7 @@
 <translation id="3229412050601871341">Төхөөрөмжийн нууц үг</translation>
 <translation id="3230539834943294477">Тусламжийн нийтлэлийг харах эсвэл төхөөрөмжийн тусламжийг олно уу</translation>
 <translation id="3232168089952388105">Төхөөрөмжийнхөө талаарх мэдээллийг хуваалцах уу?</translation>
+<translation id="3232368113895801406">Таны аюулгүй байдлын сонголтууд Тусгаарласан аппуудыг суулгахыг зөвшөөрдөггүй. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">Баруун талд эгнүүлэх</translation>
 <translation id="3232754137068452469">Веб Апп</translation>
 <translation id="3233271424239923319">Linux аппууд болон файлуудыг нөөцлөх</translation>
@@ -4597,6 +4601,7 @@
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-д хадгалсан төхөөрөмж байхгүй</translation>
 <translation id="4592891116925567110">Мэдрэгч үзгийн зурдаг апп</translation>
 <translation id="4593021220803146968">&amp;<ph name="URL" /> руу очих</translation>
+<translation id="4593962599442730215">Сонголтуудаа өөрчлөх</translation>
 <translation id="4594218792629569101">Хуудсыг жагсаалтынхаа доод тал руу зөөхийн тулд “Уншсан гэж тэмдэглэх”-ийг сонгоно уу</translation>
 <translation id="4594577641390224176">Системийн талаарх хуудсыг хайж байна уу? Зочлох</translation>
 <translation id="4595560905247879544">Апп болон өргөтгөлийг (<ph name="CUSTODIAN_NAME" />) менежер өөрчлөх боломжтой.</translation>
@@ -4611,6 +4616,7 @@
 <translation id="460190672235687855">Нуц үгнүүдийг харах</translation>
 <translation id="4602466770786743961"><ph name="HOST" />-д таны камер болон микрофонд нэвтрэхийг үргэлж зөвшөөрөх</translation>
 <translation id="4602776638371779614">Энэ таб Bluetooth төхөөрөмжүүдийг идэвхтэйгээр скан хийж байна</translation>
+<translation id="4605026046465576953">Танд тусгаарласан веб аппуудыг ажиллуулах зөвшөөрөл байхгүй тул энэ аппыг нээх боломжгүй</translation>
 <translation id="4606551464649945562">Сайтуудад таны эргэн тойрны 3D газрын зургийг үүсгэх эсвэл камерын хөдөлгөөнийг хянахыг үл зөвшөөрөх</translation>
 <translation id="4608500690299898628">&amp;Олох...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />-д алдаа гарлаа</translation>
@@ -4734,6 +4740,7 @@
 <translation id="4693155481716051732">Сүши</translation>
 <translation id="4694024090038830733">Админ хэвлэгчийн тохиргоог зохицуулж байна.</translation>
 <translation id="4694604912444486114">Сармагчин</translation>
+<translation id="4694820450536519583">зөвшөөрлүүд</translation>
 <translation id="4695318956047767909">Бараан загвар, дэлгэц амраагч</translation>
 <translation id="4697071790493980729">Илэрц олдсонгүй</translation>
 <translation id="4697551882387947560">Хайлтын үе дуусахад</translation>
@@ -6652,6 +6659,7 @@
 <translation id="6264060420924719834">Энэ апп бусад сайтын веб контентыг агуулж байна</translation>
 <translation id="6264365405983206840">Бүгдийг сонгох</translation>
 <translation id="6264376385120300461">Ямартай ч татах</translation>
+<translation id="6264520534872750757">Төхөөрөмжийг үргэлжлүүлэн ашиглах</translation>
 <translation id="6265159465845424232">Microsoft файлуудыг Microsoft OneDrive руу хуулах эсвэл зөөхөөсөө өмнө асуух</translation>
 <translation id="6265687851677020761">Портыг хасах</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />-д холбогдож байна</translation>
@@ -7415,6 +7423,7 @@
 <translation id="6876469544038980967">Хэрэггүй</translation>
 <translation id="6878422606530379992">Мэдрэгчийнг зөвшөөрсөн</translation>
 <translation id="6880587130513028875">Энэ хуудсанд зураг гаргахыг блоклосон байна.</translation>
+<translation id="6881845890692344060">Танай администратор гарсан байна. Одоо хяналт таны гарт байна.</translation>
 <translation id="6882210908253838664">Хэрэв сайт ажиллахгүй байвал та түүнд гуравдагч талын күүкинүүдийг ашиглах түр зуурын зөвшөөрлийг өгч үзэх боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Систем төхөөрөмжийн тохиргоог хадгалж чадсангүй.</translation>
 <translation id="6884474387073389421">Та сонгосон нэвтрэх өгөгдлийг устгахдаа итгэлтэй байна уу?</translation>
@@ -8312,6 +8321,7 @@
 <translation id="7616214729753637086">Төхөөрөмжийг бүртгүүлж байна...</translation>
 <translation id="7617263010641145920">Play Store-г асаах</translation>
 <translation id="7617648809369507487">Чимээгүй мессеж бичихийг ашиглах</translation>
+<translation id="7619937211696316184">Засвар үйлчилгээ дууслаа</translation>
 <translation id="7621382409404463535">Систем төхөөрөмжийн тохируулгыг хадгалж чадсангүй.</translation>
 <translation id="7621480263311228380">Үүнд таны талаар хадгалсан мэдээллээ ашиглахыг нь зөвшөөрөөгүй</translation>
 <translation id="7621595347123595643">Хэрэв та нууц үг эсвэл ПИН-ээ мартсан бол дотоод өгөгдлөө сэргээх боломжгүй болно.</translation>
@@ -9656,6 +9666,7 @@
 <translation id="8662795692588422978">Хүмүүс</translation>
 <translation id="8662911384982557515">Нүүр хуудсаа <ph name="HOME_PAGE" />-аар солих</translation>
 <translation id="8662978096466608964">Chrome нь дэлгэцийн зургийг тохируулж чадахгүй байна.</translation>
+<translation id="8663051876219324457">Апп, вебсайт болон системийн үйлчилгээнүүдэд таны байршлыг ашиглахыг зөвшөөрнө үү. Байршил нь Wi-Fi, мобайл сүлжээ болон мэдрэгчид зэрэг эх сурвалжийг таны төхөөрөмжийн байршлыг тооцоолоход ашиглаж магадгүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" />-д автоматиар олон файл татаж авах явцыг үргэлж блокло.</translation>
 <translation id="8664389313780386848">&amp; Хуудасны эх үүсвэрийг харуулах</translation>
 <translation id="8665110742939124773">Та буруу нэвтрэх код оруулсан байна. Дахин оролдоно уу.</translation>
@@ -9748,6 +9759,7 @@
 <translation id="87254326763805752">Нууц үгийг баталгаажуулна уу</translation>
 <translation id="8726206820263995930">Серверээс удирдамжийн тохиргоог татах явцад алдаа гарлаа: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Chrome-г бүрэн ашиглаарай</translation>
+<translation id="8727333994464775697">Энэ хуудсанд хардаг зүйлээ өөрчилнө үү</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />Автоматаар бөглөх хэсгийн мета өгөгдлийг<ph name="END_LINK1" /> илгээх
           <ph name="LINE_BREAK" />
           (таны автоматаар бөглөх өгөгдлийг хуваалцахгүй)</translation>

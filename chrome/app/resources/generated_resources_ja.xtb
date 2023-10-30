@@ -974,6 +974,7 @@
 <translation id="175772926354468439">テーマを有効にする</translation>
 <translation id="1757786065507923842">保護者の権限をリクエストできませんでした。</translation>
 <translation id="17584710573359123">Chrome ウェブストアのページに移動</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" /> を <ph name="REMAPPING_OPTION" /> に再マッピングしました。</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> さんのアカウント</translation>
 <translation id="176272781006230109">おすすめのショッピング情報</translation>
 <translation id="1763046204212875858">アプリケーションのショートカットを作成</translation>
@@ -1350,6 +1351,7 @@
 <translation id="2037486735086318591">近くのユーザーとファイルを送受信するには、<ph name="FEATURE_NAME" /> を設定してください</translation>
 <translation id="2039464276165755892">他者の検出時に通知内容を非表示</translation>
 <translation id="2040460856718599782">ユーザー認証時に問題が発生しました。ログイン情報をお確かめのうえ、もう一度お試しください。</translation>
+<translation id="2040822390690632244">更新、ヘルプ、デベロッパー オプション</translation>
 <translation id="2040894699575719559">位置情報がブロックされています</translation>
 <translation id="2041246176170574368">まもなくセキュリティ アップデートの提供が終了します。新しい Chromebook を 50 ドル以上お得に手に入れましょう。</translation>
 <translation id="2042279886444479655">有効なプロファイル</translation>
@@ -1876,6 +1878,7 @@
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2436385001956947090">リンクをコピー(&amp;L)</translation>
 <translation id="2438853563451647815">プリンタに接続されていません</translation>
+<translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> のパスワードを再設定</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> を読み込んでいます</translation>
 <translation id="2440604414813129000">ソースを表示(&amp;O)</translation>
 <translation id="2440823041667407902">位置情報へのアクセス</translation>
@@ -2025,6 +2028,7 @@
 <translation id="2541423446708352368">すべてのダウンロードを表示</translation>
 <translation id="2541706104884128042">お休み時間が変更されました</translation>
 <translation id="2542050502251273923">ff_debug を使用して、ネットワーク接続マネージャーと他のサービスのデバッグレベルを設定します。</translation>
+<translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」に許可した権限は、このアプリにも適用されます。<ph name="MANAGE_LINK" />}other{「<ph name="APP_NAME" />」に許可した権限は、これらのアプリにも適用されます。<ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">このタブ</translation>
 <translation id="2546302722632337735">識別子の使用と保護されたコンテンツの再生をサイトに許可しない</translation>
 <translation id="2546991196809436099">画面上の項目を拡大表示します。拡大鏡をオンまたはオフにするには、検索+Ctrl+M キーを使用します。</translation>
@@ -2467,6 +2471,7 @@
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> の再起動とリセットを行います</translation>
 <translation id="2883470649061584386">フィード</translation>
 <translation id="2884070497102362193">バッテリー、CPU、メモリ、接続などをテストできます</translation>
+<translation id="2885129935310217435">同じ名前のボタンがあります。他の名前を選択してください。</translation>
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2885729872133513017">サーバーの応答をデコード中に問題が発生しました。</translation>
 <translation id="2886119409731773154">最大で 30 分ほどかかる場合があります</translation>
@@ -2711,6 +2716,7 @@
 <translation id="3076977359333237641">ログインデータが削除されました</translation>
 <translation id="3080933187214341848">このネットワークはアカウントに同期されていません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">拡張機能</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">セキュリティ保護のために一時的にブロックされています</translation>
 <translation id="3083899879156272923">マウスが画面の中央に置かれているときに画面を移動する</translation>
@@ -2870,6 +2876,7 @@
 <translation id="3229412050601871341">デバイスのパスワード</translation>
 <translation id="3230539834943294477">ヘルプ記事やデバイスのサポートを確認できます</translation>
 <translation id="3232168089952388105">デバイスに関する情報を共有しますか？</translation>
+<translation id="3232368113895801406">セキュリティ設定により、分離されたアプリのインストールは許可されていません。<ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">右揃え</translation>
 <translation id="3232754137068452469">ウェブアプリ</translation>
 <translation id="3233271424239923319">Linux のアプリとファイルをバックアップします</translation>
@@ -4578,6 +4585,7 @@
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> に保存されたデバイスはありません</translation>
 <translation id="4592891116925567110">タッチペンの描画アプリ</translation>
 <translation id="4593021220803146968"><ph name="URL" /> に移動(&amp;G)</translation>
+<translation id="4593962599442730215">設定を変更</translation>
 <translation id="4594218792629569101">[既読にする] を選択すると、ページがリストの一番下に移動します</translation>
 <translation id="4594577641390224176">システム情報のページをお探しですか？次にアクセスしてください</translation>
 <translation id="4595560905247879544">アプリと拡張機能は管理者（<ph name="CUSTODIAN_NAME" />）だけが変更できます。</translation>
@@ -4592,6 +4600,7 @@
 <translation id="460190672235687855">パスワードを表示</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> によるカメラとマイクへのアクセスを常に許可する</translation>
 <translation id="4602776638371779614">このタブは Bluetooth デバイスをスキャンしています</translation>
+<translation id="4605026046465576953">分離されたウェブアプリを実行する権限がないため、このアプリを開けません</translation>
 <translation id="4606551464649945562">サイトに周囲の 3D マップの作成またはカメラ位置の追跡を許可しない</translation>
 <translation id="4608500690299898628">検索(&amp;F)...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> でエラーが発生しました</translation>
@@ -4715,6 +4724,7 @@
 <translation id="4693155481716051732">お寿司</translation>
 <translation id="4694024090038830733">プリンタの設定を行えるのは管理者のみです。</translation>
 <translation id="4694604912444486114">サル</translation>
+<translation id="4694820450536519583">権限</translation>
 <translation id="4695318956047767909">ダークモード、スクリーン セーバー</translation>
 <translation id="4697071790493980729">一致する検索結果は見つかりませんでした</translation>
 <translation id="4697551882387947560">ブラウザ セッションの終了時</translation>
@@ -6631,6 +6641,7 @@
 <translation id="6264060420924719834">このアプリには他のサイトのウェブ コンテンツが含まれています</translation>
 <translation id="6264365405983206840">すべて選択(&amp;A)</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
+<translation id="6264520534872750757">デバイスを引き続き使用</translation>
 <translation id="6265159465845424232">Microsoft のファイルを Microsoft OneDrive にコピーまたは移動する前に確認する</translation>
 <translation id="6265687851677020761">ポートを削除</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> に接続しています</translation>
@@ -7392,6 +7403,7 @@
 <translation id="6876469544038980967">役に立たなかった</translation>
 <translation id="6878422606530379992">センサーが許可されました</translation>
 <translation id="6880587130513028875">このページの画像はブロックされました。</translation>
+<translation id="6881845890692344060">管理者がログアウトしました。ご自身で管理できるようになりました。</translation>
 <translation id="6882210908253838664">サイトが機能しない場合は、サードパーティ Cookie の使用を一時的に許可してみてください。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">デバイスの設定を保存できませんでした。</translation>
 <translation id="6884474387073389421">選択したログインデータを削除してもよろしいですか？</translation>
@@ -8289,6 +8301,7 @@
 <translation id="7616214729753637086">デバイスを登録しています...</translation>
 <translation id="7617263010641145920">Play ストアをオンにする</translation>
 <translation id="7617648809369507487">目立たない方法で通知する</translation>
+<translation id="7619937211696316184">メンテナンスが完了しました</translation>
 <translation id="7621382409404463535">デバイスの設定を保存できませんでした。</translation>
 <translation id="7621480263311228380">保存したあなたに関する情報の使用を許可しない</translation>
 <translation id="7621595347123595643">パスワードや PIN を忘れた場合、ローカルデータを復元できなくなります。</translation>
@@ -8752,6 +8765,7 @@
 <translation id="7952708427581814389">サイトがクリップボード内のテキストや画像へのアクセスを要求できるようにする</translation>
 <translation id="795282463722894016">復元が完了しました</translation>
 <translation id="7952904276017482715">ID「<ph name="EXPECTED_ID" />」が必要ですが、ID「<ph name="NEW_ID" />」が検出されました</translation>
+<translation id="7953236668995583915">更新した設定をこのサイトに適用するには、このページを再読み込みしてください</translation>
 <translation id="7953669802889559161">入力方法</translation>
 <translation id="7953955868932471628">ショートカットの管理</translation>
 <translation id="7955105108888461311">直接リクエストする</translation>
@@ -9635,6 +9649,7 @@
 <translation id="8662795692588422978">ユーザー</translation>
 <translation id="8662911384982557515">ホームページを次に変更: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">壁紙は設定できません。</translation>
+<translation id="8663051876219324457">アプリ、ウェブサイト、システム サービスに位置情報の使用を許可します。デバイスの位置情報の特定に、Wi-Fi、モバイル ネットワーク、センサーなどのソースを使用する場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" /> 上での複数ファイルの自動ダウンロードを常にブロックする</translation>
 <translation id="8664389313780386848">ページのソースを表示(&amp;V)</translation>
 <translation id="8665110742939124773">間違ったアクセスコードが入力されました。もう一度お試しください。</translation>
@@ -9727,6 +9742,7 @@
 <translation id="87254326763805752">パスキーの確認</translation>
 <translation id="8726206820263995930">サーバーからポリシー設定を取得するときにエラーが発生しました: <ph name="CLIENT_ERROR" />。</translation>
 <translation id="8727043961453758442">Chrome を最大限に活用</translation>
+<translation id="8727333994464775697">このページの表示内容をカスタマイズできます</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />自動入力メタデータ<ph name="END_LINK1" />を送信する
           <ph name="LINE_BREAK" />
           （自動入力データは共有されません）</translation>

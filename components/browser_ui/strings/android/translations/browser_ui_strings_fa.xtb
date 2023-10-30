@@ -115,7 +115,7 @@
 <translation id="2910701580606108292">قبل از اجازه دادن به سایت‌ها برای پخش محتوای محافظت‌شده سؤال شود</translation>
 <translation id="2932883381142163287">گزارش سوءاستفاده</translation>
 <translation id="2968755619301702150">بیننده گواهی</translation>
-<translation id="3008272652534848354">بازنشانی مجوزها</translation>
+<translation id="3008272652534848354">بازنشانی اجازه‌ها</translation>
 <translation id="301521992641321250">مسدود‌شده به‌طور خودکار</translation>
 <translation id="3069226013421428034">ورود به سیستم شخص ثالث برای سایت خاصی مجاز می‌شود.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{فردا منقضی می‌شود}one{‫# روز دیگر منقضی می‌شود}other{‫# روز دیگر منقضی می‌شود}}</translation>
@@ -215,7 +215,7 @@
 <translation id="4883854917563148705">تنظیمات مدیریت‌شده بازنشانی نشدند</translation>
 <translation id="4887024562049524730">قبل از اینکه به سایت‌ها اجازه داده شود به دستگاه و داده‌های واقعیت مجازی دسترسی یابند سؤال شود (توصیه می‌شود)</translation>
 <translation id="4955223779495905865">یکی از سایت‌هایی که بازدید می‌کنید می‌تواند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کند. هریک از این سایت‌ها می‌توانند برای شخصی کردن تجربه شما کوکی و داده‌های دیگر ذخیره کنند.</translation>
-<translation id="4962975101802056554">لغو همه مجوزها برای دستگاه</translation>
+<translation id="4962975101802056554">لغو همه اجازه‌ها برای دستگاه</translation>
 <translation id="497421865427891073">جلو رفتن</translation>
 <translation id="4976702386844183910">آخرین بازدید: <ph name="DATE" /></translation>
 <translation id="4985206706500620449">کوکی‌های شخص ثالث را برای این سایت مجاز کرده‌اید</translation>
@@ -268,7 +268,7 @@
 <translation id="5723967018671998714">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شده‌اند</translation>
 <translation id="5740126560802162366">سایت‌ها می‌توانند در دستگاه داده ذخیره کنند</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود شد</translation>
-<translation id="5804241973901381774">مجوزها</translation>
+<translation id="5804241973901381774">اجازه‌ها</translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5876056640971328065">مکث ویدیو</translation>
 <translation id="5884085660368669834">اولویت سایت</translation>
@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> مورد انتخاب شد</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مجاز هستند</translation>
+<translation id="7284451015630589124">استفاده از کوکی‌های شخص ثالث را برای سایت‌ها مسدود کردید تا سایت‌ها نتوانند هنگامی که مرور می‌کنید شما را ردیابی کنند. برای <ph name="BEGIN_LINK" />مدیریت محافظت دربرابر ردیابی<ph name="END_LINK" />، به تنظیمات مراجعه کنید.</translation>
 <translation id="7302486331832100261">معمولاً اعلان‌ها را مسدود می‌کنید. برای مجاز کردن، روی «جزئیات» ضربه بزنید.</translation>
 <translation id="7366415735885268578">افزودن سایت</translation>
 <translation id="7368695150573390554">همه داده‌های آفلاین حذف خواهند شد</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}one{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}other{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}}</translation>
 <translation id="857943718398505171">مجاز (توصیه می‌شود)</translation>
 <translation id="8609465669617005112">انتقال به بالا</translation>
+<translation id="8649036394979866943">‏‫Chrome استفاده از کوکی‌های شخص ثالث را برای اکثر سایت‌ها محدود می‌کند تا این سایت‌ها نتوانند هنگامی که مرور می‌کنید شما را ردیابی کنند. برای <ph name="BEGIN_LINK" />مدیریت محافظت دربرابر ردیابی<ph name="END_LINK" />، به تنظیمات مراجعه کنید</translation>
 <translation id="8676374126336081632">پاک کردن ورودی</translation>
 <translation id="8681886425883659911">آگهی‌های نمایش‌داده‌شده در سایت‌هایی که طبق تشخیص ما آگهی‌های مزاحم یا گمراه‌کننده نمایش می‌دهند مسدود می‌شود.</translation>
 <translation id="868929229000858085">جستجوی مخاطبین</translation>

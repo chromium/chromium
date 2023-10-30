@@ -1108,6 +1108,7 @@
 <translation id="3266793032086590337">মান (সংঘাত)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{সম্পৰ্কিত ছাইটসমূহকে ধৰি কোনো ছাইট অৱৰোধ কৰা হোৱা নাই}=1{সম্পৰ্কিত ছাইটসমূহকে ধৰি ১ টা ছাইট অৱৰোধ কৰা হৈছে}one{সম্পৰ্কিত ছাইটসমূহকে ধৰি # টা ছাইট অৱৰোধ কৰা হৈছে}other{সম্পৰ্কিত ছাইটসমূহকে ধৰি # টা ছাইট অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="3268451620468152448">খুলি ৰখা টেব</translation>
+<translation id="3270041629388773465">আপোনাৰ CVC ছেভ কৰা থাকিলে অধিক দ্ৰুতভাৱে চেক আউট কৰক</translation>
 <translation id="3270156322180235608">বিমান যাত্ৰা</translation>
 <translation id="3270847123878663523">পুনঃক্ৰম কৰাটো &amp;আনডু কৰক</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" />এ সংযোগ কৰিবলৈ বিচাৰিছে</translation>
@@ -1845,6 +1846,7 @@
 <translation id="4761104368405085019">আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰক</translation>
 <translation id="4761326898079498987">অধিক সবিশেষৰ বাবে পৰ্যালোচনা কৰক</translation>
 <translation id="4761869838909035636">Chromeৰ সুৰক্ষা পৰীক্ষা চলাওক</translation>
+<translation id="4763196677855776703"><ph name="URL" />এ প্ৰদান কৰা নিয়ম আৰু চৰ্তাৱলী</translation>
 <translation id="4764680219299728632">ৰেঞ্জ, কুকটপ আৰু অভেন</translation>
 <translation id="4764776831041365478"><ph name="URL" />ৰ ৱেবপৃষ্ঠাটো অস্থায়ীভাৱে ব্যৱহাৰযোগ্য হৈ নাথাকিব পাৰে বা ইয়াক কোনো নতুন ৱেব ঠিকনালৈ স্থায়ী ভাৱে নিয়া হ’ব পাৰে।</translation>
 <translation id="4766713847338118463">তলৰ অংশত দুবাৰ ষ্টে'পল কৰক</translation>
@@ -2273,6 +2275,7 @@
 <translation id="5633259641094592098">কাল্ট আৰু ইণ্ডী চলচ্চিত্ৰ</translation>
 <translation id="563371367637259496">ম’বাইল</translation>
 <translation id="5635237618724097525">স্মাৰ্ট ফ’ন</translation>
+<translation id="5635478143789726479">বিক্ৰেতাৰ নিয়ম আৰু চৰ্তাৱলী</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />। <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">ষ্টেৰিঅ’ ছিষ্টেম আৰু উপাদান</translation>
 <translation id="5644090287519800334">কাষৰ ১ প্ৰতিচ্ছবি X শ্বিফ্ট</translation>
@@ -2392,6 +2395,7 @@
 <translation id="5911110632211230665">ফাইল খোলাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="59174027418879706">সক্ষম কৰা আছে</translation>
 <translation id="5918373444239520146">সঁজুলি আৰু প’ৰ্টেবল ইলেক্ট্ৰ’নিক</translation>
+<translation id="5918847752193018339">আপোনাৰ CVC ছেভ কৰা থাকিলে অধিক দ্ৰুতভাৱে চেক আউট কৰক। <ph name="LINK_BEGIN" />ছেভ কৰি ৰখা সুৰক্ষা ক’ডসমূহ মচক<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{১টা ব্যৱহাৰ হৈ আছে}one{#টা ব্যৱহাৰ হৈ আছে}other{#টা ব্যৱহাৰ হৈ আছে}}</translation>
 <translation id="592031860219554105">আইচ স্কেটিং</translation>
@@ -3468,6 +3472,7 @@
 <translation id="8041089156583427627">মতামত পঠিয়াওক</translation>
 <translation id="8041940743680923270">গ্ল’বেল ডিফ’ল্ট ব্যৱহাৰ কৰক (সোধক)</translation>
 <translation id="8042577181291637092">MIDI ডিভাইচ ব্যৱহাৰ কৰিবনে?</translation>
+<translation id="8043255123207491407">বিক্ৰেতাৰ নিয়ম আৰু চৰ্তাৱলী চাওক</translation>
 <translation id="8046360364391076336">ঔদ্যোগিক সামগ্ৰী আৰু সৰঞ্জাম</translation>
 <translation id="8052898407431791827">প্ৰতিলিপি কৰি ক্লিপব’ৰ্ডত ৰখা হ’ল</translation>
 <translation id="8055534648776115597">বৃত্তি সম্পৰ্কীয় শিক্ষা আৰু আধৰুৱা শিক্ষা পুনৰ আৰম্ভ কৰা</translation>

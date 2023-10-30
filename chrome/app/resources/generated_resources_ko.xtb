@@ -986,6 +986,7 @@
 <translation id="175772926354468439">테마 사용</translation>
 <translation id="1757786065507923842">상위 권한 요청에 실패했습니다.</translation>
 <translation id="17584710573359123">Chrome 웹 스토어에서 보기</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" /> 버튼이 <ph name="REMAPPING_OPTION" />에 다시 매핑되었습니다.</translation>
 <translation id="1761845175367251960"><ph name="NAME" />님의 계정</translation>
 <translation id="176272781006230109">쇼핑 추천</translation>
 <translation id="1763046204212875858">애플리케이션 바로가기 만들기</translation>
@@ -1366,6 +1367,7 @@
 <translation id="2037486735086318591">주변의 사람과 파일을 주고받으려면 <ph name="FEATURE_NAME" />을(를) 설정하세요.</translation>
 <translation id="2039464276165755892">다른 사람이 감지되면 알림 내용을 숨깁니다.</translation>
 <translation id="2040460856718599782">인증을 시도하는 중에 문제가 발생했습니다. 로그인 사용자 인증 정보를 확인하고 다시 시도해 주세요.</translation>
+<translation id="2040822390690632244">업데이트, 도움말, 개발자 옵션</translation>
 <translation id="2040894699575719559">위치가 차단됨</translation>
 <translation id="2041246176170574368">보안 업데이트가 곧 종료됩니다. 새 Chromebook을 50달러 이상 할인된 가격에 구매하세요.</translation>
 <translation id="2042279886444479655">활성화된 프로필</translation>
@@ -1381,7 +1383,7 @@
 <translation id="2048554637254265991">컨테이너 관리자 시작 중에 오류가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="2048653237708779538">실행할 수 없는 작업</translation>
 <translation id="204914487372604757">바로가기 만들기</translation>
-<translation id="2050339315714019657">인물 사진</translation>
+<translation id="2050339315714019657">세로 방향</translation>
 <translation id="2051266530792296582">Google 비밀번호 관리자가 이 웹사이트에 안전한 비밀번호를 생성했습니다.</translation>
 <translation id="2051555741181591333">핫스팟 자동 사용 중지</translation>
 <translation id="2051669996101374349">가능하면 항상 HTTPS를 사용하고 이를 지원하지 않는 사이트를 로드하기 전에 경고를 표시합니다. 고급 보호가 사용 설정되어 있으므로 이 설정을 변경할 수 없습니다.</translation>
@@ -2734,6 +2736,7 @@
 <translation id="3076977359333237641">로그인 데이터 삭제됨</translation>
 <translation id="3080933187214341848">계정과 동기화되어 있지 않은 네트워크입니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">확장 프로그램</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">보안을 위해 일시적으로 차단됨</translation>
 <translation id="3083899879156272923">마우스를 화면 중앙에 유지한 상태로 화면 움직이기</translation>
@@ -2893,6 +2896,7 @@
 <translation id="3229412050601871341">기기 비밀번호</translation>
 <translation id="3230539834943294477">도움말 보기 또는 기기 지원 찾기</translation>
 <translation id="3232168089952388105">기기 정보를 공유하시겠습니까?</translation>
+<translation id="3232368113895801406">보안 환경설정에서 분리형 앱의 설치를 허용하지 않습니다. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">오른쪽 정렬</translation>
 <translation id="3232754137068452469">웹 앱</translation>
 <translation id="3233271424239923319">Linux 앱 및 파일 백업</translation>
@@ -4602,6 +4606,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />에 저장된 기기 없음</translation>
 <translation id="4592891116925567110">스타일러스 그리기 앱</translation>
 <translation id="4593021220803146968"><ph name="URL" />(으)로 이동(&amp;G)</translation>
+<translation id="4593962599442730215">환경설정 변경</translation>
 <translation id="4594218792629569101">'읽음으로 표시'를 선택하여 페이지를 목록 맨 아래로 이동합니다.</translation>
 <translation id="4594577641390224176">시스템의 정보 페이지를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="4595560905247879544">앱 및 확장 프로그램은 관리자(<ph name="CUSTODIAN_NAME" />)만 수정할 수 있습니다.</translation>
@@ -4616,6 +4621,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="460190672235687855">비밀번호 보기</translation>
 <translation id="4602466770786743961"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 항상 허용</translation>
 <translation id="4602776638371779614">이 탭은 현재 블루투스 기기를 검사하고 있습니다</translation>
+<translation id="4605026046465576953">격리된 웹 앱을 실행할 권한이 없으므로 앱을 열 수 없습니다.</translation>
 <translation id="4606551464649945562">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하도록 허용하지 않음</translation>
 <translation id="4608500690299898628">찾기(&amp;F)...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />에 오류가 발생했습니다</translation>
@@ -4739,6 +4745,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4693155481716051732">초밥</translation>
 <translation id="4694024090038830733">프린터 구성은 관리자가 처리합니다.</translation>
 <translation id="4694604912444486114">원숭이</translation>
+<translation id="4694820450536519583">권한</translation>
 <translation id="4695318956047767909">어두운 테마, 화면 보호기</translation>
 <translation id="4697071790493980729">검색결과 없음</translation>
 <translation id="4697551882387947560">탐색 세션이 종료될 때</translation>
@@ -6657,6 +6664,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6264060420924719834">이 앱에는 다른 사이트의 웹 콘텐츠가 포함되어 있습니다</translation>
 <translation id="6264365405983206840">모두 선택(&amp;A)</translation>
 <translation id="6264376385120300461">무시하고 다운로드</translation>
+<translation id="6264520534872750757">기기 계속 사용</translation>
 <translation id="6265159465845424232">Microsoft 파일을 Microsoft OneDrive로 복사하거나 이동하기 전에 확인</translation>
 <translation id="6265687851677020761">포트 삭제</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />에 연결 중</translation>
@@ -7420,6 +7428,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6876469544038980967">도움이 되지 않음</translation>
 <translation id="6878422606530379992">센서가 허용됨</translation>
 <translation id="6880587130513028875">이 페이지에서 이미지가 차단되었습니다.</translation>
+<translation id="6881845890692344060">관리자가 로그아웃했습니다. 사용자가 직접 관리할 수 있습니다.</translation>
 <translation id="6882210908253838664">사이트가 작동하지 않으면 서드 파티 쿠키를 사용하도록 임시 권한을 부여해 볼 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">시스템에서 기기 구성을 저장하지 못했습니다.</translation>
 <translation id="6884474387073389421">선택한 로그인 데이터를 삭제하시겠습니까?</translation>
@@ -8317,6 +8326,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7616214729753637086">기기 등록 중...</translation>
 <translation id="7617263010641145920">Play 스토어 사용 설정</translation>
 <translation id="7617648809369507487">조용한 메시지 전송 사용</translation>
+<translation id="7619937211696316184">유지보수가 완료되었습니다.</translation>
 <translation id="7621382409404463535">시스템에서 기기 설정을 저장하지 못했습니다.</translation>
 <translation id="7621480263311228380">다른 사람이 나에 관해 저장한 정보를 사용하도록 허용하지 않음</translation>
 <translation id="7621595347123595643">비밀번호 또는 PIN을 잊어버린 경우 로컬 데이터를 복구할 수 없습니다.</translation>
@@ -9665,6 +9675,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8662795692588422978">사용자</translation>
 <translation id="8662911384982557515">다음으로 홈페이지 변경: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome에서 배경화면을 설정할 수 없습니다.</translation>
+<translation id="8663051876219324457">앱, 웹사이트, 시스템 서비스에서 내 위치를 사용하도록 허용합니다. 기기의 위치를 추정하는 데 Wi-Fi, 모바일 네트워크, 센서 등의 데이터가 사용될 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" />에서 여러 항목을 자동으로 다운로드하지 않도록 항상 차단</translation>
 <translation id="8664389313780386848">페이지 소스 보기(&amp;V)</translation>
 <translation id="8665110742939124773">잘못된 액세스 코드를 입력했습니다. 다시 시도해 주세요.</translation>
@@ -9757,6 +9768,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="87254326763805752">패스키 확인</translation>
 <translation id="8726206820263995930">서버에서 정책 설정을 가져오는 중에 오류 발생: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Chrome 최대한 활용하기</translation>
+<translation id="8727333994464775697">이 페이지에 표시되는 항목을 맞춤설정하세요.</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />자동 완성 메타데이터<ph name="END_LINK1" /> 보내기
           <ph name="LINE_BREAK" />
           (자동 완성 데이터는 공유되지 않음)</translation>

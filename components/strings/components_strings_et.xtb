@@ -1110,6 +1110,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3266793032086590337">Väärtus (konflikt)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Ükski sait (sealhulgas seotud saidid) pole blokeeritud}=1{1 sait (sealhulgas seotud saidid) on blokeeritud}other{# saiti (sealhulgas seotud saidid) on blokeeritud}}</translation>
 <translation id="3268451620468152448">Avatud vahelehed</translation>
+<translation id="3270041629388773465">CVC-de salvestamise korral tasute kassas kiiremini</translation>
 <translation id="3270156322180235608">Lennusõit</translation>
 <translation id="3270847123878663523">&amp;Võta korrastamine tagasi</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> soovib ühenduse luua</translation>
@@ -1849,6 +1850,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4761104368405085019">Mikrofoni kasutamine</translation>
 <translation id="4761326898079498987">Lisateabe saamiseks vaadake üle</translation>
 <translation id="4761869838909035636">Käita Chrome'i ohutuskontroll</translation>
+<translation id="4763196677855776703">Müüja <ph name="URL" /> esitatud nõuded ja tingimused</translation>
 <translation id="4764680219299728632">Pliidid, küpsetuspinnad ja ahjud</translation>
 <translation id="4764776831041365478">Veebileht aadressil <ph name="URL" /> võib olla ajutiselt maas või jäädavalt uuele veebiaadressile teisaldatud.</translation>
 <translation id="4766713847338118463">Kaks kirjaklambrit all</translation>
@@ -2277,6 +2279,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5633259641094592098">Kultus- ja indie-filmid</translation>
 <translation id="563371367637259496">Mobiil</translation>
 <translation id="5635237618724097525">Nutitelefonid</translation>
+<translation id="5635478143789726479">Müüja nõuded ja tingimused</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereosüsteemid ja komponendid</translation>
 <translation id="5644090287519800334">Pildi nihe X-teljel 1. poolel</translation>
@@ -2396,6 +2399,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5911110632211230665">Avamine blokeeritud</translation>
 <translation id="59174027418879706">Lubatud</translation>
 <translation id="5918373444239520146">Vidinad ja kaasaskantav elektroonika</translation>
+<translation id="5918847752193018339">CVC-de salvestamise korral tasute kassas kiiremini. <ph name="LINK_BEGIN" />Salvestatud turvakoodide kustutamine<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 on kasutusel}other{# on kasutusel}}</translation>
 <translation id="592031860219554105">Uisutamine</translation>
@@ -3473,6 +3477,7 @@ Lisateave:
 <translation id="8041089156583427627">Saada tagasiside</translation>
 <translation id="8041940743680923270">Kasuta globaalset vaikeseadet (küsi)</translation>
 <translation id="8042577181291637092">Kas soovite lubada MIDI-seadmete kasutamise?</translation>
+<translation id="8043255123207491407">Vaadake müüja nõudeid ja tingimusi</translation>
 <translation id="8046360364391076336">Tööstuslikud materjalid ja seadmed</translation>
 <translation id="8052898407431791827">Lõikelauale kopeeritud</translation>
 <translation id="8055534648776115597">Kutseharidus ja täiendusõpe</translation>

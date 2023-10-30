@@ -1110,6 +1110,7 @@
 <translation id="3266793032086590337">Τιμή (διένεξη)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Κανένας αποκλεισμένος ιστότοπος, συμπεριλαμβανομένων των σχετικών ιστοτόπων}=1{1 αποκλεισμένος ιστότοπος, συμπεριλαμβανομένων των σχετικών ιστοτόπων}other{# αποκλεισμένοι ιστότοποι, συμπεριλαμβανομένων των σχετικών ιστοτόπων}}</translation>
 <translation id="3268451620468152448">Ανοικτές καρτέλες</translation>
+<translation id="3270041629388773465">Ολοκληρώστε πιο γρήγορα τις αγορές σας, αποθηκεύοντας τα CVC</translation>
 <translation id="3270156322180235608">Αεροπορικά ταξίδια</translation>
 <translation id="3270847123878663523">&amp;Αναίρεση αναδιάταξης</translation>
 <translation id="3271648667212143903">Ο ιστότοπος <ph name="ORIGIN" /> επιθυμεί σύνδεση</translation>
@@ -1850,6 +1851,7 @@
 <translation id="4761104368405085019">Χρήση του μικροφώνου σας</translation>
 <translation id="4761326898079498987">Ελέγξτε το για περισσότερες λεπτομέρειες</translation>
 <translation id="4761869838909035636">Εκτέλεση Ελέγχου ασφαλείας Chrome</translation>
+<translation id="4763196677855776703">Οι όροι και οι προϋποθέσεις παρέχονται από <ph name="URL" /></translation>
 <translation id="4764680219299728632">Ηλεκτρικές κουζίνες, φούρνοι και εστίες μαγειρέματος</translation>
 <translation id="4764776831041365478">Η ιστοσελίδα στη διεύθυνση <ph name="URL" /> μπορεί να βρίσκεται προσωρινά εκτός λειτουργίας ή ίσως έχει μεταφερθεί μόνιμα σε νέα διεύθυνση ιστού.</translation>
 <translation id="4766713847338118463">Διπλή συρραφή στο κάτω μέρος</translation>
@@ -2278,6 +2280,7 @@
 <translation id="5633259641094592098">Ταινίες cult και indie</translation>
 <translation id="563371367637259496">Κινητό</translation>
 <translation id="5635237618724097525">Smartphone</translation>
+<translation id="5635478143789726479">Όροι και προϋποθέσεις πωλητή</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Στερεοφωνικά συστήματα και εξοπλισμός</translation>
 <translation id="5644090287519800334">Πλευρά 1 μετατόπιση εικόνας στον άξονα X</translation>
@@ -2397,6 +2400,7 @@
 <translation id="5911110632211230665">Το άνοιγμα έχει αποκλειστεί</translation>
 <translation id="59174027418879706">Ενεργοποιημένο</translation>
 <translation id="5918373444239520146">Gadget και φορητές ηλεκτρονικές συσκευές</translation>
+<translation id="5918847752193018339">Ολοκληρώστε πιο γρήγορα τις αγορές σας, αποθηκεύοντας τα CVC. <ph name="LINK_BEGIN" />Διαγραφή αποθηκευμένων κωδικών ασφαλείας<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 σε χρήση}other{# σε χρήση}}</translation>
 <translation id="592031860219554105">Πατινάζ στον πάγο</translation>
@@ -3474,6 +3478,7 @@
 <translation id="8041089156583427627">Αποστολή σχολίων</translation>
 <translation id="8041940743680923270">Χρήση καθολικής προεπιλεγμένης ρύθμισης (Ερώτηση)</translation>
 <translation id="8042577181291637092">Χρήση συσκευών MIDI;</translation>
+<translation id="8043255123207491407">Δείτε τους όρους και τις προϋποθέσεις του πωλητή</translation>
 <translation id="8046360364391076336">Βιομηχανικά υλικά και εξοπλισμός</translation>
 <translation id="8052898407431791827">Αντιγράφηκε στο πρόχειρο</translation>
 <translation id="8055534648776115597">Τεχνική και διά βίου εκπαίδευση</translation>

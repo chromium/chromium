@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">إشارة ضعيفة</translation>
 <translation id="1301069673413256657">‏بروتوكول GSM</translation>
 <translation id="1308754910631152188">جارٍ التحديث (اكتمل تثبيت %<ph name="PERCENTAGE_VALUE" /> من التحديثات)</translation>
+<translation id="1309341072016605398">‫<ph name="MINUTES" /> دقيقة</translation>
 <translation id="1310380015393971138">ما مِن شبكة <ph name="NETWORK_NAME" /> متوفّرة.</translation>
 <translation id="131421566576084655">تاريخ أحدث عملية إعادة ضبط للبيانات غير متوفّر.</translation>
 <translation id="1314565355471455267">‏الشبكة الظاهرية الخاصة (VPN) في Android</translation>
@@ -947,6 +948,7 @@
 <translation id="8227119283605456246">إرفاق ملف</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
 <translation id="8246209727385807362">مشغل شبكة جوّال غير معروف</translation>
+<translation id="8262870577632766028">ساعة واحدة</translation>
 <translation id="827422111966801947">نيلي</translation>
 <translation id="8286154143153872371">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الخلفية.</translation>
 <translation id="8291967909914612644">بلد مقدم الخدمة الرئيسي</translation>

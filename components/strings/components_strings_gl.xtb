@@ -1110,6 +1110,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3266793032086590337">Valor (en conflito)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Non hai sitios bloqueados, incluídos os relacionados}=1{1 sitio bloqueado, incluídos os sitios relacionados}other{# sitios bloqueados, incluídos os relacionados}}</translation>
 <translation id="3268451620468152448">Pestanas abertas</translation>
+<translation id="3270041629388773465">Poderás tramitar as compras máis rápido se tes os CVC gardados</translation>
 <translation id="3270156322180235608">Voos</translation>
 <translation id="3270847123878663523">&amp;Desfacer de cambio de orde</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> quere conectarse</translation>
@@ -1849,6 +1850,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4761104368405085019">Utilizar o micrófono</translation>
 <translation id="4761326898079498987">Obtén máis detalles</translation>
 <translation id="4761869838909035636">Executar Comprobación de seguranza de Chrome</translation>
+<translation id="4763196677855776703">Termos e condicións ofrecidos por <ph name="URL" /></translation>
 <translation id="4764680219299728632">Fogóns, placas de cociña e fornos</translation>
 <translation id="4764776831041365478">É posible que a páxina web de <ph name="URL" /> estea temporalmente inactiva ou que se trasladase definitivamente a outro enderezo web.</translation>
 <translation id="4766713847338118463">Dúas grampas na parte inferior</translation>
@@ -2277,6 +2279,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5633259641094592098">Cine independente e películas de culto</translation>
 <translation id="563371367637259496">Móbil</translation>
 <translation id="5635237618724097525">Smartphones</translation>
+<translation id="5635478143789726479">Termos e condicións do vendedor</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Compoñentes e equipos de música</translation>
 <translation id="5644090287519800334">Desprazamento do lado 1 da imaxe no eixe X</translation>
@@ -2396,6 +2399,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5911110632211230665">Non se permite abrir ficheiros</translation>
 <translation id="59174027418879706">Activado</translation>
 <translation id="5918373444239520146">Gadgets e dispositivos electrónicos portátiles</translation>
+<translation id="5918847752193018339">Poderás tramitar as compras máis rápido se tes os CVC gardados. <ph name="LINK_BEGIN" />Eliminar os códigos de seguranza gardados<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 en uso}other{# en uso}}</translation>
 <translation id="592031860219554105">Patinaxe sobre xeo</translation>
@@ -3473,6 +3477,7 @@ Detalles adicionais:
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="8041940743680923270">Usar configuración predeterminada global (Preguntar)</translation>
 <translation id="8042577181291637092">Queres usar os dispositivos MIDI?</translation>
+<translation id="8043255123207491407">Consultar os termos e condicións do vendedor</translation>
 <translation id="8046360364391076336">Materiais e equipamento industrial</translation>
 <translation id="8052898407431791827">Copiouse no portapapeis</translation>
 <translation id="8055534648776115597">Educación continua e orientación profesional</translation>

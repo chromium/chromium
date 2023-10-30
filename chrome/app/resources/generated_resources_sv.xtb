@@ -986,6 +986,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="175772926354468439">Aktivera tema</translation>
 <translation id="1757786065507923842">Begäran om förälders tillåtelse misslyckades.</translation>
 <translation id="17584710573359123">Visa i Chrome Web Store</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" /> har mappats om till <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Konton som tillhör <ph name="NAME" /></translation>
 <translation id="176272781006230109">shoppingstips</translation>
 <translation id="1763046204212875858">Skapa programgenvägar</translation>
@@ -1365,6 +1366,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2037486735086318591">Ställ in <ph name="FEATURE_NAME" /> för att ta emot och skicka filer till personer i närheten</translation>
 <translation id="2039464276165755892">Dölj aviseringar när någon annan tittar på skärmen</translation>
 <translation id="2040460856718599782">Hoppsan! Något gick fel när du försökte verifiera dig. Dubbelkolla dina inloggningsuppgifter och försök igen.</translation>
+<translation id="2040822390690632244">Uppdateringar, hjälp, utvecklaralternativ</translation>
 <translation id="2040894699575719559">Platsen är blockerad</translation>
 <translation id="2041246176170574368">Säkerhetsuppdateringar upphör snart. Spara minst 50 USD på en ny Chromebook.</translation>
 <translation id="2042279886444479655">Aktiva profiler</translation>
@@ -2732,6 +2734,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3076977359333237641">Inloggningsuppgifterna har raderats</translation>
 <translation id="3080933187214341848">Det här nätverket synkroniseras inte med ditt konto. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> – <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">tillägg</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Blockerades tillfälligt av säkerhetsskäl</translation>
 <translation id="3083899879156272923">Flytta skärmen med muspekaren centrerad</translation>
@@ -2891,6 +2894,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3229412050601871341">Lösenord för enhet</translation>
 <translation id="3230539834943294477">Visa hjälpartiklar eller hitta enhetssupport</translation>
 <translation id="3232168089952388105">Vill du dela information om enheten?</translation>
+<translation id="3232368113895801406">Dina säkerhetsinställningar förhindrar att isolerade appar installeras. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">Högerjustera</translation>
 <translation id="3232754137068452469">Webbapp</translation>
 <translation id="3233271424239923319">Säkerhetskopiera Linux-appar och Linux-filer</translation>
@@ -4602,6 +4606,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="459204634473266369">Inga enheter har sparats i <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">App för att rita med e-penna</translation>
 <translation id="4593021220803146968">&amp;Öppna <ph name="URL" /></translation>
+<translation id="4593962599442730215">Ändra inställningarna</translation>
 <translation id="4594218792629569101">Välj Markera som läst om du vill flytta sidan till slutet av listan</translation>
 <translation id="4594577641390224176">Letar du systemets about-sida? Besök</translation>
 <translation id="4595560905247879544">Appar och tillägg kan bara ändras av den ansvariga (<ph name="CUSTODIAN_NAME" />).</translation>
@@ -4616,6 +4621,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="460190672235687855">Visa lösenord</translation>
 <translation id="4602466770786743961">Tillåt alltid att <ph name="HOST" /> använder kameran och mikrofonen</translation>
 <translation id="4602776638371779614">Fliken söker aktivt efter Bluetooth-enheter</translation>
+<translation id="4605026046465576953">Det går inte att öppna den här appen eftersom du inte har behörighet att köra isolerade webbappar</translation>
 <translation id="4606551464649945562">Tillåt inte att webbplatser skapar en 3D-karta över dina omgivningar eller registrera kamerans position</translation>
 <translation id="4608500690299898628">&amp;Sök...</translation>
 <translation id="4610162781778310380">Ett fel har uppstått i <ph name="PLUGIN_NAME" /></translation>
@@ -4739,6 +4745,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694024090038830733">Skrivarkonfigurationen hanteras av administratören.</translation>
 <translation id="4694604912444486114">Apa</translation>
+<translation id="4694820450536519583">behörigheter</translation>
 <translation id="4695318956047767909">Mörkt tema, skärmsläckare</translation>
 <translation id="4697071790493980729">Inga resultat hittades</translation>
 <translation id="4697551882387947560">När surfningen avslutas</translation>
@@ -6657,6 +6664,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6264060420924719834">Den här appen innehåller webbinnehåll från andra webbplatser</translation>
 <translation id="6264365405983206840">Markera &amp;alla</translation>
 <translation id="6264376385120300461">Ladda ned ändå</translation>
+<translation id="6264520534872750757">Fortsätta att använda enheten</translation>
 <translation id="6265159465845424232">Fråga innan Microsoft-filer kopieras eller flyttas till Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Ta bort port</translation>
 <translation id="6266532094411434237">Ansluter till <ph name="DEVICE" /></translation>
@@ -7420,6 +7428,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6876469544038980967">Inte användbart</translation>
 <translation id="6878422606530379992">Användning av sensorer har tillåtits</translation>
 <translation id="6880587130513028875">Bilder är blockerade på den här sidan.</translation>
+<translation id="6881845890692344060">Administratören har loggat ut. Du har återfått kontrollen.</translation>
 <translation id="6882210908253838664">Om en webbplats inte fungerar kan du testa att ge den tillfällig behörighet att använda tredjepartscookies. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Det gick inte att spara enhetskonfigurationen.</translation>
 <translation id="6884474387073389421">Vill du radera de valda inloggningsuppgifterna?</translation>
@@ -8318,6 +8327,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7616214729753637086">Enheten registreras …</translation>
 <translation id="7617263010641145920">Aktivera Play Butik</translation>
 <translation id="7617648809369507487">Få mer diskreta meddelanden</translation>
+<translation id="7619937211696316184">Underhållet är klart</translation>
 <translation id="7621382409404463535">Det gick inte att spara enhetskonfigurationen.</translation>
 <translation id="7621480263311228380">Har inte tillåtelse att använda uppgifter som webbplatsen har sparat om dig</translation>
 <translation id="7621595347123595643">Du kan inte återställa lokal data om du glömmer lösenordet eller pinkoden.</translation>
@@ -9665,6 +9675,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8662795692588422978">Personer</translation>
 <translation id="8662911384982557515">Ändra startsida till: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Bakgrundsbilden kan inte anges i Chrome.</translation>
+<translation id="8663051876219324457">Tillåt att din plats används av appar, webbplatser och systemtjänster. Enhetens plats beräknas utifrån källor som wifi, mobilnätverk och sensorer. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Blockera alltid flera automatiska nedladdningar på <ph name="HOST" /></translation>
 <translation id="8664389313780386848">Visa &amp;sidkälla</translation>
 <translation id="8665110742939124773">Du har angett fel åtkomstkod. Försök igen.</translation>
@@ -9757,6 +9768,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="87254326763805752">Bekräfta nyckel</translation>
 <translation id="8726206820263995930">Det uppstod ett fel när policyinställningarna hämtades från servern: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Få ut mesta möjliga av Chrome</translation>
+<translation id="8727333994464775697">Anpassa vad som visas på den här sidan</translation>
 <translation id="8727751378406387165">Skicka <ph name="BEGIN_LINK1" />metadata för autofyll<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (din autofylldata delas inte)</translation>

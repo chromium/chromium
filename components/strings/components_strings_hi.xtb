@@ -1110,6 +1110,7 @@
 <translation id="3266793032086590337">मान (मेल नहीं खा रहा)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{मिलती-जुलती साइटों समेत, कोई भी साइट ब्लॉक नहीं की गई है}=1{मिलती-जुलती साइटों समेत, 1 साइट ब्लॉक की गई है}one{मिलती-जुलती साइटों समेत, # साइट ब्लॉक की गई है}other{मिलती-जुलती साइटों समेत, # साइटें ब्लॉक की गई हैं}}</translation>
 <translation id="3268451620468152448">खुले सत्र</translation>
+<translation id="3270041629388773465">सीवीसी सेव होने पर तेज़ी से पैसे चुकाए जा सकते हैं</translation>
 <translation id="3270156322180235608">हवाई यात्रा</translation>
 <translation id="3270847123878663523">&amp;पुन: क्रमित करना वापस लाएं</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> कनेक्ट करना चाहती है</translation>
@@ -1848,6 +1849,7 @@
 <translation id="4761104368405085019">अपना माइक्रोफ़ोन उपयोग करें</translation>
 <translation id="4761326898079498987">ज़्यादा जानकारी के लिए समीक्षा करें</translation>
 <translation id="4761869838909035636">Chrome की सुरक्षा जांच करें</translation>
+<translation id="4763196677855776703"><ph name="URL" /> के नियम और शर्तें</translation>
 <translation id="4764680219299728632">रेंज, कुकटॉप, और अवन</translation>
 <translation id="4764776831041365478"><ph name="URL" /> पर मौजूद वेबपेज संभवतः अस्थायी रूप से बंद है या उसे स्थायी रूप से किसी नए वेब पते पर ले जाया गया है.</translation>
 <translation id="4766713847338118463">नीचे की ओर ड्युएल स्टेपल</translation>
@@ -2276,6 +2278,7 @@
 <translation id="5633259641094592098">कल्ट और इंडी फ़िल्में</translation>
 <translation id="563371367637259496">मोबाइल</translation>
 <translation id="5635237618724097525">स्मार्टफ़ोन</translation>
+<translation id="5635478143789726479">विक्रेता के नियम और शर्तें</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">स्टीरियो सिस्टम और कॉम्पोनेंट</translation>
 <translation id="5644090287519800334">साइड 1 इमेज X शिफ़्ट</translation>
@@ -2395,6 +2398,7 @@
 <translation id="5911110632211230665">फ़ाइल को खोलने की अनुमति नहीं है</translation>
 <translation id="59174027418879706">चालू किया गया</translation>
 <translation id="5918373444239520146">गैजेट और पोर्टेबल इलेक्ट्रॉनिक्स</translation>
+<translation id="5918847752193018339">सीवीसी सेव होने पर तेज़ी से पैसे चुकाए जा सकते हैं. <ph name="LINK_BEGIN" />सेव किए गए सुरक्षा कोड मिटाएं<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">बी10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 इस्तेमाल में है}one{# इस्तेमाल में है}other{# इस्तेमाल में हैं}}</translation>
 <translation id="592031860219554105">आइस स्केटिंग</translation>
@@ -3472,6 +3476,7 @@
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="8041940743680923270">वैश्विक डिफ़ॉल्ट का उपयोग करें (पूछें)</translation>
 <translation id="8042577181291637092">क्या एमआईडीआई डिवाइसों का इस्तेमाल करना है?</translation>
+<translation id="8043255123207491407">विक्रेता के नियम और शर्तें देखें</translation>
 <translation id="8046360364391076336">इंडस्ट्रियल मटीरियल और इक्विपमेंट</translation>
 <translation id="8052898407431791827">स्क्रीनशॉट को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="8055534648776115597">व्यावसायिक और प्रौढ़ शिक्षा</translation>

@@ -228,6 +228,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="549669000822060376">Harap tunggu selagi Chromium memasang pembaruan sistem terkini.</translation>
 <translation id="5496810170689441661">Chromium mencoba mengedit sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="5527463683072221100">Buka PDF di Chromium</translation>
+<translation id="555273495373124701">Login untuk mendapatkan semua data Chromium Anda di seluruh perangkat</translation>
 <translation id="5614091477838198795">Jika aktif, Anda juga akan logout dari Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Update Chromium tersedia}=1{Update Chromium tersedia}other{Update Chromium telah tersedia selama # hari}}</translation>
 <translation id="5643865575100044307">Selalu menghapus data situs dari perangkat saat Anda menutup Chromium</translation>
@@ -366,6 +367,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7682601070171973634">Chromium sedang menjelajahi fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama dengan menggunakan lebih sedikit data Anda</translation>
 <translation id="7686590090926151193">Chromium bukan browser default</translation>
 <translation id="7689606757190482937">Menyinkronkan dan mempersonalisasi Chromium di perangkat Anda</translation>
+<translation id="7699779824407626136">Update Chromium</translation>
 <translation id="7745317241717453663">Tindakan ini akan menghapus data browsing dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat membuat direktori sementara. Periksa kapasitas kosong pada disk dan izin untuk memasang software.</translation>
 <translation id="7786760609782648049">Buat Chromium lebih cepat</translation>

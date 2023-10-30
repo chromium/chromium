@@ -977,6 +977,7 @@
 <translation id="175772926354468439">Включить тему</translation>
 <translation id="1757786065507923842">Не удалось запросить разрешение родителя.</translation>
 <translation id="17584710573359123">Перейти в Интернет-магазин Chrome</translation>
+<translation id="1761402971842586829">Кнопка "<ph name="BUTTON_NAME" />" переназначена для действия "<ph name="REMAPPING_OPTION" />".</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> – аккаунты</translation>
 <translation id="176272781006230109">рекомендуемые товары</translation>
 <translation id="1763046204212875858">Создание ярлыков приложений</translation>
@@ -1355,6 +1356,7 @@
 <translation id="2037486735086318591">Чтобы вы могли передавать файлы пользователям поблизости, а они – вам, настройте функцию "<ph name="FEATURE_NAME" />".</translation>
 <translation id="2039464276165755892">Скрывать уведомления при приближении другого человека</translation>
 <translation id="2040460856718599782">Не удалось выполнить аутентификацию. Проверьте учетные данные и повторите попытку.</translation>
+<translation id="2040822390690632244">Обновления, справка, параметры для разработчиков</translation>
 <translation id="2040894699575719559">Доступ к местоположению закрыт</translation>
 <translation id="2041246176170574368">Обновлений системы безопасности скоро не будет. Сэкономьте от 50 долларов США при покупке нового Chromebook</translation>
 <translation id="2042279886444479655">Активные профили</translation>
@@ -2719,6 +2721,7 @@
 <translation id="3076977359333237641">Ваши учетные данные удалены</translation>
 <translation id="3080933187214341848">Эта сеть не синхронизируется с вашим аккаунтом. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">расширения</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Временно заблокировано в целях безопасности</translation>
 <translation id="3083899879156272923">Перемещать экран, оставляя курсор в центре</translation>
@@ -2878,6 +2881,7 @@
 <translation id="3229412050601871341">Пароль устройства</translation>
 <translation id="3230539834943294477">Открыть справку или обратиться в службу поддержки устройства</translation>
 <translation id="3232168089952388105">Предоставить информацию об устройстве?</translation>
+<translation id="3232368113895801406">Ваши настройки безопасности запрещают установку изолированных приложений. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">Выровнять по правому краю</translation>
 <translation id="3232754137068452469">Веб-приложение</translation>
 <translation id="3233271424239923319">Выполнить резервное копирование приложений и файлов Linux</translation>
@@ -4588,6 +4592,7 @@
 <translation id="459204634473266369">В аккаунте <ph name="PRIMARY_EMAIL" /> нет сохраненных устройств.</translation>
 <translation id="4592891116925567110">Приложение для рисования с помощью стилуса</translation>
 <translation id="4593021220803146968">&amp;Перейти по адресу <ph name="URL" /></translation>
+<translation id="4593962599442730215">Изменить настройки</translation>
 <translation id="4594218792629569101">Выберите "Отметить как прочитанное", чтобы переместить страницу вниз списка</translation>
 <translation id="4594577641390224176">Ищете информацию о системе? Перейдите на страницу</translation>
 <translation id="4595560905247879544">Изменять приложения и расширения может только менеджер (<ph name="CUSTODIAN_NAME" />).</translation>
@@ -4602,6 +4607,7 @@
 <translation id="460190672235687855">Посмотреть пароли</translation>
 <translation id="4602466770786743961">Всегда предоставлять сайту <ph name="HOST" /> доступ к камере и микрофону</translation>
 <translation id="4602776638371779614">На этой вкладке выполняется активный поиск устройств Bluetooth</translation>
+<translation id="4605026046465576953">Приложение не может быть открыто, так как у вас нет разрешения на запуск изолированных веб-приложений</translation>
 <translation id="4606551464649945562">Запретить сайтам создавать 3D-карту места, в котором вы находитесь, и отслеживать положение камеры</translation>
 <translation id="4608500690299898628">&amp;Найти...</translation>
 <translation id="4610162781778310380">Ошибка в плагине <ph name="PLUGIN_NAME" /></translation>
@@ -4725,6 +4731,7 @@
 <translation id="4693155481716051732">Суши</translation>
 <translation id="4694024090038830733">Настройками принтера управляет администратор.</translation>
 <translation id="4694604912444486114">Обезьяна</translation>
+<translation id="4694820450536519583">разрешения</translation>
 <translation id="4695318956047767909">Тёмная тема, заставка</translation>
 <translation id="4697071790493980729">Ничего не найдено.</translation>
 <translation id="4697551882387947560">При завершении сеанса браузера</translation>
@@ -6643,6 +6650,7 @@
 <translation id="6264060420924719834">В этом приложении есть веб-контент с других сайтов</translation>
 <translation id="6264365405983206840">Выделить все</translation>
 <translation id="6264376385120300461">Все равно скачать</translation>
+<translation id="6264520534872750757">Продолжить использовать устройство</translation>
 <translation id="6265159465845424232">Запрашивать разрешение перед копированием или перемещением файлов Microsoft в Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Удалить порт</translation>
 <translation id="6266532094411434237">Подключение к устройству "<ph name="DEVICE" />"</translation>
@@ -7412,6 +7420,7 @@
 <translation id="6876469544038980967">Бесполезно</translation>
 <translation id="6878422606530379992">Использование датчиков разрешено</translation>
 <translation id="6880587130513028875">Показ изображений запрещен для этой страниц.</translation>
+<translation id="6881845890692344060">Администратор вышел из системы. Теперь устройством управляете вы.</translation>
 <translation id="6882210908253838664">Если сайт не работает, попробуйте временно разрешить ему использовать сторонние файлы cookie. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Не удалось сохранить конфигурацию устройства</translation>
 <translation id="6884474387073389421">Удалить выбранные учетные данные?</translation>
@@ -8309,6 +8318,7 @@
 <translation id="7616214729753637086">Регистрация устройства…</translation>
 <translation id="7617263010641145920">Включить Play Маркет</translation>
 <translation id="7617648809369507487">Использовать режим важных уведомлений</translation>
+<translation id="7619937211696316184">Техническое обслуживание завершено</translation>
 <translation id="7621382409404463535">Не удалось сохранить конфигурацию устройства.</translation>
 <translation id="7621480263311228380">Сайтам запрещено использовать сохраненную информацию о вас</translation>
 <translation id="7621595347123595643">Вы не сможете восстановить локальные данные, если забудете пароль или PIN-код.</translation>
@@ -9656,6 +9666,7 @@
 <translation id="8662795692588422978">Пользователи</translation>
 <translation id="8662911384982557515">Смена главной страницы на <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome не может установить выбранное изображение в качестве обоев рабочего стола.</translation>
+<translation id="8663051876219324457">Разрешите приложениям, сайтам и системным сервисам использовать данные о том, где вы находитесь. Местоположение вашего устройства может определяться с помощью Wi-Fi, датчиков и мобильных сетей. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Всегда блокировать автоматическое скачивание нескольких файлов с сайта <ph name="HOST" /></translation>
 <translation id="8664389313780386848">&amp;Просмотр кода страницы</translation>
 <translation id="8665110742939124773">Введен неверный код доступа. Повторите попытку.</translation>
@@ -9748,6 +9759,7 @@
 <translation id="87254326763805752">Подтвердите ключ доступа</translation>
 <translation id="8726206820263995930">Ошибка при получении настроек политики с сервера: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Максимально эффективная работа с Chrome</translation>
+<translation id="8727333994464775697">Настраивайте показ элементов на этой странице.</translation>
 <translation id="8727751378406387165">Отправить <ph name="BEGIN_LINK1" />метаданные автозаполнения<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (доступ к данным автозаполнения предоставлен не будет)</translation>

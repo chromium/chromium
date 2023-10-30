@@ -175,6 +175,7 @@
 <translation id="1876851015978093044">يؤدي هذا الإجراء إلى عرض هذا العنصر.</translation>
 <translation id="1882901927376062252">{count,plural, =1{‏تم حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏تم حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email}).}two{‏تم حفظ إشارتَين مرجعيتَين ({count}) في حسابك على Google‏ ({email}).}few{‏تم حفظ {count} إشارات مرجعية في حسابك على Google‏ ({email}).}many{‏تم حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email}).}other{‏تم حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email}).}}</translation>
 <translation id="1883255238294161206">تصغير القائمة</translation>
+<translation id="1889872080060107187">سيتم تسجيل دخولك إلى <ph name="URL" />.</translation>
 <translation id="1890237935065108104">هذا الإعداد غير متوفِّر.</translation>
 <translation id="1894023287452300670">يمكنك تتبُّع السعر من هنا.</translation>
 <translation id="189531189292803889">‏تمّت استعادة بيانات هاتف iPad مؤخرًا، وبالتالي هناك احتمالية أن يكون المتصفِّح التلقائي تغيّر.</translation>

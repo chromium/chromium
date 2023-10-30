@@ -1107,6 +1107,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3266793032086590337">Hodnota (konflikt)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Žiadne blokované weby vrátane súvisiacich webov}=1{1 blokovaný web vrátane súvisiacich webov}few{# blokované weby vrátane súvisiacich webov}many{# sites blocked, including related sites}other{# blokovaných webov vrátane súvisiacich webov}}</translation>
 <translation id="3268451620468152448">Otvorené karty</translation>
+<translation id="3270041629388773465">Ukladajte si overovacie kódy karty, zrýchlite tým platby</translation>
 <translation id="3270156322180235608">Cestovanie lietadlom</translation>
 <translation id="3270847123878663523">&amp;Vrátiť späť zmenu poradia</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> žiada o pripojenie</translation>
@@ -1845,6 +1846,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4761104368405085019">Používať váš mikrofón</translation>
 <translation id="4761326898079498987">Prezrite si ďalšie podrobnosti</translation>
 <translation id="4761869838909035636">Spustiť kontrolu bezpečnosti Chromu</translation>
+<translation id="4763196677855776703">Zmluvné podmienky poskytuje <ph name="URL" /></translation>
 <translation id="4764680219299728632">Sporáky, varné dosky a rúry</translation>
 <translation id="4764776831041365478">Stránka <ph name="URL" /> je možno dočasne nedostupná, možno bola natrvalo presunutá na novú webovú adresu.</translation>
 <translation id="4766713847338118463">Dve spinky dole</translation>
@@ -2273,6 +2275,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5633259641094592098">Kultové a indie filmy</translation>
 <translation id="563371367637259496">Mobilná</translation>
 <translation id="5635237618724097525">Smartfóny</translation>
+<translation id="5635478143789726479">Zmluvné podmienky predajcu</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereofónne systémy a komponenty</translation>
 <translation id="5644090287519800334">Posun obrázka strany č. 1 na osi X</translation>
@@ -2392,6 +2395,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5911110632211230665">Otváranie je blokované</translation>
 <translation id="59174027418879706">Povolené</translation>
 <translation id="5918373444239520146">Prístroje a prenosná elektronika</translation>
+<translation id="5918847752193018339">Ukladajte si overovacie kódy karty, zrýchlite tým platby. <ph name="LINK_BEGIN" />Odstrániť uložené bezpečnostné kódy<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Používa sa 1}few{Používajú sa #}many{Používa sa #}other{Používa sa #}}</translation>
 <translation id="592031860219554105">Ľadové korčuľovanie</translation>
@@ -3468,6 +3472,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8041089156583427627">Odoslať spätnú väzbu</translation>
 <translation id="8041940743680923270">Použiť predvolené všeobecné nastavenie (Opýtať sa)</translation>
 <translation id="8042577181291637092">Chcete používať zariadenia MIDI?</translation>
+<translation id="8043255123207491407">Zobraziť zmluvné podmienky predajcu</translation>
 <translation id="8046360364391076336">Priemyselné materiály a zariadenia</translation>
 <translation id="8052898407431791827">Skopírované do schránky</translation>
 <translation id="8055534648776115597">Odborné a celoživotné vzdelávanie</translation>

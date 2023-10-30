@@ -986,6 +986,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="175772926354468439">Aktifkan tema</translation>
 <translation id="1757786065507923842">Permintaan izin orang tua gagal.</translation>
 <translation id="17584710573359123">Lihat di Chrome Web Store</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" /> dipetakan ulang menjadi <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Akun <ph name="NAME" /></translation>
 <translation id="176272781006230109">saran belanja</translation>
 <translation id="1763046204212875858">Buat pintasan aplikasi</translation>
@@ -1365,6 +1366,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2037486735086318591">Siapkan <ph name="FEATURE_NAME" /> untuk menerima dan mengirim file kepada orang di sekitar Anda</translation>
 <translation id="2039464276165755892">Sembunyikan isi notifikasi saat orang lain terdeteksi</translation>
 <translation id="2040460856718599782">Ups!  Terjadi error saat mencoba mengautentikasi Anda.  Periksa lagi kredensial login Anda dan coba lagi.</translation>
+<translation id="2040822390690632244">Update, bantuan, opsi developer</translation>
 <translation id="2040894699575719559">Lokasi diblokir</translation>
 <translation id="2041246176170574368">Update keamanan akan segera berakhir. Hemat $50 atau lebih untuk Chromebook baru.</translation>
 <translation id="2042279886444479655">Profil aktif</translation>
@@ -2732,6 +2734,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3076977359333237641">Data login Anda telah dihapus</translation>
 <translation id="3080933187214341848">Jaringan ini tidak disinkronkan ke akun Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">ekstensi</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Diblokir sementara untuk melindungi keamanan Anda</translation>
 <translation id="3083899879156272923">Pindahkan layar sambil mempertahankan mouse di tengah layar</translation>
@@ -2891,6 +2894,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3229412050601871341">Sandi perangkat</translation>
 <translation id="3230539834943294477">Lihat artikel bantuan atau temukan dukungan perangkat</translation>
 <translation id="3232168089952388105">Bagikan informasi tentang perangkat Anda?</translation>
+<translation id="3232368113895801406">Preferensi keamanan Anda tidak mengizinkan penginstalan Aplikasi Terisolasi. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">Rata kanan</translation>
 <translation id="3232754137068452469">Aplikasi Web</translation>
 <translation id="3233271424239923319">Cadangkan file dan aplikasi Linux</translation>
@@ -4602,6 +4606,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="459204634473266369">Tidak ada perangkat yang disimpan ke <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Aplikasi menggambar dengan stilus</translation>
 <translation id="4593021220803146968">&amp;Buka <ph name="URL" /></translation>
+<translation id="4593962599442730215">Ubah preferensi Anda</translation>
 <translation id="4594218792629569101">Pilih “Tandai telah dibaca” untuk memindahkan halaman ke bagian bawah daftar</translation>
 <translation id="4594577641390224176">Mencari halaman tentang sistem? Buka</translation>
 <translation id="4595560905247879544">Aplikasi dan ekstensi hanya dapat diubah oleh pengelola (<ph name="CUSTODIAN_NAME" />).</translation>
@@ -4616,6 +4621,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="460190672235687855">Lihat sandi</translation>
 <translation id="4602466770786743961">Selalu izinkan <ph name="HOST" /> mengakses kamera dan mikrofon Anda</translation>
 <translation id="4602776638371779614">Tab ini memindai perangkat Bluetooth secara aktif</translation>
+<translation id="4605026046465576953">Aplikasi ini tidak dapat dibuka karena Anda tidak memiliki izin untuk menjalankan aplikasi web terisolasi</translation>
 <translation id="4606551464649945562">Jangan izinkan situs membuat peta 3D untuk area di sekeliling Anda atau melacak posisi kamera</translation>
 <translation id="4608500690299898628">&amp;Temukan...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> telah mengalami error</translation>
@@ -4739,6 +4745,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694024090038830733">Konfigurasi printer ditangani oleh administrator.</translation>
 <translation id="4694604912444486114">Kera</translation>
+<translation id="4694820450536519583">izin</translation>
 <translation id="4695318956047767909">Tema gelap, screensaver</translation>
 <translation id="4697071790493980729">Hasil Tidak Ditemukan</translation>
 <translation id="4697551882387947560">Saat sesi menjelajah berakhir</translation>
@@ -6657,6 +6664,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6264060420924719834">Aplikasi ini berisi konten web dari situs lain</translation>
 <translation id="6264365405983206840">Pilih Semu&amp;a</translation>
 <translation id="6264376385120300461">Tetap download</translation>
+<translation id="6264520534872750757">Terus gunakan perangkat</translation>
 <translation id="6265159465845424232">Tanyakan sebelum menyalin atau memindahkan file Microsoft ke Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Hapus port</translation>
 <translation id="6266532094411434237">Menghubungkan ke <ph name="DEVICE" /></translation>
@@ -7420,6 +7428,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6876469544038980967">Tidak Berguna</translation>
 <translation id="6878422606530379992">Sensor diizinkan</translation>
 <translation id="6880587130513028875">Gambar diblokir di halaman ini.</translation>
+<translation id="6881845890692344060">Administrator Anda telah logout. Anda memegang kendali sekarang.</translation>
 <translation id="6882210908253838664">Jika suatu situs tidak berfungsi, Anda dapat mencoba memberi situs izin sementara untuk menggunakan cookie pihak ketiga. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Maaf!  Sistem gagal menyimpan konfigurasi ponsel.</translation>
 <translation id="6884474387073389421">Yakin ingin menghapus data login yang dipilih?</translation>
@@ -7974,7 +7983,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7347943691222276892">Klik untuk keluar dari <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Keyboard di layar</translation>
 <translation id="7349010927677336670">Kelancaran Video</translation>
-<translation id="7352651011704765696">Ada yang tidak beres</translation>
+<translation id="7352651011704765696">Terjadi error</translation>
 <translation id="7352664183151911163">Di seluruh aplikasi dan browser Chrome Anda</translation>
 <translation id="7353261921908507769">Kontak dapat berbagi dengan Anda saat mereka berada di sekitar. Transfer tidak akan dimulai sampai Anda menerimanya.</translation>
 <translation id="735361434055555355">Menginstal Linux...</translation>
@@ -8317,6 +8326,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7616214729753637086">Mendaftarkan perangkat...</translation>
 <translation id="7617263010641145920">Aktifkan Play Store</translation>
 <translation id="7617648809369507487">Gunakan pesan yang lebih tenang</translation>
+<translation id="7619937211696316184">Pemeliharaan selesai</translation>
 <translation id="7621382409404463535">Sistem gagal menyimpan konfigurasi ponsel.</translation>
 <translation id="7621480263311228380">Tidak diizinkan untuk menggunakan info tentang Anda yang telah disimpan situs</translation>
 <translation id="7621595347123595643">Anda tidak akan dapat memulihkan data lokal jika Anda lupa sandi atau PIN.</translation>
@@ -9664,6 +9674,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8662795692588422978">Pengguna</translation>
 <translation id="8662911384982557515">Ubah halaman beranda Anda menjadi: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome tidak dapat menyetel wallpaper.</translation>
+<translation id="8663051876219324457">Izinkan aplikasi, situs, dan layanan sistem menggunakan lokasi Anda. Lokasi dapat menggunakan sumber seperti Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Selalu blokir download otomatis beberapa file di <ph name="HOST" /></translation>
 <translation id="8664389313780386848">&amp;Lihat sumber halaman</translation>
 <translation id="8665110742939124773">Anda memasukkan kode akses yang salah. Coba lagi.</translation>
@@ -9756,6 +9767,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="87254326763805752">Konfirmasi kunci sandi</translation>
 <translation id="8726206820263995930">Terjadi error saat mengambil setelan kebijakan dari server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Maksimalkan penggunaan Chrome</translation>
+<translation id="8727333994464775697">Sesuaikan apa yang Anda lihat di halaman ini</translation>
 <translation id="8727751378406387165">Kirim <ph name="BEGIN_LINK1" />metadata isi otomatis<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (data isi otomatis Anda tidak akan dibagikan)</translation>

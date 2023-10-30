@@ -355,6 +355,7 @@
 <translation id="7243308994586599757">Параметрлер экрандын түбүндө берилген</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> нерсе тандалды</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> жана <ph name="PERMISSION_2" /> дайындарын колдонууга уруксат берилди</translation>
+<translation id="7284451015630589124">Сайттарга Интернеттеги аракеттериңизге көз салуу максатында үчүнчү тараптын cookie файлдарын колдонууга тыюу салдыңыз. <ph name="BEGIN_LINK" />Көз салуудан коргоо параметрлерин<ph name="END_LINK" /> тескөө үчүн жөндөөлөргө өтүңүз.</translation>
 <translation id="7302486331832100261">Адатта билдирмелерди өчүрөсүз. Уруксат берүү үчүн "Чоо-жайын" таптап коюңуз.</translation>
 <translation id="7366415735885268578">Сайт кошуу</translation>
 <translation id="7368695150573390554">Сакталган маалымат өчүрүлөт</translation>
@@ -433,6 +434,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сайтында cookie файлдарына уруксат берилген}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сайтында cookie файлдарына уруксат берилген}}</translation>
 <translation id="857943718398505171">Уруксат берилген (сунушталат)</translation>
 <translation id="8609465669617005112">Өйдө жылуу</translation>
+<translation id="8649036394979866943">Chrome көптөгөн сайттардын Интернеттеги аракеттериңизге көз салуу максатында үчүнчү тараптын cookie файлдарын колдонуу мүмкүнчүлүгүн чектейт. <ph name="BEGIN_LINK" />Көз салуудан коргоо параметрлерин<ph name="END_LINK" /> тескөө үчүн жөндөөлөргө өтүңүз</translation>
 <translation id="8676374126336081632">Киргизилген нерсени тазалоо</translation>
 <translation id="8681886425883659911">Тажатма же адаштыруучу жарнамаларды көрсөткөнү менен билинген сайттарда жарнамалар бөгөттөлөт</translation>
 <translation id="868929229000858085">Байланыштарыңызды издеңиз</translation>

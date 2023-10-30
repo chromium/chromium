@@ -1110,6 +1110,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3266793032086590337">Værdi (modstridende)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Ingen websites, inkl. relaterede websites, er blokeret}=1{1 website, inkl. relaterede websites, er blokeret}one{# website, inkl. relaterede websites, er blokeret}other{# websites, inkl. relaterede websites, er blokeret}}</translation>
 <translation id="3268451620468152448">Åbne faner</translation>
+<translation id="3270041629388773465">Betal hurtigere, når du har gemt dine CVC'er</translation>
 <translation id="3270156322180235608">Flyrejser</translation>
 <translation id="3270847123878663523">&amp;Fortryd omarrangering</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> vil gerne oprette forbindelse</translation>
@@ -1849,6 +1850,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4761104368405085019">Bruge din mikrofon</translation>
 <translation id="4761326898079498987">Gennemgå for at få flere oplysninger</translation>
 <translation id="4761869838909035636">Kør Chrome-sikkerhedstjekket</translation>
+<translation id="4763196677855776703">Vilkårene og betingelserne er leveret af <ph name="URL" /></translation>
 <translation id="4764680219299728632">Komfurer, kogeplader og ovne</translation>
 <translation id="4764776831041365478">Websiden på <ph name="URL" /> kan være midlertidigt nede, eller også er den permanent flyttet til en ny webadresse.</translation>
 <translation id="4766713847338118463">Dobbelthæftning nederst</translation>
@@ -2277,6 +2279,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5633259641094592098">Kult- og indiefilm</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5635237618724097525">Smartphones</translation>
+<translation id="5635478143789726479">Sælgers vilkår og betingelser</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereoanlæg og -komponenter</translation>
 <translation id="5644090287519800334">Billedskift X på side 1</translation>
@@ -2396,6 +2399,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5911110632211230665">Åbning er ikke tilladt</translation>
 <translation id="59174027418879706">Aktiveret</translation>
 <translation id="5918373444239520146">Gadgets og bærbare elektroniske enheder</translation>
+<translation id="5918847752193018339">Betal hurtigere, når du har gemt dine CVC'er. <ph name="LINK_BEGIN" />Slet gemte sikkerhedskoder<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 i brug}one{# i brug}other{# i brug}}</translation>
 <translation id="592031860219554105">Skøjteløb</translation>
@@ -3473,6 +3477,7 @@ Yderligere oplysninger:
 <translation id="8041089156583427627">Send feedback</translation>
 <translation id="8041940743680923270">Brug global standard (spørg)</translation>
 <translation id="8042577181291637092">Vil du bruge MIDI-enheder?</translation>
+<translation id="8043255123207491407">Se sælgerens vilkår og betingelser</translation>
 <translation id="8046360364391076336">Industrimaterialer og -udstyr</translation>
 <translation id="8052898407431791827">Kopieret til udklipsholder</translation>
 <translation id="8055534648776115597">Erhvervsuddannelse og videregående uddannelse</translation>

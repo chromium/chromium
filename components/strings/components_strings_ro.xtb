@@ -1110,6 +1110,7 @@
 <translation id="3266793032086590337">Valoare (conflictuală)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Niciun site blocat, inclusiv site-urile conexe}=1{Un site blocat, inclusiv site-urile conexe}few{# site-uri blocate, inclusiv site-urile conexe}other{# de site-uri blocate, inclusiv site-urile conexe}}</translation>
 <translation id="3268451620468152448">File deschise</translation>
+<translation id="3270041629388773465">Finalizează achiziția mai rapid, cu codurile CVC salvate</translation>
 <translation id="3270156322180235608">Călătorii aeriene</translation>
 <translation id="3270847123878663523">&amp;Anulați reordonarea</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> dorește să se conecteze</translation>
@@ -1849,6 +1850,7 @@
 <translation id="4761104368405085019">Utilizează microfonul</translation>
 <translation id="4761326898079498987">Consultă pentru mai multe detalii</translation>
 <translation id="4761869838909035636">Rulează verificarea de siguranță pentru Chrome</translation>
+<translation id="4763196677855776703">Termeni și condiții oferite de <ph name="URL" /></translation>
 <translation id="4764680219299728632">Grătare, plite și cuptoare</translation>
 <translation id="4764776831041365478">Pagina web de la <ph name="URL" /> poate fi temporar nefuncțională sau a fost mutată definitiv la o nouă adresă web.</translation>
 <translation id="4766713847338118463">Capsare dublă în partea de jos</translation>
@@ -2277,6 +2279,7 @@
 <translation id="5633259641094592098">Filme cult și indie</translation>
 <translation id="563371367637259496">Mobilă</translation>
 <translation id="5635237618724097525">Smartphone-uri</translation>
+<translation id="5635478143789726479">Termenii și condițiile vânzătorului</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Sisteme stereo și componente pentru acestea</translation>
 <translation id="5644090287519800334">Deplasarea poziției X a imaginii de pe fața 1</translation>
@@ -2396,6 +2399,7 @@
 <translation id="5911110632211230665">Deschidere blocată</translation>
 <translation id="59174027418879706">Activat</translation>
 <translation id="5918373444239520146">Instrumente electronice portabile</translation>
+<translation id="5918847752193018339">Finalizează achiziția mai rapid, cu codurile CVC salvate. <ph name="LINK_BEGIN" />Șterge codurile de securitate salvate<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 în uz}few{# în uz}other{# în uz}}</translation>
 <translation id="592031860219554105">Patinaj pe gheață</translation>
@@ -3473,6 +3477,7 @@ Detalii suplimentare:
 <translation id="8041089156583427627">Trimiteți feedback</translation>
 <translation id="8041940743680923270">Utilizați setarea prestabilită la nivel global (Întrebați)</translation>
 <translation id="8042577181291637092">Folosești dispozitive MIDI?</translation>
+<translation id="8043255123207491407">Consultă termenii și condițiile vânzătorului</translation>
 <translation id="8046360364391076336">Materiale și echipamente industriale</translation>
 <translation id="8052898407431791827">S-a copiat în clipboard</translation>
 <translation id="8055534648776115597">Educație vocațională și continuă</translation>

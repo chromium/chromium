@@ -976,6 +976,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="175772926354468439">Activați tema</translation>
 <translation id="1757786065507923842">Solicitarea permisiunii pentru părinte nu a reușit.</translation>
 <translation id="17584710573359123">Vezi în Magazinul web Chrome</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" /> a fost remapat la<ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Conturile utilizatorului <ph name="NAME" /></translation>
 <translation id="176272781006230109">sugestii pentru cumpărături</translation>
 <translation id="1763046204212875858">Creează comenzi rapide pentru aplicație</translation>
@@ -1354,6 +1355,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2037486735086318591">Configurează <ph name="FEATURE_NAME" /> pentru a primi fișiere de la persoane din jur și pentru a le trimite fișiere</translation>
 <translation id="2039464276165755892">Ascunde conținutul notificării când este detectată o altă persoană</translation>
 <translation id="2040460856718599782">Hopa! A apărut o eroare la autentificarea dvs. Verificați încă o dată datele de conectare și încercați din nou.</translation>
+<translation id="2040822390690632244">Actualizări, ajutor, opțiuni pentru dezvoltatori</translation>
 <translation id="2040894699575719559">Accesul la locație a fost blocat</translation>
 <translation id="2041246176170574368">Actualizările de securitate se vor încheia în curând. Economisește 50 USD sau mai mult la cumpărarea unui Chromebook nou.</translation>
 <translation id="2042279886444479655">Profiluri active</translation>
@@ -2718,6 +2720,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3076977359333237641">Datele de conectare s-au șters</translation>
 <translation id="3080933187214341848">Această rețea nu este sincronizată cu contul tău. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">extensii</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Blocată temporar pentru protecția securității</translation>
 <translation id="3083899879156272923">Mută ecranul păstrând mouse-ul în centrul ecranului</translation>
@@ -2877,6 +2880,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3229412050601871341">Parola dispozitivului</translation>
 <translation id="3230539834943294477">Vezi articole de ajutor sau găsește asistență pentru dispozitiv</translation>
 <translation id="3232168089952388105">Permiți accesul la informațiile despre dispozitivul tău?</translation>
+<translation id="3232368113895801406">Preferințele tale de securitate nu permit instalarea aplicațiilor izolate. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">Aliniază la dreapta</translation>
 <translation id="3232754137068452469">Aplicație web</translation>
 <translation id="3233271424239923319">Fă backup pentru aplicațiile și fișierele Linux</translation>
@@ -4587,6 +4591,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="459204634473266369">Nu există dispozitive salvate în contul <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">Aplicație de desenare cu creionul</translation>
 <translation id="4593021220803146968">&amp;Accesează <ph name="URL" /></translation>
+<translation id="4593962599442730215">Schimbă preferințele</translation>
 <translation id="4594218792629569101">Selectează Marchează ca citit pentru a muta pagina în partea de jos a listei</translation>
 <translation id="4594577641390224176">Cauți pagina despre sistem? Accesează</translation>
 <translation id="4595560905247879544">Aplicațiile și extensiile pot fi modificate numai de administrator (<ph name="CUSTODIAN_NAME" />).</translation>
@@ -4601,6 +4606,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="460190672235687855">Vezi parolele</translation>
 <translation id="4602466770786743961">Permiteți întotdeauna accesul <ph name="HOST" /> la camera și microfonul dvs.</translation>
 <translation id="4602776638371779614">Această filă caută activ dispozitive Bluetooth</translation>
+<translation id="4605026046465576953">Această aplicație nu poate fi deschisă deoarece nu ai permisiunea să rulezi aplicații web izolate</translation>
 <translation id="4606551464649945562">Nu permite site-urilor să creeze o hartă 3D a lucrurilor din jur sau să urmărească poziția camerei video</translation>
 <translation id="4608500690299898628">&amp;Caută...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> a întâmpinat o eroare</translation>
@@ -4724,6 +4730,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694024090038830733">Configurarea imprimantei este gestionată de administrator.</translation>
 <translation id="4694604912444486114">Maimuță</translation>
+<translation id="4694820450536519583">permisiuni</translation>
 <translation id="4695318956047767909">Temă întunecată, screensaver</translation>
 <translation id="4697071790493980729">Niciun rezultat</translation>
 <translation id="4697551882387947560">La încheierea sesiunii de navigare</translation>
@@ -6642,6 +6649,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6264060420924719834">Aplicația include conținut web de pe alte site-uri</translation>
 <translation id="6264365405983206840">Select&amp;ează tot</translation>
 <translation id="6264376385120300461">Descarcă oricum</translation>
+<translation id="6264520534872750757">Continuă să folosești dispozitivul</translation>
 <translation id="6265159465845424232">Întreabă înainte de a copia sau a muta fișiere Microsoft în Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Elimină portul</translation>
 <translation id="6266532094411434237">Se conectează la <ph name="DEVICE" /></translation>
@@ -7407,6 +7415,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6876469544038980967">Inutile</translation>
 <translation id="6878422606530379992">Folosirea senzorilor este permisă</translation>
 <translation id="6880587130513028875">Imaginile au fost blocate pe această pagină.</translation>
+<translation id="6881845890692344060">Administratorul s-a deconectat. Acum tu deții controlul.</translation>
 <translation id="6882210908253838664">Dacă un site nu funcționează, poți încerca să-i acorzi permisiunea temporară de a folosi cookie-uri terță parte. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Hopa! Sistemul nu a putut salva configurarea dispozitivului.</translation>
 <translation id="6884474387073389421">Sigur vrei să ștergi datele de conectare selectate?</translation>
@@ -8305,6 +8314,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7616214729753637086">Se înregistrează dispozitivul...</translation>
 <translation id="7617263010641145920">Activează Magazinul Play</translation>
 <translation id="7617648809369507487">Folosește mesaje discrete</translation>
+<translation id="7619937211696316184">Întreținerea se încheie</translation>
 <translation id="7621382409404463535">Sistemul nu a putut salva configurarea dispozitivului.</translation>
 <translation id="7621480263311228380">Nu are permisiunea de a folosi informațiile pe care le-a salvat despre tine</translation>
 <translation id="7621595347123595643">Nu vei putea recupera datele locale dacă uiți parola sau codul PIN.</translation>
@@ -9652,6 +9662,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8662795692588422978">Persoane</translation>
 <translation id="8662911384982557515">Schimbă pagina de pornire la: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome nu poate seta imaginea de fundal.</translation>
+<translation id="8663051876219324457">Permite aplicațiilor, site-urilor și serviciilor de sistem să folosească locația. Locația poate folosi surse precum Wi-Fi, rețele mobile și senzori pentru a ajuta la estimarea locației dispozitivului. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Blocați întotdeauna descărcarea automată a mai multor fișiere pentru <ph name="HOST" /></translation>
 <translation id="8664389313780386848">&amp;Afișează sursa paginii</translation>
 <translation id="8665110742939124773">Ai introdus un cod de acces incorect. Încearcă din nou.</translation>
@@ -9744,6 +9755,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="87254326763805752">Confirmă cheia de acces</translation>
 <translation id="8726206820263995930">Eroare la preluarea setărilor politicii de pe server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Profită la maximum de Chrome</translation>
+<translation id="8727333994464775697">Personalizează conținutul pe care îl vezi în această pagină</translation>
 <translation id="8727751378406387165">Trimite <ph name="BEGIN_LINK1" />metadate pentru completare automată<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (datele pentru completarea automată nu vor fi trimise)</translation>

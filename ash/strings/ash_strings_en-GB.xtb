@@ -122,6 +122,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1419738280318246476">Unlock device to perform the notification action</translation>
 <translation id="1420408895951708260">Toggle Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Yes</translation>
+<translation id="1435537621343861112">Can't start dictation. Your mic is off.</translation>
 <translation id="1455242230282523554">Show language settings</translation>
 <translation id="1460620680449458626">Volume is muted.</translation>
 <translation id="14648076227129703">This allows camera access for <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> and all apps and websites with the camera permission</translation>

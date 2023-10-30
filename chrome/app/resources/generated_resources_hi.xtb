@@ -986,6 +986,7 @@
 <translation id="175772926354468439">थीम चालू करें</translation>
 <translation id="1757786065507923842">माता-पिता की अनुमति के लिए अनुरोध नहीं किया जा सका.</translation>
 <translation id="17584710573359123">Chrome वेब स्टोर में देखें</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" /> को <ph name="REMAPPING_OPTION" /> पर दोबारा मैप किया गया.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> के खाते</translation>
 <translation id="176272781006230109">खरीदारी के लिए सुझाव</translation>
 <translation id="1763046204212875858">ऐप्स  शॉर्टकट बनाएं</translation>
@@ -1364,6 +1365,7 @@
 <translation id="2037486735086318591">अपने आस-पास के लोगों से फ़ाइलें पाने और उन्हें फ़ाइलें भेजने के लिए, <ph name="FEATURE_NAME" /> सेट अप करें</translation>
 <translation id="2039464276165755892">डिवाइस की स्क्रीन के सामने किसी और की मौजूदगी होने पर, सूचना का कॉन्टेंट छिपाएं</translation>
 <translation id="2040460856718599782">ओह!  आपको प्रमाणित करने की कोशिश करते समय कुछ गड़बड़ी हो गई. कृपया अपने साइन इन क्रेडेंशियल दोबारा जाँचें और फिर से कोशिश करें.</translation>
+<translation id="2040822390690632244">अपडेट, सहायता, डेवलपर के लिए सेटिंग और टूल</translation>
 <translation id="2040894699575719559">जगह की जानकारी पर रोक लगाई गई</translation>
 <translation id="2041246176170574368">सुरक्षा से जुड़े अपडेट मिलने की सुविधा जल्द बंद होने वाली है. नए Chromebook पर, 50 डॉलर या उससे ज़्यादा की बचत करें.</translation>
 <translation id="2042279886444479655">ऐक्टिव प्रोफ़ाइलें</translation>
@@ -2730,6 +2732,7 @@
 <translation id="3076977359333237641">आपका साइन-इन डेटा मिटा दिया गया</translation>
 <translation id="3080933187214341848">यह नेटवर्क आपके खाते से सिंक नहीं है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">एक्सटेंशन</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">आपकी सुरक्षा के लिए कुछ समय तक ब्लॉक किया गया</translation>
 <translation id="3083899879156272923">माउस को स्क्रीन के बीच में रखकर स्क्रीन को घुमाएं</translation>
@@ -2888,6 +2891,7 @@
 <translation id="3229412050601871341">डिवाइस का पासवर्ड</translation>
 <translation id="3230539834943294477">सहायता लेख देखें या डिवाइस से जुड़ी सहायता पाएं</translation>
 <translation id="3232168089952388105">क्या आपको अपने डिवाइस की जानकारी शेयर करनी है?</translation>
+<translation id="3232368113895801406">आपकी सुरक्षा प्राथमिकताएं आइसोलेटेड ऐप्लिकेशन को इंस्टॉल करने की अनुमति नहीं देती हैं. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">दाईं ओर अलाइन करें</translation>
 <translation id="3232754137068452469">वेब ऐप्लिकेशन</translation>
 <translation id="3233271424239923319">Linux ऐप्लिकेशन और फ़ाइलों का बैकअप लें</translation>
@@ -4594,6 +4598,7 @@
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> से कोई डिवाइस नहीं जुड़ा है</translation>
 <translation id="4592891116925567110">स्टाइलस की मदद से ड्रॉ करने के लिए ऐप्लिकेशन</translation>
 <translation id="4593021220803146968"><ph name="URL" /> पर &amp;जाएं</translation>
+<translation id="4593962599442730215">अपनी प्राथमिकताएं बदलना</translation>
 <translation id="4594218792629569101">पेज को अपनी सूची में सबसे नीचे ले जाने के लिए, “पढ़ा गया के तौर पर मार्क करें” को चुनें</translation>
 <translation id="4594577641390224176">सिस्टम की जानकारी वाला पेज चाहिए? यहां जाएं</translation>
 <translation id="4595560905247879544">ऐप्स और एक्सटेंशन केवल मैनेजर (<ph name="CUSTODIAN_NAME" />) के द्वारा बदले जा सकते हैं.</translation>
@@ -4608,6 +4613,7 @@
 <translation id="460190672235687855">पासवर्ड देखें</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> को अपना कैमरा और माइक्रोफ़ोन हमेशा एक्सेस करने दें</translation>
 <translation id="4602776638371779614">यह टैब, ब्लूटूथ डिवाइसों के लिए लगातार स्कैन कर रहा है</translation>
+<translation id="4605026046465576953">इस ऐप्लिकेशन को नहीं खोला जा सकता, क्योंकि आपके पास आइसोलेटेड वेब ऐप्लिकेशन चलाने की अनुमति नहीं है</translation>
 <translation id="4606551464649945562">साइटों को अपने आस-पास की जगह का 3D मैप बनाने या कैमरे की स्थिति ट्रैक करने की अनुमति न दें</translation>
 <translation id="4608500690299898628">&amp;ढूंढें...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> में कोई गड़बड़ी आई</translation>
@@ -4729,6 +4735,7 @@
 <translation id="4693155481716051732">सुशी</translation>
 <translation id="4694024090038830733">प्रिंटर कॉन्फ़िगरेशन का काम एडमिन संभालता है.</translation>
 <translation id="4694604912444486114">बंदर</translation>
+<translation id="4694820450536519583">अनुमतियां</translation>
 <translation id="4695318956047767909">गहरे रंग वाली थीम, स्क्रीन सेवर</translation>
 <translation id="4697071790493980729">कोई भी नतीजा नहीं मिला</translation>
 <translation id="4697551882387947560">ब्राउज़िंग सत्र के खत्म होने पर</translation>
@@ -6644,6 +6651,7 @@
 <translation id="6264060420924719834">इस ऐप्लिकेशन पर अन्य साइटों का वेब कॉन्टेंट मौजूद है</translation>
 <translation id="6264365405983206840">&amp;सभी को चुनें</translation>
 <translation id="6264376385120300461">फिर भी डाउनलोड करें</translation>
+<translation id="6264520534872750757">डिवाइस का इस्तेमाल करना जारी रखें</translation>
 <translation id="6265159465845424232">Microsoft फ़ाइलों को कॉपी करने या Microsoft OneDrive में ट्रांसफ़र करने से पहले पूछें</translation>
 <translation id="6265687851677020761">पोर्ट हटाएं</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> से कनेक्ट किया जा रहा है</translation>
@@ -7407,6 +7415,7 @@
 <translation id="6876469544038980967">मददगार नहीं है</translation>
 <translation id="6878422606530379992">सेंसर को मंज़ूरी दी गई है</translation>
 <translation id="6880587130513028875">इस पेज पर चित्र अवरोधित कर दी गई थीं.</translation>
+<translation id="6881845890692344060">आपके एडमिन ने लॉग आउट कर दिया है. अब कंट्रोल आपके पास है.</translation>
 <translation id="6882210908253838664">अगर कोई साइट काम नहीं कर रही है, तो उसे कुछ समय के लिए तीसरे पक्ष की कुकी का इस्तेमाल करने की अनुमति दी जा सकती है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">ओह!  यह सिस्टम, डिवाइस कॉन्फ़िगरेशन को सेव नहीं कर सका.</translation>
 <translation id="6884474387073389421">साइन इन करने के लिए जो डेटा डाला गया है, क्या वाकई उसे मिटाना है?</translation>
@@ -7547,7 +7556,7 @@
 <translation id="6992554835374084304">'बेहतर स्पेलिंग जाँच' चालू करें</translation>
 <translation id="6993000214273684335">टैब को बिना नाम वाले ग्रुप से हटाया गया - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Chrome ब्राउज़र अपडेट हो रहा है</translation>
-<translation id="6995899638241819463">डेटा का गलत इस्तेमाल होने की वजह से आपके पासवर्ड सार्वजनिक हो जाने पर चेतावनी दी जाए</translation>
+<translation id="6995899638241819463">डेटा का गलत इस्तेमाल होने की वजह से, आपके पासवर्ड सार्वजनिक हो जाने पर चेतावनी दी जाए</translation>
 <translation id="6995984090981858039">ChromeOS डिवाइस की जानकारी और डेटा ऐक्सेस करें</translation>
 <translation id="6996438701394974959">डिसप्ले और टेक्स्ट का साइज़ बढ़ाएं</translation>
 <translation id="6997553674029032185">साइट पर जाएं</translation>
@@ -8302,6 +8311,7 @@
 <translation id="7616214729753637086">डिवाइस का नाम दर्ज किया जा रहा है...</translation>
 <translation id="7617263010641145920">'Play Store' चालू करें</translation>
 <translation id="7617648809369507487">काम में किसी रुकावट के बिना सूचनाएं पाएं</translation>
+<translation id="7619937211696316184">रखरखाव पूरा हो गया है</translation>
 <translation id="7621382409404463535">सिस्टम, डिवाइस कॉन्फ़िगरेशन को सेव नहीं कर सका.</translation>
 <translation id="7621480263311228380">आपके बारे में सेव की गई जानकारी का इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="7621595347123595643">अपना पासवर्ड या पिन भूल जाने पर, डिवाइस पर सेव किया गया डेटा वापस नहीं पाया जा सकेगा.</translation>
@@ -9647,6 +9657,7 @@
 <translation id="8662795692588422978">लोग</translation>
 <translation id="8662911384982557515">अपना होम पेज: <ph name="HOME_PAGE" /> में बदलें</translation>
 <translation id="8662978096466608964">Chrome वॉलपेपर सेट नहीं कर सकता.</translation>
+<translation id="8663051876219324457">ऐप्लिकेशन, वेबसाइटों, और सिस्टम की सेवाओं को अपनी जगह की जानकारी का इस्तेमाल करने की अनुमति दें. जगह की जानकारी देने वाली सेवा, आपके डिवाइस की मौजूदा जगह का अनुमान लगाने के लिए, वाई-फ़ाई, मोबाइल नेटवर्क, और सेंसर जैसे सोर्स का इस्तेमाल कर सकती है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" /> पर एकाधिक स्वचालित डाउनलोड हमेशा ब्लॉक करें</translation>
 <translation id="8664389313780386848">पेज का स्रोत &amp;देखें</translation>
 <translation id="8665110742939124773">आपने गलत ऐक्सेस कोड डाला है. फिर से कोशिश करें.</translation>
@@ -9739,6 +9750,7 @@
 <translation id="87254326763805752">पासवर्ड की पुष्टि करें</translation>
 <translation id="8726206820263995930">सर्वर से नीति सेटिंग फ़ेच करते समय गड़बड़ी: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Chrome का ज़्यादा से ज़्यादा फ़ायदा पाएं</translation>
+<translation id="8727333994464775697">इस पेज पर दिखने वाली चीज़ों को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />ऑटोमैटिक भरने वाला मेटाडेटा<ph name="END_LINK1" /> भेजें
           <ph name="LINE_BREAK" />
           (आपका ऑटोमैटिक भरने वाला डेटा शेयर नहीं किया जाएगा)</translation>
@@ -9961,7 +9973,7 @@
 <translation id="8898140163781851592">प्राइमरी माउस बटन</translation>
 <translation id="8898786835233784856">अगले टैब को चुनें</translation>
 <translation id="8898790559170352647">अपना Microsoft खाता जोड़ें</translation>
-<translation id="8898822736010347272">आप जिन पेजों पर जाते हैं उनमें से कुछ के यूआरएल, सिस्टम की सीमित जानकारी, और पेज की कुछ सामग्री को यह Google को भेजता है. ऐसा इसलिए जिससे कि नए खतरों को खोजा जा सके और वेब पर सभी सुरक्षित रहें.</translation>
+<translation id="8898822736010347272">आपने जिन पेजों को विज़िट किया है उनमें से कुछ के यूआरएल, सिस्टम की सीमित जानकारी, और पेज का कुछ कॉन्टेंट Google को भेजा जाता है. ऐसा इसलिए, ताकि नए खतरों को खोजा जा सके और वेब पर सबको सुरक्षित रखा जा सके.</translation>
 <translation id="8899851313684471736">लिंक को नई &amp;विंडो में खोलें</translation>
 <translation id="8900413463156971200">सेल्युलर नेटवर्क चालू करें</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और यह <ph name="DEVICE_TYPE" /> आज ही लौटा दें.}one{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और यह <ph name="DEVICE_TYPE" /> तय समय से पहले लौटा दें.}other{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और यह <ph name="DEVICE_TYPE" /> तय समय से पहले लौटा दें.}}</translation>

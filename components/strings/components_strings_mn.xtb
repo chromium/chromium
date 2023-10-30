@@ -1111,6 +1111,7 @@
 <translation id="3266793032086590337">Утга (зөрчил)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Холбоотой сайтуудыг оруулаад ямар ч сайтыг блоклоогүй}=1{Холбоотой сайтуудыг оруулаад 1 сайтыг блоклосон}other{Холбоотой сайтуудыг оруулаад # сайтыг блоклосон}}</translation>
 <translation id="3268451620468152448">Цонхнуудыг нээх</translation>
+<translation id="3270041629388773465">Таны карт баталгаажуулалтын кодыг хадгалсан үед тооцоог илүү хурдан хийнэ үү</translation>
 <translation id="3270156322180235608">Агаарын аялал</translation>
 <translation id="3270847123878663523">&amp; Дахин эрэмбэлэх үйлдлийг буцаах</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> холбогдох хүсэлтэй байна</translation>
@@ -1850,6 +1851,7 @@
 <translation id="4761104368405085019">Микрофоноо ашигла</translation>
 <translation id="4761326898079498987">Дэлгэрэнгүй мэдээлэл авах бол шалгана уу</translation>
 <translation id="4761869838909035636">Chrome-н Аюулгүй байдлын шалгалтыг ажиллуулах</translation>
+<translation id="4763196677855776703"><ph name="URL" />-с олгосон үйлчилгээний ерөнхий нөхцөл</translation>
 <translation id="4764680219299728632">Цахилгаан зуух, зуухны дээд халаагуур болон шарах зуух</translation>
 <translation id="4764776831041365478"><ph name="URL" /> холбоос бүхий веб хуудас нь түр хугацаагаар ажиллахгүй эсвэл шинэ веб хаягтай болсон байна.</translation>
 <translation id="4766713847338118463">Доод буланд хоёр удаа үдэх</translation>
@@ -2278,6 +2280,7 @@
 <translation id="5633259641094592098">Тахин шүтэгдсэн, инди кино</translation>
 <translation id="563371367637259496">Мобайл</translation>
 <translation id="5635237618724097525">Ухаалаг утас</translation>
+<translation id="5635478143789726479">Борлуулагчийн үйлчилгээний ерөнхий нөхцөл</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стерео систем болон бүрэлдэхүүн хэсгүүд</translation>
 <translation id="5644090287519800334">Хуудасны нүүрэн тал дээр X тэнхлэгийн дагуу зураг шилжүүлэх</translation>
@@ -2397,6 +2400,7 @@
 <translation id="5911110632211230665">Нээхийг блоклосон</translation>
 <translation id="59174027418879706">Идэвхжсэн</translation>
 <translation id="5918373444239520146">Гаджет болон зөөврийн цахилгаан багаж</translation>
+<translation id="5918847752193018339">Таны карт баталгаажуулалтын кодыг хадгалсан үед тооцоог илүү хурдан хийнэ үү. <ph name="LINK_BEGIN" />Хадгалсан аюулгүй байдлын кодуудыг устгах<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1-г ашиглаж байгаа}other{# ашиглаж байгаа}}</translation>
 <translation id="592031860219554105">Уран гулгалт</translation>
@@ -3473,6 +3477,7 @@
 <translation id="8041089156583427627">Санал хүсэлт илгээх</translation>
 <translation id="8041940743680923270">Анхдагч хувилбарыг ашигла (Асуу)</translation>
 <translation id="8042577181291637092">MIDI төхөөрөмжүүдийг ашиглах уу?</translation>
+<translation id="8043255123207491407">Борлуулагчийн үйлчилгээний ерөнхий нөхцөлийг харах</translation>
 <translation id="8046360364391076336">Аж үйлдвэрийн материалууд болон тоног төхөөрөмж</translation>
 <translation id="8052898407431791827">Түр санах ойд хуулсан</translation>
 <translation id="8055534648776115597">Мэргэжлийн, тасралтгүй боловсрол</translation>

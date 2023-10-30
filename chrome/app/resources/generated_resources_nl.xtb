@@ -975,6 +975,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="175772926354468439">Thema aanzetten</translation>
 <translation id="1757786065507923842">Verzoek om ouderlijke toestemming mislukt.</translation>
 <translation id="17584710573359123">Bekijken in de Chrome Web Store</translation>
+<translation id="1761402971842586829"><ph name="BUTTON_NAME" /> opnieuw toegewezen aan <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Accounts van <ph name="NAME" /></translation>
 <translation id="176272781006230109">winkelsuggesties</translation>
 <translation id="1763046204212875858">Applicatiesnelkoppelingen maken</translation>
@@ -1353,6 +1354,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2037486735086318591">Stel <ph name="FEATURE_NAME" /> in om bestanden te krijgen van en te sturen naar mensen bij jou in de buurt</translation>
 <translation id="2039464276165755892">Content van meldingen verbergen als iemand anders wordt waargenomen</translation>
 <translation id="2040460856718599782">Er is iets verkeerd gegaan tijdens de verificatie. Controleer je inloggegevens en probeer het opnieuw.</translation>
+<translation id="2040822390690632244">Updates, hulp, opties voor ontwikkelaars</translation>
 <translation id="2040894699575719559">Locatie geblokkeerd</translation>
 <translation id="2041246176170574368">Beveiligingsupdates worden binnenkort beëindigd. Bespaar $ 50 of meer op een nieuwe Chromebook.</translation>
 <translation id="2042279886444479655">Actieve profielen</translation>
@@ -2717,6 +2719,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3076977359333237641">Je inloggegevens zijn verwijderd</translation>
 <translation id="3080933187214341848">Dit netwerk is niet gesynchroniseerd met je account. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
+<translation id="3082493846131340396">extensies</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Tijdelijk geblokkeerd ter bescherming van je veiligheid</translation>
 <translation id="3083899879156272923">Scherm meebewegen met de cursor midden op het scherm</translation>
@@ -2876,6 +2879,7 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3229412050601871341">Apparaatwachtwoord</translation>
 <translation id="3230539834943294477">Help-artikelen bekijken of support voor apparaten vinden</translation>
 <translation id="3232168089952388105">Informatie over je apparaat delen?</translation>
+<translation id="3232368113895801406">Op basis van je beveiligingsvoorkeuren kunnen geïsoleerde apps niet worden geïnstalleerd. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="3232558119926886907">Rechts uitlijnen</translation>
 <translation id="3232754137068452469">Webapp</translation>
 <translation id="3233271424239923319">Back-up maken van Linux-apps en -bestanden</translation>
@@ -4585,6 +4589,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="459204634473266369">Geen apparaten opgeslagen in <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592891116925567110">App voor tekenen met stylus</translation>
 <translation id="4593021220803146968">&amp;Ga naar <ph name="URL" /></translation>
+<translation id="4593962599442730215">Je voorkeuren wijzigen</translation>
 <translation id="4594218792629569101">Selecteer Markeren als gelezen om de pagina naar de onderkant van de lijst te verplaatsen</translation>
 <translation id="4594577641390224176">Zoek je de informatiepagina van het systeem? Ga naar</translation>
 <translation id="4595560905247879544">Apps en extensies kunnen alleen worden aangepast door de beheerder (<ph name="CUSTODIAN_NAME" />).</translation>
@@ -4599,6 +4604,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="460190672235687855">Wachtwoorden bekijken</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> altijd toegang geven tot je camera en microfoon</translation>
 <translation id="4602776638371779614">Dit tabblad zoekt actief naar bluetooth-apparaten</translation>
+<translation id="4605026046465576953">Deze app kan niet worden geopend omdat je geen rechten hebt om geïsoleerde web-apps uit te voeren</translation>
 <translation id="4606551464649945562">Niet toestaan dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
 <translation id="4608500690299898628">&amp;Zoeken...</translation>
 <translation id="4610162781778310380">Er is een fout opgetreden in <ph name="PLUGIN_NAME" /></translation>
@@ -4721,6 +4727,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694024090038830733">De printerconfiguratie wordt bepaald door de beheerder.</translation>
 <translation id="4694604912444486114">Aap</translation>
+<translation id="4694820450536519583">rechten</translation>
 <translation id="4695318956047767909">Donker thema, screensaver</translation>
 <translation id="4697071790493980729">Geen resultaten gevonden</translation>
 <translation id="4697551882387947560">Wanneer de browsingsessie eindigt</translation>
@@ -6635,6 +6642,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6264060420924719834">Deze app heeft webcontent van andere sites</translation>
 <translation id="6264365405983206840">&amp;Alles selecteren</translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
+<translation id="6264520534872750757">Het apparaat blijven gebruiken</translation>
 <translation id="6265159465845424232">Vragen voordat Microsoft-bestanden worden gekopieerd of verplaatst naar Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Poort verwijderen</translation>
 <translation id="6266532094411434237">Verbinding maken met <ph name="DEVICE" /></translation>
@@ -7398,6 +7406,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6876469544038980967">Niet nuttig</translation>
 <translation id="6878422606530379992">Sensoren toegestaan</translation>
 <translation id="6880587130513028875">Er zijn afbeeldingen op deze pagina geblokkeerd.</translation>
+<translation id="6881845890692344060">Je beheerder is uitgelogd. Jij hebt nu de controle.</translation>
 <translation id="6882210908253838664">Als een site niet werkt, kun je proberen de site tijdelijk toestemming te geven om cookies van derden te gebruiken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">Het systeem kan de apparaatconfiguratie niet opslaan.</translation>
 <translation id="6884474387073389421">Weet je zeker dat je de geselecteerde inloggegevens wilt verwijderen?</translation>
@@ -8294,6 +8303,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7616214729753637086">Apparaat registreren...</translation>
 <translation id="7617263010641145920">Play Store aanzetten</translation>
 <translation id="7617648809369507487">Stillere berichten gebruiken</translation>
+<translation id="7619937211696316184">Onderhoud is afgerond</translation>
 <translation id="7621382409404463535">Het systeem kan de apparaatconfiguratie niet opslaan.</translation>
 <translation id="7621480263311228380">Mag de informatie niet gebruiken die over jou is opgeslagen</translation>
 <translation id="7621595347123595643">Als je je wachtwoord of pincode vergeet, kun je geen lokale gegevens herstellen.</translation>
@@ -9639,6 +9649,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8662795692588422978">Personen</translation>
 <translation id="8662911384982557515">Je homepage wijzigen in: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome kan de achtergrond niet instellen.</translation>
+<translation id="8663051876219324457">Sta toe dat apps, websites en systeemservices je locatie gebruiken. Voor de schatting van je apparaatlocatie kunnen bronnen zoals wifi, mobiele netwerken en sensoren worden gebruikt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Meerdere automatische downloads altijd blokkeren op <ph name="HOST" /></translation>
 <translation id="8664389313780386848">Paginabron &amp;weergeven</translation>
 <translation id="8665110742939124773">Je hebt een onjuiste toegangscode opgegeven. Probeer het opnieuw.</translation>
@@ -9731,6 +9742,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="87254326763805752">Bevestig de toegangscode</translation>
 <translation id="8726206820263995930">Fout bij het ophalen van beleidsinstellingen van de server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727043961453758442">Haal het maximale uit Chrome</translation>
+<translation id="8727333994464775697">Aanpassen wat je op deze pagina ziet</translation>
 <translation id="8727751378406387165"><ph name="BEGIN_LINK1" />Metadata voor automatisch invullen<ph name="END_LINK1" /> sturen
 <ph name="LINE_BREAK" />
 (je gegevens voor automatisch invullen worden niet gedeeld)</translation>

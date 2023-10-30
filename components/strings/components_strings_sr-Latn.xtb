@@ -1110,6 +1110,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3266793032086590337">Vrednost (neusaglašena)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Nema blokiranih sajtova, uključujući srodne sajtove}=1{1 sajt je blokiran, uključujući srodne sajtove}one{# sajt je blokiran, uključujući srodne sajtove}few{# sajta su blokirana, uključujući srodne sajtove}other{# sajtova je blokirano, uključujući srodne sajtove}}</translation>
 <translation id="3268451620468152448">Otvorene kartice</translation>
+<translation id="3270041629388773465">Plaćajte brže kada sačuvate CVC brojeve</translation>
 <translation id="3270156322180235608">Vazdušni saobraćaj</translation>
 <translation id="3270847123878663523">&amp;Opozovi promenu redosleda</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> želi da se poveže</translation>
@@ -1849,6 +1850,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4761104368405085019">Korišćenje mikrofona</translation>
 <translation id="4761326898079498987">Više detalja potražite u pregledu</translation>
 <translation id="4761869838909035636">Pokrenite Chrome bezbednosnu proveru</translation>
+<translation id="4763196677855776703">Uslove i odredbe pruža <ph name="URL" /></translation>
 <translation id="4764680219299728632">Štednjaci, grejne ploče i pećnice</translation>
 <translation id="4764776831041365478">Moguće je da veb-stranica na adresi <ph name="URL" /> privremeno ne funkcioniše ili da je trajno premeštena na novu veb adresu.</translation>
 <translation id="4766713847338118463">Dvostruko spajanje na dnu</translation>
@@ -2277,6 +2279,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5633259641094592098">Kultni i indi filmovi</translation>
 <translation id="563371367637259496">Mobilna</translation>
 <translation id="5635237618724097525">Pametni telefoni</translation>
+<translation id="5635478143789726479">Uslovi i odredbe prodavca</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereo sistemi i komponente</translation>
 <translation id="5644090287519800334">Pomeranje slike 1. strane po X osi</translation>
@@ -2396,6 +2399,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5911110632211230665">Otvaranje je blokirano</translation>
 <translation id="59174027418879706">Omogućeno</translation>
 <translation id="5918373444239520146">Gadžeti i prenosivi elektronski uređaji</translation>
+<translation id="5918847752193018339">Plaćajte brže kada sačuvate CVC brojeve. <ph name="LINK_BEGIN" />Izbrišite sačuvane bezbednosne kodove<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{Koristi se 1}one{Koristi se #}few{Koriste se #}other{Koristi se #}}</translation>
 <translation id="592031860219554105">Klizanje na ledu</translation>
@@ -3472,6 +3476,7 @@ Dodatni detalji:
 <translation id="8041089156583427627">Pošalji povratne informacije</translation>
 <translation id="8041940743680923270">Koristi globalnu podrazumevanu vrednost (Pitaj)</translation>
 <translation id="8042577181291637092">Želite da koristite MIDI uređaje?</translation>
+<translation id="8043255123207491407">Pogledajte uslove i odredbe prodavca</translation>
 <translation id="8046360364391076336">Industrijski materijali i oprema</translation>
 <translation id="8052898407431791827">Kopirano je u privremenu memoriju</translation>
 <translation id="8055534648776115597">Stručno osposobljavanje i kontinuirano obrazovanje</translation>

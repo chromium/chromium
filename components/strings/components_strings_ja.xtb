@@ -311,6 +311,7 @@
 <translation id="1574714699824202614">お支払い方法を確認しています</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581172376168798878">無期限</translation>
 <translation id="1583429793053364125">このウェブページの表示中に問題が発生しました。</translation>
 <translation id="1584492003828271317">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、ウェブサイトが提案する広告、Cookie の設定状況、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
 <translation id="1586541204584340881">インストールした拡張機能</translation>
@@ -973,6 +974,7 @@
 <translation id="2985306909656435243">有効にすると、Chromium がカード情報をこのデバイスに保存するためフォームにすばやく入力できるようになります。</translation>
 <translation id="2985398929374701810">有効な住所を入力してください</translation>
 <translation id="2987034854559945715">一致する機能はありません</translation>
+<translation id="2988216301273604645">Chrome で、サイトがブラウジング中のユーザーのトラッキングに使用できる情報量を制限します。設定を変更して、ご自身で保護レベルを選択することもできます。</translation>
 <translation id="2989742184762224133">2 か所のステープル（上）</translation>
 <translation id="2991174974383378012">ウェブサイトとの共有</translation>
 <translation id="299122504639061328">デフォルトの検索エンジンとサイト内検索を管理します</translation>
@@ -1110,6 +1112,7 @@
 <translation id="3266793032086590337">値（競合）</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{ブロックされているサイトはありません（関連サイトを含む）}=1{1 件のサイトがブロックされています（関連サイトを含む）}other{# 件のサイトがブロックされています（関連サイトを含む）}}</translation>
 <translation id="3268451620468152448">開いているタブ</translation>
+<translation id="3270041629388773465">CVC を保存するとすばやくお支払いできます</translation>
 <translation id="3270156322180235608">空の旅</translation>
 <translation id="3270847123878663523">順序変更の取り消し（&amp;U）</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> が接続を要求しています</translation>
@@ -1383,6 +1386,7 @@
 <translation id="3793574014653384240">最近発生した問題の件数と原因</translation>
 <translation id="3795344968043407227">インディーズ音楽、オルタナティブ ミュージック</translation>
 <translation id="3799805948399000906">リクエストされたフォント</translation>
+<translation id="3801265110651850478">閲覧トラフィックと一緒に「トラッキング拒否」リクエストを送信する</translation>
 <translation id="380329542618494757">名前</translation>
 <translation id="3806932344025766608">アクセスしようとしているサイトでは、攻撃者がユーザーを騙してソフトウェアをインストールさせたり、パスワード、電話番号、クレジット カード番号などを開示させたりする可能性があります。安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">電話回線サービス</translation>
@@ -1653,6 +1657,7 @@
 <translation id="4331708818696583467">保護されていない通信</translation>
 <translation id="4333295216031073611">ショッピング リスト</translation>
 <translation id="4333561522337981382">全ディスプレイのウィンドウを管理する</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
 <translation id="4340575312453649552">この広告は、デバイスのリソース消費が多すぎるため、Chrome によって削除されました。</translation>
 <translation id="4340810192899866471">JSON からインポート</translation>
 <translation id="4340982228985273705">このパソコンは企業の管理対象として検出されていないため、ポリシーで自動的にインストールできるのは Chrome ウェブストアでホストされている拡張機能のみとなります。Chrome ウェブストアの更新 URL は「<ph name="CWS_UPDATE_URL" />」です。</translation>
@@ -1849,6 +1854,7 @@
 <translation id="4761104368405085019">マイクを使用する</translation>
 <translation id="4761326898079498987">詳細をご確認ください</translation>
 <translation id="4761869838909035636">Chrome の安全チェックを実行</translation>
+<translation id="4763196677855776703">利用規約は <ph name="URL" /> でご確認いただけます</translation>
 <translation id="4764680219299728632">コンロ、オーブン</translation>
 <translation id="4764776831041365478"><ph name="URL" /> のウェブページは一時的に停止しているか、新しいウェブアドレスに移動した可能性があります。</translation>
 <translation id="4766713847338118463">2 か所のステープル（下）</translation>
@@ -2210,6 +2216,7 @@
 <translation id="5512812358367123529">オフィス家具</translation>
 <translation id="5513528801833998679">デバイスのログイン情報を使用</translation>
 <translation id="5515388687005870733">55x85 mm</translation>
+<translation id="5518352028556756716">ほとんどのサイトは、サードパーティ Cookie を使用してブラウジング中のユーザーをトラッキングできません。またシークレット モードでは、サイトはサードパーティ Cookie を使用できません。</translation>
 <translation id="5518670652865028077">アート、エンターテインメント</translation>
 <translation id="5519516356611866228">変更後のバージョン</translation>
 <translation id="5519696598216267194">紙（穴開き）</translation>
@@ -2277,6 +2284,7 @@
 <translation id="5633259641094592098">カルト映画、インディーズ映画</translation>
 <translation id="563371367637259496">モバイル</translation>
 <translation id="5635237618724097525">スマートフォン</translation>
+<translation id="5635478143789726479">販売者の利用規約</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />。<ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">ステレオ システム、コンポーネント</translation>
 <translation id="5644090287519800334">1 面の画像の X 軸移動</translation>
@@ -2396,6 +2404,7 @@
 <translation id="5911110632211230665">開けないようブロックされました</translation>
 <translation id="59174027418879706">有効</translation>
 <translation id="5918373444239520146">ガジェット、携帯用電子機器</translation>
+<translation id="5918847752193018339">CVC を保存するとすばやくお支払いできます。<ph name="LINK_BEGIN" />保存したセキュリティ コードを削除する<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 個が使用中}other{# 個が使用中}}</translation>
 <translation id="592031860219554105">アイススケート</translation>
@@ -3110,6 +3119,7 @@
 <translation id="7366117520888504990">198x275 mm</translation>
 <translation id="7366362069757178916">支払いハンドラ</translation>
 <translation id="7367985555340314048">興味 / 関心のあるトピックをユーザーの最近の閲覧履歴に基づいて判断し、ウェブサイトでパーソナライズド広告を表示するために使うことを許可します</translation>
+<translation id="7368169244533796604">サイトを削除</translation>
 <translation id="7372526636730851647">写真（光沢）</translation>
 <translation id="7372973238305370288">検索結果</translation>
 <translation id="7374461526650987610">プロトコル ハンドラ</translation>
@@ -3426,6 +3436,7 @@
 <translation id="7951415247503192394">（32 ビット）</translation>
 <translation id="7952192831285741665">欧州 EDP</translation>
 <translation id="7952327717479677595">[検索エンジンを管理] ボタンです。実行すると、デフォルトの検索エンジンとサイト内検索を管理できます</translation>
+<translation id="7953236668995583915">更新した設定をこのサイトに適用するには、このページを再読み込みしてください</translation>
 <translation id="7953569069500808819">端綴じ（上）</translation>
 <translation id="7955105108888461311">直接リクエストする</translation>
 <translation id="7956713633345437162">モバイルのブックマーク</translation>
@@ -3474,6 +3485,7 @@
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8041940743680923270">グローバルのデフォルト値（[確認]）を使用</translation>
 <translation id="8042577181291637092">MIDI デバイスを使用しますか？</translation>
+<translation id="8043255123207491407">販売者の利用規約を表示</translation>
 <translation id="8046360364391076336">産業資材、設備</translation>
 <translation id="8052898407431791827">クリップボードにコピーしました</translation>
 <translation id="8055534648776115597">職業教育、生涯教育</translation>
