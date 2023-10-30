@@ -35,6 +35,7 @@ class DelegatingEventsProcessor final : public EventsProcessorInterface {
   void OnEventRecorded(StructuredEventProto* event) override;
   void OnProvideIndependentMetrics(
       ChromeUserMetricsExtension* uma_proto) override;
+  void OnProfileAdded(const base::FilePath& path) override;
 
  private:
   std::vector<std::unique_ptr<EventsProcessorInterface>> events_processors_;

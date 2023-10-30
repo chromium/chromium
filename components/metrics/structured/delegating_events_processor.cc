@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/metrics/structured/delegating_events_processor.h"
+#include "delegating_events_processor.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics::structured {
@@ -49,6 +50,12 @@ void DelegatingEventsProcessor::OnProvideIndependentMetrics(
     ChromeUserMetricsExtension* uma_proto) {
   for (auto& events_processor : events_processors_) {
     events_processor->OnProvideIndependentMetrics(uma_proto);
+  }
+}
+
+void DelegatingEventsProcessor::OnProfileAdded(const base::FilePath& path) {
+  for (auto& events_processor : events_processors_) {
+    events_processor->OnProfileAdded(path);
   }
 }
 

@@ -65,6 +65,9 @@ void Recorder::ProfileAdded(const base::FilePath& profile_path) {
   for (auto& observer : observers_) {
     observer.OnProfileAdded(profile_path);
   }
+
+  // Notify the event processors.
+  delegating_events_processor_.OnProfileAdded(profile_path);
 }
 
 void Recorder::OnReportingStateChanged(bool enabled) {

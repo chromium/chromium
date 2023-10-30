@@ -5,10 +5,19 @@
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 
 #include "base/feature_list.h"
+#include "components/metrics/structured/structured_metrics_features.h"
 
 namespace metrics::structured {
 
 BASE_FEATURE(kAppDiscoveryLogging,
              "AppDiscoveryLogging",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kOobeUploadCount{
+    &kEnabledStructuredMetricsService, "oobe_upload_count", 10};
+
+int GetOobeEventUploadCount() {
+  return kOobeUploadCount.Get();
 }
+
+}  // namespace metrics::structured

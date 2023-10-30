@@ -8,6 +8,7 @@
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "components/metrics/structured/structured_metrics_features.h"
+#include "structured_metrics_service.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace metrics::structured {
@@ -208,6 +209,20 @@ void StructuredMetricsService::SetRecorderForTest(
 MetricsServiceClient* StructuredMetricsService::GetMetricsServiceClient()
     const {
   return client_;
+}
+
+void StructuredMetricsService::ManualUpload() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!recorder_->can_provide_metrics() ||
+      recorder_->events()->non_uma_events_size() == 0) {
+    return;
+  }
+
+  if (!reporting_service_->log_store()->has_unsent_logs()) {
+    BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  }
+  reporting_service_->Start();
 }
 
 }  // namespace metrics::structured

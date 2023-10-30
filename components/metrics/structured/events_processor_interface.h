@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_EVENTS_PROCESSOR_INTERFACE_H_
 #define COMPONENTS_METRICS_STRUCTURED_EVENTS_PROCESSOR_INTERFACE_H_
 
+#include "base/files/file_path.h"
 #include "components/metrics/structured/event.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/structured_data.pb.h"
@@ -46,6 +47,9 @@ class EventsProcessorInterface {
   // MetricsService. This will be called before events are attached.
   virtual void OnProvideIndependentMetrics(
       ChromeUserMetricsExtension* uma_proto) = 0;
+
+  // Notify the processor that a profile has been added.
+  virtual void OnProfileAdded(const base::FilePath& path) {}
 };
 
 }  // namespace metrics::structured

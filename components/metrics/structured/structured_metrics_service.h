@@ -70,6 +70,7 @@ class StructuredMetricsService final {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   friend class StructuredMetricsServiceTest;
   friend class StructuredMetricsMixin;
+  friend class OobeStructuredMetricsWatcher;
   friend class metrics::StructuredMetricsServiceTestBase;
 
   FRIEND_TEST_ALL_PREFIXES(StructuredMetricsServiceTest, RotateLogs);
@@ -98,6 +99,10 @@ class StructuredMetricsService final {
 
   // Fills out the UMA proto to be sent.
   void InitializeUmaProto(ChromeUserMetricsExtension& uma_proto);
+
+  // Triggers an upload of recorded events outside of the normal cadence.
+  // This doesn't interfere with the normal cadence.
+  void ManualUpload();
 
   // Helper function to serialize a ChromeUserMetricsExtension proto.
   static std::string SerializeLog(const ChromeUserMetricsExtension& uma_proto);
