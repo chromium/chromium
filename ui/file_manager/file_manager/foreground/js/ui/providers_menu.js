@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import {decorate} from '../../../common/js/ui.js';
-import {Menu} from './menu.js';
-
-import {util} from '../../../common/js/util.js';
+import {iconSetToCSSBackgroundImageValue} from '../../../common/js/util.js';
 import {ProvidersModel} from '../providers_model.js';
 
 import {FilesMenuItem} from './files_menu.js';
+import {Menu} from './menu.js';
 
 /**
  * Fills out the menu for mounting or installing new providers.
@@ -72,7 +71,7 @@ export class ProvidersMenu {
     const item = this.addMenuItem_();
     item.label = name;
 
-    const iconImage = util.iconSetToCSSBackgroundImageValue(iconSet);
+    const iconImage = iconSetToCSSBackgroundImageValue(iconSet);
     if (iconImage === 'none' && providerId === '@smb') {
       item.iconStartFileType = 'smb';
     } else {

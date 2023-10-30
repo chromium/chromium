@@ -8,8 +8,6 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 
 import {queryDecoratedElement} from '../../../common/js/dom_utils.js';
 import {decorate} from '../../../common/js/ui.js';
-// @ts-ignore: error TS6133: 'util' is declared but its value is never read.
-import {util} from '../../../common/js/util.js';
 
 import {Command} from './command.js';
 import {Menu} from './menu.js';

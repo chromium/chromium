@@ -15,7 +15,7 @@ import {isDlpEnabled} from '../../common/js/flags.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str, strf} from '../../common/js/translations.js';
 import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
-import {util} from '../../common/js/util.js';
+import {visitURL} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -428,7 +428,7 @@ export class FileTransferController {
       this.filesToast_.show(toastText, {
         text: str('DLP_TOAST_BUTTON_LABEL'),
         callback: () => {
-          util.visitURL(
+          visitURL(
               'https://support.google.com/chrome/a/?p=chromeos_datacontrols');
         },
       });

@@ -29,7 +29,7 @@ import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str} from '../../common/js/translations.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
-import {util} from '../../common/js/util.js';
+import {getLastVisitedURL, isInGuestMode, runningInBrowser} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {NudgeType} from '../../containers/nudge_container.js';
@@ -611,7 +611,7 @@ export class FileManager extends EventTarget {
    * @return {string}
    */
   getLastVisitedURL() {
-    return util.getLastVisitedURL();
+    return getLastVisitedURL();
   }
 
   /**
@@ -637,13 +637,13 @@ export class FileManager extends EventTarget {
   }
 
   /**
-   * Updates guestMode_ field based on what the result of the util.isInGuestMode
+   * Updates guestMode_ field based on what the result of the isInGuestMode
    * helper function. It errs on the side of not-in-guestmode, if the util
    * function fails. The worse this causes are extra notifications.
    */
   async setGuestMode_() {
     try {
-      const guest = await util.isInGuestMode();
+      const guest = await isInGuestMode();
       if (guest !== null) {
         this.guestMode_ = guest;
       }
@@ -1132,7 +1132,7 @@ export class FileManager extends EventTarget {
     if (!loadTimeData.isInitialized()) {
       loadTimeData.data = this.fileBrowserBackground_.stringData;
     }
-    if (util.runningInBrowser()) {
+    if (runningInBrowser()) {
       this.fileBrowserBackground_.registerDialog(window);
     }
     this.fileOperationManager_ =

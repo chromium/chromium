@@ -11,7 +11,7 @@
 import 'chrome://resources/cros_components/button/button.js';
 
 import {isCrosComponentsEnabled} from '../../../../common/js/flags.js';
-import {util} from '../../../../common/js/util.js';
+import {visitURL} from '../../../../common/js/util.js';
 
 import {getTemplate} from './educational_banner.html.js';
 import {type AllowedVolumeOrType, Banner, BannerEvent, DismissedForeverEventSource} from './types.js';
@@ -125,7 +125,7 @@ export class EducationalBanner extends Banner {
     const href = extraButton?.getAttribute('href');
     if (href && extraButton) {
       extraButton.addEventListener('click', (e) => {
-        util.visitURL(/** @type {!string} */ (href));
+        visitURL(/** @type {!string} */ (href));
         if (extraButton.hasAttribute('dismiss-banner-when-clicked')) {
           this.dispatchEvent(
               new CustomEvent(BannerEvent.BANNER_DISMISSED_FOREVER, {

@@ -14,7 +14,7 @@ import {type AnnotatedTask, getDefaultTask} from '../../common/js/file_tasks.js'
 import {isJellyEnabled} from '../../common/js/flags.js';
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {str, strf} from '../../common/js/translations.js';
-import {util} from '../../common/js/util.js';
+import {checkAPIError} from '../../common/js/util.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -209,7 +209,7 @@ export class TaskController {
     const mimeTypes =
         await Promise.all(entries.map(entry => this.getMimeType_(entry)));
     chrome.fileManagerPrivate.setDefaultTask(
-        task.descriptor, entries, mimeTypes, util.checkAPIError);
+        task.descriptor, entries, mimeTypes, checkAPIError);
     this.metadataUpdateController_.refreshCurrentDirectoryMetadata();
 
     // Update task menu button unless the task button was updated by other

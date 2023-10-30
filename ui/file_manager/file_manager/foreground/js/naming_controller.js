@@ -9,7 +9,7 @@ import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {isFakeEntry, isSameEntry} from '../../common/js/entry_utils.js';
 import {strf} from '../../common/js/translations.js';
-import {UserCanceledError, util} from '../../common/js/util.js';
+import {FileErrorToDomError, UserCanceledError} from '../../common/js/util.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
@@ -119,13 +119,13 @@ export class NamingController {
       await getFile(directory, filename, {create: false});
     } catch (error) {
       // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
-      if (error.name == util.FileError.NOT_FOUND_ERR) {
+      if (error.name == FileErrorToDomError.NOT_FOUND_ERR) {
         // The file does not exist, so it should be ok to create a new file.
         return fileUrl;
       }
 
       // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
-      if (error.name == util.FileError.TYPE_MISMATCH_ERR) {
+      if (error.name == FileErrorToDomError.TYPE_MISMATCH_ERR) {
         // A directory is found. Do not allow to overwrite directory.
         this.alertDialog_.show(strf('DIRECTORY_ALREADY_EXISTS', filename));
         throw error;

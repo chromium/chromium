@@ -13,7 +13,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {isCrosComponentsEnabled} from '../../../../common/js/flags.js';
-import {util} from '../../../../common/js/util.js';
+import {getLastVisitedURL} from '../../../../common/js/util.js';
 
 import {EducationalBanner} from './educational_banner.js';
 import {Banner, BannerEvent} from './types.js';
@@ -87,7 +87,7 @@ export async function testDefaultDismissButtonEmitsEvent(done: () => void) {
 export async function testAdditionalButtonCanBeClicked() {
   educationalBanner.querySelector<CrButtonElement>(
                        '[slot="extra-button"]')!.click();
-  assertEquals(util.getLastVisitedURL(), 'http://test.com');
+  assertEquals(getLastVisitedURL(), 'http://test.com');
 }
 
 /**
@@ -164,5 +164,5 @@ export async function testDismissWhenClickedAttributeWorksComponents(
 
   banner.shadowRoot!.querySelector<CrButtonElement>(
                         '[slot="extra-button"]')!.click();
-  assertEquals(util.getLastVisitedURL(), 'http://test.com');
+  assertEquals(getLastVisitedURL(), 'http://test.com');
 }

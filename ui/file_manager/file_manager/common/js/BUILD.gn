@@ -27,7 +27,6 @@ group("js_modules") {
     ":storage",
     ":ui",
     ":url_constants",
-    ":util",
     ":volume_manager_types",
   ]
 }
@@ -129,7 +128,6 @@ js_library("mock_chrome") {
 }
 
 js_library("mock_entry") {
-  deps = [ ":util" ]
 }
 
 js_library("notifications") {
@@ -179,36 +177,6 @@ js_library("unittest_util") {
 }
 
 js_library("url_constants") {
-}
-
-js_library("util") {
-  deps = [
-    ":files_app_entry_types",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ui/file_manager/file_manager/common/js:ui",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:entry_location",
-    "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs/ts:store",
-    "//ui/file_manager/file_manager/foreground/js:constants",
-  ]
-
-  externs_list = [
-    "//ui/file_manager/file_manager/externs/platform.js",
-    "//ui/file_manager/file_manager/externs/app_window_common.js",
-  ]
-}
-
-js_unittest("util_unittest") {
-  deps = [
-    ":files_app_entry_types",
-    ":mock_entry",
-    ":util",
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-  ]
 }
 
 js_library("volume_manager_types") {

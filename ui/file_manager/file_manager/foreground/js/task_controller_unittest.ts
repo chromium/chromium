@@ -13,7 +13,7 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
 import {decorate} from '../../common/js/ui.js';
-import {util} from '../../common/js/util.js';
+import {descriptorEqual} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {PropStatus, State} from '../../externs/ts/state.js';
@@ -174,7 +174,7 @@ export function testExecuteEntryTask(callback: () => void) {
       new Promise<chrome.fileManagerPrivate.FileTaskDescriptor>((resolve) => {
         chrome.fileManagerPrivate.executeTask = resolve;
       }).then((descriptor: chrome.fileManagerPrivate.FileTaskDescriptor) => {
-        assert(util.descriptorEqual(
+        assert(descriptorEqual(
             {appId: 'handler-extension-id', taskType: 'file', actionId: 'play'},
             descriptor));
       }),

@@ -72,7 +72,6 @@ js_unittest("actions_submenu_unittest") {
     ":menu",
     "//ash/webui/common/resources:assert",
     "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:mock_actions_model",
   ]
 }
@@ -165,7 +164,6 @@ js_library("directory_tree") {
     "//ash/webui/common/resources:cr_deprecated",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
@@ -221,10 +219,7 @@ js_unittest("file_list_selection_model_unittest") {
 }
 
 js_library("file_manager_dialog_base") {
-  deps = [
-    ":dialogs",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
+  deps = [ ":dialogs" ]
 }
 
 js_unittest("file_manager_dialog_base_unittest") {
@@ -367,17 +362,11 @@ js_unittest("file_tap_handler_unittest") {
 }
 
 js_library("files_alert_dialog") {
-  deps = [
-    ":dialogs",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
+  deps = [ ":dialogs" ]
 }
 
 js_library("files_confirm_dialog") {
-  deps = [
-    ":dialogs",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
+  deps = [ ":dialogs" ]
 }
 
 js_library("files_menu") {
@@ -423,7 +412,6 @@ js_library("list_container") {
     ":list_single_selection_model",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr_deprecated",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
   ]
@@ -536,7 +524,6 @@ js_library("multi_menu_button") {
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:event_tracker",
     "//ui/file_manager/file_manager/common/js:ui",
-    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 
@@ -548,7 +535,6 @@ js_unittest("multi_menu_unittest") {
     "//ash/webui/common/resources:assert",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:ui",
-    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 
@@ -577,7 +563,6 @@ js_library("providers_menu") {
     ":menu",
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:ui",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:providers_model",
   ]
 }

@@ -6,7 +6,7 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {storage, ValueChanged} from '../../common/js/storage.js';
-import {util} from '../../common/js/util.js';
+import {makeTaskID} from '../../common/js/util.js';
 
 /**
  * TaskHistory object keeps track of the history of task executions. Recent
@@ -32,7 +32,7 @@ export class TaskHistory extends EventTarget {
    * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor
    */
   recordTaskExecuted(descriptor) {
-    const taskId = util.makeTaskID(descriptor);
+    const taskId = makeTaskID(descriptor);
     this.lastExecutedTime_[taskId] = Date.now();
     this.truncate_();
     this.save_();
@@ -45,7 +45,7 @@ export class TaskHistory extends EventTarget {
    * @return {number}
    */
   getLastExecutedTime(descriptor) {
-    const taskId = util.makeTaskID(descriptor);
+    const taskId = makeTaskID(descriptor);
     // @ts-ignore: error TS2322: Type 'number | undefined' is not assignable to
     // type 'number'.
     return this.lastExecutedTime_[taskId] ? this.lastExecutedTime_[taskId] : 0;

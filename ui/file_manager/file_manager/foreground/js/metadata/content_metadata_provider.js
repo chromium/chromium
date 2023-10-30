@@ -9,7 +9,7 @@ import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js'
 import {unwrapEntry} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {getSanitizedScriptUrl} from '../../../common/js/trusted_script_url_policy_util.js';
-import {util} from '../../../common/js/util.js';
+import {testSendMessage} from '../../../common/js/util.js';
 import {ThumbnailLoader} from '../thumbnail_loader.js';
 
 import {MetadataItem} from './metadata_item.js';
@@ -395,7 +395,7 @@ export class ContentMetadataProvider extends MetadataProvider {
     // Automated tests need to wait for this, otherwise we crash in
     // browser_test cleanup because the worker process still has
     // URL requests in-flight.
-    util.testSendMessage('worker-initialized');
+    testSendMessage('worker-initialized');
     this.initialized_ = true;
   }
 

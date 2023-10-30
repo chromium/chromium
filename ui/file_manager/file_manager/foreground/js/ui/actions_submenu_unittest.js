@@ -6,8 +6,6 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
-// @ts-ignore: error TS6133: 'util' is declared but its value is never read.
-import {util} from '../../../common/js/util.js';
 import {MockActionModel, MockActionsModel} from '../mock_actions_model.js';
 
 import {ActionsSubmenu} from './actions_submenu.js';

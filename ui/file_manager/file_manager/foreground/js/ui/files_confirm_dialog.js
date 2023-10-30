@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from '../../../common/js/util.js';
+import {getFilesAppModalDialogInstance} from '../../../common/js/util.js';
 
 import {ConfirmDialog} from './dialogs.js';
 
@@ -64,7 +64,7 @@ export class FilesConfirmDialog extends ConfirmDialog {
   // type.
   show_(...args) {
     if (!this.showModalElement) {
-      this.parentNode_ = util.getFilesAppModalDialogInstance();
+      this.parentNode_ = getFilesAppModalDialogInstance();
     }
 
     if (this.focusCancelButton) {

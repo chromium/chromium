@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from '../common/js/util.js';
+import {iconSetToCSSBackgroundImageValue} from '../common/js/util.js';
 import {constants} from '../foreground/js/constants.js';
 
 import {css, customElement, html, property, type PropertyValues, styleMap, svg, XfBase} from './xf_base.js';
@@ -78,7 +78,7 @@ export class XfIcon extends XfBase {
 
     if (this.iconSet) {
       const backgroundImageStyle = {
-        'background-image': util.iconSetToCSSBackgroundImageValue(this.iconSet),
+        'background-image': iconSetToCSSBackgroundImageValue(this.iconSet),
       };
       return html`<span class="keep-color" style=${
           styleMap(backgroundImageStyle)}></span>`;

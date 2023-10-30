@@ -6,7 +6,7 @@ import {getFileTasks} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {getNativeEntry} from '../../common/js/entry_utils.js';
 import {annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR} from '../../common/js/file_tasks.js';
-import {util} from '../../common/js/util.js';
+import {descriptorEqual} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {CurrentDirectory, DirectoryContent, FileData, FileKey, FileTasks, PropStatus, Selection, State} from '../../externs/ts/state.js';
@@ -384,7 +384,7 @@ export async function*
     }
     if (!allowCrostiniTask(filesData)) {
       resultingTasks.tasks = resultingTasks.tasks.filter(
-          (task: chrome.fileManagerPrivate.FileTask) => !util.descriptorEqual(
+          (task: chrome.fileManagerPrivate.FileTask) => !descriptorEqual(
               task.descriptor, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
     }
     const tasks = annotateTasks(resultingTasks.tasks, filesData);

@@ -59,3 +59,7 @@ declare namespace chrome {
     }
   }
 }
+
+interface ChromeWindow extends Window {
+  chrome: typeof chrome;
+}

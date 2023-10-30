@@ -4,7 +4,7 @@
 
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {ScriptLoader} from '../../common/js/script_loader.js';
-import {util} from '../../common/js/util.js';
+import {descriptorEqual} from '../../common/js/util.js';
 
 // @ts-ignore: error TS2440: Import declaration conflicts with local declaration
 // of 'test'.
@@ -300,7 +300,7 @@ test.util.sync
       taskList[i].isDefault =
           // @ts-ignore: error TS2339: Property 'descriptor' does not exist on
           // type 'Object'.
-          util.descriptorEqual(taskList[i].descriptor, descriptor);
+          descriptorEqual(taskList[i].descriptor, descriptor);
     }
   };
 
@@ -373,7 +373,7 @@ test.util.sync.taskWasExecuted = (contentWindow, descriptor, fileNames) => {
   const task = test.util.executedTasks_.find(
       // @ts-ignore: error TS7006: Parameter 'task' implicitly has an 'any'
       // type.
-      task => util.descriptorEqual(task.descriptor, descriptor) &&
+      task => descriptorEqual(task.descriptor, descriptor) &&
           // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any'
           // type.
           fileNamesStr === JSON.stringify(task.entries.map(e => e.name)));
@@ -404,7 +404,7 @@ test.util.sync.replyExecutedTask =
       const found = test.util.executedTasks_.find(
           // @ts-ignore: error TS7006: Parameter 'task' implicitly has an 'any'
           // type.
-          task => util.descriptorEqual(task.descriptor, descriptor));
+          task => descriptorEqual(task.descriptor, descriptor));
       if (!found) {
         const {appId, taskType, actionId} = descriptor;
         console.error(`No task with id ${appId}|${taskType}|${actionId}`);

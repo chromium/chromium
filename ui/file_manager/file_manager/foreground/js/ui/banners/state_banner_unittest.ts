@@ -8,7 +8,7 @@ import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../../../../common/js/test_error_reporting.js';
 import {decorate} from '../../../../common/js/ui.js';
-import {util} from '../../../../common/js/util.js';
+import {getLastVisitedURL} from '../../../../common/js/util.js';
 import {Command} from '../command.js';
 
 import {StateBanner} from './state_banner.js';
@@ -54,7 +54,7 @@ export function setUp() {
  */
 export async function testAdditionalButtonCanBeClicked() {
   stateBanner.querySelector<CrButtonElement>('[slot="extra-button"]')!.click();
-  assertEquals(util.getLastVisitedURL(), 'http://test.com');
+  assertEquals(getLastVisitedURL(), 'http://test.com');
 }
 
 /**
@@ -91,7 +91,7 @@ export async function testChromeOsSettingsLink() {
 }
 
 /**
- * Test that a href with no subpage, still calls util.visitURL as there is no
+ * Test that a href with no subpage, still calls visitURL as there is no
  * internal method to make the chrome://os-settings/ page appear except for
  * link capturing.
  */
@@ -107,7 +107,7 @@ export async function testChromeOsSettingsNoSubpageLink() {
   `;
   stateBanner = document.body.querySelector<StateBanner>('state-banner')!;
   stateBanner.querySelector<CrButtonElement>('[slot="extra-button"]')!.click();
-  assertEquals(util.getLastVisitedURL(), osSettingsLink);
+  assertEquals(getLastVisitedURL(), osSettingsLink);
 }
 
 /**

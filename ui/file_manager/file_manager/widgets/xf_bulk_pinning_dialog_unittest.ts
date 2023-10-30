@@ -6,7 +6,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
-import {util} from '../common/js/util.js';
+import {getLastVisitedURL} from '../common/js/util.js';
 import {updateBulkPinProgress} from '../state/ducks/bulk_pinning.js';
 import {getEmptyState, getStore} from '../state/store.js';
 
@@ -358,7 +358,7 @@ export async function testLearnMore() {
   assertNotEquals(null, link);
   link.click();
   assertEquals(
-      util.getLastVisitedURL(),
+      getLastVisitedURL(),
       'https://support.google.com/chromebook?p=my_drive_cbx');
 }
 

@@ -8,7 +8,7 @@ import {queryRequiredElement, queryRequiredExactlyOne} from '../../common/js/dom
 import {isNonModifiable} from '../../common/js/entry_utils.js';
 import {isCrosComponentsEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {str, strf} from '../../common/js/translations.js';
-import {util} from '../../common/js/util.js';
+import {canBulkPinningCloudPanelShow} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {State} from '../../externs/ts/state.js';
@@ -592,8 +592,7 @@ export class ToolbarController {
       this.togglePinnedCommand_.canExecuteChange(
           this.listContainer_.currentList);
     }
-    if (!util.canBulkPinningCloudPanelShow(
-            bulkPinning?.stage, bulkPinningPref)) {
+    if (!canBulkPinningCloudPanelShow(bulkPinning?.stage, bulkPinningPref)) {
       this.cloudButton_.hidden = true;
       return;
     }

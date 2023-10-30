@@ -31,7 +31,6 @@ js_library("file_manager_base") {
     ":progress_center",
     "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:url_constants",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:crostini",
@@ -68,7 +67,6 @@ js_library("mock_file_operation_manager") {
 js_library("file_operation_manager") {
   deps = [
     ":file_operation_util",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
@@ -91,7 +89,6 @@ js_unittest("file_operation_manager_unittest") {
 }
 
 js_library("file_operation_util") {
-  deps = [ "//ui/file_manager/file_manager/common/js:util" ]
 }
 
 js_library("mock_volume_manager") {
@@ -141,7 +138,6 @@ js_library("test_util_base") {
   deps = [
     ":runtime_loaded_test_util",
     "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }
@@ -152,7 +148,6 @@ js_library("test_util") {
     ":test_util_base",
     "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 
@@ -170,7 +165,6 @@ js_unittest("volume_manager_unittest") {
 
 js_library("volume_manager_util") {
   deps = [
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs/ts:store",
   ]

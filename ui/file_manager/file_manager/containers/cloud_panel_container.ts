@@ -8,7 +8,7 @@
  * @suppress {checkTypes} TS already checks this file.
  */
 
-import {util} from '../common/js/util.js';
+import {canBulkPinningCloudPanelShow} from '../common/js/util.js';
 import {State} from '../externs/ts/state.js';
 import {getStore, type Store} from '../state/store.js';
 import {type CloudPanelSettingsClickEvent, CloudPanelType, XfCloudPanel} from '../widgets/xf_cloud_panel.js';
@@ -104,8 +104,7 @@ export class CloudPanelContainer {
     // If the bulk pinning cloud panel can't be shown, make sure to close any
     // open variants of it. This ensures if the panel is open when the
     // preference is disabled, it will not stay open with stale data.
-    if (!util.canBulkPinningCloudPanelShow(
-            bulkPinProgress.stage, bulkPinPref)) {
+    if (!canBulkPinningCloudPanelShow(bulkPinProgress.stage, bulkPinPref)) {
       this.panel_.close();
       return;
     }

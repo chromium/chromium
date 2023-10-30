@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from '../../common/js/util.js';
+import {FileErrorToDomError, FileOperationErrorType} from '../../common/js/util.js';
 
 /**
  * Utilities for file operations.
@@ -17,7 +17,7 @@ const fileOperationUtil = {};
  */
 export class FileOperationError {
   /**
-   * @param {util.FileOperationErrorType} code Error type.
+   * @param {FileOperationErrorType} code Error type.
    * @param {string|Entry|DOMError} data Additional data.
    */
   constructor(code, data) {
@@ -41,7 +41,7 @@ fileOperationUtil.resolvePath = (root, path) => {
   }
   return new Promise(root.getFile.bind(root, path, {create: false}))
       .catch(error => {
-        if (error.name === util.FileError.TYPE_MISMATCH_ERR) {
+        if (error.name === FileErrorToDomError.TYPE_MISMATCH_ERR) {
           // Bah.  It's a directory, ask again.
           return new Promise(
               root.getDirectory.bind(root, path, {create: false}));
@@ -94,7 +94,7 @@ fileOperationUtil.deduplicatePath =
                   // we're going to create it during the copy.  However, if the
                   // resolve fails with anything other than NOT_FOUND, that's
                   // trouble.
-                  if (error.name === util.FileError.NOT_FOUND_ERR) {
+                  if (error.name === FileErrorToDomError.NOT_FOUND_ERR) {
                     return trialPath;
                   } else {
                     return Promise.reject(error);
@@ -109,7 +109,7 @@ fileOperationUtil.deduplicatePath =
           return Promise.reject(error);
         }
         return Promise.reject(new FileOperationError(
-            util.FileOperationErrorType.FILESYSTEM_ERROR, error));
+            FileOperationErrorType.FILESYSTEM_ERROR, error));
       });
       if (opt_successCallback) {
         promise.then(opt_successCallback, opt_errorCallback);

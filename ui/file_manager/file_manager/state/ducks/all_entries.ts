@@ -10,7 +10,7 @@ import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {recordInterval, recordSmallCount, startInterval} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
-import {util} from '../../common/js/util.js';
+import {iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -198,7 +198,7 @@ function getEntryIcon(
         const iconSet = entry.volumeInfo.iconSet;
         if (iconSet) {
           const backgroundImage =
-              util.iconSetToCSSBackgroundImageValue(entry.volumeInfo.iconSet);
+              iconSetToCSSBackgroundImageValue(entry.volumeInfo.iconSet);
           if (backgroundImage !== 'none') {
             return iconSet;
           }

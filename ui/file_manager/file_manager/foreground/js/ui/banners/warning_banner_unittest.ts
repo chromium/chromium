@@ -6,7 +6,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {util} from '../../../../common/js/util.js';
+import {getLastVisitedURL} from '../../../../common/js/util.js';
 
 import {BannerEvent} from './types.js';
 import {WarningBanner} from './warning_banner.js';
@@ -49,7 +49,7 @@ export async function testAdditionalButtonCanBeClicked() {
       'click', () => console.log('additional event listner'));
   warningBanner.querySelector<CrButtonElement>(
                    '[slot="extra-button"]')!.click();
-  assertEquals(util.getLastVisitedURL(), 'http://test.com');
+  assertEquals(getLastVisitedURL(), 'http://test.com');
 }
 
 /**

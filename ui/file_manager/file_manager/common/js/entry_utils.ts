@@ -15,7 +15,7 @@ import {createDOMError} from './dom_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
 import {isArcVmEnabled, isPluginVmEnabled} from './flags.js';
 import {collator, getEntryLabel} from './translations.js';
-import {util} from './util.js';
+import {FileErrorToDomError} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -712,7 +712,7 @@ export function readEntriesRecursively(
   const maybeRunCallback = () => {
     if (numRunningTasks === 0) {
       if (shouldStop()) {
-        errorCallback(createDOMError(util.FileError.ABORT_ERR));
+        errorCallback(createDOMError(FileErrorToDomError.ABORT_ERR));
       } else if (error) {
         errorCallback(error);
       } else {

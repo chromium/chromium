@@ -8,7 +8,7 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {calculateBulkPinRequiredSpace} from '../common/js/api.js';
 import {RateLimiter} from '../common/js/async_util.js';
 import {bytesToString, getCurrentLocaleOrDefault, str, strf} from '../common/js/translations.js';
-import {util} from '../common/js/util.js';
+import {visitURL} from '../common/js/util.js';
 import {State as AppState} from '../externs/ts/state.js';
 import {getStore} from '../state/store.js';
 
@@ -210,7 +210,7 @@ export class XfBulkPinningDialog extends XfBase {
   // Called when the "Learn more" link is clicked.
   private onLearnMore(e: UIEvent) {
     e.preventDefault();
-    util.visitURL('https://support.google.com/chromebook?p=my_drive_cbx');
+    visitURL('https://support.google.com/chromebook?p=my_drive_cbx');
   }
 
   // Called when the "View storage" link is clicked.

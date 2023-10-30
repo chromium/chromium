@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {str} from '../../common/js/translations.js';
-import {util} from '../../common/js/util.js';
+import {timeoutPromise} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {addVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
@@ -111,25 +111,24 @@ volumeManagerUtil.createVolumeInfo = async volumeMetadata => {
   }
 
   console.debug(`Getting file system '${volumeMetadata.volumeId}'`);
-  return util
-      .timeoutPromise(
-          new Promise((resolve, reject) => {
-            chrome.fileManagerPrivate.getVolumeRoot(
-                {
-                  volumeId: volumeMetadata.volumeId,
-                  writable: !volumeMetadata.isReadOnly,
-                },
-                rootDirectoryEntry => {
-                  if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError.message);
-                  } else {
-                    resolve(rootDirectoryEntry);
-                  }
-                });
-          }),
-          volumeManagerUtil.TIMEOUT,
-          volumeManagerUtil.TIMEOUT_STR_REQUEST_FILE_SYSTEM + ': ' +
-              volumeMetadata.volumeId)
+  return timeoutPromise(
+             new Promise((resolve, reject) => {
+               chrome.fileManagerPrivate.getVolumeRoot(
+                   {
+                     volumeId: volumeMetadata.volumeId,
+                     writable: !volumeMetadata.isReadOnly,
+                   },
+                   rootDirectoryEntry => {
+                     if (chrome.runtime.lastError) {
+                       reject(chrome.runtime.lastError.message);
+                     } else {
+                       resolve(rootDirectoryEntry);
+                     }
+                   });
+             }),
+             volumeManagerUtil.TIMEOUT,
+             volumeManagerUtil.TIMEOUT_STR_REQUEST_FILE_SYSTEM + ': ' +
+                 volumeMetadata.volumeId)
       .then(rootDirectoryEntry => {
         console.debug(`Got file system '${volumeMetadata.volumeId}'`);
         return new VolumeInfoImpl(

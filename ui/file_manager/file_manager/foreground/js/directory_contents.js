@@ -14,7 +14,7 @@ import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {recordInterval, recordMediumCount, startInterval} from '../../common/js/metrics.js';
 import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
 import {createTrashReaders} from '../../common/js/trash.js';
-import {util} from '../../common/js/util.js';
+import {FileErrorToDomError} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {SearchLocation, SearchOptions} from '../../externs/ts/state.js';
@@ -92,7 +92,8 @@ export class DirectoryContentScanner extends ContentScanner {
     if (!this.entry_ || !this.entry_.createReader) {
       // If entry is not specified or if entry doesn't implement createReader,
       // we cannot read it.
-      errorCallback(createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
+      errorCallback(
+          createDOMError(FileErrorToDomError.INVALID_MODIFICATION_ERR));
       return;
     }
 
@@ -101,7 +102,7 @@ export class DirectoryContentScanner extends ContentScanner {
     const readEntries = () => {
       reader.readEntries(entries => {
         if (this.cancelled_) {
-          errorCallback(createDOMError(util.FileError.ABORT_ERR));
+          errorCallback(createDOMError(FileErrorToDomError.ABORT_ERR));
           return;
         }
 
@@ -273,10 +274,10 @@ export class SearchV2ContentScanner extends ContentScanner {
            */
           (entries) => {
             if (this.cancelled_) {
-              reject(createDOMError(util.FileError.ABORT_ERR));
+              reject(createDOMError(FileErrorToDomError.ABORT_ERR));
             } else if (chrome.runtime.lastError) {
               reject(createDOMError(
-                  util.FileError.NOT_READABLE_ERR,
+                  FileErrorToDomError.NOT_READABLE_ERR,
                   chrome.runtime.lastError.message));
             } else {
               recordInterval(`Search.${metricVariant}.Latency`);
@@ -531,12 +532,13 @@ export class SearchV2ContentScanner extends ContentScanner {
           (results) => {
             if (chrome.runtime.lastError) {
               reject(createDOMError(
-                  util.FileError.NOT_READABLE_ERR,
+                  FileErrorToDomError.NOT_READABLE_ERR,
                   chrome.runtime.lastError.message));
             } else if (this.cancelled_) {
-              reject(createDOMError(util.FileError.ABORT_ERR));
+              reject(createDOMError(FileErrorToDomError.ABORT_ERR));
             } else if (!results) {
-              reject(createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
+              reject(
+                  createDOMError(FileErrorToDomError.INVALID_MODIFICATION_ERR));
             } else {
               recordInterval('Search.Drive.Latency');
               resolve(results.map(r => r.entry));
@@ -688,14 +690,14 @@ export class DriveMetadataSearchContentScanner extends ContentScanner {
             console.error(chrome.runtime.lastError.message);
           }
           if (this.cancelled_) {
-            errorCallback(createDOMError(util.FileError.ABORT_ERR));
+            errorCallback(createDOMError(FileErrorToDomError.ABORT_ERR));
             return;
           }
 
           if (!results) {
             console.warn('Drive search encountered an error.');
             errorCallback(
-                createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
+                createDOMError(FileErrorToDomError.INVALID_MODIFICATION_ERR));
             return;
           }
 
@@ -766,7 +768,7 @@ export class RecentContentScanner extends ContentScanner {
           if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError.message);
             errorCallback(
-                createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
+                createDOMError(FileErrorToDomError.INVALID_MODIFICATION_ERR));
             return;
           }
           if (entries.length > 0) {
@@ -934,7 +936,7 @@ export class TrashContentScanner extends ContentScanner {
       // @ts-ignore: error TS2532: Object is possibly 'undefined'.
       this.readers_[idx].readEntries(entries => {
         if (this.cancelled_) {
-          errorCallback(createDOMError(util.FileError.ABORT_ERR));
+          errorCallback(createDOMError(FileErrorToDomError.ABORT_ERR));
           return;
         }
 

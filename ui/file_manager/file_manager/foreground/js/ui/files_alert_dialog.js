@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from '../../../common/js/util.js';
+import {getFilesAppModalDialogInstance} from '../../../common/js/util.js';
 
 import {AlertDialog} from './dialogs.js';
 
@@ -41,7 +41,7 @@ export class FilesAlertDialog extends AlertDialog {
   // @ts-ignore: error TS7019: Rest parameter 'args' implicitly has an 'any[]'
   // type.
   show_(...args) {
-    this.parentNode_ = util.getFilesAppModalDialogInstance();
+    this.parentNode_ = getFilesAppModalDialogInstance();
 
     // @ts-ignore: error TS2556: A spread argument must either have a tuple type
     // or be passed to a rest parameter.

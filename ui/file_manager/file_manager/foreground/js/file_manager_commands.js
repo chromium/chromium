@@ -17,7 +17,7 @@ import {isDlpEnabled, isDriveFsBulkPinningEnabled, isMirrorSyncEnabled, isNewDir
 import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash, TrashEntry} from '../../common/js/trash.js';
-import {util} from '../../common/js/util.js';
+import {visitURL} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {NudgeType} from '../../containers/nudge_container.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
@@ -2304,11 +2304,11 @@ CommandHandler.COMMANDS_['volume-help'] = new (class extends FilesCommand {
   // type.
   execute(event, fileManager) {
     if (fileManager.directoryModel.isOnDrive()) {
-      util.visitURL(str('GOOGLE_DRIVE_HELP_URL'));
+      visitURL(str('GOOGLE_DRIVE_HELP_URL'));
       CommandHandler.recordMenuItemSelected(
           CommandHandler.MenuCommandsForUMA.DRIVE_HELP);
     } else {
-      util.visitURL(str('FILES_APP_HELP_URL'));
+      visitURL(str('FILES_APP_HELP_URL'));
       CommandHandler.recordMenuItemSelected(
           CommandHandler.MenuCommandsForUMA.HELP);
     }
@@ -2352,7 +2352,7 @@ CommandHandler.COMMANDS_['drive-buy-more-space'] =
       // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
       // 'any' type.
       execute(event, fileManager) {
-        util.visitURL(str('GOOGLE_DRIVE_BUY_STORAGE_URL'));
+        visitURL(str('GOOGLE_DRIVE_BUY_STORAGE_URL'));
         CommandHandler.recordMenuItemSelected(
             CommandHandler.MenuCommandsForUMA.DRIVE_BUY_MORE_SPACE);
       }
@@ -2376,7 +2376,7 @@ CommandHandler.COMMANDS_['drive-go-to-drive'] =
       // @ts-ignore: error TS7006: Parameter 'fileManager' implicitly has an
       // 'any' type.
       execute(event, fileManager) {
-        util.visitURL(str('GOOGLE_DRIVE_ROOT_URL'));
+        visitURL(str('GOOGLE_DRIVE_ROOT_URL'));
         CommandHandler.recordMenuItemSelected(
             CommandHandler.MenuCommandsForUMA.DRIVE_GO_TO_DRIVE);
       }

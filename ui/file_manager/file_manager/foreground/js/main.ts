@@ -15,7 +15,7 @@ import './metrics_start.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {GlitchType, reportGlitch} from '../../common/js/glitch.js';
-import {util} from '../../common/js/util.js';
+import {testSendMessage} from '../../common/js/util.js';
 
 import {FileManager} from './file_manager.js';
 
@@ -38,6 +38,6 @@ run().then(() => {
   fileManager.initializeCore();
 
   fileManager.initializeUI(document.body).then(() => {
-    util.testSendMessage('ready');
+    testSendMessage('ready');
   });
 });

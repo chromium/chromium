@@ -9,7 +9,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {isSameVolume, unwrapEntry} from '../../common/js/entry_utils.js';
 import {recordBoolean} from '../../common/js/metrics.js';
 import {strf} from '../../common/js/translations.js';
-import {util} from '../../common/js/util.js';
+import {visitURL} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -133,7 +133,7 @@ class DriveShareAction {
             return;
           }
           // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-          util.visitURL(assert(results[0].shareUrl));
+          visitURL(assert(results[0].shareUrl));
         });
   }
 
@@ -640,7 +640,7 @@ class DriveManageAction {
             return;
           }
           // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-          util.visitURL(assert(results[0].alternateUrl));
+          visitURL(assert(results[0].alternateUrl));
         });
   }
 

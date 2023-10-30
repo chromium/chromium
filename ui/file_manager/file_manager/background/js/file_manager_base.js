@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {resolveIsolatedEntries} from '../../common/js/api.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {recordInterval} from '../../common/js/metrics.js';
-import {util} from '../../common/js/util.js';
+import {doIfPrimaryContext} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
@@ -180,7 +180,7 @@ export class FileManagerBase {
    * @private
    */
   handleViewEvent_(event) {
-    util.doIfPrimaryContext(() => {
+    doIfPrimaryContext(() => {
       this.handleViewEventInternal_(event);
     });
   }
@@ -349,7 +349,7 @@ export class FileManagerBase {
    * @private
    */
   onMountCompleted_(event) {
-    util.doIfPrimaryContext(() => {
+    doIfPrimaryContext(() => {
       this.onMountCompletedInternal_(event);
     });
   }

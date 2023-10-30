@@ -12,7 +12,7 @@ import {EntryList, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {recordMediumCount} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
-import {util} from '../../common/js/util.js';
+import {testSendMessage} from '../../common/js/util.js';
 import {isNative, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -1343,7 +1343,7 @@ export class DirectoryModel extends EventTarget {
 
       // For tests that open the dialog to empty directories, everything
       // is loaded at this point.
-      util.testSendMessage('directory-change-complete');
+      testSendMessage('directory-change-complete');
       const previousVolumeInfo = previousDirEntry ?
           this.volumeManager_.getVolumeInfo(previousDirEntry) :
           null;

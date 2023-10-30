@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from './util.js';
+import {FileErrorToDomError} from './util.js';
 
 /**
  * Joins paths so that the two paths are connected by only 1 '/'.
@@ -178,7 +178,8 @@ export class MockEntry {
       // @ts-ignore: error TS2722: Cannot invoke an object which is possibly
       // 'undefined'.
       onError(
-          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+          /** @type {!FileError} */ (
+              {name: FileErrorToDomError.NOT_FOUND_ERR}));
     }
   }
 
@@ -220,7 +221,8 @@ export class MockEntry {
       // @ts-ignore: error TS2722: Cannot invoke an object which is possibly
       // 'undefined'.
       onError(
-          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+          /** @type {!FileError} */ (
+              {name: FileErrorToDomError.NOT_FOUND_ERR}));
     }
   }
 
@@ -231,8 +233,8 @@ export class MockEntry {
    * @param {string=} opt_newName New name.
    * @param {function(!Entry)=} opt_successCallback Callback invoked with the
    *     moved entry.
-   * @param {function(!FileError)=} opt_errorCallback Callback invoked with
-   *     an error object.
+   * @param {function(!FileError)=} opt_errorCallback Callback invoked
+   *     with an error object.
    */
   // @ts-ignore: error TS6133: 'opt_errorCallback' is declared but its value is
   // never read.
@@ -284,8 +286,8 @@ export class MockEntry {
    * Removes the entry.
    *
    * @param {function():void} onSuccess Success callback.
-   * @param {function(!FileError):void=} onError Callback invoked with an error
-   *     object.
+   * @param {function(!FileError):void=} onError Callback invoked with
+   *     an error object.
    */
   // @ts-ignore: error TS6133: 'onError' is declared but its value is never
   // read.
@@ -303,8 +305,8 @@ export class MockEntry {
    * Removes the entry and any children.
    *
    * @param {function():void} onSuccess Success callback.
-   * @param {function(!FileError):void=} onError Callback invoked with an error
-   *     object.
+   * @param {function(!FileError):void=} onError Callback invoked with
+   *     an error object.
    */
   // @ts-ignore: error TS6133: 'onError' is declared but its value is never
   // read.
@@ -530,7 +532,8 @@ export class MockDirectoryEntry extends MockEntry {
     onError = onError || (error => {});      // no-op
     if (this.removed_) {
       return onError(
-          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+          /** @type {!FileError} */ (
+              {name: FileErrorToDomError.NOT_FOUND_ERR}));
     }
     option = option || {};
     const fullPath = path[0] === '/' ? path : joinPath(this.fullPath, path);
@@ -541,10 +544,11 @@ export class MockDirectoryEntry extends MockEntry {
       if (!(result instanceof expectedClass)) {
         onError(
             /** @type {!FileError} */ (
-                {name: util.FileError.TYPE_MISMATCH_ERR}));
+                {name: FileErrorToDomError.TYPE_MISMATCH_ERR}));
       } else if (option['create'] && option['exclusive']) {
         onError(
-            /** @type {!FileError} */ ({name: util.FileError.PATH_EXISTS_ERR}));
+            /** @type {!FileError} */ (
+                {name: FileErrorToDomError.PATH_EXISTS_ERR}));
       } else {
         // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
         // parameter of type 'FileSystemEntry'.
@@ -553,7 +557,8 @@ export class MockDirectoryEntry extends MockEntry {
     } else {
       if (!option['create']) {
         onError(
-            /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+            /** @type {!FileError} */ (
+                {name: FileErrorToDomError.NOT_FOUND_ERR}));
       } else {
         // @ts-ignore: error TS2339: Property 'create' does not exist on type
         // 'Function'.

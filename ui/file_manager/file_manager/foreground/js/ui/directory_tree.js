@@ -13,7 +13,7 @@ import {isJellyEnabled} from '../../../common/js/flags.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {recordEnum, recordInterval, recordSmallCount, recordUserAction, startInterval} from '../../../common/js/metrics.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
-import {util} from '../../../common/js/util.js';
+import {iconSetToCSSBackgroundImageValue} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../../externs/background/file_operation_manager.js';
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
@@ -474,12 +474,9 @@ export class DirectoryItem extends FilesTreeItem {
       // @ts-ignore: error TS2339: Property 'items' does not exist on type
       // 'DirectoryItem'.
       const currentElement = this.items[index];
-      const label =
-          getEntryLabel(
-              // @ts-ignore: error TS2345: Argument of type 'EntryLocation |
-              // null' is not assignable to parameter of type 'EntryLocation'.
-              tree.volumeManager_.getLocationInfo(currentEntry),
-              currentEntry) ||
+      const label = getEntryLabel(
+                        tree.volumeManager_.getLocationInfo(currentEntry),
+                        currentEntry) ||
           '';
 
 
@@ -1430,7 +1427,7 @@ class VolumeItem extends DirectoryItem {
     icon.classList.add('item-icon');
 
     const backgroundImage =
-        util.iconSetToCSSBackgroundImageValue(volumeInfo.iconSet);
+        iconSetToCSSBackgroundImageValue(volumeInfo.iconSet);
     if (backgroundImage !== 'none') {
       icon.setAttribute('style', 'background-image: ' + backgroundImage);
     } else if (VolumeManagerCommon.shouldProvideIcons(
@@ -1596,9 +1593,6 @@ export class DriveVolumeItem extends VolumeItem {
 
           // Create if it doesn't exist yet.
           const label = getEntryLabel(
-                            // @ts-ignore: error TS2345: Argument of type
-                            // 'EntryLocation | null' is not assignable to
-                            // parameter of type 'EntryLocation'.
                             this.parentTree_.volumeManager_.getLocationInfo(
                                 sharedDriveGrandRoot),
                             sharedDriveGrandRoot) ||
@@ -2116,7 +2110,7 @@ class AndroidAppItem extends FilesTreeItem {
 
     if (modelItem.androidApp.iconSet) {
       const backgroundImage =
-          util.iconSetToCSSBackgroundImageValue(modelItem.androidApp.iconSet);
+          iconSetToCSSBackgroundImageValue(modelItem.androidApp.iconSet);
       if (backgroundImage !== 'none') {
         // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
         icon.setAttribute('style', 'background-image: ' + backgroundImage);

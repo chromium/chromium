@@ -16,7 +16,7 @@ import {isInlineSyncStatusEnabled} from '../../common/js/flags.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {str, strf} from '../../common/js/translations.js';
 import {toFilesAppURL} from '../../common/js/url_constants.js';
-import {util} from '../../common/js/util.js';
+import {visitURL} from '../../common/js/util.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {MetadataModelInterface} from '../../externs/metadata_model.js';
 import {getStore} from '../../state/store.js';
@@ -399,7 +399,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
           item.message = str('SYNC_NO_SERVER_SPACE');
           item.setExtraButton(
               ProgressItemState.ERROR, str('LEARN_MORE_LABEL'),
-              () => util.visitURL(str('GOOGLE_DRIVE_MANAGE_STORAGE_URL')));
+              () => visitURL(str('GOOGLE_DRIVE_MANAGE_STORAGE_URL')));
 
           // This error will reappear every time sync is retried, so we use
           // a fixed ID to avoid spamming the user.
@@ -409,7 +409,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
           item.message = str('SYNC_NO_SERVER_SPACE_ORGANIZATION');
           item.setExtraButton(
               ProgressItemState.ERROR, str('LEARN_MORE_LABEL'),
-              () => util.visitURL(str('GOOGLE_DRIVE_MANAGE_STORAGE_URL')));
+              () => visitURL(str('GOOGLE_DRIVE_MANAGE_STORAGE_URL')));
 
           // This error will reappear every time sync is retried, so we use
           // a fixed ID to avoid spamming the user.
@@ -423,8 +423,8 @@ export class DriveSyncHandlerImpl extends EventTarget {
               strf('SYNC_ERROR_SHARED_DRIVE_OUT_OF_SPACE', event.sharedDrive);
           item.setExtraButton(
               ProgressItemState.ERROR, str('LEARN_MORE_LABEL'),
-              () => util.visitURL(
-                  str('GOOGLE_DRIVE_ENTERPRISE_MANAGE_STORAGE_URL')));
+              () =>
+                  visitURL(str('GOOGLE_DRIVE_ENTERPRISE_MANAGE_STORAGE_URL')));
 
           // Shared drives will keep trying to sync the file until it is either
           // removed or available storage is increased. This ensures each

@@ -16,7 +16,7 @@ import {DialogType} from '../../common/js/dialog_type.js';
 import {getTeamDriveName} from '../../common/js/entry_utils.js';
 import {isDriveFsBulkPinningEnabled, isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
-import {util} from '../../common/js/util.js';
+import {isNullOrUndefined} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -1007,8 +1007,8 @@ export function isBelowThreshold(
   if (!threshold || !sizeStats) {
     return false;
   }
-  if (util.isNullOrUndefined(sizeStats.remainingSize) ||
-      util.isNullOrUndefined(sizeStats.totalSize)) {
+  if (isNullOrUndefined(sizeStats.remainingSize) ||
+      isNullOrUndefined(sizeStats.totalSize)) {
     return false;
   }
   if (('minSize' in threshold) && threshold.minSize < sizeStats.remainingSize) {

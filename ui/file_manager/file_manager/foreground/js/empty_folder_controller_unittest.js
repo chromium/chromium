@@ -10,7 +10,7 @@ import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/translations.js';
-import {util} from '../../common/js/util.js';
+import {FileErrorToDomError} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus} from '../../externs/ts/state.js';
@@ -309,7 +309,7 @@ export async function testShownForODFS(done) {
   // required as true).
   const event = new Event('scan-failed');
   // @ts-ignore: error TS2339: Property 'error' does not exist on type 'Event'.
-  event.error = {name: util.FileError.NO_MODIFICATION_ALLOWED_ERR};
+  event.error = {name: FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR};
   // @ts-ignore: error TS2341: Property 'onScanFailed_' is private and only
   // accessible within class 'EmptyFolderController'.
   emptyFolderController.onScanFailed_(event);

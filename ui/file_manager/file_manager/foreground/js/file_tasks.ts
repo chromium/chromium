@@ -18,7 +18,7 @@ import {recordEnum, recordTime} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {bytesToString, str, strf} from '../../common/js/translations.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
-import {util} from '../../common/js/util.js';
+import {descriptorEqual, extractFilePath, isTeleported, makeTaskID, splitExtension} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -111,7 +111,7 @@ export class FileTasks {
               constants.DEFAULT_CROSTINI_VM, entries[0]!,
               false /* persist */))) {
       resultingTasks.tasks = resultingTasks.tasks.filter(
-          (task: chrome.fileManagerPrivate.FileTask) => !util.descriptorEqual(
+          (task: chrome.fileManagerPrivate.FileTask) => !descriptorEqual(
               task.descriptor, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
     }
 
@@ -409,7 +409,7 @@ export class FileTasks {
     }
 
     const filename = this.entries_[0]!.name;
-    const extension = util.splitExtension(filename)[1] || null;
+    const extension = splitExtension(filename)[1] || null;
 
     try {
       await this.checkAvailability_();
@@ -429,7 +429,7 @@ export class FileTasks {
         case 'opened':
           break;
         case 'message_sent':
-          util.isTeleported(window).then(teleported => {
+          isTeleported().then(teleported => {
             if (teleported) {
               this.ui_.showOpenInOtherDesktopAlert(this.entries_);
             }
@@ -501,7 +501,7 @@ export class FileTasks {
       const TaskResult = chrome.fileManagerPrivate.TaskResult;
       switch (result) {
         case TaskResult.MESSAGE_SENT:
-          util.isTeleported(window).then((teleported) => {
+          isTeleported().then((teleported) => {
             if (teleported) {
               this.ui_.showOpenInOtherDesktopAlert(entries);
             }
@@ -643,7 +643,7 @@ export class FileTasks {
 
     console.error(
         'The specified task is not a valid internal task: ' +
-        util.makeTaskID(descriptor));
+        makeTaskID(descriptor));
   }
 
   /** Install a Linux Package in the Linux container.  */
@@ -668,7 +668,7 @@ export class FileTasks {
    * @param url URL of the archive file to mount.
    */
   private async mountArchive_(url: string): Promise<VolumeInfo> {
-    const filename = util.extractFilePath(url)?.split('/').pop() || '';
+    const filename = extractFilePath(url)?.split('/').pop() || '';
 
     const item = new ProgressCenterItem();
     item.id = 'Mounting: ' + url;
@@ -778,7 +778,7 @@ export class FileTasks {
         return;
       }
 
-      const filename = util.extractFilePath(url)?.split('/').pop() || '';
+      const filename = extractFilePath(url)?.split('/').pop() || '';
       const item = new ProgressCenterItem();
       item.id = 'Cannot mount: ' + url;
       item.type = ProgressItemType.MOUNT_ARCHIVE;
@@ -829,7 +829,7 @@ export class FileTasks {
     let defaultIdx = 0;
     if (this.defaultTask_) {
       for (let j = 0; j < items.length; j++) {
-        if (util.descriptorEqual(
+        if (descriptorEqual(
                 items[j]!.task.descriptor, this.defaultTask_.descriptor)) {
           defaultIdx = j;
         }
