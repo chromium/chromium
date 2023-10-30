@@ -49,19 +49,22 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, LocalPolicies) {
       supervised_user::SupervisionMixin::SignInMode::kSupervised) {
     EXPECT_TRUE(
         prefs->GetBoolean(policy::policy_prefs::kForceGoogleSafeSearch));
+    EXPECT_EQ(prefs->GetInteger(policy::policy_prefs::kForceYouTubeRestrict),
+              safe_search_api::YOUTUBE_RESTRICT_MODERATE);
     EXPECT_FALSE(prefs->IsUserModifiablePreference(
         policy::policy_prefs::kForceGoogleSafeSearch));
+    EXPECT_FALSE(prefs->IsUserModifiablePreference(
+        policy::policy_prefs::kForceYouTubeRestrict));
   } else {
     EXPECT_FALSE(
         prefs->GetBoolean(policy::policy_prefs::kForceGoogleSafeSearch));
+    EXPECT_EQ(prefs->GetInteger(policy::policy_prefs::kForceYouTubeRestrict),
+              safe_search_api::YOUTUBE_RESTRICT_OFF);
     EXPECT_TRUE(prefs->IsUserModifiablePreference(
         policy::policy_prefs::kForceGoogleSafeSearch));
+    EXPECT_TRUE(prefs->IsUserModifiablePreference(
+        policy::policy_prefs::kForceYouTubeRestrict));
   }
-
-  EXPECT_EQ(prefs->GetInteger(policy::policy_prefs::kForceYouTubeRestrict),
-            safe_search_api::YOUTUBE_RESTRICT_OFF);
-  EXPECT_TRUE(prefs->IsUserModifiablePreference(
-      policy::policy_prefs::kForceYouTubeRestrict));
 }
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, ProfileName) {

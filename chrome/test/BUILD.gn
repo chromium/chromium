@@ -4143,7 +4143,6 @@ if (!is_android) {
         "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
         "../browser/supervised_user/supervised_user_service_browsertest.cc",
         "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
-        "../browser/supervised_user/youtube_restrictions_browsertest.cc",
         "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc",
       ]
 

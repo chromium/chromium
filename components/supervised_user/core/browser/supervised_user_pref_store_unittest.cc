@@ -113,17 +113,16 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_FALSE(fixture.changed_prefs()->FindDictByDottedPath(
       prefs::kSupervisedUserManualHosts));
 
-  // kForceGoogleSafeSearch defaults to true defaults
+  // kForceGoogleSafeSearch defaults to true and kForceYouTubeRestrict defaults
   // to Moderate for supervised users.
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   policy::policy_prefs::kForceGoogleSafeSearch),
               Optional(true));
-
-  // kForceYouTubeRestrict is not configured by kForceSafeSearch.
-  EXPECT_FALSE(
+  int force_youtube_restrict =
       fixture.changed_prefs()
           ->FindIntByDottedPath(policy::policy_prefs::kForceYouTubeRestrict)
-          .has_value());
+          .value_or(safe_search_api::YOUTUBE_RESTRICT_OFF);
+  EXPECT_EQ(force_youtube_restrict, safe_search_api::YOUTUBE_RESTRICT_MODERATE);
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
@@ -157,7 +156,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   ASSERT_TRUE(manual_hosts);
   EXPECT_TRUE(*manual_hosts == hosts);
 
-  // kForceGoogleSafeSearch can be configured by the
+  // kForceGoogleSafeSearch and kForceYouTubeRestrict can be configured by the
   // custodian, overriding the hardcoded default.
   fixture.changed_prefs()->clear();
   service_.SetLocalSetting(supervised_user::kForceSafeSearch,
@@ -167,11 +166,11 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
                   policy::policy_prefs::kForceGoogleSafeSearch),
               Optional(false));
 
-  // kForceYouTubeRestrict is not configured by kForceSafeSearch.
-  EXPECT_FALSE(
+  force_youtube_restrict =
       fixture.changed_prefs()
           ->FindIntByDottedPath(policy::policy_prefs::kForceYouTubeRestrict)
-          .has_value());
+          .value_or(safe_search_api::YOUTUBE_RESTRICT_MODERATE);
+  EXPECT_EQ(force_youtube_restrict, safe_search_api::YOUTUBE_RESTRICT_OFF);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The custodian can allow sites and apps to request permissions.
