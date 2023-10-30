@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <list>
 
+#include "base/feature_list.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -20,6 +21,13 @@
 namespace gpu {
 ///////////////////////////////////////////////////////////////////////////////
 // GLCommonImageBackingFactory
+
+namespace {
+// Kill switch for allowing using core ES3 format types for half float format.
+BASE_FEATURE(kAllowEs3F16CoreTypeForGlSi,
+             "AllowEs3F16CoreTypeForGlSi",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
 
 GLCommonImageBackingFactory::GLCommonImageBackingFactory(
     uint32_t supported_usages,
@@ -49,21 +57,34 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
     if (format == viz::SinglePlaneFormat::kBGR_565) {
       continue;
     }
-    const GLFormatDesc format_desc = ToGLFormatDesc(
+    const GLFormatDesc format_desc = ToGLFormatDescOverrideHalfFloatType(
         format, /*plane_index=*/0,
-        feature_info->feature_flags().angle_rgbx_internal_format);
+        feature_info->feature_flags().angle_rgbx_internal_format,
+        feature_info->oes_texture_float_available());
     const GLuint image_internal_format = format_desc.image_internal_format;
     const GLenum gl_format = format_desc.data_format;
     CHECK_NE(gl_format, static_cast<GLenum>(GL_ZERO));
     const GLenum gl_type = format_desc.data_type;
+
+    // kRGBA_F16 is a core part of ES3.
+    const bool at_least_es3 =
+        gl::g_current_gl_version->IsAtLeastGLES(3, 0) &&
+        base::FeatureList::IsEnabled(kAllowEs3F16CoreTypeForGlSi);
+    const bool supports_data_type =
+        (gl_type == GL_HALF_FLOAT && at_least_es3) ||
+        validators->pixel_type.IsValid(gl_type);
+    const bool supports_internal_format =
+        (image_internal_format == GL_RGBA16F && at_least_es3) ||
+        validators->texture_internal_format.IsValid(image_internal_format);
+
     const bool uncompressed_format_valid =
-        validators->texture_internal_format.IsValid(image_internal_format) &&
+        supports_internal_format &&
         validators->texture_format.IsValid(gl_format);
     const bool compressed_format_valid =
         validators->compressed_texture_format.IsValid(image_internal_format);
 
     if (!(uncompressed_format_valid || compressed_format_valid) ||
-        !validators->pixel_type.IsValid(gl_type)) {
+        !supports_data_type) {
       continue;
     }
 
