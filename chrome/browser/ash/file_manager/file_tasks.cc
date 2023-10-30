@@ -393,7 +393,7 @@ bool OpenFilesWithBrowser(Profile* profile,
   for (const FileSystemURL& file_url : file_urls) {
     if (ash::FileSystemBackend::CanHandleURL(file_url)) {
       num_opened +=
-          util::OpenFileWithBrowser(profile, file_url, action_id) ? 1 : 0;
+          util::OpenFileWithAppOrBrowser(profile, file_url, action_id) ? 1 : 0;
     }
   }
   return num_opened > 0;

@@ -13,12 +13,16 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -26,6 +30,9 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_system_core_util.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/filename_util.h"
 #include "pdf/buildflags.h"
@@ -34,8 +41,7 @@
 
 using content::BrowserThread;
 
-namespace file_manager {
-namespace util {
+namespace file_manager::util {
 namespace {
 
 // List of file extensions viewable in the browser.
@@ -75,6 +81,63 @@ bool OpenNewTab(const GURL& url) {
   return true;
 }
 
+absl::optional<std::string> GetAppIdFromFilePath(
+    const GURL& url,
+    const base::FilePath& file_path) {
+  if (url.SchemeIsFile()) {
+    return absl::nullopt;
+  }
+  const std::string& file_extension = file_path.FinalExtension();
+  if (file_extension == ".gdoc") {
+    return web_app::kGoogleDocsAppId;
+  } else if (file_extension == ".gsheet") {
+    return web_app::kGoogleSheetsAppId;
+  } else if (file_extension == ".gslides") {
+    return web_app::kGoogleSlidesAppId;
+  }
+  return absl::nullopt;
+}
+
+bool OpenHostedFileInNewTabOrApp(Profile* profile,
+                                 const base::FilePath& file_path,
+                                 LaunchAppCallback callback,
+                                 const GURL& url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  absl::optional<std::string> app_id = GetAppIdFromFilePath(url, file_path);
+  if (!app_id.has_value()) {
+    std::move(callback).Run(absl::nullopt);
+    return OpenNewTab(url);
+  }
+  apps::AppServiceProxy* app_service =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  DCHECK(app_service);
+  const apps::AppRegistryCache& cache = app_service->AppRegistryCache();
+  bool is_app_available = false;
+  cache.ForOneApp(
+      app_id.value(), [&is_app_available](const apps::AppUpdate& update) {
+        is_app_available = update.Readiness() == apps::Readiness::kReady;
+      });
+
+  if (!is_app_available) {
+    std::move(callback).Run(absl::nullopt);
+    return OpenNewTab(url);
+  }
+
+  auto chained_callback =
+      base::BindOnce([](apps::LaunchResult&& result) {
+        LOG_IF(ERROR, result.state != apps::LaunchResult::SUCCESS)
+            << "Failed to launch hosted file via app despite "
+               "it being ready";
+        return result.state;
+      }).Then(std::move(callback));
+
+  app_service->LaunchAppWithUrl(app_id.value(), ui::EF_NONE, url,
+                                apps::LaunchSource::kFromFileManager, nullptr,
+                                std::move(chained_callback));
+  return true;
+}
+
 // Reads the alternate URL from a GDoc file. When it fails, returns a file URL
 // for |file_path| as fallback.
 // Note that an alternate url is a URL to open a hosted document.
@@ -87,22 +150,27 @@ GURL ReadUrlFromGDocAsync(const base::FilePath& file_path) {
 }
 
 // Parse a local file to extract the Docs url and open this url.
-void OpenGDocUrlFromFile(const base::FilePath& file_path) {
+void OpenGDocUrlFromFile(Profile* profile,
+                         const base::FilePath& file_path,
+                         LaunchAppCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ReadUrlFromGDocAsync, file_path),
-      base::BindOnce(base::IgnoreResult(&OpenNewTab)));
+      base::BindOnce(base::IgnoreResult(&OpenHostedFileInNewTabOrApp), profile,
+                     file_path, std::move(callback)));
 }
 
 // Open a hosted GDoc, from a path hosted in DriveFS.
-void OpenHostedDriveFsFile(const base::FilePath& file_path,
+void OpenHostedDriveFsFile(Profile* profile,
+                           const base::FilePath& file_path,
+                           LaunchAppCallback callback,
                            drive::FileError error,
                            drivefs::mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK) {
     return;
   }
   if (drivefs::IsLocal(metadata->type)) {
-    OpenGDocUrlFromFile(file_path);
+    OpenGDocUrlFromFile(profile, file_path, std::move(callback));
     return;
   }
   GURL hosted_url(metadata->alternate_url);
@@ -110,7 +178,8 @@ void OpenHostedDriveFsFile(const base::FilePath& file_path,
     return;
   }
 
-  OpenNewTab(hosted_url);
+  OpenHostedFileInNewTabOrApp(profile, file_path, std::move(callback),
+                              hosted_url);
 }
 
 // Open an encrypted file by redirecting the user to Google Drive.
@@ -130,9 +199,10 @@ void OpenEncryptedDriveFsFile(const base::FilePath& file_path,
 
 }  // namespace
 
-bool OpenFileWithBrowser(Profile* profile,
-                         const storage::FileSystemURL& file_system_url,
-                         const std::string& action_id) {
+bool OpenFileWithAppOrBrowser(Profile* profile,
+                              const storage::FileSystemURL& file_system_url,
+                              const std::string& action_id,
+                              LaunchAppCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(profile);
 
@@ -184,10 +254,11 @@ bool OpenFileWithBrowser(Profile* profile,
           integration_service->GetDriveFsInterface() &&
           integration_service->GetRelativeDrivePath(file_path, &path)) {
         integration_service->GetDriveFsInterface()->GetMetadata(
-            path, base::BindOnce(&OpenHostedDriveFsFile, file_path));
+            path, base::BindOnce(&OpenHostedDriveFsFile, profile, file_path,
+                                 std::move(callback)));
         return true;
       }
-      OpenGDocUrlFromFile(file_path);
+      OpenGDocUrlFromFile(profile, file_path, std::move(callback));
     }
     return true;
   }
@@ -197,5 +268,4 @@ bool OpenFileWithBrowser(Profile* profile,
   return false;
 }
 
-}  // namespace util
-}  // namespace file_manager
+}  // namespace file_manager::util
