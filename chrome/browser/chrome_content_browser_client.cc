@@ -3464,6 +3464,20 @@ bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
       DCHECK(reporting_origin);
       return privacy_sandbox_settings->MaySendAttributionReport(
           *source_origin, *destination_origin, *reporting_origin, rfh);
+    case AttributionReportingOperation::kSourceTransitionalDebugReporting:
+    case AttributionReportingOperation::kOsSourceTransitionalDebugReporting:
+      DCHECK(source_origin);
+      DCHECK(reporting_origin);
+      return privacy_sandbox_settings
+          ->IsAttributionReportingTransitionalDebuggingAllowed(
+              *source_origin, *reporting_origin);
+    case AttributionReportingOperation::kTriggerTransitionalDebugReporting:
+    case AttributionReportingOperation::kOsTriggerTransitionalDebugReporting:
+      DCHECK(destination_origin);
+      DCHECK(reporting_origin);
+      return privacy_sandbox_settings
+          ->IsAttributionReportingTransitionalDebuggingAllowed(
+              *destination_origin, *reporting_origin);
     case AttributionReportingOperation::kAny:
       return privacy_sandbox_settings->IsAttributionReportingEverAllowed();
   }

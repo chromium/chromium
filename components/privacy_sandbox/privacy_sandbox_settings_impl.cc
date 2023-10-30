@@ -486,6 +486,17 @@ bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
              reporting_origin.GetURL());
 }
 
+bool PrivacySandboxSettingsImpl::
+    IsAttributionReportingTransitionalDebuggingAllowed(
+        const url::Origin& top_frame_origin,
+        const url::Origin& reporting_origin) const {
+  // Third party cookies must also be available for this context. An empty site
+  // for cookies is provided so the context is always treated as a third party.
+  return cookie_settings_->IsFullCookieAccessAllowed(
+      reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
+      net::CookieSettingOverrides());
+}
+
 void PrivacySandboxSettingsImpl::SetFledgeJoiningAllowed(
     const std::string& top_frame_etld_plus1,
     bool allowed) {

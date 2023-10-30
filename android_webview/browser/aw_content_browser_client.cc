@@ -46,6 +46,7 @@
 #include "base/android/locale_utils.h"
 #include "base/base_paths_android.h"
 #include "base/base_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -85,6 +86,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/file_url_loader.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/network_service_instance.h"
@@ -125,6 +127,8 @@
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using content::BrowserThread;
 using content::WebContents;
@@ -1236,7 +1240,24 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
     case AttributionReportingOperation::kSourceVerboseDebugReport:
     case AttributionReportingOperation::kTriggerVerboseDebugReport:
     case AttributionReportingOperation::kReport:
+    case AttributionReportingOperation::kSourceTransitionalDebugReporting:
+    case AttributionReportingOperation::kTriggerTransitionalDebugReporting:
       return false;
+    case AttributionReportingOperation::kOsSourceTransitionalDebugReporting:
+    case AttributionReportingOperation::kOsTriggerTransitionalDebugReporting: {
+      CHECK(reporting_origin);
+      content::GlobalRenderFrameHostId global_id;
+      if (rfh) {
+        global_id = rfh->GetGlobalId();
+      }
+
+      // Third party cookies must also be available for this context. An empty
+      // site for cookies is provided so the context is always treated as a
+      // third party.
+      return AwCookieAccessPolicy::GetInstance()->AllowCookies(
+          reporting_origin->GetURL(), net::SiteForCookies(), global_id.child_id,
+          global_id.frame_routing_id);
+    }
   }
 
   NOTREACHED_NORETURN();

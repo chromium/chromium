@@ -168,6 +168,13 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& reporting_origin,
       content::RenderFrameHost* console_frame = nullptr) const = 0;
 
+  // Determines whether Attribution Reporting API's transitional debug reporting
+  // is allowable in a particular context. Note that
+  // `IsAttributionReportingAllowed()` should be called prior to this.
+  virtual bool IsAttributionReportingTransitionalDebuggingAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& reporting_origin) const = 0;
+
   // Sets the ability for |top_frame_etld_plus1| to join the profile to interest
   // groups to |allowed|. This information is stored in preferences, and is made
   // available to the API via IsFledgeJoiningAllowed(). |top_frame_etld_plus1|

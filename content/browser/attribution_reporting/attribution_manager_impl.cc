@@ -763,25 +763,39 @@ void AttributionManagerImpl::ProcessEvents() {
   // possible. Once reaching the first to require a cookie check, start the
   // async check and stop processing further events.
   while (!pending_events_.empty()) {
-    const attribution_reporting::SuitableOrigin* cookie_origin = absl::visit(
+    const attribution_reporting::SuitableOrigin* cookie_origin = nullptr;
+    const url::Origin* source_origin = nullptr;
+    const url::Origin* destination_origin = nullptr;
+    ContentBrowserClient::AttributionReportingOperation operation;
+
+    absl::visit(
         base::Overloaded{
-            [](const StorableSource& source) {
-              return source.registration().debug_key.has_value() ||
-                             source.registration().debug_reporting
-                         ? &source.common_info().reporting_origin()
-                         : nullptr;
+            [&](const StorableSource& source) {
+              cookie_origin = source.registration().debug_key.has_value() ||
+                                      source.registration().debug_reporting
+                                  ? &source.common_info().reporting_origin()
+                                  : nullptr;
+              source_origin = &*source.common_info().source_origin();
+              operation = ContentBrowserClient::AttributionReportingOperation::
+                  kSourceTransitionalDebugReporting;
             },
-            [](const AttributionTrigger& trigger) {
+            [&](const AttributionTrigger& trigger) {
               const attribution_reporting::TriggerRegistration& registration =
                   trigger.registration();
-              return registration.debug_key.has_value() ||
-                             registration.debug_reporting
-                         ? &trigger.reporting_origin()
-                         : nullptr;
+              cookie_origin = registration.debug_key.has_value() ||
+                                      registration.debug_reporting
+                                  ? &trigger.reporting_origin()
+                                  : nullptr;
+              destination_origin = &*trigger.destination_origin();
+              operation = ContentBrowserClient::AttributionReportingOperation::
+                  kTriggerTransitionalDebugReporting;
             },
         },
         pending_events_.front());
-    if (cookie_origin) {
+    if (cookie_origin &&
+        IsOperationAllowed(*storage_partition_, operation,
+                           /*rfh=*/nullptr, source_origin, destination_origin,
+                           &**cookie_origin)) {
       cookie_checker_->IsDebugCookieSet(
           *cookie_origin,
           base::BindOnce(
@@ -1440,38 +1454,68 @@ void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
   // Only process the new event if it is the only one in the queue. Otherwise,
   // there's already an async cookie-check in progress.
   if (size_before_push == 0) {
-    ProcessNextOsEvent();
+    ProcessOsEvents();
   }
 }
 
-void AttributionManagerImpl::ProcessNextOsEvent() {
+void AttributionManagerImpl::ProcessOsEvents() {
+  while (!pending_os_events_.empty()) {
+    const OsRegistration& event = pending_os_events_.front();
+
+    const auto reporting_origin = url::Origin::Create(event.registration_url);
+
+    ContentBrowserClient::AttributionReportingOperation operation;
+    const url::Origin* source_origin;
+    const url::Origin* destination_origin;
+    switch (event.GetType()) {
+      case RegistrationType::kSource:
+        operation = ContentBrowserClient::AttributionReportingOperation::
+            kOsSourceTransitionalDebugReporting;
+        source_origin = &event.top_level_origin;
+        destination_origin = nullptr;
+        break;
+      case RegistrationType::kTrigger:
+        operation = ContentBrowserClient::AttributionReportingOperation::
+            kOsTriggerTransitionalDebugReporting;
+        source_origin = nullptr;
+        destination_origin = &event.top_level_origin;
+        break;
+    }
+
+    if (IsOperationAllowed(*storage_partition_, operation,
+                           RenderFrameHost::FromID(event.render_frame_id),
+                           source_origin, destination_origin,
+                           &reporting_origin)) {
+      cookie_checker_->IsDebugCookieSet(
+          reporting_origin,
+          base::BindOnce(
+              [](base::WeakPtr<AttributionManagerImpl> manager,
+                 bool is_debug_key_allowed) {
+                if (manager) {
+                  manager->ProcessNextOsEvent(is_debug_key_allowed);
+                  manager->ProcessOsEvents();
+                }
+              },
+              weak_factory_.GetWeakPtr()));
+      return;
+    }
+
+    ProcessNextOsEvent(/*is_debug_key_allowed=*/false);
+  }
+}
+
+void AttributionManagerImpl::ProcessNextOsEvent(bool is_debug_key_allowed) {
   DCHECK(!pending_os_events_.empty());
 
-  cookie_checker_->IsDebugCookieSet(
-      url::Origin::Create(pending_os_events_.front().registration_url),
-      base::BindOnce(
-          [](base::WeakPtr<AttributionManagerImpl> manager,
-             bool is_debug_key_allowed) {
-            if (!manager) {
-              return;
-            }
+  {
+    auto& event = pending_os_events_.front();
+    os_level_manager_->Register(
+        std::move(event), is_debug_key_allowed,
+        base::BindOnce(&AttributionManagerImpl::OnOsRegistration,
+                       weak_factory_.GetWeakPtr(), is_debug_key_allowed));
+  }
 
-            DCHECK(!manager->pending_os_events_.empty());
-
-            {
-              auto& event = manager->pending_os_events_.front();
-              manager->os_level_manager_->Register(
-                  std::move(event), is_debug_key_allowed,
-                  base::BindOnce(&AttributionManagerImpl::OnOsRegistration,
-                                 manager, is_debug_key_allowed));
-            }
-
-            manager->pending_os_events_.pop_front();
-            if (!manager->pending_os_events_.empty()) {
-              manager->ProcessNextOsEvent();
-            }
-          },
-          weak_factory_.GetWeakPtr()));
+  pending_os_events_.pop_front();
 }
 
 void AttributionManagerImpl::NotifyOsRegistration(
