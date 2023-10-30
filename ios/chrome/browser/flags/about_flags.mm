@@ -1675,6 +1675,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kCompanyEntityIconAdjustment,
                                     kOmniboxCompanyEntityAdjustmentVariations,
                                     "OmniboxCompanyEntityAdjustment")},
+    {"dynamic-theme-color", flag_descriptions::kDynamicThemeColorName,
+     flag_descriptions::kDynamicThemeColorDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDynamicThemeColor)},
+    {"dynamic-background-color", flag_descriptions::kDynamicBackgroundColorName,
+     flag_descriptions::kDynamicBackgroundColorDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDynamicBackgroundColor)},
+
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

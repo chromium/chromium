@@ -268,6 +268,16 @@ extern const char kDetectMainThreadFreezeDescription[];
 extern const char kDiscoverFeedSportCardName[];
 extern const char kDiscoverFeedSportCardDescription[];
 
+// Title and description for the flag that updates the color of the toolbar
+// based on the page's background color.
+extern const char kDynamicBackgroundColorName[];
+extern const char kDynamicBackgroundColorDescription[];
+
+// Title and description for the flag that updates the color of the toolbar
+// based on the page's theme color.
+extern const char kDynamicThemeColorName[];
+extern const char kDynamicThemeColorDescription[];
+
 // Title and description for the flag to enable the bookmarks account storage
 // and related UI features.
 extern const char kEnableBookmarksAccountStorageName[];

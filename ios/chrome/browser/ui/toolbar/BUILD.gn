@@ -143,6 +143,7 @@ source_set("toolbar_ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
+    "//third_party/material_color_utilities",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

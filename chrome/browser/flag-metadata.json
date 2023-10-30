@@ -1868,6 +1868,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "dynamic-background-color",
+    "owners": ["gambard@google.com", "chromeleon@google.com"],
+    "expiry_milestone": 124
+  },
+  {
     "name": "dynamic-color-gamut",
     "owners": [ "cblume@chromium.org", "ccameron@chromium.org" ],
     "expiry_milestone": 90
@@ -1876,6 +1881,11 @@
     "name": "dynamic-search-update-animation",
     "owners": ["yulunwu@chromium.org"],
     "expiry_milestone": 103
+  },
+  {
+    "name": "dynamic-theme-color",
+    "owners": ["gambard@google.com", "chromeleon@google.com"],
+    "expiry_milestone": 124
   },
   {
     "name": "eap-gtc-wifi-authentication",

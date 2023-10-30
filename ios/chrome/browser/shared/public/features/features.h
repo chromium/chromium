@@ -234,6 +234,14 @@ BASE_DECLARE_FEATURE(kFullScreenPromoOnOmniboxCopyPaste);
 // Feature flag to try using the page theme color in the top toolbar
 BASE_DECLARE_FEATURE(kThemeColorInTopToolbar);
 
+// Feature flag to try using the page theme color as dynamic color for the
+// toolbars.
+BASE_DECLARE_FEATURE(kDynamicThemeColor);
+
+// Feature flag to try using the page background color as dynamic color for the
+// toolbars.
+BASE_DECLARE_FEATURE(kDynamicBackgroundColor);
+
 // Feature flag enabling tab grid refactoring.
 BASE_DECLARE_FEATURE(kTabGridRefactoring);
 

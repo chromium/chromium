@@ -323,6 +323,17 @@ const char kDiscoverFeedSportCardName[] = "Sport card in Discover feed";
 const char kDiscoverFeedSportCardDescription[] =
     "Enables the live sport card in the NTP's Discover feed";
 
+const char kDynamicBackgroundColorName[] = "Use Dynamic theme color";
+const char kDynamicBackgroundColorDescription[] =
+    "When enabled, the toolbar background is using a dynamic color from the "
+    "page's theme color. Takes precedence over Background color if both flags "
+    "are enabled.";
+
+const char kDynamicThemeColorName[] = "Use Dynamic background color";
+const char kDynamicThemeColorDescription[] =
+    "When enabled, the toolbar background is using a dynamic color from the "
+    "page's underpage background color. If the color is white, it is ignored.";
+
 const char kEnableDiscoverFeedTopSyncPromoName[] =
     "Enables the top of feed sync promo.";
 const char kEnableDiscoverFeedTopSyncPromoDescription[] =
@@ -1012,7 +1023,7 @@ const char kTFLiteLanguageDetectionIgnoreDescription[] =
 const char kThemeColorInTopToolbarName[] = "Top toolbar use page's theme color";
 const char kThemeColorInTopToolbarDescription[] =
     "When enabled with bottom omnibox, the top toolbar background color is the "
-    "page's theme color";
+    "page's theme color. Disabled when a dynamic color flag is enabled.";
 
 const char kIOSHideFeedWithSearchChoiceName[] = "Hide Feed with Search Choice";
 const char kIOSHideFeedWithSearchChoiceDescription[] =
