@@ -302,6 +302,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "phone_hub_silence_phone.icon",
     "pin_request_lock.icon",
     "pinned.icon",
+    "placeholder_app.icon",
     "privacy_indicators.icon",
     "privacy_indicators_camera.icon",
     "privacy_indicators_microphone.icon",

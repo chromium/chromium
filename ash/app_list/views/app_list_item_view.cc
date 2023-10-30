@@ -25,6 +25,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
@@ -728,10 +729,24 @@ void AppListItemView::UpdateIconView(bool update_item_icon) {
   }
 
   if (update_item_icon) {
-    SetIcon(item_weak_->GetIcon(app_list_config_->type()));
-  } else {
-    SetIcon(icon_image_);
+    if (HasPromiseIconPlaceholder()) {
+      icon_image_model_ = ui::ImageModel(ui::ImageModel::FromVectorIcon(
+          ash::kPlaceholderAppIcon, cros_tokens::kCrosSysPrimary));
+    } else {
+      icon_image_model_ = ui::ImageModel(ui::ImageModel::FromImageSkia(
+          item_weak_ ? item_weak_->GetIcon(app_list_config_->type())
+                     : gfx::ImageSkia()));
+    }
   }
+  gfx::ImageSkia image_icon;
+  if (icon_image_model_.IsImage()) {
+    image_icon = icon_image_model_.GetImage().AsImageSkia();
+  } else if (icon_image_model_.IsVectorIcon()) {
+    image_icon = ui::ThemedVectorIcon(icon_image_model_.GetVectorIcon())
+                     .GetImageSkia(GetColorProvider());
+  }
+
+  SetIcon(image_icon);
 }
 
 void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
@@ -741,10 +756,10 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
   // Clear icon and bail out if item icon is empty.
   if (icon.isNull()) {
     icon_->SetImage(nullptr);
-    icon_image_ = gfx::ImageSkia();
+    icon_image_model_ =
+        ui::ImageModel(ui::ImageModel::FromImageSkia(gfx::ImageSkia()));
     return;
   }
-  icon_image_ = icon;
 
   gfx::Size icon_bounds = is_folder_ ? app_list_config_->unclipped_icon_size()
                                      : app_list_config_->grid_icon_size();
@@ -757,6 +772,11 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
   icon_->SetImage(resized);
 
   Layout();
+}
+
+bool AppListItemView::HasPromiseIconPlaceholder() {
+  return is_promise_app_ && item_weak_ &&
+         item_weak_->GetMetadata()->is_placeholder_icon;
 }
 
 void AppListItemView::SetHostBadgeIcon(const gfx::ImageSkia& host_badge_icon,

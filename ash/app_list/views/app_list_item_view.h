@@ -172,6 +172,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Sets the icon of this image.
   void SetIcon(const gfx::ImageSkia& icon);
 
+  // Whether the icon use on this item is a placeholder icon for a promise app.
+  bool HasPromiseIconPlaceholder();
+
   void SetItemName(const std::u16string& display_name,
                    const std::u16string& full_name);
 
@@ -284,7 +287,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   bool IsNotificationIndicatorShownForTest() const;
   GridDelegate* grid_delegate_for_test() { return grid_delegate_; }
-  const gfx::ImageSkia& icon_image_for_test() const { return icon_image_; }
+  const gfx::ImageSkia icon_image_for_test() const {
+    return icon_image_model_.GetImage().AsImageSkia();
+  }
 
   AppListMenuModelAdapter* item_menu_model_adapter() const {
     return item_menu_model_adapter_.get();
@@ -545,7 +550,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   base::OneShotTimer touch_drag_timer_;
 
   // The bitmap image for this app list item.
-  gfx::ImageSkia icon_image_;
+  ui::ImageModel icon_image_model_;
 
   // The bitmap image for this app list item's host badge icon.
   gfx::ImageSkia host_badge_icon_image_;

@@ -44,7 +44,8 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // for the config has not been set using `SetIcon()`. The icon color is
   // associated with the icon so set the icon color when the icon is set.
   void SetDefaultIconAndColor(const gfx::ImageSkia& icon,
-                              const IconColor& color);
+                              const IconColor& color,
+                              bool is_placeholder_icon);
   const gfx::ImageSkia& GetDefaultIcon() const;
 
   // Returns the icon color associated with the default icon.

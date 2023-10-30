@@ -42,7 +42,7 @@ AppListTestModel::AppListTestItem::AppListTestItem(const std::string& id,
   const int icon_dimension =
       SharedAppListConfig::instance().default_grid_icon_dimension();
   SetDefaultIconAndColor(CreateImageSkia(icon_dimension, icon_dimension),
-                         IconColor());
+                         IconColor(), /*is_placeholder_icon=*/false);
 }
 
 AppListTestModel::AppListTestItem::~AppListTestItem() = default;

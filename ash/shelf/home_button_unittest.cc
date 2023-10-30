@@ -248,7 +248,8 @@ TEST_F(HomeButtonWithQuickAppAccess, AppWithNoIconThenLoaded) {
 
   // Set the default icon and check that the quick app button is visible after.
   item->SetDefaultIconAndColor(
-      CreateSolidColorTestImage(gfx::Size(32, 32), SK_ColorRED), IconColor());
+      CreateSolidColorTestImage(gfx::Size(32, 32), SK_ColorRED), IconColor(),
+      /*is_placeholder_icon=*/false);
   EXPECT_TRUE(IsQuickAppVisible());
 
   histogram_tester.ExpectTotalCount("Apps.QuickAppIconLoadTime", 1);
@@ -263,13 +264,15 @@ TEST_F(HomeButtonWithQuickAppAccess, IconUpdatesOnNewQuickAppSet) {
   AppListItem* item = new AppListItem(quick_app_id);
   GetAppListTestHelper()->model()->AddItem(item);
   item->SetDefaultIconAndColor(
-      CreateSolidColorTestImage(gfx::Size(32, 32), SK_ColorRED), IconColor());
+      CreateSolidColorTestImage(gfx::Size(32, 32), SK_ColorRED), IconColor(),
+      /*is_placeholder_icon=*/false);
 
   const std::string quick_app_id_two = "Quick App Item Two";
   AppListItem* item_two = new AppListItem(quick_app_id_two);
   GetAppListTestHelper()->model()->AddItem(item_two);
   item_two->SetDefaultIconAndColor(
-      CreateSolidColorTestImage(gfx::Size(32, 32), SK_ColorBLUE), IconColor());
+      CreateSolidColorTestImage(gfx::Size(32, 32), SK_ColorBLUE), IconColor(),
+      /*is_placeholder_icon=*/false);
 
   EXPECT_TRUE(
       Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));

@@ -59,9 +59,11 @@ const gfx::ImageSkia& AppListItem::GetIcon(
 }
 
 void AppListItem::SetDefaultIconAndColor(const gfx::ImageSkia& icon,
-                                         const IconColor& color) {
+                                         const IconColor& color,
+                                         bool is_placeholder_icon) {
   metadata_->icon = icon;
   metadata_->icon_color = color;
+  metadata_->is_placeholder_icon = is_placeholder_icon;
 
   // If the item does not have a config specific icon, it will be represented by
   // the (possibly scaled) default icon, which means that changing the default

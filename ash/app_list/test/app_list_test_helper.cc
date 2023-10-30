@@ -176,7 +176,8 @@ void AppListTestHelper::AddAppItemsWithColorAndName(int num_apps,
       // Skip the calculation of the icon color from the generated solid-colored
       // icon to save some time.
       item->SetDefaultIconAndColor(
-          CreateSolidColorTestImage(kIconImageSize, *solid_color), IconColor());
+          CreateSolidColorTestImage(kIconImageSize, *solid_color), IconColor(),
+          /*is_placeholder_icon=*/false);
     }
 
     auto* item_ptr = item.get();

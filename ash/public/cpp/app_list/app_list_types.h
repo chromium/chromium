@@ -142,6 +142,7 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   bool is_system_folder = false;
 
   gfx::ImageSkia icon;                  // The icon of this item.
+  bool is_placeholder_icon = false;     // The icon is a placeholder.
   SkColor badge_color = SK_ColorWHITE;  // Notification badge color.
   gfx::ImageSkia badge_icon;            // The badge icon for the item.
 
