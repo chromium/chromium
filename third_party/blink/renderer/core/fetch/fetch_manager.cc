@@ -1003,7 +1003,7 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
   request.SetAdAuctionHeaders(fetch_request_data_->AdAuctionHeaders());
   request.SetAttributionReportingEligibility(
       fetch_request_data_->AttributionReportingEligibility());
-  request.SetSharedStorageWritable(
+  request.SetSharedStorageWritableOptedIn(
       fetch_request_data_->SharedStorageWritable());
 
   request.SetOriginalDestination(fetch_request_data_->OriginalDestination());

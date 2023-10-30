@@ -297,12 +297,24 @@ class PLATFORM_EXPORT ResourceRequestHead {
     ad_auction_headers_ = ad_auction_headers;
   }
 
-  // True if the request and any subsequent redirects should have the
-  // `http_names::kSecSharedStorageWritable` header attached and allow writing
-  // to shared storage via the response headers.
-  bool GetSharedStorageWritable() const { return shared_storage_writable_; }
-  void SetSharedStorageWritable(bool shared_storage_writable) {
-    shared_storage_writable_ = shared_storage_writable;
+  // True if the original request included the required attribute for the
+  // response to be eligible to write to shared storage, pending a
+  // `PermissionsPolicy` check.
+  bool GetSharedStorageWritableOptedIn() const {
+    return shared_storage_writable_opted_in_;
+  }
+  void SetSharedStorageWritableOptedIn(bool shared_storage_writable_opted_in) {
+    shared_storage_writable_opted_in_ = shared_storage_writable_opted_in;
+  }
+
+  // True if the current request should have the
+  // `http_names::kSecSharedStorageWritable` header attached and is eligible to
+  // write to shared storage from response headers.
+  bool GetSharedStorageWritableEligible() const {
+    return shared_storage_writable_eligible_;
+  }
+  void SetSharedStorageWritableEligible(bool shared_storage_writable_eligible) {
+    shared_storage_writable_eligible_ = shared_storage_writable_eligible;
   }
 
   // True if service workers should not get events for the request.
@@ -656,7 +668,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool keepalive_ : 1;
   bool browsing_topics_ : 1;
   bool ad_auction_headers_ : 1;
-  bool shared_storage_writable_ : 1;
+  bool shared_storage_writable_opted_in_ : 1;
+  bool shared_storage_writable_eligible_ : 1;
   bool allow_stale_response_ : 1;
   mojom::blink::FetchCacheMode cache_mode_;
   bool skip_service_worker_ : 1;

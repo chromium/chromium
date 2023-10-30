@@ -180,7 +180,7 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
   // using `IsFeatureEnabledForSubresourceRequestAssumingOptIn()`, since a
   // `network::ResourceRequest` is not available at the call site and
   // `blink::ResourceRequest` should not be used in blink public APIs.
-  if (request.shared_storage_writable) {
+  if (request.shared_storage_writable_eligible) {
     DCHECK(base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI));
     opt_in_features.insert(mojom::PermissionsPolicyFeature::kSharedStorage);
   }

@@ -467,7 +467,7 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
     net::CookieSettingOverrides cookie_setting_overrides,
     std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
-    bool shared_storage_writable)
+    bool shared_storage_writable_eligible)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
@@ -526,7 +526,7 @@ URLLoader::URLLoader(
                                        context.GetDevToolsObserver())),
       shared_storage_request_helper_(
           std::make_unique<SharedStorageRequestHelper>(
-              shared_storage_writable,
+              shared_storage_writable_eligible,
               url_loader_network_observer_)),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       allow_http1_for_streaming_upload_(
@@ -1099,11 +1099,12 @@ void URLLoader::FollowRedirect(
     private_network_access_checker_.ResetForRedirect(*deferred_redirect_url_);
   }
 
-  // Propagate removal of shared storage eligiblity to the helper if the
-  // "Sec-Shared-Storage-Writable" request header has been removed.
+  // Propagate removal or restoration of shared storage eligiblity to the helper
+  // if the "Sec-Shared-Storage-Writable" request header has been removed or
+  // restored.
   DCHECK(shared_storage_request_helper_);
-  shared_storage_request_helper_
-      ->RemoveEligibilityIfSharedStorageWritableRemoved(removed_headers);
+  shared_storage_request_helper_->UpdateSharedStorageWritableEligible(
+      removed_headers, modified_headers);
 
   deferred_redirect_url_.reset();
   new_redirect_url_ = new_url;

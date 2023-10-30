@@ -203,7 +203,8 @@ bool StructTraits<
   out->keepalive = data.keepalive();
   out->browsing_topics = data.browsing_topics();
   out->ad_auction_headers = data.ad_auction_headers();
-  out->shared_storage_writable = data.shared_storage_writable();
+  out->shared_storage_writable_eligible =
+      data.shared_storage_writable_eligible();
   out->has_user_gesture = data.has_user_gesture();
   out->enable_load_timing = data.enable_load_timing();
   out->enable_upload_progress = data.enable_upload_progress();

@@ -177,7 +177,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           accept_ch_frame_observer,
       net::CookieSettingOverrides cookie_setting_overrides,
       std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
-      bool shared_storage_writable);
+      bool shared_storage_writable_eligible);
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
@@ -338,17 +338,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
                    int error_code,
                    const std::vector<base::File> opened_files);
 
-  // A `ResourceRequest` where `shared_storage_writable` is true, is eligible
-  // for shared storage operations via response headers.
+  // A `ResourceRequest` where `shared_storage_writable_eligible` is true, is
+  // eligible for shared storage operations via response headers.
   //
   // Outbound control flow:
   //
   // Start in `ProcessOutboundSharedStorageInterceptor()`
   // - Execute `SharedStorageRequestHelper::ProcessOutgoingRequest`, which will
   // add the `kSecSharedStorageWritableHeader` request header to the
-  // `URLRequest` if `ResourceRequest::shared_storage_writable` is true and
-  // there is a `mojom::URLLoaderNetworkServiceObserver*` available to forward
-  // processed headers to.
+  // `URLRequest` if `ResourceRequest::shared_storage_writable_eligible` is true
+  // and there is a `mojom::URLLoaderNetworkServiceObserver*` available to
+  // forward processed headers to.
   // - `ScheduleStart` immediately afterwards regardless of eligibility for
   // shared storage
   //
@@ -356,10 +356,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   //
   // Start in `FollowRedirect`
   // - Execute
-  // `SharedStorageRequestHelper::`
-  //   `RemoveEligibilityIfSharedStorageWritableRemoved`
-  // to remove the `kSecSharedStorageWritableHeader` request header if
-  // eligibility has been lost
+  // `SharedStorageRequestHelper::UpdateSharedStorageWritableEligible`
+  // to remove or restore the `kSecSharedStorageWritableHeader` request header
+  // if eligibility has been lost or regained
   //
   // Inbound redirection control flow:
   //

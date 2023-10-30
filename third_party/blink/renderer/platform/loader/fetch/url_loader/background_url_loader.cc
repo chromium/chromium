@@ -40,7 +40,8 @@
 namespace {
 
 using FollowRedirectCallback =
-    base::OnceCallback<void(std::vector<std::string> removed_headers)>;
+    base::OnceCallback<void(std::vector<std::string> removed_headers,
+                            net::HttpRequestHeaders modified_headers)>;
 
 }  // namespace
 
@@ -99,6 +100,13 @@ template <>
 struct CrossThreadCopier<absl::optional<mojo_base::BigBuffer>> {
   STATIC_ONLY(CrossThreadCopier);
   using Type = absl::optional<mojo_base::BigBuffer>;
+  static Type Copy(Type&& value) { return std::move(value); }
+};
+
+template <>
+struct CrossThreadCopier<net::HttpRequestHeaders> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = net::HttpRequestHeaders;
   static Type Copy(Type&& value) { return std::move(value); }
 };
 
@@ -392,7 +400,8 @@ class BackgroundURLLoader::Context
   void OnReceivedRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr head,
-      base::OnceCallback<void(std::vector<std::string> removed_headers)>
+      base::OnceCallback<void(std::vector<std::string> removed_headers,
+                              net::HttpRequestHeaders modified_headers)>
           follow_redirect_callback,
       int request_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
@@ -400,24 +409,26 @@ class BackgroundURLLoader::Context
         url_, *head, has_devtools_request_id_, request_id);
     url_ = KURL(redirect_info.new_url);
     std::vector<std::string> removed_headers;
+    net::HttpRequestHeaders modified_headers;
     if (client_->WillFollowRedirect(
             url_, redirect_info.new_site_for_cookies,
             WebString::FromUTF8(redirect_info.new_referrer),
             ReferrerUtils::NetToMojoReferrerPolicy(
                 redirect_info.new_referrer_policy),
             WebString::FromUTF8(redirect_info.new_method), response,
-            has_devtools_request_id_, &removed_headers,
+            has_devtools_request_id_, &removed_headers, modified_headers,
             redirect_info.insecure_scheme_was_upgraded)) {
       PostCrossThreadTask(
           *background_task_runner_, FROM_HERE,
           CrossThreadBindOnce(std::move(follow_redirect_callback),
-                              std::move(removed_headers)));
+                              std::move(removed_headers),
+                              std::move(modified_headers)));
     } else {
       // `follow_redirect_callback` must be deleted in the background thread.
       background_task_runner_->DeleteSoon(
-          FROM_HERE,
-          std::make_unique<base::OnceCallback<void(std::vector<std::string>)>>(
-              std::move(follow_redirect_callback)));
+          FROM_HERE, std::make_unique<base::OnceCallback<void(
+                         std::vector<std::string>, net::HttpRequestHeaders)>>(
+                         std::move(follow_redirect_callback)));
     }
   }
   void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,

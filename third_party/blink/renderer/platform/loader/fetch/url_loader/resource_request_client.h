@@ -20,6 +20,7 @@
 
 namespace net {
 struct RedirectInfo;
+class HttpRequestHeaders;
 }
 
 namespace network {
@@ -42,8 +43,10 @@ class BLINK_PLATFORM_EXPORT ResourceRequestClient
   // about the redirect response and the RedirectInfo includes information about
   // the request to be made if the `follow_redirect_callback` is called.
   // `removed_headers` contains header field names that need to be removed.
+  // `modified_headers` contains headers that need to be added or updated.
   using FollowRedirectCallback =
-      base::OnceCallback<void(std::vector<std::string> removed_headers)>;
+      base::OnceCallback<void(std::vector<std::string> removed_headers,
+                              net::HttpRequestHeaders modified_headers)>;
   virtual void OnReceivedRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr head,

@@ -464,10 +464,11 @@ bool WillFollowRedirect(ResourceLoader* loader, KURL new_url) {
                              /*report_security_info=*/true, /*request_id=*/1);
   bool has_devtools_request_id = false;
   std::vector<std::string> removed_headers;
+  net::HttpRequestHeaders modified_headers;
   return loader->WillFollowRedirect(
       new_url, net::SiteForCookies(), /*new_referrer=*/String(),
       network::mojom::ReferrerPolicy::kAlways, "GET", response,
-      has_devtools_request_id, &removed_headers,
+      has_devtools_request_id, &removed_headers, modified_headers,
       /*insecure_scheme_was_upgraded=*/false);
 }
 

@@ -191,7 +191,8 @@ void SyncLoadContext::OnReceivedRedirect(
   signals_->SignalRedirectOrResponseComplete();
 }
 
-void SyncLoadContext::FollowRedirect(std::vector<std::string> removed_headers) {
+void SyncLoadContext::FollowRedirect(std::vector<std::string> removed_headers,
+                                     net::HttpRequestHeaders modified_headers) {
   CHECK(follow_redirect_callback_);
   if (!signals_->RestartAfterRedirect()) {
     CancelRedirect();
@@ -200,7 +201,8 @@ void SyncLoadContext::FollowRedirect(std::vector<std::string> removed_headers) {
 
   response_->redirect_info = net::RedirectInfo();
   *context_for_redirect_ = nullptr;
-  std::move(follow_redirect_callback_).Run(std::move(removed_headers));
+  std::move(follow_redirect_callback_)
+      .Run(std::move(removed_headers), std::move(modified_headers));
 }
 
 void SyncLoadContext::CancelRedirect() {

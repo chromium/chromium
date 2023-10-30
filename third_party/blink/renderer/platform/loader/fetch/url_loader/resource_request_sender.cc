@@ -435,16 +435,24 @@ void ResourceRequestSender::SendSync(
         base::RefCountedData<absl::optional<std::vector<std::string>>>;
     const scoped_refptr<RefCountedOptionalStringVector> removed_headers =
         base::MakeRefCounted<RefCountedOptionalStringVector>();
+    using RefCountedOptionalHttpRequestHeaders =
+        base::RefCountedData<absl::optional<net::HttpRequestHeaders>>;
+    const scoped_refptr<RefCountedOptionalHttpRequestHeaders> modified_headers =
+        base::MakeRefCounted<RefCountedOptionalHttpRequestHeaders>();
     client->OnReceivedRedirect(
         *response->redirect_info, response->head.Clone(),
         /*follow_redirect_callback=*/
         WTF::BindOnce(
             [](scoped_refptr<RefCountedOptionalStringVector>
                    removed_headers_out,
-               std::vector<std::string> removed_headers) {
+               scoped_refptr<RefCountedOptionalHttpRequestHeaders>
+                   modified_headers_out,
+               std::vector<std::string> removed_headers,
+               net::HttpRequestHeaders modified_headers) {
               removed_headers_out->data = std::move(removed_headers);
+              modified_headers_out->data = std::move(modified_headers);
             },
-            removed_headers));
+            removed_headers, modified_headers));
     // `follow_redirect_callback` can't be asynchronously called for synchronous
     // requests because the current thread will be blocked by
     // `redirect_or_response_event.Wait()` call. So we check `HasOneRef()` here
@@ -455,7 +463,8 @@ void ResourceRequestSender::SendSync(
       task_runner->PostTask(
           FROM_HERE, base::BindOnce(&SyncLoadContext::FollowRedirect,
                                     base::Unretained(context_for_redirect),
-                                    std::move(*removed_headers->data)));
+                                    std::move(*removed_headers->data),
+                                    std::move(*modified_headers->data)));
     } else {
       task_runner->PostTask(
           FROM_HERE, base::BindOnce(&SyncLoadContext::CancelRedirect,
@@ -631,6 +640,7 @@ void ResourceRequestSender::FollowPendingRedirect(
     // Redirect URL may not be handled by the network service, so force a
     // restart in case another URLLoaderFactory should handle the URL.
     if (request_info->redirect_requires_loader_restart) {
+      request_info->modified_headers.Clear();
       request_info->url_loader->FollowRedirectForcingRestart();
     } else {
       std::vector<std::string> removed_headers(
@@ -638,8 +648,9 @@ void ResourceRequestSender::FollowPendingRedirect(
       base::ranges::transform(request_info_->removed_headers,
                               removed_headers.begin(), &WebString::Ascii);
       request_info->url_loader->FollowRedirect(
-          removed_headers, {} /* modified_headers */,
+          removed_headers, request_info->modified_headers,
           {} /* modified_cors_exempt_headers */);
+      request_info->modified_headers.Clear();
     }
   }
 }
@@ -781,7 +792,8 @@ void ResourceRequestSender::OnFollowRedirectCallback(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::vector<std::string> removed_headers) {
+    std::vector<std::string> removed_headers,
+    net::HttpRequestHeaders modified_headers) {
   // DeletePendingRequest() may have cleared request_info_.
   if (!request_info_) {
     return;
@@ -797,6 +809,7 @@ void ResourceRequestSender::OnFollowRedirectCallback(
   request_info_->has_pending_redirect = true;
   request_info_->resource_load_info_notifier_wrapper
       ->NotifyResourceRedirectReceived(redirect_info, std::move(response_head));
+  request_info_->modified_headers.MergeFrom(modified_headers);
 
   if (request_info_->freeze_mode == LoaderFreezeMode::kNone) {
     FollowPendingRedirect(request_info_.get());

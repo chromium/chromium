@@ -78,7 +78,8 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
   SyncLoadContext& operator=(const SyncLoadContext&) = delete;
   ~SyncLoadContext() override;
 
-  void FollowRedirect(std::vector<std::string> removed_headers);
+  void FollowRedirect(std::vector<std::string> removed_headers,
+                      net::HttpRequestHeaders modified_headers);
   void CancelRedirect();
 
  private:

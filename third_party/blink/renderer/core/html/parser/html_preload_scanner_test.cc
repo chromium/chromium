@@ -120,7 +120,7 @@ struct SharedStorageWritableTestCase {
   bool use_secure_document_url;
   const char* base_url;
   const char* input_html;
-  bool expected_shared_storage_writable;
+  bool expected_shared_storage_writable_opted_in;
 };
 
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
@@ -285,13 +285,13 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
 
   void SharedStorageWritableRequestVerification(
       Document* document,
-      bool expected_shared_storage_writable) {
+      bool expected_shared_storage_writable_opted_in) {
     ASSERT_TRUE(preload_request_.get());
     Resource* resource = preload_request_->Start(document);
     ASSERT_TRUE(resource);
 
-    EXPECT_EQ(expected_shared_storage_writable,
-              resource->GetResourceRequest().GetSharedStorageWritable());
+    EXPECT_EQ(expected_shared_storage_writable_opted_in,
+              resource->GetResourceRequest().GetSharedStorageWritableOptedIn());
   }
 
  protected:
@@ -514,7 +514,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
     std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
     preloader.TakePreloadData(std::move(preload_data));
     preloader.SharedStorageWritableRequestVerification(
-        &GetDocument(), test_case.expected_shared_storage_writable);
+        &GetDocument(), test_case.expected_shared_storage_writable_opted_in);
   }
 
  private:
@@ -1707,23 +1707,23 @@ TEST_F(HTMLPreloadScannerTest, testSharedStorageWritable) {
       // Insecure context
       {kInsecureDocumentUrl, kSecureBaseURL,
        "<img src='/image' sharedstoragewritable>",
-       /*expected_shared_storage_writable=*/false},
+       /*expected_shared_storage_writable_opted_in=*/false},
       // No sharedstoragewritable attribute
       {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>",
-       /*expected_shared_storage_writable=*/false},
+       /*expected_shared_storage_writable_opted_in=*/false},
       // Irrelevant element type
       {kSecureDocumentUrl, kSecureBaseURL,
        "<video poster='/image' sharedstoragewritable>",
-       /*expected_shared_storage_writable=*/false},
+       /*expected_shared_storage_writable_opted_in=*/false},
       // Secure context, sharedstoragewritable attribute
       // Base (initial) URL does not affect SharedStorageWritable eligibility
       {kSecureDocumentUrl, kInsecureBaseURL,
        "<img src='/image' sharedstoragewritable>",
-       /*expected_shared_storage_writable=*/true},
+       /*expected_shared_storage_writable_opted_in=*/true},
       // Secure context, sharedstoragewritable attribute
       {kSecureDocumentUrl, kSecureBaseURL,
        "<img src='/image' sharedstoragewritable>",
-       /*expected_shared_storage_writable=*/true},
+       /*expected_shared_storage_writable_opted_in=*/true},
   };
 
   for (const auto& test_case : test_cases) {

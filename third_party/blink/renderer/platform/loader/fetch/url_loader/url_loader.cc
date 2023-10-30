@@ -329,15 +329,17 @@ void URLLoader::Context::OnReceivedRedirect(
 
   url_ = KURL(redirect_info.new_url);
   std::vector<std::string> removed_headers;
+  net::HttpRequestHeaders modified_headers;
   if (client_->WillFollowRedirect(
           url_, redirect_info.new_site_for_cookies,
           WebString::FromUTF8(redirect_info.new_referrer),
           ReferrerUtils::NetToMojoReferrerPolicy(
               redirect_info.new_referrer_policy),
           WebString::FromUTF8(redirect_info.new_method), response,
-          has_devtools_request_id_, &removed_headers,
+          has_devtools_request_id_, &removed_headers, modified_headers,
           redirect_info.insecure_scheme_was_upgraded)) {
-    std::move(follow_redirect_callback).Run(std::move(removed_headers));
+    std::move(follow_redirect_callback)
+        .Run(std::move(removed_headers), std::move(modified_headers));
   }
 }
 

@@ -337,7 +337,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
         request_info.begin_params->impression->runtime_features;
   }
 
-  new_request->shared_storage_writable = request_info.shared_storage_writable;
+  new_request->shared_storage_writable_eligible =
+      request_info.shared_storage_writable;
 
   return new_request;
 }

@@ -6,6 +6,8 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_piece.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/structured_headers.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -50,6 +52,23 @@ StringToSharedStorageHeaderParamType(base::StringPiece param_str) {
   }
 
   return param_it->second;
+}
+
+bool GetSecSharedStorageWritableHeader(const net::HttpRequestHeaders& headers) {
+  std::string value;
+  if (!headers.GetHeader(kSecSharedStorageWritableHeader, &value)) {
+    return false;
+  }
+  absl::optional<net::structured_headers::Item> item =
+      net::structured_headers::ParseBareItem(value);
+  if (!item || !item->is_boolean() || !item->GetBoolean()) {
+    // We only expect the value "?1", which parses to boolean true.
+    // TODO(cammie): Log a histogram to see if this ever happens.
+    LOG(ERROR) << "Unexpected value '" << value << "' found for '"
+               << kSecSharedStorageWritableHeader << "' header.";
+    return false;
+  }
+  return true;
 }
 
 }  // namespace network

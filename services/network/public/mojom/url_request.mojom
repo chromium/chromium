@@ -332,7 +332,7 @@ struct URLRequest {
 
   // True if the request should send the `Sec-Shared-Storage-Writable` request
   // header.
-  bool shared_storage_writable;
+  bool shared_storage_writable_eligible;
 
   // True if the request was user initiated.
   bool has_user_gesture;

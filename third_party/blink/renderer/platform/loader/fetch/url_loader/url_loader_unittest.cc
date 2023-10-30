@@ -213,6 +213,7 @@ class TestURLLoaderClient : public URLLoaderClient {
                           const WebURLResponse& passed_redirect_response,
                           bool& report_raw_headers,
                           std::vector<std::string>*,
+                          net::HttpRequestHeaders&,
                           bool insecure_scheme_was_upgraded) override {
     EXPECT_TRUE(loader_);
 
@@ -355,8 +356,8 @@ class URLLoaderTest : public testing::Test {
         redirect_info, network::mojom::URLResponseHead::New(),
         /*follow_redirect_callback=*/
         WTF::BindOnce(
-            [](bool* callback_called,
-               std::vector<std::string> removed_headers) {
+            [](bool* callback_called, std::vector<std::string> removed_headers,
+               net::HttpRequestHeaders modified_headers) {
               *callback_called = true;
             },
             WTF::Unretained(&callback_called)));

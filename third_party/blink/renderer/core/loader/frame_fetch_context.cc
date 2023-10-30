@@ -348,14 +348,18 @@ void FrameFetchContext::PrepareRequest(
         attribution_src_loader->GetRuntimeFeatures());
   }
 
-  if (request.GetSharedStorageWritable()) {
+  // If the original request included the attribute to opt-in to shared storage,
+  // then update eligibility for the current (possibly redirected) request. Note
+  // that if the original request didn't opt-in, then the original request and
+  // any subsequent redirects are ineligible for shared storage writing by
+  // response header.
+  if (request.GetSharedStorageWritableOptedIn()) {
     auto* policy = GetPermissionsPolicy();
-    if (!policy ||
-        !request.IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+    request.SetSharedStorageWritableEligible(
+        policy &&
+        request.IsFeatureEnabledForSubresourceRequestAssumingOptIn(
             policy, mojom::blink::PermissionsPolicyFeature::kSharedStorage,
-            SecurityOrigin::Create(request.Url())->ToUrlOrigin())) {
-      request.SetSharedStorageWritable(false);
-    }
+            SecurityOrigin::Create(request.Url())->ToUrlOrigin()));
   }
 
   request.SetSharedDictionaryWriterEnabled(

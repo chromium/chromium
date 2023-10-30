@@ -1905,11 +1905,11 @@ TEST_F(PermissionsPolicyTest,
   request_with_topics_opt_in.browsing_topics = true;
 
   network::ResourceRequest request_with_shared_storage_opt_in;
-  request_with_shared_storage_opt_in.shared_storage_writable = true;
+  request_with_shared_storage_opt_in.shared_storage_writable_eligible = true;
 
   network::ResourceRequest request_with_both_opt_in;
   request_with_both_opt_in.browsing_topics = true;
-  request_with_both_opt_in.shared_storage_writable = true;
+  request_with_both_opt_in.shared_storage_writable_eligible = true;
 
   {
     // +--------------------------------------------------------+

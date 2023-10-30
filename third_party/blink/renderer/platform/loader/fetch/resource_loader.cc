@@ -526,6 +526,7 @@ bool ResourceLoader::WillFollowRedirect(
     const WebURLResponse& passed_redirect_response,
     bool& has_devtools_request_id,
     std::vector<std::string>* removed_headers,
+    net::HttpRequestHeaders& modified_headers,
     bool insecure_scheme_was_upgraded) {
   DCHECK(!passed_redirect_response.IsNull());
 
@@ -650,12 +651,6 @@ bool ResourceLoader::WillFollowRedirect(
   fetcher_->RecordResourceTimingOnRedirect(resource_.Get(), redirect_response,
                                            new_url);
 
-  // `Context().PrepareRequest()` below may update the value of
-  // `new_request->GetSharedStorageWritable()`. If it does, we will need to
-  // remove the corresponding header.
-  bool need_to_check_for_shared_storage_writable_change =
-      new_request->GetSharedStorageWritable() && removed_headers;
-
   // The following two calls may rewrite the new_request->Url() to
   // something else not for rejecting redirect but for other reasons.
   // E.g. WebFrameTestClient::WillSendRequest() and
@@ -685,9 +680,20 @@ bool ResourceLoader::WillFollowRedirect(
   DCHECK_EQ(new_request->GetMode(), request_mode);
   DCHECK_EQ(new_request->GetCredentialsMode(), credentials_mode);
 
-  if (need_to_check_for_shared_storage_writable_change &&
-      !new_request->GetSharedStorageWritable()) {
-    removed_headers->push_back(http_names::kSecSharedStorageWritable.Ascii());
+  // If `Shared-Storage-Writable` eligibity has changed, update the headers.
+  bool previous_shared_storage_writable_eligible =
+      resource_->LastResourceRequest().GetSharedStorageWritableEligible();
+  bool new_shared_storage_writable_eligible =
+      new_request->GetSharedStorageWritableEligible();
+  if (new_shared_storage_writable_eligible !=
+      previous_shared_storage_writable_eligible) {
+    if (new_shared_storage_writable_eligible) {
+      CHECK(new_request->GetSharedStorageWritableOptedIn());
+      modified_headers.SetHeader(http_names::kSecSharedStorageWritable.Ascii(),
+                                 "?1");
+    } else if (removed_headers) {
+      removed_headers->push_back(http_names::kSecSharedStorageWritable.Ascii());
+    }
   }
 
   if (new_request->Url() != KURL(new_url)) {

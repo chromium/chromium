@@ -463,8 +463,10 @@ void CorsURLLoader::FollowRedirect(
   }
   request_.headers.MergeFrom(modified_headers);
 
-  if (base::Contains(removed_headers, kSecSharedStorageWritableHeader)) {
-    request_.shared_storage_writable = false;
+  if (GetSecSharedStorageWritableHeader(modified_headers)) {
+    request_.shared_storage_writable_eligible = true;
+  } else if (base::Contains(removed_headers, kSecSharedStorageWritableHeader)) {
+    request_.shared_storage_writable_eligible = false;
   }
 
   if (!allow_any_cors_exempt_header_ &&

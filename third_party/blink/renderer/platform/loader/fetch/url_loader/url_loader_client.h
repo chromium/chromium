@@ -36,6 +36,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -59,7 +60,8 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
   // information about the received redirect. When |report_raw_headers| is
   // updated it'll be used for filtering data of the next redirect or response.
   // |removed_headers| outputs headers that need to be removed from the
-  // redirect request.
+  // redirect request. `modified_headers` outputs headers that need to be added
+  // to or updated in the redirect request.
   //
   // Implementations should return true to instruct the loader to follow the
   // redirect, or false otherwise.
@@ -72,6 +74,7 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
       const WebURLResponse& passed_redirect_response,
       bool& report_raw_headers,
       std::vector<std::string>* removed_headers,
+      net::HttpRequestHeaders& modified_headers,
       bool insecure_scheme_was_upgraded) {
     return true;
   }

@@ -126,7 +126,7 @@ Resource* PreloadRequest::Start(Document* document) {
       RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
           document->domWindow()) &&
       document->domWindow()->IsSecureContext();
-  resource_request.SetSharedStorageWritable(shared_storage_writable);
+  resource_request.SetSharedStorageWritableOptedIn(shared_storage_writable);
   if (shared_storage_writable) {
     CHECK_EQ(resource_type_, ResourceType::kImage);
     UseCounter::Count(document, WebFeature::kSharedStorageAPI_Image_Attribute);

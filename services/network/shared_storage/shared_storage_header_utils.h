@@ -9,6 +9,10 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace net {
+class HttpRequestHeaders;
+}  // namespace net
+
 namespace network {
 
 inline constexpr base::StringPiece kSecSharedStorageWritableHeader =
@@ -28,6 +32,8 @@ StringToSharedStorageOperationType(base::StringPiece operation_str);
 
 absl::optional<SharedStorageHeaderParamType>
 StringToSharedStorageHeaderParamType(base::StringPiece param_str);
+
+bool GetSecSharedStorageWritableHeader(const net::HttpRequestHeaders& headers);
 
 }  // namespace network
 

@@ -222,7 +222,8 @@ class MockRequestClient : public ResourceRequestClient {
 class MockLoader : public network::mojom::URLLoader {
  public:
   using RepeatingFollowRedirectCallback = base::RepeatingCallback<void(
-      const std::vector<std::string>& removed_headers)>;
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers)>;
   MockLoader() = default;
   MockLoader(const MockLoader&) = delete;
   MockLoader& operator=(const MockLoader&) = delete;
@@ -235,7 +236,7 @@ class MockLoader : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const absl::optional<GURL>& new_url) override {
     if (follow_redirect_callback_) {
-      follow_redirect_callback_.Run(removed_headers);
+      follow_redirect_callback_.Run(removed_headers, modified_headers);
     }
   }
   void SetPriority(net::RequestPriority priority,
@@ -391,10 +392,12 @@ TEST_F(ResourceRequestSenderTest, RedirectSyncFollow) {
 
   base::RunLoop run_loop_for_redirect;
   mock_loader_prt->SetFollowRedirectCallback(base::BindLambdaForTesting(
-      [&](const std::vector<std::string>& removed_headers) {
+      [&](const std::vector<std::string>& removed_headers,
+          const net::HttpRequestHeaders& modified_headers) {
         // network::mojom::URLLoader::FollowRedirect() must be called with an
-        // empty `removed_headers`.
+        // empty `removed_headers` and empty `modified_headers`.
         EXPECT_TRUE(removed_headers.empty());
+        EXPECT_TRUE(modified_headers.IsEmpty());
         run_loop_for_redirect.Quit();
       }));
 
@@ -403,8 +406,9 @@ TEST_F(ResourceRequestSenderTest, RedirectSyncFollow) {
           network::mojom::URLResponseHeadPtr head,
           ResourceRequestClient::FollowRedirectCallback callback) {
         EXPECT_EQ(GURL(kRedirectedUrl), redirect_info.new_url);
-        // Synchronously call `callback` with an empty `removed_headers`.
-        std::move(callback).Run({});
+        // Synchronously call `callback` with an empty `removed_headers` and
+        // empty `modified_headers`.
+        std::move(callback).Run({}, {});
       }));
 
   net::RedirectInfo redirect_info;
@@ -433,11 +437,13 @@ TEST_F(ResourceRequestSenderTest, RedirectSyncFollowWithRemovedHeaders) {
 
   base::RunLoop run_loop_for_redirect;
   mock_loader_prt->SetFollowRedirectCallback(base::BindLambdaForTesting(
-      [&](const std::vector<std::string>& removed_headers) {
+      [&](const std::vector<std::string>& removed_headers,
+          const net::HttpRequestHeaders& modified_headers) {
         // network::mojom::URLLoader::FollowRedirect() must be called with a
-        // non-empty `removed_headers`.
+        // non-empty `removed_headers` and empty `modified_headers.
         EXPECT_THAT(removed_headers,
                     ::testing::ElementsAreArray({"Foo-Bar", "Hoge-Piyo"}));
+        EXPECT_TRUE(modified_headers.IsEmpty());
         run_loop_for_redirect.Quit();
       }));
 
@@ -446,8 +452,59 @@ TEST_F(ResourceRequestSenderTest, RedirectSyncFollowWithRemovedHeaders) {
           network::mojom::URLResponseHeadPtr head,
           ResourceRequestClient::FollowRedirectCallback callback) {
         EXPECT_EQ(GURL(kRedirectedUrl), redirect_info.new_url);
-        // Synchronously call `callback` with a non-empty `removed_headers`.
-        std::move(callback).Run({"Foo-Bar", "Hoge-Piyo"});
+        // Synchronously call `callback` with a non-empty `removed_headers` and
+        // empty `modified_headers`.
+        std::move(callback).Run({"Foo-Bar", "Hoge-Piyo"}, {});
+      }));
+
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = GURL(kRedirectedUrl);
+  client->OnReceiveRedirect(redirect_info,
+                            network::mojom::URLResponseHead::New());
+  run_loop_for_redirect.Run();
+  client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                            mojo::ScopedDataPipeConsumerHandle(),
+                            absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(mock_client_->received_response());
+}
+
+TEST_F(ResourceRequestSenderTest, RedirectSyncFollowWithModifiedHeaders) {
+  mock_client_ = base::MakeRefCounted<MockRequestClient>();
+  StartAsync(CreateResourceRequest(), mock_client_);
+  ASSERT_EQ(1u, loader_and_clients_.size());
+  mojo::Remote<network::mojom::URLLoaderClient> client(
+      std::move(loader_and_clients_[0].second));
+
+  std::unique_ptr<MockLoader> mock_loader = std::make_unique<MockLoader>();
+  MockLoader* mock_loader_prt = mock_loader.get();
+  mojo::MakeSelfOwnedReceiver(std::move(mock_loader),
+                              std::move(loader_and_clients_[0].first));
+
+  base::RunLoop run_loop_for_redirect;
+  mock_loader_prt->SetFollowRedirectCallback(base::BindLambdaForTesting(
+      [&](const std::vector<std::string>& removed_headers,
+          const net::HttpRequestHeaders& modified_headers) {
+        // network::mojom::URLLoader::FollowRedirect() must be called with an
+        // empty `removed_headers` and non-empty `modified_headers.
+        EXPECT_TRUE(removed_headers.empty());
+        EXPECT_EQ(
+            "Cookie-Monster: Nom nom nom\r\nDomo-Kun: Loves Chrome\r\n\r\n",
+            modified_headers.ToString());
+        run_loop_for_redirect.Quit();
+      }));
+
+  mock_client_->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
+      [&](const net::RedirectInfo& redirect_info,
+          network::mojom::URLResponseHeadPtr head,
+          ResourceRequestClient::FollowRedirectCallback callback) {
+        EXPECT_EQ(GURL(kRedirectedUrl), redirect_info.new_url);
+        // Synchronously call `callback` with an empty `removed_headers` and
+        // non-empty `modified_headers`.
+        net::HttpRequestHeaders modified_headers;
+        modified_headers.SetHeader("Cookie-Monster", "Nom nom nom");
+        modified_headers.SetHeader("Domo-Kun", "Loves Chrome");
+        std::move(callback).Run({}, std::move(modified_headers));
       }));
 
   net::RedirectInfo redirect_info;
@@ -474,7 +531,8 @@ TEST_F(ResourceRequestSenderTest, RedirectSyncCancel) {
                               std::move(loader_and_clients_[0].first));
 
   mock_loader_prt->SetFollowRedirectCallback(
-      base::BindRepeating([](const std::vector<std::string>& removed_headers) {
+      base::BindRepeating([](const std::vector<std::string>& removed_headers,
+                             const net::HttpRequestHeaders& modified_headers) {
         // FollowRedirect() must not be called.
         CHECK(false);
       }));
@@ -508,10 +566,12 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollow) {
 
   base::RunLoop run_loop_for_redirect;
   mock_loader_prt->SetFollowRedirectCallback(base::BindLambdaForTesting(
-      [&](const std::vector<std::string>& removed_headers) {
+      [&](const std::vector<std::string>& removed_headers,
+          const net::HttpRequestHeaders& modified_headers) {
         // network::mojom::URLLoader::FollowRedirect() must be called with an
-        // empty `removed_headers`.
+        // empty `removed_headers` and empty `modified_headers.
         EXPECT_TRUE(removed_headers.empty());
+        EXPECT_TRUE(modified_headers.IsEmpty());
         run_loop_for_redirect.Quit();
       }));
 
@@ -532,8 +592,9 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollow) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(received_redirect_info);
   EXPECT_EQ(GURL(kRedirectedUrl), received_redirect_info->new_url);
-  // Asynchronously call `callback` with an empty `removed_headers`.
-  std::move(follow_redirect_callback).Run({});
+  // Asynchronously call `callback` with an empty `removed_headers` and empty
+  // `modified_headers`.
+  std::move(follow_redirect_callback).Run({}, {});
   run_loop_for_redirect.Run();
   client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                             mojo::ScopedDataPipeConsumerHandle(),
@@ -555,11 +616,13 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowWithRemovedHeaders) {
 
   base::RunLoop run_loop_for_redirect;
   mock_loader_prt->SetFollowRedirectCallback(base::BindLambdaForTesting(
-      [&](const std::vector<std::string>& removed_headers) {
+      [&](const std::vector<std::string>& removed_headers,
+          const net::HttpRequestHeaders& modified_headers) {
         // network::mojom::URLLoader::FollowRedirect() must be called with a
-        // non-empty `removed_headers`.
+        // non-empty `removed_headers` and empty `modified_headers.
         EXPECT_THAT(removed_headers,
                     ::testing::ElementsAreArray({"Foo-Bar", "Hoge-Piyo"}));
+        EXPECT_TRUE(modified_headers.IsEmpty());
         run_loop_for_redirect.Quit();
       }));
 
@@ -581,8 +644,65 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowWithRemovedHeaders) {
   ASSERT_TRUE(received_redirect_info);
   EXPECT_EQ(GURL(kRedirectedUrl), received_redirect_info->new_url);
 
-  // Asynchronously call `callback` with a non-empty `removed_headers`.
-  std::move(follow_redirect_callback).Run({"Foo-Bar", "Hoge-Piyo"});
+  // Asynchronously call `callback` with a non-empty `removed_headers` and an
+  // empty `modified_headers`.
+  std::move(follow_redirect_callback).Run({"Foo-Bar", "Hoge-Piyo"}, {});
+  run_loop_for_redirect.Run();
+  client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                            mojo::ScopedDataPipeConsumerHandle(),
+                            absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(mock_client_->received_response());
+}
+
+TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowWithModifiedHeaders) {
+  mock_client_ = base::MakeRefCounted<MockRequestClient>();
+  StartAsync(CreateResourceRequest(), mock_client_);
+  ASSERT_EQ(1u, loader_and_clients_.size());
+  mojo::Remote<network::mojom::URLLoaderClient> client(
+      std::move(loader_and_clients_[0].second));
+  std::unique_ptr<MockLoader> mock_loader = std::make_unique<MockLoader>();
+  MockLoader* mock_loader_prt = mock_loader.get();
+  mojo::MakeSelfOwnedReceiver(std::move(mock_loader),
+                              std::move(loader_and_clients_[0].first));
+
+  base::RunLoop run_loop_for_redirect;
+  mock_loader_prt->SetFollowRedirectCallback(base::BindLambdaForTesting(
+      [&](const std::vector<std::string>& removed_headers,
+          const net::HttpRequestHeaders& modified_headers) {
+        // network::mojom::URLLoader::FollowRedirect() must be called with an
+        // empty `removed_headers` and non-empty `modified_headers.
+        EXPECT_TRUE(removed_headers.empty());
+        EXPECT_EQ(
+            "Cookie-Monster: Nom nom nom\r\nDomo-Kun: Loves Chrome\r\n\r\n",
+            modified_headers.ToString());
+        run_loop_for_redirect.Quit();
+      }));
+
+  absl::optional<net::RedirectInfo> received_redirect_info;
+  ResourceRequestClient::FollowRedirectCallback follow_redirect_callback;
+  mock_client_->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
+      [&](const net::RedirectInfo& redirect_info,
+          network::mojom::URLResponseHeadPtr head,
+          ResourceRequestClient::FollowRedirectCallback callback) {
+        received_redirect_info = redirect_info;
+        follow_redirect_callback = std::move(callback);
+      }));
+
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = GURL(kRedirectedUrl);
+  client->OnReceiveRedirect(redirect_info,
+                            network::mojom::URLResponseHead::New());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(received_redirect_info);
+  EXPECT_EQ(GURL(kRedirectedUrl), received_redirect_info->new_url);
+
+  // Asynchronously call `callback` with an empty `removed_headers` and
+  // non-empty `modified_headers`.
+  net::HttpRequestHeaders modified_headers;
+  modified_headers.SetHeader("Cookie-Monster", "Nom nom nom");
+  modified_headers.SetHeader("Domo-Kun", "Loves Chrome");
+  std::move(follow_redirect_callback).Run({}, std::move(modified_headers));
   run_loop_for_redirect.Run();
   client->OnReceiveResponse(network::mojom::URLResponseHead::New(),
                             mojo::ScopedDataPipeConsumerHandle(),
@@ -603,7 +723,8 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowAfterCancel) {
                               std::move(loader_and_clients_[0].first));
 
   mock_loader_prt->SetFollowRedirectCallback(
-      base::BindRepeating([](const std::vector<std::string>& removed_headers) {
+      base::BindRepeating([](const std::vector<std::string>& removed_headers,
+                             const net::HttpRequestHeaders& modified_headers) {
         // FollowRedirect() must not be called.
         CHECK(false);
       }));
@@ -628,7 +749,7 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowAfterCancel) {
 
   // Aynchronously cancels the request.
   sender()->Cancel(scheduler::GetSingleThreadTaskRunnerForTesting());
-  std::move(follow_redirect_callback).Run({});
+  std::move(follow_redirect_callback).Run({}, {});
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1018,7 +1139,8 @@ TEST_F(ResourceRequestSenderTest, SlowCodeCache) {
 
   bool follow_redirect_callback_called = false;
   mock_loader_prt->SetFollowRedirectCallback(base::BindLambdaForTesting(
-      [&](const std::vector<std::string>& removed_headers) {
+      [&](const std::vector<std::string>& removed_headers,
+          const net::HttpRequestHeaders& modified_headers) {
         follow_redirect_callback_called = true;
       }));
 
@@ -1026,7 +1148,7 @@ TEST_F(ResourceRequestSenderTest, SlowCodeCache) {
       [&](const net::RedirectInfo& redirect_info,
           network::mojom::URLResponseHeadPtr head,
           ResourceRequestClient::FollowRedirectCallback callback) {
-        std::move(callback).Run({});
+        std::move(callback).Run({}, {});
       }));
 
   auto response = CreateResponse();
@@ -1465,7 +1587,7 @@ TEST_F(ResourceRequestSenderTest,
           ResourceRequestClient::FollowRedirectCallback callback) {
         EXPECT_EQ(GURL(kTestPageUrl), redirect_info.new_url);
         // Synchronously call `callback` with an empty `removed_headers`.
-        std::move(callback).Run({});
+        std::move(callback).Run({}, {});
       }));
   net::RedirectInfo redirect_info;
   redirect_info.new_url = GURL(kTestPageUrl);
@@ -1692,8 +1814,9 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirect) {
           network::mojom::URLResponseHeadPtr head,
           ResourceRequestClient::FollowRedirectCallback callback) {
         EXPECT_EQ(GURL(kRedirectedUrl), redirect_info.new_url);
-        // Synchronously call `callback` with an empty `removed_headers`.
-        std::move(callback).Run({});
+        // Synchronously call `callback` with an empty `removed_headers` and
+        // empty `modified_headers`.
+        std::move(callback).Run({}, {});
       }));
 
   auto loader_factory = base::MakeRefCounted<BackgroundThreadURLLoaderFactory>(
@@ -1719,10 +1842,12 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirect) {
 
         mock_loader_prt->SetFollowRedirectCallback(base::BindRepeating(
             [](scoped_refptr<RefCountedURLLoaderClientRemote> refcounted_client,
-               const std::vector<std::string>& removed_headers) {
+               const std::vector<std::string>& removed_headers,
+               const net::HttpRequestHeaders& modified_headers) {
               // network::mojom::URLLoader::FollowRedirect() must be called with
-              // an empty `removed_headers`.
+              // an empty `removed_headers` and empty `modified_headers.
               EXPECT_TRUE(removed_headers.empty());
+              EXPECT_TRUE(modified_headers.IsEmpty());
 
               // After FollowRedirect() is called, calls
               // URLLoaderClient::OnReceiveResponse() and
@@ -1754,8 +1879,8 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectWithRemovedHeaders) {
           ResourceRequestClient::FollowRedirectCallback callback) {
         EXPECT_EQ(GURL(kRedirectedUrl), redirect_info.new_url);
         // network::mojom::URLLoader::FollowRedirect() must be called with a
-        // non-empty `removed_headers`.
-        std::move(callback).Run({"Foo-Bar", "Hoge-Piyo"});
+        // non-empty `removed_headers` and empty `modified_headers.
+        std::move(callback).Run({"Foo-Bar", "Hoge-Piyo"}, {});
       }));
 
   auto loader_factory = base::MakeRefCounted<BackgroundThreadURLLoaderFactory>(
@@ -1781,11 +1906,82 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectWithRemovedHeaders) {
 
         mock_loader_prt->SetFollowRedirectCallback(base::BindRepeating(
             [](scoped_refptr<RefCountedURLLoaderClientRemote> refcounted_client,
-               const std::vector<std::string>& removed_headers) {
+               const std::vector<std::string>& removed_headers,
+               const net::HttpRequestHeaders& modified_headers) {
               // Synchronously call `callback` with a non-empty
-              // `removed_headers`.
+              // `removed_headers` and empty `modified_headers.
               EXPECT_THAT(removed_headers, ::testing::ElementsAreArray(
                                                {"Foo-Bar", "Hoge-Piyo"}));
+              EXPECT_TRUE(modified_headers.IsEmpty());
+
+              // After FollowRedirect() is called, calls
+              // URLLoaderClient::OnReceiveResponse() and
+              // URLLoaderClient::OnComplete()
+              refcounted_client->data->OnReceiveResponse(
+                  network::mojom::URLResponseHead::New(),
+                  CreateDataPipeConsumerHandleFilledWithString(kTestData),
+                  absl::nullopt);
+              refcounted_client->data->OnComplete(
+                  network::URLLoaderCompletionStatus(net::Error::OK));
+            },
+            std::move(refcounted_client)));
+      }));
+
+  SyncLoadResponse response = SendSync(mock_client, std::move(loader_factory));
+  EXPECT_EQ(net::OK, response.error_code);
+  ASSERT_TRUE(response.data);
+  EXPECT_EQ(kTestData,
+            std::string(response.data->begin()->data(), response.data->size()));
+}
+
+TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectWithModifiedHeaders) {
+  scoped_refptr<MockRequestClient> mock_client =
+      base::MakeRefCounted<MockRequestClient>();
+  mock_client->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
+      [&](const net::RedirectInfo& redirect_info,
+          network::mojom::URLResponseHeadPtr head,
+          ResourceRequestClient::FollowRedirectCallback callback) {
+        EXPECT_EQ(GURL(kRedirectedUrl), redirect_info.new_url);
+        // network::mojom::URLLoader::FollowRedirect() must be called with an
+        // empty `removed_headers` and non-empty `modified_headers.
+        net::HttpRequestHeaders modified_headers;
+        modified_headers.SetHeader("Cookie-Monster", "Nom nom nom");
+        modified_headers.SetHeader("Domo-Kun", "Loves Chrome");
+        std::move(callback).Run({}, std::move(modified_headers));
+      }));
+
+  auto loader_factory = base::MakeRefCounted<BackgroundThreadURLLoaderFactory>(
+      base::BindOnce([](mojo::PendingReceiver<network::mojom::URLLoader> loader,
+                        mojo::PendingRemote<network::mojom::URLLoaderClient>
+                            client) {
+        std::unique_ptr<MockLoader> mock_loader =
+            std::make_unique<MockLoader>();
+        MockLoader* mock_loader_prt = mock_loader.get();
+        mojo::MakeSelfOwnedReceiver(std::move(mock_loader), std::move(loader));
+
+        mojo::Remote<network::mojom::URLLoaderClient> loader_client(
+            std::move(client));
+
+        net::RedirectInfo redirect_info;
+        redirect_info.new_url = GURL(kRedirectedUrl);
+        loader_client->OnReceiveRedirect(
+            redirect_info, network::mojom::URLResponseHead::New());
+
+        scoped_refptr<RefCountedURLLoaderClientRemote> refcounted_client =
+            base::MakeRefCounted<RefCountedURLLoaderClientRemote>(
+                std::move(loader_client));
+
+        mock_loader_prt->SetFollowRedirectCallback(base::BindRepeating(
+            [](scoped_refptr<RefCountedURLLoaderClientRemote> refcounted_client,
+               const std::vector<std::string>& removed_headers,
+               const net::HttpRequestHeaders& modified_headers) {
+              // Synchronously call `callback` with an empty
+              // `removed_headers` and non-empty `modified_headers.
+              EXPECT_TRUE(removed_headers.empty());
+              EXPECT_EQ(
+                  "Cookie-Monster: Nom nom nom\r\nDomo-Kun: Loves "
+                  "Chrome\r\n\r\n",
+                  modified_headers.ToString());
 
               // After FollowRedirect() is called, calls
               // URLLoaderClient::OnReceiveResponse() and
@@ -1843,7 +2039,8 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectCancel) {
             mock_loader_prt->SetFollowRedirectCallback(base::BindRepeating(
                 [](scoped_refptr<base::RefCountedData<mojo::Remote<
                        network::mojom::URLLoaderClient>>> refcounted_client,
-                   const std::vector<std::string>& removed_headers) {
+                   const std::vector<std::string>& removed_headers,
+                   const net::HttpRequestHeaders& modified_headers) {
                   // FollowRedirect() must not be called.
                   CHECK(false);
                 },

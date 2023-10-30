@@ -120,15 +120,16 @@ mojom::SharedStorageOperationPtr MakeSharedStorageOperation(
 }  // namespace
 
 SharedStorageRequestHelper::SharedStorageRequestHelper(
-    bool shared_storage_writable,
+    bool shared_storage_writable_eligible,
     mojom::URLLoaderNetworkServiceObserver* observer)
-    : shared_storage_writable_(shared_storage_writable), observer_(observer) {}
+    : shared_storage_writable_eligible_(shared_storage_writable_eligible),
+      observer_(observer) {}
 
 SharedStorageRequestHelper::~SharedStorageRequestHelper() = default;
 
 void SharedStorageRequestHelper::ProcessOutgoingRequest(
     net::URLRequest& request) {
-  if (!shared_storage_writable_ || !observer_) {
+  if (!shared_storage_writable_eligible_ || !observer_) {
     // This `request` isn't eligible for shared storage writes and/or `this` has
     // no `observer_` to forward any processed shared storage response header
     // to.
@@ -151,7 +152,7 @@ bool SharedStorageRequestHelper::ProcessIncomingResponse(
     return false;
   }
 
-  if (!shared_storage_writable_ || !observer_) {
+  if (!shared_storage_writable_eligible_ || !observer_) {
     // This response has a shared storage header but isn't eligible to write to
     // shared storage (or there is no `observer_` to forward the processed
     // response header to); remove the header(s) to prevent a cross-site data
@@ -164,11 +165,17 @@ bool SharedStorageRequestHelper::ProcessIncomingResponse(
   return ProcessResponse(request, header_value.value(), std::move(done));
 }
 
-void SharedStorageRequestHelper::
-    RemoveEligibilityIfSharedStorageWritableRemoved(
-        const std::vector<std::string>& removed_headers) {
-  if (base::Contains(removed_headers, kSecSharedStorageWritableHeader)) {
-    shared_storage_writable_ = false;
+void SharedStorageRequestHelper::UpdateSharedStorageWritableEligible(
+    const std::vector<std::string>& removed_headers,
+    const net::HttpRequestHeaders& modified_headers) {
+  // Note that in `net::RedirectUtil::UpdateHttpRequest()`, `modified_headers`
+  // are set after `removed_headers` are removed, so if the
+  // `kSecSharedStorageWritableHeader` is in both of these, ``modified_headers`
+  // takes precedence.
+  if (GetSecSharedStorageWritableHeader(modified_headers)) {
+    shared_storage_writable_eligible_ = true;
+  } else if (base::Contains(removed_headers, kSecSharedStorageWritableHeader)) {
+    shared_storage_writable_eligible_ = false;
   }
 }
 

@@ -205,6 +205,7 @@ class FakeURLLoaderClient : public URLLoaderClient {
                           const WebURLResponse& passed_redirect_response,
                           bool& report_raw_headers,
                           std::vector<std::string>*,
+                          net::HttpRequestHeaders&,
                           bool insecure_scheme_was_upgraded) override {
     DCHECK(freezable_task_runner_->BelongsToCurrentThread());
     DCHECK(!will_follow_callbacks_.empty());
