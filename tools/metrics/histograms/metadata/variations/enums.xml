@@ -1,0 +1,283 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BeaconFileState">
+  <int value="0" label="Readable"/>
+  <int value="1" label="Not deserializable"/>
+  <int value="2" label="Lacks dictionary contents"/>
+  <int value="3" label="Missing crash streak key"/>
+  <int value="4" label="Missing clean exit beacon key"/>
+</enum>
+
+<enum name="BooleanFutureSeed">
+  <int value="0" label="Seed fetched before Time::Now()"/>
+  <int value="1" label="Seed fetched after Time::Now()"/>
+</enum>
+
+<enum name="JsonDeserializationError">
+  <summary>
+    Captures errors codes that can be given by
+    JSONFileValueDeserializer::Deserialize().
+  </summary>
+  <int value="0" label="No error"/>
+  <int value="1" label="Invalid format"/>
+  <int value="1000" label="Access denied"/>
+  <int value="1001" label="Cannot read file"/>
+  <int value="1002" label="File locked"/>
+  <int value="1003" label="No such file"/>
+</enum>
+
+<enum name="UserChannels">
+  <int value="-1" label="Unknown"/>
+  <int value="0" label="Canary"/>
+  <int value="1" label="Dev"/>
+  <int value="2" label="Beta"/>
+  <int value="3" label="Stable"/>
+</enum>
+
+<enum name="VariationsDeltaCompression">
+  <int value="0"
+      label="Delta compression flag set and received delta compressed data."/>
+  <int value="1"
+      label="Delta compression flag set but received not delta comressed
+             data."/>
+  <int value="2"
+      label="Delta compression flag not set but received delta compressed
+             data."/>
+  <int value="3"
+      label="Delta compression flag not set and received not delta compressed
+             data."/>
+</enum>
+
+<enum name="VariationSeedSignature">
+  <int value="0" label="Signature Missing"/>
+  <int value="1" label="Signature Decode Failed"/>
+  <int value="2" label="Invalid Signature"/>
+  <int value="3" label="Invalid Signature for Seed"/>
+  <int value="4" label="Valid Signature for Seed"/>
+</enum>
+
+<enum name="VariationsFirstRunResult">
+  <int value="0" label="Seed imported successfully"/>
+  <int value="1" label="Seed import failed - no callback (Obsolete)"/>
+  <int value="2" label="Seed import failed - no first run seed"/>
+  <int value="3" label="Seed import failed - failed to store seed"/>
+  <int value="4" label="Seed import failed - invalid response date string"/>
+</enum>
+
+<enum name="VariationsHeadersOwner">
+  <int value="0" label="Unknown (render-thread-initiated request)"/>
+  <int value="1" label="Unknown (request initiated elsewhere)"/>
+  <int value="2" label="Not Google-owned"/>
+  <int value="3" label="Google-owned"/>
+</enum>
+
+<enum name="VariationsHeadersRequestContextCategory">
+  <int value="0" label="First party: Request intiated by browser."/>
+  <int value="1"
+      label="First party: Request initiated by internal Chrome page."/>
+  <int value="2"
+      label="First party: Request initiated by Google-associated page."/>
+  <int value="3"
+      label="First party: Request initiated by a Google-associated sub-frame
+             on a Google-associated page."/>
+  <int value="4"
+      label="Third party: Request initiated by non-Google-associated page
+             (request initiator)."/>
+  <int value="5" label="Third party: No TrustedParams."/>
+  <int value="6" label="Third party: No IsolationInfo."/>
+  <int value="7"
+      label="Third party: Request initiated by a sub-frame on a
+             non-Google-associated page."/>
+  <int value="8"
+      label="Third party: Request initiated by non-Google-associated page
+             (frame origin). (Deprecated)"/>
+</enum>
+
+<enum name="VariationsHeadersURLValidationResult">
+  <int value="0" label="Rejected: Invalid URL."/>
+  <int value="1" label="Rejected: Not https. (Deprecated)"/>
+  <int value="2" label="Rejected: Not Google domain."/>
+  <int value="3" label="Should append headers."/>
+  <int value="4" label="Rejected: Neither http, nor https."/>
+  <int value="5" label="Rejected: Is a Google domain, but not https."/>
+</enum>
+
+<enum name="VariationsInvalidLayerReason">
+  <int value="0" label="Invalid ID"/>
+  <int value="1" label="No slots"/>
+  <int value="2" label="No members"/>
+  <int value="3" label="Invalid entropy mode"/>
+  <int value="4" label="Slots do not divide low entropy domain"/>
+  <int value="5" label="Invalid slot bounds"/>
+  <int value="6" label="Unknown fields"/>
+</enum>
+
+<enum name="VariationsInvalidStudyReason">
+  <int value="0" label="Invalid min_version"/>
+  <int value="1" label="Invalid max_version"/>
+  <int value="2" label="Invalid min_os_version"/>
+  <int value="3" label="Invalid max_os_version"/>
+  <int value="4" label="Experiment without a name"/>
+  <int value="5" label="Repeated experiment name"/>
+  <int value="6" label="Total probability overflow"/>
+  <int value="7" label="Missing experiment entry for default experient"/>
+  <int value="8" label="Missing study name"/>
+  <int value="9" label="Experiment probability overflow"/>
+  <int value="10"
+      label="Experiment has a google_web_experiment_id and a
+             web_trigger_experiment_id"/>
+  <int value="11" label="Study has an invalid name"/>
+  <int value="12" label="Experiment has an invalid name"/>
+  <int value="13" label="Feature has an invalid name"/>
+  <int value="14" label="Forcing flag has an invalid name"/>
+</enum>
+
+<enum name="VariationsLogInvalidValue">
+  <summary>
+    All values in this enum are invalid, this enum exists only so we have a nice
+    UI.
+  </summary>
+  <int value="0" label="dummy enum value"/>
+</enum>
+
+<enum name="VariationsPermanentConsistencyCountryResult">
+  <int value="0" label="Saved pref missing and no country code in seed"/>
+  <int value="1" label="Saved pref missing and country code in seed"/>
+  <int value="2" label="Saved pref invalid and no country code in seed"/>
+  <int value="3" label="Saved pref invalid and country code in seed"/>
+  <int value="4"
+      label="Saved pref present for current version and no country code in
+             seed"/>
+  <int value="5"
+      label="Saved pref present for different version and no country code in
+             seed"/>
+  <int value="6"
+      label="Saved pref present for current version and country code in seed
+             matches"/>
+  <int value="7"
+      label="Saved pref present for current version and country code in seed
+             is different"/>
+  <int value="8"
+      label="Saved pref present for different version and country code in
+             seed matches"/>
+  <int value="9"
+      label="Saved pref present for different version and country code in
+             seed is different"/>
+  <int value="10"
+      label="Saved pref present for variations overridden country is set.
+             Mainly used for testing / developer."/>
+</enum>
+
+<enum name="VariationsResourceRequestsAllowedState">
+  <int value="0" label="Requests allowed"/>
+  <int value="1" label="Requests not allowed (Obsolete 11/2013)"/>
+  <int value="2" label="Notified that requests became allowed"/>
+  <int value="3" label="Requests not allowed: EULA not accepted"/>
+  <int value="4" label="Requests not allowed: network down"/>
+  <int value="5" label="Requests not allowed: disabled by command line"/>
+  <int value="6" label="Waiting for network status"/>
+</enum>
+
+<enum name="VariationsRestrictionPolicyValues">
+  <int value="0" label="All variations are applied"/>
+  <int value="1" label="Only critical variations applied"/>
+  <int value="2" label="All variations are restricted"/>
+</enum>
+
+<enum name="VariationsSafeModeCachedFlagsBehavior">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not engaged - below threshold"/>
+  <int value="2" label="Engaged - using safe values"/>
+  <int value="3" label="Engaged - ignoring outdated safe values"/>
+  <int value="4" label="Engaged - without safe values"/>
+</enum>
+
+<enum name="VariationsSeedDateChange">
+  <int value="0" label="No previous date"/>
+  <int value="1" label="New date older than old date"/>
+  <int value="2" label="Same day"/>
+  <int value="3" label="Day changed"/>
+</enum>
+
+<enum name="VariationsSeedLoadResult">
+  <int value="0" label="Seed Loaded Successfully"/>
+  <int value="1" label="Seed Empty"/>
+  <int value="2" label="Seed Corrupt (Obsolete)"/>
+  <int value="3" label="Seed Signature Verification Failed"/>
+  <int value="4" label="Seed Corrupt Base64 Data"/>
+  <int value="5" label="Seed Corrupt Protobuf"/>
+  <int value="6" label="Seed Corrupt Gzip Data"/>
+  <int value="7" label="Seed Load Timed Out"/>
+  <int value="8" label="Seed Load Interrupted"/>
+  <int value="9" label="Seed Load Other Failure"/>
+</enum>
+
+<enum name="VariationsSeedStoreResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed - Empty Seed (obsolete)"/>
+  <int value="2" label="Failed - Parse Error"/>
+  <int value="3" label="Failed - Signature Mismatch"/>
+  <int value="4" label="Failed - Gzip Compress Error"/>
+  <int value="5" label="Delta Count (obsolete)"/>
+  <int value="6" label="Failed - Delta: Read Seed"/>
+  <int value="7" label="Failed - Delta: Apply"/>
+  <int value="8" label="Failed - Delta: Store Seed"/>
+  <int value="9" label="Failed - Gzip Uncompress Error"/>
+  <int value="10" label="Failed - Empty Gzip Contents"/>
+  <int value="11" label="Failed - Unsupported Seed Format"/>
+  <int value="12" label="Gzip Delta Count"/>
+  <int value="13" label="Non-Gzip Delta Count"/>
+  <int value="14" label="Gzip Full Count"/>
+  <int value="15" label="Non-Gzip Full Count"/>
+</enum>
+
+<enum name="VariationsSeedUsage">
+  <int value="0" label="Regular seed used"/>
+  <int value="1" label="Expired regular seed">No seed used</int>
+  <int value="2" label="Unloadable regular seed">No seed used</int>
+  <int value="3" label="Safe seed used"/>
+  <int value="4" label="Expired safe seed">No seed used</int>
+  <int value="5" label="(Obsolete M100) Corrupted safe seed">No seed used</int>
+  <int value="6"
+      label="(Obsolete M100) Regular seed used after loading empty safe seed"/>
+  <int value="7"
+      label="(Obsolete M100) Expired regular seed after loading empty safe
+             seed">No seed used</int>
+  <int value="8"
+      label="(Obsolete M100) Corrupted regular seed after loading empty safe
+             seed">No seed used</int>
+  <int value="9" label="Regular seed for future milestone">No seed used</int>
+  <int value="10" label="Safe seed for future milestone">No seed used</int>
+  <int value="11" label="Unloadable safe seed">No seed used</int>
+  <int value="12" label="Null seed used">No seed used</int>
+</enum>
+
+</enums>
+
+</histogram-configuration>
