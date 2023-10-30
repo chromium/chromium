@@ -133,6 +133,7 @@ source_set("eg2_tests") {
     ":password_sharing_constants",
     "//base/test:test_support",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
