@@ -123,10 +123,6 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
                                  device_local_accounts);
   }
 
-  void GetApps(std::vector<const ArcKioskAppData*>* apps) const {
-    manager()->GetAppsForTesting(apps);
-  }
-
   ArcKioskAppManager* manager() const { return ArcKioskAppManager::Get(); }
 
  protected:
@@ -147,8 +143,7 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
     SetApps(init_apps, std::string());
     waiter.Wait(1);
 
-    std::vector<const ArcKioskAppData*> apps;
-    GetApps(&apps);
+    std::vector<const ArcKioskAppData*> apps = manager()->GetAppsForTesting();
     ASSERT_EQ(2u, apps.size());
     ASSERT_EQ(app1.package_name(), apps[0]->package_name());
     ASSERT_EQ(app2.package_name(), apps[1]->package_name());
@@ -169,8 +164,7 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
 
     EXPECT_TRUE(manager()->GetAutoLaunchAccountId().is_valid());
 
-    std::vector<const ArcKioskAppData*> apps;
-    GetApps(&apps);
+    std::vector<const ArcKioskAppData*> apps = manager()->GetAppsForTesting();
     ASSERT_EQ(2u, apps.size());
     ASSERT_EQ(app1.package_name(), apps[0]->package_name());
     ASSERT_EQ(app2.package_name(), apps[1]->package_name());
@@ -191,8 +185,7 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
     SetApps(new_apps, std::string());
     waiter.Wait(1);
 
-    std::vector<const ArcKioskAppData*> apps;
-    GetApps(&apps);
+    std::vector<const ArcKioskAppData*> apps = manager()->GetAppsForTesting();
     ASSERT_EQ(2u, apps.size());
     ASSERT_EQ(app1.package_name(), apps[0]->package_name());
     ASSERT_EQ(app3.package_name(), apps[1]->package_name());
@@ -210,9 +203,7 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
     CleanApps();
     waiter.Wait(1);
 
-    std::vector<const ArcKioskAppData*> apps;
-    GetApps(&apps);
-    ASSERT_EQ(0u, apps.size());
+    ASSERT_EQ(0u, manager()->GetAppsForTesting().size());
     EXPECT_FALSE(manager()->GetAutoLaunchAccountId().is_valid());
   }
 }
@@ -226,10 +217,9 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, GetAppByAccountId) {
   SetApps(init_apps, std::string());
 
   // Verify the app data searched by account id.
-  std::vector<const ArcKioskAppData*> apps;
-  GetApps(&apps);
+  std::vector<const ArcKioskAppData*> apps = manager()->GetAppsForTesting();
   ASSERT_EQ(1u, apps.size());
-  const ArcKioskAppData* app = apps.front();
+  const ArcKioskAppData* app = apps[0];
   const ArcKioskAppData* app_by_account_id =
       manager()->GetAppByAccountId(app->account_id());
   ASSERT_TRUE(app_by_account_id);
@@ -255,10 +245,9 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, UpdateNameAndIcon) {
   SetApps(init_apps, std::string());
 
   // Verify the initialized app data.
-  std::vector<const ArcKioskAppData*> apps;
-  GetApps(&apps);
+  std::vector<const ArcKioskAppData*> apps = manager()->GetAppsForTesting();
   ASSERT_EQ(1u, apps.size());
-  const ArcKioskAppData* app = apps.front();
+  const ArcKioskAppData* app = apps[0];
   ASSERT_EQ(app->name(), package_name);
   ASSERT_TRUE(app->icon().isNull());
 

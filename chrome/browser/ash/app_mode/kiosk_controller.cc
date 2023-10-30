@@ -72,24 +72,18 @@ KioskController::~KioskController() {
 }
 
 std::vector<KioskApp> KioskController::GetApps() const {
-  std::vector<KioskAppManagerBase::App> web_apps;
-  web_app_manager_->GetApps(&web_apps);
-  std::vector<KioskAppManagerBase::App> chrome_apps;
-  chrome_app_manager_->GetApps(&chrome_apps);
-  std::vector<KioskAppManagerBase::App> arc_apps;
-  arc_app_manager_->GetApps(&arc_apps);
-
   std::vector<KioskApp> apps;
-  for (const auto& web_app : web_apps) {
+  for (const KioskAppManagerBase::App& web_app : web_app_manager_->GetApps()) {
     apps.emplace_back(KioskAppId::ForWebApp(web_app.account_id), web_app.name,
                       web_app.icon);
   }
-  for (const auto& chrome_app : chrome_apps) {
+  for (const KioskAppManagerBase::App& chrome_app :
+       chrome_app_manager_->GetApps()) {
     apps.emplace_back(
         KioskAppId::ForChromeApp(chrome_app.app_id, chrome_app.account_id),
         chrome_app.name, chrome_app.icon);
   }
-  for (const auto& arc_app : arc_apps) {
+  for (const KioskAppManagerBase::App& arc_app : arc_app_manager_->GetApps()) {
     apps.emplace_back(KioskAppId::ForArcApp(arc_app.account_id), arc_app.name,
                       arc_app.icon);
   }

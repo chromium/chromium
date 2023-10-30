@@ -40,7 +40,7 @@ class ArcKioskAppManager : public KioskAppManagerBase {
   const ArcKioskAppData* GetAppByAccountId(const AccountId& account_id);
 
   // KioskAppManagerBase:
-  void GetApps(std::vector<App>* apps) const override;
+  std::vector<App> GetApps() const override;
 
   void UpdateNameAndIcon(const AccountId& account_id,
                          const std::string& name,
@@ -56,12 +56,10 @@ class ArcKioskAppManager : public KioskAppManagerBase {
   // returns empty account id.
   const AccountId& GetAutoLaunchAccountId() const;
 
- private:
-  friend class ArcKioskAppManagerTest;
   // Returns the list of all apps in their internal representation.
-  void GetAppsForTesting(
-      std::vector<const ArcKioskAppData*>* apps_internal) const;
+  std::vector<const ArcKioskAppData*> GetAppsForTesting() const;
 
+ private:
   // KioskAppmanagerBase:
   // Updates `apps_` based on CrosSettings.
   void UpdateAppsFromPolicy() override;

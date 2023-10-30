@@ -564,14 +564,14 @@ void KioskAppManager::RemoveApp(const std::string& app_id,
   policy::SetDeviceLocalAccounts(service, device_local_accounts);
 }
 
-void KioskAppManager::GetApps(Apps* apps) const {
-  apps->clear();
+std::vector<KioskAppManager::App> KioskAppManager::GetApps() const {
+  std::vector<App> apps;
   for (const auto& app : apps_) {
-    const KioskAppData& app_data = *app;
-    if (app_data.status() != KioskAppData::Status::kError) {
-      apps->push_back(ConstructApp(app_data));
+    if (app->status() != KioskAppData::Status::kError) {
+      apps.push_back(ConstructApp(*app));
     }
   }
+  return apps;
 }
 
 KioskAppManager::App KioskAppManager::ConstructApp(

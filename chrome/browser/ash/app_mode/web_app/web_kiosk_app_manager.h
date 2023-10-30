@@ -47,7 +47,7 @@ class WebKioskAppManager : public KioskAppManagerBase {
   static KioskAppManagerBase::App CreateAppByData(const WebKioskAppData& data);
 
   // KioskAppManagerBase:
-  void GetApps(std::vector<App>* apps) const override;
+  std::vector<App> GetApps() const override;
 
   void LoadIcons();
 

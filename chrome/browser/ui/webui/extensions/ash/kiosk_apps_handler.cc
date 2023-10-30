@@ -29,52 +29,71 @@
 #include "content/public/browser/web_ui.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/grit/extensions_browser_resources.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace ash {
 
 namespace {
 
-// Returns a Value::Dict populated with `app_data`.
-base::Value::Dict PopulateAppDict(const KioskAppManager::App& app_data) {
-  std::string icon_url;
-  if (app_data.icon.isNull()) {
-    icon_url = webui::GetBitmapDataUrl(*ui::ResourceBundle::GetSharedInstance()
-                                            .GetImageNamed(IDR_APP_DEFAULT_ICON)
-                                            .ToSkBitmap());
-  } else {
-    icon_url = webui::GetBitmapDataUrl(*app_data.icon.bitmap());
+const SkBitmap& BitmapOrDefault(gfx::ImageSkia icon) {
+  return icon.isNull() ? *ui::ResourceBundle::GetSharedInstance()
+                              .GetImageNamed(IDR_APP_DEFAULT_ICON)
+                              .ToSkBitmap()
+                       : *icon.bitmap();
+}
+
+bool IsAutoLaunch(const KioskAppManager::App& app) {
+  return KioskAppManager::Get()->GetAutoLaunchApp() == app.app_id &&
+         (KioskAppManager::Get()->IsAutoLaunchEnabled() ||
+          KioskAppManager::Get()->IsAutoLaunchRequested());
+}
+
+base::Value::Dict PopulateAppDict(const KioskAppManager::App& app) {
+  // This dict must mirror the `KioskApp` interface defined in
+  // chrome/browser/resources/extensions/kiosk_browser_proxy.ts.
+  return base::Value::Dict()
+      .Set("id", app.app_id)
+      .Set("name", app.name)
+      .Set("iconURL", webui::GetBitmapDataUrl(BitmapOrDefault(app.icon)))
+      .Set("autoLaunch", IsAutoLaunch(app))
+      .Set("isLoading", app.is_loading);
+}
+
+base::Value::List ToAppDictList(const std::vector<KioskAppManager::App>& apps) {
+  base::Value::List list;
+  for (const auto& app : apps) {
+    list.Append(PopulateAppDict(app));
   }
-  base::Value::Dict app_dict;
-  // The items which are to be written into app_dict are also described in
-  // chrome/browser/resources/extensions/chromeos/kiosk_app_list.js in @typedef
-  // for AppDict. Please update it whenever you add or remove any keys here.
-  app_dict.Set("id", app_data.app_id);
-  app_dict.Set("name", app_data.name);
-  app_dict.Set("iconURL", icon_url);
-  app_dict.Set("autoLaunch",
-               KioskAppManager::Get()->GetAutoLaunchApp() == app_data.app_id &&
-                   (KioskAppManager::Get()->IsAutoLaunchEnabled() ||
-                    KioskAppManager::Get()->IsAutoLaunchRequested()));
-  app_dict.Set("isLoading", app_data.is_loading);
-  return app_dict;
+  return list;
+}
+
+bool IsBailoutShortcutEnabled() {
+  bool value_from_pref;
+  if (CrosSettings::Get()->GetBoolean(
+          kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled,
+          &value_from_pref)) {
+    return value_from_pref;
+  }
+  return true;
 }
 
 // Sanitize app id input value and extracts app id out of it.
 // Returns false if an app id could not be derived out of the input.
-bool ExtractsAppIdFromInput(const std::string& input,
-                            std::string* app_id) {
+bool ExtractsAppIdFromInput(const std::string& input, std::string* app_id) {
   if (crx_file::id_util::IdIsValid(input)) {
     *app_id = input;
     return true;
   }
 
   GURL webstore_url = GURL(input);
-  if (!webstore_url.is_valid())
+  if (!webstore_url.is_valid()) {
     return false;
+  }
 
   GURL webstore_base_url =
       GURL(extension_urls::GetWebstoreItemDetailURLPrefix());
@@ -88,12 +107,14 @@ bool ExtractsAppIdFromInput(const std::string& input,
 
   const std::string path = webstore_url.path();
   const size_t last_slash = path.rfind('/');
-  if (last_slash == std::string::npos)
+  if (last_slash == std::string::npos) {
     return false;
+  }
 
   const std::string candidate_id = path.substr(last_slash + 1);
-  if (!crx_file::id_util::IdIsValid(candidate_id))
+  if (!crx_file::id_util::IdIsValid(candidate_id)) {
     return false;
+  }
 
   *app_id = candidate_id;
   return true;
@@ -193,9 +214,9 @@ void KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus(
     is_auto_launch_enabled_ = false;
   }
 
-  base::Value::Dict kiosk_params;
-  kiosk_params.Set("kioskEnabled", is_kiosk_enabled_);
-  kiosk_params.Set("autoLaunchEnabled", is_auto_launch_enabled_);
+  auto kiosk_params = base::Value::Dict()
+                          .Set("kioskEnabled", is_kiosk_enabled_)
+                          .Set("autoLaunchEnabled", is_auto_launch_enabled_);
   ResolveJavascriptCallback(base::Value(callback_id), kiosk_params);
 }
 
@@ -204,33 +225,14 @@ void KioskAppsHandler::OnKioskAppsSettingsChanged() {
 }
 
 base::Value::Dict KioskAppsHandler::GetSettingsDictionary() {
-  base::Value::Dict settings;
   if (!initialized_ || !is_kiosk_enabled_) {
-    return settings;
+    return base::Value::Dict();
   }
 
-  bool enable_bailout_shortcut;
-  if (!CrosSettings::Get()->GetBoolean(
-          kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled,
-          &enable_bailout_shortcut)) {
-    enable_bailout_shortcut = true;
-  }
-
-  settings.Set("disableBailout", !enable_bailout_shortcut);
-  settings.Set("hasAutoLaunchApp",
-               !kiosk_app_manager_->GetAutoLaunchApp().empty());
-
-  KioskAppManager::AppList apps;
-  kiosk_app_manager_->GetApps(&apps);
-
-  base::Value::List apps_list;
-  for (size_t i = 0; i < apps.size(); ++i) {
-    const KioskAppManager::App& app_data = apps[i];
-    apps_list.Append(PopulateAppDict(app_data));
-  }
-  settings.Set("apps", std::move(apps_list));
-
-  return settings;
+  return base::Value::Dict()
+      .Set("disableBailout", !IsBailoutShortcutEnabled())
+      .Set("hasAutoLaunchApp", !kiosk_app_manager_->GetAutoLaunchApp().empty())
+      .Set("apps", ToAppDictList(kiosk_app_manager_->GetApps()));
 }
 
 void KioskAppsHandler::HandleInitializeKioskAppSettings(
@@ -253,8 +255,9 @@ void KioskAppsHandler::HandleGetKioskAppSettings(
 }
 
 void KioskAppsHandler::HandleAddKioskApp(const base::Value::List& args) {
-  if (!initialized_ || !is_kiosk_enabled_)
+  if (!initialized_ || !is_kiosk_enabled_) {
     return;
+  }
 
   const std::string& input = args.front().GetString();
 
@@ -268,8 +271,9 @@ void KioskAppsHandler::HandleAddKioskApp(const base::Value::List& args) {
 }
 
 void KioskAppsHandler::HandleRemoveKioskApp(const base::Value::List& args) {
-  if (!initialized_ || !is_kiosk_enabled_)
+  if (!initialized_ || !is_kiosk_enabled_) {
     return;
+  }
 
   const std::string& app_id = args.front().GetString();
 
@@ -278,8 +282,9 @@ void KioskAppsHandler::HandleRemoveKioskApp(const base::Value::List& args) {
 
 void KioskAppsHandler::HandleEnableKioskAutoLaunch(
     const base::Value::List& args) {
-  if (!initialized_ || !is_kiosk_enabled_ || !is_auto_launch_enabled_)
+  if (!initialized_ || !is_kiosk_enabled_ || !is_auto_launch_enabled_) {
     return;
+  }
 
   const std::string& app_id = args.front().GetString();
 
@@ -288,22 +293,25 @@ void KioskAppsHandler::HandleEnableKioskAutoLaunch(
 
 void KioskAppsHandler::HandleDisableKioskAutoLaunch(
     const base::Value::List& args) {
-  if (!initialized_ || !is_kiosk_enabled_ || !is_auto_launch_enabled_)
+  if (!initialized_ || !is_kiosk_enabled_ || !is_auto_launch_enabled_) {
     return;
+  }
 
   const std::string& app_id = args.front().GetString();
 
   std::string startup_app_id = kiosk_app_manager_->GetAutoLaunchApp();
-  if (startup_app_id != app_id)
+  if (startup_app_id != app_id) {
     return;
+  }
 
   kiosk_app_manager_->SetAutoLaunchApp("", owner_settings_service_);
 }
 
 void KioskAppsHandler::HandleSetDisableBailoutShortcut(
     const base::Value::List& args) {
-  if (!initialized_ || !is_kiosk_enabled_)
+  if (!initialized_ || !is_kiosk_enabled_) {
     return;
+  }
 
   CHECK(!args.empty());
   const bool disable_bailout_shortcut = args.front().GetBool();
@@ -315,8 +323,9 @@ void KioskAppsHandler::HandleSetDisableBailoutShortcut(
 
 void KioskAppsHandler::UpdateApp(const std::string& app_id) {
   KioskAppManager::App app_data;
-  if (!kiosk_app_manager_->GetApp(app_id, &app_data))
+  if (!kiosk_app_manager_->GetApp(app_id, &app_data)) {
     return;
+  }
 
   FireWebUIListener("kiosk-app-updated", PopulateAppDict(app_data));
 }

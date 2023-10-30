@@ -63,27 +63,28 @@ ArcKioskAppManager::~ArcKioskAppManager() {
 const ArcKioskAppData* ArcKioskAppManager::GetAppByAccountId(
     const AccountId& account_id) {
   for (auto& app : apps_) {
-    if (app->account_id() == account_id)
+    if (app->account_id() == account_id) {
       return app.get();
+    }
   }
   return nullptr;
 }
 
-void ArcKioskAppManager::GetApps(std::vector<App>* apps) const {
-  apps->clear();
-  apps->reserve(apps_.size());
-  for (auto& app : apps_) {
-    apps->emplace_back(*app.get());
+std::vector<ArcKioskAppManager::App> ArcKioskAppManager::GetApps() const {
+  std::vector<App> apps;
+  for (const auto& app : apps_) {
+    apps.emplace_back(*app);
   }
+  return apps;
 }
 
-void ArcKioskAppManager::GetAppsForTesting(
-    std::vector<const ArcKioskAppData*>* apps) const {
-  apps->clear();
-  apps->reserve(apps_.size());
-  for (auto& app : apps_) {
-    apps->push_back(app.get());
+std::vector<const ArcKioskAppData*> ArcKioskAppManager::GetAppsForTesting()
+    const {
+  std::vector<const ArcKioskAppData*> apps;
+  for (const auto& app : apps_) {
+    apps.push_back(app.get());
   }
+  return apps;
 }
 
 void ArcKioskAppManager::UpdateNameAndIcon(const AccountId& account_id,
@@ -133,8 +134,9 @@ void ArcKioskAppManager::UpdateAppsFromPolicy() {
   // Store current apps. We will compare old and new apps to determine which
   // apps are new, and which were deleted.
   std::map<std::string, std::unique_ptr<ArcKioskAppData>> old_apps;
-  for (auto& app : apps_)
+  for (auto& app : apps_) {
     old_apps[app->app_id()] = std::move(app);
+  }
   apps_.clear();
   auto_launch_account_id_.clear();
   auto_launched_with_zero_delay_ = false;
@@ -146,8 +148,9 @@ void ArcKioskAppManager::UpdateAppsFromPolicy() {
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
   for (auto account : device_local_accounts) {
-    if (account.type != policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP)
+    if (account.type != policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP) {
       continue;
+    }
 
     const AccountId account_id(AccountId::FromUserEmail(account.user_id));
 
@@ -175,8 +178,9 @@ void ArcKioskAppManager::UpdateAppsFromPolicy() {
     } else {
       // Use package name when display name is not specified.
       std::string name = app_info.package_name();
-      if (!app_info.display_name().empty())
+      if (!app_info.display_name().empty()) {
         name = app_info.display_name();
+      }
       apps_.push_back(std::make_unique<ArcKioskAppData>(
           app_id, app_info.package_name(), app_info.class_name(),
           app_info.action(), account_id, name));
@@ -186,8 +190,9 @@ void ArcKioskAppManager::UpdateAppsFromPolicy() {
   }
 
   std::vector<KioskAppDataBase*> old_apps_to_remove;
-  for (auto& entry : old_apps)
+  for (auto& entry : old_apps) {
     old_apps_to_remove.emplace_back(entry.second.get());
+  }
   ClearRemovedApps(old_apps_to_remove);
 
   NotifyKioskAppsChanged();

@@ -205,8 +205,7 @@ class KioskAppManagerTest : public InProcessBrowserTest {
   }
 
   std::string GetAppIds() const {
-    KioskAppManager::AppList apps;
-    manager()->GetApps(&apps);
+    KioskAppManager::AppList apps = manager()->GetApps();
 
     std::string str;
     for (size_t i = 0; i < apps.size(); ++i) {
@@ -285,8 +284,7 @@ class KioskAppManagerTest : public InProcessBrowserTest {
                     const std::string& expected_app_name,
                     const std::string& expected_required_platform_version) {
     // Check manifest data is cached correctly.
-    KioskAppManager::AppList apps;
-    manager()->GetApps(&apps);
+    KioskAppManager::AppList apps = manager()->GetApps();
     ASSERT_EQ(1u, apps.size());
     EXPECT_EQ(app_id, apps[0].app_id);
     EXPECT_EQ(expected_app_name, apps[0].name);
@@ -671,9 +669,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, DownloadNewApp) {
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, RemoveApp) {
   // Add a new app.
   RunAddNewAppTest(kTestLocalFsKioskApp, "1.0.0", kTestLocalFsKioskAppName, "");
-  KioskAppManager::AppList apps;
-  manager()->GetApps(&apps);
-  ASSERT_EQ(1u, apps.size());
+  ASSERT_EQ(1u, manager()->GetApps().size());
   base::FilePath crx_path;
   std::string version;
   EXPECT_TRUE(GetCachedCrx(kTestLocalFsKioskApp, &crx_path, &version));
@@ -686,8 +682,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, RemoveApp) {
   // Remove the app now.
   manager()->RemoveApp(kTestLocalFsKioskApp, owner_settings_service_.get());
   content::RunAllTasksUntilIdle();
-  manager()->GetApps(&apps);
-  ASSERT_EQ(0u, apps.size());
+  ASSERT_EQ(0u, manager()->GetApps().size());
   {
     base::ScopedAllowBlockingForTesting allow_io;
     EXPECT_FALSE(base::PathExists(crx_path));
@@ -703,9 +698,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateApp) {
 
   // Add a version 1 app first.
   RunAddNewAppTest(kTestLocalFsKioskApp, "1.0.0", kTestLocalFsKioskAppName, "");
-  KioskAppManager::AppList apps;
-  manager()->GetApps(&apps);
-  ASSERT_EQ(1u, apps.size());
+  ASSERT_EQ(1u, manager()->GetApps().size());
   base::FilePath crx_path;
   std::string version;
   EXPECT_TRUE(GetCachedCrx(kTestLocalFsKioskApp, &crx_path, &version));
@@ -726,8 +719,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateApp) {
   EXPECT_EQ(waiter.data_load_failure_count(), 0);
 
   // Verify the app has been updated to v2.
-  manager()->GetApps(&apps);
-  ASSERT_EQ(1u, apps.size());
+  ASSERT_EQ(1u, manager()->GetApps().size());
   base::FilePath new_crx_path;
   std::string new_version;
   EXPECT_TRUE(GetCachedCrx(kTestLocalFsKioskApp, &new_crx_path, &new_version));
@@ -757,9 +749,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateApp) {
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAndRemoveApp) {
   // Add a version 1 app first.
   RunAddNewAppTest(kTestLocalFsKioskApp, "1.0.0", kTestLocalFsKioskAppName, "");
-  KioskAppManager::AppList apps;
-  manager()->GetApps(&apps);
-  ASSERT_EQ(1u, apps.size());
+  ASSERT_EQ(1u, manager()->GetApps().size());
   base::FilePath v1_crx_path;
   std::string version;
   EXPECT_TRUE(GetCachedCrx(kTestLocalFsKioskApp, &v1_crx_path, &version));
@@ -780,8 +770,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAndRemoveApp) {
   EXPECT_EQ(waiter.data_load_failure_count(), 0);
 
   // Verify the app has been updated to v2.
-  manager()->GetApps(&apps);
-  ASSERT_EQ(1u, apps.size());
+  ASSERT_EQ(1u, manager()->GetApps().size());
   base::FilePath v2_crx_path;
   std::string new_version;
   EXPECT_TRUE(GetCachedCrx(kTestLocalFsKioskApp, &v2_crx_path, &new_version));
@@ -796,8 +785,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAndRemoveApp) {
   // Remove the app now.
   manager()->RemoveApp(kTestLocalFsKioskApp, owner_settings_service_.get());
   content::RunAllTasksUntilIdle();
-  manager()->GetApps(&apps);
-  ASSERT_EQ(0u, apps.size());
+  ASSERT_EQ(0u, manager()->GetApps().size());
   // Verify both v1 and v2 crx files are removed.
   {
     base::ScopedAllowBlockingForTesting allow_io;
