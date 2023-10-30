@@ -628,7 +628,11 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
     }
 
     if (mode() != blink::mojom::IDBTransactionMode::ReadOnly) {
-      bucket_context_->delegate().on_writing_transaction_complete.Run();
+      const bool did_sync =
+          mode() == blink::mojom::IDBTransactionMode::VersionChange ||
+          backing_store_transaction_->durability() ==
+              blink::mojom::IDBTransactionDurability::Strict;
+      bucket_context_->delegate().on_writing_transaction_complete.Run(did_sync);
     }
 
     if (database_) {

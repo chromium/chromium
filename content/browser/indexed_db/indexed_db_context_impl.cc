@@ -28,7 +28,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/values.h"
-#include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -130,8 +129,7 @@ IndexedDBContextImpl::IndexedDBContextImpl(
       quota_client_wrapper_(
           std::make_unique<storage::QuotaClientCallbackWrapper>(
               quota_client_.get())),
-      quota_client_receiver_(quota_client_wrapper_.get()),
-      filesystem_proxy_(storage::CreateFilesystemProxy()) {
+      quota_client_receiver_(quota_client_wrapper_.get()) {
   TRACE_EVENT0("IndexedDB", "init");
 
   // QuotaManagerProxy::RegisterClient() must be called during construction
@@ -313,8 +311,7 @@ void IndexedDBContextImpl::DoDeleteBucketData(
           idb_file_path);
   bool success = s.ok();
   if (success) {
-    success = filesystem_proxy_->DeletePathRecursively(
-        GetBlobStorePath(bucket_locator));
+    success = base::DeletePathRecursively(GetBlobStorePath(bucket_locator));
   }
 
   NotifyOfBucketModification(bucket_locator);
@@ -851,11 +848,19 @@ int64_t IndexedDBContextImpl::GetBucketDiskUsage(
   if (!LookUpBucket(bucket_locator.id))
     return 0;
 
-  if (bucket_size_map_.find(bucket_locator) == bucket_size_map_.end()) {
-    bucket_size_map_[bucket_locator] = ReadUsageFromDisk(bucket_locator);
+  bool write_in_progress = false;
+  const auto iter = bucket_size_map_.find(bucket_locator);
+  if (iter != bucket_size_map_.end()) {
+    if (iter->second >= 0) {
+      return iter->second;
+    }
+    write_in_progress = true;
   }
 
-  return bucket_size_map_[bucket_locator];
+  const int64_t value = ReadUsageFromDisk(bucket_locator, write_in_progress);
+  CHECK_GE(value, 0);
+  bucket_size_map_[bucket_locator] = value;
+  return value;
 }
 
 base::Time IndexedDBContextImpl::GetBucketLastModified(
@@ -871,11 +876,11 @@ base::Time IndexedDBContextImpl::GetBucketLastModified(
   }
 
   base::FilePath idb_directory = GetLevelDBPath(bucket_locator);
-  absl::optional<base::File::Info> info =
-      filesystem_proxy_->GetFileInfo(idb_directory);
-  if (!info.has_value())
-    return base::Time();
-  return info->last_modified;
+  base::File::Info info;
+  if (base::GetFileInfo(idb_directory, &info)) {
+    return info.last_modified;
+  }
+  return base::Time();
 }
 
 std::vector<base::FilePath> IndexedDBContextImpl::GetStoragePaths(
@@ -925,10 +930,16 @@ void IndexedDBContextImpl::FactoryOpened(
 }
 
 void IndexedDBContextImpl::WritingTransactionComplete(
-    const storage::BucketLocator& bucket_locator) {
+    const storage::BucketLocator& bucket_locator,
+    bool flushed) {
   DCHECK(!indexeddb_factory_.get() ||
          indexeddb_factory_->GetConnectionCount(bucket_locator.id) > 0);
   NotifyOfBucketModification(bucket_locator);
+  if (!flushed) {
+    // A negative value indicates "not cached, and LevelDB file write is
+    // potentially in progress". See `bucket_size_map_` docs.
+    bucket_size_map_[bucket_locator] = -1;
+  }
 }
 
 void IndexedDBContextImpl::DatabaseDeleted(
@@ -993,9 +1004,8 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence() {
 
     if (delete_bucket) {
       GetIDBFactory()->ForceClose(bucket_locator.id, false);
-      filesystem_proxy_->DeletePathRecursively(GetLevelDBPath(bucket_locator));
-      filesystem_proxy_->DeletePathRecursively(
-          GetBlobStorePath(bucket_locator));
+      base::DeletePathRecursively(GetLevelDBPath(bucket_locator));
+      base::DeletePathRecursively(GetBlobStorePath(bucket_locator));
     }
   }
 }
@@ -1035,16 +1045,32 @@ base::FilePath IndexedDBContextImpl::GetLevelDBPathForTesting(
 }
 
 int64_t IndexedDBContextImpl::ReadUsageFromDisk(
-    const storage::BucketLocator& bucket_locator) const {
+    const storage::BucketLocator& bucket_locator,
+    bool write_in_progress) const {
   if (is_incognito()) {
     if (!indexeddb_factory_)
       return 0;
     return indexeddb_factory_->GetInMemoryDBSize(bucket_locator);
   }
 
+#if BUILDFLAG(IS_WIN)
+  // Touch all files in the LevelDB directory to update directory entry
+  // metadata. See note for `bucket_size_map_` about why this is necessary.
+  if (write_in_progress) {
+    const base::FilePath leveldb_dir = GetLevelDBPath(bucket_locator);
+    base::FileEnumerator file_iter(leveldb_dir, /*recursive=*/true,
+                                   base::FileEnumerator::FILES);
+    for (base::FilePath file_path = file_iter.Next(); !file_path.empty();
+         file_path = file_iter.Next()) {
+      base::File file(
+          file_path, base::File::FLAG_OPEN | base::File::FLAG_WIN_SHARE_DELETE);
+    }
+  }
+#endif
+
   int64_t total_size = 0;
   for (const base::FilePath& path : GetStoragePaths(bucket_locator))
-    total_size += filesystem_proxy_->ComputeDirectorySize(path);
+    total_size += base::ComputeDirectorySize(path);
   return total_size;
 }
 

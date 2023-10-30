@@ -799,9 +799,10 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
       bucket_context_destruction_weak_factory_.GetWeakPtr(), bucket_locator);
   bucket_delegate.on_writing_transaction_complete = base::BindRepeating(
       [](base::WeakPtr<IndexedDBFactory> factory,
-         storage::BucketLocator bucket_locator) {
+         storage::BucketLocator bucket_locator, bool did_sync) {
         if (factory) {
-          factory->context_->WritingTransactionComplete(bucket_locator);
+          factory->context_->WritingTransactionComplete(bucket_locator,
+                                                        did_sync);
         }
       },
       bucket_context_destruction_weak_factory_.GetWeakPtr(), bucket_locator);

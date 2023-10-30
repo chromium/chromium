@@ -144,8 +144,10 @@ class CONTENT_EXPORT IndexedDBBucketContext {
         on_content_changed;
 
     // Called to inform the quota system that a transaction which may have
-    // updated the amount of disk space used has completed.
-    base::RepeatingClosure on_writing_transaction_complete;
+    // updated the amount of disk space used has completed. The parameter is
+    // true for transactions that caused the backing store to flush.
+    base::RepeatingCallback<void(bool /*did_sync*/)>
+        on_writing_transaction_complete;
 
     // Called to run a given callback on every bucket context (including the one
     // in the current sequence and those in other sequences/associated with

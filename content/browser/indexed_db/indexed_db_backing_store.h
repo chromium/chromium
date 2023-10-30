@@ -174,6 +174,9 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
     base::WeakPtr<Transaction> AsWeakPtr();
 
+    blink::mojom::IDBTransactionDurability durability() const {
+      return durability_;
+    }
     blink::mojom::IDBTransactionMode mode() const { return mode_; }
 
     IndexedDBBackingStore* backing_store() {
