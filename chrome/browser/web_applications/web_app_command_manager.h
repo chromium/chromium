@@ -101,7 +101,8 @@ class WebAppCommandManager {
   void OnLockAcquired(WebAppCommand::Id command_id,
                       base::OnceClosure start_command);
 
-  void StartCommand(WebAppCommand* command, base::OnceClosure start_command);
+  void StartCommand(base::WeakPtr<WebAppCommand> command,
+                    base::OnceClosure start_command);
 
   content::WebContents* EnsureWebContentsCreated();
 
