@@ -60,6 +60,8 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
   // Create the save in account button.
   _saveInAccountButton =
       PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
+  _saveInAccountButton.accessibilityIdentifier =
+      kBulkUploadSaveButtonAccessibilityIdentifer;
   [_saveInAccountButton
       setTitle:l10n_util::GetNSString(IDS_IOS_BULK_UPLOAD_BUTTON_TITLE)
       forState:UIControlStateNormal];

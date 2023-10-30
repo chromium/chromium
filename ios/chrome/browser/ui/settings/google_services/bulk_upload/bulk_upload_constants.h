@@ -24,6 +24,9 @@ extern NSString* const kBulkUploadTableViewBookmarksItemAccessibilityIdentifer;
 extern NSString* const
     kBulkUploadTableViewReadingListItemAccessibilityIdentifer;
 
+// Accessibility identifiers for the save button in the bulk upload page.
+extern NSString* const kBulkUploadSaveButtonAccessibilityIdentifer;
+
 // Item to exchange between the mediator and the view controller.
 @interface BulkUploadViewItem : NSObject
 

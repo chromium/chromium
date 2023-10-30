@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_mediator_delegate.h"
+#import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -130,12 +131,13 @@ const BulkUploadModelItem kBuildUploadModelItems[] = {
 #pragma mark - Private
 
 - (void)save {
-  int count = 0;
-  for (BulkUploadModelItem modelItem : kBuildUploadModelItems) {
-    count += _map[modelItem.model_type].item_count;
-  }
   syncer::ModelTypeSet selectedModelTypes = [self selectedModelTypeEnumSet];
   _syncService->TriggerLocalDataMigration(selectedModelTypes);
+  int count = 0;
+  // Count items for the selected types.
+  for (syncer::ModelType model_type : selectedModelTypes) {
+    count += _map[model_type].item_count;
+  }
   const std::string email =
       _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
@@ -234,7 +236,8 @@ const BulkUploadModelItem kBuildUploadModelItems[] = {
     [self save];
     return;
   }
-  _reauthenticationModule = [[ReauthenticationModule alloc] init];
+  // Use util from password_utils to create reauth module to allow easy testing.
+  _reauthenticationModule = password_manager::BuildReauthenticationModule();
   if (![_reauthenticationModule canAttemptReauth]) {
     base::RecordAction(
         base::UserMetricsAction("Signin_BulkUpload_FaceID_CannotBeStarted"));

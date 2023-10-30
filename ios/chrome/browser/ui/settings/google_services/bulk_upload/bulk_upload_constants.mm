@@ -14,5 +14,8 @@ NSString* const kBulkUploadTableViewBookmarksItemAccessibilityIdentifer =
 NSString* const kBulkUploadTableViewReadingListItemAccessibilityIdentifer =
     @"BulkUploadTableViewReadingListItemAccessibilityIdentifer";
 
+NSString* const kBulkUploadSaveButtonAccessibilityIdentifer =
+    @"BulkUploadSaveButtonAccessibilityIdentifer";
+
 @implementation BulkUploadViewItem
 @end
