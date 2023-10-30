@@ -7075,3 +7075,4 @@ crbug.com/1496301 http/tests/devtools/a11y-axe-core/settings/blackbox-a11y-test.
 
 # Gardener 2023-10-30
 crbug.com/1497325 [ Mac ] external/wpt/css/css-color/nested-color-mix-with-currentcolor.html [ Failure Pass ]
+crbug.com/1497337 [ Win ] external/wpt/html/semantics/popovers/popover-focus-2.html [ Failure Pass ]
