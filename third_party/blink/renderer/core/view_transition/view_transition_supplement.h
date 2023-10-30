@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
@@ -15,7 +16,6 @@
 
 namespace blink {
 class DOMViewTransition;
-class V8ViewTransitionCallback;
 
 class CORE_EXPORT ViewTransitionSupplement
     : public GarbageCollected<ViewTransitionSupplement>,
@@ -36,7 +36,12 @@ class CORE_EXPORT ViewTransitionSupplement
       Document&,
       V8ViewTransitionCallback* callback,
       ExceptionState&);
-  // Without callback:
+  // With options
+  static DOMViewTransition* startViewTransition(ScriptState*,
+                                                Document&,
+                                                ViewTransitionOptions* options,
+                                                ExceptionState&);
+  // Without callback or options:
   static DOMViewTransition* startViewTransition(ScriptState*,
                                                 Document&,
                                                 ExceptionState&);

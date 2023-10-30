@@ -7,6 +7,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -90,6 +91,7 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
   DCHECK(script_state);
   DCHECK(ThreadScheduler::Current());
   auto* supplement = From(document);
+
   if (callback) {
     auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
     // Set the parent task ID if we're not in an extension task (as extensions
@@ -104,8 +106,21 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
 DOMViewTransition* ViewTransitionSupplement::startViewTransition(
     ScriptState* script_state,
     Document& document,
+    ViewTransitionOptions* options,
     ExceptionState& exception_state) {
-  return startViewTransition(script_state, document, nullptr, exception_state);
+  CHECK(!options || options->hasUpdate());
+  return startViewTransition(script_state, document,
+                             options ? options->update() : nullptr,
+                             exception_state);
+}
+
+DOMViewTransition* ViewTransitionSupplement::startViewTransition(
+    ScriptState* script_state,
+    Document& document,
+    ExceptionState& exception_state) {
+  return startViewTransition(script_state, document,
+                             static_cast<V8ViewTransitionCallback*>(nullptr),
+                             exception_state);
 }
 
 DOMViewTransition* ViewTransitionSupplement::StartTransition(

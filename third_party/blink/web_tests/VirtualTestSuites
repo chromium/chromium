@@ -1550,6 +1550,16 @@
     "expires": "May 1, 2024"
   },
   {
+    "prefix": "view-transition-types",
+    "platforms": ["Linux", "Mac", "Win"],
+    "owners": ["view-transitions-api@chromium.org"],
+    "bases": ["wpt_internal/view-transition-types"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-threaded-compositing",
+             "--enable-blink-features=ViewTransitionTypes"],
+    "expires": "May 1, 2024"
+  },
+  {
     "prefix": "mutation-events-disabled",
     "platforms": ["Linux"],
     "bases": [],

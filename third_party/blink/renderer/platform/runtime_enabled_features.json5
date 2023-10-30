@@ -4071,6 +4071,10 @@
       name: "ViewTransitionOnNavigation",
     },
     {
+      // https://chromestatus.com/feature/5089552511533056
+      name: "ViewTransitionTypes",
+    },
+    {
       name: "VisibilityCollapseColumn",
       base_feature: "none",
     },
