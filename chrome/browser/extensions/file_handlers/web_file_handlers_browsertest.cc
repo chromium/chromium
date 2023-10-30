@@ -13,9 +13,9 @@
 namespace extensions {
 namespace {
 
-class FileHandlingWithoutFeatureBrowserTest : public ExtensionBrowserTest {
+class WebFileHandlersBrowserTest : public ExtensionBrowserTest {
  public:
-  FileHandlingWithoutFeatureBrowserTest() {
+  WebFileHandlersBrowserTest() {
     feature_list_.InitAndDisableFeature(
         extensions_features::kExtensionWebFileHandlers);
   }
@@ -26,7 +26,7 @@ class FileHandlingWithoutFeatureBrowserTest : public ExtensionBrowserTest {
 
 // Web File Handlers are either parsed or emit a warning, depending on the
 // current browser channel and feature enablement.
-IN_PROC_BROWSER_TEST_F(FileHandlingWithoutFeatureBrowserTest, Warning) {
+IN_PROC_BROWSER_TEST_F(WebFileHandlersBrowserTest, Warning) {
   struct {
     const char* name;
     const char* manifest;
