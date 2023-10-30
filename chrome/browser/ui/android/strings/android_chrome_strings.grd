@@ -1553,11 +1553,10 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
 
       <!-- Tracking protection -->
-      <!-- TODO(b/295926938): Update the strings once finalized. -->
-      <message name="IDS_TRACKING_PROTECTION_TITLE" desc="" translateable="false">
+      <message name="IDS_TRACKING_PROTECTION_TITLE" desc="Tracking Protection preference item title.">
         Tracking protection
       </message>
-      <message name="IDS_TRACKING_PROTECTION_SUMMARY" desc="" translateable="false">
+      <message name="IDS_TRACKING_PROTECTION_SUMMARY" desc="Tracking Protection preference item summary.">
         Protection from trackers (third-party cookies, IP tracking, invasive scripts, and more)
       </message>
 
