@@ -80,12 +80,12 @@ TEST_P(UpdateVirtualCardEnrollmentRequestTest, GetRequestContent) {
       case VirtualCardEnrollmentSource::kDownstream:
       case VirtualCardEnrollmentSource::kSettingsPage:
         billable_service_number =
-            base::NumberToString(kUnmaskCardBillableServiceNumber);
+            base::NumberToString(kUnmaskPaymentMethodBillableServiceNumber);
         channel_type = "CHROME_DOWNSTREAM";
         break;
       case VirtualCardEnrollmentSource::kUpstream:
         billable_service_number =
-            base::NumberToString(kUploadCardBillableServiceNumber);
+            base::NumberToString(kUploadPaymentMethodBillableServiceNumber);
         channel_type = "CHROME_UPSTREAM";
         break;
       default:
@@ -114,7 +114,8 @@ TEST_P(UpdateVirtualCardEnrollmentRequestTest, GetRequestContent) {
     EXPECT_TRUE(GetRequest()->GetRequestContent().find("instrument_id") !=
                 std::string::npos);
     EXPECT_TRUE(GetRequest()->GetRequestContent().find(base::NumberToString(
-                    kUnmaskCardBillableServiceNumber)) != std::string::npos);
+                    kUnmaskPaymentMethodBillableServiceNumber)) !=
+                std::string::npos);
   }
 }
 

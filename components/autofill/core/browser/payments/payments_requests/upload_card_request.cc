@@ -57,7 +57,7 @@ std::string UploadCardRequest::GetRequestContent() {
   const std::string& app_locale = request_details_.app_locale;
   base::Value::Dict context;
   context.Set("language_code", app_locale);
-  context.Set("billable_service", kUploadCardBillableServiceNumber);
+  context.Set("billable_service", kUploadPaymentMethodBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
     context.Set("customer_context",
                 BuildCustomerContextDictionary(

@@ -37,7 +37,7 @@ std::string SelectChallengeOptionRequest::GetRequestContentType() {
 std::string SelectChallengeOptionRequest::GetRequestContent() {
   base::Value::Dict request_dict;
   base::Value::Dict context;
-  context.Set("billable_service", kUnmaskCardBillableServiceNumber);
+  context.Set("billable_service", kUnmaskPaymentMethodBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
     context.Set("customer_context",
                 BuildCustomerContextDictionary(

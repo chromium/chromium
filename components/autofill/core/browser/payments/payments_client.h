@@ -65,8 +65,8 @@ typedef base::OnceCallback<void(
 
 // Billable service number is defined in Payments server to distinguish
 // different requests.
-inline constexpr int kUnmaskCardBillableServiceNumber = 70154;
-inline constexpr int kUploadCardBillableServiceNumber = 70073;
+inline constexpr int kUnmaskPaymentMethodBillableServiceNumber = 70154;
+inline constexpr int kUploadPaymentMethodBillableServiceNumber = 70073;
 inline constexpr int kMigrateCardsBillableServiceNumber = 70264;
 
 class PaymentsRequest;

@@ -320,7 +320,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       upload_request_.client_behavior_signals, app_locale_,
       base::BindOnce(&CreditCardSaveManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr()),
-      payments::kUploadCardBillableServiceNumber,
+      payments::kUploadPaymentMethodBillableServiceNumber,
       payments::GetBillingCustomerId(personal_data_manager_),
       payments::PaymentsClient::UploadCardSource::UPSTREAM_CHECKOUT_FLOW);
 }

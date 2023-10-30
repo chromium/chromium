@@ -4154,9 +4154,9 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_form.fields[4].value = u"123";
 
   // Confirm that the preflight request contained
-  // kUploadCardBillableServiceNumber in the request.
+  // kUploadPaymentMethodBillableServiceNumber in the request.
   FormSubmitted(credit_card_form);
-  EXPECT_EQ(payments::kUploadCardBillableServiceNumber,
+  EXPECT_EQ(payments::kUploadPaymentMethodBillableServiceNumber,
             payments_client().billable_service_number_in_request());
 }
 
