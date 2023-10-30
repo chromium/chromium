@@ -30,6 +30,8 @@ enum class WebApkUpdateReason {
   SHORTCUTS_DIFFER,
   DARK_BACKGROUND_COLOR_DIFFERS,
   DARK_THEME_COLOR_DIFFERS,
+  PRIMARY_ICON_CHANGE_BELOW_THRESHOLD,
+  PRIMARY_ICON_CHANGE_SHELL_UPDATE,
 };
 
 // A Java counterpart will be generated for this enum.

@@ -350,6 +350,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_creation::kWebNotesStylizeEnabled,
     &kWebApkAllowIconUpdate,
     &kWebApkBackupAndRestoreBackend,
+    &kWebApkIconUpdateThreshold,
     &kWebApkInstallService,
     &features::kDnsOverHttps,
     &notifications::features::kUseChimeAndroidSdk,
@@ -1197,6 +1198,10 @@ BASE_FEATURE(kWebOtpCrossDeviceSimpleString,
 
 BASE_FEATURE(kWebApkAllowIconUpdate,
              "WebApkAllowIconUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebApkIconUpdateThreshold,
+             "WebApkIconUpdateThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebApkBackupAndRestoreBackend,

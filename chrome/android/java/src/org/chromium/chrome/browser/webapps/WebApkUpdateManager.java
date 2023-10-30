@@ -26,11 +26,8 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -57,6 +54,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -80,9 +78,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     private static final int CHANGING_ICON_MASK = 1 << 1;
     private static final int CHANGING_APP_NAME = 1 << 2;
     private static final int CHANGING_SHORTNAME = 1 << 3;
-    private static final int HISTOGRAM_SCOPE = 1 << 4;
+    private static final int CHANGING_ICON_BELOW_THRESHOLD = 1 << 4;
+    private static final int CHANGING_ICON_SHELL_UPDATE = 1 << 5;
+    private static final int HISTOGRAM_SCOPE = 1 << 6;
 
     private static final String PARAM_SHELL_VERSION = "shell_version";
+    private static final String PARAM_CHANGE_THRESHOLD = "change_threshold";
 
     private final ActivityTabProvider mTabProvider;
 
@@ -214,17 +215,16 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     /**
      * Logs how different (in percentages) two bitmaps are, scaling the images down to be the same
-     * size (if the two are of different dimensions). Does nothing if either bitmap passed in via
-     * `iconDiffPair` is null.
+     * size (if the two are of different dimensions). Does nothing if either bitmap passed in is
+     * null (but it only happens during testing).
      *
-     * @param iconDiffPair a pair of Bitmaps to compare to each other.
+     * @param before The current Bitmap of the web app.
+     * @param after The new (proposed) Bitmap for the web app.
+     * @return the percentage difference of the two Bitmaps.
      */
-    static void logIconDiffs(Pair<Bitmap, Bitmap> iconDiffPair) {
-        ThreadUtils.assertOnBackgroundThread();
-
-        Bitmap before = iconDiffPair.first;
-        Bitmap after = iconDiffPair.second;
-        if (before == null || after == null) return;
+    static int logIconDiffs(Bitmap before, Bitmap after) {
+        // The icons may be null during unit testing.
+        if (before == null || after == null) return Integer.MAX_VALUE;
 
         // Unfortunately, the install size can differ from the update size (for example, a 96x96
         // installed icon is downscaled to size 72x72, during update -- even if the website provides
@@ -247,6 +247,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             RecordHistogram.recordCount100Histogram(
                     "WebApk.AppIdentityDialog.PendingImageUpdateDiffValue", diffValue);
         }
+
+        return diffValue;
     }
 
     @Override
@@ -259,29 +261,25 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         mFetchedInfo =
                 MergedWebappInfo.create(/* oldWebappInfo= */ mInfo, fetchedIntentDataProvider);
 
-        Pair<Bitmap, Bitmap> iconDiffPair =
-                new Pair<>(
-                        mInfo.icon().bitmap(),
-                        mFetchedInfo != null ? mFetchedInfo.icon().bitmap() : null);
-        List<Integer> originalUpdateReasons =
+        mUpdateReasons =
                 generateUpdateReasons(
-                        mInfo, mFetchedInfo, mFetchedPrimaryIconUrl, mFetchedSplashIconUrl);
-        // In order to determine whether to log the icon differences, we need to consult the
-        // original update reasons, before we revert to using the old icon below.
-        boolean containsIconUpdateRequest =
-                originalUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS)
-                        || originalUpdateReasons.contains(
-                                WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS);
+                        mInfo,
+                        mFetchedInfo,
+                        mFetchedPrimaryIconUrl,
+                        mFetchedSplashIconUrl,
+                        iconUpdateDialogEnabled(),
+                        nameUpdateDialogEnabled());
 
         if (mFetchedInfo != null) {
             // When only some/no app identity updates are permitted, the update
             // should still proceed with updating all the other values (not related
             // to the blocked app identity update).
-            if (!nameUpdateDialogEnabled()) {
+            if (!mUpdateReasons.contains(WebApkUpdateReason.NAME_DIFFERS)
+                    && !mUpdateReasons.contains(WebApkUpdateReason.SHORT_NAME_DIFFERS)) {
                 mFetchedInfo.setUseOldName(true);
             }
-            if (!iconUpdateDialogEnabled()
-                    && !allowIconUpdateForShellVersion(mInfo.shellApkVersion())) {
+
+            if (!mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS)) {
                 mFetchedInfo.setUseOldIcon(true);
                 // Forces recreation of the primary icon during proto construction.
                 mFetchedPrimaryIconUrl = "";
@@ -294,9 +292,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         }
 
         boolean gotManifest = (mFetchedInfo != null);
-        mUpdateReasons =
-                generateUpdateReasons(
-                        mInfo, mFetchedInfo, mFetchedPrimaryIconUrl, mFetchedSplashIconUrl);
         boolean needsUpgrade = !mUpdateReasons.isEmpty();
         if (mStorage.shouldForceUpdate() && needsUpgrade) {
             // Add to the front of the list to designate it as the primary reason.
@@ -304,6 +299,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         }
         Log.i(TAG, "Got Manifest: " + gotManifest);
         Log.i(TAG, "WebAPK upgrade needed: " + needsUpgrade);
+        Log.i(TAG, "Upgrade reasons: " + Arrays.toString(mUpdateReasons.toArray()));
 
         // If the Web Manifest was not found and an upgrade is requested, stop fetching Web
         // Manifests as the user navigates to avoid sending multiple WebAPK update requests. In
@@ -327,12 +323,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         }
 
         if (!needsUpgrade) {
-            // No updates can mean that an icon update was requested, but we blocked it. We still
-            // want to log the icon differences.
-            if (containsIconUpdateRequest) {
-                PostTask.postTask(TaskTraits.BEST_EFFORT, () -> logIconDiffs(iconDiffPair));
-            }
-
             if (!mStorage.didPreviousUpdateSucceed() || mStorage.shouldForceUpdate()) {
                 onFinishedUpdate(mStorage, WebApkInstallResult.SUCCESS, false /* relaxUpdates */);
             }
@@ -343,12 +333,22 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS)
                         || mUpdateReasons.contains(
                                 WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS);
+        boolean shellUpdateInProgress =
+                mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_CHANGE_SHELL_UPDATE);
+        boolean iconChangeBelowThreshold =
+                mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_CHANGE_BELOW_THRESHOLD);
         boolean shortNameChanging = mUpdateReasons.contains(WebApkUpdateReason.SHORT_NAME_DIFFERS);
         boolean nameChanging = mUpdateReasons.contains(WebApkUpdateReason.NAME_DIFFERS);
 
         int histogramAction = CHANGING_NOTHING;
         if (mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS)) {
             histogramAction |= CHANGING_ICON;
+        }
+        if (mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_CHANGE_BELOW_THRESHOLD)) {
+            histogramAction |= CHANGING_ICON_BELOW_THRESHOLD;
+        }
+        if (mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_CHANGE_SHELL_UPDATE)) {
+            histogramAction |= CHANGING_ICON_SHELL_UPDATE;
         }
         if (mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS)) {
             histogramAction |= CHANGING_ICON_MASK;
@@ -365,42 +365,31 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         boolean showDialogForName =
                 (nameChanging || shortNameChanging) && nameUpdateDialogEnabled();
         boolean showDialogForIcon =
-                iconChanging
-                        && iconUpdateDialogEnabled()
-                        && !allowIconUpdateForShellVersion(mInfo.shellApkVersion());
+                iconChanging && !iconChangeBelowThreshold && !shellUpdateInProgress;
 
-        // If an icon change is involved, log the numerical value of how much the icon is changing,
-        // except in cases where the user has already approved the update, because that means we
-        // have already logged it the last time around (the update is still pending).
-        if (containsIconUpdateRequest && !alreadyUserApproved) {
-            PostTask.postTask(TaskTraits.BEST_EFFORT, () -> logIconDiffs(iconDiffPair));
-        }
-
-        if ((!showDialogForName && !showDialogForIcon) || alreadyUserApproved) {
-            if (alreadyUserApproved) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Webapp.AppIdentityDialog.AlreadyApproved",
-                        histogramAction,
-                        HISTOGRAM_SCOPE);
-            } else {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Webapp.AppIdentityDialog.NotShowing", histogramAction, HISTOGRAM_SCOPE);
-            }
-
-            // It might seem non-obvious why the POSITIVE button is selected when we've determined
-            // that App Identity updates are not enabled or when nothing meaningful is changing.
-            // Keep in mind, though, that the update being processed might not be app identity
-            // related and those updates must still go through. The server keeps track of whether an
-            // identity update has been approved by the user, using the `appIdentityUpdateSupported`
-            // flag, so the app won't be able to update its identity even if we use the POSITIVE
-            // button here.
-            onUserApprovedUpdate(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        if ((showDialogForName || showDialogForIcon) && !alreadyUserApproved) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Webapp.AppIdentityDialog.Showing", histogramAction, HISTOGRAM_SCOPE);
+            showIconOrNameUpdateDialog(iconChanging, shortNameChanging, nameChanging);
             return;
         }
 
-        RecordHistogram.recordEnumeratedHistogram(
-                "Webapp.AppIdentityDialog.Showing", histogramAction, HISTOGRAM_SCOPE);
-        showIconOrNameUpdateDialog(iconChanging, shortNameChanging, nameChanging);
+        if (alreadyUserApproved) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Webapp.AppIdentityDialog.AlreadyApproved", histogramAction, HISTOGRAM_SCOPE);
+        } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Webapp.AppIdentityDialog.NotShowing", histogramAction, HISTOGRAM_SCOPE);
+        }
+
+        // It might seem non-obvious why the POSITIVE button is selected when we've determined
+        // that App Identity updates are not enabled or when nothing meaningful is changing.
+        // Keep in mind, though, that the update being processed might not be app identity
+        // related and those updates must still go through. The server keeps track of whether an
+        // identity update has been approved by the user, using the `appIdentityUpdateSupported`
+        // flag, so the app won't be able to update its identity even if we use the POSITIVE
+        // button here.
+        onUserApprovedUpdate(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
 
     protected boolean iconUpdateDialogEnabled() {
@@ -412,10 +401,16 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         return true;
     }
 
-    private boolean allowIconUpdateForShellVersion(int shellVersion) {
+    private static boolean allowIconUpdateForShellVersion(int shellVersion) {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.WEB_APK_ALLOW_ICON_UPDATA, PARAM_SHELL_VERSION, 0)
+                        ChromeFeatureList.WEB_APK_ALLOW_ICON_UPDATE, PARAM_SHELL_VERSION, 0)
                 >= shellVersion;
+    }
+
+    private static boolean belowAppIdIconUpdateThreshold(int percentage) {
+        return percentage
+                <= ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.WEB_APK_ICON_UPDATE_THRESHOLD, PARAM_CHANGE_THRESHOLD, 0);
     }
 
     protected void showIconOrNameUpdateDialog(
@@ -443,7 +438,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     }
 
     private String getAppIdentityHash(WebappInfo info, String primaryIconUrl) {
-        if (info == null) return "";
+        if (info == null) {
+            return "";
+        }
         return info.name()
                 + "|"
                 + info.shortName()
@@ -702,13 +699,17 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
      *     suited for use as the launcher icon on this device.
      * @param splashIconUrl The icon URL in {@link fetchedInfo#iconUrlToMurmur2HashMap()} best
      *     suited for use as the splash icon on this device.
+     * @param iconUpdateDialogEnabled Whether the App Identity Dialog is enabled for icons.
+     * @param nameUpdateDialogEnabled Whether the App Identity Dialog is enabled for names.
      * @return reasons that an update is needed or an empty list if an update is not needed.
      */
     private static List<Integer> generateUpdateReasons(
             WebappInfo oldInfo,
             WebappInfo fetchedInfo,
             String primaryIconUrl,
-            String splashIconUrl) {
+            String splashIconUrl,
+            boolean iconUpdateDialogEnabled,
+            boolean nameUpdateDialogEnabled) {
         List<Integer> updateReasons = new ArrayList<>();
 
         if (isShellApkVersionOutOfDate(oldInfo)) {
@@ -732,10 +733,30 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                         oldInfo.iconUrlToMurmur2HashMap(), splashIconUrl);
 
         if (!TextUtils.equals(primaryIconMurmur2Hash, fetchedPrimaryIconMurmur2Hash)) {
-            updateReasons.add(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS);
-        }
-        if (!TextUtils.equals(splashIconMurmur2Hash, fetchedSplashIconMurmur2Hash)) {
-            updateReasons.add(WebApkUpdateReason.SPLASH_ICON_HASH_DIFFERS);
+            boolean shouldUpdateIcon = false; // Determined below.
+
+            int iconDiffValue = logIconDiffs(oldInfo.icon().bitmap(), fetchedInfo.icon().bitmap());
+            if (belowAppIdIconUpdateThreshold(iconDiffValue)) {
+                shouldUpdateIcon = true;
+                updateReasons.add(WebApkUpdateReason.PRIMARY_ICON_CHANGE_BELOW_THRESHOLD);
+            }
+
+            if (allowIconUpdateForShellVersion(oldInfo.shellApkVersion())) {
+                updateReasons.add(WebApkUpdateReason.PRIMARY_ICON_CHANGE_SHELL_UPDATE);
+                shouldUpdateIcon = true;
+            }
+
+            if (iconUpdateDialogEnabled) {
+                shouldUpdateIcon = true;
+            }
+
+            if (shouldUpdateIcon) {
+                updateReasons.add(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS);
+
+                if (!TextUtils.equals(splashIconMurmur2Hash, fetchedSplashIconMurmur2Hash)) {
+                    updateReasons.add(WebApkUpdateReason.SPLASH_ICON_HASH_DIFFERS);
+                }
+            }
         }
         if (!UrlUtilities.urlsMatchIgnoringFragments(oldInfo.scopeUrl(), fetchedInfo.scopeUrl())) {
             updateReasons.add(WebApkUpdateReason.SCOPE_DIFFERS);
@@ -744,11 +765,13 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 oldInfo.manifestStartUrl(), fetchedInfo.manifestStartUrl())) {
             updateReasons.add(WebApkUpdateReason.START_URL_DIFFERS);
         }
-        if (!TextUtils.equals(oldInfo.shortName(), fetchedInfo.shortName())) {
-            updateReasons.add(WebApkUpdateReason.SHORT_NAME_DIFFERS);
-        }
-        if (!TextUtils.equals(oldInfo.name(), fetchedInfo.name())) {
-            updateReasons.add(WebApkUpdateReason.NAME_DIFFERS);
+        if (nameUpdateDialogEnabled) {
+            if (!TextUtils.equals(oldInfo.shortName(), fetchedInfo.shortName())) {
+                updateReasons.add(WebApkUpdateReason.SHORT_NAME_DIFFERS);
+            }
+            if (!TextUtils.equals(oldInfo.name(), fetchedInfo.name())) {
+                updateReasons.add(WebApkUpdateReason.NAME_DIFFERS);
+            }
         }
         if (oldInfo.backgroundColor() != fetchedInfo.backgroundColor()) {
             updateReasons.add(WebApkUpdateReason.BACKGROUND_COLOR_DIFFERS);

@@ -217,6 +217,7 @@ BASE_DECLARE_FEATURE(kVoiceButtonInTopToolbar);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
 BASE_DECLARE_FEATURE(kWebApkAllowIconUpdate);
 BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
+BASE_DECLARE_FEATURE(kWebApkIconUpdateThreshold);
 BASE_DECLARE_FEATURE(kWebApkInstallService);
 
 // For FeatureParam, Alphabetical:
