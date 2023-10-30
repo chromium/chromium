@@ -222,7 +222,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   gfx::Rect GetAnchorRectInScreen() const;
 
   // PagePopup function
-  AXObject* RootAXObject() override;
+  AXObject* RootAXObject(Element* popover_owner) override;
   void SetWindowRect(const gfx::Rect&) override;
 
   WebPagePopupImpl(

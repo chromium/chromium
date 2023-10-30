@@ -76,7 +76,7 @@ void ColorChooserUIController::EndChooser() {
   client_->DidEndChooser();
 }
 
-AXObject* ColorChooserUIController::RootAXObject() {
+AXObject* ColorChooserUIController::RootAXObject(Element* popup_owner) {
   return nullptr;
 }
 

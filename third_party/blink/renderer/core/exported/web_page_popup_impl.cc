@@ -573,17 +573,17 @@ void WebPagePopupImpl::DestroyPage() {
   page_.Clear();
 }
 
-AXObject* WebPagePopupImpl::RootAXObject() {
+AXObject* WebPagePopupImpl::RootAXObject(Element* popup_owner) {
   if (!page_)
     return nullptr;
   // If |page_| is non-null, the main frame must have a Document.
   Document* document = MainFrame().GetDocument();
-  AXObjectCache* cache = document->ExistingAXObjectCache();
+  AXObjectCacheBase* cache =
+      To<AXObjectCacheBase>(document->ExistingAXObjectCache());
   // There should never be a circumstance when RootAXObject() is triggered
   // and the AXObjectCache doesn't already exist. It's called when trying
   // to attach the accessibility tree of the pop-up to the host page.
-  DCHECK(cache);
-  return To<AXObjectCacheBase>(cache)->GetOrCreate(document->GetLayoutView());
+  return cache->GetOrCreate(document, cache->Get(popup_owner));
 }
 
 void WebPagePopupImpl::SetWindowRect(const gfx::Rect& rect_in_screen) {

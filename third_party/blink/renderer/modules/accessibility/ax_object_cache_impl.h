@@ -328,9 +328,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // be created. For instance, not all HTMLElements can have an AXObject,
   // such as <head> or <script> tags.
   AXObject* GetOrCreate(AccessibleNode*, AXObject* parent);
-  AXObject* GetOrCreate(LayoutObject*, AXObject* parent_if_known) override;
+  AXObject* GetOrCreate(LayoutObject*, AXObject* parent_if_known);
   AXObject* GetOrCreate(LayoutObject* layout_object);
-  AXObject* GetOrCreate(const Node*, AXObject* parent_if_known);
+  AXObject* GetOrCreate(const Node*, AXObject* parent_if_known) override;
   AXObject* GetOrCreate(Node*, AXObject* parent_if_known);
   AXObject* GetOrCreate(Node*);
   AXObject* GetOrCreate(const Node*);
@@ -346,7 +346,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* Get(AbstractInlineTextBox*);
 
   // Get an AXObject* backed by the passed-in DOM node.
-  AXObject* Get(const Node*);
+  AXObject* Get(const Node*) override;
   // Get an AXObject* backed by the passed-in LayoutObject, or the
   // LayoutObject's DOM node, if that is available.
   // If |parent_for_repair| is provided, and the object had been detached from

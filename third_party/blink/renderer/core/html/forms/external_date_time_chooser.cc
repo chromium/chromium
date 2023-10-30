@@ -156,7 +156,7 @@ void ExternalDateTimeChooser::EndChooser() {
   client->DidEndChooser();
 }
 
-AXObject* ExternalDateTimeChooser::RootAXObject() {
+AXObject* ExternalDateTimeChooser::RootAXObject(Element* popup_owner) {
   return nullptr;
 }
 

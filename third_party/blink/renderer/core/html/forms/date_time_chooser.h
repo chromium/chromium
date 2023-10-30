@@ -42,6 +42,7 @@
 namespace blink {
 
 class AXObject;
+class Element;
 
 struct DateTimeChooserParameters {
   DISALLOW_NEW();
@@ -87,7 +88,7 @@ class CORE_EXPORT DateTimeChooser : public GarbageCollected<DateTimeChooser> {
 
   virtual void EndChooser() = 0;
   // Returns a root AXObject in the DateTimeChooser if it's available.
-  virtual AXObject* RootAXObject() = 0;
+  virtual AXObject* RootAXObject(Element* popup_owner) = 0;
 
   virtual void Trace(Visitor* visitor) const {}
 };

@@ -152,7 +152,7 @@ void PickerIndicatorElement::DetachLayoutTree(bool performing_reattach) {
 }
 
 AXObject* PickerIndicatorElement::PopupRootAXObject() const {
-  return chooser_ ? chooser_->RootAXObject() : nullptr;
+  return chooser_ ? chooser_->RootAXObject(&OwnerElement()) : nullptr;
 }
 
 bool PickerIndicatorElement::IsPickerIndicatorElement() const {

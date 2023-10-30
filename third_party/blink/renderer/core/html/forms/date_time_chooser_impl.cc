@@ -81,8 +81,8 @@ void DateTimeChooserImpl::EndChooser() {
   frame_->View()->GetChromeClient()->ClosePagePopup(popup_);
 }
 
-AXObject* DateTimeChooserImpl::RootAXObject() {
-  return popup_ ? popup_->RootAXObject() : nullptr;
+AXObject* DateTimeChooserImpl::RootAXObject(Element* popup_owner) {
+  return popup_ ? popup_->RootAXObject(popup_owner) : nullptr;
 }
 
 static String ValueToDateTimeString(double value, InputType::Type type) {
