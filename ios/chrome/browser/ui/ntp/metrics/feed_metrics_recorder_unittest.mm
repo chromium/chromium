@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/json/values_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "components/feed/core/v2/public/common_enums.h"
@@ -645,9 +646,7 @@ TEST_F(FeedMetricsRecorderTest, TestComputeActivityBuckets_kNoActivity) {
   test_pref_service_.SetTime(kActivityBucketLastReportedDateKey,
                              last_activity_bucket);
   // Make sure LastReportedDateArray is empty.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setObject:[NSMutableArray new]
-               forKey:kActivityBucketLastReportedDateArrayKey];
+  test_pref_service_.ClearPref(kActivityBucketLastReportedDateArrayKey);
 
   [recorder_ recordNTPDidChangeVisibility:YES];
 
@@ -662,12 +661,12 @@ TEST_F(FeedMetricsRecorderTest, TestComputeActivityBuckets_kLowActivity) {
   test_pref_service_.SetTime(kActivityBucketLastReportedDateKey,
                              last_activity_bucket);
   // Make sure LastReportedDateArray is in range 1 to 7.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSMutableArray* array = [NSMutableArray array];
+  base::Value::List listOfDates;
   for (size_t i = 0; i < 5; ++i) {
-    [array addObject:[NSDate date]];
+    listOfDates.Append(TimeToValue(base::Time::Now()));
   }
-  [defaults setObject:array forKey:kActivityBucketLastReportedDateArrayKey];
+  test_pref_service_.SetList(kActivityBucketLastReportedDateArrayKey,
+                             std::move(listOfDates));
 
   [recorder_ recordNTPDidChangeVisibility:YES];
 
@@ -682,12 +681,12 @@ TEST_F(FeedMetricsRecorderTest, TestComputeActivityBuckets_kMediumActivity) {
   test_pref_service_.SetTime(kActivityBucketLastReportedDateKey,
                              last_activity_bucket);
   // Make sure LastReportedDateArray is in range 8 to 15.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSMutableArray* array = [NSMutableArray array];
+  base::Value::List listOfDates;
   for (size_t i = 0; i < 9; ++i) {
-    [array addObject:[NSDate date]];
+    listOfDates.Append(TimeToValue(base::Time::Now()));
   }
-  [defaults setObject:array forKey:kActivityBucketLastReportedDateArrayKey];
+  test_pref_service_.SetList(kActivityBucketLastReportedDateArrayKey,
+                             std::move(listOfDates));
 
   [recorder_ recordNTPDidChangeVisibility:YES];
 

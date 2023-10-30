@@ -221,6 +221,26 @@ void MigrateNSDatePreferenceFromUserDefaults(std::string_view pref_name,
   [defaults removeObjectForKey:key];
 }
 
+// Helper function migrating the preference `pref_name` of type Array of NSDate
+// from `defaults` to `pref_service`.
+void MigrateArrayOfDatesPreferenceFromUserDefaults(std::string_view pref_name,
+                                                   PrefService* pref_service,
+                                                   NSUserDefaults* defaults) {
+  NSString* key = @(pref_name.data());
+  NSArray* value =
+      base::apple::ObjCCastStrict<NSArray>([defaults objectForKey:key]);
+  if (!value) {
+    return;
+  }
+  base::Value::List list_value;
+  for (NSDate* date : value) {
+    base::Time time = base::Time::FromNSDate(date);
+    list_value.Append(TimeToValue(time));
+  }
+  pref_service->SetList(pref_name.data(), std::move(list_value));
+  [defaults removeObjectForKey:key];
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -630,6 +650,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDoublePref(kLongFeedVisitTimeAggregateKey, 0.0);
   registry->RegisterTimePref(kArticleVisitTimestampKey, base::Time());
   registry->RegisterIntegerPref(kLastUsedFeedForGoodVisitsKey, 0);
+  registry->RegisterListPref(kActivityBucketLastReportedDateArrayKey);
 
   registry->RegisterBooleanPref(kSyncRequested, false);
 }
@@ -665,22 +686,8 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 09/2023
   // TODO(crbug.com/1485045) To be removed after a few milestones.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  {
-    NSString* key = @(kAppStoreRatingActiveDaysInPastWeekKey);
-    NSArray* value =
-        base::apple::ObjCCastStrict<NSArray>([defaults objectForKey:key]);
-    if (value != nil) {
-      [defaults removeObjectForKey:key];
-
-      base::Value::List list_value;
-      for (NSDate* date : value) {
-        base::Time time = base::Time::FromNSDate(date);
-        list_value.Append(TimeToValue(time));
-      }
-      prefs->SetList(kAppStoreRatingActiveDaysInPastWeekKey,
-                     std::move(list_value));
-    }
-  }
+  MigrateArrayOfDatesPreferenceFromUserDefaults(
+      kAppStoreRatingActiveDaysInPastWeekKey, prefs, defaults);
 
   // Added 09/2023
   // TODO(crbug.com/1485045) To be removed after a few milestones.
@@ -815,6 +822,10 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   // Added 10/2023.
   MigrateIntegerPreferenceFromUserDefaults(kLastUsedFeedForGoodVisitsKey, prefs,
                                            defaults);
+
+  // Added 10/2023.
+  MigrateArrayOfDatesPreferenceFromUserDefaults(
+      kActivityBucketLastReportedDateArrayKey, prefs, defaults);
 }
 
 void MigrateObsoleteUserDefault(void) {

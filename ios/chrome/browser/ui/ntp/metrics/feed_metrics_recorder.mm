@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/json/values_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -909,32 +910,28 @@ using feed::FeedUserActionType;
 
 // Logs engagement daily for the Activity Buckets Calculation.
 - (void)logDailyActivity {
-  NSDate* now = [NSDate date];
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  const base::Time now = base::Time::Now();
 
   // Check if the array is initialized.
-  NSMutableArray<NSDate*>* lastReportedArray = [[defaults
-      arrayForKey:kActivityBucketLastReportedDateArrayKey] mutableCopy];
-  if (!lastReportedArray) {
-    // Initialized before (could be empty).
-    lastReportedArray = [NSMutableArray new];
-  }
+  base::Value::List lastReportedArray =
+      self.prefService->GetList(kActivityBucketLastReportedDateArrayKey)
+          .Clone();
 
   // Adds a daily entry to the `lastReportedArray` array
   // only once when the user engages.
-  if ([now timeIntervalSinceDate:[lastReportedArray lastObject]] >=
-          (24 * 60 * 60) ||
-      lastReportedArray.count == 0) {
-    [lastReportedArray addObject:now];
-    [defaults setObject:lastReportedArray
-                 forKey:kActivityBucketLastReportedDateArrayKey];
+  if ((lastReportedArray.size() > 0 &&
+       (now - ValueToTime(lastReportedArray.back()).value()) >=
+           base::Days(1)) ||
+      lastReportedArray.size() == 0) {
+    lastReportedArray.Append(TimeToValue(now));
+    self.prefService->SetList(kActivityBucketLastReportedDateArrayKey,
+                              std::move(lastReportedArray));
   }
 }
 
 // Calculates the amount of dates the user has been active for the past 28 days.
 - (void)computeActivityBuckets {
   const base::Time now = base::Time::Now();
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
   base::Time lastActivityBucket =
       self.prefService->GetTime(kActivityBucketLastReportedDateKey);
@@ -953,37 +950,24 @@ using feed::FeedUserActionType;
 
   // Calculate activity buckets.
   // Check if the array is initialized.
-  NSMutableArray<NSDate*>* lastReportedArray = [[defaults
-      arrayForKey:kActivityBucketLastReportedDateArrayKey] mutableCopy];
-  if (!lastReportedArray) {
-    // Initialized before (could be empty).
-    lastReportedArray = [NSMutableArray new];
-  }
+  const base::Value::List& lastReportedArray =
+      self.prefService->GetList(kActivityBucketLastReportedDateArrayKey);
+  base::Value::List newLastReportedArray;
 
-  // Check for dates > 28 days and remove older items.
-  NSMutableIndexSet* toDelete = [[NSMutableIndexSet alloc] init];
-  for (NSUInteger i = 0; i < lastReportedArray.count; ++i) {
-    const base::Time date = base::Time::FromNSDate(lastReportedArray[i]);
-    if ((now - date) > kRangeForActivityBuckets) {
-      [toDelete addIndex:i];
-    } else {
-      break;
+  // Do not save in newLastReportedArray dates > 28 days.
+  for (NSUInteger i = 0; i < lastReportedArray.size(); ++i) {
+    absl::optional<base::Time> date = ValueToTime(lastReportedArray[i]);
+    if (!date.has_value()) {
+      continue;
+    }
+    if ((now - date.value()) <= kRangeForActivityBuckets) {
+      newLastReportedArray.Append(TimeToValue(date.value()));
     }
   }
 
-  // The count should never be < 1 for `lastReportedArray` when toDelete > 0 to
-  // prevent a crash / out of bounds errors.
-  if (toDelete.count > 0) {
-    CHECK(lastReportedArray.count >= 1);
-    [lastReportedArray removeObjectsAtIndexes:toDelete];
-  }
-  [defaults setObject:lastReportedArray
-               forKey:kActivityBucketLastReportedDateArrayKey];
-
   FeedActivityBucket activityBucket = FeedActivityBucket::kNoActivity;
   // Check how many items in array.
-  NSUInteger datesActive = lastReportedArray.count;
-  switch (datesActive) {
+  switch (newLastReportedArray.size()) {
     case 0:
       activityBucket = FeedActivityBucket::kNoActivity;
       break;
@@ -1003,6 +987,8 @@ using feed::FeedUserActionType;
   }
   self.prefService->SetInteger(kActivityBucketKey,
                                static_cast<int>(activityBucket));
+  self.prefService->SetList(kActivityBucketLastReportedDateArrayKey,
+                            std::move(newLastReportedArray));
 
   // Activity Buckets Daily Run.
   [self recordActivityBuckets:activityBucket];

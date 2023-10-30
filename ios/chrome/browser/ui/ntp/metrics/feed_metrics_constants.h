@@ -50,7 +50,7 @@ extern const char kTimeSpentInFeedAggregateKey[];
 // Stores the last time the activity bucket was reported.
 extern const char kActivityBucketLastReportedDateKey[];
 // Stores the last 28 days of activity bucket reported days.
-extern NSString* const kActivityBucketLastReportedDateArrayKey;
+extern const char kActivityBucketLastReportedDateArrayKey[];
 
 #pragma mark - Enums
 

@@ -27,8 +27,8 @@ const char kLastDayTimeInFeedReportedKey[] = "LastDayTimeInFeedReported";
 const char kTimeSpentInFeedAggregateKey[] = "TimeSpentInFeedAggregate";
 const char kActivityBucketLastReportedDateKey[] =
     "ActivityBucketLastReportedDate";
-NSString* const kActivityBucketLastReportedDateArrayKey =
-    @"ActivityBucketLastReportedDateArray";
+const char kActivityBucketLastReportedDateArrayKey[] =
+    "ActivityBucketLastReportedDateArray";
 
 #pragma mark - Histograms
 
