@@ -73,6 +73,28 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // Called to handle the "uploadReport" WebUI message.
   void HandleUploadReport(const base::Value::List& args);
 
+  // Called to handle the "uploadReport" WebUI message. This disables all
+  // policy providers except the LocalTestPolicyProvider which contains
+  // policies set via chrome://policy/test.
+  void HandleSetLocalTestPolicies(const base::Value::List& args);
+
+  // Called to handle the "revertLocalTestPolicies" WebUI message. This enables
+  // all policy providers except the LocalTestPolicyProvider which contains
+  // policies set via chrome://policy/test.
+  void HandleRevertLocalTestPolicies(const base::Value::List& args);
+
+  // Called to handle the "restartBrowser" WebUI message.
+  // This writes policies set via chrome://policy/test in a pref
+  // which will be read next time the browser restarts.
+  // Since the page is the same on browser and iOS, the message is the
+  // same on all platforms, however here, we expect the user to manually restart
+  // the browser.
+  void HandleRestartBrowser(const base::Value::List& args);
+
+  // Called to handle the "setUserAffiliation" WebUI message.
+  // This fakes that the LocalTestPolicyProvider policies are affiliated.
+  void HandleSetUserAffiliation(const base::Value::List& args);
+
   // Called to handle the "getPolicyLogs" WebUI message from
   // chrome://policy/logs.
   void HandleGetPolicyLogs(const base::Value::List& args);

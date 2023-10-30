@@ -759,6 +759,10 @@ extern const char kPasswordReuseDetectionDescription[];
 extern const char kPasswordSharingName[];
 extern const char kPasswordSharingDescription[];
 
+// Title and description for the flag to enable chrome://policy/test.
+extern const char kEnablePolicyTestPageName[];
+extern const char kEnablePolicyTestPageDescription[];
+
 // Title and description for the flag to enable the post restore default browser
 // promo.
 extern const char kPostRestoreDefaultBrowserPromoName[];

@@ -864,6 +864,12 @@ const char kPasswordSharingName[] = "Enables password sharing";
 const char kPasswordSharingDescription[] =
     "Enables password sharing between members of the same family.";
 
+const char kEnablePolicyTestPageName[] =
+    "Enable access to the policy test page";
+const char kEnablePolicyTestPageDescription[] =
+    "When enabled, allows the policy test page to be accessed at "
+    "chrome://policy/test.";
+
 const char kPostRestoreDefaultBrowserPromoName[] =
     "Post Restore Default Browser Promo";
 const char kPostRestoreDefaultBrowserPromoDescription[] =

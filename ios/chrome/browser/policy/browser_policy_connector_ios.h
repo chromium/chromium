@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/local_test_policy_provider.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -37,10 +38,18 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
 
   ~BrowserPolicyConnectorIOS() override;
 
+  // If the kLocalTestPoliciesForNextStartup pref is non-empty, read and apply
+  // the policies stored in it, and then clear the pref.
+  void MaybeApplyLocalTestPolicies(PrefService* local_state);
+
   // Returns the platform provider used by this BrowserPolicyConnectorIOS. Can
   // be overridden for testing via
   // BrowserPolicyConnectorBase::SetPolicyProviderForTesting().
   policy::ConfigurationPolicyProvider* GetPlatformProvider();
+
+  policy::LocalTestPolicyProvider* local_test_policy_provider() {
+    return local_test_provider_.get();
+  }
 
   policy::ChromeBrowserCloudManagementController*
   chrome_browser_cloud_management_controller() {
@@ -74,6 +83,7 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
   std::unique_ptr<policy::ConfigurationPolicyProvider> CreatePlatformProvider();
 
   // Owned by base class.
+  raw_ptr<policy::LocalTestPolicyProvider> local_test_provider_ = nullptr;
   policy::ConfigurationPolicyProvider* platform_provider_ = nullptr;
 
   std::unique_ptr<policy::ChromeBrowserCloudManagementController>

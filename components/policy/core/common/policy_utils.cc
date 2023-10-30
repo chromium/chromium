@@ -6,6 +6,7 @@
 
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/core/common/schema.h"
 #include "components/prefs/pref_service.h"
 
 namespace policy::utils {
@@ -39,6 +40,35 @@ bool IsPolicyTestingEnabled(PrefService* pref_service,
 #else
   return false;
 #endif
+}
+
+base::Value::Dict GetPolicyNameToTypeMapping(
+    const base::Value::List& policy_names,
+    const policy::Schema& schema) {
+  base::Value::Dict result;
+  for (auto& policy_name : policy_names) {
+    switch (schema.GetKnownProperty(policy_name.GetString()).type()) {
+      case base::Value::Type::BOOLEAN:
+        result.Set(policy_name.GetString(), "boolean");
+        break;
+      case base::Value::Type::DICT:
+        result.Set(policy_name.GetString(), "dictionary");
+        break;
+      case base::Value::Type::INTEGER:
+        result.Set(policy_name.GetString(), "integer");
+        break;
+      case base::Value::Type::LIST:
+        result.Set(policy_name.GetString(), "list");
+        break;
+      case base::Value::Type::STRING:
+        result.Set(policy_name.GetString(), "string");
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+  return result;
 }
 
 }  // namespace policy::utils
