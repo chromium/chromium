@@ -274,12 +274,22 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
             network_detailed_network_view()->AddTetherHostsSectionHeader();
       }
 
+      UpdateTetherHostsSection();
       network_detailed_network_view()->ReorderTetherHostsTopContainer(index++);
 
       size_t tether_item_index = 0;
       tether_item_index = CreateItemViewsIfMissingAndReorder(
           NetworkType::kTether, tether_item_index, networks,
           &previous_network_views);
+
+      // Add tether hosts status message to NetworkDetailedNetworkView's
+      // `tether_hosts_network_list_view_` if it exist.
+      if (tether_hosts_status_message_) {
+        network_detailed_network_view()
+            ->GetNetworkList(NetworkType::kTether)
+            ->ReorderChildView(tether_hosts_status_message_,
+                               tether_item_index++);
+      }
 
       network_detailed_network_view()->ReorderTetherHostsListView(index++);
     } else {
@@ -657,6 +667,21 @@ void NetworkListViewControllerImpl::UpdateMobileSection() {
   UpdateMobileToggleAndSetStatusMessage();
 }
 
+void NetworkListViewControllerImpl::UpdateTetherHostsSection() {
+  DCHECK(tether_hosts_header_view_);
+
+  network_detailed_network_view()->UpdateTetherHostsStatus(true);
+
+  if (!has_tether_networks_) {
+    CreateInfoLabelIfMissingAndUpdate(
+        IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND,
+        &tether_hosts_status_message_);
+    return;
+  }
+
+  RemoveAndResetViewIfExists(&tether_hosts_status_message_);
+}
+
 void NetworkListViewControllerImpl::UpdateWifiSection() {
   if (!wifi_header_view_) {
     RecordDetailedViewSection(DetailedViewSection::kWifiSection);
@@ -850,6 +875,12 @@ void NetworkListViewControllerImpl::CreateInfoLabelIfMissingAndUpdate(
         NetworkListViewControllerViewChildId::kWifiStatusMessage));
     *info_label_ptr = network_detailed_network_view()
                           ->GetNetworkList(NetworkType::kWiFi)
+                          ->AddChildView(std::move(info));
+  } else if (info_label_ptr == &tether_hosts_status_message_) {
+    info->SetID(static_cast<int>(
+        NetworkListViewControllerViewChildId::kTetherHostsStatusMessage));
+    *info_label_ptr = network_detailed_network_view()
+                          ->GetNetworkList(NetworkType::kTether)
                           ->AddChildView(std::move(info));
   } else {
     NOTREACHED();

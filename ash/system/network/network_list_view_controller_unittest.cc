@@ -275,6 +275,10 @@ class NetworkListViewControllerTest : public AshTestBase,
     return network_list_view_controller_impl_->wifi_status_message_;
   }
 
+  TrayInfoLabel* GetTetherHostsStatusMessage() {
+    return network_list_view_controller_impl_->tether_hosts_status_message_;
+  }
+
   TriView* GetConnectionWarning() {
     return network_list_view_controller_impl_->connection_warning_;
   }
@@ -1229,14 +1233,14 @@ TEST_P(NetworkListViewControllerTest,
 }
 
 TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
-  if (IsInstantHotspotRebrandEnabled()) {
-    return;
-  }
   // TODO(b/295543827):Display error message if Bluetooth is disabled.
-  // TODO(b/298656342): Display error message if no tether devices are found.
 
   // Mobile section is not shown if Tether network is unavailable.
-  EXPECT_THAT(GetMobileStatusMessage(), IsNull());
+  if (!IsInstantHotspotRebrandEnabled()) {
+    EXPECT_THAT(GetMobileStatusMessage(), IsNull());
+  } else {
+    EXPECT_THAT(GetTetherHostsStatusMessage(), IsNull());
+  }
 
   // Tether is enabled but no devices are added.
   auto properties =
@@ -1245,13 +1249,23 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
   properties->device_state = DeviceStateType::kEnabled;
   cros_network()->SetDeviceProperties(properties.Clone());
 
-  ASSERT_THAT(GetMobileStatusMessage(), NotNull());
-  ASSERT_THAT(GetMobileSubHeader(), NotNull());
-  CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND),
-      GetMobileStatusMessage()->label()->GetText());
-  EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
+  if (!IsInstantHotspotRebrandEnabled()) {
+    ASSERT_THAT(GetMobileStatusMessage(), NotNull());
+    ASSERT_THAT(GetMobileSubHeader(), NotNull());
+    CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND),
+        GetMobileStatusMessage()->label()->GetText());
+    EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
+  } else {
+    ASSERT_THAT(GetTetherHostsStatusMessage(), NotNull());
+    ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND),
+        GetTetherHostsStatusMessage()->label()->GetText());
+    EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
+    return;
+  }
 
   // Tether network is uninitialized and Bluetooth state enabling.
   properties->device_state = DeviceStateType::kUninitialized;

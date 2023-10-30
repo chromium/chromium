@@ -74,7 +74,8 @@ class ASH_EXPORT NetworkListViewControllerImpl
     kWifiStatusMessage = 16,
     kConnectionWarningSystemIcon = 17,
     kConnectionWarningManagedIcon = 18,
-    kTetherHostsSectionHeader = 19
+    kTetherHostsSectionHeader = 19,
+    kTetherHostsStatusMessage = 20
   };
 
   // Map of network guids and their corresponding list item views.
@@ -141,6 +142,11 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // If there are no WiFi networks or WiFi is disabled, this method will also
   // add an info message.
   void UpdateWifiSection();
+
+  // Updates the Tether Hosts section. This method creates a new header if one
+  // does not exist. If Bluetooth is disabled or Instant Hotspot is enabled with
+  // no nearby hosts, this method will display an error message.
+  void UpdateTetherHostsSection();
 
   // Updated mobile data toggle states and sets mobile data status message.
   void UpdateMobileToggleAndSetStatusMessage();
@@ -241,6 +247,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // for: #addr-of
   RAW_PTR_EXCLUSION TrayInfoLabel* wifi_status_message_ = nullptr;
 
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION TrayInfoLabel* tether_hosts_status_message_ = nullptr;
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
   RAW_PTR_EXCLUSION NetworkListTetherHostsHeaderView*
