@@ -139,16 +139,6 @@ class MockAutofillClient : public autofill::AutofillClient {
               (override));
   MOCK_METHOD(translate::TranslateDriver*, GetTranslateDriver, (), (override));
   MOCK_METHOD(void, ShowAutofillSettings, (autofill::PopupType), (override));
-  MOCK_METHOD(void,
-              ShowUnmaskPrompt,
-              (const autofill::CreditCard&,
-               const autofill::CardUnmaskPromptOptions&,
-               base::WeakPtr<autofill::CardUnmaskDelegate>),
-              (override));
-  MOCK_METHOD(void,
-              OnUnmaskVerificationResult,
-              (PaymentsRpcResult),
-              (override));
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MOCK_METHOD(void,
               ConfirmSaveIbanLocally,
@@ -162,32 +152,11 @@ class MockAutofillClient : public autofill::AutofillClient {
                SaveIbanPromptCallback),
               (override));
   MOCK_METHOD(void,
-              ShowWebauthnOfferDialog,
-              (WebauthnDialogCallback),
-              (override));
-  MOCK_METHOD(void,
-              ShowWebauthnVerifyPendingDialog,
-              (WebauthnDialogCallback),
-              (override));
-  MOCK_METHOD(void, UpdateWebauthnOfferDialogWithError, (), (override));
-  MOCK_METHOD(bool, CloseWebauthnDialog, (), (override));
-  MOCK_METHOD(void,
               OfferVirtualCardOptions,
               (const std::vector<autofill::CreditCard*>&,
                base::OnceCallback<void(const std::string&)>),
               (override));
-#else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  MOCK_METHOD(void,
-              ConfirmAccountNameFixFlow,
-              (base::OnceCallback<void(const std::u16string&)>),
-              (override));
-  MOCK_METHOD(
-      void,
-      ConfirmExpirationDateFixFlow,
-      (const autofill::CreditCard&,
-       base::OnceCallback<void(const std::u16string&, const std::u16string&)>),
-      (override));
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   MOCK_METHOD(void,
               ConfirmCreditCardFillAssist,
               (const autofill::CreditCard&, base::OnceClosure),

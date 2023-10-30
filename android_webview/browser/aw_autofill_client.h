@@ -26,7 +26,6 @@ class AutofillPopupDelegate;
 class CreditCard;
 class PersonalDataManager;
 class StrikeDatabase;
-struct CardUnmaskPromptOptions;
 }  // namespace autofill
 
 namespace content {
@@ -103,17 +102,6 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
   void ShowAutofillSettings(autofill::PopupType popup_type) override;
-  void ShowUnmaskPrompt(
-      const autofill::CreditCard& card,
-      const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
-      base::WeakPtr<autofill::CardUnmaskDelegate> delegate) override;
-  void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
-  void ConfirmAccountNameFixFlow(
-      base::OnceCallback<void(const std::u16string&)> callback) override;
-  void ConfirmExpirationDateFixFlow(
-      const autofill::CreditCard& card,
-      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-          callback) override;
   void ConfirmCreditCardFillAssist(const autofill::CreditCard& card,
                                    base::OnceClosure callback) override;
   void ConfirmSaveAddressProfile(

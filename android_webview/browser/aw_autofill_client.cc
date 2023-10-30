@@ -176,29 +176,6 @@ void AwAutofillClient::ShowAutofillSettings(autofill::PopupType popup_type) {
   NOTIMPLEMENTED();
 }
 
-void AwAutofillClient::ShowUnmaskPrompt(
-    const autofill::CreditCard& card,
-    const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
-    base::WeakPtr<autofill::CardUnmaskDelegate> delegate) {
-  NOTIMPLEMENTED();
-}
-
-void AwAutofillClient::OnUnmaskVerificationResult(PaymentsRpcResult result) {
-  NOTIMPLEMENTED();
-}
-
-void AwAutofillClient::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const std::u16string&)> callback) {
-  NOTIMPLEMENTED();
-}
-
-void AwAutofillClient::ConfirmExpirationDateFixFlow(
-    const autofill::CreditCard& card,
-    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-        callback) {
-  NOTIMPLEMENTED();
-}
-
 void AwAutofillClient::ShowEditAddressProfileDialog(
     const autofill::AutofillProfile& profile,
     AddressProfileSavePromptCallback on_user_decision_callback) {

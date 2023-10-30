@@ -176,8 +176,7 @@ void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
 
 void AutofillClient::ShowLocalCardMigrationDialog(
     base::OnceClosure show_migration_dialog_closure) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop) implements this.
+  // This is overridden by platform subclasses
 }
 
 void AutofillClient::ConfirmMigrateLocalCardToCloud(
@@ -185,8 +184,7 @@ void AutofillClient::ConfirmMigrateLocalCardToCloud(
     const std::string& user_email,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     LocalCardMigrationCallback start_migrating_cards_callback) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop) implements this.
+  // This is overridden by platform subclasses
 }
 
 void AutofillClient::ShowLocalCardMigrationResults(
@@ -194,8 +192,38 @@ void AutofillClient::ShowLocalCardMigrationResults(
     const std::u16string& tip_message,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     MigrationDeleteCardCallback delete_local_card_callback) {
-  // This is overridden by platform subclasses. Currently only
-  // ChromeAutofillClient (Chrome Desktop) implements this.
+  // This is overridden by platform subclasses.
+}
+
+void AutofillClient::ShowWebauthnOfferDialog(
+    WebauthnDialogCallback offer_dialog_callback) {
+  // This is overridden by platform subclasses.
+}
+
+void AutofillClient::ShowWebauthnVerifyPendingDialog(
+    WebauthnDialogCallback verify_pending_dialog_callback) {
+  // This is overridden by platform subclasses.
+}
+
+void AutofillClient::UpdateWebauthnOfferDialogWithError() {
+  // This is overridden by platform subclasses.
+}
+
+bool AutofillClient::CloseWebauthnDialog() {
+  // This is overridden by platform subclasses.
+  return false;
+}
+#else
+void AutofillClient::ConfirmAccountNameFixFlow(
+    base::OnceCallback<void(const std::u16string&)> callback) {
+  // This is overridden by platform subclasses.
+}
+
+void AutofillClient::ConfirmExpirationDateFixFlow(
+    const CreditCard& card,
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+        callback) {
+  // This is overridden by platform subclasses.
 }
 #endif
 
@@ -235,6 +263,17 @@ void AutofillClient::ConfirmSaveCreditCardToCloud(
 }
 
 void AutofillClient::CreditCardUploadCompleted(bool card_saved) {
+  // This is overridden by platform subclasses.
+}
+
+void AutofillClient::ShowUnmaskPrompt(
+    const CreditCard& card,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
+    base::WeakPtr<CardUnmaskDelegate> delegate) {
+  // This is overridden by platform subclasses.
+}
+
+void AutofillClient::OnUnmaskVerificationResult(PaymentsRpcResult result) {
   // This is overridden by platform subclasses.
 }
 

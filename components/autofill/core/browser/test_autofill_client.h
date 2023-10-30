@@ -269,14 +269,6 @@ class TestAutofillClientTemplate : public T {
 
   void ShowAutofillSettings(PopupType popup_type) override {}
 
-  void ShowUnmaskPrompt(
-      const autofill::CreditCard& card,
-      const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
-      base::WeakPtr<autofill::CardUnmaskDelegate> delegate) override {}
-
-  void OnUnmaskVerificationResult(
-      AutofillClient::PaymentsRpcResult result) override {}
-
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override {
     return form_data_importer_->GetVirtualCardEnrollmentManager();
   }
@@ -340,15 +332,6 @@ class TestAutofillClientTemplate : public T {
     confirm_upload_iban_to_cloud_called_ = true;
     offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
   }
-
-  void ShowWebauthnOfferDialog(
-      AutofillClient::WebauthnDialogCallback offer_dialog_callback) override {}
-
-  void ShowWebauthnVerifyPendingDialog(
-      AutofillClient::WebauthnDialogCallback verify_pending_dialog_callback)
-      override {}
-
-  void UpdateWebauthnOfferDialogWithError() override {}
 
   bool CloseWebauthnDialog() override { return true; }
 

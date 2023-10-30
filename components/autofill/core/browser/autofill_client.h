@@ -551,8 +551,8 @@ class AutofillClient : public RiskDataLoader {
   virtual void ShowUnmaskPrompt(
       const CreditCard& card,
       const CardUnmaskPromptOptions& card_unmask_prompt_options,
-      base::WeakPtr<CardUnmaskDelegate> delegate) = 0;
-  virtual void OnUnmaskVerificationResult(PaymentsRpcResult result) = 0;
+      base::WeakPtr<CardUnmaskDelegate> delegate);
+  virtual void OnUnmaskVerificationResult(PaymentsRpcResult result);
 
   // Shows a dialog for the user to choose/confirm the authentication
   // to use in card unmasking.
@@ -656,20 +656,20 @@ class AutofillClient : public RiskDataLoader {
   // unmasked. Runs |offer_dialog_callback| if the OK button or the cancel
   // button in the dialog is clicked.
   virtual void ShowWebauthnOfferDialog(
-      WebauthnDialogCallback offer_dialog_callback) = 0;
+      WebauthnDialogCallback offer_dialog_callback);
 
   // Will show a dialog indicating the card verification is in progress. It is
   // shown after verification starts only if the WebAuthn is enabled.
   virtual void ShowWebauthnVerifyPendingDialog(
-      WebauthnDialogCallback verify_pending_dialog_callback) = 0;
+      WebauthnDialogCallback verify_pending_dialog_callback);
 
   // Will update the WebAuthn dialog content when there is an error fetching the
   // challenge.
-  virtual void UpdateWebauthnOfferDialogWithError() = 0;
+  virtual void UpdateWebauthnOfferDialogWithError();
 
   // Will close the current visible WebAuthn dialog. Returns true if dialog was
   // visible and has been closed.
-  virtual bool CloseWebauthnDialog() = 0;
+  virtual bool CloseWebauthnDialog();
 
   // Shows the dialog including all credit cards that are available to be used
   // as a virtual card. |candidates| must not be empty and has at least one
@@ -682,7 +682,7 @@ class AutofillClient : public RiskDataLoader {
   // Display the cardholder name fix flow prompt and run the |callback| if
   // the card should be uploaded to payments with updated name from the user.
   virtual void ConfirmAccountNameFixFlow(
-      base::OnceCallback<void(const std::u16string&)> callback) = 0;
+      base::OnceCallback<void(const std::u16string&)> callback);
 
   // Display the expiration date fix flow prompt with the |card| details
   // and run the |callback| if the card should be uploaded to payments with
@@ -690,7 +690,7 @@ class AutofillClient : public RiskDataLoader {
   virtual void ConfirmExpirationDateFixFlow(
       const CreditCard& card,
       base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-          callback) = 0;
+          callback);
 #endif
 
   // Runs |callback| once the user makes a decision with respect to the

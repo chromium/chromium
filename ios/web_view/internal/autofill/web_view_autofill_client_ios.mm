@@ -214,18 +214,6 @@ void WebViewAutofillClientIOS::OnUnmaskVerificationResult(
   [bridge_ didReceiveUnmaskVerificationResult:result];
 }
 
-void WebViewAutofillClientIOS::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const std::u16string&)> callback) {
-  NOTREACHED();
-}
-
-void WebViewAutofillClientIOS::ConfirmExpirationDateFixFlow(
-    const CreditCard& card,
-    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-        callback) {
-  NOTREACHED();
-}
-
 void WebViewAutofillClientIOS::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
