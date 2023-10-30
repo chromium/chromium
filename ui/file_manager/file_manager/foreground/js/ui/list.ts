@@ -306,7 +306,7 @@ export class List extends HTMLUListElement {
   }
 
 
-  private batchCount_ = 0;
+  protected batchCount_ = 0;
 
   /**
    * When making a lot of updates to the list, the code could be wrapped in

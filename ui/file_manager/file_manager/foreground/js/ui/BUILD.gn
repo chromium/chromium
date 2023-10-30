@@ -327,7 +327,6 @@ js_library("file_table_list") {
     ":file_tap_handler",
     ":list_selection_model",
     "table:table",
-    "table:table_list",
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/externs:entry_location",

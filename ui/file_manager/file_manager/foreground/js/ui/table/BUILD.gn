@@ -10,7 +10,6 @@ group("js_modules") {
     ":table_column",
     ":table_column_model",
     ":table_header",
-    ":table_list",
     ":table_splitter",
   ]
 }
@@ -27,7 +26,6 @@ js_library("table") {
     ":table_column",
     ":table_column_model",
     ":table_header",
-    ":table_list",
     "//ash/webui/common/resources:cr_deprecated",
     "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/foreground/js/ui:list_single_selection_model",
@@ -47,10 +45,6 @@ js_library("table_header") {
     ":table_splitter",
     "//ash/webui/common/resources:cr_deprecated",
   ]
-}
-
-js_library("table_list") {
-  deps = [ "//ash/webui/common/resources:cr_deprecated" ]
 }
 
 js_library("table_splitter") {

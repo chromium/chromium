@@ -182,7 +182,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/table/table_column.js",
   "file_manager/foreground/js/ui/table/table_column_model.js",
   "file_manager/foreground/js/ui/table/table_header.js",
-  "file_manager/foreground/js/ui/table/table_list.js",
   "file_manager/foreground/js/ui/table/table_splitter.js",
   "file_manager/foreground/js/ui/tree.js",
 ]
@@ -190,6 +189,8 @@ static_js_files = [
 # END: static_js_files.
 
 ts_files = [
+  "file_manager/foreground/js/ui/table/table_list.ts",
+
   # Common.
   "file_manager/common/js/api.ts",
   "file_manager/common/js/app_util.ts",
