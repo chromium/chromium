@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import {appUtil} from '../../common/js/app_util.js';
+import {saveAppState, updateAppState} from '../../common/js/app_util.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {isRecentRoot} from '../../common/js/entry_utils.js';
 import {storage} from '../../common/js/storage.js';
@@ -171,7 +171,7 @@ export class AppStateController {
       // @ts-ignore: error TS2339: Property 'appState' does not exist on type
       // 'Window & typeof globalThis'.
       window.appState.viewOptions = prefs;
-      appUtil.saveAppState();
+      saveAppState();
     }
   }
 
@@ -256,7 +256,7 @@ export class AppStateController {
       }
     }
 
-    appUtil.updateAppState(
+    updateAppState(
         // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.directoryModel_.getCurrentDirEntry() ?
             // @ts-ignore: error TS2531: Object is possibly 'null'.

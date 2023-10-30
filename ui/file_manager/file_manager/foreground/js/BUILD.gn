@@ -177,7 +177,6 @@ js_library("app_state_controller") {
     "ui:file_manager_ui",
     "ui:list_container",
     "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:app_util",
     "//ui/file_manager/file_manager/common/js:util",
   ]
 }

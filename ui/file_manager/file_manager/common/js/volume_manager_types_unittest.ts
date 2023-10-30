@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockFileEntry, MockFileSystem} from './mock_entry.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
@@ -10,34 +10,22 @@ import {VolumeManagerCommon} from './volume_manager_types.js';
 // Test that every volumeType has a rootType, and that it maps back to the same
 // volumeType.
 export function testRootTypeFromVolumeTypeBijection() {
-  Object.keys(VolumeManagerCommon.VolumeType).forEach((key) => {
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type 'typeof
-    // VolumeType'.
-    const volumeType = VolumeManagerCommon.VolumeType[key];
-    assertTrue(volumeType !== undefined);
-
+  for (const volumeType of Object.values(VolumeManagerCommon.VolumeType)) {
     // System Internal volumes do not have a corresponding root.
-    if (volumeType == VolumeManagerCommon.VolumeType.SYSTEM_INTERNAL) {
+    if (volumeType === VolumeManagerCommon.VolumeType.SYSTEM_INTERNAL) {
       return;
     }
 
     const rootType = VolumeManagerCommon.getRootTypeFromVolumeType(volumeType);
-    assertTrue(
-        volumeType == VolumeManagerCommon.getVolumeTypeFromRootType(rootType));
-  });
+    assertEquals(
+        volumeType, VolumeManagerCommon.getVolumeTypeFromRootType(rootType));
+  }
 }
 
 // Test that all rootType have a corresponding volumeType, except for "fake"
 // root types that do not have a volume of their own.
 export function testEveryRootTypeHasAVolumeType() {
-  Object.keys(VolumeManagerCommon.RootType).forEach((key) => {
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type 'typeof
-    // RootType'.
-    const rootType = VolumeManagerCommon.RootType[key];
-    assertTrue(rootType !== undefined);
-
+  for (const rootType of Object.values(VolumeManagerCommon.RootType)) {
     // The "Recent" view and "Google Drive" parent entry are not handled in the
     // switch because they do not have a corresponding volume.
     // TODO(tapted): Validate this against isFakeEntry(..) when
@@ -49,8 +37,8 @@ export function testEveryRootTypeHasAVolumeType() {
     }
 
     const volumeType = VolumeManagerCommon.getVolumeTypeFromRootType(rootType);
-    assertTrue(volumeType !== undefined);
-  });
+    assertNotEquals(volumeType, undefined);
+  }
 }
 
 // Tests that IsRecentArcEntry() should return true/false if an entry belongs/

@@ -13,7 +13,6 @@ visibility = [
 
 group("js_modules") {
   deps = [
-    ":app_util",
     ":array_data_model",
     ":async_util",
     ":error_counter",
@@ -31,16 +30,6 @@ group("js_modules") {
     ":util",
     ":volume_manager_types",
   ]
-}
-
-js_library("app_util") {
-  deps = [
-    ":storage",
-    "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-  ]
-  externs_list =
-      [ "//ui/file_manager/file_manager/externs/app_window_common.js" ]
 }
 
 js_library("array_data_model") {
@@ -220,10 +209,6 @@ js_unittest("util_unittest") {
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
-}
-
-js_unittest("volume_manager_types_unittest") {
-  deps = [ ":volume_manager_types" ]
 }
 
 js_library("volume_manager_types") {
