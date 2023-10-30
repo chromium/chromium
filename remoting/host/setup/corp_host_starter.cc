@@ -240,7 +240,7 @@ void CorpHostStarter::OnProvisionCorpMachineResponse(
 void CorpHostStarter::OnHostStopped(DaemonController::AsyncResult result) {
   bool stopped = false;
   for (auto i = 0; !stopped && i < 10; i++) {
-    LOG(INFO) << "Attempting to stop the existing host instance.";
+    LOG(INFO) << "Attempting to stop the existing host instance...";
     stopped =
         (daemon_controller_->GetState() == DaemonController::STATE_STOPPED);
     if (!stopped) {
@@ -251,6 +251,8 @@ void CorpHostStarter::OnHostStopped(DaemonController::AsyncResult result) {
     LOG(WARNING) << "Unable to stop existing host process. Setup will "
                  << "continue, but you may need to restart the host to "
                  << "complete it.";
+  } else {
+    LOG(INFO) << "Existing host instance stopped.";
   }
 
   GetOAuthTokens();

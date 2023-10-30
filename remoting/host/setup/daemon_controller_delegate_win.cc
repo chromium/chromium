@@ -68,6 +68,14 @@ const char* const kUnprivilegedConfigKeys[] = {kHostIdConfigPath,
 
 // Reads and parses the configuration file up to |kMaxConfigFileSize| in size.
 bool ReadConfig(const base::FilePath& filename, base::Value::Dict& config_out) {
+  // ReadConfig is called in cases where no config file is expected to be
+  // present so check to see if a file exists before attempting to read and
+  // parse it.
+  if (!base::PathExists(filename)) {
+    LOG(INFO) << "'" << filename.value() << "' does not exist, skipping read.";
+    return false;
+  }
+
   std::string file_content;
   if (!base::ReadFileToStringWithMaxSize(filename, &file_content,
                                          kMaxConfigFileSize)) {
@@ -77,6 +85,7 @@ bool ReadConfig(const base::FilePath& filename, base::Value::Dict& config_out) {
 
   absl::optional<base::Value::Dict> config = HostConfigFromJson(file_content);
   if (!config.has_value()) {
+    LOG(ERROR) << "Config file: '" << filename.value() << "' is empty.";
     return false;
   }
 
