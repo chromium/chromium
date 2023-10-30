@@ -581,6 +581,10 @@ const CGFloat kFaviconBadgeSideLength = 24;
 - (UIImageView*)createImageView {
   UIImageView* imageView = [[UIImageView alloc] initWithImage:self.image];
   imageView.contentMode = UIViewContentModeScaleAspectFit;
+  if (self.imageViewAccessibilityLabel) {
+    imageView.isAccessibilityElement = YES;
+    imageView.accessibilityLabel = self.imageViewAccessibilityLabel;
+  }
 
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
   return imageView;

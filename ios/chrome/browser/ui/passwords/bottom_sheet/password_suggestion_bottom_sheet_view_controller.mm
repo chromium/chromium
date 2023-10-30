@@ -300,6 +300,10 @@ CGFloat const kSpacingAfterTitle = 4;
   NSString* title = l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE);
   UIView* titleView = password_manager::CreatePasswordManagerTitleView(title);
   titleView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  titleView.accessibilityLabel = [NSString
+      stringWithFormat:@"%@. %@", title,
+                       l10n_util::GetNSString(
+                           IDS_IOS_PASSWORD_BOTTOM_SHEET_SELECT_PASSWORD)];
   return titleView;
 }
 

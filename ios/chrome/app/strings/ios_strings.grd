@@ -2315,6 +2315,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS" desc="The password bottom sheet's long press menu item to open the password details page, which displays more information, like username, password and associated website.">
         Show Details
       </message>
+      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SELECT_PASSWORD" desc="This message is mentioned right after the title when the Password Bottom Sheet opens. For example, in English, it would say: 'Google Password Manager. Select a password to fill.'. This is spoken by VoiceOver. [iOS only]">
+        Select a password to fill.
+      </message>
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SUBTITLE" desc="Shown on the password bottom sheet to inform users that, upon accepting the prompt, their username and password will be shared with the given website. [iOS only]" meaning="A string under the title logo of the password bottom sheet.">
         You'll sign in to <ph name="URL">$1<ex>chromium.org</ex></ph>
       </message>
@@ -2329,6 +2332,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_SHOW_DETAILS" desc="The payment bottom sheet's long press menu item to open the credit card details view.">
         Show Details
+      </message>
+      <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_SELECT_PAYMENT_METHOD" desc="This message is mentioned right after the title when the Payments Bottom Sheet opens. For example, when using Google Pay, it would say: 'Google Pay. Select a payment method to fill.'. This is spoken by VoiceOver. [iOS only]">
+        Select a payment method to fill.
       </message>
       <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE" desc="Shown on the payment bottom sheet to inform users that, upon accepting the prompt, credit card informations will be shared with the given website. [iOS only]" meaning="A string under the title logo of the payment bottom sheet.">
         You'll fill info into <ph name="URL">$1<ex>chromium.org</ex></ph>
