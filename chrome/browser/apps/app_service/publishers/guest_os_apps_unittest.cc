@@ -124,6 +124,19 @@ class GuestOSAppsTest : public testing::Test {
     return intent_filters;
   }
 
+  void UpdateMimeTypes(std::string container_name,
+                       std::string extension,
+                       std::string mime_type) {
+    vm_tools::apps::MimeTypes mime_types_list;
+    mime_types_list.set_vm_name(bruschetta::kBruschettaVmName);
+    mime_types_list.set_container_name(container_name);
+    (*mime_types_list.mutable_mime_type_mappings())[extension] = mime_type;
+    auto* mime_types_service =
+        guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile());
+    mime_types_service->UpdateMimeTypes(mime_types_list);
+    task_environment_.RunUntilIdle();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -235,15 +248,7 @@ TEST_F(GuestOSAppsTest, IntentFilterWithTextPlainAddsTextWildcardMimeType) {
 TEST_F(GuestOSAppsTest, IntentFilterHasExtensionsFromPrefs) {
   const std::string mime_type = "test/mime1";
   const std::string extension = "test_extension";
-
-  // Update the mime_types_service to map the extension to the mime type.
-  vm_tools::apps::MimeTypes mime_types_list;
-  mime_types_list.set_vm_name(bruschetta::kBruschettaVmName);
-  mime_types_list.set_container_name("test_container");
-  (*mime_types_list.mutable_mime_type_mappings())[extension] = mime_type;
-  auto* mime_types_service =
-      guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile());
-  mime_types_service->UpdateMimeTypes(mime_types_list);
+  UpdateMimeTypes("test_container", extension, mime_type);
 
   // Create app and get its registered intent filters.
   const std::string app_id =

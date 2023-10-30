@@ -651,10 +651,11 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
         .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER,
         .icon = raw_ref(kFolderIcon)});
 
+    std::string ext = selection.front()->item()->file().file_path.Extension();
     std::string mime_type;
     const bool is_image =
-        net::GetMimeTypeFromFile(selection.front()->item()->file().file_path,
-                                 &mime_type) &&
+        !ext.empty() &&
+        net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type) &&
         net::MatchesMimeType(kMimeTypeImage, mime_type);
 
     if (is_image) {

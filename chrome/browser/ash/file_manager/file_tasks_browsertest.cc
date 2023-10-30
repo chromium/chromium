@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -184,12 +185,9 @@ void ConvertExpectation(const Expectation& test,
   for (base::StringPiece extension : all_extensions) {
     base::FilePath path = prefix.AddExtension(extension);
     std::string mime_type;
+    base::ScopedAllowBlockingForTesting allow_blocking;
     net::GetMimeTypeFromFile(path, &mime_type);
     if (test.mime_type != nullptr) {
-      // Sniffing isn't used when GetMimeTypeFromFile() succeeds, so there
-      // shouldn't be a hard-coded mime type configured.
-      EXPECT_TRUE(mime_type.empty())
-          << "Did not expect mime match " << mime_type << " for " << path;
       mime_type = test.mime_type;
     } else {
       EXPECT_FALSE(mime_type.empty()) << "No mime type for " << path;
@@ -268,7 +266,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExtensionToMimeMapping) {
       {"cr2"},
       {"dng"},
       {"nef"},
-      {"nrw"},
+      {"nrw", false},
       {"orf"},
       {"raf"},
       {"rw2"},
@@ -305,8 +303,11 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExtensionToMimeMapping) {
   for (const auto& test : kExpectations) {
     base::FilePath path = prefix.AddExtension(test.file_extension);
 
-    EXPECT_EQ(test.has_mime, net::GetMimeTypeFromFile(path, &mime_type))
-        << test.file_extension;
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (test.has_mime) {
+      EXPECT_TRUE(net::GetMimeTypeFromFile(path, &mime_type))
+          << test.file_extension;
+    }
   }
 }
 
@@ -334,11 +335,11 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ImageHandlerChangeDetector) {
       {"cr2", kMediaAppId},
       {"dng", kMediaAppId},
       {"nef", kMediaAppId},
-      {"nrw", kMediaAppId},
+      {"nrw", kMediaAppId, "image/tiff"},
       {"orf", kMediaAppId},
       {"raf", kMediaAppId},
       {"rw2", kMediaAppId},
-      {"NRW", kMediaAppId},  // Uppercase extension.
+      {"NRW", kMediaAppId, "image/tiff"},  // Uppercase extension.
   };
   TestExpectationsAgainstDefaultTasks(expectations);
 }

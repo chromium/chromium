@@ -191,6 +191,7 @@ base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
 std::vector<file_tasks::FullTaskDescriptor> GetTasksForFile(
     Profile* profile,
     const base::FilePath& file) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   std::string mime_type;
   net::GetMimeTypeFromFile(file, &mime_type);
   CHECK(!mime_type.empty());

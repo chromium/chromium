@@ -102,7 +102,6 @@ TEST(MimeUtilTest, ExtensionTest) {
          "application/x-mpegurl",  // Chrome's secondary mapping.
          "audio/x-mpegurl",  // https://crbug.com/1273061, system override for
                              // android-arm[64]-test and Linux. Possibly more.
-         "application/vnd.apple.mpegurl",  // System override for ChromeOS.
          "audio/mpegurl",                  // System override for mac.
      }},
     {FILE_PATH_LITERAL("csv"), {"text/csv"}},

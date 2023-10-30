@@ -4239,7 +4239,6 @@ source_set("ash") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
     "//third_party/securemessage/proto",
-    "//third_party/xdg_shared_mime_info",
     "//third_party/zlib",
     "//third_party/zlib/google:compression_utils",
     "//third_party/zlib/google:zip",

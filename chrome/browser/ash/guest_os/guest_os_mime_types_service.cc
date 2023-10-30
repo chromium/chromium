@@ -10,16 +10,34 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/nix/mime_util_xdg.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "third_party/xdg_shared_mime_info/mime_cache.h"
 
 namespace guest_os {
+namespace {
+
+base::Value::Dict GetOverrideMimeTypes(
+    const vm_tools::apps::MimeTypes& mime_type_mappings) {
+  base::Value::Dict overrides;
+  for (const auto& mapping : mime_type_mappings.mime_type_mappings()) {
+    // Only store mappings from container that are different to host.
+    base::FilePath dummy_path("foo." + mapping.first);
+    std::string type = base::nix::GetFileMimeType(dummy_path);
+    if (mapping.second != type) {
+      overrides.Set(mapping.first, mapping.second);
+    }
+  }
+  return overrides;
+}
+
+}  // namespace
 
 GuestOsMimeTypesService::GuestOsMimeTypesService(Profile* profile)
     : prefs_(profile->GetPrefs()) {}
@@ -116,22 +134,24 @@ void GuestOsMimeTypesService::UpdateMimeTypes(
     return;
   }
 
-  base::Value::Dict exts;
-  for (const auto& mapping : mime_type_mappings.mime_type_mappings()) {
-    // Only store mappings from container that are different to host.
-    std::string type;
-    if (!xdg_shared_mime_info::GetMimeCacheTypeFromExtension(mapping.first,
-                                                             &type) ||
-        mapping.second != type) {
-      exts.Set(mapping.first, mapping.second);
-    }
-  }
-  VLOG(1) << "UpdateMimeTypes(" << mime_type_mappings.vm_name() << ", "
-          << mime_type_mappings.container_name() << ")=" << exts;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&GetOverrideMimeTypes, mime_type_mappings),
+      base::BindOnce(&GuestOsMimeTypesService::UpdateOverrideMimeTypes,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     mime_type_mappings.vm_name(),
+                     mime_type_mappings.container_name()));
+}
+
+void GuestOsMimeTypesService::UpdateOverrideMimeTypes(
+    std::string vm_name,
+    std::string container_name,
+    base::Value::Dict overrides) {
+  VLOG(1) << "UpdateMimeTypes(" << vm_name << ", " << container_name
+          << ")=" << overrides;
   ScopedDictPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
-  base::Value::Dict& mime_types = update.Get();
-  base::Value::Dict* vm = mime_types.EnsureDict(mime_type_mappings.vm_name());
-  vm->Set(mime_type_mappings.container_name(), base::Value(std::move(exts)));
+  base::Value::Dict* vm = update.Get().EnsureDict(vm_name);
+  vm->Set(container_name, base::Value(std::move(overrides)));
 }
 
 }  // namespace guest_os

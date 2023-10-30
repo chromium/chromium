@@ -1,9 +1,3 @@
 include_rules = [
   "+grit",  # For generated headers
 ]
-
-specific_include_rules = {
-  "platform_mime_util_linux\.cc": [
-    "+third_party/xdg_shared_mime_info",
-  ]
-}

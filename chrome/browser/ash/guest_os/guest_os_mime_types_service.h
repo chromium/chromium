@@ -10,6 +10,8 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -59,8 +61,14 @@ class GuestOsMimeTypesService : public KeyedService {
   void UpdateMimeTypes(const vm_tools::apps::MimeTypes& mime_type_mappings);
 
  private:
+  void UpdateOverrideMimeTypes(std::string vm_name,
+                               std::string container_name,
+                               base::Value::Dict overrides);
+
   // Owned by the Profile.
   const raw_ptr<PrefService, ExperimentalAsh> prefs_;
+
+  base::WeakPtrFactory<GuestOsMimeTypesService> weak_ptr_factory_{this};
 };
 
 }  // namespace guest_os
