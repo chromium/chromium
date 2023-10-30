@@ -1521,15 +1521,23 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .WithBrowser()
             .NewDirectoryTree(),
         TestCase("openFileDialogGuestOs").WithBrowser().NewDirectoryTree(),
+// TODO(crbug.com/1425820): Re-enable this test.
+#if !defined(LEAK_SANITIZER) || !BUILDFLAG(IS_CHROMEOS) || \
+    !defined(ADDRESS_SANITIZER)
         TestCase("openFileDialogGuestOs")
             .WithBrowser()
             .InIncognito()
             .NewDirectoryTree(),
+#endif
         TestCase("saveFileDialogGuestOs").WithBrowser().NewDirectoryTree(),
+// TODO(crbug.com/1425820): Re-enable this test.
+#if !defined(LEAK_SANITIZER) || !BUILDFLAG(IS_CHROMEOS) || \
+    !defined(ADDRESS_SANITIZER)
         TestCase("saveFileDialogGuestOs")
             .WithBrowser()
             .InIncognito()
             .NewDirectoryTree(),
+#endif
         TestCase("openFileDialogDownloads")
             .WithBrowser()
             .NewDirectoryTree()
