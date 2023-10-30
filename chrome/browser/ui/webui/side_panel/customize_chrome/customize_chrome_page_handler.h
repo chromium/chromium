@@ -12,7 +12,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/token.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -22,12 +21,10 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/search/ntp_logging_events.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -35,14 +32,6 @@
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace data_decoder {
-class DataDecoder;
-}  // namespace data_decoder
-
-namespace image_fetcher {
-class ImageDecoder;
-}  // namespace image_fetcher
 
 class Profile;
 
@@ -72,8 +61,7 @@ class CustomizeChromePageHandler
       mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
       NtpCustomBackgroundService* ntp_custom_background_service,
       content::WebContents* web_contents,
-      const std::vector<std::pair<const std::string, int>> module_id_names,
-      image_fetcher::ImageDecoder* image_decoder);
+      const std::vector<std::pair<const std::string, int>> module_id_names);
 
   CustomizeChromePageHandler(const CustomizeChromePageHandler&) = delete;
   CustomizeChromePageHandler& operator=(const CustomizeChromePageHandler&) =
@@ -109,28 +97,8 @@ class CustomizeChromePageHandler
   void SetModuleDisabled(const std::string& module_id, bool disabled) override;
   void UpdateModulesSettings() override;
   void UpdateScrollToSection() override;
-  void GetDescriptors(GetDescriptorsCallback callback) override;
-  void GetWallpaperSearchResults(
-      const std::string& descriptor_a,
-      const absl::optional<std::string>& descriptor_b,
-      const absl::optional<std::string>& descriptor_c,
-      side_panel::mojom::DescriptorDValuePtr descriptor_d_value,
-      GetWallpaperSearchResultsCallback callback) override;
-  void SetBackgroundToWallpaperSearchResult(
-      const base::Token& result_id) override;
 
  private:
-  void OnDescriptorsRetrieved(GetDescriptorsCallback callback,
-                              std::unique_ptr<std::string> response_body);
-  void OnDescriptorsJsonParsed(GetDescriptorsCallback callback,
-                               data_decoder::DataDecoder::ValueOrError result);
-  void OnWallpaperSearchResultsRetrieved(
-      GetWallpaperSearchResultsCallback callback,
-      optimization_guide::OptimizationGuideModelExecutionResult result);
-  void OnWallpaperSearchResultsDecoded(
-      GetWallpaperSearchResultsCallback callback,
-      std::vector<SkBitmap> bitmaps);
-
   void LogEvent(NTPLoggingEventType event);
 
   bool IsCustomLinksEnabled() const;
@@ -171,10 +139,7 @@ class CustomizeChromePageHandler
   base::TimeTicks background_images_request_start_time_;
   raw_ptr<ThemeService> theme_service_;
   const std::vector<std::pair<const std::string, int>> module_id_names_;
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-  std::unique_ptr<data_decoder::DataDecoder> data_decoder_;
-  const raw_ref<image_fetcher::ImageDecoder> image_decoder_;
-  base::flat_map<base::Token, SkBitmap> wallpaper_search_results_;
+
   // Caches a request to scroll to a section in case the front-end queries the
   // last requested section, e.g. during load.
   CustomizeChromeSection last_requested_section_ =

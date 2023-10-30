@@ -23,9 +23,11 @@ import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, DescriptorA, DescriptorDValue, Descriptors, Theme, WallpaperSearchResult} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './wallpaper_search.html.js';
+import {DescriptorA, DescriptorDValue, Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchResult} from './wallpaper_search.mojom-webui.js';
+import {WallpaperSearchProxy} from './wallpaper_search/wallpaper_search_proxy.js';
 
 export const DESCRIPTOR_D_VALUE =
     ['#ef4837', '#0984e3', '#f9cc18', '#23cc6a', '#474747'];
@@ -101,13 +103,15 @@ export class WallpaperSearchElement extends PolymerElement {
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;
+  private wallpaperSearchHandler_: WallpaperSearchHandlerInterface;
   private setThemeListenerId_: number|null = null;
 
   constructor() {
     super();
     this.callbackRouter_ = CustomizeChromeApiProxy.getInstance().callbackRouter;
     this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
-    this.pageHandler_.getDescriptors().then(({descriptors}) => {
+    this.wallpaperSearchHandler_ = WallpaperSearchProxy.getHandler();
+    this.wallpaperSearchHandler_.getDescriptors().then(({descriptors}) => {
       if (descriptors) {
         this.descriptors_ = descriptors;
       }
@@ -169,9 +173,10 @@ export class WallpaperSearchElement extends PolymerElement {
     this.loading_ = true;
     this.results_ = [];
     this.emptyContainers_ = [];
-    const {results} = await this.pageHandler_.getWallpaperSearchResults(
-        this.selectedDescriptorA_, this.selectedDescriptorB_,
-        this.selectedDescriptorC_, this.selectedDescriptorD_);
+    const {results} =
+        await this.wallpaperSearchHandler_.getWallpaperSearchResults(
+            this.selectedDescriptorA_, this.selectedDescriptorB_,
+            this.selectedDescriptorC_, this.selectedDescriptorD_);
     this.loading_ = false;
     this.results_ = results;
     this.emptyContainers_ = Array.from(
@@ -179,7 +184,8 @@ export class WallpaperSearchElement extends PolymerElement {
   }
 
   private async onResultClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
-    this.pageHandler_.setBackgroundToWallpaperSearchResult(e.model.item.id);
+    this.wallpaperSearchHandler_.setBackgroundToWallpaperSearchResult(
+        e.model.item.id);
   }
 }
 

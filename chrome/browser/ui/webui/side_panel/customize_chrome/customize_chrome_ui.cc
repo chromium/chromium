@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -227,6 +228,14 @@ void CustomizeChromeUI::BindInterface(
       web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
+void CustomizeChromeUI::BindInterface(
+    mojo::PendingReceiver<
+        side_panel::customize_chrome::mojom::WallpaperSearchHandler>
+        pending_receiver) {
+  wallpaper_search_handler_ = std::make_unique<WallpaperSearchHandler>(
+      std::move(pending_receiver), profile_, image_decoder_.get());
+}
+
 void CustomizeChromeUI::CreatePageHandler(
     mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
     mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
@@ -235,7 +244,7 @@ void CustomizeChromeUI::CreatePageHandler(
   customize_chrome_page_handler_ = std::make_unique<CustomizeChromePageHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       NtpCustomBackgroundServiceFactory::GetForProfile(profile_), web_contents_,
-      module_id_names_, image_decoder_.get());
+      module_id_names_);
   if (section_.has_value()) {
     customize_chrome_page_handler_->ScrollToSection(*section_);
     section_.reset();

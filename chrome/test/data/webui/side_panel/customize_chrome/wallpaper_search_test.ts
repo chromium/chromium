@@ -5,9 +5,11 @@
 import 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote, Descriptors} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
+import {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.js';
+import {Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
+import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -19,7 +21,7 @@ import {$$, assertStyle, createBackgroundImage, createTheme, installMock} from '
 
 suite('WallpaperSearchTest', () => {
   let callbackRouterRemote: CustomizeChromePageRemote;
-  let handler: TestMock<CustomizeChromePageHandlerRemote>;
+  let handler: TestMock<WallpaperSearchHandlerInterface>;
   let wallpaperSearchElement: WallpaperSearchElement;
 
   async function createWallpaperSearchElement(
@@ -42,10 +44,9 @@ suite('WallpaperSearchTest', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
-        CustomizeChromePageHandlerRemote,
-        (mock: CustomizeChromePageHandlerRemote) =>
-            CustomizeChromeApiProxy.setInstance(
-                mock, new CustomizeChromePageCallbackRouter()));
+        WallpaperSearchHandlerRemote,
+        (mock: WallpaperSearchHandlerInterface) =>
+            WallpaperSearchProxy.setHandler(mock));
     callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
   });

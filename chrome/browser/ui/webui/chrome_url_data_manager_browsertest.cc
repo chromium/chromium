@@ -23,7 +23,9 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/history_clusters/core/features.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/search/ntp_features.h"
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -182,6 +184,9 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     enabled_features.push_back(history_clusters::kSidePanelJourneys);
     enabled_features.push_back(features::kSupportTool);
     enabled_features.push_back(features::kCustomizeChromeSidePanel);
+    enabled_features.push_back(ntp_features::kCustomizeChromeWallpaperSearch);
+    enabled_features.push_back(
+        optimization_guide::features::kOptimizationGuideModelExecution);
     enabled_features.push_back(features::kReadAnything);
     enabled_features.push_back(user_notes::kUserNotes);
 

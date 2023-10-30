@@ -1,0 +1,50 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module side_panel.customize_chrome.mojom;
+
+import "mojo/public/mojom/base/token.mojom";
+import "skia/public/mojom/skcolor.mojom";
+
+struct DescriptorA {
+  string category;
+  array<string> labels;
+};
+
+struct DescriptorB {
+  string label;
+  string image_path;
+};
+
+union DescriptorDValue {
+  skia.mojom.SkColor color;
+  float hue;
+};
+
+struct Descriptors {
+  array<DescriptorA> descriptor_a;
+  array<DescriptorB> descriptor_b;
+  array<string> descriptor_c;
+};
+
+struct WallpaperSearchResult {
+  mojo_base.mojom.Token id;
+  string image;
+};
+
+// Browser-side handler for requests from WebUI page.
+interface WallpaperSearchHandler {
+  // Retrieves NTP descriptors.
+  GetDescriptors() => (Descriptors? descriptors);
+
+  // Searches NTP wallpaper for descriptors.
+  // Returns list of sanitized image data.
+  GetWallpaperSearchResults(string descriptor_a,
+      string? descriptor_b, string? descriptor_c,
+      DescriptorDValue? descriptor_d_value)
+        => (array<WallpaperSearchResult> results);
+
+  // Sets wallpaper search result of index to background image.
+  SetBackgroundToWallpaperSearchResult(mojo_base.mojom.Token result_id);
+};

@@ -195,6 +195,7 @@
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
@@ -208,6 +209,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/commerce/core/mojom/shopping_list.mojom.h"  // nogncheck crbug.com/1125897
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/search/ntp_features.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -1284,6 +1286,15 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         side_panel::mojom::CustomizeChromePageHandlerFactory,
         CustomizeChromeUI>(map);
+
+    if (base::FeatureList::IsEnabled(
+            ntp_features::kCustomizeChromeWallpaperSearch) &&
+        base::FeatureList::IsEnabled(
+            optimization_guide::features::kOptimizationGuideModelExecution)) {
+      RegisterWebUIControllerInterfaceBinder<
+          side_panel::customize_chrome::mojom::WallpaperSearchHandler,
+          CustomizeChromeUI>(map);
+    }
   }
 
   if (user_notes::IsUserNotesEnabled()) {

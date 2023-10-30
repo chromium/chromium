@@ -7827,6 +7827,7 @@ test("unit_tests") {
       "../browser/ui/webui/settings/site_settings_helper_unittest.cc",
       "../browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler_unittest.cc",
       "../browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler_unittest.cc",
+      "../browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler_unittest.cc",
       "../browser/ui/webui/side_panel/performance_controls/performance_page_handler_unittest.cc",
       "../browser/ui/webui/side_panel/reading_list/reading_list_page_handler_unittest.cc",
       "../browser/ui/webui/side_panel/user_notes/user_notes_page_handler_unittest.cc",
