@@ -119,6 +119,12 @@ bool CheckPrivateAggregationConfig(
         SecurityOrigin::CreateFromString(
             options.privateAggregationConfig()->aggregationCoordinatorOrigin());
     CHECK(parsed_coordinator);
+    if (parsed_coordinator->IsOpaque()) {
+      resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state.GetIsolate(), DOMExceptionCode::kSyntaxError,
+          "aggregationCoordinatorOrigin must be a valid origin"));
+      return false;
+    }
     if (!aggregation_service::IsAggregationCoordinatorOriginAllowed(
             parsed_coordinator->ToUrlOrigin())) {
       resolver.Reject(V8ThrowDOMException::CreateOrEmpty(

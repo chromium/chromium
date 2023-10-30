@@ -105,7 +105,7 @@ private_aggregation_promise_test(async (test) => {
 
   const data = {enableDebugMode: true, contributions: [{bucket: 1n, value: 2}]};
   promise_rejects_dom(
-      test, "DataError",
+      test, "SyntaxError",
       sharedStorage.run("contribute-to-histogram",
                         {data, keepAlive: true, privateAggregationConfig}));
 
