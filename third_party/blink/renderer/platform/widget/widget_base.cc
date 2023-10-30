@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -1167,6 +1168,23 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     params->value = new_info.value;
     params->selection =
         gfx::Range(new_info.selection_start, new_info.selection_end);
+    {
+      // It is expected that the selection range is always bounded by
+      // the text content, but according to the logs in browser process
+      // sometimes it is not.
+      // LOG and dump stack traces in renderers temporarily for further
+      // investigation.
+      // TODO(crbug.com/1457178): Remove the strace when the root cause if
+      // identified and fixed.
+      gfx::Range text_range(0, params->value.length());
+      if (!params->selection.IsBoundedBy(text_range)) {
+        LOG(ERROR) << "selection range is not bounded by the text: "
+                   << "selection=" << params->selection.ToString()
+                   << "text=" << text_range.ToString();
+        base::debug::DumpWithoutCrashing();
+      }
+    }
+
     if (new_info.composition_start != -1) {
       params->composition =
           gfx::Range(new_info.composition_start, new_info.composition_end);
