@@ -3678,6 +3678,15 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     message = self._driver.FindElement('css selector', '#message.result')
     self.assertTrue('clicked' in message.GetText())
 
+  def testBrowserNameIsEchoed(self):
+    """Verifies that the returned browserName capability is the same as the
+    sent browserName capability. The feature is relied upon by
+    test_merge_browserName Web Platform Test.
+    """
+    browser_name = self._driver.capabilities['browserName']
+    driver = self.CreateDriver(browser_name=browser_name)
+    self.assertEqual(browser_name, driver.capabilities['browserName'])
+
   def testHeadlessWithUserDataDirStarts(self):
     """Tests that ChromeDriver can launch Chrome in headless mode
        with user-data-dir provided as a command line argument.

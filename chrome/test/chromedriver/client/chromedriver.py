@@ -106,7 +106,7 @@ class ChromeDriver(object):
       send_w3c_capability=True, send_w3c_request=True,
       page_load_strategy=None, unexpected_alert_behaviour=None,
       devtools_events_to_log=None, accept_insecure_certs=None,
-      timeouts=None, test_name=None, web_socket_url=None):
+      timeouts=None, test_name=None, web_socket_url=None, browser_name=None):
     self._executor = command_executor.CommandExecutor(server_url)
     self._server_url = server_url
     self.w3c_compliant = False
@@ -225,6 +225,9 @@ class ChromeDriver(object):
 
     if web_socket_url is not None:
       params['webSocketUrl'] = web_socket_url
+
+    if browser_name is not None:
+      params['browserName'] = browser_name
 
     if send_w3c_request:
       params = {'capabilities': {'alwaysMatch': params}}

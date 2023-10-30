@@ -21,6 +21,7 @@ extern const char kChromeDriverOptionsKeyPrefixed[];
 extern const char kBrowserShortName[];
 extern const char kBrowserCapabilityName[];
 extern const char kUserAgentProductName[];
+extern const char kHeadlessShellCapabilityName[];
 extern const char kHeadlessUserAgentProductName[];
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CONSTANTS_VERSION_H_

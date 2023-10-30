@@ -114,7 +114,7 @@ TEST(ParseBrowserString, HeadlessChrome) {
   Status status = BrowserInfo::ParseBrowserString(
       false, "HeadlessChrome/39.0.2171.59", &browser_info);
   ASSERT_TRUE(status.IsOk());
-  ASSERT_EQ("headless chrome", browser_info.browser_name);
+  ASSERT_EQ("chrome-headless-shell", browser_info.browser_name);
   ASSERT_EQ("39.0.2171.59", browser_info.browser_version);
   ASSERT_EQ(39, browser_info.major_version);
   ASSERT_EQ(2171, browser_info.build_no);
@@ -175,7 +175,7 @@ TEST(FillFromBrowserVersionResponse, HeadlessChrome) {
   BrowserInfo browser_info;
   Status status = browser_info.FillFromBrowserVersionResponse(response);
   ASSERT_TRUE(status.IsOk());
-  ASSERT_EQ("headless chrome", browser_info.browser_name);
+  ASSERT_EQ("chrome-headless-shell", browser_info.browser_name);
   ASSERT_EQ("39.0.2171.59", browser_info.browser_version);
   ASSERT_EQ(39, browser_info.major_version);
   ASSERT_EQ(2171, browser_info.build_no);
