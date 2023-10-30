@@ -1,6 +1,6 @@
 Name: xdg-mime
 URL: https://gitlab.freedesktop.org/xdg/xdgmime
-Version: 722325fba8968a26eb243642cbe89a044d6dfd6c
+Version: 179296748e92bd91bf531656632a1056307fb7b7
 CPEPrefix: unknown
 License: Academic Free License version 2.0 or LGPL v2
 License File: LICENSE
@@ -12,5 +12,3 @@ Run //base/third_party/xdg_mime/roll.py to update this dependency.
 Patches:
 - 000-have-mmap.patch: enable code guarded with HAVE_MMAP since
   Chrome does not run autoconf.
-- 001-fix-casts-for-cfi.patch: remove casting between function
-  pointer types (!!!)
