@@ -18,7 +18,6 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "crypto/random.h"
-#include "third_party/leveldatabase/env_chromium.h"
 
 namespace gcm {
 
@@ -31,9 +30,6 @@ using EntryVectorType =
 // authentication secret. Must be at least 16 bytes.
 const size_t kAuthSecretBytes = 16;
 
-// Size cap for the leveldb log file before compression.
-const size_t kDatabaseWriteBufferSizeBytes = 16 * 1024;
-
 std::string DatabaseKey(const std::string& app_id,
                         const std::string& authorized_entity) {
   DCHECK_EQ(std::string::npos, app_id.find(','));
@@ -42,14 +38,6 @@ std::string DatabaseKey(const std::string& app_id,
   return authorized_entity.empty()
              ? app_id  // No comma, for compatibility with existing keys.
              : app_id + ',' + authorized_entity;
-}
-
-leveldb_env::Options CreateLevelDbOptions() {
-  leveldb_env::Options options;
-  options.create_if_missing = true;
-  options.max_open_files = 0;  // Use minimum.
-  options.write_buffer_size = kDatabaseWriteBufferSizeBytes;
-  return options;
 }
 
 }  // namespace
@@ -299,7 +287,7 @@ void GCMKeyStore::LazyInitialize(base::OnceClosure done_closure) {
       blocking_task_runner_);
 
   database_->Init(
-      CreateLevelDbOptions(),
+      leveldb_proto::CreateSimpleOptions(),
       base::BindOnce(&GCMKeyStore::DidInitialize, weak_factory_.GetWeakPtr()));
 }
 
