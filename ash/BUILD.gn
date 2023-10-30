@@ -1207,6 +1207,8 @@ component("ash") {
     "style/dark_light_mode_controller_impl.h",
     "style/dot_indicator.cc",
     "style/dot_indicator.h",
+    "style/drop_down_checkbox.cc",
+    "style/drop_down_checkbox.h",
     "style/harmonized_colors.cc",
     "style/harmonized_colors.h",
     "style/icon_button.cc",
