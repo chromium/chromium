@@ -102,6 +102,7 @@ group("gn_all") {
       "//services/service_manager/public/cpp",
       "//skia:skia_unittests",
       "//sql:sql_unittests",
+      "//testing/libfuzzer/tests",
       "//third_party/angle/src/tests:angle_end2end_tests",
       "//third_party/angle/src/tests:angle_unittests",
       "//third_party/angle/src/tests:angle_white_box_tests",
@@ -764,13 +765,6 @@ group("gn_all") {
 
       if (is_chromeos_ash) {
         deps += [ "//chrome/services/ipp_parser/public/cpp:fuzzers" ]
-      }
-
-      # TODO(crbug.com/906751): Get the libFuzzer tests working on Windows.
-      # Disable them for now because they cause the Windows clang ToT builder to
-      # fail.
-      if (!is_win) {
-        deps += [ "//testing/libfuzzer/tests:libfuzzer_tests" ]
       }
     }
 
