@@ -2697,6 +2697,9 @@ void AccessibilityControllerImpl::ShowConfirmationDialog(
   // Save the dialog so it doesn't go out of scope before it is
   // used and closed.
   confirmation_dialog_ = dialog->GetWeakPtr();
+  if (show_confirmation_dialog_callback_for_testing_) {
+    show_confirmation_dialog_callback_for_testing_.Run();
+  }
 }
 
 void AccessibilityControllerImpl::
@@ -2904,6 +2907,11 @@ void AccessibilityControllerImpl::AddShowToastCallbackForTesting(
     base::RepeatingCallback<void(AccessibilityToastType)> callback) {
   accessibility_notification_controller_->AddShowToastCallbackForTesting(
       std::move(callback));
+}
+
+void AccessibilityControllerImpl::AddShowConfirmationDialogCallbackForTesting(
+    base::RepeatingCallback<void()> callback) {
+  show_confirmation_dialog_callback_for_testing_ = std::move(callback);
 }
 
 }  // namespace ash

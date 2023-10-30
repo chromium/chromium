@@ -137,6 +137,19 @@ class AtpAccessibilityPrivate {
   }
 
   /**
+   * Shows a confirmation dialog.
+   * @param {string} title The title of the confirmation dialog.
+   * @param {string} description The description to show within the confirmation
+   * dialog.
+   * @param {string} cancelName The human-readable name of the cancel button.
+   * @param {function(boolean): void} callback
+   */
+  showConfirmationDialog(title, description, cancelName, callback) {
+    this.getUserInterfaceRemote_().showConfirmationDialog(title, description,
+        cancelName).then(response => callback(response.confirmed));
+  }
+
+  /**
    * Sets the given accessibility focus rings for this extension.
    * @param {!Array<!chrome.accessibilityPrivate.FocusRingInfo>} focusRings
    *     Array of focus rings to draw.

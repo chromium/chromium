@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_highlight_layer.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -74,6 +75,29 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
 };  // namespace
 
 namespace ash {
+
+class DialogShownWaiter {
+ public:
+  DialogShownWaiter() {
+    ash::Shell::Get()
+        ->accessibility_controller()
+        ->AddShowConfirmationDialogCallbackForTesting(base::BindRepeating(
+            &DialogShownWaiter::OnDialogShown, weak_factory_.GetWeakPtr()));
+  }
+
+  DialogShownWaiter(const DialogShownWaiter&) = delete;
+  DialogShownWaiter& operator=(const DialogShownWaiter&) = delete;
+
+  ~DialogShownWaiter() = default;
+
+  void Wait() { run_loop_.Run(); }
+
+  void OnDialogShown() { run_loop_.QuitWhenIdle(); }
+
+ private:
+  base::RunLoop run_loop_;
+  base::WeakPtrFactory<DialogShownWaiter> weak_factory_{this};
+};  // namespace
 
 namespace {
 // Matches max utterance from the TTS extension API.
@@ -931,6 +955,223 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, OpenSettingsSubpage) {
   fake_service_->RequestOpenSettingsSubpage("manageAccessibility/tts");
 
   waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       AcceptConfirmationDialog) {
+  // Initialize ATP.
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Request confirmation dialog.
+  base::RunLoop waiter;
+  fake_service_->RequestShowConfirmationDialog(
+      "Order Confirmation", "Ok to purchase 10,000 lbs of canned corn?",
+      "No, thank you", base::BindLambdaForTesting([&waiter](bool confirmed) {
+        waiter.Quit();
+        EXPECT_TRUE(confirmed);
+      }));
+
+  // Wait for dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify dialog was created.
+  AccessibilityConfirmationDialog* dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Accept dialog.
+  dialog->AcceptDialog();
+
+  // Wait for dialog callback and closing.
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       CancelConfirmationDialog) {
+  // Initialize ATP.
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Request confirmation dialog.
+  base::RunLoop waiter;
+  fake_service_->RequestShowConfirmationDialog(
+      "Order Confirmation", "Ok to purchase 10,000 lbs of canned corn?",
+      "No, thank you", base::BindLambdaForTesting([&waiter](bool confirmed) {
+        waiter.Quit();
+        EXPECT_FALSE(confirmed);
+      }));
+
+  // Wait for dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify dialog was created.
+  AccessibilityConfirmationDialog* dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Cancel dialog.
+  dialog->CancelDialog();
+
+  // Wait for dialog callback and closing.
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       CloseConfirmationDialog) {
+  // Initialize ATP.
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Request confirmation dialog.
+  base::RunLoop waiter;
+  fake_service_->RequestShowConfirmationDialog(
+      "Order Confirmation", "Ok to purchase 10,000 lbs of canned corn?",
+      "No, thank you", base::BindLambdaForTesting([&waiter](bool confirmed) {
+        waiter.Quit();
+        EXPECT_FALSE(confirmed);
+      }));
+
+  // Wait for dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify dialog was created.
+  AccessibilityConfirmationDialog* dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Close dialog.
+  dialog->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+
+  // Wait for callback and closing.
+  waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       AutoCloseSecondConfirmationDialog) {
+  // If a dialog is already being shown, we do not show a new one.
+  // Instead, we return false through the callback on the new dialog
+  // to indicate it was closed without the user taking any action.
+  // (See the implementation in user_interface_impl.cc and
+  // accessibility_controller_impl.cc)
+
+  // Initialize ATP.
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Request first confirmation dialog.
+  base::RunLoop waiter1;
+  fake_service_->RequestShowConfirmationDialog(
+      "Order Confirmation", "Ok to purchase 10,000 lbs of canned corn?",
+      "No, thank you", base::BindLambdaForTesting([&waiter1](bool confirmed) {
+        waiter1.Quit();
+        EXPECT_TRUE(confirmed);
+      }));
+
+  // Wait for dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify dialog was created.
+  AccessibilityConfirmationDialog* dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Request second confirmation dialog.
+  base::RunLoop waiter2;
+  fake_service_->RequestShowConfirmationDialog(
+      "Are we there yet?",
+      "Do you confirm that the journey to the destination is completed?", "No",
+      base::BindLambdaForTesting([&waiter2](bool confirmed) {
+        waiter2.Quit();
+        EXPECT_FALSE(confirmed);
+      }));
+
+  // Wait for second dialog to get automatically closed.
+  waiter2.Run();
+
+  // Verify current dialog is first dialog.
+  dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Accept first dialog.
+  dialog->AcceptDialog();
+
+  // Wait for first dialog callback and closing.
+  waiter1.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
+                       OpenSecondConfirmationDialogAfterClosingFirst) {
+  // Initialize ATP.
+  TurnOnAccessibilityService(AssistiveTechnologyType::kChromeVox);
+  fake_service_->BindAnotherUserInterface();
+
+  // Request first confirmation dialog.
+  base::RunLoop waiter1;
+  fake_service_->RequestShowConfirmationDialog(
+      "Order Confirmation", "Ok to purchase 10,000 lbs of canned corn?",
+      "No, thank you", base::BindLambdaForTesting([&waiter1](bool confirmed) {
+        waiter1.Quit();
+        EXPECT_TRUE(confirmed);
+      }));
+
+  // Wait for dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify dialog was created.
+  AccessibilityConfirmationDialog* dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify first dialog title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Order Confirmation");
+
+  // Accept first dialog.
+  dialog->AcceptDialog();
+
+  // Wait for first dialog callback and closing.
+  waiter1.Run();
+
+  // Request second confirmation dialog.
+  base::RunLoop waiter2;
+  fake_service_->RequestShowConfirmationDialog(
+      "Are we there yet?",
+      "Do you confirm that the journey to the destination is completed?", "No",
+      base::BindLambdaForTesting([&waiter2](bool confirmed) {
+        waiter2.Quit();
+        EXPECT_TRUE(confirmed);
+      }));
+
+  // Wait for second dialog shown.
+  DialogShownWaiter().Wait();
+
+  // Verify second dialog was created.
+  dialog =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog, nullptr);
+
+  // Verify second dialog title.
+  EXPECT_EQ(dialog->GetWindowTitle(), u"Are we there yet?");
+
+  // Accept second dialog.
+  dialog->AcceptDialog();
+
+  // Wait for second dialog callback and closing.
+  waiter2.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, SetFocusRings) {

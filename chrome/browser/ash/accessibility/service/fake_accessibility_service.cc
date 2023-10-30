@@ -273,6 +273,17 @@ void FakeAccessibilityService::RequestOpenSettingsSubpage(
   }
 }
 
+void FakeAccessibilityService::RequestShowConfirmationDialog(
+    const std::string& title,
+    const std::string& description,
+    const absl::optional<std::string>& cancel_name,
+    ax::mojom::UserInterface::ShowConfirmationDialogCallback callback) {
+  for (auto& ux_client : ux_remotes_) {
+    ux_client->ShowConfirmationDialog(title, description, cancel_name,
+                                      std::move(callback));
+  }
+}
+
 void FakeAccessibilityService::RequestSetFocusRings(
     std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
     ax::mojom::AssistiveTechnologyType at_type) {

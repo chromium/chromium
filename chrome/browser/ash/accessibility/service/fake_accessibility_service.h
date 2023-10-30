@@ -165,6 +165,12 @@ class FakeAccessibilityService
 
   void RequestOpenSettingsSubpage(const std::string& subpage);
 
+  void RequestShowConfirmationDialog(
+      const std::string& title,
+      const std::string& description,
+      const absl::optional<std::string>& cancel_name,
+      ax::mojom::UserInterface::ShowConfirmationDialogCallback callback);
+
   void RequestSetFocusRings(
       std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
       ax::mojom::AssistiveTechnologyType at_type);

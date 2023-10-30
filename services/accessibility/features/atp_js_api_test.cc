@@ -551,6 +551,19 @@ TEST_F(AccessibilityPrivateJSApiTest, OpenSettingsSubpage) {
   waiter.Run();
 }
 
+TEST_F(AccessibilityPrivateJSApiTest, ShowConfirmationDialog) {
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.accessibilityPrivate.showConfirmationDialog(
+        'Confirm Order',
+        'Your order is: Three samosas, two chai teas, and a side of naan bread',
+        'Cancel please, I already ate',
+        success => remote.testComplete(success)
+    );
+  )JS");
+  WaitForJSTestComplete();
+}
+
 TEST_F(AccessibilityPrivateJSApiTest, SetFocusRings) {
   base::RunLoop waiter;
   client_->SetFocusRingsCallback(base::BindLambdaForTesting([&waiter, this]() {

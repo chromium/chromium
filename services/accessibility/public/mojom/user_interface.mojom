@@ -61,6 +61,13 @@ interface UserInterface {
     // substring 'manageAccessibility/tts'.
     OpenSettingsSubpage(string subpage);
 
+    // Shows a confirmation dialog, given the title of the confirmation dialog,
+    // the description to show within the confirmation dialog, and the
+    // human-readable name of the cancel button. Returns true if the dialog was
+    // confirmed, false if it was canceled or closed.
+    ShowConfirmationDialog(string title, string description, string? cancelName)
+        => (bool confirmed);
+
     // Sets the given accessibility focus rings for the given `at_type`
     // or clears them if the list is empty.
     // TODO(b/293348920): Cleanup after migration: pass a map of id to

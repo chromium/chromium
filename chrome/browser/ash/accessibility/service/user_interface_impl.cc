@@ -11,6 +11,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/accessibility/public/mojom/user_interface.mojom-shared.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace ash {
 
@@ -29,6 +31,38 @@ void UserInterfaceImpl::DarkenScreen(bool darken) {
 
 void UserInterfaceImpl::OpenSettingsSubpage(const std::string& subpage) {
   AccessibilityManager::Get()->OpenSettingsSubpage(subpage);
+}
+
+void UserInterfaceImpl::ShowConfirmationDialog(
+    const std::string& title,
+    const std::string& description,
+    const absl::optional<std::string>& cancel_name,
+    ShowConfirmationDialogCallback callback) {
+  // If a dialog is already being shown we do not show a new one.
+  // Instead, return false through the callback on the new dialog
+  // to indicate it was closed without the user taking any action.
+  // This is consistent with AcceleratorController, and matches
+  // the implementation in accessibility_controller_impl.cc.
+  if (show_confirmation_dialog_callback_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  show_confirmation_dialog_callback_ = std::move(callback);
+  ash::AccessibilityController::Get()->ShowConfirmationDialog(
+      base::UTF8ToUTF16(title), base::UTF8ToUTF16(description),
+      cancel_name ? base::UTF8ToUTF16(cancel_name.value())
+                  : l10n_util::GetStringUTF16(IDS_APP_CANCEL),
+      base::BindOnce(&UserInterfaceImpl::OnDialogResult,
+                     weak_factory_.GetWeakPtr(), /* confirmed */ true),
+      base::BindOnce(&UserInterfaceImpl::OnDialogResult,
+                     weak_factory_.GetWeakPtr(), /* not confirmed */ false),
+      base::BindOnce(&UserInterfaceImpl::OnDialogResult,
+                     weak_factory_.GetWeakPtr(), /* not confirmed */ false));
+}
+
+void UserInterfaceImpl::OnDialogResult(bool confirmed) {
+  std::move(show_confirmation_dialog_callback_).Run(confirmed);
+  show_confirmation_dialog_callback_.Reset();
 }
 
 void UserInterfaceImpl::SetFocusRings(

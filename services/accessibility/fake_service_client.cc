@@ -169,6 +169,14 @@ void FakeServiceClient::OpenSettingsSubpage(const std::string& subpage) {
   }
 }
 
+void FakeServiceClient::ShowConfirmationDialog(
+    const std::string& title,
+    const std::string& description,
+    const absl::optional<std::string>& cancel_name,
+    ShowConfirmationDialogCallback callback) {
+  std::move(callback).Run(true);
+}
+
 void FakeServiceClient::SetFocusRings(
     std::vector<mojom::FocusRingInfoPtr> focus_rings,
     mojom::AssistiveTechnologyType at_type) {

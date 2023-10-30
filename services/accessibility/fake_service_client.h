@@ -90,6 +90,10 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   // ax::mojom::UserInterface:
   void DarkenScreen(bool darken) override;
   void OpenSettingsSubpage(const std::string& subpage) override;
+  void ShowConfirmationDialog(const std::string& title,
+                              const std::string& description,
+                              const absl::optional<std::string>& cancel_name,
+                              ShowConfirmationDialogCallback callback) override;
   void SetFocusRings(std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
                      ax::mojom::AssistiveTechnologyType at_type) override;
   void SetHighlights(const std::vector<gfx::Rect>& rects,
