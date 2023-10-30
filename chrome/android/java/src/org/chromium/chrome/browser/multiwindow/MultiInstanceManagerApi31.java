@@ -226,6 +226,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         return result;
     }
 
+    @Override
+    public int getCurrentInstanceId() {
+        List<InstanceInfo> allInstances = getInstanceInfo();
+        if (allInstances == null || allInstances.isEmpty()) return INVALID_INSTANCE_ID;
+        // Current instance is at top of list.
+        return allInstances.get(0).instanceId;
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected boolean isRunningInAdjacentWindow(
             SparseBooleanArray visibleTasks, Activity activity) {

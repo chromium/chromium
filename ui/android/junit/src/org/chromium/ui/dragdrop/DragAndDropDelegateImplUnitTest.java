@@ -4,6 +4,8 @@
 
 package org.chromium.ui.dragdrop;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -52,15 +54,13 @@ import org.chromium.url.JUnitTestGURLs;
 public class DragAndDropDelegateImplUnitTest {
     /** Using a window size of 1000*600 for the ease of dp / pixel calculation. */
     private static final int WINDOW_WIDTH = 1000;
-
     private static final int WINDOW_HEIGHT = 600;
-
     private static final float DRAG_START_X_DP = 1.0f;
     private static final float DRAG_START_Y_DP = 1.0f;
-
     private static final String IMAGE_FILENAME = "image.png";
 
     @Mock private DragAndDropPermissions mDragAndDropPermissions;
+    @Mock private DragAndDropBrowserDelegate mDragAndDropBrowserDelegate;
 
     /** Helper shadow class to make sure #startDragAndDrop is accepted by Android. */
     @Implements(ApiHelperForN.class)
@@ -202,7 +202,7 @@ public class DragAndDropDelegateImplUnitTest {
     @Config(shadows = {ShadowContentResolver.class, ShadowApiHelperForN.class})
     public void testStartDragAndDrop_Image_WithAnimation() {
         mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(
-                createDragAndDropBrowserDelegate(false, true, null, null));
+                mockDragAndDropBrowserDelegate(false, true, null, null));
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
         final DropDataAndroid imageDropData =
                 DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png", IMAGE_FILENAME);
@@ -536,7 +536,7 @@ public class DragAndDropDelegateImplUnitTest {
         final DropDataAndroid dropData =
                 DropDataAndroid.create("", JUnitTestGURLs.EXAMPLE_URL, null, null, null);
         mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(
-                createDragAndDropBrowserDelegate(false, false, null, new Intent()));
+                mockDragAndDropBrowserDelegate(false, false, null, new Intent()));
         ClipData clipData = mDragAndDropDelegateImpl.buildClipData(dropData);
         Assert.assertTrue(
                 "Link ClipData should include plaintext MIME type.",
@@ -557,7 +557,7 @@ public class DragAndDropDelegateImplUnitTest {
         final DropDataAndroid dropData =
                 DropDataAndroid.create("", JUnitTestGURLs.EXAMPLE_URL, null, null, null);
         mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(
-                createDragAndDropBrowserDelegate(false, false, null, null));
+                mockDragAndDropBrowserDelegate(false, false, null, null));
         ClipData clipData = mDragAndDropDelegateImpl.buildClipData(dropData);
         Assert.assertTrue(
                 "Link ClipData should include plaintext MIME type.",
@@ -573,21 +573,20 @@ public class DragAndDropDelegateImplUnitTest {
 
     @Test
     public void testClipData_browserContent() {
-        DragAndDropBrowserDelegate mockDelegate = mock(DragAndDropBrowserDelegate.class);
         ClipData mockClipData = mock(ClipData.class);
         DropDataAndroid mockDropData = mock(DropDataAndroid.class);
         when(mockDropData.hasBrowserContent()).thenReturn(true);
-        when(mockDelegate.buildClipData(mockDropData)).thenReturn(mockClipData);
-        mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(mockDelegate);
+        when(mDragAndDropBrowserDelegate.buildClipData(mockDropData)).thenReturn(mockClipData);
+        mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
         ClipData actualClipData = mDragAndDropDelegateImpl.buildClipData(mockDropData);
         Assert.assertEquals("ClipData is not as expected.", mockClipData, actualClipData);
-        verify(mockDelegate).buildClipData(mockDropData);
+        verify(mDragAndDropBrowserDelegate).buildClipData(mockDropData);
     }
 
     @Test
     public void testDropInChromeFromOutside() {
         mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(
-                createDragAndDropBrowserDelegate(true, false, mDragAndDropPermissions, null));
+                mockDragAndDropBrowserDelegate(true, false, mDragAndDropPermissions, null));
         // Assume that data is dragged from outside Chrome.
         mDragAndDropDelegateImpl.onDrag(mContainerView, mockDragEvent(DragEvent.ACTION_DROP));
         verify(mDragAndDropPermissions).release();
@@ -658,36 +657,17 @@ public class DragAndDropDelegateImplUnitTest {
                 RecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 
-    private DragAndDropBrowserDelegate createDragAndDropBrowserDelegate(
+    private DragAndDropBrowserDelegate mockDragAndDropBrowserDelegate(
             boolean supportDropInChrome,
             boolean supportAnimatedImageDragShadow,
             DragAndDropPermissions permissions,
             Intent intent) {
-        return new DragAndDropBrowserDelegate() {
-            @Override
-            public boolean getSupportDropInChrome() {
-                return supportDropInChrome;
-            }
-
-            @Override
-            public boolean getSupportAnimatedImageDragShadow() {
-                return supportAnimatedImageDragShadow;
-            }
-
-            @Override
-            public DragAndDropPermissions getDragAndDropPermissions(DragEvent dropEvent) {
-                return permissions;
-            }
-
-            @Override
-            public Intent createLinkIntent(String urlString) {
-                return intent;
-            }
-
-            @Override
-            public ClipData buildClipData(DropDataAndroid dropData) {
-                return null;
-            }
-        };
+        when(mDragAndDropBrowserDelegate.getSupportDropInChrome()).thenReturn(supportDropInChrome);
+        when(mDragAndDropBrowserDelegate.getSupportAnimatedImageDragShadow())
+                .thenReturn(supportAnimatedImageDragShadow);
+        when(mDragAndDropBrowserDelegate.getDragAndDropPermissions(any(DragEvent.class)))
+                .thenReturn(permissions);
+        when(mDragAndDropBrowserDelegate.createLinkIntent(anyString())).thenReturn(intent);
+        return mDragAndDropBrowserDelegate;
     }
 }

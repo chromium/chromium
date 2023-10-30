@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -16,14 +16,10 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.ClipData;
-import android.content.Context;
 import android.graphics.PointF;
-import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.core.view.ContentInfoCompat;
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,12 +29,13 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
+import org.chromium.chrome.browser.dragdrop.DragDropGlobalState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -53,54 +50,49 @@ import org.chromium.ui.base.LocalizationUtils;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
 public class TabDropTargetTest {
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Mock private MultiInstanceManager mMultiInstanceManager;
-    @Mock private StripLayoutHelper mStripLayoutHelper;
-    @Mock StripLayoutTab mStripLayoutTab;
-    @Mock Profile mProfile;
 
+    private static final int CURRENT_INSTANCE_ID = 1;
+    private static final int ANOTHER_INSTANCE_ID = 2;
+    // clang-format on
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Mock private StripLayoutHelperManager mStripLayoutHelperManager;
+    @Mock private StripLayoutHelper mStripLayoutHelper;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private StripLayoutTab mStripLayoutTab;
+    @Mock private View mToolbarContainerView;
+    @Mock private Profile mProfile;
     private TabDropTarget mTabDropTarget;
     private Activity mActivity;
-    private Context mContext;
-    private TabDragSource mTabDragSource;
-    private View mTabsToolbarViewDragSource;
-    private View mTabsToolbarViewDropTarget;
-    private Tab mTabBeingDragged;
-    private int mHashCodeDragSource;
     private ContentInfoCompat mContentInfoCompatPayload;
 
     /** Resets the environment before each test. */
     @Before
     public void beforeTest() {
-        MockitoAnnotations.initMocks(this);
-        mContext =
-                new ContextThemeWrapper(
-                        ApplicationProvider.getApplicationContext(),
-                        R.style.Theme_BrowserUI_DayNight);
-
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
 
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
         // Create both the TabDragSource and TabDropTarget.
-        mTabDragSource = TabDragSource.getInstance();
-        mTabDropTarget = new TabDropTarget(mStripLayoutHelper);
-
-        // Create two tab views - source and destination.
-        mTabsToolbarViewDragSource = new View(mActivity);
-        mTabsToolbarViewDragSource.setLayoutParams(new MarginLayoutParams(150, 50));
-        mHashCodeDragSource = System.identityHashCode(mTabsToolbarViewDragSource);
-        mTabsToolbarViewDropTarget = new View(mActivity);
-        mTabsToolbarViewDropTarget.setLayoutParams(new MarginLayoutParams(300, 50));
+        mTabDropTarget =
+                new TabDropTarget(
+                        mStripLayoutHelperManager, mMultiInstanceManager, mToolbarContainerView);
 
         // Mock the tab to be dragged.
-        mTabBeingDragged = MockTab.createAndInitialize(5, mProfile);
+        DragDropGlobalState.getInstance().tabBeingDragged =
+                MockTab.createAndInitialize(5, mProfile);
+        DragDropGlobalState.getInstance().dragSourceInstanceId = CURRENT_INSTANCE_ID;
+
+        // Mock strip methods.
+        when(mStripLayoutHelperManager.getActiveStripLayoutHelper()).thenReturn(mStripLayoutHelper);
 
         // Create drop payload from the drag source view.
         mContentInfoCompatPayload =
                 new ContentInfoCompat.Builder(
-                                createClipData(mTabsToolbarViewDragSource, mTabBeingDragged),
+                                createClipData(
+                                        mToolbarContainerView,
+                                        DragDropGlobalState.getInstance().tabBeingDragged),
                                 ContentInfoCompat.SOURCE_DRAG_AND_DROP)
                         .build();
     }
@@ -108,11 +100,9 @@ public class TabDropTargetTest {
     @After
     public void tearDown() {
         mContentInfoCompatPayload = null;
-        mHashCodeDragSource = 0;
-        mTabsToolbarViewDropTarget = null;
-        mTabsToolbarViewDragSource = null;
+        mToolbarContainerView = null;
         mTabDropTarget = null;
-        mTabDragSource = null;
+        DragDropGlobalState.getInstance().reset();
     }
 
     private ClipData createClipData(View view, Tab tab) {
@@ -127,145 +117,179 @@ public class TabDropTargetTest {
     }
 
     /**
-     * Tests the method {@link TabDragSource.DropContentReceiver#onReceiveContent()}.
-     *
-     * Checks that it successfully accepts a drop of a payload on different tabs layout view.
+     * Tests the method {@link TabDropTarget#onReceiveContent(View, ContentInfoCompat)}. Checks that
+     * it successfully accepts a drop of a payload on different tabs layout view.
      */
     @Test
     public void test_TabDropAction_onDifferentTabsLayout_ReturnsSuccess() {
-        mTabDragSource.setTabBeingDragged(mTabBeingDragged);
-        mTabDragSource.setDragSourceTabsToolbarHashCode(mHashCodeDragSource);
-        mTabDragSource.setAcceptNextDrop(true);
-        mTabDragSource.setMultiInstanceManager(mMultiInstanceManager);
-        mTabDragSource.setTabDropPosition(new PointF(100f, 20.f));
+        // Mock different tab layout.
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(ANOTHER_INSTANCE_ID);
+
+        DragDropGlobalState.getInstance().acceptNextDrop = true;
+        DragDropGlobalState.getInstance().dropLocation = new PointF(100f, 20.f);
         Mockito.doNothing()
                 .when(mMultiInstanceManager)
-                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
+                .moveTabToWindow(
+                        any(), eq(DragDropGlobalState.getInstance().tabBeingDragged), anyInt());
 
         // Perform action of a simulated drop of ClipData payload on drop target view.
         ContentInfoCompat remainingPayload =
-                mTabDropTarget
-                        .getDropContentReceiver()
-                        .onReceiveContent(mTabsToolbarViewDropTarget, mContentInfoCompatPayload);
+                mTabDropTarget.onReceiveContent(mToolbarContainerView, mContentInfoCompatPayload);
 
         // Verify the ClipData dropped was consumed.
-        assertTrue(
-                "Dropped payload should be consumed.",
-                remainingPayload != mContentInfoCompatPayload);
-        assertTrue("Remaining payload should be null.", remainingPayload == null);
+        assertNull("Remaining payload should be null.", remainingPayload);
     }
 
     /**
-     * Tests the method {@link TabDragSource.DropContentReceiver#onReceiveContent()}.
-     *
-     * Checks that it successfully rejects the drop of payload on same tab layout view.
+     * Tests the method {@link TabDropTarget#onReceiveContent(View, ContentInfoCompat)}. Checks that
+     * it successfully rejects the drop of payload on same tab layout view.
      */
     @Test
     public void test_TabDropAction_onSameTabsLayout_ReturnsFalse() {
-        mTabDragSource.setTabBeingDragged(mTabBeingDragged);
-        mTabDragSource.setDragSourceTabsToolbarHashCode(mHashCodeDragSource);
-        mTabDragSource.setAcceptNextDrop(true);
+        // Mock same tab layout.
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(CURRENT_INSTANCE_ID);
+
+        DragDropGlobalState.getInstance().acceptNextDrop = true;
 
         // Perform action of a simulated drop of ClipData payload on drag source view.
         ContentInfoCompat remainingPayload =
-                mTabDropTarget
-                        .getDropContentReceiver()
-                        .onReceiveContent(mTabsToolbarViewDragSource, mContentInfoCompatPayload);
+                mTabDropTarget.onReceiveContent(mToolbarContainerView, mContentInfoCompatPayload);
 
         // Verify the drop was not consumed, the original payload was returned.
-        assertFalse(
-                "Dropped payload should NOT be consumed.",
-                remainingPayload != mContentInfoCompatPayload);
-        assertFalse("Remaining payload should NOT be null.", remainingPayload == null);
+        assertEquals(
+                "Original payload should be returned.",
+                mContentInfoCompatPayload,
+                remainingPayload);
+    }
+
+    @Test
+    public void test_TabDropAction_doNotAcceptNextDrop_ReturnsFalse() {
+        // Mock different tab layout.
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(ANOTHER_INSTANCE_ID);
+        DragDropGlobalState.getInstance().acceptNextDrop = false;
+
+        // Perform action of a simulated drop of ClipData payload on drag source view.
+        ContentInfoCompat remainingPayload =
+                mTabDropTarget.onReceiveContent(mToolbarContainerView, mContentInfoCompatPayload);
+
+        // Verify the drop was not consumed, the original payload was returned.
+        assertEquals(
+                "Original payload should be returned.",
+                mContentInfoCompatPayload,
+                remainingPayload);
     }
 
     /**
-     * Tests the method {@link TabDragSource.DropContentReceiver#onReceiveContent()}.
-     *
-     * Checks that it rejects a ClipData drop of a payload with the tabId that does not match with
-     * the saved Tab info even if the source and destination windows are different.
+     * Tests the method {@link TabDropTarget#onReceiveContent(View, ContentInfoCompat)}. Checks that
+     * it rejects a ClipData drop of a payload with the tabId that does not match with the saved Tab
+     * info even if the source and destination windows are different.
      */
     @Test
     public void test_TabDropAction_onDifferentTabsLayout_WithBadClipDataDrop_ReturnsFailure() {
-        mTabDragSource.setTabBeingDragged(mTabBeingDragged);
-        mTabDragSource.setDragSourceTabsToolbarHashCode(mHashCodeDragSource);
-        mTabDragSource.setAcceptNextDrop(true);
-        mTabDragSource.setMultiInstanceManager(mMultiInstanceManager);
-        mTabDragSource.setTabDropPosition(new PointF(100f, 20.f));
-        Mockito.doNothing()
-                .when(mMultiInstanceManager)
-                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
+        // Mock different tab layout.
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(ANOTHER_INSTANCE_ID);
+
+        DragDropGlobalState.getInstance().acceptNextDrop = true;
+        DragDropGlobalState.getInstance().dropLocation = new PointF(100f, 20.f);
 
         // Create ClipData for non-Chrome apps with invalid tab id.
         Tab tabForBadClipData = MockTab.createAndInitialize(555, mProfile);
         ContentInfoCompat compactPayloadWithBadClipData =
                 new ContentInfoCompat.Builder(
-                                createClipData(mTabsToolbarViewDragSource, tabForBadClipData),
+                                createClipData(mToolbarContainerView, tabForBadClipData),
                                 ContentInfoCompat.SOURCE_DRAG_AND_DROP)
                         .build();
 
         // Perform action of a simulated drop of ClipData payload on drop target view.
         ContentInfoCompat remainingPayload =
-                mTabDropTarget
-                        .getDropContentReceiver()
-                        .onReceiveContent(
-                                mTabsToolbarViewDropTarget, compactPayloadWithBadClipData);
+                mTabDropTarget.onReceiveContent(
+                        mToolbarContainerView, compactPayloadWithBadClipData);
 
         // Verify the ClipData dropped was rejected.
-        assertFalse(
-                "Dropped bad payload should be returned.",
-                remainingPayload != compactPayloadWithBadClipData);
-        assertFalse("Remaining payload should NOT be null.", remainingPayload == null);
+        assertEquals(
+                "Original payload should be returned.",
+                compactPayloadWithBadClipData,
+                remainingPayload);
     }
 
     @Test
     public void test_TabDropAction_onDifferentTabsLayout_WithNullClipDataDrop_ReturnsFailure() {
-        mTabDragSource.setTabBeingDragged(mTabBeingDragged);
-        mTabDragSource.setDragSourceTabsToolbarHashCode(mHashCodeDragSource);
-        mTabDragSource.setAcceptNextDrop(true);
-        mTabDragSource.setMultiInstanceManager(mMultiInstanceManager);
-        Mockito.doNothing()
-                .when(mMultiInstanceManager)
-                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
+        // Mock different tab layout.
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(ANOTHER_INSTANCE_ID);
+
+        DragDropGlobalState.getInstance().acceptNextDrop = true;
 
         // Perform action of a simulated drop of null payload on drop target view.
         ContentInfoCompat remainingPayload =
-                mTabDropTarget
-                        .getDropContentReceiver()
-                        .onReceiveContent(mTabsToolbarViewDropTarget, null);
+                mTabDropTarget.onReceiveContent(mToolbarContainerView, null);
 
         // Verify the ClipData dropped was rejected.
-        assertFalse("Dropped null payload should be returned.", remainingPayload != null);
+        assertNull("Dropped null payload should be returned.", remainingPayload);
     }
 
     @Test
     public void test_TabDropAction_onDifferentTabsLayout_WithEmptyClipDataDrop_ReturnsFailure() {
-        mTabDragSource.setTabBeingDragged(mTabBeingDragged);
-        mTabDragSource.setDragSourceTabsToolbarHashCode(mHashCodeDragSource);
-        mTabDragSource.setAcceptNextDrop(true);
-        mTabDragSource.setMultiInstanceManager(mMultiInstanceManager);
-        Mockito.doNothing()
-                .when(mMultiInstanceManager)
-                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
+        // Mock different tab layout.
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(ANOTHER_INSTANCE_ID);
+
+        DragDropGlobalState.getInstance().acceptNextDrop = true;
 
         // Create empty ClipData.
         ContentInfoCompat compactPayloadWithEmptyClipData =
                 new ContentInfoCompat.Builder(
-                                createClipData(mTabsToolbarViewDragSource, null),
+                                createClipData(mToolbarContainerView, null),
                                 ContentInfoCompat.SOURCE_DRAG_AND_DROP)
                         .build();
 
         // Perform action of a simulated drop of empty ClipData payload on drop target view.
         ContentInfoCompat remainingPayload =
-                mTabDropTarget
-                        .getDropContentReceiver()
-                        .onReceiveContent(
-                                mTabsToolbarViewDropTarget, compactPayloadWithEmptyClipData);
+                mTabDropTarget.onReceiveContent(
+                        mToolbarContainerView, compactPayloadWithEmptyClipData);
 
         // Verify the ClipData dropped was rejected.
-        assertFalse(
+        assertEquals(
                 "Dropped same payload should be returned.",
-                remainingPayload != compactPayloadWithEmptyClipData);
+                compactPayloadWithEmptyClipData,
+                remainingPayload);
+    }
+    @Test
+    public void test_TabDropAction_onDifferentTabsLayout_onTab_inRTLLayout_success() {
+        LocalizationUtils.setRtlForTesting(true);
+        // Simulate different tab layout.
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(ANOTHER_INSTANCE_ID);
+
+        // Drop point is on the left side of the tab.
+        final int droppedOnIndex = 1;
+        prepareDropOnTab(3, droppedOnIndex, 1, new PointF(140.f, 20.f), 101.f, 100.f);
+
+        // Perform action of a simulated drop of ClipData payload on a desired tab of drop target
+        // view.
+        ContentInfoCompat remainingPayload =
+                mTabDropTarget.onReceiveContent(mToolbarContainerView, mContentInfoCompatPayload);
+
+        // Verify the ClipData dropped was consumed and the tab is positioned on a desired location.
+        assertNull("Dropped payload should be fully consumed.", remainingPayload);
+        verify(mStripLayoutHelper, times(1)).selectTabAtIndex(droppedOnIndex + 1);
+    }
+
+    @Test
+    public void test_TabDropAction_onDifferentTabsLayout_onTab_inLTRLayout_success() {
+        LocalizationUtils.setRtlForTesting(false);
+        // Simulate different tab layout.
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(ANOTHER_INSTANCE_ID);
+
+        // Drop point is on the right side of the tab.
+        final int droppedOnIndex = 1;
+        prepareDropOnTab(3, droppedOnIndex, 1, new PointF(160.f, 20.f), 101.f, 100.f);
+
+        // Perform action of a simulated drop of ClipData payload on a desired tab of drop target
+        // view.
+        ContentInfoCompat remainingPayload =
+                mTabDropTarget.onReceiveContent(mToolbarContainerView, mContentInfoCompatPayload);
+
+        // Verify the ClipData dropped was consumed and the inset tab is desired location.
+        assertNull("Dropped payload should be fully consumed.", remainingPayload);
+        verify(mStripLayoutHelper, times(1)).selectTabAtIndex(droppedOnIndex + 1);
     }
 
     private void prepareDropOnTab(
@@ -275,63 +299,13 @@ public class TabDropTargetTest {
             PointF dropPoint,
             float tabStartX,
             float tabWidth) {
-        mTabDragSource.setTabBeingDragged(mTabBeingDragged);
-        mTabDragSource.setDragSourceTabsToolbarHashCode(mHashCodeDragSource);
-        mTabDragSource.setAcceptNextDrop(true);
-        mTabDragSource.setMultiInstanceManager(mMultiInstanceManager);
-        mTabDragSource.setTabDropPosition(dropPoint);
-        Mockito.doNothing()
-                .when(mMultiInstanceManager)
-                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
+        DragDropGlobalState.getInstance().acceptNextDrop = true;
+        DragDropGlobalState.getInstance().dropLocation = dropPoint;
         when(mStripLayoutHelper.getTabAtPosition(anyFloat())).thenReturn(mStripLayoutTab);
         when(mStripLayoutHelper.getTabCount()).thenReturn(tabsCount);
         when(mStripLayoutHelper.findIndexForTab(droppedOnTabId)).thenReturn(droppedOnIndex);
         when(mStripLayoutTab.getId()).thenReturn(droppedOnTabId);
         when(mStripLayoutTab.getDrawX()).thenReturn(tabStartX);
         when(mStripLayoutTab.getWidth()).thenReturn(tabWidth);
-    }
-
-    @Test
-    public void test_TabDropAction_onDifferentTabsLayout_onTab_inRTLLayout_success() {
-        LocalizationUtils.setRtlForTesting(true);
-
-        // Drop point is on the left side of the tab.
-        final int droppedOnIndex = 1;
-        prepareDropOnTab(3, droppedOnIndex, 1, new PointF(140.f, 20.f), 101.f, 100.f);
-
-        // Perform action of a simulated drop of ClipData payload on a desired tab of drop target
-        // view.
-        ContentInfoCompat remainingPayload =
-                mTabDropTarget
-                        .getDropContentReceiver()
-                        .onReceiveContent(mTabsToolbarViewDropTarget, mContentInfoCompatPayload);
-
-        // Verify the ClipData dropped was consumed and the tab is positioned on a desired location.
-        assertTrue(
-                "Dropped payload should be fully consumed.",
-                remainingPayload != mContentInfoCompatPayload && remainingPayload == null);
-        verify(mStripLayoutHelper, times(1)).selectTabAtIndex(droppedOnIndex + 1);
-    }
-
-    @Test
-    public void test_TabDropAction_onDifferentTabsLayout_onTab_inLTRLayout_success() {
-        LocalizationUtils.setRtlForTesting(false);
-
-        // Drop point is on the right side of the tab.
-        final int droppedOnIndex = 1;
-        prepareDropOnTab(3, droppedOnIndex, 1, new PointF(160.f, 20.f), 101.f, 100.f);
-
-        // Perform action of a simulated drop of ClipData payload on a desired tab of drop target
-        // view.
-        ContentInfoCompat remainingPayload =
-                mTabDropTarget
-                        .getDropContentReceiver()
-                        .onReceiveContent(mTabsToolbarViewDropTarget, mContentInfoCompatPayload);
-
-        // Verify the ClipData dropped was consumed and the inset tab is desired location.
-        assertTrue(
-                "Dropped payload should be fully consumed.",
-                remainingPayload != mContentInfoCompatPayload && remainingPayload == null);
-        verify(mStripLayoutHelper, times(1)).selectTabAtIndex(droppedOnIndex + 1);
     }
 }

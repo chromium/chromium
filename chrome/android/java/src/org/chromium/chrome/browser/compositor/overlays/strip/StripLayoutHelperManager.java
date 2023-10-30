@@ -16,6 +16,7 @@ import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -78,6 +80,7 @@ import java.util.List;
  * all input and model events to the proper destination.
  */
 public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNativeObserver {
+
     /**
      * POD type that contains the necessary tab model info on startup. Used in the startup flicker
      * fix experiment where we create a placeholder tab strip on startup to mitigate jank as tabs
@@ -146,21 +149,16 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private final float mHeight;  // in dp units
     private int mOrientation;
     private CompositorButton mModelSelectorButton;
-
     private Context mContext;
     private boolean mBrowserScrimShowing;
     private int mTabStripFadeShort;
     private int mTabStripFadeLong;
     private float mTabStripFadeShortWidth;
     private float mTabStripFadeLongWidth;
-
     private TabStripSceneLayer mTabStripTreeProvider;
-
     private TabStripEventHandler mTabStripEventHandler;
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
-
     private final ViewStub mTabHoverCardViewStub;
-
     private float mModelSelectorWidth;
     // 3-dots menu button with tab strip end padding
     private float mMenuButtonPadding;
@@ -176,9 +174,12 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     private TabModelObserver mTabModelObserver;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
-
     private final String mDefaultTitle;
     private final Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+
+    // Drag-Drop
+    @Nullable private TabDropTarget mTabDropTarget;
+    @Nullable private TabDragSource mTabDragSource;
 
     private class TabStripEventHandler implements MotionEventHandler {
         @Override
@@ -333,7 +334,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
         mEventFilter =
                 new AreaMotionEventFilter(context, mTabStripEventHandler, null, false, false);
-
         CompositorOnClickHandler selectorClickHandler = new CompositorOnClickHandler() {
             @Override
             public void onClick(long time) {
@@ -342,7 +342,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         };
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
             createModelSelectorButtonForTsr(context, selectorClickHandler);
-
             // Model selector button background color.
             // Default bg color is surface inverse.
             int tsrBackgroundDefaultColor =
@@ -443,6 +442,17 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mBrowserScrimShowing = false;
 
         mTabHoverCardViewStub = tabHoverCardViewStub;
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()
+                && TabUiFeatureUtilities.isTabDragEnabled()) {
+            mTabDragSource =
+                    new TabDragSource(
+                            toolbarContainerView,
+                            multiInstanceManager,
+                            dragDropDelegate,
+                            managerHost.getBrowserControlsManager());
+            mTabDropTarget = new TabDropTarget(this, multiInstanceManager, toolbarContainerView);
+        }
+
         mNormalHelper =
                 new StripLayoutHelper(
                         context,
@@ -451,9 +461,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                         renderHost,
                         false,
                         mModelSelectorButton,
-                        multiInstanceManager,
-                        dragDropDelegate,
-                        managerHost.getBrowserControlsManager(),
+                        mTabDragSource,
                         toolbarContainerView);
         mIncognitoHelper =
                 new StripLayoutHelper(
@@ -463,9 +471,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                         renderHost,
                         true,
                         mModelSelectorButton,
-                        multiInstanceManager,
-                        dragDropDelegate,
-                        managerHost.getBrowserControlsManager(),
+                        mTabDragSource,
                         toolbarContainerView);
 
         tabHoverCardViewStub.setOnInflateListener((viewStub, view) -> {
@@ -482,8 +488,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 tabModelStartupInfoSupplier.addObserver(this::setTabModelStartupInfo);
             }
         }
-
-        mNormalHelper.prepareForDragDrop();
 
         onContextChanged(context);
     }
@@ -527,6 +531,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             mTabModelSelectorTabModelObserver.destroy();
             mTabModelSelectorTabObserver.destroy();
         }
+        mTabDropTarget = null;
+        mTabDragSource = null;
     }
 
     @Override
@@ -1030,5 +1036,13 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     ViewStub getTabHoverCardViewStubForTesting() {
         return mTabHoverCardViewStub;
+    }
+
+    public TabDragSource getTabDragSourceForTesting() {
+        return mTabDragSource;
+    }
+
+    public TabDropTarget getTabDropTargetForTesting() {
+        return mTabDropTarget;
     }
 }

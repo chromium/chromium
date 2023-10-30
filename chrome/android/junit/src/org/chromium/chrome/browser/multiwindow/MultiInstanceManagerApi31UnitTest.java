@@ -561,6 +561,17 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     @SmallTest
     @UiThreadTest
+    public void testCurrentInstanceId() {
+        // Ensure the single instance at non-zero position is handled okay.
+        int expected = 2;
+        assertEquals(expected, allocInstanceIndex(expected, mActivityTask56));
+        int id = mMultiInstanceManager.getCurrentInstanceId();
+        assertEquals("Current instanceId is not as expected", expected, id);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
     public void testSelectedTabUpdatesInstanceInfo() {
         when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
         when(mTabModelOrchestrator.getTabModelSelector()).thenReturn(mTabModelSelector);
