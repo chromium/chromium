@@ -771,10 +771,7 @@ void AttributionManagerImpl::ProcessEvents() {
     absl::visit(
         base::Overloaded{
             [&](const StorableSource& source) {
-              cookie_origin = source.registration().debug_key.has_value() ||
-                                      source.registration().debug_reporting
-                                  ? &source.common_info().reporting_origin()
-                                  : nullptr;
+              cookie_origin = &source.common_info().reporting_origin();
               source_origin = &*source.common_info().source_origin();
               operation = ContentBrowserClient::AttributionReportingOperation::
                   kSourceTransitionalDebugReporting;
@@ -839,7 +836,7 @@ void AttributionManagerImpl::StoreSource(StorableSource source,
   }
 
   attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
-      .WithArgs(source)
+      .WithArgs(source, is_debug_cookie_set)
       .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
                            weak_factory_.GetWeakPtr(), std::move(source),
                            cleared_debug_key, is_debug_cookie_set));

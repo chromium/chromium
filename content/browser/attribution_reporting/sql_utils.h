@@ -32,16 +32,17 @@ url::Origin DeserializeOrigin(const std::string& origin);
 absl::optional<attribution_reporting::mojom::SourceType> DeserializeSourceType(
     int val);
 
-// If the given `TriggerConfig` is `nullptr`, the corresponding proto fields are
-// omitted. This is used to avoid writing new fields in older DB-migration
-// paths.
+// If the given `TriggerConfig` or `is_debug_cookie_set` is `nullptr`, the
+// corresponding proto fields are omitted. This is used to avoid writing new
+// fields in older DB-migration paths.
 CONTENT_EXPORT std::string SerializeReadOnlySourceData(
     const attribution_reporting::EventReportWindows&,
     int max_event_level_reports,
     double randomized_response_rate,
-    const attribution_reporting::TriggerConfig*);
+    const attribution_reporting::TriggerConfig*,
+    const bool* debug_cookie_set);
 
-absl::optional<proto::AttributionReadOnlySourceData>
+CONTENT_EXPORT absl::optional<proto::AttributionReadOnlySourceData>
 DeserializeReadOnlySourceDataAsProto(sql::Statement& stmt, int col);
 
 }  // namespace content

@@ -121,6 +121,8 @@ class SourceBuilder {
 
   SourceBuilder& SetTriggerConfig(attribution_reporting::TriggerConfig);
 
+  SourceBuilder& SetDebugCookieSet(bool debug_cookie_set);
+
   StorableSource Build() const;
 
   StoredSource BuildStored() const;
@@ -143,6 +145,7 @@ class SourceBuilder {
   double randomized_response_rate_ = 0;
   std::vector<uint64_t> aggregatable_dedup_keys_;
   bool is_within_fenced_frame_ = false;
+  bool debug_cookie_set_ = false;
 };
 
 // Returns a AttributionTrigger with default data which matches the default
@@ -411,6 +414,10 @@ MATCHER_P(SourceTypeIs, matcher, "") {
 
 MATCHER_P(SourceDebugKeyIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.debug_key(), result_listener);
+}
+
+MATCHER_P(SourceDebugCookieSetIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.debug_cookie_set(), result_listener);
 }
 
 MATCHER_P(SourceFilterDataIs, matcher, "") {

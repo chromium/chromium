@@ -43,6 +43,8 @@ message AttributionReadOnlySourceData {
   };
 
   optional TriggerDataMatching trigger_data_matching = 5;
+
+  optional bool debug_cookie_set = 6;
 }
 
 message AttributionEventLevelMetadata {

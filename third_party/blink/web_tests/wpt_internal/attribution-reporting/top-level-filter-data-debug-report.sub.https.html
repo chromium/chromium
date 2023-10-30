@@ -12,6 +12,7 @@ attribution_reporting_promise_test(async t => {
 
   registerAttributionSrcByImg(createRedirectChain([
     {
+      cookie: attributionDebugCookie,
       source: {
         destination: host,
         filter_data: {a: ['b']},
@@ -19,7 +20,6 @@ attribution_reporting_promise_test(async t => {
       },
     },
     {
-      cookie: attributionDebugCookie,
       trigger: {
         debug_reporting: true,
         event_trigger_data: [{}],

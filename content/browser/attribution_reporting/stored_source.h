@@ -62,7 +62,8 @@ class CONTENT_EXPORT StoredSource {
       Id source_id,
       int64_t aggregatable_budget_consumed,
       double randomized_response_rate,
-      attribution_reporting::TriggerConfig);
+      attribution_reporting::TriggerConfig,
+      bool debug_cookie_set);
 
   ~StoredSource();
 
@@ -129,6 +130,8 @@ class CONTENT_EXPORT StoredSource {
     return trigger_config_;
   }
 
+  bool debug_cookie_set() const { return debug_cookie_set_; }
+
   void SetDedupKeys(std::vector<uint64_t> dedup_keys) {
     dedup_keys_ = std::move(dedup_keys);
   }
@@ -155,7 +158,8 @@ class CONTENT_EXPORT StoredSource {
                Id source_id,
                int64_t aggregatable_budget_consumed,
                double randomized_response_rate,
-               attribution_reporting::TriggerConfig);
+               attribution_reporting::TriggerConfig,
+               bool debug_cookie_set);
 
   CommonSourceInfo common_info_;
 
@@ -188,6 +192,8 @@ class CONTENT_EXPORT StoredSource {
   double randomized_response_rate_;
 
   attribution_reporting::TriggerConfig trigger_config_;
+
+  bool debug_cookie_set_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

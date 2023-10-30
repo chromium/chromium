@@ -215,6 +215,11 @@ SourceBuilder& SourceBuilder::SetTriggerConfig(
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetDebugCookieSet(bool debug_cookie_set) {
+  debug_cookie_set_ = debug_cookie_set;
+  return *this;
+}
+
 StorableSource SourceBuilder::Build() const {
   return StorableSource(reporting_origin_, registration_, source_origin_,
                         source_type_, is_within_fenced_frame_);
@@ -231,7 +236,7 @@ StoredSource SourceBuilder::BuildStored() const {
       registration_.filter_data, registration_.debug_key,
       registration_.aggregation_keys, attribution_logic_, active_state_,
       source_id_, aggregatable_budget_consumed_, randomized_response_rate_,
-      registration_.trigger_config);
+      registration_.trigger_config, debug_cookie_set_);
   source.SetDedupKeys(dedup_keys_);
   source.SetAggregatableDedupKeys(aggregatable_dedup_keys_);
   return source;
@@ -541,7 +546,8 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
         source.filter_data(), source.debug_key(), source.aggregation_keys(),
         source.attribution_logic(), source.active_state(), source.dedup_keys(),
         source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
-        source.randomized_response_rate(), source.trigger_config());
+        source.randomized_response_rate(), source.trigger_config(),
+        source.debug_cookie_set());
   };
   return tie(a) == tie(b);
 }

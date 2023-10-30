@@ -328,7 +328,8 @@ bool To56(sql::Database& db) {
         0, SerializeReadOnlySourceData(*event_report_windows,
                                        max_event_level_reports,
                                        /*randomized_response_rate=*/-1,
-                                       /*trigger_config=*/nullptr));
+                                       /*trigger_config=*/nullptr,
+                                       /*debug_cookie_set=*/nullptr));
     set_statement.BindInt64(1, id);
     if (!set_statement.Run()) {
       return false;

@@ -1818,7 +1818,9 @@ TEST_F(AttributionManagerImplTest,
                 ContentBrowserClient::AttributionReportingOperation::
                     kSourceVerboseDebugReport,
                 ContentBrowserClient::AttributionReportingOperation::
-                    kTriggerVerboseDebugReport),
+                    kTriggerVerboseDebugReport,
+                ContentBrowserClient::AttributionReportingOperation::
+                    kSourceTransitionalDebugReporting),
           _, _, _, _))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(
@@ -1857,7 +1859,9 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
                 ContentBrowserClient::AttributionReportingOperation::
                     kSourceVerboseDebugReport,
                 ContentBrowserClient::AttributionReportingOperation::
-                    kTriggerVerboseDebugReport),
+                    kTriggerVerboseDebugReport,
+                ContentBrowserClient::AttributionReportingOperation::
+                    kSourceTransitionalDebugReporting),
           _, _, _, _))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(
@@ -2286,6 +2290,7 @@ const struct {
   absl::optional<uint64_t> expected_debug_key;
   absl::optional<uint64_t> expected_cleared_key;
   bool cookie_access_allowed;
+  bool expected_debug_cookie_set;
 } kDebugKeyTestCases[] = {
     {
         "no debug key, no cookie",
@@ -2294,6 +2299,7 @@ const struct {
         absl::nullopt,
         absl::nullopt,
         true,
+        false,
     },
     {
         "has debug key, no cookie",
@@ -2302,6 +2308,7 @@ const struct {
         absl::nullopt,
         123,
         true,
+        false,
     },
     {
         "no debug key, has cookie",
@@ -2309,6 +2316,7 @@ const struct {
         "https://r1.test",
         absl::nullopt,
         absl::nullopt,
+        true,
         true,
     },
     {
@@ -2318,6 +2326,7 @@ const struct {
         123,
         absl::nullopt,
         true,
+        true,
     },
     {
         "has debug key, no cookie access",
@@ -2325,6 +2334,7 @@ const struct {
         "https://r1.test",
         absl::nullopt,
         123,
+        false,
         false,
     },
 };
@@ -2353,7 +2363,6 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
                       kSourceVerboseDebugReport),
             _, _, IsNull(), Pointee(*reporting_origin)))
         .WillRepeatedly(Return(true));
-    if (test_case.input_debug_key) {
       EXPECT_CALL(browser_client,
                   IsAttributionReportingOperationAllowed(
                       _,
@@ -2361,7 +2370,6 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
                           kSourceTransitionalDebugReporting,
                       _, _, IsNull(), Pointee(*reporting_origin)))
           .WillOnce(Return(test_case.cookie_access_allowed));
-    }
     ScopedContentBrowserClientSetting setting(&browser_client);
 
     EXPECT_CALL(observer, OnSourceHandled(_, base::Time::Now(),
@@ -2374,8 +2382,11 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
             .Build(),
         kFrameId);
 
-    EXPECT_THAT(StoredSources(),
-                ElementsAre(SourceDebugKeyIs(test_case.expected_debug_key)))
+    EXPECT_THAT(
+        StoredSources(),
+        ElementsAre(
+            AllOf(SourceDebugKeyIs(test_case.expected_debug_key),
+                  SourceDebugCookieSetIs(test_case.expected_debug_cookie_set))))
         << test_case.name;
 
     attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
@@ -2409,7 +2420,9 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
                       kSourceVerboseDebugReport,
                   ContentBrowserClient::AttributionReportingOperation::kTrigger,
                   ContentBrowserClient::AttributionReportingOperation::
-                      kTriggerVerboseDebugReport),
+                      kTriggerVerboseDebugReport,
+                  ContentBrowserClient::AttributionReportingOperation::
+                      kSourceTransitionalDebugReporting),
             _, _, _, Pointee(*reporting_origin)))
         .WillRepeatedly(Return(true));
     if (test_case.input_debug_key) {

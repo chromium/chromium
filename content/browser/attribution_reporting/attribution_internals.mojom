@@ -107,6 +107,7 @@ struct WebUISource {
   uint64 aggregatable_budget_consumed;
   array<uint64> aggregatable_dedup_keys;
   attribution_reporting.mojom.TriggerConfig trigger_config;
+  bool debug_cookie_set;
 
   enum Attributability {
     kAttributable,

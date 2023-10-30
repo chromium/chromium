@@ -592,6 +592,12 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
           : delegate_->GetRandomizedResponseRate(
                 *source_type, *event_report_windows, max_event_level_reports);
 
+  // If "debug_cookie_set" field was not set in earlier versions, set the value
+  // to whether the debug key was set for the source.
+  bool debug_cookie_set = read_only_source_data_msg->has_debug_cookie_set()
+                              ? read_only_source_data_msg->debug_cookie_set()
+                              : debug_key.has_value();
+
   static constexpr char kDestinationSitesSql[] =
       "SELECT destination_site "
       "FROM source_destinations "
@@ -634,7 +640,8 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       max_event_level_reports, priority, std::move(*filter_data), debug_key,
       std::move(*aggregation_keys), *attribution_logic, *active_state,
       source_id, aggregatable_budget_consumed, randomized_response_rate,
-      attribution_reporting::TriggerConfig(trigger_data_matching));
+      attribution_reporting::TriggerConfig(trigger_data_matching),
+      debug_cookie_set);
   if (!stored_source.has_value()) {
     return absl::nullopt;
   }
@@ -726,8 +733,11 @@ bool AttributionStorageSql::DeactivateSources(
 }
 
 StoreSourceResult AttributionStorageSql::StoreSource(
-    const StorableSource& source) {
+    const StorableSource& source,
+    bool debug_cookie_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(!source.registration().debug_key.has_value() || debug_cookie_set);
 
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the source.
@@ -889,10 +899,11 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   statement.BindBlob(14, SerializeAggregationKeys(reg.aggregation_keys));
   statement.BindBlob(15, SerializeFilterData(reg.filter_data));
-  statement.BindBlob(16,
-                     SerializeReadOnlySourceData(
-                         reg.event_report_windows, reg.max_event_level_reports,
-                         randomized_response_data.rate(), &reg.trigger_config));
+  statement.BindBlob(
+      16, SerializeReadOnlySourceData(reg.event_report_windows,
+                                      reg.max_event_level_reports,
+                                      randomized_response_data.rate(),
+                                      &reg.trigger_config, &debug_cookie_set));
 
   if (!statement.Run()) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -921,7 +932,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
       attribution_logic, *active_state, source_id,
       /*aggregatable_budget_consumed=*/0, randomized_response_data.rate(),
-      reg.trigger_config);
+      reg.trigger_config, debug_cookie_set);
 
   if (!stored_source.has_value() ||
       !rate_limit_table_.AddRateLimitForSource(&db_, *stored_source)) {

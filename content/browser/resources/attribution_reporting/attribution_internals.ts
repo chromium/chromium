@@ -250,6 +250,7 @@ class Source {
   aggregatableBudgetConsumed: bigint;
   aggregatableDedupKeys: bigint[];
   triggerDataMatching: string;
+  debugCookieSet: boolean;
 
   constructor(mojo: WebUISource) {
     this.sourceEventId = mojo.sourceEventId;
@@ -276,6 +277,7 @@ class Source {
     this.triggerDataMatching =
         triggerDataMatchingText[mojo.triggerConfig.triggerDataMatching];
     this.status = attributabilityText[mojo.attributability];
+    this.debugCookieSet = mojo.debugCookieSet;
   }
 }
 
@@ -330,6 +332,7 @@ class SourceTableModel extends TableModel<Source> {
               'Aggregatable Budget Consumed',
               (e) => `${e.aggregatableBudgetConsumed} / ${BUDGET_PER_SOURCE}`),
           new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
+          new ValueColumn<Source, boolean>('Debug Cookie Set', (e) => e.debugCookieSet),
           new ListColumn<Source, bigint>('Dedup Keys', (e) => e.dedupKeys),
           new ListColumn<Source, bigint>(
               'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),

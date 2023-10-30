@@ -490,6 +490,10 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     return absl::nullopt;
   }
 
+  if (is_debug_cookie_set && result.source()) {
+    is_debug_cookie_set = result.source()->debug_cookie_set();
+  }
+
   base::Value::List report_body;
   base::Time original_report_time;
 

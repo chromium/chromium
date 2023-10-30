@@ -44,7 +44,8 @@ std::string SerializeReadOnlySourceData(
     const attribution_reporting::EventReportWindows& event_report_windows,
     int max_event_level_reports,
     double randomized_response_rate,
-    const attribution_reporting::TriggerConfig* trigger_config) {
+    const attribution_reporting::TriggerConfig* trigger_config,
+    const bool* debug_cookie_set) {
   DCHECK_GE(max_event_level_reports, 0);
   proto::AttributionReadOnlySourceData msg;
 
@@ -71,6 +72,10 @@ std::string SerializeReadOnlySourceData(
             proto::AttributionReadOnlySourceData::MODULUS);
         break;
     }
+  }
+
+  if (debug_cookie_set) {
+    msg.set_debug_cookie_set(*debug_cookie_set);
   }
 
   return msg.SerializeAsString();
