@@ -75,7 +75,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
         const CoreAccountId& account_id,
         base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
         std::unique_ptr<std::string> response_for_testing) {
-  if (response_for_testing) {
+  if (response_for_testing && !response_for_testing->empty()) {
     OnManagedAccountsSigninRestrictionResult(std::move(callback),
                                              std::move(response_for_testing));
     return;
