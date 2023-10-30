@@ -22,11 +22,13 @@
 #include "base/time/time.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -206,12 +208,13 @@ class MockProxyConfigService : public ProxyConfigService {
 class TestResolveProxyDelegate : public ProxyDelegate {
  public:
   void OnResolveProxy(const GURL& url,
-                      const GURL& top_frame_url,
+                      const NetworkAnonymizationKey& network_anonymization_key,
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
     method_ = method;
     num_resolve_proxy_called_++;
+    network_anonymization_key_ = network_anonymization_key;
     proxy_retry_info_ = proxy_retry_info;
     DCHECK(!add_proxy_ || !remove_proxy_);
     if (add_proxy_) {
@@ -228,6 +231,10 @@ class TestResolveProxyDelegate : public ProxyDelegate {
   void set_add_proxy(bool add_proxy) { add_proxy_ = add_proxy; }
 
   void set_remove_proxy(bool remove_proxy) { remove_proxy_ = remove_proxy; }
+
+  NetworkAnonymizationKey network_anonymization_key() const {
+    return network_anonymization_key_;
+  }
 
   const ProxyRetryInfoMap& proxy_retry_info() const {
     return proxy_retry_info_;
@@ -251,6 +258,7 @@ class TestResolveProxyDelegate : public ProxyDelegate {
   bool add_proxy_ = false;
   bool remove_proxy_ = false;
   std::string method_;
+  NetworkAnonymizationKey network_anonymization_key_;
   ProxyRetryInfoMap proxy_retry_info_;
 };
 
@@ -259,7 +267,7 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
  public:
   // ProxyDelegate implementation:
   void OnResolveProxy(const GURL& url,
-                      const GURL& top_frame_url,
+                      const NetworkAnonymizationKey& network_anonymization_key,
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {}
@@ -517,6 +525,31 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   rv = service.ResolveProxy(bypass_url, "GET", NetworkAnonymizationKey(), &info,
                             callback.callback(), &request, net_log_with_source);
   EXPECT_TRUE(info.is_direct());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest, OnResolveProxyHasNak) {
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  ConfiguredProxyResolutionService service(
+      std::make_unique<MockProxyConfigService>(ProxyConfig::CreateDirect()),
+      std::move(factory), nullptr, /*quick_check_enabled=*/true);
+
+  auto proxy_delegate = TestResolveProxyDelegate();
+  service.SetProxyDelegate(&proxy_delegate);
+
+  GURL url("http://www.google.com/");
+  NetworkAnonymizationKey network_anonymization_key =
+      NetworkAnonymizationKey::CreateCrossSite(
+          SchemefulSite(GURL("http://example.com")));
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  service.ResolveProxy(url, std::string(), network_anonymization_key, &info,
+                       callback.callback(), &request,
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+
+  EXPECT_EQ(network_anonymization_key,
+            proxy_delegate.network_anonymization_key());
 }
 
 // Test callback that deletes an item when called.  This is used to test various

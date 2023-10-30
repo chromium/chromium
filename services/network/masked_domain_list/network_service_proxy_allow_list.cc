@@ -72,11 +72,22 @@ size_t NetworkServiceProxyAllowList::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(url_matcher_with_bypass_);
 }
 
-bool NetworkServiceProxyAllowList::Matches(const GURL& request_url,
-                                           const GURL& top_frame_url) {
-  VLOG(3) << "NSPAL::Matches(" << request_url << ", " << top_frame_url << ")";
+bool NetworkServiceProxyAllowList::Matches(
+    const GURL& request_url,
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
+  if (!network_anonymization_key.GetTopFrameSite().has_value()) {
+    DVLOG(3) << "NSPAL::Matches(" << request_url
+             << ", empty top_frame_site) - false";
+    return false;
+  }
+
+  // TODO(aakallam): Check if the NAK is transient - if the top_frame_site is
+  // opaque or the NAK has a nonce, we should skip the 1st party check.
+  net::SchemefulSite top_frame_site =
+      network_anonymization_key.GetTopFrameSite().value();
+  DVLOG(3) << "NSPAL::Matches(" << request_url << ", " << top_frame_site << ")";
   UrlMatcherWithBypass::MatchResult result =
-      url_matcher_with_bypass_.Matches(request_url, top_frame_url);
+      url_matcher_with_bypass_.Matches(request_url, top_frame_site.GetURL());
   return result.matches && result.is_third_party;
 }
 

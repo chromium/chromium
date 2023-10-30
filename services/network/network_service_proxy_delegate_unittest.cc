@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -281,8 +282,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessHttpProxy) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -298,8 +299,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessHttpsUrl) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpsUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpsUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -315,8 +316,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessWebSocketUrl) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kWebsocketUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kWebsocketUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -332,8 +333,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyNoRuleForHttpsUrl) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpsUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpsUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -346,8 +347,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyLocalhost) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kLocalhost), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kLocalhost), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -358,8 +359,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyEmptyConfig) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -372,8 +373,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyNonIdempotentMethod) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "POST",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "POST", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -388,8 +389,8 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "POST",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "POST", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -408,8 +409,8 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kWebsocketUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kWebsocketUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -423,8 +424,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotOverrideExisting) {
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar");
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -441,8 +442,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyOverridesExisting) {
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar");
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -459,8 +460,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMergesDirect) {
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -475,8 +476,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMergesDirect) {
   // the config rules specify http
   net::ProxyInfo result_https;
   result_https.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpsUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result_https);
+  delegate->OnResolveProxy(GURL(kHttpsUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result_https);
 
   net::ProxyList expected_proxy_list_https;
   expected_proxy_list_https.AddProxyServer(
@@ -497,8 +498,8 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -520,8 +521,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotMergeDirect) {
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -541,8 +542,8 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar; PROXY baz");
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -563,8 +564,8 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpsUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpsUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -584,7 +585,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
   net::ProxyRetryInfo& info = retry_map["foo:80"];
   info.try_while_bad = false;
   info.bad_until = base::TimeTicks::Now() + base::Days(2);
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET", retry_map, &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "GET", retry_map, &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -604,7 +606,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyAllProxiesBad) {
   net::ProxyRetryInfo& info = retry_map["foo:80"];
   info.try_while_bad = false;
   info.bad_until = base::TimeTicks::Now() + base::Days(2);
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET", retry_map, &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "GET", retry_map, &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -631,8 +634,10 @@ TEST_F(NetworkServiceProxyDelegateTest,
   // Verify that the IP Protection proxy list is correctly merged with the
   // existing proxy list.
   result.UsePacString("PROXY bar; DIRECT; PROXY weird");
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -673,8 +678,10 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   // Proxy server is not added.
@@ -704,8 +711,10 @@ TEST_F(
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -724,8 +733,10 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_NoConfigCache) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -749,8 +760,10 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_NoAuthToken) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -773,8 +786,10 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_NoProxyList) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -802,8 +817,10 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_AllowListDisabled) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -829,8 +846,10 @@ TEST_F(
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
@@ -850,8 +869,10 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kLocalhost), GURL("http://top.com"), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kLocalhost),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
 }
@@ -875,8 +896,10 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyIpProtectionNoMatch) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kLocalhost), GURL("http://top.com"), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kLocalhost),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
 }
@@ -901,8 +924,10 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMayNeedAuthTokenSoon) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
   EXPECT_FALSE(result.is_direct());
   EXPECT_TRUE(result.is_for_ip_protection());
 }
@@ -917,8 +942,8 @@ TEST_F(NetworkServiceProxyDelegateTest, InitialConfigUsedForProxy) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
-                           net::ProxyRetryInfoMap(), &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
+                           "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(

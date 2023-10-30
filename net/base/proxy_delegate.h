@@ -9,6 +9,7 @@
 
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 
@@ -33,11 +34,12 @@ class NET_EXPORT ProxyDelegate {
   // Allows the delegate to override the proxy resolution decision made by
   // ProxyResolutionService. The delegate may override the decision by modifying
   // the ProxyInfo |result|.
-  virtual void OnResolveProxy(const GURL& url,
-                              const GURL& top_frame_url,
-                              const std::string& method,
-                              const ProxyRetryInfoMap& proxy_retry_info,
-                              ProxyInfo* result) = 0;
+  virtual void OnResolveProxy(
+      const GURL& url,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const std::string& method,
+      const ProxyRetryInfoMap& proxy_retry_info,
+      ProxyInfo* result) = 0;
 
   // Called when use of a proxy chain failed due to `net_error`, but another
   // proxy chain in the list succeeded. The failed proxy is within `bad_chain`,

@@ -24,7 +24,6 @@ namespace {
 bool ApplyProxyConfigToProxyInfo(const net::ProxyConfig::ProxyRules& rules,
                                  const net::ProxyRetryInfoMap& proxy_retry_info,
                                  const GURL& url,
-                                 const GURL& top_frame_url,
                                  net::ProxyInfo* proxy_info) {
   DCHECK(proxy_info);
   if (rules.empty()) {
@@ -131,31 +130,36 @@ NetworkServiceProxyDelegate::~NetworkServiceProxyDelegate() = default;
 
 void NetworkServiceProxyDelegate::OnResolveProxy(
     const GURL& url,
-    const GURL& top_frame_url,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     const std::string& method,
     const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
-  auto vlog = [&](std::string message) {
-    VLOG(3) << "NSPD::OnResolveProxy(" << url << ", " << top_frame_url << ") - "
-            << message;
+  auto dvlog = [&](std::string message) {
+    absl::optional<net::SchemefulSite> top_frame_site =
+        network_anonymization_key.GetTopFrameSite();
+    DVLOG(3) << "NSPD::OnResolveProxy(" << url << ", "
+             << (top_frame_site.has_value() ? top_frame_site.value()
+                                            : net::SchemefulSite())
+             << ") - " << message;
   };
   if (IsForIpProtection()) {
     // Do not use the proxy if the request doesn't match the allow list or the
     // token cache is not available or does not have a token.
     if (!ipp_config_cache_ || !network_service_proxy_allow_list_) {
-      vlog("no cache or proxy allow list");
+      dvlog("no cache or proxy allow list");
       return;
     }
     if (!network_service_proxy_allow_list_->IsEnabled()) {
-      vlog("proxy allow list not enabled");
+      dvlog("proxy allow list not enabled");
       return;
     }
-    if (!network_service_proxy_allow_list_->Matches(url, top_frame_url)) {
-      vlog("proxy allow list did not match");
+    if (!network_service_proxy_allow_list_->Matches(
+            url, network_anonymization_key)) {
+      dvlog("proxy allow list did not match");
       return;
     }
     if (!ipp_config_cache_->AreAuthTokensAvailable()) {
-      vlog("no auth token available from cache");
+      dvlog("no auth token available from cache");
       return;
     }
     if (!ipp_config_cache_->IsProxyListAvailable()) {
@@ -163,7 +167,7 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
       // case where a proxy list has not been downloaded, and the case where a
       // proxy list is empty. The `IsProxyListAvailable()` method can be removed
       // at that time.
-      vlog("no proxy list available from cache");
+      dvlog("no proxy list available from cache");
       return;
     }
 
@@ -178,8 +182,8 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     proxy_list.AddProxyServer(net::ProxyServer::Direct());
 
     if (VLOG_IS_ON(3)) {
-      vlog(base::StrCat({"setting proxy list (before deprioritization) to ",
-                         proxy_list.ToPacString()}));
+      dvlog(base::StrCat({"setting proxy list (before deprioritization) to ",
+                          proxy_list.ToPacString()}));
     }
     result->set_is_for_ip_protection(true);
     result->OverrideProxyList(
@@ -196,7 +200,7 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
 
   net::ProxyInfo proxy_info;
   if (ApplyProxyConfigToProxyInfo(proxy_config_->rules, proxy_retry_info, url,
-                                  top_frame_url, &proxy_info)) {
+                                  &proxy_info)) {
     DCHECK(!proxy_info.is_empty() && !proxy_info.is_direct());
     if (proxy_config_->should_replace_direct &&
         !proxy_config_->should_override_existing_config) {

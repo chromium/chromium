@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_MASKED_DOMAIN_LIST_NETWORK_SERVICE_PROXY_ALLOW_LIST_H_
 
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/masked_domain_list/url_matcher_with_bypass.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -40,10 +41,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
   // match on them. If false, `Matches` will always return false.
   bool IsPopulated();
 
-  // Determines if the pair of URLs are eligible for the proxy by determining
-  // if the request is an eligible domain and if the top frame domain is
-  // considered a first or third party.
-  bool Matches(const GURL& request_url, const GURL& top_frame_url);
+  // Determines if the request is eligible for the proxy by determining if the
+  // request_url is for an eligible domain and if the NAK supports eligibility.
+  // If the top_frame_origin of the NAK does not have the same owner as the
+  // request_url and the request_url is in the allow list, the request is
+  // eligible for the proxy.
+  bool Matches(const GURL& request_url,
+               const net::NetworkAnonymizationKey& network_anonymization_key);
 
   // Use the Masked Domain List to generate the allow list and the 1P bypass
   // rules.

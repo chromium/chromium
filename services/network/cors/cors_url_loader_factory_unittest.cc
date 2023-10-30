@@ -359,7 +359,7 @@ TEST_F(TrustedCorsURLLoaderFactoryTest, RequestIsBlockedByBlockList) {
   resource_block_list_.UseMaskedDomainList(mdl);
 
   url::Origin top_frame_origin =
-      url::Origin::Create(GURL("https://top.frame.com"));
+      url::Origin::Create(GURL("https://topframe.com"));
 
   ResourceRequest request;
   GURL url = test_server()->GetURL("/resource.js");
@@ -386,7 +386,7 @@ TEST_F(TrustedCorsURLLoaderFactoryTest,
        RequestBypassesBlockListBecauseTopFrameIsFirstParty) {
   auto mdl = masked_domain_list::MaskedDomainList();
   auto* owner = mdl.add_resource_owners();
-  owner->add_owned_properties("top.frame.com");
+  owner->add_owned_properties("topframe.com");
   auto* resource = owner->add_owned_resources();
   resource->set_domain(test_server()->base_url().host());
   resource->add_experiments(masked_domain_list::Resource_Experiment::
@@ -395,7 +395,7 @@ TEST_F(TrustedCorsURLLoaderFactoryTest,
   resource_block_list_.UseMaskedDomainList(mdl);
 
   url::Origin top_frame_origin =
-      url::Origin::Create(GURL("https://top.frame.com"));
+      url::Origin::Create(GURL("https://topframe.com"));
 
   ResourceRequest request;
   GURL url = test_server()->GetURL("/resource.js");
@@ -439,7 +439,7 @@ TEST_F(AfpDisabledCorsURLLoaderFactoryTest, BlockListIsNotUsed) {
   resource_block_list_.UseMaskedDomainList(mdl);
 
   url::Origin top_frame_origin =
-      url::Origin::Create(GURL("https://top.frame.com"));
+      url::Origin::Create(GURL("https://topframe.com"));
 
   ResourceRequest request;
   GURL url = test_server()->GetURL("/resource.js");

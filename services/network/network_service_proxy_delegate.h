@@ -54,11 +54,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   }
 
   // net::ProxyDelegate implementation:
-  void OnResolveProxy(const GURL& url,
-                      const GURL& top_frame_url,
-                      const std::string& method,
-                      const net::ProxyRetryInfoMap& proxy_retry_info,
-                      net::ProxyInfo* result) override;
+  void OnResolveProxy(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const std::string& method,
+      const net::ProxyRetryInfoMap& proxy_retry_info,
+      net::ProxyInfo* result) override;
   void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
   void OnBeforeTunnelRequest(const net::ProxyChain& proxy_chain,
                              size_t chain_index,
