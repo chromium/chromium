@@ -2426,8 +2426,19 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
 
 TEST_F(AttributionDataHostManagerImplTest, WebDisabled_SourceNotRegistered) {
   MockAttributionReportingContentBrowserClient browser_client;
-  EXPECT_CALL(browser_client, IsWebAttributionReportingAllowed())
-      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(
+      browser_client,
+      GetAttributionSupport(
+          ContentBrowserClient::AttributionReportingOsApiState::kDisabled,
+          testing::_))
+      .WillRepeatedly(
+          testing::Return(network::mojom::AttributionSupport::kNone));
+  EXPECT_CALL(
+      browser_client,
+      GetAttributionSupport(
+          ContentBrowserClient::AttributionReportingOsApiState::kEnabled,
+          testing::_))
+      .WillRepeatedly(testing::Return(network::mojom::AttributionSupport::kOs));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
   const GURL reporter_url("https://report.test");

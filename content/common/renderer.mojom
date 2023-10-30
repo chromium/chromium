@@ -10,7 +10,6 @@ import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_types.mojom";
-import "services/network/public/mojom/attribution.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom";
@@ -186,17 +185,11 @@ interface Renderer {
   // |cors_exempt_header_list| sets the CORS exempt header list for sanity
   // checking (e.g. DCHECKs).
   //
-  // |attribution_support| sets whether web or OS-level Attribution Reporting is supported.
-  //
   // |origin_trials_settings| sets the settings used to build a
   // blink::OriginTrialPolicy for the renderer. It can be null if the embedder
   // does not support origin trials.
   InitializeRenderer(string user_agent,
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list,
-                     network.mojom.AttributionSupport attribution_support,
                      blink.mojom.OriginTrialsSettings? origin_trials_settings);
-
- // Set whether web or OS-level Attribution Reporting is supported.
-  SetAttributionReportingSupport(network.mojom.AttributionSupport attribution_support);
 };

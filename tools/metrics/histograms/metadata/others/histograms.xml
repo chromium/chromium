@@ -3685,6 +3685,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Conversions.AttributionBehavior"
+    enum="ConversionAttributionBehavior" expires_after="2024-10-24">
+  <owner>jdeabreu@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the Attribution Behavior for WebView set via the androidx.webkit
+    WebSettingsCompat#setAttributionRegistrationBehavior method. This setting
+    allows developers to configure whether Attribution sources and triggers are
+    registered as coming from the app itself or coming from the web content in
+    the WebView, or if Attribution should be disabled.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AttributionOsLevelApiState"
+    enum="ConversionAttributionOsLevelApiState" expires_after="2024-10-24">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether OS-level attribution is supported on the device. Only
+    recorded on Android when the AttributionReportingCrossAppWeb feature is
+    enabled. Recorded once per browser session when the browser starts up.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AttributionSrcRequestStatus"
     enum="ConversionAttributionSrcRequestStatus" expires_after="2024-03-10">
   <owner>linnan@chromium.org</owner>
@@ -3693,18 +3718,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the status of the attributionsrc requests. Recorded when the request
     started and finished.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.AttributionSupport"
-    enum="ConversionAttributionSupport" expires_after="2024-03-10">
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether web or OS-level attribution is supported on the device. Only
-    recorded on Android when the AttributionReportingCrossAppWeb feature is
-    enabled. Recorded once per browser session when the browser starts up.
   </summary>
 </histogram>
 

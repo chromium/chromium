@@ -22,6 +22,12 @@ template <class SuperClass>
 class MockAttributionReportingContentBrowserClientBase : public SuperClass {
  public:
   // ContentBrowserClient:
+  MOCK_METHOD(network::mojom::AttributionSupport,
+              GetAttributionSupport,
+              (ContentBrowserClient::AttributionReportingOsApiState state,
+               content::WebContents* web_contents),
+              (override));
+
   MOCK_METHOD(bool,
               IsAttributionReportingOperationAllowed,
               (BrowserContext*,
@@ -31,8 +37,6 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
                const url::Origin* destination_origin,
                const url::Origin* reporting_origin),
               (override));
-
-  MOCK_METHOD(bool, IsWebAttributionReportingAllowed, (), (override));
 
   MOCK_METHOD(bool,
               ShouldUseOsWebSourceAttributionReporting,

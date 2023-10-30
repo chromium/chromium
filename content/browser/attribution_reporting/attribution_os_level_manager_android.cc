@@ -34,6 +34,7 @@
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -43,7 +44,7 @@ namespace content {
 
 namespace {
 
-using ApiState = ::content::AttributionOsLevelManager::ApiState;
+using ApiState = ContentBrowserClient::AttributionReportingOsApiState;
 
 int GetDeletionMode(bool delete_rate_limit_data) {
   // See

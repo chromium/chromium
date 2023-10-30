@@ -51,7 +51,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
-#include "services/network/public/mojom/attribution.mojom-forward.h"
 #endif
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
@@ -736,13 +735,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void ReinitializeLogging(uint32_t logging_dest,
                                    base::ScopedFD log_file_descriptor) = 0;
 #endif
-
-  // Sets whether web or OS-level Attribution Reporting is supported. This may
-  // be called if the renderer process was created before the Measurement API
-  // state is returned from the underlying platform. See
-  // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-  virtual void SetAttributionReportingSupport(
-      network::mojom::AttributionSupport) = 0;
 
   // Static management functions -----------------------------------------------
 

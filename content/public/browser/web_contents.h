@@ -1471,6 +1471,10 @@ class WebContents : public PageNavigator,
   virtual void SetOwnerLocationForDebug(
       absl::optional<base::Location> owner_location) = 0;
 
+  // Sends the attribution support state to all renderer processes for the
+  // current page.
+  virtual void UpdateAttributionSupportRenderer() = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class WebContentsImpl;

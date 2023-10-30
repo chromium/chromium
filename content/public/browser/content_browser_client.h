@@ -917,6 +917,20 @@ class CONTENT_EXPORT ContentBrowserClient {
       RenderFrameHost* render_frame_host,
       InterestGroupManager::InterestGroupDataKey data_key);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AttributionReportingOsApiState {
+    kDisabled = 0,
+    kEnabled = 1,
+    kMaxValue = kEnabled,
+  };
+
+  // Allows the embedder to control the type of attribution reporting allowed.
+  // Web, Os, both or none
+  virtual network::mojom::AttributionSupport GetAttributionSupport(
+      AttributionReportingOsApiState state,
+      content::WebContents* web_contents);
+
   enum class AttributionReportingOperation {
     kSource,
     kTrigger,
@@ -955,19 +969,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin* destination_origin,
       const url::Origin* reporting_origin);
 
-  // Allows the embedder to control if web attribution reporting is allowed.
-  // This method must be idempotent.
-  virtual bool IsWebAttributionReportingAllowed();
-
   // Allows the embedder to control if an OS source event should register as
   // a Web OS or OS (App) source.
-  // This method must be idempotent.
   virtual bool ShouldUseOsWebSourceAttributionReporting(
       content::RenderFrameHost* rfh);
 
   // Allows the embedder to control if an OS trigger event should register as
   // a Web OS or OS (App) trigger.
-  // This method must be idempotent.
   virtual bool ShouldUseOsWebTriggerAttributionReporting(
       content::RenderFrameHost* rfh);
 

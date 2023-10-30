@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_content_browser_client.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
@@ -1206,6 +1207,26 @@ AwContentBrowserClient::GetOriginTrialsSettings() {
       ->GetSettings();
 }
 
+network::mojom::AttributionSupport
+AwContentBrowserClient::GetAttributionSupport(
+    AttributionReportingOsApiState state,
+    content::WebContents* web_contents) {
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
+  if (aw_settings && aw_settings->GetAttributionBehavior() ==
+                         AwSettings::AttributionBehavior::DISABLED) {
+    return network::mojom::AttributionSupport::kNone;
+  }
+
+  // WebView only supports OS-level attribution and not web-attribution.
+  switch (state) {
+    case AttributionReportingOsApiState::kDisabled:
+      return network::mojom::AttributionSupport::kNone;
+    case AttributionReportingOsApiState::kEnabled: {
+      return network::mojom::AttributionSupport::kOs;
+    }
+  }
+}
+
 bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
     content::BrowserContext* browser_context,
     AttributionReportingOperation operation,
@@ -1214,8 +1235,8 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
   // Check if attribution reporting has been disabled.
-  // TODO(crbug.com/1473966) This method should not be called at all if
-  //     the configured behavior is DISABLED.
+  // This method should not be called at all if the configured behavior is
+  // DISABLED.
   WebContents* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (web_contents) {
     AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
@@ -1263,10 +1284,6 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
   NOTREACHED_NORETURN();
 }
 
-bool AwContentBrowserClient::IsWebAttributionReportingAllowed() {
-  return false;  // WebView does not support web-only attribution.
-}
-
 bool AwContentBrowserClient::ShouldUseOsWebSourceAttributionReporting(
     content::RenderFrameHost* rfh) {
   // Attribution reporting can register a source to either the top level origin
@@ -1281,19 +1298,22 @@ bool AwContentBrowserClient::ShouldUseOsWebSourceAttributionReporting(
 
   WebContents* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
-  AwSettings::AttributionBehavior attribution_behavior =
-      aw_settings->GetAttributionBehavior();
 
-  switch (attribution_behavior) {
-    case AwSettings::AttributionBehavior::DISABLED:
-      return false;
-    case AwSettings::AttributionBehavior::WEB_SOURCE_AND_WEB_TRIGGER:
-      return true;
-    case AwSettings::AttributionBehavior::APP_SOURCE_AND_WEB_TRIGGER:
-    case AwSettings::AttributionBehavior::APP_SOURCE_AND_APP_TRIGGER:
-      return false;
-    default:
-      break;
+  if (aw_settings) {
+    AwSettings::AttributionBehavior attribution_behavior =
+        aw_settings->GetAttributionBehavior();
+
+    switch (attribution_behavior) {
+      case AwSettings::AttributionBehavior::DISABLED:
+        return false;
+      case AwSettings::AttributionBehavior::WEB_SOURCE_AND_WEB_TRIGGER:
+        return true;
+      case AwSettings::AttributionBehavior::APP_SOURCE_AND_WEB_TRIGGER:
+      case AwSettings::AttributionBehavior::APP_SOURCE_AND_APP_TRIGGER:
+        return false;
+      default:
+        break;
+    }
   }
 
   NOTREACHED_NORETURN();
@@ -1310,19 +1330,22 @@ bool AwContentBrowserClient::ShouldUseOsWebTriggerAttributionReporting(
 
   WebContents* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
-  AwSettings::AttributionBehavior attribution_behavior =
-      aw_settings->GetAttributionBehavior();
 
-  switch (attribution_behavior) {
-    case AwSettings::AttributionBehavior::DISABLED:
-      return false;
-    case AwSettings::AttributionBehavior::WEB_SOURCE_AND_WEB_TRIGGER:
-    case AwSettings::AttributionBehavior::APP_SOURCE_AND_WEB_TRIGGER:
-      return true;
-    case AwSettings::AttributionBehavior::APP_SOURCE_AND_APP_TRIGGER:
-      return false;
-    default:
-      break;
+  if (aw_settings) {
+    AwSettings::AttributionBehavior attribution_behavior =
+        aw_settings->GetAttributionBehavior();
+
+    switch (attribution_behavior) {
+      case AwSettings::AttributionBehavior::DISABLED:
+        return false;
+      case AwSettings::AttributionBehavior::WEB_SOURCE_AND_WEB_TRIGGER:
+      case AwSettings::AttributionBehavior::APP_SOURCE_AND_WEB_TRIGGER:
+        return true;
+      case AwSettings::AttributionBehavior::APP_SOURCE_AND_APP_TRIGGER:
+        return false;
+      default:
+        break;
+    }
   }
 
   NOTREACHED_NORETURN();

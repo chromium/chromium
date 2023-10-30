@@ -1221,6 +1221,11 @@ void Page::UpdateBrowsingContextGroup(
   }
 }
 
+void Page::SetAttributionSupport(
+    network::mojom::AttributionSupport attribution_support) {
+  attribution_support_ = attribution_support;
+}
+
 template class CORE_TEMPLATE_EXPORT Supplement<Page>;
 
 const char InternalSettingsPageSupplementBase::kSupplementName[] =

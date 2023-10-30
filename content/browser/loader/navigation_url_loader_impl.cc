@@ -325,7 +325,10 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->has_storage_access =
       request_info.begin_params->has_storage_access;
 
-  new_request->attribution_reporting_support = AttributionManager::GetSupport();
+  new_request->attribution_reporting_support =
+      AttributionManager::GetAttributionSupport(
+          WebContents::FromFrameTreeNodeId(
+              frame_tree_node->frame_tree_node_id()));
 
   new_request->attribution_reporting_eligibility =
       request_info.begin_params->impression.has_value()

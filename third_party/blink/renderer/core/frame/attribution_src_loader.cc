@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
@@ -565,7 +566,7 @@ bool AttributionSrcLoader::CanRegister(const KURL& url,
 }
 
 network::mojom::AttributionSupport AttributionSrcLoader::GetSupport() const {
-  return Platform::Current()->GetAttributionReportingSupport();
+  return local_frame_->GetPage()->GetAttributionSupport();
 }
 
 network::AttributionReportingRuntimeFeatures

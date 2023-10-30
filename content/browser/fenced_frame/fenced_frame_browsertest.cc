@@ -6155,8 +6155,13 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   MockAttributionReportingContentBrowserClientBase<
       ContentBrowserTestContentBrowserClient>
       browser_client;
-  EXPECT_CALL(browser_client, IsWebAttributionReportingAllowed())
-      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(
+      browser_client,
+      GetAttributionSupport(
+          ContentBrowserClient::AttributionReportingOsApiState::kDisabled,
+          testing::_))
+      .WillRepeatedly(
+          testing::Return(network::mojom::AttributionSupport::kNone));
   ON_CALL(browser_client, IsPrivacySandboxReportingDestinationAttested)
       .WillByDefault(testing::Return(true));
 

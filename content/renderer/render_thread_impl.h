@@ -51,7 +51,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_change_notifier.h"
 #include "net/nqe/effective_connection_type.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -186,7 +185,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
       override;
-  network::mojom::AttributionSupport GetAttributionReportingSupport() override;
 
   // IPC::Listener implementation via ChildThreadImpl:
   void OnAssociatedInterfaceRequest(
@@ -430,7 +428,6 @@ class CONTENT_EXPORT RenderThreadImpl
       const std::string& user_agent,
       const blink::UserAgentMetadata& user_agent_metadata,
       const std::vector<std::string>& cors_exempt_header_list,
-      network::mojom::AttributionSupport,
       blink::mojom::OriginTrialsSettingsPtr origin_trial_settings) override;
   void UpdateScrollbarTheme(
       mojom::UpdateScrollbarThemeParamsPtr params) override;
@@ -449,8 +446,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void SetIsCrossOriginIsolated(bool value) override;
   void SetIsWebSecurityDisabled(bool value) override;
   void SetIsIsolatedContext(bool value) override;
-  void SetAttributionReportingSupport(
-      network::mojom::AttributionSupport) override;
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
@@ -497,8 +492,6 @@ class CONTENT_EXPORT RenderThreadImpl
 
   blink::WebString user_agent_;
   blink::UserAgentMetadata user_agent_metadata_;
-
-  network::mojom::AttributionSupport attribution_support_;
 
   // Sticky once true, indicates that compositing is done without Gpu, so
   // resources given to the compositor or to the viz service should be

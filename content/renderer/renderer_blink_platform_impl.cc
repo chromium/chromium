@@ -80,7 +80,6 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "storage/common/database/database_identifier.h"
@@ -971,15 +970,6 @@ base::PlatformThreadId RendererBlinkPlatformImpl::GetIOThreadId() const {
     io_thread_id_ready_event_.Wait();
   }
   return io_thread_id_;
-}
-
-network::mojom::AttributionSupport
-RendererBlinkPlatformImpl::GetAttributionReportingSupport() {
-  auto* render_thread = RenderThreadImpl::current();
-  // RenderThreadImpl is null in some tests.
-  if (!render_thread)
-    return network::mojom::AttributionSupport::kWeb;
-  return render_thread->GetAttributionReportingSupport();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

@@ -6,6 +6,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "skia/public/mojom/skcolor.mojom";
+import "services/network/public/mojom/attribution.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/remote_frame.mojom";
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
@@ -155,4 +156,10 @@ interface PageBroadcast {
   // in `browsing_context_group_info`.
   UpdatePageBrowsingContextGroup(
     blink.mojom.BrowsingContextGroupInfo browsing_context_group_info);
+
+  // Allows the browser to inform the renderer about a change in attribution
+  // support, e.g. when the OS indicates that the OS Attribution API is
+  // supported/unsupported or when attribution is enabled/disabled for
+  // Android WebView.
+  SetPageAttributionSupport(network.mojom.AttributionSupport support);
 };

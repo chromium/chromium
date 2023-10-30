@@ -459,6 +459,7 @@ bool RenderViewHostImpl::CreateRenderView(
   DCHECK_EQ(&frame_tree_node->frame_tree(), frame_tree_);
   params->is_prerendering = frame_tree_->is_prerendering() ||
                             frame_tree_->page_delegate()->IsInPreviewMode();
+  params->attribution_support = delegate_->GetAttributionSupport();
 
   if (main_rfh) {
     auto local_frame_params = mojom::CreateLocalMainFrameParams::New();

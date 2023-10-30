@@ -79,7 +79,6 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/host/gpu_client.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
 #include "content/browser/blob_storage/file_backed_blob_factory_worker_impl.h"
@@ -190,7 +189,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_factory_impl.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -1667,7 +1665,6 @@ bool RenderProcessHostImpl::Init() {
           browser_context_),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       storage_partition_impl_->cors_exempt_header_list(),
-      AttributionManager::GetSupport(),
       GetContentClient()->browser()->GetOriginTrialsSettings());
 
   if (run_renderer_in_process()) {
@@ -5566,11 +5563,6 @@ void RenderProcessHostImpl::ProvideSwapFileForRenderer() {
               allocator->ProvideTemporaryFile(std::move(file));
           },
           std::move(allocator)));
-}
-
-void RenderProcessHostImpl::SetAttributionReportingSupport(
-    network::mojom::AttributionSupport attribution_support) {
-  GetRendererInterface()->SetAttributionReportingSupport(attribution_support);
 }
 
 #if BUILDFLAG(IS_ANDROID)

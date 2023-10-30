@@ -324,10 +324,12 @@ bool FencedFrameReporter::SendReport(
 
   const std::string devtools_request_id =
       base::UnguessableToken::Create().ToString();
-  auto* attribution_host = AttributionHost::FromWebContents(
-      WebContents::FromRenderFrameHost(request_initiator_frame));
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(request_initiator_frame);
+  auto* attribution_host = AttributionHost::FromWebContents(web_contents);
   if (attribution_host &&
-      network::HasAttributionSupport(AttributionManager::GetSupport())) {
+      network::HasAttributionSupport(
+          AttributionManager::GetAttributionSupport(web_contents))) {
     BeaconId beacon_id(unique_id_counter.GetNext());
     if (attribution_host->NotifyFencedFrameReportingBeaconStarted(
             beacon_id, navigation_id, request_initiator_frame,
@@ -547,7 +549,9 @@ bool FencedFrameReporter::SendReportInternal(
             ? network::mojom::AttributionReportingEligibility::kNavigationSource
             : network::mojom::AttributionReportingEligibility::kEventSource;
 
-    request->attribution_reporting_support = AttributionManager::GetSupport();
+    request->attribution_reporting_support =
+        AttributionManager::GetAttributionSupport(
+            WebContents::FromFrameTreeNodeId(initiator_frame_tree_node_id));
 
     request->attribution_reporting_runtime_features =
         attribution_reporting_data->attribution_reporting_runtime_features;

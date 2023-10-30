@@ -260,7 +260,7 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
       switches::kAttributionReportingDebugMode);
 
   std::move(callback).Run(attribution_reporting_enabled, debug_mode,
-                          AttributionManager::GetSupport());
+                          AttributionManager::GetAttributionSupport(contents));
 }
 
 void AttributionInternalsHandlerImpl::GetActiveSources(

@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -219,16 +218,6 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
   std::unique_ptr<MockDataHost> mock_data_host_;
 };
 
-class AttributionTestingPlatformSupport : public TestingPlatformSupport {
- public:
-  network::mojom::AttributionSupport GetAttributionReportingSupport() override {
-    return attribution_support;
-  }
-
-  network::mojom::AttributionSupport attribution_support =
-      network::mojom::AttributionSupport::kWeb;
-};
-
 class AttributionSrcLoaderTest : public PageTestBase {
  public:
   AttributionSrcLoaderTest() = default;
@@ -260,7 +249,6 @@ class AttributionSrcLoaderTest : public PageTestBase {
   }
 
  protected:
-  ScopedTestingPlatformSupport<AttributionTestingPlatformSupport> platform_;
   Persistent<AttributionSrcLocalFrameClient> client_;
   Persistent<AttributionSrcLoader> attribution_src_loader_;
 };
@@ -559,7 +547,7 @@ TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
 }
 
 TEST_F(AttributionSrcLoaderTest, NoneSupported_CannotRegister) {
-  platform_->attribution_support = network::mojom::AttributionSupport::kNone;
+  GetPage().SetAttributionSupport(network::mojom::AttributionSupport::kNone);
 
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
@@ -573,7 +561,7 @@ TEST_F(AttributionSrcLoaderTest, WebDisabled_TriggerNotRegistered) {
 
   for (auto attribution_support : {network::mojom::AttributionSupport::kNone,
                                    network::mojom::AttributionSupport::kOs}) {
-    platform_->attribution_support = attribution_support;
+    GetPage().SetAttributionSupport(attribution_support);
 
     ResourceRequest request(test_url);
     auto* resource = MakeGarbageCollected<MockResource>(test_url);
@@ -638,15 +626,12 @@ class AttributionSrcLoaderCrossAppWebRuntimeDisabledTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       network::features::kAttributionReportingCrossAppWeb};
-
- protected:
-  ScopedTestingPlatformSupport<AttributionTestingPlatformSupport> platform_;
 };
 
 TEST_F(AttributionSrcLoaderCrossAppWebRuntimeDisabledTest,
        OsTriggerNotRegistered) {
-  platform_->attribution_support =
-      network::mojom::AttributionSupport::kWebAndOs;
+  GetPage().SetAttributionSupport(
+      network::mojom::AttributionSupport::kWebAndOs);
 
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
@@ -673,15 +658,12 @@ class AttributionSrcLoaderCrossAppWebEnabledTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       network::features::kAttributionReportingCrossAppWeb};
-
- protected:
-  ScopedTestingPlatformSupport<AttributionTestingPlatformSupport> platform_;
 };
 
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
   auto attribution_support = network::mojom::AttributionSupport::kWebAndOs;
 
-  platform_->attribution_support = attribution_support;
+  GetPage().SetAttributionSupport(attribution_support);
 
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
@@ -698,7 +680,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
        SupportHeader_RegisterNavigation) {
   auto attribution_support = network::mojom::AttributionSupport::kWebAndOs;
 
-  platform_->attribution_support = attribution_support;
+  GetPage().SetAttributionSupport(attribution_support);
 
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
@@ -715,8 +697,8 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
 }
 
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
-  platform_->attribution_support =
-      network::mojom::AttributionSupport::kWebAndOs;
+  GetPage().SetAttributionSupport(
+      network::mojom::AttributionSupport::kWebAndOs);
 
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
@@ -747,8 +729,8 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
        HeadersSize_OsMetricsRecorded) {
   base::HistogramTester histograms;
-  platform_->attribution_support =
-      network::mojom::AttributionSupport::kWebAndOs;
+  GetPage().SetAttributionSupport(
+      network::mojom::AttributionSupport::kWebAndOs);
 
   KURL test_url = ToKURL("https://example1.com/foo.html");
   AtomicString os_registration(R"("https://r.test/x")");

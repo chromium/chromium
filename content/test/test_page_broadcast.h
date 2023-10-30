@@ -45,6 +45,8 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
       override;
   void UpdatePageBrowsingContextGroup(const blink::BrowsingContextGroupInfo&
                                           browsing_context_group_info) override;
+  void SetPageAttributionSupport(
+      network::mojom::AttributionSupport support) override;
 
   mojo::AssociatedReceiver<blink::mojom::PageBroadcast> receiver_;
 };

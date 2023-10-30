@@ -336,9 +336,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void ResumeSocketManagerForRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) override;
 
-  void SetAttributionReportingSupport(
-      network::mojom::AttributionSupport) override;
-
   // IPC::Sender via RenderProcessHost.
   bool Send(IPC::Message* msg) override;
 

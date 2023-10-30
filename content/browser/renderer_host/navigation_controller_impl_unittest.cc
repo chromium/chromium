@@ -151,6 +151,11 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
       (const blink::BrowsingContextGroupInfo& browsing_context_group_info),
       (override));
 
+  MOCK_METHOD(void,
+              SetPageAttributionSupport,
+              (network::mojom::AttributionSupport support),
+              (override));
+
   mojo::PendingAssociatedRemote<blink::mojom::PageBroadcast> GetRemote() {
     return receiver_.BindNewEndpointAndPassDedicatedRemote();
   }

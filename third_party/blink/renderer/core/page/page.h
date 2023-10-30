@@ -449,6 +449,17 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // place.
   void UpdateBrowsingContextGroup(const blink::BrowsingContextGroupInfo&);
 
+  // Attribution Reporting API ------------------------------------
+  // Sets whether web or OS-level Attribution Reporting is supported
+  void SetAttributionSupport(
+      network::mojom::AttributionSupport attribution_support);
+
+  // Returns whether web or OS-level Attribution Reporting is supported. See
+  // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
+  network::mojom::AttributionSupport GetAttributionSupport() {
+    return attribution_support_;
+  }
+
  private:
   friend class ScopedPagePauser;
 
@@ -610,6 +621,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // The information determining the browsing context group this page lives in.
   BrowsingContextGroupInfo browsing_context_group_info_;
+
+  network::mojom::AttributionSupport attribution_support_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;

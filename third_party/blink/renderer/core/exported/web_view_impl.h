@@ -320,6 +320,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       override;
   void UpdatePageBrowsingContextGroup(
       const BrowsingContextGroupInfo& browsing_context_group_info) override;
+  void SetPageAttributionSupport(
+      network::mojom::AttributionSupport support) override;
 
   void DispatchPersistedPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);

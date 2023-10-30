@@ -55,6 +55,8 @@ import java.util.List;
 @RunWith(AwJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class AttributionReportingTest {
+    private static final String SOURCE_REGISTRATION_PATH = "/source";
+    private static final String TRIGGER_REGISTRATION_PATH = "/trigger";
     private static final String OS_SOURCE_RESPONSE_HEADER =
             "Attribution-Reporting-Register-OS-Source";
     private static final String OS_TRIGGER_RESPONSE_HEADER =
@@ -155,6 +157,10 @@ public class AttributionReportingTest {
         assertEquals(AttributionBehavior.DISABLED, mSettings.getAttributionBehavior());
 
         loadUrlSync(mTestPage);
+
+        // When disabled, we don't expect any calls to the attribution server.
+        Assert.assertEquals(0, mAttributionServer.getRequestCount(SOURCE_REGISTRATION_PATH));
+        Assert.assertEquals(0, mAttributionServer.getRequestCount(TRIGGER_REGISTRATION_PATH));
 
         // When disabled, we don't expect any calls to any of the actual registration methods.
         verify(mMockAttributionManager, never())
@@ -324,13 +330,13 @@ public class AttributionReportingTest {
     private String createTestPage() {
         String sourceUrl =
                 mAttributionServer.setResponse(
-                        "/source",
+                        SOURCE_REGISTRATION_PATH,
                         "",
                         getAttributionResponseHeaders(
                                 OS_SOURCE_RESPONSE_HEADER, SOURCE_REGISTRATION_URL));
         String triggerUrl =
                 mAttributionServer.setResponse(
-                        "/trigger",
+                        TRIGGER_REGISTRATION_PATH,
                         "",
                         getAttributionResponseHeaders(
                                 OS_TRIGGER_RESPONSE_HEADER, TRIGGER_REGISTRATION_URL));

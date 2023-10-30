@@ -50,12 +50,15 @@ class AwSettings : public content::WebContentsObserver {
     COUNT,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.settings
   enum AttributionBehavior {
     DISABLED = 0,
     APP_SOURCE_AND_WEB_TRIGGER = 1,
     WEB_SOURCE_AND_WEB_TRIGGER = 2,
     APP_SOURCE_AND_APP_TRIGGER = 3,
+    kMaxValue = APP_SOURCE_AND_APP_TRIGGER,
   };
 
   static AwSettings* FromWebContents(content::WebContents* web_contents);

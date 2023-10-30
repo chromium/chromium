@@ -893,6 +893,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetOwnerLocationForDebug(
       absl::optional<base::Location> owner_location) override;
 
+  network::mojom::AttributionSupport GetAttributionSupport() override;
+  void UpdateAttributionSupportRenderer() override;
+  static void UpdateAttributionSupportAllRenderers();
+
   // NavigatorDelegate ---------------------------------------------------------
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override;

@@ -724,8 +724,13 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   MockAttributionReportingContentBrowserClientBase<
       ContentBrowserTestContentBrowserClient>
       browser_client;
-  EXPECT_CALL(browser_client, IsWebAttributionReportingAllowed())
-      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(
+      browser_client,
+      GetAttributionSupport(
+          ContentBrowserClient::AttributionReportingOsApiState::kDisabled,
+          testing::_))
+      .WillRepeatedly(
+          testing::Return(network::mojom::AttributionSupport::kNone));
 
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.

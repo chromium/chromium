@@ -281,6 +281,7 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
 
   web_view->SetRendererPreferences(params->renderer_preferences);
   web_view->SetWebPreferences(params->web_preferences);
+  web_view->SetPageAttributionSupport(params->attribution_support);
 
   if (!local_main_frame) {
     // Create a remote main frame.

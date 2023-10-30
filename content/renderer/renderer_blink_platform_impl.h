@@ -214,7 +214,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebURL& url,
       blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
   base::PlatformThreadId GetIOThreadId() const override;
-  network::mojom::AttributionSupport GetAttributionReportingSupport() override;
   scoped_refptr<base::SingleThreadTaskRunner> VideoFrameCompositorTaskRunner()
       override;
 #if BUILDFLAG(IS_ANDROID)

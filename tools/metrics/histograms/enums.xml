@@ -20215,17 +20215,22 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Failed to assemble report"/>
 </enum>
 
+<enum name="ConversionAttributionBehavior">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="App Source and Web Trigger"/>
+  <int value="2" label="Web source and Web Trigger"/>
+  <int value="3" label="App Source and App Trigger"/>
+</enum>
+
+<enum name="ConversionAttributionOsLevelApiState">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled"/>
+</enum>
+
 <enum name="ConversionAttributionSrcRequestStatus">
   <int value="0" label="Requested"/>
   <int value="1" label="Received"/>
   <int value="2" label="Failed"/>
-</enum>
-
-<enum name="ConversionAttributionSupport">
-  <int value="0" label="Web"/>
-  <int value="1" label="Web and OS"/>
-  <int value="2" label="OS"/>
-  <int value="3" label="None"/>
 </enum>
 
 <enum name="ConversionCorruptReportStatus">

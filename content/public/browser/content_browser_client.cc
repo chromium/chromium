@@ -549,6 +549,17 @@ void ContentBrowserClient::OnAuctionComplete(
     RenderFrameHost* render_frame_host,
     InterestGroupManager::InterestGroupDataKey data_key) {}
 
+network::mojom::AttributionSupport ContentBrowserClient::GetAttributionSupport(
+    AttributionReportingOsApiState state,
+    content::WebContents* web_contents) {
+  switch (state) {
+    case AttributionReportingOsApiState::kDisabled:
+      return network::mojom::AttributionSupport::kWeb;
+    case AttributionReportingOsApiState::kEnabled:
+      return network::mojom::AttributionSupport::kWebAndOs;
+  }
+}
+
 bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
     content::BrowserContext* browser_context,
     AttributionReportingOperation operation,
@@ -556,10 +567,6 @@ bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
-  return true;
-}
-
-bool ContentBrowserClient::IsWebAttributionReportingAllowed() {
   return true;
 }
 

@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -471,8 +470,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
   void Test(AttributionSrcTestCase test_case) {
     SCOPED_TRACE(test_case.input_html);
 
-    ScopedTestingPlatformSupport<AttributionTestingPlatformSupport> platform;
-    platform->attribution_support = test_case.attribution_support;
+    GetPage().SetAttributionSupport(test_case.attribution_support);
 
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
@@ -518,17 +516,6 @@ class HTMLPreloadScannerTest : public PageTestBase {
   }
 
  private:
-  class AttributionTestingPlatformSupport : public TestingPlatformSupport {
-   public:
-    network::mojom::AttributionSupport GetAttributionReportingSupport()
-        override {
-      return attribution_support;
-    }
-
-    network::mojom::AttributionSupport attribution_support =
-        network::mojom::AttributionSupport::kWeb;
-  };
-
   std::unique_ptr<HTMLPreloadScanner> scanner_;
 };
 

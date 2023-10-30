@@ -1020,8 +1020,12 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   MockAttributionReportingContentBrowserClientBase<
       ContentBrowserTestContentBrowserClient>
       browser_client;
-  EXPECT_CALL(browser_client, IsWebAttributionReportingAllowed())
-      .WillRepeatedly(Return(false));
+  EXPECT_CALL(
+      browser_client,
+      GetAttributionSupport(
+          ContentBrowserClient::AttributionReportingOsApiState::kDisabled,
+          testing::_))
+      .WillRepeatedly(Return(network::mojom::AttributionSupport::kNone));
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(

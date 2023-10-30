@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
-#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
@@ -110,12 +109,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   virtual void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost>
           proto) = 0;
-
-  // Returns whether web or OS-level Attribution Reporting is supported.
-  // See
-  // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-  virtual network::mojom::AttributionSupport
-  GetAttributionReportingSupport() = 0;
 
  private:
   const base::AutoReset<RenderThread*> resetter_;

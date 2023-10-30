@@ -74,6 +74,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/schemeful_site.h"
@@ -1390,7 +1391,9 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
 }
 
 void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
-  if (!network::HasAttributionOsSupport(GetSupport())) {
+  if (!network::HasAttributionOsSupport(
+          GetAttributionSupport(content::WebContents::FromRenderFrameHost(
+              RenderFrameHost::FromID(registration.render_frame_id))))) {
     NotifyOsRegistration(registration,
                          /*is_debug_key_allowed=*/false,
                          OsRegistrationResult::kUnsupported);
