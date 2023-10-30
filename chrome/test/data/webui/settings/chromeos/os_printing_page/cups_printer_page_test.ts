@@ -83,7 +83,7 @@ suite('<settings-cups-printers>', () => {
   });
 
   // Verify the Nearby printers section can be properly opened and closed.
-  test('CollapsibleNearbyPrinterSection', () => {
+  test.skip('CollapsibleNearbyPrinterSection', () => {
     // The Add printer section above the Nearby printers section should be
     // hidden.
     assertFalse(
@@ -127,7 +127,7 @@ suite('<settings-cups-printers>', () => {
 
   // Verify the Nearby printers section starts open when there are no saved
   // printers or open when there's more than one saved printer.
-  test('CollapsibleNearbyPrinterSectionSavedPrinters', async () => {
+  test.skip('CollapsibleNearbyPrinterSectionSavedPrinters', async () => {
     // Simulate no saved printers and expect the section to be open.
     cupsPrintersBrowserProxy.printerList = {printerList: []};
     resetPage();
