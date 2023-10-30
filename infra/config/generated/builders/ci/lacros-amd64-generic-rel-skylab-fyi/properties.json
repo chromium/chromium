@@ -15,8 +15,7 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb",
-                  "mb_no_luci_auth"
+                  "mb"
                 ],
                 "config": "chromium",
                 "cros_boards_with_qemu_images": [

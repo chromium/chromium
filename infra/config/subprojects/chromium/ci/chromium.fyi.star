@@ -146,7 +146,6 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "mb",
-                "mb_no_luci_auth",
             ],
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
@@ -179,7 +178,7 @@ ci.builder(
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
-            apply_configs = ["mb", "mb_no_luci_auth"],
+            apply_configs = ["mb"],
             target_bits = 64,
             target_platform = "chromeos",
             target_cros_boards = "eve",
@@ -242,7 +241,7 @@ ci.builder(
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
-            apply_configs = ["mb", "mb_no_luci_auth"],
+            apply_configs = ["mb"],
             target_bits = 64,
             target_platform = "chromeos",
             target_cros_boards = "kevin:jacuzzi",
