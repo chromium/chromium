@@ -906,6 +906,7 @@ enum class ToolbarKind {
       initWithDeviceSwitcherResultDispatcher:deviceSwitcherResultDispatcher
                       hostContentSettingsMap:settingsMap
                              loadingNotifier:_urlLoadingNotifierBrowserAgent
+                                 prefService:browserState->GetPrefs()
                                   sceneState:SceneStateBrowserAgent::
                                                  FromBrowser(self.browser)
                                                      ->GetSceneState()

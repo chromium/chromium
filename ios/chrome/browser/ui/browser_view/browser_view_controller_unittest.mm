@@ -234,10 +234,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         [[PopupMenuCoordinator alloc] initWithBrowser:browser_.get()];
     [popup_menu_coordinator_ start];
 
-    toolbar_coordinator_ =
-        [[ToolbarCoordinator alloc] initWithBrowser:browser_.get()];
-    [toolbar_coordinator_ start];
-
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForBrowserState(
             chrome_browser_state_.get());
@@ -252,6 +248,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                         hostContentSettingsMap:(HostContentSettingsMap*)
                                                    settings_map
                                loadingNotifier:urlLoadingNotifier_
+                                   prefService:chrome_browser_state_.get()
+                                                   ->GetPrefs()
                                     sceneState:scene_state_
                        tabStripCommandsHandler:nil
                                        tracker:(feature_engagement::Tracker*)
@@ -259,6 +257,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                                   webStateList:browser_->GetWebStateList()];
     [dispatcher startDispatchingToTarget:bubble_presenter_
                              forProtocol:@protocol(HelpCommands)];
+
+    toolbar_coordinator_ =
+        [[ToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+    [toolbar_coordinator_ start];
 
     tab_strip_coordinator_ =
         [[TabStripCoordinator alloc] initWithBrowser:browser_.get()];

@@ -153,6 +153,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   self.view.openNewTabButton.guideName = kNewTabButtonGuide;
   self.view.forwardButton.guideName = kForwardButtonGuide;
   self.view.backButton.guideName = kBackButtonGuide;
+  self.view.shareButton.guideName = kShareButtonGuide;
 
   [self addLayoutGuideCenterToButtons];
 
@@ -542,6 +543,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   self.view.openNewTabButton.layoutGuideCenter = self.layoutGuideCenter;
   self.view.forwardButton.layoutGuideCenter = self.layoutGuideCenter;
   self.view.backButton.layoutGuideCenter = self.layoutGuideCenter;
+  self.view.shareButton.layoutGuideCenter = self.layoutGuideCenter;
 }
 
 // Exits fullscreen.

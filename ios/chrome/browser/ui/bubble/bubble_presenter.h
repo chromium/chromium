@@ -13,6 +13,7 @@
 @class CommandDispatcher;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
+class PrefService;
 @class SceneState;
 @protocol TabStripCommands;
 @protocol ToolbarCommands;
@@ -41,6 +42,7 @@ class DeviceSwitcherResultDispatcher;
                     hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
                            loadingNotifier:(UrlLoadingNotifierBrowserAgent*)
                                                urlLoadingNotifier
+                               prefService:(PrefService*)prefService
                                 sceneState:(SceneState*)sceneState
                    tabStripCommandsHandler:
                        (id<TabStripCommands>)tabStripCommandsHandler

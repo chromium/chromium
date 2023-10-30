@@ -36,6 +36,8 @@ extern GuideName* const kBackButtonGuide;
 extern GuideName* const kForwardButtonGuide;
 // A guide that is constrained to match the frame of the NewTab button.
 extern GuideName* const kNewTabButtonGuide;
+// A guide that is constrained to match the frame of the Share button.
+extern GuideName* const kShareButtonGuide;
 // A guide that is constrained to match the frame of the TabSwitcher button's
 // image.
 extern GuideName* const kTabSwitcherGuide;

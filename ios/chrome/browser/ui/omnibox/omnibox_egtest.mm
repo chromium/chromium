@@ -8,9 +8,11 @@
 #import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -626,6 +628,136 @@ void FocusFakebox() {
 
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+}
+
+// Tests that copying the location bar by long pressing will trigger the share
+// button IPH to be displayed, if certain conditions are met, with the omnibox
+// at the bottom. Runs for phone factor only.
+- (void)testCopyLocationBarTriggersShareButtonIPHWithBottomOmnibox {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no bottom omnibox in tablet)");
+  }
+  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.additional_args.push_back(
+      base::StringPrintf("--enable-features=%s:chosen_feature/"
+                         "IPH_iOSShareToolbarItemFeature,IPHForSafariSwitcher",
+                         feature_engagement::kIPHDemoMode.name));
+  // Force the conditions that allow the iph to show.
+  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+  config.additional_args.push_back("SyncedAndFirstDevice");
+
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  GREYAssertTrue([ChromeEarlGrey isBottomOmniboxSteadyStateEnabled],
+                 @"Test case should have ran in bottom omnibox environment");
+
+  [self openPage1];
+
+  // Long pressing should allow copying.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_longPress()];
+
+  // Verify that the Copy button is displayed.
+  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
+      assertWithMatcher:grey_notNil()];
+
+  // Tapping it should copy the URL.
+  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
+
+  // Verify the share button IPH is shown.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              @"BubbleViewLabelIdentifier")];
+}
+
+// Tests that copying the location bar by long pressing will trigger the share
+// button IPH to be displayed, if certain conditions are met, with the omnibox
+// at the top.
+- (void)testCopyLocationBarTriggersShareButtonIPHWithTopOmnibox {
+  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.additional_args.push_back(
+      base::StringPrintf("--enable-features=%s:chosen_feature/"
+                         "IPH_iOSShareToolbarItemFeature,IPHForSafariSwitcher",
+                         feature_engagement::kIPHDemoMode.name));
+  // Force the conditions that allow the iph to show.
+  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+  config.additional_args.push_back("SyncedAndFirstDevice");
+  config.additional_args.push_back(
+      base::StringPrintf("--disable-features=BottomOmniboxSteadyState"));
+
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [self openPage1];
+
+  // Long pressing should allow copying.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_longPress()];
+
+  // Verify that the Copy button is displayed.
+  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
+      assertWithMatcher:grey_notNil()];
+
+  // Tapping it should copy the URL.
+  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
+
+  // Verify the share button IPH is shown.
+  GREYAssert([ChromeEarlGrey testUIElementAppearanceWithMatcher:
+                                 chrome_test_util::TabShareButton()],
+             @"The share button is not found");
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              @"BubbleViewLabelIdentifier")];
+}
+
+// Tests that copying the location bar by long pressing will NOT trigger the
+// share button IPH to be displayed, if the share button is disabled because the
+// url is not sharable.
+- (void)testCopyLocationBarNotTriggersShareButtonIPHWhenButtonDisabled {
+  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.additional_args.push_back(
+      base::StringPrintf("--enable-features=%s:chosen_feature/"
+                         "IPH_iOSShareToolbarItemFeature,IPHForSafariSwitcher",
+                         feature_engagement::kIPHDemoMode.name));
+  // Force the conditions that allow the iph to show.
+  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+  config.additional_args.push_back("SyncedAndFirstDevice");
+  config.additional_args.push_back(
+      base::StringPrintf("--disable-features=BottomOmniboxSteadyState"));
+
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+
+  // Long pressing should allow copying.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_longPress()];
+
+  // Verify that the Copy button is displayed.
+  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
+      assertWithMatcher:grey_notNil()];
+
+  // Tapping it should copy the URL.
+  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      verifyStringCopied:base::SysUTF8ToNSString("chrome://version")];
+
+  // Verify the share button is shown but the IPH is not shown.
+  GREYAssert([ChromeEarlGrey testUIElementAppearanceWithMatcher:
+                                 chrome_test_util::TabShareButton()],
+             @"The share button is not found");
+  GREYAssert(
+      ![ChromeEarlGrey
+          testUIElementAppearanceWithMatcher:grey_accessibilityID(
+                                                 @"BubbleViewLabelIdentifier")],
+      @"The share button IPH is displayed");
 }
 
 - (void)testDismissesEditMenu {

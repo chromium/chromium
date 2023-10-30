@@ -283,6 +283,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   _shareButtonEnabled = enabled;
   if (self.trailingButtonState == kShareButton) {
     [self.locationBarSteadyView enableTrailingButton:enabled];
+
+    if (_shareButtonEnabled) {
+      [self.layoutGuideCenter
+          referenceView:self.locationBarSteadyView.trailingButton
+              underName:kShareButtonGuide];
+    }
   }
 }
 
@@ -467,6 +473,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
       self.locationBarSteadyView.trailingButton.accessibilityIdentifier =
           kOmniboxShareButtonIdentifier;
       [self.locationBarSteadyView enableTrailingButton:self.shareButtonEnabled];
+
+      if (self.shareButtonEnabled) {
+        [self.layoutGuideCenter
+            referenceView:self.locationBarSteadyView.trailingButton
+                underName:kShareButtonGuide];
+      }
       break;
     };
     case kVoiceSearchButton: {

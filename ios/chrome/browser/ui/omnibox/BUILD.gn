@@ -257,6 +257,7 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     ":features",
+    "//components/feature_engagement/public",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
