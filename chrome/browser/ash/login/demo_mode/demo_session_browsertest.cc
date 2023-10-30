@@ -23,11 +23,13 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
@@ -320,25 +322,25 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, SessionStartup) {
   login_manager_mixin_.WaitForActiveSession();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DemoSWALaunchesOnSessionStartup \
-  DISABLED_DemoSWALaunchesOnSessionStartup
-#else
-#define MAYBE_DemoSWALaunchesOnSessionStartup DemoSWALaunchesOnSessionStartup
-#endif
-IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest,
-                       MAYBE_DemoSWALaunchesOnSessionStartup) {
+IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, DemoSWALaunchesOnSessionStartup) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   login_manager_mixin_.WaitForActiveSession();
   auto* profile = ProfileManager::GetActiveUserProfile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
-  WaitForBrowserAdded();
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  browser_opened.Wait();
 
-  // Verify that the Demo SWA has been opened
-  Browser* demo_app_browser =
+  // Verify that Demo Mode App is opened.
+  Browser* app_browser =
       FindSystemWebAppBrowser(profile, SystemWebAppType::DEMO_MODE);
-  ASSERT_TRUE(demo_app_browser);
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
 }
 
 IN_PROC_BROWSER_TEST_F(
