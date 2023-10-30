@@ -7072,3 +7072,6 @@ crbug.com/1496252 [ Win ] virtual/popover-hint-disabled/external/wpt/html/semant
 
 # TODO(crbug.com/1496301): Fix expectations to reflect new default setting and reenable
 crbug.com/1496301 http/tests/devtools/a11y-axe-core/settings/blackbox-a11y-test.js [ Failure Pass ]
+
+# Gardener 2023-10-30
+crbug.com/1497325 [ Mac ] external/wpt/css/css-color/nested-color-mix-with-currentcolor.html [ Failure Pass ]
