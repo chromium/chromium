@@ -19,8 +19,8 @@ otherwise manipulates that input, it definitely should be fuzzed!
 1. Find your existing unit test target. Create a new similar target
    alongside. (In the future, you'll be able to add them right into your
    unit test code directly.)
-2. Add `enable_fuzztest = true` to that target's `gn` definition. Add
-   a .cc file.
+2. Add a gn target definition a lot like a normal unit test, but with
+   `enable_fuzztest = true`. See below for details. Create a `.cc` file.
 3. In the unit tests code, `#include "third_party/fuzztest/src/fuzztest/fuzztest.h"`
 4. Add a `FUZZ_TEST` macro, which might be as simple as `FUZZ_TEST(MyApiTest, ExistingFunctionWhichTakesUntrustedInput)`
    (though you may wish to structure things differently, see below)
@@ -35,39 +35,58 @@ they'll be reported back to you.
 
 More detail in all the following sections.
 
-## Adding `FUZZ_TEST` support to a target
+## Creating a new `FUZZ_TEST` target
 
 *** note
-**Note:** Currently, you should create a **new** unit test target.
-While the FuzzTest framework supports mixed unit and fuzz tests,
-we don't yet recommend this option in Chromium.
+**Note:** Fuzztests don't yet build on Android or Windows component builds
+. We recommendwrapping these new targets in `if (fuzztest_supported) { }`
+blocks in your `gn` file for now. We'll remove these in future when it works on
+all platforms.
 ***
-
-*** note
-**Note:** Fuzztests don't yet build on Android or Windows. We recommend
-wrapping these new targets in `if (is_linux) { }` blocks in your `gn`
-file for now.
-***
-
-It's generally good practice to place a `FUZZ_TEST` alongside associated unit
-tests. If you're using the existing gn [`test` template] then simple add
-an extra `enable_fuzztest = true` line:
 
 ```
-if (is_linux) {
+import("//build/config/sanitizers/sanitizers.gni")
+
+if (fuzztest_supported) {
   test("hypothetical_fuzztests") {
     sources = [ "hypothetical_fuzztests.cc" ]
 
-    enable_fuzztest = true   # add this!
+    enable_fuzztest = true
 
     deps = [
       ":hypothetical_component",
+      "//third_party/fuzztest:fuzztest_gtest_main",
     ]
   }
 }
 ```
 
-If you're creating a new one, make something like the above.
+## Adding `FUZZ_TEST` support to a target
+
+*** note
+**Note:** Currently, you must create a **new** unit test target.
+While the FuzzTest framework supports mixed unit and fuzz tests,
+we don't yet support this option in Chromium.
+***
+
+In the near future we'll support adding `FUZZ_TEST`s alongside existing
+unit tests, even in the same .cc file. You will add an extra
+`enable_fuzztest = true` line:
+
+```
+if (is_linux) {
+  test("existing_unit_tests") {
+    sources = [ "existing_unit_tests.cc" ] # add FUZZ_TESTs here
+
+    enable_fuzztest = true   # add this!
+
+    deps = [
+      ":existing_component",
+      # Other stuff
+    ]
+  }
+}
+```
 
 This will:
 * add a dependency on the appropriate fuzztest libraries;
@@ -75,9 +94,16 @@ This will:
 * construct metadata so that [ClusterFuzz] knows how to run the resulting
   binary.
 
+This relies on something, somewhere, calling `base::LaunchUnitTests` within
+your executable to initialize FuzzTest. This should be the case already.
+
 (If you have other code targets, such as `source_set`s, contributing to your
 unit test target they may need to explicitly depend upon `//third_party/fuzztest`
 too.)
+
+*** note
+**Note:** Again, this is not yet supported!
+***
 
 ## Adding `FUZZ_TEST`s in the code
 

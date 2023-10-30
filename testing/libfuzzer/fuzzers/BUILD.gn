@@ -487,7 +487,10 @@ test("libyuv_scale_fuzztest") {
   sources = [ "libyuv_scale_fuzztest.cc" ]
   enable_fuzztest = true
 
-  deps = [ ":libyuv_scale_fuzzer_common" ]
+  deps = [
+    ":libyuv_scale_fuzzer_common",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }
 
 proto_library("command_buffer_lpm_fuzzer_proto") {

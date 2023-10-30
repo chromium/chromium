@@ -120,7 +120,7 @@ copy("check_seed_corpus_archive") {
 if (fuzztest_supported) {
   test("fuzztest_tests") {
     enable_fuzztest = true
-    deps = [ "//testing/gtest" ]
+    deps = [ "//third_party/fuzztest:fuzztest_gtest_main" ]
     sources = [ "fuzztest_smoketest.cc" ]
   }
 }

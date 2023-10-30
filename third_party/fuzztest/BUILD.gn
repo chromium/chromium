@@ -289,24 +289,32 @@ source_set("fuzztest_internal") {
 #                               # out of process execution environment.
 #                               # Requires use_centipede gn argument.
 source_set("fuzztest") {
-  sources = [ "src/fuzztest/fuzztest_gtest_main.cc" ]
-  deps = [
-    "//testing/gtest",
-    "//third_party/abseil-cpp/absl/flags:flag",
-    "//third_party/abseil-cpp/absl/flags:parse",
-  ]
-
   if (use_centipede) {
     # If we are building for centipede, we want to make fuzztest executables
     # which can be used as centipede fuzzers.
-    sources += [ "src/fuzztest/internal/centipede_adaptor.cc" ]
-    deps += [ ":centipede_runner_no_main" ]
+    sources = [ "src/fuzztest/internal/centipede_adaptor.cc" ]
+    deps = [ ":centipede_runner_no_main" ]
   } else if (use_fuzzing_engine) {
-    deps += [ "//testing/libfuzzer:fuzzing_engine_no_main" ]
+    deps = [ "//testing/libfuzzer:fuzzing_engine_no_main" ]
   }
   public_deps = [ ":fuzztest_internal" ]
   public_configs = [ ":fuzztest_internal_config" ]
   configs -= fuzzing_engine_remove_configs
   configs += fuzzing_engine_add_configs
+  testonly = true
+}
+
+# Depend upon this if you need a main() function
+source_set("fuzztest_gtest_main") {
+  deps = [
+    "//testing/gtest",
+    "//third_party/abseil-cpp/absl/flags:flag",
+    "//third_party/abseil-cpp/absl/flags:parse",
+  ]
+  sources = [ "src/fuzztest/fuzztest_gtest_main.cc" ]
+  public_deps = [
+    ":fuzztest",
+    "//testing/gtest",
+  ]
   testonly = true
 }
