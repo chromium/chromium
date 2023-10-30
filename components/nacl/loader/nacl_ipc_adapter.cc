@@ -252,13 +252,7 @@ std::unique_ptr<NaClDescWrapper> MakeShmRegionNaClDesc(
   base::subtle::ScopedPlatformSharedMemoryHandle handle =
       region.PassPlatformHandle();
   return std::make_unique<NaClDescWrapper>(
-#if BUILDFLAG(IS_APPLE)
-      NaClDescImcShmMachMake(handle.release(),
-#elif BUILDFLAG(IS_WIN)
-      NaClDescImcShmMake(handle.Take(),
-#else
       NaClDescImcShmMake(handle.fd.release(),
-#endif
                              size));
 }
 
@@ -570,11 +564,7 @@ bool NaClIPCAdapter::RewriteMessage(const IPC::Message& msg, uint32_t type) {
         }
         case ppapi::proxy::SerializedHandle::SOCKET: {
           nacl_desc = std::make_unique<NaClDescWrapper>(NaClDescSyncSocketMake(
-#if BUILDFLAG(IS_WIN)
-              handle.descriptor().GetHandle()
-#else
               handle.descriptor().fd
-#endif
                   ));
           break;
         }
@@ -582,11 +572,7 @@ bool NaClIPCAdapter::RewriteMessage(const IPC::Message& msg, uint32_t type) {
           // Create the NaClDesc for the file descriptor. If quota checking is
           // required, wrap it in a NaClDescQuota.
           NaClDesc* desc = NaClDescIoMakeFromHandle(
-#if BUILDFLAG(IS_WIN)
-              handle.descriptor().GetHandle(),
-#else
               handle.descriptor().fd,
-#endif
               TranslatePepperFileReadWriteOpenFlags(handle.open_flags()));
           if (desc && handle.file_io()) {
             desc = MakeNaClDescQuota(
@@ -661,11 +647,7 @@ void NaClIPCAdapter::SaveOpenResourceMessage(
 
     std::unique_ptr<NaClDescWrapper> desc_wrapper(
         new NaClDescWrapper(NaClDescIoMakeFromHandle(
-#if BUILDFLAG(IS_WIN)
-            orig_sh.descriptor().GetHandle(),
-#else
             orig_sh.descriptor().fd,
-#endif
             NACL_ABI_O_RDONLY)));
 
     // The file token didn't resolve successfully, so we give the

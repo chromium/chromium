@@ -23,10 +23,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace {
 
 // Tasks posted in this file are on the critical path of displaying the official
@@ -45,17 +41,10 @@ const base::FilePath::StringType NaClIrtName() {
 
 #if defined(ARCH_CPU_X86_FAMILY)
 #if defined(ARCH_CPU_X86_64)
-  bool is64 = true;
-#elif BUILDFLAG(IS_WIN)
-  bool is64 = base::win::OSInfo::GetInstance()->IsWowX86OnAMD64();
+  irt_name.append(FILE_PATH_LITERAL("x86_64"));
 #else
-  bool is64 = false;
+  irt_name.append(FILE_PATH_LITERAL("x86_32"));
 #endif
-  if (is64)
-    irt_name.append(FILE_PATH_LITERAL("x86_64"));
-  else
-    irt_name.append(FILE_PATH_LITERAL("x86_32"));
-
 #elif defined(ARCH_CPU_ARM_FAMILY)
   irt_name.append(FILE_PATH_LITERAL("arm"));
 #elif defined(ARCH_CPU_MIPSEL)
@@ -205,19 +194,6 @@ void NaClBrowser::InitIrtFilePath() {
     irt_filepath_ = plugin_dir.Append(NaClIrtName());
   }
 }
-
-#if BUILDFLAG(IS_WIN)
-bool NaClBrowser::GetNaCl64ExePath(base::FilePath* exe_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::FilePath module_path;
-  if (!base::PathService::Get(base::FILE_MODULE, &module_path)) {
-    LOG(ERROR) << "NaCl process launch failed: could not resolve module";
-    return false;
-  }
-  *exe_path = module_path.DirName().Append(L"nacl64");
-  return true;
-}
-#endif
 
 // static
 NaClBrowser* NaClBrowser::GetInstanceInternal() {

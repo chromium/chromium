@@ -71,10 +71,6 @@ void HistogramEnumerateOsArch(const std::string& sandbox_isa) {
   NaClOSArch os_arch = kNaClOSArchMax;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   os_arch = kNaClLinux32;
-#elif BUILDFLAG(IS_MAC)
-  os_arch = kNaClMac32;
-#elif BUILDFLAG(IS_WIN)
-  os_arch = kNaClWin32;
 #endif
 
   if (sandbox_isa == "x86-64")

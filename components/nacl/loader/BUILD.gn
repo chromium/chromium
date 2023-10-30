@@ -46,14 +46,6 @@ if (current_cpu != "arm64") {
       "//services/service_manager/public/cpp",
     ]
 
-    if (is_win) {
-      sources += [ "nacl_main_platform_delegate_win.cc" ]
-    }
-
-    if (is_mac) {
-      sources += [ "nacl_main_platform_delegate_mac.mm" ]
-    }
-
     if (is_linux || is_chromeos) {
       sources += [ "nacl_main_platform_delegate_linux.cc" ]
     }
