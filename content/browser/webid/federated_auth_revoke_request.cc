@@ -76,6 +76,14 @@ void FederatedAuthRevokeRequest::SetCallbackAndStart(
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
   callback_ = std::move(callback);
 
+  url::Origin config_origin = url::Origin::Create(options_->config->config_url);
+  if (!network::IsOriginPotentiallyTrustworthy(config_origin)) {
+    Complete(RevokeStatus::kError,
+             RevokeStatusForMetrics::kIdpNotPotentiallyTrustworthy,
+             /*should_delay_callback=*/false);
+    return;
+  }
+
   FederatedApiPermissionStatus permission_status =
       api_permission_delegate->GetApiPermissionStatus(embedding_origin_);
 
@@ -107,7 +115,6 @@ void FederatedAuthRevokeRequest::SetCallbackAndStart(
              /*should_delay_callback=*/true);
     return;
   }
-  url::Origin config_origin = url::Origin::Create(options_->config->config_url);
   // Reject if we know that there are no sharing permissions with the given IdP.
   if (!permission_delegate_->HasSharingPermission(
           origin_, embedding_origin_, config_origin, absl::nullopt)) {

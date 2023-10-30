@@ -188,14 +188,20 @@ ScriptPromise IdentityCredential::revoke(
     return promise;
   }
 
+  KURL provider_url(options->configURL());
+  if (!provider_url.IsValid()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "configURL is invalid"));
+    return promise;
+  }
+
   auto* auth_request =
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
 
   ContentSecurityPolicy* policy =
       resolver->GetExecutionContext()
           ->GetContentSecurityPolicyForCurrentWorld();
-  if (IsRejectingPromiseDueToCSP(policy, resolver,
-                                 KURL(options->configURL()))) {
+  if (IsRejectingPromiseDueToCSP(policy, resolver, provider_url)) {
     return promise;
   }
 

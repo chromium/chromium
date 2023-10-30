@@ -132,8 +132,9 @@ enum class FedCmRevokeStatus {
   kWellKnownTooBig,
   kWellKnownInvalidContentType,
   kConfigInvalidContentType,
+  kIdpNotPotentiallyTrustworthy,
 
-  kMaxValue = kConfigInvalidContentType
+  kMaxValue = kIdpNotPotentiallyTrustworthy
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

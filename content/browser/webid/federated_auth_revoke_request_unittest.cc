@@ -65,6 +65,7 @@ struct Config {
   std::vector<AccountConfig> accounts;
   FetchStatus config_fetch_status;
   FetchStatus accounts_fetch_status;
+  std::string config_url;
 };
 
 Config kValidConfig = {
@@ -72,7 +73,8 @@ Config kValidConfig = {
     {{"account1", /*login_state=*/absl::nullopt,
       /*was_granted_sharing_permission=*/true}},
     /*config_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
-    /*accounts_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK}};
+    /*accounts_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
+    kProviderUrl};
 
 // Helper class for receiving the Revoke method callback.
 class RevokeRequestCallbackHelper {
@@ -124,7 +126,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     has_fetched_well_known_ = true;
     FetchStatus fetch_status = {ParseStatus::kSuccess, net::HTTP_OK};
     IdpNetworkRequestManager::WellKnown well_known;
-    std::set<GURL> well_known_urls = {GURL(kProviderUrl)};
+    std::set<GURL> well_known_urls = {GURL(config_.config_url)};
     well_known.provider_urls = std::move(well_known_urls);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -143,7 +145,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     endpoints.revoke = GURL(kRevokeEndpoint);
 
     IdentityProviderMetadata idp_metadata;
-    idp_metadata.config_url = GURL(kProviderUrl);
+    idp_metadata.config_url = GURL(config_.config_url);
     idp_metadata.idp_login_url = GURL(kLoginUrl);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -202,9 +204,6 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
 
     api_permission_delegate_ = std::make_unique<TestApiPermissionDelegate>();
     permission_delegate_ = std::make_unique<TestPermissionDelegate>();
-    metrics_ = std::make_unique<FedCmMetrics>(
-        GURL(kProviderUrl), main_test_rfh()->GetPageUkmSourceId(),
-        /*session_id=*/1, /*is_disabled=*/false);
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
@@ -216,10 +215,14 @@ class FederatedAuthRevokeRequestTest : public RenderViewHostImplTestHarness {
         std::make_unique<TestIdpNetworkRequestManager>(config);
     network_manager_ = network_manager.get();
 
+    metrics_ = std::make_unique<FedCmMetrics>(
+        GURL(config.config_url), main_test_rfh()->GetPageUkmSourceId(),
+        /*session_id=*/1, /*is_disabled=*/false);
+
     blink::mojom::IdentityCredentialRevokeOptionsPtr options =
         blink::mojom::IdentityCredentialRevokeOptions::New();
     options->config = blink::mojom::IdentityProviderConfig::New();
-    options->config->config_url = GURL(kProviderUrl);
+    options->config->config_url = GURL(config.config_url);
     options->config->client_id = kClientId;
     options->account_hint = "accountHint";
 
@@ -283,6 +286,18 @@ TEST_F(FederatedAuthRevokeRequestTest, Success) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Revoke2",
                                        RevokeStatusForMetrics::kSuccess, 1);
   ExpectRevokeStatusUKM(RevokeStatusForMetrics::kSuccess,
+                        FedCmEntry::kEntryName);
+}
+
+TEST_F(FederatedAuthRevokeRequestTest, NotTrustworthyIdP) {
+  Config config = kValidConfig;
+  config.config_url = "http://idp.example/fedcm.json";
+  RunRevokeTest(config, RevokeStatus::kError);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.Status.Revoke2",
+      RevokeStatusForMetrics::kIdpNotPotentiallyTrustworthy, 1);
+  ExpectRevokeStatusUKM(RevokeStatusForMetrics::kIdpNotPotentiallyTrustworthy,
                         FedCmEntry::kEntryName);
 }
 

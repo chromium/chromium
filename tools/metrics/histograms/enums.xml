@@ -44967,6 +44967,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="16" label="WellKnownTooBig"/>
   <int value="17" label="WellKnownInvalidContentType"/>
   <int value="18" label="ConfigInvalidContentType"/>
+  <int value="19" label="IdpNotPotentiallyTrustworthy"/>
 </enum>
 
 <enum name="FedCmRpContext">
