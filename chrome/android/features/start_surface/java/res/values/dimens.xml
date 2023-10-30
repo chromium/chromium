@@ -22,7 +22,7 @@ found in the LICENSE file.
     <dimen name="home_surface_search_box_background_radius">100dp</dimen>
 
     <!-- Single Tab module on phones -->
-    <dimen name="single_tab_module_lateral_margin">20dp</dimen>
+    <dimen name="single_tab_module_lateral_margin">@dimen/mvt_container_lateral_margin_polish</dimen>
     <dimen name="single_tab_module_padding_top">16dp</dimen>
     <dimen name="single_tab_module_padding_bottom">20dp</dimen>
     <dimen name="single_tab_module_tab_thumbnail_size">106dp</dimen>
