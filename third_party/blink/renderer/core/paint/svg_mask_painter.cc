@@ -142,17 +142,7 @@ PaintRecord SVGMaskPainter::PaintResource(SVGResource* mask_resource,
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording();
   canvas->concat(AffineTransformToSkM44(origin * content_transformation));
-  bool needs_luminance_layer =
-      masker->StyleRef().MaskType() == EMaskType::kLuminance;
-  if (needs_luminance_layer) {
-    cc::PaintFlags flags;
-    flags.setColorFilter(cc::ColorFilter::MakeLuma());
-    canvas->saveLayer(flags);
-  }
   canvas->drawPicture(std::move(record));
-  if (needs_luminance_layer) {
-    canvas->restore();
-  }
   return recorder.finishRecordingAsPicture();
 }
 
@@ -165,6 +155,15 @@ gfx::RectF SVGMaskPainter::ResourceBounds(SVGResource* mask_resource,
     return gfx::RectF();
   }
   return masker->ResourceBoundingBox(reference_box, zoom);
+}
+
+EMaskType SVGMaskPainter::MaskType(SVGResource* mask_resource,
+                                   SVGResourceClient& client) {
+  auto* masker = ResolveElementReference(mask_resource, client);
+  if (!masker) {
+    return EMaskType::kAlpha;
+  }
+  return masker->StyleRef().MaskType();
 }
 
 }  // namespace blink

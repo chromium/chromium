@@ -20,6 +20,8 @@ class LayoutObject;
 class SVGResource;
 class SVGResourceClient;
 
+enum class EMaskType : uint8_t;
+
 class SVGMaskPainter {
   STATIC_ONLY(SVGMaskPainter);
 
@@ -35,6 +37,8 @@ class SVGMaskPainter {
                                    SVGResourceClient& client,
                                    const gfx::RectF& reference_box,
                                    float zoom);
+  static EMaskType MaskType(SVGResource* mask_resource,
+                            SVGResourceClient& client);
 };
 
 }  // namespace blink

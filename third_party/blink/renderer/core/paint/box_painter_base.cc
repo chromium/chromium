@@ -1080,6 +1080,38 @@ bool ShouldApplyBlendOperation(const BoxPainterBase::FillLayerInfo& info,
   return !info.is_bottom_layer || layer.GetType() != EFillLayerType::kMask;
 }
 
+bool NeedsMaskLuminanceLayer(const FillLayer& layer, StyleImage* image) {
+  if (layer.GetType() != EFillLayerType::kMask) {
+    return false;
+  }
+  if (layer.MaskMode() == EFillMaskMode::kLuminance) {
+    return true;
+  }
+  if (layer.MaskMode() == EFillMaskMode::kMatchSource) {
+    if (image->IsSVGMaskReference()) {
+      const auto& svg_reference = To<StyleSVGMaskReferenceImage>(*image);
+      EMaskType type = SVGMaskPainter::MaskType(
+          svg_reference.GetSVGResource(), svg_reference.GetSVGResourceClient());
+      return type == EMaskType::kLuminance;
+    }
+  }
+  return false;
+}
+
+class ScopedMaskLuminanceLayer {
+  STACK_ALLOCATED();
+
+ public:
+  ScopedMaskLuminanceLayer(GraphicsContext& context, SkBlendMode composite_op)
+      : context_(context) {
+    context.BeginLayer(cc::ColorFilter::MakeLuma(), &composite_op);
+  }
+  ~ScopedMaskLuminanceLayer() { context_.EndLayer(); }
+
+ private:
+  GraphicsContext& context_;
+};
+
 scoped_refptr<Image> UpdateGeometryAndGetImageForLayer(
     const PaintInfo& paint_info,
     const ComputedStyle& style,
@@ -1158,6 +1190,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   scoped_refptr<Image> image;
   SkBlendMode composite_op = SkBlendMode::kSrcOver;
   absl::optional<ScopedImageRenderingSettings> image_rendering_settings_context;
+  absl::optional<ScopedMaskLuminanceLayer> mask_luminance_scope;
   if (fill_layer_info.should_paint_image) {
     image = UpdateGeometryAndGetImageForLayer(paint_info, style_, bg_layer,
                                               fill_layer_info.image,
@@ -1169,6 +1202,13 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
     if (ShouldApplyBlendOperation(fill_layer_info, bg_layer)) {
       composite_op = WebCoreCompositeToSkiaComposite(bg_layer.Composite(),
                                                      bg_layer.GetBlendMode());
+    }
+
+    if (NeedsMaskLuminanceLayer(bg_layer, fill_layer_info.image)) {
+      mask_luminance_scope.emplace(context, composite_op);
+      // The mask luminance layer will apply `composite_op`, so reset it to
+      // avoid applying it twice.
+      composite_op = SkBlendMode::kSrcOver;
     }
   }
 

@@ -513,13 +513,6 @@ crbug.com/1496473 external/wpt/css/css-masking/mask-image/mask-image-3i.html [ F
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-003.html [ Failure ]
 crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSpaceOnUse-004.html [ Failure ]
 
-# Need to support mask-mode.
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-a.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-b.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-c.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-d.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-mode-to-mask-type.html [ Failure ]
-
 # CSS clip-path: shape() not implemented
 crbug.com/1308431 [ Win11 ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Failure ]
 crbug.com/1308431 [ Win ] external/wpt/css/css-masking/parsing/clip-path-shape-parsing.html [ Failure ]
