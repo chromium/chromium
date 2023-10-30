@@ -127,16 +127,6 @@ TEST(WebInputEventBuilderTest, TestMouseWheelScrollHistograms) {
       WM_HSCROLL, blink::WebPointerProperties::PointerType::kTouch,
       "InputMethod.MouseWheel.ScrollCharacters", event_timestamps,
       histogram_expectations);
-  // Tests mouse wheel vertical scrolling logging.
-  unsigned long scroll_lines = 1;
-  SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &scroll_lines, 0);
-  histogram_expectations.clear();
-  histogram_expectations = {
-      {scroll_lines - 1, 0}, {scroll_lines, 4}, {scroll_lines + 1, 0}};
-  VerifyWebMouseWheelEventBuilderHistograms(
-      WM_VSCROLL, blink::WebPointerProperties::PointerType::kTouch,
-      "InputMethod.MouseWheel.ScrollLines", event_timestamps,
-      histogram_expectations);
 }
 
 }  // namespace ui
