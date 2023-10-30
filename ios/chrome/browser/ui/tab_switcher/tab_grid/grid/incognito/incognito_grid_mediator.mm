@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator_delegate.h"
@@ -38,7 +39,8 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
 
 }  // namespace
 
-@interface IncognitoGridMediator () <PrefObserverDelegate>
+@interface IncognitoGridMediator () <IncognitoReauthObserver,
+                                     PrefObserverDelegate>
 @end
 
 @implementation IncognitoGridMediator {
@@ -48,6 +50,8 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   // YES if incognito is disabled.
   BOOL _incognitoDisabled;
+  // Whether this grid is currently selected.
+  BOOL _selected;
 }
 
 // TODO(crbug.com/1457146): Refactor the grid commands to have the same function
@@ -78,6 +82,7 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
+  _selected = selected;
   if (selected) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridSelectIncognitoPanel"));
@@ -119,6 +124,7 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
 - (void)disconnect {
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
+  [_reauthSceneAgent removeObserver:self];
   [super disconnect];
 }
 
@@ -127,14 +133,20 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
   // correct delegate.
   [self.toolbarsMutator setToolbarsButtonsDelegate:self];
 
+  BOOL authenticationRequired = self.reauthSceneAgent.authenticationRequired;
+
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];
-  toolbarsConfiguration.closeAllButton = !self.webStateList->empty();
-  toolbarsConfiguration.doneButton = YES;
-  toolbarsConfiguration.newTabButton = IsAddNewTabAllowedByPolicy(
-      self.browser->GetBrowserState()->GetPrefs(), YES);
+  toolbarsConfiguration.closeAllButton =
+      (!authenticationRequired && !self.webStateList->empty());
+  toolbarsConfiguration.doneButton = !authenticationRequired;
+  toolbarsConfiguration.newTabButton =
+      (!authenticationRequired &&
+       IsAddNewTabAllowedByPolicy(self.browser->GetBrowserState()->GetPrefs(),
+                                  YES));
   toolbarsConfiguration.searchButton = YES;
-  toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();
+  toolbarsConfiguration.selectTabsButton =
+      (!authenticationRequired && !self.webStateList->empty());
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
 
@@ -182,6 +194,24 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
   DCHECK(browser);
 
   return browser->GetBrowserState()->GetPrefs();
+}
+
+- (void)setReauthSceneAgent:(IncognitoReauthSceneAgent*)reauthSceneAgent {
+  if (_reauthSceneAgent == reauthSceneAgent) {
+    return;
+  }
+  [_reauthSceneAgent removeObserver:self];
+  _reauthSceneAgent = reauthSceneAgent;
+  [_reauthSceneAgent addObserver:self];
+}
+
+#pragma mark - IncognitoReauthObserver
+
+- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
+    didUpdateAuthenticationRequirement:(BOOL)isRequired {
+  if (_selected) {
+    [self configureToolbarsButtons];
+  }
 }
 
 #pragma mark - Private
