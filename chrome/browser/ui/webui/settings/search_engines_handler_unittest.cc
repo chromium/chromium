@@ -13,8 +13,11 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/country_codes/country_codes.h"
+#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,14 +28,21 @@
 namespace settings {
 namespace {
 TemplateURL* AddSearchEngine(TemplateURLService* template_url_service,
-                             const std::string& name) {
+                             const std::string& name,
+                             int prepopulated_id,
+                             absl::optional<std::string> url) {
   TemplateURLData default_search_engine;
   default_search_engine.SetShortName(base::UTF8ToUTF16(name));
-  default_search_engine.SetURL("http://" + name +
-                               "foo.com/url?bar={searchTerms}");
+  default_search_engine.prepopulate_id = prepopulated_id;
+
+  if (url.has_value()) {
+    default_search_engine.SetURL(*url);
+  } else {
+    default_search_engine.SetURL("http://" + name +
+                                 "foo.com/url?bar={searchTerms}");
+  }
   default_search_engine.alternate_urls.push_back("http://" + name +
                                                  "/alt#quux={searchTerms}");
-
   return template_url_service->Add(
       std::make_unique<TemplateURL>(default_search_engine));
 }
@@ -53,7 +63,14 @@ class SearchEnginesHandlerTestBase : public testing::Test {
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
     TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(profile());
-    AddSearchEngine(template_url_service, "foo.com");
+    TemplateURL* default_engine =
+        AddSearchEngine(template_url_service, "foo.com", /*prepopulated_id=*/0,
+                        /*url=*/absl::nullopt);
+    AddSearchEngine(template_url_service, "bing",
+                    TemplateURLPrepopulateData::bing.id,
+                    TemplateURLPrepopulateData::bing.search_url);
+
+    template_url_service->SetUserSelectedDefaultSearchProvider(default_engine);
 
     handler_ = std::make_unique<SearchEnginesHandler>(profile_);
     web_ui_.set_web_contents(web_contents_factory_.CreateWebContents(profile_));
@@ -90,6 +107,20 @@ class SearchEnginesHandlerParametrizedTest
     }
   }
 
+  void SetUp() override {
+    SearchEnginesHandlerTestBase::SetUp();
+
+    if (WithSearchEnginesChoiceEnabled()) {
+      PrefService* pref_service = profile()->GetPrefs();
+      // The search engine choice feature is only enabled for countries in the
+      // EEA region.
+      const int kBelgiumCountryId =
+          country_codes::CountryCharsToCountryID('B', 'E');
+      pref_service->SetInteger(country_codes::kCountryIDAtInstall,
+                               kBelgiumCountryId);
+    }
+  }
+
   bool WithSearchEnginesChoiceEnabled() const { return GetParam(); }
 };
 
@@ -106,14 +137,15 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
   EXPECT_EQ(0U, web_ui()->call_data().size());
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile());
-  TemplateURL* template_url = AddSearchEngine(template_url_service, "bar.com");
+  TemplateURL* template_url =
+      AddSearchEngine(template_url_service, "bar.com", /*prepopulated_id=*/0,
+                      /*url=*/absl::nullopt);
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
   EXPECT_EQ("search-engines-changed", call_data.arg1()->GetString());
 
-  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
   template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
   EXPECT_EQ(2U, web_ui()->call_data().size());
   const content::TestWebUI::CallData& second_call_data =
@@ -135,6 +167,11 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
       search_engines::kDefaultSearchEngineChoiceLocationHistogram,
       search_engines::ChoiceMadeLocation::kSearchEngineSettings, 1);
 
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_BING,
+      WithSearchEnginesChoiceEnabled() ? 1 : 0);
+
   base::Value::List second_call_args;
   // Search engine model id.
   second_call_args.Append(1);
@@ -145,6 +182,11 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
   histogram_tester().ExpectBucketCount(
       search_engines::kDefaultSearchEngineChoiceLocationHistogram,
       search_engines::ChoiceMadeLocation::kSearchSettings, 1);
+
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_BING,
+      WithSearchEnginesChoiceEnabled() ? 1 : 0);
 }
 
 class SearchEnginesHandlerTestWithSearchEngineChoiceEnabled
@@ -152,6 +194,18 @@ class SearchEnginesHandlerTestWithSearchEngineChoiceEnabled
  public:
   SearchEnginesHandlerTestWithSearchEngineChoiceEnabled() {
     feature_list()->InitAndEnableFeature(switches::kSearchEngineChoice);
+  }
+
+  void SetUp() override {
+    SearchEnginesHandlerTestBase::SetUp();
+
+    PrefService* pref_service = profile()->GetPrefs();
+    // The search engine choice feature is only enabled for countries in the
+    // EEA region.
+    const int kBelgiumCountryId =
+        country_codes::CountryCharsToCountryID('B', 'E');
+    pref_service->SetInteger(country_codes::kCountryIDAtInstall,
+                             kBelgiumCountryId);
   }
 };
 
@@ -182,5 +236,36 @@ TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
   histogram_tester().ExpectUniqueSample(
       search_engines::kDefaultSearchEngineChoiceLocationHistogram,
       search_engines::ChoiceMadeLocation::kSearchEngineSettings, 1);
+}
+
+TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
+       RecordingSearchEngineShouldBeDoneAfterSettingDefault) {
+  PrefService* pref_service = profile()->GetPrefs();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  // The search engine choice feature is only enabled for countries in the EEA
+  // region.
+  const int kBelgiumCountryId =
+      country_codes::CountryCharsToCountryID('B', 'E');
+  pref_service->SetInteger(country_codes::kCountryIDAtInstall,
+                           kBelgiumCountryId);
+
+  const TemplateURL* default_search_engine =
+      template_url_service->GetDefaultSearchProvider();
+  SearchEngineType default_search_engine_type =
+      default_search_engine->GetEngineType(
+          template_url_service->search_terms_data());
+
+  CHECK_NE(default_search_engine_type, SearchEngineType::SEARCH_ENGINE_BING);
+  base::Value::List args;
+  // Search engine model id.
+  args.Append(1);
+  args.Append(static_cast<int>(
+      search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+  web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
+
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_BING, 1);
 }
 }  // namespace settings

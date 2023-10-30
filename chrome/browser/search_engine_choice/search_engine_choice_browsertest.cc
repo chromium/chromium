@@ -39,9 +39,11 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/webapps/common/web_app_id.h"
@@ -234,6 +236,10 @@ class SearchEngineChoiceBrowserTest : public InProcessBrowserTest {
     histogram_tester_.ExpectBucketCount(
         search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
         condition, count);
+  }
+
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
   }
 
  private:
@@ -495,6 +501,9 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   // Set the pref and simulate a dialog closing event.
   service->NotifyChoiceMade(/*prepopulate_id=*/1, EntryPoint::kDialog);
   EXPECT_FALSE(service->IsShowingDialog(browser()));
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 
   // Test that the dialog doesn't get shown again after opening the browser.
   QuitAndRestoreBrowser(browser());
@@ -634,4 +643,33 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
       search_engines::SearchEngineChoiceScreenConditions::
           kUnsupportedBrowserType,
       2);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
+                       RecordingSearchEngineIsDoneAfterSettingDefault) {
+  Profile* profile = browser()->profile();
+  auto* service = static_cast<MockSearchEngineChoiceService*>(
+      SearchEngineChoiceServiceFactory::GetForProfile(profile));
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+
+  // Navigate to a URL to display the dialog.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_TRUE(service->IsShowingDialog(browser()));
+
+  const TemplateURL* default_search_engine =
+      template_url_service->GetDefaultSearchProvider();
+  const int default_search_engine_id = default_search_engine->prepopulate_id();
+  const int kBingId = 3;
+
+  EXPECT_NE(default_search_engine_id, kBingId);
+  // Set the pref and simulate a dialog closing event.
+  service->NotifyChoiceMade(kBingId, EntryPoint::kDialog);
+  EXPECT_FALSE(service->IsShowingDialog(browser()));
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_BING, 1);
 }

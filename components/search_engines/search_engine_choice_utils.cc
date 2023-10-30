@@ -103,6 +103,16 @@ const base::flat_set<int> GetEeaChoiceCountries() {
   });
 }
 
+SearchEngineType GetDefaultSearchEngineType(
+    TemplateURLService& template_url_service) {
+  const TemplateURL* default_search_engine =
+      template_url_service.GetDefaultSearchProvider();
+
+  return default_search_engine ? default_search_engine->GetEngineType(
+                                     template_url_service.search_terms_data())
+                               : SEARCH_ENGINE_OTHER;
+}
+
 }  // namespace
 
 const char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
@@ -116,6 +126,9 @@ const char kSearchEngineChoiceScreenEventsHistogram[] =
 
 const char kDefaultSearchEngineChoiceLocationHistogram[] =
     "Search.DefaultSearchEngineChoiceLocation";
+
+const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
+    "Search.ChoiceScreenDefaultSearchEngineType";
 
 // Returns whether the choice screen flag is generally enabled for the specific
 // user flow.
@@ -236,8 +249,15 @@ void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
       search_engines::kSearchEngineChoiceScreenEventsHistogram, event);
 }
 
+void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type) {
+  base::UmaHistogramEnumeration(
+      kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram, engine_type,
+      SEARCH_ENGINE_MAX);
+}
+
 void RecordChoiceMade(PrefService* profile_prefs,
-                      ChoiceMadeLocation choice_location) {
+                      ChoiceMadeLocation choice_location,
+                      TemplateURLService* template_url_service) {
   // Record the histogram even if the feature is not enabled.
   base::UmaHistogramEnumeration(
       search_engines::kDefaultSearchEngineChoiceLocationHistogram,
@@ -257,6 +277,13 @@ void RecordChoiceMade(PrefService* profile_prefs,
   if (profile_prefs->HasPrefPath(
           prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
     return;
+  }
+
+  // TODO(b/307713013): Remove the check for `template_url_service` when the
+  // function is used on the iOS side.
+  if (template_url_service) {
+    search_engines::RecordChoiceScreenDefaultSearchProviderType(
+        GetDefaultSearchEngineType(*template_url_service));
   }
 
   profile_prefs->SetInt64(

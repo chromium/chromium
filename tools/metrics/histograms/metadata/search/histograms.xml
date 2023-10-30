@@ -120,6 +120,19 @@ chromium-metrics-reviews@google.com.
   <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
+<histogram name="Search.ChoiceScreenDefaultSearchEngineType"
+    enum="OmniboxSearchEngineType" expires_after="2024-03-31">
+  <owner>dgn@chromium.org</owner>
+  <owner>jyammine@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records the type of the default search engine that was chosen by the user.
+    The choice is recorded when made in the search engine choice screen or in
+    the settings page. The enum is shared with
+    Search.DefaultSearchProviderType2.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceScreenEvents"
     enum="SearchEngineChoiceScreenEvents" expires_after="2024-03-31">
   <owner>samarchehade@chromium.org</owner>

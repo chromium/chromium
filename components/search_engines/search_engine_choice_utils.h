@@ -6,6 +6,7 @@
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_UTILS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "components/search_engines/search_engine_type.h"
 
 namespace policy {
 class PolicyService;
@@ -20,6 +21,7 @@ extern const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenNavigationConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenEventsHistogram[];
 extern const char kDefaultSearchEngineChoiceLocationHistogram[];
+extern const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -125,9 +127,14 @@ int GetSearchEngineChoiceCountryId(PrefService* profile_prefs);
 bool IsEeaChoiceCountry(int country_id);
 
 // Records that the choice was made by settings the timestamp if applicable.
-// Records the location from which the choice was made.
+// Records the location from which the choice was made and the search engine
+// that was chosen.
+// The function should be called after the default search engine has been set.
+// TODO(b/307713013): Remove the default value for `template_url_service` once
+// the function is used on the iOS side.
 void RecordChoiceMade(PrefService* profile_prefs,
-                      ChoiceMadeLocation choice_location);
+                      ChoiceMadeLocation choice_location,
+                      TemplateURLService* template_url_service = nullptr);
 
 // Records the specified choice screen condition at profile initialization.
 void RecordChoiceScreenProfileInitCondition(
@@ -135,6 +142,11 @@ void RecordChoiceScreenProfileInitCondition(
 
 // Records the specified choice screen event.
 void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);
+
+// Records the type of the default search engine that was chosen by the user
+// in the search engine choice screen or in the settings page.
+void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type);
+
 }  // namespace search_engines
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_UTILS_H_

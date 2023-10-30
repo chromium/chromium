@@ -15,6 +15,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
@@ -222,7 +224,8 @@ TEST_F(SearchEngineChoiceUtilsTest,
       search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
 
   search_engines::RecordChoiceMade(
-      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen);
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
+      &template_url_service());
   VerifyEligibleButWillNotShowChoiceScreen(
       policy_service(),
       /*profile_properties=*/
@@ -254,7 +257,8 @@ TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenWithForceCommandLineFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kForceSearchEngineChoiceScreen);
   search_engines::RecordChoiceMade(
-      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen);
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
+      &template_url_service());
 
   VerifyWillShowChoiceScreen(
       policy_service(), /*profile_properties=*/
@@ -368,8 +372,19 @@ TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
       country_codes::CountryCharsToCountryID('U', 'S');
   pref_service()->SetInteger(country_codes::kCountryIDAtInstall,
                              kUnitedStatesCountryId);
+
+  const TemplateURL* default_search_engine =
+      template_url_service().GetDefaultSearchProvider();
+  EXPECT_EQ(default_search_engine->prepopulate_id(),
+            TemplateURLPrepopulateData::google.id);
+
   search_engines::RecordChoiceMade(
-      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen);
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
+      &template_url_service());
+
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
   EXPECT_FALSE(pref_service()->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
 
@@ -385,7 +400,11 @@ TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
 
   // Test that the choice is recorded if it wasn't previously done.
   search_engines::RecordChoiceMade(
-      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen);
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
+      &template_url_service());
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 
   EXPECT_NEAR(pref_service()->GetInt64(
                   prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
@@ -404,7 +423,8 @@ TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
 
   // Test that the choice is not recorded if it was previously done.
   search_engines::RecordChoiceMade(
-      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen);
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
+      &template_url_service());
   EXPECT_EQ(pref_service()->GetInt64(
                 prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
             kModifiedTimestamp);
@@ -412,4 +432,7 @@ TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
   histogram_tester_.ExpectUniqueSample(
       search_engines::kDefaultSearchEngineChoiceLocationHistogram,
       search_engines::ChoiceMadeLocation::kChoiceScreen, 3);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 }

@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
 #include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"
@@ -285,20 +286,25 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
     return;
   }
 
+  list_controller_.MakeDefaultTemplateURL(index);
+
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   Profile& profile = CHECK_DEREF(Profile::FromWebUI(web_ui()));
-  search_engines::ChoiceMadeLocation kChoiceMadeLocation =
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(&profile);
+  search_engines::ChoiceMadeLocation choice_made_location =
       static_cast<search_engines::ChoiceMadeLocation>(args[1].GetInt());
 
-  CHECK(kChoiceMadeLocation ==
+  CHECK(choice_made_location ==
             search_engines::ChoiceMadeLocation::kSearchSettings ||
-        kChoiceMadeLocation ==
+        choice_made_location ==
             search_engines::ChoiceMadeLocation::kSearchEngineSettings);
-
-  search_engines::RecordChoiceMade(profile.GetPrefs(), kChoiceMadeLocation);
+  // `RecordChoiceMade` should always be called after setting the default
+  // search engine.
+  search_engines::RecordChoiceMade(profile.GetPrefs(), choice_made_location,
+                                   template_url_service);
 #endif
 
-  list_controller_.MakeDefaultTemplateURL(index);
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
 }
 

@@ -97,10 +97,7 @@ SearchEngineChoiceService::SearchEngineChoiceService(
 
 void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id,
                                                  EntryPoint entry_point) {
-  // Sets the timestamp and search engine choice preferences.
   PrefService* pref_service = profile_->GetPrefs();
-  RecordChoiceMade(pref_service,
-                   search_engines::ChoiceMadeLocation::kChoiceScreen);
 
   // A custom search engine would have a `prepopulate_id` of 0.
   // Having a custom search engine displayed on the choice screen would mean
@@ -137,6 +134,12 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id,
     search_engines::RecordChoiceScreenEvent(
         search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet);
   }
+
+  // `RecordChoiceMade` should always be called after setting the default
+  // search engine.
+  RecordChoiceMade(pref_service,
+                   search_engines::ChoiceMadeLocation::kChoiceScreen,
+                   &template_url_service_.get());
 }
 
 void SearchEngineChoiceService::NotifyDialogOpened(
