@@ -72,10 +72,6 @@ id<GREYMatcher> SettingsSignInRowMatcher() {
                     grey_sufficientlyVisible(), nil);
 }
 
-id<GREYMatcher> HistoryOptInPrimaryButtonMatcher() {
-  return SigninScreenPromoPrimaryButtonMatcher();
-}
-
 id<GREYMatcher> HistoryOptInPromoMatcher() {
   return grey_allOf(
       grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier),

@@ -52,10 +52,6 @@ id<GREYMatcher> SettingsSignInRowMatcher();
 // Matcher for the history opt-in screen.
 id<GREYMatcher> HistoryOptInPromoMatcher();
 
-// Matcher for the primary button ("Yes, I'm In") in the history opt-in screen.
-// DEPRECATED, please use `SigninScreenPromoPrimaryButtonMatcher()`.
-id<GREYMatcher> HistoryOptInPrimaryButtonMatcher();
-
 // Action for searching an UI element in the history opt-in screen..
 id<GREYAction> HistoryOptInScrollDown();
 
