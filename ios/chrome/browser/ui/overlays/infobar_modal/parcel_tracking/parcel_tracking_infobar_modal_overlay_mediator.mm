@@ -63,8 +63,7 @@
             withTrackingStatus:YES];
       break;
     case ParcelTrackingStep::kAskedToTrackPackage:
-      // kAskedToTrackPackage banner does not present a modal.
-      NOTREACHED();
+      [_consumer setParcelList:delegate->GetParcelList() withTrackingStatus:NO];
       break;
   }
 }

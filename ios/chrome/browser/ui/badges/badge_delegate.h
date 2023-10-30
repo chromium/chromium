@@ -32,6 +32,9 @@
 // Action when the overflow badge is tapped.
 - (void)overflowBadgeButtonTapped:(id)sender;
 
+// Action when the parcel tracking badge is tapped.
+- (void)parcelTrackingBadgeButtonTapped:(id)sender;
+
 // Show the infobar modal for the respective `badgeType` when the new overflow
 // menu is tapped.
 - (void)showModalForBadgeType:(BadgeType)badgeType;

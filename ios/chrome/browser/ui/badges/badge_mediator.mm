@@ -288,6 +288,13 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   [self updateConsumerReadStatus];
 }
 
+- (void)parcelTrackingBadgeButtonTapped:(id)sender {
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
+  DCHECK_EQ(badgeButton.badgeType, kBadgeTypeParcelTracking);
+
+  [self handleTappedBadgeButton:badgeButton];
+}
+
 - (void)showModalForBadgeType:(BadgeType)badgeType {
   [self addModalRequestForInfobarType:InfobarTypeForBadgeType(badgeType)];
 }
