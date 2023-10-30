@@ -39,6 +39,11 @@ class DocumentsTable {
   static bool Remove(SqlDatabase* db, const base::FilePath& file_path);
   static bool GetAllFiles(SqlDatabase* db,
                           std::vector<base::FilePath>& documents);
+
+  // Find all the files in a directory.
+  static bool SearchByDirectory(SqlDatabase* db,
+                                const base::FilePath& directory,
+                                std::vector<base::FilePath>& matched_paths);
 };
 
 }  // namespace app_list

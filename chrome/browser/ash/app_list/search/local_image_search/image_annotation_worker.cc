@@ -132,6 +132,7 @@ bool IsSupportedImage(const base::FilePath& path) {
 
 bool IsPathExcluded(const base::FilePath& path,
                     const std::vector<base::FilePath>& excluded_paths) {
+  DVLOG(1) << "IsPathExcluded: " << path;
   return std::any_of(excluded_paths.begin(), excluded_paths.end(),
                      [&path](const base::FilePath& prefix) {
                        return base::StartsWith(path.value(), prefix.value(),
@@ -216,31 +217,7 @@ void ImageAnnotationWorker::OnDlcInstalled() {
         on_file_change_callback_);
   }
 
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::FilePath root_path)
-              -> std::unique_ptr<base::FileEnumerator> {
-            DVLOG(1) << "Commencing start up indexing. ";
-            return std::make_unique<base::FileEnumerator>(
-                root_path,
-                /*recursive=*/true, base::FileEnumerator::FILES,
-                // There is an image extension test down the pipe.
-                "*.[j,p,J,P,w,W][p,n,P,N,e,E]*[g,G,p,P]",
-                base::FileEnumerator::FolderSearchPolicy::ALL);
-          },
-          root_path_),
-      base::BindOnce(
-          [](base::FilePathWatcher::Callback on_file_change_callback,
-             std::unique_ptr<base::FileEnumerator> file_enumerator) {
-            for (base::FilePath file = file_enumerator->Next(); !file.empty();
-                 file = file_enumerator->Next()) {
-              DVLOG(1) << "Found files: " << file;
-              on_file_change_callback.Run(std::move(file), /*error=*/false);
-            }
-          },
-          on_file_change_callback_));
-
+  OnFileChange(root_path_, /*error=*/false);
   FindAndRemoveDeletedFiles(annotation_storage_->GetAllFiles());
 }
 
@@ -248,37 +225,87 @@ void ImageAnnotationWorker::OnFileChange(const base::FilePath& path,
                                          bool error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "OnFileChange: " << path;
-  if (error || DirectoryExists(path) || !IsImage(path) ||
-      IsPathExcluded(path, excluded_paths_)) {
+  if (error || IsPathExcluded(path, excluded_paths_)) {
+    DVLOG(1) << "Skipping.";
     return;
   }
 
   DVLOG(1) << "Adding to a queue";
-  images_being_processed_.push(std::move(path));
-  if (images_being_processed_.size() == 1) {
-    ProcessNextImage();
+  files_to_process_.push(std::move(path));
+  if (files_to_process_.size() == 1) {
+    return ProcessNextItem();
   }
+  return;
 }
 
-void ImageAnnotationWorker::ProcessNextImage() {
+void ImageAnnotationWorker::ProcessNextItem() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "ProcessNextImage";
-
-  if (images_being_processed_.empty()) {
+  if (files_to_process_.empty()) {
     DVLOG(1) << "The queue is empty.";
     image_content_annotator_.DisconnectAnnotator();
     optical_character_recognizer_.DisconnectAnnotator();
     return;
   }
 
-  base::FilePath image_path = images_being_processed_.front();
+  const base::FilePath path = files_to_process_.front();
+  DVLOG(1) << "ProcessNextItem " << path;
+  if (base::DirectoryExists(path)) {
+    return ProcessNextDirectory();
+  } else if (IsImage(path)) {
+    return ProcessNextImage();
+  } else if (!base::PathExists(path)) {
+    return RemoveOldDirectory();
+  } else {
+    files_to_process_.pop();
+    return ProcessNextItem();
+  }
+}
+
+void ImageAnnotationWorker::ProcessNextDirectory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::FilePath directory_path = files_to_process_.front();
+  DVLOG(1) << "ProcessNextDirectory " << directory_path;
+
+  // We need to re-index all the files in the directory.
+  auto file_enumerator = base::FileEnumerator(
+      directory_path,
+      /*recursive=*/false, base::FileEnumerator::NAMES_ONLY, "*",
+      base::FileEnumerator::FolderSearchPolicy::ALL);
+
+  for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
+       file_path = file_enumerator.Next()) {
+    DVLOG(1) << "Found file: " << file_path;
+    OnFileChange(std::move(file_path), /*error=*/false);
+  }
+  files_to_process_.pop();
+  return ProcessNextItem();
+}
+
+void ImageAnnotationWorker::RemoveOldDirectory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::FilePath directory_path = files_to_process_.front();
+  DVLOG(1) << "RemoveOldDirectory " << directory_path;
+
+  auto files = annotation_storage_->SearchByDirectory(directory_path);
+  for (const auto& file : files) {
+    OnFileChange(file, /*error=*/false);
+  }
+
+  files_to_process_.pop();
+  return ProcessNextItem();
+}
+
+void ImageAnnotationWorker::ProcessNextImage() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::FilePath image_path = files_to_process_.front();
+  DVLOG(1) << "ProcessNextImage " << image_path;
 
   auto file_info = std::make_unique<base::File::Info>();
   if (!base::GetFileInfo(image_path, file_info.get()) || file_info->size == 0 ||
       file_info->size > kMaxFileSizeBytes || !IsSupportedImage(image_path)) {
     annotation_storage_->Remove(image_path);
-    images_being_processed_.pop();
-    return ProcessNextImage();
+    files_to_process_.pop();
+    return ProcessNextItem();
   }
   DCHECK(file_info);
 
@@ -292,8 +319,8 @@ void ImageAnnotationWorker::ProcessNextImage() {
     // modified time. So skip inserting the image annotations if the file
     // has not changed since the last update.
     if (file_info->last_modified == stored_annotations.front().last_modified) {
-      images_being_processed_.pop();
-      return ProcessNextImage();
+      files_to_process_.pop();
+      return ProcessNextItem();
     }
   }
 
@@ -370,8 +397,8 @@ void ImageAnnotationWorker::OnPerformOcr(
 
   // OCR is the first in the pipeline.
   if (!use_ica_) {
-    images_being_processed_.pop();
-    ProcessNextImage();
+    files_to_process_.pop();
+    ProcessNextItem();
   }
 }
 
@@ -398,8 +425,8 @@ void ImageAnnotationWorker::OnPerformIca(
   }
 
   // ICA is the last in the pipeline.
-  images_being_processed_.pop();
-  ProcessNextImage();
+  files_to_process_.pop();
+  ProcessNextItem();
 }
 
 void ImageAnnotationWorker::FindAndRemoveDeletedFiles(
@@ -435,8 +462,8 @@ void ImageAnnotationWorker::RunFakeImageAnnotator(ImageInfo image_info) {
       image_info.path.BaseName().RemoveFinalExtension().value();
   image_info.annotations.insert(std::move(annotation));
   annotation_storage_->Insert(std::move(image_info));
-  images_being_processed_.pop();
-  ProcessNextImage();
+  files_to_process_.pop();
+  ProcessNextItem();
 }
 
 void ImageAnnotationWorker::TriggerOnFileChangeForTests(

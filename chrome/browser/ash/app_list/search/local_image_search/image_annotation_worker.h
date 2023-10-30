@@ -63,8 +63,17 @@ class ImageAnnotationWorker {
  private:
   void OnFileChange(const base::FilePath& path, bool error);
 
-  // Processes the next image from the `images_being_processed_`.
+  // Processes the next item from the `files_to_process_` queue.
+  void ProcessNextItem();
+
+  // Processes the next directory from the `files_to_process_` queue.
+  void ProcessNextDirectory();
+
+  // Processes the next image from the `files_to_process_` queue.
   void ProcessNextImage();
+
+  // Remove all the files from a deleted directory.
+  void RemoveOldDirectory();
 
   // Removes deleted images from the annotation storage.
   void FindAndRemoveDeletedFiles(const std::vector<base::FilePath> images);
@@ -106,7 +115,7 @@ class ImageAnnotationWorker {
   const bool use_file_watchers_;
   const bool use_ica_;
   const bool use_ocr_;
-  base::queue<base::FilePath> images_being_processed_;
+  base::queue<base::FilePath> files_to_process_;
 
   // Owned by this class.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

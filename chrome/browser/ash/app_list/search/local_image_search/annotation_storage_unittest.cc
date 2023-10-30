@@ -366,5 +366,53 @@ TEST_F(AnnotationStorageTest, SchemaMigration) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(AnnotationStorageTest, SearchByDirectory) {
+  storage_->Initialize();
+  task_environment_.RunUntilIdle();
+
+  ImageInfo document_image1({"test", "bar", "test1"},
+                            test_directory_.AppendASCII("document1.jpg"),
+                            base::Time::Now(), /*file_size=*/1);
+  ImageInfo foo_image(
+      {"test1"},
+      test_directory_.AppendASCII("New Folder").AppendASCII("foo.png"),
+      base::Time::Now(), 4);
+
+  storage_->Insert(document_image1);
+  storage_->Insert(foo_image);
+
+  EXPECT_THAT(
+      storage_->SearchByDirectory(test_directory_),
+      testing::ElementsAreArray({document_image1.path, foo_image.path}));
+
+  EXPECT_THAT(
+      storage_->SearchByDirectory(test_directory_.AppendASCII("New Folder")),
+      testing::ElementsAreArray({foo_image.path}));
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AnnotationStorageTest, GetAllFiles) {
+  storage_->Initialize();
+  task_environment_.RunUntilIdle();
+
+  ImageInfo document_image1({"test", "bar", "test1"},
+                            test_directory_.AppendASCII("document1.jpg"),
+                            base::Time::Now(), /*file_size=*/1);
+  ImageInfo foo_image(
+      {"test1"},
+      test_directory_.AppendASCII("New Folder").AppendASCII("foo.png"),
+      base::Time::Now(), 4);
+
+  storage_->Insert(document_image1);
+  storage_->Insert(foo_image);
+
+  EXPECT_THAT(
+      storage_->GetAllFiles(),
+      testing::ElementsAreArray({document_image1.path, foo_image.path}));
+
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace
 }  // namespace app_list

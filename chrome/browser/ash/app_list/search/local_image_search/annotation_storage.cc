@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -199,6 +200,21 @@ std::vector<base::FilePath> AnnotationStorage::GetAllFiles() {
   }
 
   return documents;
+}
+
+std::vector<base::FilePath> AnnotationStorage::SearchByDirectory(
+    const base::FilePath& directory) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "SearchByDirectory " << directory;
+
+  std::vector<base::FilePath> files;
+  if (!DocumentsTable::SearchByDirectory(sql_database_.get(), directory,
+                                         files)) {
+    LOG(ERROR) << "Failed to get file paths from the db.";
+    return {};
+  }
+
+  return files;
 }
 
 std::vector<ImageInfo> AnnotationStorage::FindImagePath(
