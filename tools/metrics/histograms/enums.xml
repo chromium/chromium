@@ -16098,6 +16098,16 @@ Called by update_protocol_commands_enum.py.-->
   <int value="6" label="Notification Action Click"/>
 </enum>
 
+<enum name="ChoiceMadeLocation">
+  <int value="0" label="Search settings page (Desktop only)"/>
+  <int value="1"
+      label="Manage search engines and site search page (desktop) OR search
+             engine settings screen (mobile)"/>
+  <int value="2"
+      label="Choice screen (rendered in dialog, profile picker, promo page
+             etc.., not accessed through settings)"/>
+</enum>
+
 <enum name="ChromeActivityType">
   <int value="0" label="Tabbed Chrome"/>
   <int value="1" label="Custom Tab"/>

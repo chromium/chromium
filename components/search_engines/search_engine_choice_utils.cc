@@ -114,6 +114,9 @@ const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[] =
 const char kSearchEngineChoiceScreenEventsHistogram[] =
     "Search.ChoiceScreenEvents";
 
+const char kDefaultSearchEngineChoiceLocationHistogram[] =
+    "Search.DefaultSearchEngineChoiceLocation";
+
 // Returns whether the choice screen flag is generally enabled for the specific
 // user flow.
 bool IsChoiceScreenFlagEnabled(ChoicePromo promo) {
@@ -235,6 +238,11 @@ void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
 
 void RecordChoiceMade(PrefService* profile_prefs,
                       ChoiceMadeLocation choice_location) {
+  // Record the histogram even if the feature is not enabled.
+  base::UmaHistogramEnumeration(
+      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
+      choice_location);
+
   if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
     return;
   }

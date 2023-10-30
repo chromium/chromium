@@ -19,6 +19,7 @@ namespace search_engines {
 extern const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenNavigationConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenEventsHistogram[];
+extern const char kDefaultSearchEngineChoiceLocationHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -81,7 +82,7 @@ enum class ChoicePromo {
   kFre = 2,
 };
 
-//  The location from which the search engine choice was made.
+//  The location from which the default search engine was set.
 //  These values are persisted to logs. Entries should not be renumbered and
 //  numeric values should never be reused.
 //  Must be kept in sync with the ChoiceMadeLocation enum in
@@ -95,6 +96,7 @@ enum class ChoiceMadeLocation {
   // The search engine choice dialog for existing users or the profile picker
   // for new users.
   kChoiceScreen = 2,
+  kMaxValue = kChoiceScreen,
 };
 
 // Whether the choice screen flag is generally enabled for the specific flow.
@@ -124,8 +126,6 @@ bool IsEeaChoiceCountry(int country_id);
 
 // Records that the choice was made by settings the timestamp if applicable.
 // Records the location from which the choice was made.
-// TODO(b/306580764): Use `choice_location` to record histograms of the location
-// where the choice was made from.
 void RecordChoiceMade(PrefService* profile_prefs,
                       ChoiceMadeLocation choice_location);
 

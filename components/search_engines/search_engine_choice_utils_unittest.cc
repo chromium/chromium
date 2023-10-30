@@ -373,6 +373,10 @@ TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
   EXPECT_FALSE(pref_service()->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
 
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
+      search_engines::ChoiceMadeLocation::kChoiceScreen, 1);
+
   // Revert to an EEA region country.
   const int kBelgiumCountryId =
       country_codes::CountryCharsToCountryID('B', 'E');
@@ -388,6 +392,10 @@ TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
               base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds(),
               /*abs_error=*/2);
 
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
+      search_engines::ChoiceMadeLocation::kChoiceScreen, 2);
+
   // Set the pref to 5 so that we can know if it gets modified.
   const int kModifiedTimestamp = 5;
   pref_service()->SetInt64(
@@ -400,4 +408,8 @@ TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
   EXPECT_EQ(pref_service()->GetInt64(
                 prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
             kModifiedTimestamp);
+
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
+      search_engines::ChoiceMadeLocation::kChoiceScreen, 3);
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,6 +59,7 @@ class SearchEnginesHandlerTestBase : public testing::Test {
     web_ui_.set_web_contents(web_contents_factory_.CreateWebContents(profile_));
     handler_->set_web_ui(&web_ui_);
     handler()->AllowJavascript();
+    handler()->RegisterMessages();
     web_ui()->ClearTrackedCalls();
   }
 
@@ -65,8 +67,10 @@ class SearchEnginesHandlerTestBase : public testing::Test {
   Profile* profile() const { return profile_; }
   SearchEnginesHandler* handler() const { return handler_.get(); }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
+  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
@@ -118,6 +122,31 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
   EXPECT_EQ("search-engines-changed", second_call_data.arg1()->GetString());
 }
 
+TEST_P(SearchEnginesHandlerParametrizedTest,
+       SettingTheDefaultSearchEngineRecordsHistogram) {
+  base::Value::List first_call_args;
+  // Search engine model id.
+  first_call_args.Append(1);
+  first_call_args.Append(static_cast<int>(
+      search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+  web_ui()->HandleReceivedMessage("setDefaultSearchEngine", first_call_args);
+
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
+      search_engines::ChoiceMadeLocation::kSearchEngineSettings, 1);
+
+  base::Value::List second_call_args;
+  // Search engine model id.
+  second_call_args.Append(1);
+  second_call_args.Append(
+      static_cast<int>(search_engines::ChoiceMadeLocation::kSearchSettings));
+  web_ui()->HandleReceivedMessage("setDefaultSearchEngine", second_call_args);
+
+  histogram_tester().ExpectBucketCount(
+      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
+      search_engines::ChoiceMadeLocation::kSearchSettings, 1);
+}
+
 class SearchEnginesHandlerTestWithSearchEngineChoiceEnabled
     : public SearchEnginesHandlerTestBase {
  public:
@@ -143,11 +172,15 @@ TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
   args.Append(1);
   args.Append(static_cast<int>(
       search_engines::ChoiceMadeLocation::kSearchEngineSettings));
-  handler()->HandleSetDefaultSearchEngine(args);
+  web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
 
   EXPECT_NEAR(pref_service->GetInt64(
                   prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
               base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds(),
               /*abs_error=*/2);
+
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
+      search_engines::ChoiceMadeLocation::kSearchEngineSettings, 1);
 }
 }  // namespace settings

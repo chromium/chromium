@@ -1387,6 +1387,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.DefaultSearchEngineChoiceLocation"
+    enum="ChoiceMadeLocation" expires_after="2024-03-31">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records the location from which the default search engine was set. Emitted
+    when the default search engine is changed in the settings page or in the
+    search engine choice screen.
+  </summary>
+</histogram>
+
 <histogram name="Search.DefaultSearchProviderType"
     enum="OmniboxSearchEngineType" expires_after="2023-02-12">
   <obsolete>
