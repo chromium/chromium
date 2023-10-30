@@ -110,37 +110,41 @@ MATCHER_P2(Contain,
   return arg.GetHeader(expected_name, &value) && value == expected_value;
 }
 
+struct HeadersReceived {
+  net::ProxyChain proxy_chain;
+  uint64_t chain_index;
+  scoped_refptr<net::HttpResponseHeaders> response_headers;
+};
+
 class TestCustomProxyConnectionObserver
     : public mojom::CustomProxyConnectionObserver {
  public:
   TestCustomProxyConnectionObserver() = default;
   ~TestCustomProxyConnectionObserver() override = default;
 
-  const absl::optional<std::pair<net::ProxyServer, int>>& FallbackArgs() const {
+  const absl::optional<std::pair<net::ProxyChain, int>>& FallbackArgs() const {
     return fallback_;
   }
 
-  const absl::optional<
-      std::pair<net::ProxyServer, scoped_refptr<net::HttpResponseHeaders>>>&
-  HeadersReceivedArgs() const {
+  const absl::optional<HeadersReceived>& HeadersReceivedArgs() const {
     return headers_received_;
   }
 
   // mojom::CustomProxyConnectionObserver:
-  void OnFallback(const net::ProxyServer& bad_proxy, int net_error) override {
-    fallback_ = std::make_pair(bad_proxy, net_error);
+  void OnFallback(const net::ProxyChain& bad_chain, int net_error) override {
+    fallback_ = std::make_pair(bad_chain, net_error);
   }
-  void OnTunnelHeadersReceived(const net::ProxyServer& proxy_server,
+  void OnTunnelHeadersReceived(const net::ProxyChain& proxy_chain,
+                               uint64_t chain_index,
                                const scoped_refptr<net::HttpResponseHeaders>&
                                    response_headers) override {
-    headers_received_ = std::make_pair(proxy_server, response_headers);
+    headers_received_ =
+        HeadersReceived{proxy_chain, chain_index, response_headers};
   }
 
  private:
-  absl::optional<std::pair<net::ProxyServer, int>> fallback_;
-  absl::optional<
-      std::pair<net::ProxyServer, scoped_refptr<net::HttpResponseHeaders>>>
-      headers_received_;
+  absl::optional<std::pair<net::ProxyChain, int>> fallback_;
+  absl::optional<HeadersReceived> headers_received_;
 };
 
 class NetworkServiceProxyDelegateTest : public testing::Test {
@@ -935,9 +939,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnFallbackObserved) {
   delegate->OnFallback(proxy_chain, net::ERR_FAILED);
   RunUntilIdle();
   ASSERT_TRUE(TestObserver()->FallbackArgs());
-  // TODO(crbug.com/1491092): When Observer supports chain, test that it
-  // receives the full chain and chain index.
-  EXPECT_EQ(TestObserver()->FallbackArgs()->first, proxy_chain.proxy_server());
+  EXPECT_EQ(TestObserver()->FallbackArgs()->first, proxy_chain);
   EXPECT_EQ(TestObserver()->FallbackArgs()->second, net::ERR_FAILED);
 }
 
@@ -960,8 +962,14 @@ TEST_F(NetworkServiceProxyDelegateTest, OnFallback_IpProtection) {
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnTunnelHeadersReceivedObserved) {
-  net::ProxyChain proxy_chain(net::ProxyServer::SCHEME_HTTP,
-                              net::HostPortPair("proxy.com", 80));
+  net::ProxyChain proxy_chain({
+      net::ProxyServer(net::ProxyServer::SCHEME_HTTP,
+                       net::HostPortPair("proxy1.com", 80)),
+      net::ProxyServer(net::ProxyServer::SCHEME_HTTP,
+                       net::HostPortPair("proxy2.com", 80)),
+      net::ProxyServer(net::ProxyServer::SCHEME_HTTP,
+                       net::HostPortPair("proxy3.com", 80)),
+  });
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>(
           "HTTP/1.1 200\nHello: World\n\n");
@@ -972,16 +980,15 @@ TEST_F(NetworkServiceProxyDelegateTest, OnTunnelHeadersReceivedObserved) {
 
   EXPECT_FALSE(TestObserver()->HeadersReceivedArgs());
   EXPECT_EQ(net::OK, delegate->OnTunnelHeadersReceived(
-                         proxy_chain, /*chain_index=*/0, *headers));
+                         proxy_chain, /*chain_index=*/2, *headers));
   RunUntilIdle();
   ASSERT_TRUE(TestObserver()->HeadersReceivedArgs());
-  // TODO(crbug.com/1491092): When Observer supports chain, test that it
-  // receives the full chain and chain index.
-  EXPECT_EQ(TestObserver()->HeadersReceivedArgs()->first,
-            proxy_chain.proxy_server());
+  EXPECT_EQ(TestObserver()->HeadersReceivedArgs()->proxy_chain, proxy_chain);
+  EXPECT_EQ(TestObserver()->HeadersReceivedArgs()->chain_index, 2UL);
   // Compare raw header strings since the headers pointer is copied.
-  EXPECT_EQ(TestObserver()->HeadersReceivedArgs()->second->raw_headers(),
-            headers->raw_headers());
+  EXPECT_EQ(
+      TestObserver()->HeadersReceivedArgs()->response_headers->raw_headers(),
+      headers->raw_headers());
 }
 
 }  // namespace network

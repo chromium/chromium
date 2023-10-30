@@ -123,12 +123,13 @@ interface CustomProxyConnectionObserver {
   // network error encountered, if any, and OK if the fallback was for a reason
   // other than a network error (e.g. the proxy service was explicitly directed
   // to skip a proxy).
-  OnFallback(ProxyServer bad_proxy, int32 net_error);
+  OnFallback(ProxyChain bad_chain, int32 net_error);
 
   // Called when the response headers for the proxy tunnel request have been
   // received.
   OnTunnelHeadersReceived(
-      ProxyServer proxy_server,
+      ProxyChain proxy_chain,
+      uint64 chain_index,
       HttpResponseHeaders response_headers);
 };
 

@@ -210,17 +210,14 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
 
 void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
                                              int net_error) {
-  // TODO(crbug.com/1491092): Handle proxy chains.
-  const net::ProxyServer& bad_proxy = bad_chain.proxy_server();
-
   // If the bad proxy was an IP Protection proxy, refresh the list of IP
   // protection proxies immediately.
-  if (IsProxyForIpProtection(bad_proxy) && ipp_config_cache_) {
+  if (IsProxyForIpProtection(bad_chain.proxy_server()) && ipp_config_cache_) {
     ipp_config_cache_->RequestRefreshProxyList();
   }
 
   if (observer_) {
-    observer_->OnFallback(bad_proxy, net_error);
+    observer_->OnFallback(bad_chain, net_error);
   }
 }
 
@@ -264,15 +261,12 @@ net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
     const net::ProxyChain& proxy_chain,
     size_t chain_index,
     const net::HttpResponseHeaders& response_headers) {
-  // TODO(crbug.com/1491092): Handle proxy chains.
-  CHECK_EQ(chain_index, 0u);
-  const net::ProxyServer& proxy_server = proxy_chain.proxy_server();
-
   if (observer_) {
     // Copy the response headers since mojo expects a ref counted object.
     observer_->OnTunnelHeadersReceived(
-        proxy_server, base::MakeRefCounted<net::HttpResponseHeaders>(
-                          response_headers.raw_headers()));
+        proxy_chain, chain_index,
+        base::MakeRefCounted<net::HttpResponseHeaders>(
+            response_headers.raw_headers()));
   }
   return net::OK;
 }

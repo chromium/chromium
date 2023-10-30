@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,9 +66,10 @@ class CONTENT_EXPORT PrefetchProxyConfigurator
   void SetClockForTesting(const base::Clock* clock);
 
   // mojom::CustomProxyConnectionObserver:
-  void OnFallback(const net::ProxyServer& bad_proxy, int net_error) override;
+  void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
   void OnTunnelHeadersReceived(
-      const net::ProxyServer& proxy_server,
+      const net::ProxyChain& proxy_chain,
+      uint64_t chain_index,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers) override;
 
  private:
@@ -80,8 +81,8 @@ class CONTENT_EXPORT PrefetchProxyConfigurator
   // The headers used to setup the connect tunnel.
   net::HttpRequestHeaders connect_tunnel_headers_;
 
-  // The proxy server used for prefetch requests.
-  const net::ProxyServer prefetch_proxy_server_;
+  // The proxy chain used for prefetch requests.
+  const net::ProxyChain prefetch_proxy_chain_;
 
   // The time clock used to calculate |prefetch_proxy_not_available_until_|.
   raw_ptr<const base::Clock> clock_;
