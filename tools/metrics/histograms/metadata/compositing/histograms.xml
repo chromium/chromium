@@ -55,6 +55,12 @@ chromium-metrics-reviews@google.com.
   <variant name="WheelScroll" summary="wheel scrolling"/>
 </variants>
 
+<variants name="SmoothnessThread">
+  <variant name=""/>
+  <variant name="CompositorThread."/>
+  <variant name="MainThread."/>
+</variants>
+
 <histogram name="Compositing.Browser.LayersUpdateTime" units="microseconds"
     expires_after="2024-02-05">
   <owner>pdr@chromium.org</owner>
@@ -1148,8 +1154,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Graphics.Smoothness.Checkerboarding3.{Sequence}" units="%"
-    expires_after="2024-05-08">
+<histogram name="Graphics.Smoothness.Checkerboarding3.{Thread}{Sequence}"
+    units="%" expires_after="2024-05-08">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1167,6 +1173,7 @@ chromium-metrics-reviews@google.com.
     aggregated until an additional sequence completes where there are (&gt;=
     100) frames available in total.
   </summary>
+  <token key="Thread" variants="SmoothnessThread"/>
   <token key="Sequence" variants="SmoothnessSequence"/>
 </histogram>
 
@@ -1188,13 +1195,6 @@ chromium-metrics-reviews@google.com.
     aggregated until there are enough frames to produce the metric.
   </summary>
   <token key="Type">
-    <variant name="Animations"
-        summary="animations, where a sequence is a series of frames produced
-                 which contain at least one of: Compositor-thread animations;
-                 Main-thread animations; and JS animations."/>
-    <variant name="Interactions"
-        summary="interactions, where a sequence is a series of frames
-                 produced which contain scrolling or pinch-gestures."/>
     <variant name="Sequences"
         summary="animations and interactions, where a sequence is a series of
                  frames produced which contain at least one of the
@@ -1223,10 +1223,7 @@ chromium-metrics-reviews@google.com.
     frames (&gt;= 100). If there are sequences with fewer frames, then these are
     aggregated until there are enough frames to produce the metric.
   </summary>
-  <token key="Thread">
-    <variant name="CompositorThread."/>
-    <variant name="MainThread."/>
-  </token>
+  <token key="Thread" variants="SmoothnessThread"/>
   <token key="Sequence" variants="SmoothnessSequence"/>
 </histogram>
 
@@ -1323,11 +1320,7 @@ chromium-metrics-reviews@google.com.
     This is a new implementation of the older
     Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
   </summary>
-  <token key="Thread">
-    <variant name=""/>
-    <variant name="CompositorThread."/>
-    <variant name="MainThread."/>
-  </token>
+  <token key="Thread" variants="SmoothnessThread"/>
   <token key="Sequence" variants="SmoothnessSequence"/>
 </histogram>
 
