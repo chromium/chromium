@@ -122,7 +122,8 @@ class ChromeUnwinderCreator {
 
 #if ANDROID_UNWINDING_SUPPORTED
 std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
-    stack_unwinder::Module* const stack_unwinder_module) {
+    stack_unwinder::Module* const stack_unwinder_module,
+    bool is_java_name_hashing_enabled) {
   CHECK_NE(getpid(), gettid());
 
   static base::NoDestructor<NativeUnwinderAndroidMapDelegateImpl> map_delegate(
@@ -137,7 +138,7 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
   std::vector<std::unique_ptr<base::Unwinder>> unwinders;
   unwinders.push_back(stack_unwinder_module->CreateNativeUnwinder(
       map_delegate.get(), reinterpret_cast<uintptr_t>(&__executable_start),
-      /*is_java_name_hashing_enabled=*/false));
+      is_java_name_hashing_enabled));
   unwinders.push_back(chrome_unwinder_creator->Create());
   return unwinders;
 }
@@ -244,12 +245,18 @@ stack_unwinder::Module* GetOrLoadModule() {
 }
 #endif  // ANDROID_UNWINDING_SUPPORTED
 
+#if BUILDFLAG(IS_ANDROID)
+base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory(
+    bool is_java_name_hashing_enabled) {
+#else
 base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
+#endif  // BUILDFLAG(IS_ANDROID)
   if (!AreUnwindPrerequisitesAvailable(chrome::GetChannel())) {
     return base::StackSamplingProfiler::UnwindersFactory();
   }
 #if ANDROID_UNWINDING_SUPPORTED
-  return base::BindOnce(CreateCoreUnwinders, GetOrLoadModule());
+  return base::BindOnce(CreateCoreUnwinders, GetOrLoadModule(),
+                        is_java_name_hashing_enabled);
 #else   // ANDROID_UNWINDING_SUPPORTED
   return base::StackSamplingProfiler::UnwindersFactory();
 #endif  // ANDROID_UNWINDING_SUPPORTED
