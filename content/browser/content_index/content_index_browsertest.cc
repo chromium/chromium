@@ -51,6 +51,13 @@ class ContentIndexTest : public ContentBrowserTest {
     ASSERT_TRUE(context_);
   }
 
+  void TearDownOnMainThread() override {
+    context_ = nullptr;
+    provider_ = nullptr;
+    shell_ = nullptr;
+    ContentBrowserTest::TearDownOnMainThread();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
@@ -83,9 +90,9 @@ class ContentIndexTest : public ContentBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  raw_ptr<ShellContentIndexProvider, DanglingUntriaged> provider_;
-  raw_ptr<ContentIndexContext, DanglingUntriaged> context_;
-  raw_ptr<Shell, DanglingUntriaged> shell_;
+  raw_ptr<ShellContentIndexProvider> provider_ = nullptr;
+  raw_ptr<ContentIndexContext> context_ = nullptr;
+  raw_ptr<Shell> shell_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentIndexTest, GetIcons) {
@@ -125,8 +132,9 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, GetIcons) {
     ASSERT_NE(registration_data.first, -1);
     auto icons = GetIcons(registration_data.first, "id3");
     ASSERT_EQ(icons.size(), 2u);
-    if (icons[0].height() > icons[1].height())
+    if (icons[0].height() > icons[1].height()) {
       std::swap(icons[0], icons[1]);
+    }
 
     ASSERT_FALSE(icons[0].isNull());
     EXPECT_EQ(icons[0].width(), 24);
