@@ -1667,7 +1667,7 @@
       name: "FedCmAutoSelectedFlag",
       depends_on: ["FedCm"],
       public: true,
-      status: "test",
+      status: "stable",
       base_feature: "none",
     },
     {
@@ -1681,7 +1681,7 @@
       name: "FedCmError",
       depends_on: ["FedCm"],
       public: true,
-      status: "test",
+      status: "stable",
       base_feature: "none",
     },
     {

@@ -238,6 +238,7 @@ interface FontData
 
 # FedCM API is not implemented on WebView. crbug.com/1340252
 interface IdentityCredential : Credential
+interface IdentityCredentialError : DOMException
 interface IdentityProvider
 interface NavigatorLogin
 
