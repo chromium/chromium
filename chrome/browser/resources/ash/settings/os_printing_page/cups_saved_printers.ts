@@ -18,7 +18,6 @@ import './cups_printers_entry.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {addWebUiListener, WebUiListener} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -198,17 +197,6 @@ export class SettingsCupsSavedPrintersElement extends
         readOnly: true,
         reflectToAttribute: true,
       },
-
-      /**
-       * True when the "local-printer-observing" feature flag is enabled.
-       */
-      isLocalPrinterObservingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('isLocalPrinterObservingEnabled');
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -236,9 +224,7 @@ export class SettingsCupsSavedPrintersElement extends
   private pageStartTime_: number;
   private timeoutIds_: number[];
   private onFocusListener_: () => void;
-  private localPrintersUpdatedListener_: WebUiListener;
   private isPrinterSettingsPrinterStatusEnabled_: boolean;
-  private isLocalPrinterObservingEnabled_: boolean;
 
   constructor() {
     super();
@@ -251,15 +237,6 @@ export class SettingsCupsSavedPrintersElement extends
     this.visiblePrinterCounter_ = MIN_VISIBLE_PRINTERS;
 
     this.onFocusListener_ = () => this.resetPrinterStatusQueryTimers();
-
-    // Listen for updates of local printers from the 'local-printers-updated'
-    // event to consume their updated printer statuses.
-    if (this.isLocalPrinterObservingEnabled_) {
-      addWebUiListener(
-          'local-printers-updated',
-          (printers: CupsPrinterInfo[]) => printers.forEach(
-              printer => this.onPrinterStatusReceived_(printer.printerStatus)));
-    }
   }
 
   override ready(): void {
@@ -271,11 +248,7 @@ export class SettingsCupsSavedPrintersElement extends
           this.onOpenActionMenu_(event);
         });
 
-    // When `isLocalPrinterObservingEnabled_` is enabled printer statuses get
-    // pushed from the backend so printer statuses don't need to be
-    // individually requested.
-    if (this.isPrinterSettingsPrinterStatusEnabled_ &&
-        !this.isLocalPrinterObservingEnabled_) {
+    if (this.isPrinterSettingsPrinterStatusEnabled_) {
       this.startPrinterStatusQueryTimer_(/*forErrorStatePrinters=*/ true);
       this.startPrinterStatusQueryTimer_(/*forErrorStatePrinters=*/ false);
     }
@@ -496,10 +469,9 @@ export class SettingsCupsSavedPrintersElement extends
    * For each printer status received, add it to the printer status cache then
    * notify its respective printer entry to update its status.
    */
-  private onPrinterStatusReceived_(printerStatus: PrinterStatus|
-                                   undefined): void {
+  private onPrinterStatusReceived_(printerStatus: PrinterStatus): void {
     assert(this.isPrinterSettingsPrinterStatusEnabled_);
-    if (!printerStatus?.printerId) {
+    if (!printerStatus) {
       return;
     }
 
@@ -603,10 +575,6 @@ export class SettingsCupsSavedPrintersElement extends
 
   getPrinterStatusReasonCacheForTesting(): Map<string, PrinterStatusReason> {
     return this.printerStatusReasonCache_;
-  }
-
-  getTimeoutIdsForTesting(): number[] {
-    return this.timeoutIds_;
   }
 }
 

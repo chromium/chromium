@@ -333,9 +333,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           features::IsPrinterSettingsPrinterStatusEnabled());
   html_source->AddBoolean("isPrintPreviewDiscoveredPrintersEnabled",
                           features::IsPrintPreviewDiscoveredPrintersEnabled());
-  html_source->AddBoolean(
-      "isLocalPrinterObservingEnabled",
-      base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
 }
 
 void PrintingSection::AddHandlers(content::WebUI* web_ui) {
