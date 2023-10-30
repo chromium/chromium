@@ -8,9 +8,11 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/webapps/common/web_app_id.h"
@@ -47,15 +49,26 @@ class OnCompleteDialogDelegate : public views::DialogDelegate {
 }  // namespace
 
 IsolatedWebAppInstallerViewController::IsolatedWebAppInstallerViewController(
+    Profile* profile,
     WebAppProvider* web_app_provider,
     IsolatedWebAppInstallerModel* model)
-    : web_app_provider_(web_app_provider),
+    : profile_(profile),
+      web_app_provider_(web_app_provider),
       model_(model),
       view_(nullptr),
       dialog_delegate_(nullptr) {}
 
 IsolatedWebAppInstallerViewController::
     ~IsolatedWebAppInstallerViewController() = default;
+
+void IsolatedWebAppInstallerViewController::Start() {
+  // TODO(crbug.com/1479140): Check if Feature is enabled
+  model_->SetStep(IsolatedWebAppInstallerModel::Step::kGetMetadata);
+  OnModelChanged();
+
+  installability_checker_ = InstallabilityChecker::CreateAndStart(
+      profile_, web_app_provider_, model_->bundle_path(), this);
+}
 
 void IsolatedWebAppInstallerViewController::Show(base::OnceClosure callback) {
   CHECK(!callback_);
@@ -73,6 +86,42 @@ void IsolatedWebAppInstallerViewController::Show(base::OnceClosure callback) {
                                             /*context=*/nullptr,
                                             /*parent=*/nullptr)
       ->Show();
+}
+
+void IsolatedWebAppInstallerViewController::SetViewForTesting(
+    IsolatedWebAppInstallerView* view) {
+  view_ = view;
+}
+
+void IsolatedWebAppInstallerViewController::OnProfileShutdown() {
+  Close();
+}
+
+void IsolatedWebAppInstallerViewController::OnBundleInvalid(
+    const std::string& error) {
+  // TODO(crbug.com/1479140): Show "failed to verify" error message
+  Close();
+}
+
+void IsolatedWebAppInstallerViewController::OnBundleInstallable(
+    const SignedWebBundleMetadata& metadata) {
+  model_->SetSignedWebBundleMetadata(metadata);
+  model_->SetStep(IsolatedWebAppInstallerModel::Step::kConfirmInstall);
+  OnModelChanged();
+}
+
+void IsolatedWebAppInstallerViewController::OnBundleUpdatable(
+    const SignedWebBundleMetadata& metadata,
+    const base::Version& installed_version) {
+  // TODO(crbug.com/1479140): Handle updates
+  Close();
+}
+
+void IsolatedWebAppInstallerViewController::OnBundleOutdated(
+    const SignedWebBundleMetadata& metadata,
+    const base::Version& installed_version) {
+  // TODO(crbug.com/1479140): Show "outdated" error message
+  Close();
 }
 
 void IsolatedWebAppInstallerViewController::OnSettingsLinkClicked() {
@@ -107,20 +156,22 @@ void IsolatedWebAppInstallerViewController::OnComplete() {
   std::move(callback_).Run();
 }
 
+void IsolatedWebAppInstallerViewController::Close() {
+  if (dialog_delegate_) {
+    dialog_delegate_->CancelDialog();
+  }
+}
+
 void IsolatedWebAppInstallerViewController::OnModelChanged() {
   // TODO(crbug.com/1479140): Configure Install/Cancel buttons for all screens
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kDisabled:
-      dialog_delegate_->SetButtons(ui::DIALOG_BUTTON_CANCEL);
+      SetButtons(IDS_APP_CLOSE, /*accept_button_label_id=*/absl::nullopt);
       view_->ShowDisabledScreen();
       break;
 
     case IsolatedWebAppInstallerModel::Step::kGetMetadata:
-      dialog_delegate_->SetButtons(ui::DIALOG_BUTTON_CANCEL);
-      dialog_delegate_->SetButtonLabel(
-          ui::DIALOG_BUTTON_CANCEL, l10n_util::GetStringUTF16(IDS_APP_CANCEL));
-      dialog_delegate_->SetButtonStyle(ui::DIALOG_BUTTON_CANCEL,
-                                       ui::ButtonStyle::kDefault);
+      SetButtons(IDS_APP_CANCEL, /*accept_button_label_id=*/absl::nullopt);
       view_->ShowGetMetadataScreen();
       break;
 
@@ -136,6 +187,26 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
       view_->ShowInstallSuccessScreen(model_->bundle_metadata());
       break;
   }
+}
+
+void IsolatedWebAppInstallerViewController::SetButtons(
+    int close_button_label_id,
+    absl::optional<int> accept_button_label_id) {
+  if (!dialog_delegate_) {
+    return;
+  }
+
+  int buttons = ui::DIALOG_BUTTON_CANCEL;
+  dialog_delegate_->SetButtonLabel(
+      ui::DIALOG_BUTTON_CANCEL,
+      l10n_util::GetStringUTF16(close_button_label_id));
+  if (accept_button_label_id.has_value()) {
+    buttons |= ui::DIALOG_BUTTON_OK;
+    dialog_delegate_->SetButtonLabel(
+        ui::DIALOG_BUTTON_OK,
+        l10n_util::GetStringUTF16(accept_button_label_id.value()));
+  }
+  dialog_delegate_->SetButtons(buttons);
 }
 
 std::unique_ptr<views::DialogDelegate>

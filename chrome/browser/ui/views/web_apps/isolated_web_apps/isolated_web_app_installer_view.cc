@@ -183,11 +183,7 @@ BEGIN_METADATA(DisabledScreen, InstallerScreenView)
 END_METADATA
 
 IsolatedWebAppInstallerView::IsolatedWebAppInstallerView(Delegate* delegate)
-    : delegate_(delegate), screen_(nullptr) {
-  views::LayoutProvider* provider = views::LayoutProvider::Get();
-  SetInsideBorderInsets(
-      provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG));
-}
+    : delegate_(delegate), screen_(nullptr), initialized_(false) {}
 
 IsolatedWebAppInstallerView::~IsolatedWebAppInstallerView() = default;
 
@@ -229,6 +225,13 @@ void IsolatedWebAppInstallerView::ShowInstallSuccessScreen(
 
 void IsolatedWebAppInstallerView::ShowScreen(
     std::unique_ptr<InstallerScreenView> screen) {
+  if (!initialized_) {
+    initialized_ = true;
+    views::LayoutProvider* provider = views::LayoutProvider::Get();
+    SetInsideBorderInsets(
+        provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG));
+  }
+
   if (screen_) {
     RemoveChildView(screen_);
   }

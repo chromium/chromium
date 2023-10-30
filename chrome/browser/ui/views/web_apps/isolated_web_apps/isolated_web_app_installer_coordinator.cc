@@ -36,6 +36,7 @@ IsolatedWebAppInstallerCoordinator::IsolatedWebAppInstallerCoordinator(
     const base::FilePath& bundle_path)
     : model_(std::make_unique<IsolatedWebAppInstallerModel>(bundle_path)),
       controller_(std::make_unique<IsolatedWebAppInstallerViewController>(
+          profile,
           WebAppProvider::GetForWebApps(profile),
           model_.get())) {}
 
@@ -44,6 +45,7 @@ IsolatedWebAppInstallerCoordinator::~IsolatedWebAppInstallerCoordinator() =
 
 void IsolatedWebAppInstallerCoordinator::Show(
     base::OnceCallback<void(absl::optional<webapps::AppId>)> callback) {
+  controller_->Start();
   controller_->Show(
       base::BindOnce(&IsolatedWebAppInstallerCoordinator::OnDialogClosed,
                      base::Unretained(this), std::move(callback)));

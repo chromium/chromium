@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -59,8 +60,9 @@ class IsolatedWebAppInstallerViewUiPixelTest
     IsolatedWebAppInstallerModel model{base::FilePath()};
     model.SetStep(GetParam().step);
 
+    Profile* profile = browser()->profile();
     IsolatedWebAppInstallerViewController controller{
-        WebAppProvider::GetForWebApps(browser()->profile()), &model};
+        profile, WebAppProvider::GetForWebApps(profile), &model};
     controller.Show(base::DoNothing());
   }
 

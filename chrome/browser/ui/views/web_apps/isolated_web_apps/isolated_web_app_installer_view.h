@@ -40,23 +40,27 @@ class IsolatedWebAppInstallerView : public views::BoxLayoutView {
   explicit IsolatedWebAppInstallerView(Delegate* delegate);
   ~IsolatedWebAppInstallerView() override;
 
-  void ShowDisabledScreen();
+  virtual void ShowDisabledScreen();
 
-  void ShowGetMetadataScreen();
-  void UpdateGetMetadataProgress(double percent, int minutes_remaining);
+  virtual void ShowGetMetadataScreen();
+  virtual void UpdateGetMetadataProgress(double percent, int minutes_remaining);
 
-  void ShowMetadataScreen(const SignedWebBundleMetadata& bundle_metadata);
+  virtual void ShowMetadataScreen(
+      const SignedWebBundleMetadata& bundle_metadata);
 
-  void ShowInstallScreen(const SignedWebBundleMetadata& bundle_metadata);
-  void UpdateInstallProgress(double percent, int minutes_remaining);
+  virtual void ShowInstallScreen(
+      const SignedWebBundleMetadata& bundle_metadata);
+  virtual void UpdateInstallProgress(double percent, int minutes_remaining);
 
-  void ShowInstallSuccessScreen(const SignedWebBundleMetadata& bundle_metadata);
+  virtual void ShowInstallSuccessScreen(
+      const SignedWebBundleMetadata& bundle_metadata);
 
  private:
   void ShowScreen(std::unique_ptr<InstallerScreenView> screen);
 
   raw_ptr<Delegate> delegate_;
   raw_ptr<InstallerScreenView> screen_;
+  bool initialized_;
 };
 
 }  // namespace web_app
