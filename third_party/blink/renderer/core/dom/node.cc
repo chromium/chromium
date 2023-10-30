@@ -964,8 +964,8 @@ void Node::MarkSubtreeNeedsStyleRecalcForFontUpdates() {
   if (GetStyleChangeType() == kSubtreeStyleChange)
     return;
 
-  if (IsElementNode()) {
-    const ComputedStyle* style = GetComputedStyle();
+  if (auto* element = DynamicTo<Element>(this)) {
+    const ComputedStyle* style = element->GetComputedStyle();
     if (!style)
       return;
 
@@ -974,7 +974,7 @@ void Node::MarkSubtreeNeedsStyleRecalcForFontUpdates() {
     // other style computations are unaffected by font loading.
     if (!NeedsStyleRecalc()) {
       if (style->DependsOnFontMetrics() ||
-          To<Element>(this)->PseudoElementStylesDependOnFontMetrics()) {
+          element->PseudoElementStylesDependOnFontMetrics()) {
         SetNeedsStyleRecalc(
             kLocalStyleChange,
             StyleChangeReasonForTracing::Create(style_change_reason::kFonts));
@@ -1425,8 +1425,8 @@ void Node::SetForceReattachLayoutTree() {
     return;
   if (!InActiveDocument())
     return;
-  if (IsElementNode()) {
-    if (!GetComputedStyle()) {
+  if (Element* element = DynamicTo<Element>(this)) {
+    if (!element->GetComputedStyle()) {
       DCHECK(!GetLayoutObject());
       return;
     }

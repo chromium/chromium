@@ -1826,8 +1826,8 @@ ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
 
 const ComputedStyle* StyleResolver::StyleForText(Text* text_node) {
   DCHECK(text_node);
-  if (Node* parent_node = LayoutTreeBuilderTraversal::Parent(*text_node)) {
-    const ComputedStyle* style = parent_node->GetComputedStyle();
+  if (Element* parent = LayoutTreeBuilderTraversal::ParentElement(*text_node)) {
+    const ComputedStyle* style = parent->GetComputedStyle();
     if (style && !style->IsEnsuredInDisplayNone()) {
       return style;
     }

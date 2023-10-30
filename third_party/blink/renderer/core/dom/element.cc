@@ -3238,12 +3238,11 @@ void Element::MarkNonSlottedHostChildrenForStyleRecalc() {
     if (child->NeedsStyleRecalc()) {
       continue;
     }
-    if (!child->IsElementNode()) {
-      continue;
-    }
-    if (auto* style = child->GetComputedStyle()) {
-      if (style->IsEnsuredOutsideFlatTree()) {
-        child->SetStyleChangeForNonSlotted();
+    if (auto* element = DynamicTo<Element>(child)) {
+      if (auto* style = element->GetComputedStyle()) {
+        if (style->IsEnsuredOutsideFlatTree()) {
+          child->SetStyleChangeForNonSlotted();
+        }
       }
     }
   }
@@ -7057,8 +7056,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
   style_request.type = StyleRequest::kForComputedStyle;
   if (UsesHighlightPseudoInheritance(pseudo_element_specifier)) {
     const ComputedStyle* highlight_element_style = nullptr;
-    ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*this);
-    if (parent) {
+    if (Element* parent = LayoutTreeBuilderTraversal::ParentElement(*this)) {
       highlight_element_style =
           parent->GetComputedStyle()->HighlightData().Style(
               pseudo_element_specifier, pseudo_argument);
@@ -7568,8 +7566,8 @@ const ComputedStyle* Element::StyleForPseudoElement(
       // outside the flat tree should return empty styles, but currently we do
       // not. See issue https://crbug.com/831568. We can replace the if-test
       // with DCHECK(layout_parent) when that issue is fixed.
-      if (Node* layout_parent =
-              LayoutTreeBuilderTraversal::LayoutParent(*this)) {
+      if (Element* layout_parent =
+              LayoutTreeBuilderTraversal::LayoutParentElement(*this)) {
         layout_parent_style = layout_parent->GetComputedStyle();
       }
     }
@@ -9136,9 +9134,9 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
   }
 
   for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(*this)) {
-    // Check for content-visibility:hidden
-    if (&ancestor != this) {
-      if (Element* ancestor_element = DynamicTo<Element>(ancestor)) {
+    if (Element* ancestor_element = DynamicTo<Element>(ancestor)) {
+      // Check for content-visibility:hidden
+      if (ancestor_element != this) {
         if (auto* lock = ancestor_element->GetDisplayLockContext()) {
           if (lock->IsLocked() &&
               !lock->IsActivatable(DisplayLockActivationReason::kViewport)) {
@@ -9146,13 +9144,13 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
           }
         }
       }
-    }
 
-    // Check for opacity:0
-    if (options->checkOpacity()) {
-      if (style = ancestor.GetComputedStyle(); style) {
-        if (style->Opacity() == 0.f) {
-          return false;
+      // Check for opacity:0
+      if (options->checkOpacity()) {
+        if (style = ancestor_element->GetComputedStyle(); style) {
+          if (style->Opacity() == 0.f) {
+            return false;
+          }
         }
       }
     }

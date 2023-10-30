@@ -1099,13 +1099,15 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
     inserted_node->ClearFlatTreeNodeDataIfHostChanged(*this);
   if (!InActiveDocument())
     return;
-  if (IsElementNode() && !GetComputedStyle()) {
-    // There is no need to mark for style recalc if the parent element does not
-    // Already have a ComputedStyle. For instance if we insert nodes into a
-    // display:none subtree. If this ContainerNode gets a ComputedStyle during
-    // the next style recalc, we will traverse into the inserted children since
-    // the ComputedStyle goes from null to non-null.
-    return;
+  if (Element* element = DynamicTo<Element>(this)) {
+    if (!element->GetComputedStyle()) {
+      // There is no need to mark for style recalc if the parent element does
+      // not already have a ComputedStyle. For instance if we insert nodes into
+      // a display:none subtree. If this ContainerNode gets a ComputedStyle
+      // during the next style recalc, we will traverse into the inserted
+      // children since the ComputedStyle goes from null to non-null.
+      return;
+    }
   }
   if (inserted_node->IsContainerNode() || inserted_node->IsTextNode())
     inserted_node->SetStyleChangeOnInsertion();

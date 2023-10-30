@@ -335,16 +335,13 @@ LayoutText* Text::CreateTextLayoutObject() {
 
 void Text::AttachLayoutTree(AttachContext& context) {
   if (context.parent) {
-    ContainerNode* style_parent = LayoutTreeBuilderTraversal::Parent(*this);
-    if (style_parent) {
-      // To handle <body> to <html> writing-mode propagation, we should use
-      // style in layout object instead of |Node::GetComputedStyle()|.
-      // See http://crbug.com/988585
+    if (Element* style_parent =
+            LayoutTreeBuilderTraversal::ParentElement(*this)) {
       const ComputedStyle* const style =
           IsA<HTMLHtmlElement>(style_parent) && style_parent->GetLayoutObject()
               ? style_parent->GetLayoutObject()->Style()
               : style_parent->GetComputedStyle();
-      DCHECK(style);
+      CHECK(style);
       if (TextLayoutObjectIsNeeded(context, *style)) {
         LayoutTreeBuilderForText(*this, context, style).CreateLayoutObject();
         context.previous_in_flow = GetLayoutObject();
@@ -356,11 +353,11 @@ void Text::AttachLayoutTree(AttachContext& context) {
 
 void Text::ReattachLayoutTreeIfNeeded(AttachContext& context) {
   bool layout_object_is_needed = false;
-  ContainerNode* style_parent = LayoutTreeBuilderTraversal::Parent(*this);
+  Element* style_parent = LayoutTreeBuilderTraversal::ParentElement(*this);
   if (style_parent && context.parent) {
-    DCHECK(style_parent->GetComputedStyle());
-    layout_object_is_needed =
-        TextLayoutObjectIsNeeded(context, *style_parent->GetComputedStyle());
+    const ComputedStyle* style = style_parent->GetComputedStyle();
+    CHECK(style);
+    layout_object_is_needed = TextLayoutObjectIsNeeded(context, *style);
   }
 
   if (layout_object_is_needed == !!GetLayoutObject())
