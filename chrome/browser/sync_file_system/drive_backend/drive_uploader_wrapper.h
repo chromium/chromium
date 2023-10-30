@@ -17,10 +17,10 @@ namespace drive_backend {
 // pointer.  Each method wraps corresponding name method of
 // DriveUploaderInterface.  See comments in drive_uploader_interface.h
 // for details.
-class DriveUploaderWrapper
-    : public base::SupportsWeakPtr<DriveUploaderWrapper> {
+class DriveUploaderWrapper {
  public:
   explicit DriveUploaderWrapper(drive::DriveUploaderInterface* drive_uploader);
+  ~DriveUploaderWrapper();
 
   DriveUploaderWrapper(const DriveUploaderWrapper&) = delete;
   DriveUploaderWrapper& operator=(const DriveUploaderWrapper&) = delete;
@@ -38,9 +38,14 @@ class DriveUploaderWrapper
                      const drive::UploadNewFileOptions& options,
                      drive::UploadCompletionCallback callback);
 
+  base::WeakPtr<DriveUploaderWrapper> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   raw_ptr<drive::DriveUploaderInterface> drive_uploader_;
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<DriveUploaderWrapper> weak_ptr_factory_{this};
 };
 
 }  // namespace drive_backend

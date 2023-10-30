@@ -18,6 +18,8 @@ DriveServiceWrapper::DriveServiceWrapper(
   DCHECK(drive_service_);
 }
 
+DriveServiceWrapper::~DriveServiceWrapper() = default;
+
 void DriveServiceWrapper::AddNewDirectory(
     const std::string& parent_resource_id,
     const std::string& directory_title,

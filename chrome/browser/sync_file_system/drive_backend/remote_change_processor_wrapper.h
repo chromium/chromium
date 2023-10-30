@@ -17,11 +17,11 @@ namespace drive_backend {
 // pointer.  Each method wraps corresponding name method of
 // RemoteChangeProcessor.  See comments in remote_change_processor.h
 // for details.
-class RemoteChangeProcessorWrapper
-    : public base::SupportsWeakPtr<RemoteChangeProcessorWrapper> {
+class RemoteChangeProcessorWrapper {
  public:
   explicit RemoteChangeProcessorWrapper(
       RemoteChangeProcessor* remote_change_processor);
+  ~RemoteChangeProcessorWrapper();
 
   RemoteChangeProcessorWrapper(const RemoteChangeProcessorWrapper&) = delete;
   RemoteChangeProcessorWrapper& operator=(const RemoteChangeProcessorWrapper&) =
@@ -44,9 +44,14 @@ class RemoteChangeProcessorWrapper
                              const FileChange& change,
                              SyncStatusCallback callback);
 
+  base::WeakPtr<RemoteChangeProcessorWrapper> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   raw_ptr<RemoteChangeProcessor, DanglingUntriaged> remote_change_processor_;
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<RemoteChangeProcessorWrapper> weak_ptr_factory_{this};
 };
 
 }  // namespace drive_backend
