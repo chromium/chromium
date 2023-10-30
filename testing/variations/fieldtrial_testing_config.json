@@ -8964,7 +8964,11 @@
                 {
                     "name": "enabled_direct_ip_protection_phase_0_2023-09-28",
                     "params": {
-                        "IpPrivacyDirectOnly": "true"
+                        "IpPrivacyDirectOnly": "true",
+                        "IpPrivacyTokenServer": "https://phosphor-pa.googleapis.com",
+                        "IpPrivacyTokenServerGetInitialDataPath": "/v1/ipblinding/getInitialData",
+                        "IpPrivacyTokenServerGetProxyConfigPath": "/v1/ipblinding/getProxyConfig",
+                        "IpPrivacyTokenServerGetTokensPath": "/v1/ipblinding/auth"
                     },
                     "enable_features": [
                         "EnableIpPrivacyProxy",
@@ -8974,7 +8978,11 @@
                 {
                     "name": "control_prestable_phase0_2023-09-28",
                     "params": {
-                        "IpPrivacyDirectOnly": "false"
+                        "IpPrivacyDirectOnly": "false",
+                        "IpPrivacyTokenServer": "https://phosphor-pa.googleapis.com",
+                        "IpPrivacyTokenServerGetInitialDataPath": "/v1/ipblinding/getInitialData",
+                        "IpPrivacyTokenServerGetProxyConfigPath": "/v1/ipblinding/getProxyConfig",
+                        "IpPrivacyTokenServerGetTokensPath": "/v1/ipblinding/auth"
                     },
                     "disable_features": [
                         "EnableIpPrivacyProxy",
