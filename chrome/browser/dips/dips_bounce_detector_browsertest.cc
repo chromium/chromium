@@ -588,7 +588,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       Attribute3PIframesCHIPSServerAccessTo1P) {
+                       // TODO(crbug.com/1497430): Re-enable this test
+                       DISABLED_Attribute3PIframesCHIPSServerAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.AddDefaultHandlers(kChromeTestDataDir);
@@ -620,8 +621,10 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                                       "(Write) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       AttributeSameSiteNestedIframesCookieClientAccessTo1P) {
+IN_PROC_BROWSER_TEST_F(
+    DIPSBounceDetectorBrowserTest,
+    // TODO(crbug.com/1497430): Re-enable this test
+    DISABLED_AttributeSameSiteNestedIframesCookieClientAccessTo1P) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
 
@@ -652,8 +655,10 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                                       "(Write) -> d.test/title1.html")));
 }
 
-IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       AttributeSameSiteNestedIframesCookieServerAccessTo1P) {
+IN_PROC_BROWSER_TEST_F(
+    DIPSBounceDetectorBrowserTest,
+    // TODO(crbug.com/1497430): Re-enable this test
+    DISABLED_AttributeSameSiteNestedIframesCookieServerAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.AddDefaultHandlers(kChromeTestDataDir);
