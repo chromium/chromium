@@ -192,9 +192,9 @@ void MediaRouterDesktop::CreateRoute(const MediaSource::Id& source_id,
   const mojom::MediaRouteProviderId provider_id = sink->provider_id();
 
   const std::string presentation_id = MediaRouterBase::CreatePresentationId();
-  auto mr_callback =
-      base::BindOnce(&MediaRouterDesktop::RouteResponseReceived, AsWeakPtr(),
-                     presentation_id, provider_id, std::move(callback), false);
+  auto mr_callback = base::BindOnce(&MediaRouterDesktop::RouteResponseReceived,
+                                    weak_factory_.GetWeakPtr(), presentation_id,
+                                    provider_id, std::move(callback), false);
 
   if (source.IsDesktopMirroringSource()) {
     desktop_picker_.Show(
@@ -202,8 +202,9 @@ void MediaRouterDesktop::CreateRoute(const MediaSource::Id& source_id,
         {DesktopMediaList::Type::kScreen},
         base::BindRepeating([](content::WebContents* wc) { return true; }),
         base::BindOnce(&MediaRouterDesktop::CreateRouteWithSelectedDesktop,
-                       AsWeakPtr(), provider_id, sink_id, presentation_id,
-                       origin, web_contents, timeout, std::move(mr_callback)));
+                       weak_factory_.GetWeakPtr(), provider_id, sink_id,
+                       presentation_id, origin, web_contents, timeout,
+                       std::move(mr_callback)));
   } else {
     const int frame_tree_node_id =
         web_contents ? web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId()
@@ -240,9 +241,9 @@ void MediaRouterDesktop::JoinRoute(const MediaSource::Id& source_id,
   const int frame_tree_node_id =
       web_contents ? web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId()
                    : kDefaultFrameTreeNodeId;
-  auto mr_callback =
-      base::BindOnce(&MediaRouterDesktop::RouteResponseReceived, AsWeakPtr(),
-                     presentation_id, *provider_id, std::move(callback), true);
+  auto mr_callback = base::BindOnce(&MediaRouterDesktop::RouteResponseReceived,
+                                    weak_factory_.GetWeakPtr(), presentation_id,
+                                    *provider_id, std::move(callback), true);
   media_route_providers_[*provider_id]->JoinRoute(
       source_id, presentation_id, origin, frame_tree_node_id, timeout,
       std::move(mr_callback));
@@ -257,8 +258,9 @@ void MediaRouterDesktop::TerminateRoute(const MediaRoute::Id& route_id) {
         mojom::RouteRequestResultCode::ROUTE_NOT_FOUND);
     return;
   }
-  auto callback = base::BindOnce(&MediaRouterDesktop::OnTerminateRouteResult,
-                                 AsWeakPtr(), route_id, *provider_id);
+  auto callback =
+      base::BindOnce(&MediaRouterDesktop::OnTerminateRouteResult,
+                     weak_factory_.GetWeakPtr(), route_id, *provider_id);
   media_route_providers_[*provider_id]->TerminateRoute(route_id,
                                                        std::move(callback));
 }
@@ -357,7 +359,7 @@ void MediaRouterDesktop::GetMediaController(
     return;
   }
   auto callback = base::BindOnce(&MediaRouterDesktop::OnMediaControllerCreated,
-                                 AsWeakPtr(), route_id);
+                                 weak_factory_.GetWeakPtr(), route_id);
   media_route_providers_[*provider_id]->CreateMediaRouteController(
       route_id, std::move(controller), std::move(observer),
       std::move(callback));
@@ -464,8 +466,9 @@ void MediaRouterDesktop::RegisterMediaRoutesObserver(
     // MediaRoutesObserver is calling this method from its constructor, and that
     // must complete before invoking its virtual OnRoutesUpdated() method.
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&MediaRouterDesktop::NotifyOfExistingRoutes,
-                                  AsWeakPtr(), observer->AsWeakPtr()));
+        FROM_HERE,
+        base::BindOnce(&MediaRouterDesktop::NotifyOfExistingRoutes,
+                       weak_factory_.GetWeakPtr(), observer->AsWeakPtr()));
   }
 }
 
@@ -514,7 +517,7 @@ void MediaRouterDesktop::RegisterMediaRouteProvider(
       std::move(media_route_provider_remote));
   bound_remote.set_disconnect_handler(
       base::BindOnce(&MediaRouterDesktop::OnProviderConnectionError,
-                     AsWeakPtr(), provider_id));
+                     weak_factory_.GetWeakPtr(), provider_id));
   media_route_providers_[provider_id] = std::move(bound_remote);
 }
 
