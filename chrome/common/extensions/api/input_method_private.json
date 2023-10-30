@@ -68,6 +68,7 @@
         "type": "string",
         "description": "The aggregated status of all language packs for a given input method.",
         "enum": [
+          // This should only be used when we have uninitialised data.
           "unknown",
           "notInstalled",
           "inProgress",
