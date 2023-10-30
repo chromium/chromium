@@ -74,7 +74,7 @@ class LocalDeviceTestRun(test_run.TestRun):
       consecutive_device_errors = 0
       for test in tests:
         if not test:
-          logging.warning('No tests in shared. Continuing.')
+          logging.warning('No tests in shard. Continuing.')
           tests.test_completed()
           continue
         if exit_now.isSet():
