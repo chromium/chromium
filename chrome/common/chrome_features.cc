@@ -909,7 +909,7 @@ BASE_FEATURE(kKAnonymityServiceStorage,
 // Place Lacros's browser components in a location shared across users.
 BASE_FEATURE(kLacrosSharedComponentsDir,
              "LacrosSharedComponentsDir",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
