@@ -208,13 +208,13 @@
         <if expr="_google_chrome">
           <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites." formatter_data="android_java">
             Chrome blocks sites from using third-party cookies to track you as you browse.
-            If site features aren’t working <ph name="START_LINK">&lt;a target="_blank" href="$1"&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
+            <ph name="NEW_LINE">&lt;br/&gt;</ph>If site features aren’t working <ph name="START_LINK">&lt;a target="_blank" href="$1"&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
           </message>
         </if>
         <if expr="not _google_chrome">
           <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites." formatter_data="android_java">
             Chromium blocks sites from using third-party cookies to track you as you browse.
-            If site features aren’t working <ph name="START_LINK">&lt;a target="_blank" href="$1"&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
+            <ph name="NEW_LINE">&lt;br/&gt;</ph>If site features aren’t working <ph name="START_LINK">&lt;a target="_blank" href="$1"&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
           </message>
         </if>
       </if>
