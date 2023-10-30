@@ -38,6 +38,7 @@ MediaRecorderEncoderWrapper::MediaRecorderEncoderWrapper(
     scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
     media::VideoCodecProfile profile,
     uint32_t bits_per_second,
+    bool is_screencast,
     media::GpuVideoAcceleratorFactories* gpu_factories,
     CreateEncoderCB create_encoder_cb,
     VideoTrackRecorder::OnEncodedVideoCB on_encoded_video_cb,
@@ -62,6 +63,9 @@ MediaRecorderEncoderWrapper::MediaRecorderEncoderWrapper(
   CHECK(base::Contains(kSupportedCodecs, codec_));
   options_.bitrate = media::Bitrate::VariableBitrate(
       bits_per_second, base::ClampMul(bits_per_second, 2u).RawValue());
+  options_.content_hint = is_screencast
+                              ? media::VideoEncoder::ContentHint::Screen
+                              : media::VideoEncoder::ContentHint::Camera;
 }
 
 MediaRecorderEncoderWrapper::~MediaRecorderEncoderWrapper() {
@@ -72,6 +76,11 @@ bool MediaRecorderEncoderWrapper::CanEncodeAlphaChannel() const {
   // Alpha encoding is supported only with VP8 and VP9 software encoders.
   return !gpu_factories_ && (codec_ == media::VideoCodec::kVP8 ||
                              codec_ == media::VideoCodec::kVP9);
+}
+
+bool MediaRecorderEncoderWrapper::IsScreenContentEncodingForTesting() const {
+  return options_.content_hint.has_value() &&
+         *options_.content_hint == media::VideoEncoder::ContentHint::Screen;
 }
 
 void MediaRecorderEncoderWrapper::EnterErrorState(

@@ -820,6 +820,7 @@ VideoTrackRecorderImpl::CreateMediaVideoEncoder(
     scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
     CodecProfile codec_profile,
     uint32_t bits_per_second,
+    bool is_screencast,
     const OnEncodedVideoCB& on_encoded_video_cb,
     bool create_vea_encoder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
@@ -858,10 +859,9 @@ VideoTrackRecorderImpl::CreateMediaVideoEncoder(
 
   media::GpuVideoAcceleratorFactories* gpu_factories =
       Platform::Current()->GetGpuFactories();
-  // TODO(crbug.com/1441395): Support |is_screencast|.
   return std::make_unique<MediaRecorderEncoderWrapper>(
       std::move(encoding_task_runner), video_codec_profile, bits_per_second,
-      create_vea_encoder ? gpu_factories : nullptr,
+      is_screencast, create_vea_encoder ? gpu_factories : nullptr,
       create_vea_encoder
           ? GetCreateHardwareVideoEncoderCallback()
           : GetCreateSoftwareVideoEncoderCallback(codec_profile.codec_id),
@@ -873,6 +873,7 @@ VideoTrackRecorderImpl::CreateSoftwareVideoEncoder(
     scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
     CodecProfile codec_profile,
     uint32_t bits_per_second,
+    bool is_screencast,
     const OnEncodedVideoCB& on_encoded_video_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   switch (codec_profile.codec_id) {
@@ -897,7 +898,7 @@ VideoTrackRecorderImpl::CreateSoftwareVideoEncoder(
       return std::make_unique<MediaRecorderEncoderWrapper>(
           std::move(encoding_task_runner),
           codec_profile.profile.value_or(media::AV1PROFILE_PROFILE_MAIN),
-          bits_per_second,
+          bits_per_second, is_screencast,
           /*gpu_factories=*/nullptr,
           GetCreateSoftwareVideoEncoderCallback(CodecId::kAv1),
           on_encoded_video_cb, std::move(on_error_cb));
@@ -1012,8 +1013,8 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
     encoding_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
     encoder = CreateMediaVideoEncoder(encoding_task_runner, codec_profile,
-                                      bits_per_second, on_encoded_video_cb,
-                                      create_vea_encoder);
+                                      bits_per_second, is_screencast,
+                                      on_encoded_video_cb, create_vea_encoder);
   } else {
     if (create_vea_encoder) {
       encoding_task_runner =
@@ -1024,9 +1025,9 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
     } else {
       encoding_task_runner =
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-      encoder =
-          CreateSoftwareVideoEncoder(encoding_task_runner, codec_profile,
-                                     bits_per_second, on_encoded_video_cb);
+      encoder = CreateSoftwareVideoEncoder(encoding_task_runner, codec_profile,
+                                           bits_per_second, is_screencast,
+                                           on_encoded_video_cb);
     }
   }
 

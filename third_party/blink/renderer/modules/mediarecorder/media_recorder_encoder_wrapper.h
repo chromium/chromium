@@ -32,6 +32,7 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
       scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
       media::VideoCodecProfile profile,
       uint32_t bits_per_second,
+      bool is_screencast,
       media::GpuVideoAcceleratorFactories* gpu_factories,
       CreateEncoderCB create_encoder_cb,
       VideoTrackRecorder::OnEncodedVideoCB on_encoded_video_cb,
@@ -45,6 +46,7 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
   base::WeakPtr<Encoder> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
+  bool IsScreenContentEncodingForTesting() const override;
 
  private:
   friend class MediaRecorderEncoderWrapperTest;

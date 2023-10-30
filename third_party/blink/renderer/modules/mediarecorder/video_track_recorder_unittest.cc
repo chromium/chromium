@@ -294,6 +294,20 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
     return result;
   }
 
+  bool IsScreenContentEncoding() {
+    bool result;
+    base::WaitableEvent finished;
+    video_track_recorder_->encoder_.PostTaskWithThisObject(CrossThreadBindOnce(
+        [](base::WaitableEvent* finished, bool* out_result,
+           VideoTrackRecorder::Encoder* encoder) {
+          *out_result = encoder->IsScreenContentEncodingForTesting();
+          finished->Signal();
+        },
+        CrossThreadUnretained(&finished), CrossThreadUnretained(&result)));
+    finished.Wait();
+    return result;
+  }
+
   bool HasEncoderInstance() const {
     return !video_track_recorder_->encoder_.is_null();
   }
@@ -477,6 +491,48 @@ TEST_P(VideoTrackRecorderTestParam, VideoEncoding) {
     EXPECT_EQ(third_frame_encoded_alpha.size(), kEmptySize);
   }
 
+  // The encoder is configured non screen content by default.
+  EXPECT_FALSE(IsScreenContentEncoding());
+
+  Mock::VerifyAndClearExpectations(this);
+}
+
+// VideoEncoding with the screencast track.
+TEST_P(VideoTrackRecorderTestParam, ConfigureEncoderWithScreenContent) {
+  track_->SetIsScreencastForTesting(true);
+
+  InitializeRecorder(testing::get<0>(GetParam()));
+
+  const bool encode_alpha_channel = testing::get<2>(GetParam());
+  // |frame_size| cannot be arbitrarily small, should be reasonable.
+  const gfx::Size& frame_size = testing::get<1>(GetParam());
+  const TestFrameType test_frame_type = testing::get<3>(GetParam());
+
+  // We don't support alpha channel with GpuMemoryBuffer frames.
+  if (test_frame_type != TestFrameType::kI420 && encode_alpha_channel) {
+    return;
+  }
+
+  const scoped_refptr<media::VideoFrame> video_frame = CreateFrameForTest(
+      test_frame_type, frame_size, encode_alpha_channel, /*padding=*/0);
+  if (!video_frame) {
+    ASSERT_TRUE(!!video_frame);
+  }
+
+  InSequence s;
+  base::RunLoop run_loop1;
+  EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo)
+      .WillOnce(RunClosure(run_loop1.QuitClosure()));
+  Encode(video_frame, base::TimeTicks::Now());
+  run_loop1.Run();
+
+  EXPECT_TRUE(HasEncoderInstance());
+
+  // MediaRecorderEncoderWrapper is configured with a screen content hint.
+  const bool is_media_recorder_encoder_wrapper =
+      testing::get<4>(GetParam()) ||
+      testing::get<0>(GetParam()) == VideoTrackRecorder::CodecId::kAv1;
+  EXPECT_EQ(is_media_recorder_encoder_wrapper, IsScreenContentEncoding());
   Mock::VerifyAndClearExpectations(this);
 }
 
