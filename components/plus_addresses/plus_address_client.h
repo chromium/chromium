@@ -51,21 +51,22 @@ class PlusAddressClient {
   PlusAddressClient(PlusAddressClient&&);
   PlusAddressClient& operator=(PlusAddressClient&&);
 
-  // Initiates a request to get a plus address for use on `site` and only
+  // Initiates a request to get a plus address for use on `origin` and only
   // runs `callback` with a plus address if the request to the server
   // completes successfully and returns the expected response.
   //
   // TODO (crbug.com/1467623): Should callback be run if the request fails?
-  void CreatePlusAddress(const std::string& site, PlusAddressCallback callback);
+  void CreatePlusAddress(const url::Origin& origin,
+                         PlusAddressCallback callback);
 
-  // Initiates a request to get a plus address for use on `site` and runs
+  // Initiates a request to get a plus address for use on `origin` and runs
   // `on_completed` when the request is completed.
-  void ReservePlusAddress(const std::string& site,
+  void ReservePlusAddress(const url::Origin& origin,
                           PlusAddressRequestCallback on_completed);
 
-  // Initiates a request to confirm `plus_address` for use on `site` and runs
+  // Initiates a request to confirm `plus_address` for use on `origin` and runs
   // `on_completed` when the request is completed.
-  void ConfirmPlusAddress(const std::string& site,
+  void ConfirmPlusAddress(const url::Origin& origin,
                           const std::string& plus_address,
                           PlusAddressRequestCallback on_completed);
 

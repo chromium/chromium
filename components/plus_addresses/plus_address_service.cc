@@ -112,7 +112,7 @@ void PlusAddressService::OfferPlusAddressCreation(
     return;
   }
   plus_address_client_.CreatePlusAddress(
-      GetEtldPlusOne(origin),
+      origin,
       // On receiving the PlusAddress...
       base::BindOnce(
           // ... first send it back to Autofill
@@ -136,7 +136,7 @@ void PlusAddressService::ReservePlusAddress(
     return;
   }
   plus_address_client_.ReservePlusAddress(
-      GetEtldPlusOne(origin),
+      origin,
       // Thin wrapper around on_completed to save the PlusAddress in the
       // success case.
       base::BindOnce(
@@ -168,7 +168,7 @@ void PlusAddressService::ConfirmPlusAddress(
     return;
   }
   plus_address_client_.ConfirmPlusAddress(
-      GetEtldPlusOne(origin), plus_address,
+      origin, plus_address,
       // Thin wrapper around on_completed to save the PlusAddress in the
       // success case.
       base::BindOnce(

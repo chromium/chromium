@@ -131,9 +131,9 @@ class PlusAddressClientRequests : public ::testing::Test {
 // Ensures the request sent by Chrome matches what we intended.
 TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_IssuesCorrectRequest) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  std::string site = "https://foobar.com";
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   client.SetAccessTokenInfoForTesting(eternal_token_info);
-  client.CreatePlusAddress(site, base::DoNothing());
+  client.CreatePlusAddress(origin, base::DoNothing());
 
   // Validate that the V1 Create request uses the right url and requests method.
   EXPECT_EQ(last_request.url, fullProfileEndpoint);
@@ -154,7 +154,7 @@ TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_IssuesCorrectRequest) {
   ASSERT_TRUE(body.has_value() && body->is_dict());
   std::string* facet_entry = body->GetDict().FindString("facet");
   ASSERT_NE(facet_entry, nullptr);
-  EXPECT_EQ(*facet_entry, site);
+  EXPECT_EQ(*facet_entry, origin.Serialize());
 }
 
 TEST_F(PlusAddressClientRequests,
@@ -162,11 +162,14 @@ TEST_F(PlusAddressClientRequests,
   identity_test_env.MakePrimaryAccountAvailable("foo@plus.plus",
                                                 signin::ConsentLevel::kSignin);
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  std::string site = "https://foobar.com";
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
+  // Mock out the response from the remote service as a string. The service
+  // refers to this as a facet, so matching its nomenclature.
+  std::string facet = origin.Serialize();
   base::MockOnceCallback<void(const std::string&)> callback;
   // Make a request when the PlusAddressClient has an expired OAuth token.
   EXPECT_CALL(callback, Run).Times(0);
-  client.CreatePlusAddress(site, callback.Get());
+  client.CreatePlusAddress(origin, callback.Get());
 
   // Verify that CreatePlusAddress hasn't already sent the network request.
   ASSERT_EQ(test_url_loader_factory.NumPending(), 0);
@@ -181,7 +184,7 @@ TEST_F(PlusAddressClientRequests,
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
   test_url_loader_factory.SimulateResponseForPendingRequest(
       fullProfileEndpoint,
-      MakeCreationResponse(site, "unused+plus@plus.plus", true));
+      MakeCreationResponse(facet, "unused+plus@plus.plus", true));
 }
 
 // For tests that cover successful but unexpected server responses, see the
@@ -190,18 +193,19 @@ TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_RunsCallbackOnSuccess) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.SetClockForTesting(test_clock());
-  std::string site = "https://foobar.com";
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
+  std::string facet = origin.Serialize();
   std::string plus_address = "plusone@plus.plus";
 
   base::MockOnceCallback<void(const std::string&)> on_complete;
   // Initiate a request...
-  client.CreatePlusAddress(site, on_complete.Get());
+  client.CreatePlusAddress(origin, on_complete.Get());
   // Fulfill the request and the callback should be run
   EXPECT_CALL(on_complete, Run(plus_address)).Times(1);
 
   base::TimeDelta latency = base::Milliseconds(2400);
   AdvanceTimeTo(start_time + latency);
-  const std::string json = MakeCreationResponse(site, plus_address, true);
+  const std::string json = MakeCreationResponse(facet, plus_address, true);
   test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
                                                             json);
 
@@ -224,11 +228,12 @@ TEST_F(PlusAddressClientRequests,
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   client.SetAccessTokenInfoForTesting(eternal_token_info);
   client.SetClockForTesting(test_clock());
-  std::string site = "https://foobar.com";
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
+  std::string facet = origin.Serialize();
 
   base::MockOnceCallback<void(const std::string&)> on_response_parsed;
   // Initiate a request...
-  client.CreatePlusAddress(site, on_response_parsed.Get());
+  client.CreatePlusAddress(origin, on_response_parsed.Get());
 
   // The request fails and the callback is never run
   EXPECT_CALL(on_response_parsed, Run).Times(0);
@@ -256,32 +261,35 @@ TEST_F(PlusAddressClientRequests,
   base::MockOnceCallback<void(const std::string&)> first_request;
   base::MockOnceCallback<void(const std::string&)> second_request;
 
-  std::string site_1 = "hulu.com";
-  std::string site_2 = "netflix.com";
+  const url::Origin origin_1 = url::Origin::Create(GURL("https://foobar.com"));
+  std::string facet_1 = origin_1.Serialize();
+  const url::Origin origin_2 = url::Origin::Create(GURL("https://barfoo.com"));
+  std::string facet_2 = origin_2.Serialize();
   std::string plus_address_1 = "plus1@plus.plus";
   std::string plus_address_2 = "plus2@plus.plus";
 
   // Send two requests in quick succession
-  client.CreatePlusAddress(site_1, first_request.Get());
-  client.CreatePlusAddress(site_2, second_request.Get());
+  client.CreatePlusAddress(origin_1, first_request.Get());
+  client.CreatePlusAddress(origin_2, second_request.Get());
 
   // The first callback should be run once the server responds to its request.
   PlusAddressMap expected;
   EXPECT_CALL(first_request, Run(plus_address_1)).Times(1);
   test_url_loader_factory.SimulateResponseForPendingRequest(
-      fullProfileEndpoint, MakeCreationResponse(site_1, plus_address_1, true));
+      fullProfileEndpoint, MakeCreationResponse(facet_1, plus_address_1, true));
   // Same for the second callback.
   EXPECT_CALL(second_request, Run(plus_address_2)).Times(1);
   test_url_loader_factory.SimulateResponseForPendingRequest(
-      fullProfileEndpoint, MakeCreationResponse(site_2, plus_address_2, true));
+      fullProfileEndpoint, MakeCreationResponse(facet_2, plus_address_2, true));
 }
 
 // Ensures the request sent by Chrome matches what we intended.
 TEST_F(PlusAddressClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  std::string site = "https://foobar.com";
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
+  std::string facet = origin.Serialize();
   client.SetAccessTokenInfoForTesting(eternal_token_info);
-  client.ReservePlusAddress(site, base::DoNothing());
+  client.ReservePlusAddress(origin, base::DoNothing());
 
   // Validate that the V1 Create request uses the right url and requests method.
   EXPECT_EQ(last_request.url, fullReserveEndpoint);
@@ -302,16 +310,17 @@ TEST_F(PlusAddressClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
   ASSERT_TRUE(body.has_value() && body->is_dict());
   std::string* facet_entry = body->GetDict().FindString("facet");
   ASSERT_NE(facet_entry, nullptr);
-  EXPECT_EQ(*facet_entry, site);
+  EXPECT_EQ(*facet_entry, facet);
 }
 
 // Ensures the request sent by Chrome matches what we intended.
 TEST_F(PlusAddressClientRequests, ConfirmPlusAddress_IssuesCorrectRequest) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
-  std::string site = "https://foobar.com";
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
+  std::string facet = origin.Serialize();
   std::string plus_address = "plus@plus.plus";
   client.SetAccessTokenInfoForTesting(eternal_token_info);
-  client.ConfirmPlusAddress(site, plus_address, base::DoNothing());
+  client.ConfirmPlusAddress(origin, plus_address, base::DoNothing());
 
   // Validate that the V1 Create request uses the right url and requests method.
   EXPECT_EQ(last_request.url, fullConfirmEndpoint);
@@ -332,7 +341,7 @@ TEST_F(PlusAddressClientRequests, ConfirmPlusAddress_IssuesCorrectRequest) {
   ASSERT_TRUE(body.has_value() && body->is_dict());
   std::string* facet_entry = body->GetDict().FindString("facet");
   ASSERT_NE(facet_entry, nullptr);
-  EXPECT_EQ(*facet_entry, site);
+  EXPECT_EQ(*facet_entry, facet);
 }
 
 // Tests the behavior of the PlusAddressCreationRequests (Reserve+Confirm) which
@@ -359,9 +368,9 @@ class PlusAddressCreationRequests
   }
   void MakeCreationRequest(PlusAddressRequestCallback callback) {
     if (GetParam() == PlusAddressNetworkRequestType::kReserve) {
-      client_.ReservePlusAddress(site, std::move(callback));
+      client_.ReservePlusAddress(origin_, std::move(callback));
     } else if (GetParam() == PlusAddressNetworkRequestType::kCreate) {
-      client_.ConfirmPlusAddress(site, plus_address, std::move(callback));
+      client_.ConfirmPlusAddress(origin_, plus_address_, std::move(callback));
     } else {
       NOTREACHED();
     }
@@ -378,9 +387,9 @@ class PlusAddressCreationRequests
         signin::AccessTokenInfo(token, base::Time::Min(), ""));
   }
 
-  std::string site = "https://foobar.com";
-  std::string plus_address = "plus@plus.plus";
-  base::TimeDelta latency = base::Milliseconds(2400);
+  const url::Origin origin_ = url::Origin::Create(GURL("https://foobar.com"));
+  const std::string plus_address_ = "plus@plus.plus";
+  base::TimeDelta latency_ = base::Milliseconds(2400);
 
  private:
   PlusAddressClient client_;
@@ -398,12 +407,14 @@ TEST_P(PlusAddressCreationRequests, HandlesConcurrentRequests) {
 
   // The first callback should be run once the server responds to its request.
   test_url_loader_factory.SimulateResponseForPendingRequest(
-      Endpoint(), MakeCreationResponse(site, plus_address, true));
+      Endpoint(),
+      MakeCreationResponse(origin_.Serialize(), plus_address_, true));
   EXPECT_TRUE(first_request.IsReady());
 
   // Same for the second callback.
   test_url_loader_factory.SimulateResponseForPendingRequest(
-      Endpoint(), MakeCreationResponse(site, plus_address, true));
+      Endpoint(),
+      MakeCreationResponse(origin_.Serialize(), plus_address_, true));
   EXPECT_TRUE(second_request.IsReady());
 }
 
@@ -428,9 +439,10 @@ TEST_P(PlusAddressCreationRequests, EnqueuedUntilOAuthTokenFetched) {
   ASSERT_EQ(test_url_loader_factory.NumPending(), 1);
   ASSERT_FALSE(future.IsReady());
   test_url_loader_factory.SimulateResponseForPendingRequest(
-      Endpoint(), MakeCreationResponse(site, plus_address, true));
+      Endpoint(),
+      MakeCreationResponse(origin_.Serialize(), plus_address_, true));
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get()->plus_address, plus_address);
+  EXPECT_EQ(future.Get()->plus_address, plus_address_);
 }
 
 TEST_P(PlusAddressCreationRequests, RunCallbackOnSuccess) {
@@ -439,16 +451,17 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnSuccess) {
   MakeCreationRequest(future.GetCallback());
 
   // Fulfill the request and the appropriate callback should be run.
-  AdvanceTimeTo(start_time + latency);
-  const std::string json = MakeCreationResponse(site, plus_address, true);
+  AdvanceTimeTo(start_time + latency_);
+  const std::string json =
+      MakeCreationResponse(origin_.Serialize(), plus_address_, true);
   test_url_loader_factory.SimulateResponseForPendingRequest(Endpoint(), json);
 
   ASSERT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get()->plus_address, plus_address);
+  EXPECT_EQ(future.Get()->plus_address, plus_address_);
 
   // Verify expected metrics.
-  histogram_tester.ExpectUniqueTimeSample(LatencyHistogram(), latency, 1);
+  histogram_tester.ExpectUniqueTimeSample(LatencyHistogram(), latency_, 1);
   histogram_tester.ExpectUniqueSample(ResponseCodeHistogram(), 200, 1);
   histogram_tester.ExpectUniqueSample(ResponseByteSizeHistogram(), json.size(),
                                       1);
@@ -459,7 +472,7 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnNetworkError) {
   base::test::TestFuture<const PlusProfileOrError&> future;
   MakeCreationRequest(future.GetCallback());
 
-  AdvanceTimeTo(start_time + latency);
+  AdvanceTimeTo(start_time + latency_);
   EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
       Endpoint(), "", net::HTTP_NOT_FOUND));
 
@@ -470,7 +483,7 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnNetworkError) {
             PlusAddressRequestErrorType::kNetworkError);
 
   // Verify expected metrics.
-  histogram_tester.ExpectUniqueTimeSample(LatencyHistogram(), latency, 1);
+  histogram_tester.ExpectUniqueTimeSample(LatencyHistogram(), latency_, 1);
   histogram_tester.ExpectUniqueSample(ResponseCodeHistogram(),
                                       net::HTTP_NOT_FOUND, 1);
   histogram_tester.ExpectTotalCount(ResponseByteSizeHistogram(), 0);
@@ -480,7 +493,7 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnClientError) {
   // Initiate a request...
   base::test::TestFuture<const PlusProfileOrError&> future;
   MakeCreationRequest(future.GetCallback());
-  AdvanceTimeTo(start_time + latency);
+  AdvanceTimeTo(start_time + latency_);
 
   // Return a response missing all of the expected fields.
   const std::string json = "{}";
@@ -493,7 +506,7 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnClientError) {
             PlusAddressRequestErrorType::kParsingError);
 
   // Verify expected metrics.
-  histogram_tester.ExpectUniqueTimeSample(LatencyHistogram(), latency, 1);
+  histogram_tester.ExpectUniqueTimeSample(LatencyHistogram(), latency_, 1);
   histogram_tester.ExpectUniqueSample(ResponseCodeHistogram(), net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(ResponseByteSizeHistogram(), json.size(),
                                       1);
@@ -563,18 +576,19 @@ TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSuccess) {
   client.GetAllPlusAddresses(future.GetCallback());
   std::string plus_address_1 = "plus1@plus.plus";
   std::string plus_address_2 = "plus2@plus.plus";
-  std::string site_1 = "google.com";
-  std::string site_2 = "netflix.com";
+  std::string facet_1 = "asdf.example";
+  std::string facet_2 = "fdsa.example";
 
-  PlusAddressMap expected({{site_1, plus_address_1}, {site_2, plus_address_2}});
+  PlusAddressMap expected(
+      {{facet_1, plus_address_1}, {facet_2, plus_address_2}});
   // Fulfill the request and the callback should be run
   base::TimeDelta latency = base::Milliseconds(2400);
   AdvanceTimeTo(start_time + latency);
   const std::string json =
-      test::MakeListResponse({PlusProfile{.facet = site_1,
+      test::MakeListResponse({PlusProfile{.facet = facet_1,
                                           .plus_address = plus_address_1,
                                           .is_confirmed = true},
-                              PlusProfile{.facet = site_2,
+                              PlusProfile{.facet = facet_2,
                                           .plus_address = plus_address_2,
                                           .is_confirmed = true}});
   test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,

@@ -49,7 +49,8 @@ const net::NetworkTrafficAnnotationTag kCreatePlusAddressAnnotation =
           type: ACCESS_TOKEN,
           type: SENSITIVE_URL
         }
-        data: "The site on which the user wants to use a plus address is sent."
+        data: "The origin on which the user wants to use a plus address is "
+                "sent."
         destination: GOOGLE_OWNED_SERVICE
         last_reviewed: "2023-09-07"
       }
@@ -79,7 +80,7 @@ const net::NetworkTrafficAnnotationTag kReservePlusAddressAnnotation =
           type: ACCESS_TOKEN,
           type: SENSITIVE_URL
         }
-        data: "The site that the user may use a plus address on is sent."
+        data: "The origin that the user may use a plus address on is sent."
         destination: GOOGLE_OWNED_SERVICE
         last_reviewed: "2023-09-23"
       }
@@ -110,8 +111,8 @@ const net::NetworkTrafficAnnotationTag kConfirmPlusAddressAnnotation =
           type: SENSITIVE_URL,
           type: USERNAME
         }
-        data: "The plus address and the site that the user is using it on are "
-              "both sent."
+        data: "The plus address and the origin that the user is using it on "
+              "are  both sent."
         destination: GOOGLE_OWNED_SERVICE
         last_reviewed: "2023-09-23"
       }
@@ -172,7 +173,7 @@ PlusAddressClient::~PlusAddressClient() = default;
 PlusAddressClient::PlusAddressClient(PlusAddressClient&&) = default;
 PlusAddressClient& PlusAddressClient::operator=(PlusAddressClient&&) = default;
 
-void PlusAddressClient::CreatePlusAddress(const std::string& site,
+void PlusAddressClient::CreatePlusAddress(const url::Origin& origin,
                                           PlusAddressCallback callback) {
   if (!server_url_) {
     return;
@@ -180,7 +181,7 @@ void PlusAddressClient::CreatePlusAddress(const std::string& site,
   // Refresh the OAuth token if it's expired.
   if (access_token_info_.expiration_time < clock_->Now()) {
     GetAuthToken(base::BindOnce(&PlusAddressClient::CreatePlusAddress,
-                                base::Unretained(this), site,
+                                base::Unretained(this), origin,
                                 std::move(callback)));
     return;
   }
@@ -195,7 +196,7 @@ void PlusAddressClient::CreatePlusAddress(const std::string& site,
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   base::Value::Dict payload;
-  payload.Set("facet", site);
+  payload.Set("facet", origin.Serialize());
   std::string request_body;
   bool wrote_payload = base::JSONWriter::Write(payload, &request_body);
   DCHECK(wrote_payload);
@@ -219,7 +220,7 @@ void PlusAddressClient::CreatePlusAddress(const std::string& site,
 }
 
 void PlusAddressClient::ReservePlusAddress(
-    const std::string& site,
+    const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
   if (!server_url_) {
     return;
@@ -227,7 +228,7 @@ void PlusAddressClient::ReservePlusAddress(
   // Refresh the OAuth token if it's expired.
   if (access_token_info_.expiration_time < clock_->Now()) {
     GetAuthToken(base::BindOnce(&PlusAddressClient::ReservePlusAddress,
-                                base::Unretained(this), site,
+                                base::Unretained(this), origin,
                                 std::move(on_completed)));
     return;
   }
@@ -242,7 +243,7 @@ void PlusAddressClient::ReservePlusAddress(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   base::Value::Dict payload;
-  payload.Set("facet", site);
+  payload.Set("facet", origin.Serialize());
   std::string request_body;
   bool wrote_payload = base::JSONWriter::Write(payload, &request_body);
   DCHECK(wrote_payload);
@@ -267,7 +268,7 @@ void PlusAddressClient::ReservePlusAddress(
 }
 
 void PlusAddressClient::ConfirmPlusAddress(
-    const std::string& site,
+    const url::Origin& origin,
     const std::string& plus_address,
     PlusAddressRequestCallback on_completed) {
   if (!server_url_) {
@@ -276,7 +277,7 @@ void PlusAddressClient::ConfirmPlusAddress(
   // Refresh the OAuth token if it's expired.
   if (access_token_info_.expiration_time < clock_->Now()) {
     GetAuthToken(base::BindOnce(&PlusAddressClient::ConfirmPlusAddress,
-                                base::Unretained(this), plus_address, site,
+                                base::Unretained(this), origin, plus_address,
                                 std::move(on_completed)));
     return;
   }
@@ -291,7 +292,7 @@ void PlusAddressClient::ConfirmPlusAddress(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   base::Value::Dict payload;
-  payload.Set("facet", site);
+  payload.Set("facet", origin.Serialize());
   payload.Set("reserved_email_address", plus_address);
   std::string request_body;
   bool wrote_payload = base::JSONWriter::Write(payload, &request_body);
