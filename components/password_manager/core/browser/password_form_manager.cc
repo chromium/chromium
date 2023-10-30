@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_form_manager.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <tuple>
@@ -844,7 +845,7 @@ bool PasswordFormManager::ProvisionallySave(
         possible_usernames) {
   DCHECK(DoesManage(submitted_form.unique_renderer_id, driver));
   DCHECK(client_->IsSavingAndFillingEnabled(submitted_form.url));
-  auto [parsed_submitted_form, username_detection_method] =
+  auto [parsed_submitted_form, in_form_username_detection_method] =
       ParseFormAndMakeLogging(submitted_form, FormDataParser::Mode::kSaving);
   RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_submitted_form,
                          FormDataParser::Mode::kSaving);
@@ -875,31 +876,8 @@ bool PasswordFormManager::ProvisionallySave(
   votes_uploader_.clear_single_username_vote_data();
 
   if (possible_usernames && !possible_usernames->empty()) {
-    std::optional<UsernameFoundOutsideOfForm> possible_username =
-        FindBestPossibleUsernameCandidate(*possible_usernames);
-
-    // `possible_username` is considered for single username vote in three
-    // cases:
-    // 1) There is a password field and no username field in the current form.
-    // 2) There are both password and username fields, and the username
-    // value matches the username value (`possible_username`) in the single
-    // username form.
-    // 3) There is a username field outside of the password form that is a
-    // server override.
-    // 4) Username field outside of the password form has a server prediction,
-    // while username in the password form was found using client-side
-    // heuristics.
-    if (IsPasswordFormWithoutUsername(
-            parsed_submitted_form_.get()) ||  // Case (1).
-        (possible_username.has_value() &&
-         (possible_username.value()
-              .password_form_had_matching_username ||  // Case (2).
-          UsernameOutsideOfFormHasHigherPriority(
-              possible_username.value().priority,
-              username_detection_method)  // Case (3) & (4).
-          ))) {
-      HandleUsernameFirstFlow(possible_username);
-    }
+    HandleUsernameFirstFlow(*possible_usernames,
+                            in_form_username_detection_method);
   }
   HandleForgotPasswordFormData();
 
@@ -1329,16 +1307,61 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
   UpdatePredictionsForObservedForm(predictions);
 }
 
+// Best candidate is considered for single username vote in four cases:
+// 1) There is a password field and no username field in the current form.
+// 2) There are both password and username fields, and the username
+// value matches the username value (`possible_username`) in the single
+// username form.
+// 3) There is a username field outside of the password form that is a
+// server override.
+// 4) Username field outside of the password form has a server prediction,
+// while username in the password form was found using client-side
+// heuristics.
+// If no case is suitable, don't consider for single username vote.
+bool PasswordFormManager::ShouldPreferUsernameFoundOutsideOfForm(
+    const std::optional<UsernameFoundOutsideOfForm>& best_candidate,
+    FormDataParser::UsernameDetectionMethod in_form_username_detection_method) {
+  if (IsPasswordFormWithoutUsername(
+          parsed_submitted_form_.get())) {  // Case (1).
+    // Don't check for best candidate. If it is empty, vote for fallback
+    // classifier must be sent.
+    return true;
+  }
+  if (best_candidate.has_value()) {
+    if (best_candidate.value()
+            .password_form_had_matching_username) {  // Case (2).
+      return true;
+    }
+    if (UsernameOutsideOfFormHasHigherPriority(
+            best_candidate.value().priority,
+            in_form_username_detection_method)) {  // Case (3) & (4).
+      return true;
+    }
+  }
+  return false;
+}
+
 void PasswordFormManager::HandleUsernameFirstFlow(
-    const std::optional<UsernameFoundOutsideOfForm>& possible_username) {
-  if (!possible_username.has_value()) {
-    // !IsPossibleSingleUsernameAvailable(possible_username)
+    const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>&
+        possible_usernames,
+    FormDataParser::UsernameDetectionMethod in_form_username_detection_method) {
+  std::optional<UsernameFoundOutsideOfForm> best_candidate =
+      FindBestPossibleUsernameCandidate(possible_usernames);
+  bool should_prefer_username_found_outside_of_form =
+      ShouldPreferUsernameFoundOutsideOfForm(best_candidate,
+                                             in_form_username_detection_method);
+  if (!should_prefer_username_found_outside_of_form) {
+    return;
+  }
+
+  if (!best_candidate.has_value()) {
+    // Happens when there is no username field in the password form as well.
     // If no single username typing preceded single password typing, set
     // empty single username vote data for the fallback classifier.
     votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData());
     return;
   }
-  const UsernameFoundOutsideOfForm& picked_username = possible_username.value();
+  const UsernameFoundOutsideOfForm& picked_username = best_candidate.value();
   votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData(
       picked_username.data.renderer_id, picked_username.data.value,
       picked_username.data.form_predictions.value_or(FormPredictions()),

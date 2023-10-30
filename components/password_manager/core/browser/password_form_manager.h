@@ -357,12 +357,20 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // credentials available to use.
   bool WebAuthnCredentialsAvailable() const;
 
+  // Checks if `best_candidate` has better signal than the username
+  // found inside the password form.
+  bool ShouldPreferUsernameFoundOutsideOfForm(
+      const std::optional<UsernameFoundOutsideOfForm>& best_candidate,
+      FormDataParser::UsernameDetectionMethod
+          in_form_username_detection_method);
+
   // Sets voting data and update `parsed_submitted_form_` with the correct
   // username value for a password form without a username field.
-  // If `possible_username` equals `std::nullopt`, only voting for the fallback
-  // classifier will be set.
   void HandleUsernameFirstFlow(
-      const std::optional<UsernameFoundOutsideOfForm>& possible_username);
+      const base::LRUCache<PossibleUsernameFieldIdentifier,
+                           PossibleUsernameData>& possible_usernames,
+      FormDataParser::UsernameDetectionMethod
+          in_form_username_detection_method);
 
   // Sets voting data for a password form that is likely a forgot password form
   // (a form, into which the user inputs their username to start the
