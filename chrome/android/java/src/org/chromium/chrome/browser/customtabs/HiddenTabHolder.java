@@ -195,10 +195,8 @@ public class HiddenTabHolder {
             if (referrer == null) referrer = "";
 
             if (urlsMatch && TextUtils.equals(speculationReferrer, referrer)) {
-                CustomTabsConnection.recordSpeculationStatusSwapTabTaken();
                 return tab;
             } else {
-                CustomTabsConnection.recordSpeculationStatusSwapTabNotMatched();
                 tab.destroy();
                 return null;
             }

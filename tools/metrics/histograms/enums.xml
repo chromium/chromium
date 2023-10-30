@@ -26025,27 +26025,6 @@ metrics consent we also won't be able to send UMA metrics. -->
              memory"/>
 </enum>
 
-<enum name="CustomTabsSpeculationStatusOnStart">
-  <int value="0"
-      label="Speculation allowed. If started, the kind will also be recorded"/>
-  <int value="1" label="Prefetch kind of speculation started"/>
-  <int value="2" label="Prerender kind of speculation started"/>
-  <int value="3" label="Background Tab kind of speculation started"/>
-  <int value="4" label="Prerender speculation allowed, but not started"/>
-  <int value="5" label="Not allowed: Device class"/>
-  <int value="6" label="Not allowed: Block 3rd party cookies"/>
-  <int value="7" label="Not allowed: Network prediction disabled"/>
-  <int value="8" label="Not allowed: Data reduction enabled"/>
-  <int value="9" label="(Obsolete) Not allowed: Network metered"/>
-</enum>
-
-<enum name="CustomTabsSpeculationStatusOnSwap">
-  <int value="0" label="Background Tab Swapped In"/>
-  <int value="1" label="Background Tab Not Matched"/>
-  <int value="2" label="Prerender Swapped In"/>
-  <int value="3" label="Prerender Not Matched"/>
-</enum>
-
 <enum name="D3D11FeatureLevel">
   <int value="0" label="Unknown"/>
   <int value="1" label="No D3D11 DLL"/>

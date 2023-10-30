@@ -641,32 +641,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.SpeculationStatusOnStart"
-    enum="CustomTabsSpeculationStatusOnStart" expires_after="2021-02-14">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Recorded only for Android. How a speculation was started or why it was
-    disallowed. This is recorded when a speculation of any kind is requested,
-    with either a &quot;Speculation allowed&quot; value, or a reason why it was
-    not allowed. If the speculation is allowed and is attempted to be started,
-    the status on start will be counted in addition: one of
-    &quot;Prefetch&quot;, &quot;Prerender&quot;, &quot;Background Tab&quot; or
-    &quot;Prerender not started&quot;. The last case is when a prerender is
-    abandoned during start. Starting with M84 this is is also recorded for
-    webapps/WebAPKs. Filter the platform for just CCT/TWA data.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.SpeculationStatusOnSwap"
-    enum="CustomTabsSpeculationStatusOnSwap" expires_after="2020-07-26">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Recorded only for Android. Recorded when a speculation is requesting to swap
-    into a visible tab. Starting with M84 this is is also recorded for
-    webapps/WebAPKs. Filter the platform for just CCT/TWA data.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.Startup.TimeToFirstCommitNavigation2.{suffix}"
     units="ms" expires_after="2024-08-25">
   <owner>mthiesse@chromium.org</owner>
