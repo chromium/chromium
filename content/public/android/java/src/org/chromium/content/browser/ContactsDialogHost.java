@@ -44,6 +44,10 @@ public class ContactsDialogHost implements ContactsPickerListener {
         mNativeContactsProviderAndroid = 0;
     }
 
+    private boolean isDestroyed() {
+        return mNativeContactsProviderAndroid == 0;
+    }
+
     @CalledByNative
     private void showDialog(boolean multiple, boolean includeNames, boolean includeEmails,
             boolean includeTel, boolean includeAddresses, boolean includeIcons,
@@ -72,6 +76,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
 
         windowAndroid.requestPermissions(
                 new String[] {Manifest.permission.READ_CONTACTS}, (permissions, grantResults) -> {
+                    if (isDestroyed()) return;
                     if (permissions.length == 1 && grantResults.length == 1
                             && TextUtils.equals(permissions[0], Manifest.permission.READ_CONTACTS)
                             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
