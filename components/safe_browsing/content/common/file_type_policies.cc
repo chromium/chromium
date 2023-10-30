@@ -315,9 +315,36 @@ DownloadFileType::DangerLevel FileTypePolicies::GetFileDangerLevel(
 uint64_t FileTypePolicies::GetMaxFileSizeToAnalyze(
     const std::string& ascii_ext) const {
   AutoLock lock(lock_);
-  return PolicyForExtension(ascii_ext, GURL{}, nullptr)
+  std::string inspection_ext;
+  switch (PolicyForExtension(ascii_ext, GURL{}, nullptr).inspection_type()) {
+    case DownloadFileType::NONE:
+      break;
+    case DownloadFileType::ZIP:
+      inspection_ext = "zip";
+      break;
+    case DownloadFileType::RAR:
+      inspection_ext = "rar";
+      break;
+    case DownloadFileType::DMG:
+      inspection_ext = "dmg";
+      break;
+    case DownloadFileType::OFFICE_DOCUMENT:
+      // Office documents don't currently check a max file size to analyze, so
+      // they don't need an `inspection_ext` here.
+      break;
+    case DownloadFileType::SEVEN_ZIP:
+      inspection_ext = "7z";
+      break;
+  }
+
+  return PolicyForExtension(inspection_ext, GURL{}, nullptr)
       .platform_settings(0)
       .max_file_size_to_analyze();
+}
+
+uint64_t FileTypePolicies::GetMaxFileSizeToAnalyze(
+    const base::FilePath& file) const {
+  return GetMaxFileSizeToAnalyze(CanonicalizedExtension(file));
 }
 
 uint64_t FileTypePolicies::GetMaxArchivedBinariesToReport() const {
