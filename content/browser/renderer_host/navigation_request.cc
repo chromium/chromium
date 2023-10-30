@@ -977,8 +977,9 @@ network::mojom::WebSandboxFlags GetSandboxFlagsInitiator(
   return policy_container_host->policies().sandbox_flags;
 }
 
-bool IsSharedStorageWritableForNavigationRequest(FrameTreeNode* frame_tree_node,
-                                                 const GURL& url) {
+bool IsSharedStorageWritableEligibleForNavigationRequest(
+    FrameTreeNode* frame_tree_node,
+    const GURL& url) {
   // False if the <iframe> does not have the "sharedstoragewritable" opt-in
   // attribute.
   if (!frame_tree_node->shared_storage_writable()) {
@@ -1669,8 +1670,11 @@ NavigationRequest::NavigationRequest(
 
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
       base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118)) {
-    shared_storage_writable_ = IsSharedStorageWritableForNavigationRequest(
-        frame_tree_node_, common_params_->url);
+    shared_storage_writable_opted_in_ =
+        frame_tree_node_->shared_storage_writable();
+    shared_storage_writable_eligible_ =
+        IsSharedStorageWritableEligibleForNavigationRequest(
+            frame_tree_node_, common_params_->url);
   }
 
   if (from_begin_navigation_) {
@@ -4955,7 +4959,7 @@ void NavigationRequest::OnStartChecksComplete(
           devtools_accepted_stream_types, is_pdf_, GetInitiatorProcessId(),
           initiator_document_token_, GetPreviousRenderFrameHostId(),
           allow_cookies_from_browser_, navigation_id_,
-          shared_storage_writable_),
+          shared_storage_writable_eligible_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       std::move(prefetched_signed_exchange_cache_), this, loader_type,
       CreateCookieAccessObserver(), CreateTrustTokenAccessObserver(),
@@ -5131,13 +5135,23 @@ void NavigationRequest::OnRedirectChecksComplete(
                                *topics_header_value);
   }
 
-  if (shared_storage_writable_) {
+  if (shared_storage_writable_opted_in_) {
     // On a redirect, the PermissionsPolicy may change the status of this
     // request's Shared Storage eligibility, so we need to re-compute it.
-    shared_storage_writable_ = IsSharedStorageWritableForNavigationRequest(
-        frame_tree_node_, common_params_->url);
-    if (!shared_storage_writable_) {
-      removed_headers.push_back(kSecSharedStorageWritableRequestHeaderKey);
+    bool previous_shared_storage_writable_eligible =
+        shared_storage_writable_eligible_;
+    shared_storage_writable_eligible_ =
+        IsSharedStorageWritableEligibleForNavigationRequest(
+            frame_tree_node_, common_params_->url);
+
+    if (shared_storage_writable_eligible_ !=
+        previous_shared_storage_writable_eligible) {
+      if (shared_storage_writable_eligible_) {
+        modified_headers.SetHeader(kSecSharedStorageWritableRequestHeaderKey,
+                                   "?1");
+      } else {
+        removed_headers.push_back(kSecSharedStorageWritableRequestHeaderKey);
+      }
     }
   }
 

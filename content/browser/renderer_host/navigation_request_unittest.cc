@@ -497,8 +497,8 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
   // Verify that the main frame's `NavigationRequest` will not be
   // SharedStorageWritable.
   ASSERT_TRUE(main_navigation->GetNavigationHandle());
-  EXPECT_FALSE(
-      main_navigation->GetNavigationHandle()->shared_storage_writable());
+  EXPECT_FALSE(main_navigation->GetNavigationHandle()
+                   ->shared_storage_writable_eligible());
 
   // Commit the navigation.
   main_navigation->Commit();
@@ -520,8 +520,8 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
 
   // Verify that the `NavigationRequest` will be SharedStorageWritable.
   ASSERT_TRUE(child_navigation->GetNavigationHandle());
-  EXPECT_TRUE(
-      child_navigation->GetNavigationHandle()->shared_storage_writable());
+  EXPECT_TRUE(child_navigation->GetNavigationHandle()
+                  ->shared_storage_writable_eligible());
 
   // Commit the navigation.
   child_navigation->Commit();
@@ -559,7 +559,7 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
   // Verify that the `NavigationRequest` will be SharedStorageWritable.
   ASSERT_TRUE(child_of_fenced_frame_navigation->GetNavigationHandle());
   EXPECT_TRUE(child_of_fenced_frame_navigation->GetNavigationHandle()
-                  ->shared_storage_writable());
+                  ->shared_storage_writable_eligible());
 
   // Commit the navigation.
   child_of_fenced_frame_navigation->Commit();

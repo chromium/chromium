@@ -11323,6 +11323,217 @@ IN_PROC_BROWSER_TEST_F(
                                  "denied the method on window.sharedStorage."));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageHeaderObserverBrowserTest,
+    Iframe_CrossOrigin_Redirect_InititalAllowed_IntermediateDenied_FinalAllowed_WriteInitialAndFinal) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/
+      "(self \"https://b.test:{{port}}\" \"https://d.test:{{port}}\")",
+      /*is_image=*/false,
+      /*redirect_hostnames=*/std::vector<std::string>({"c.test", "d.test"}));
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_FOUND,
+      /*extra_headers=*/
+      {base::StrCat({"Location: ", redirect_urls_.front().spec()}),
+       "Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
+
+  WaitForRedirectRequestAndSendResponse(
+      /*expect_writable_header=*/false,
+      /*http_status=*/net::HTTP_TEMPORARY_REDIRECT,
+      /*extra_headers=*/
+      {base::StrCat({"Location: ", redirect_urls_.back().spec()}),
+       "Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: append;key=wont;value=set"},
+      /*redirect_index=*/0);
+
+  WaitForRedirectRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: delete;key=a, set;value=will;key=set"},
+      /*redirect_index=*/1);
+
+  // There will now have been a total of 5 operations (3 previous, 2 current).
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(5);
+
+  EXPECT_EQ(observer_->header_results().size(), 2u);
+  EXPECT_EQ(observer_->header_results().back().first, redirect_origins_.back());
+  EXPECT_THAT(observer_->header_results().back().second,
+              testing::ElementsAre(true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet),
+                  DeleteOperation(redirect_origins_.back(), "a",
+                                  OperationResult::kSuccess),
+                  SetOperation(redirect_origins_.back(), "set", "will",
+                               absl::nullopt, OperationResult::kSet)));
+
+  // Create an iframe that's same-origin to the original iframe URL.
+  FrameTreeNode* iframe_node2 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node2, R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.get('set'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(3u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+
+  // Only one entry was set in b.test's shared storage.
+  EXPECT_EQ("undefined",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[2].message));
+
+  // Create an iframe that's same-origin to the first redirect URL.
+  FrameTreeNode* iframe_node3 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), redirect_urls_.front());
+
+  EvalJsResult result = EvalJs(iframe_node3, R"(
+        sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
+      )");
+
+  // c.test does not have permission to use shared storage.
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("The \"shared-storage\" Permissions Policy "
+                                 "denied the method on window.sharedStorage."));
+
+  // Create an iframe that's same-origin to the second redirect URL.
+  FrameTreeNode* iframe_node4 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), redirect_urls_.back());
+
+  ExecuteScriptInWorklet(iframe_node4, R"(
+      console.log(await sharedStorage.get('set'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url, /*expected_total_host_count=*/2u);
+
+  // One entry was set in d.test's shared storage.
+  EXPECT_EQ(5u, console_observer.messages().size());
+  EXPECT_EQ("will", base::UTF16ToUTF8(console_observer.messages()[3].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[4].message));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageHeaderObserverBrowserTest,
+    Iframe_CrossOrigin_Redirect_InitialDenied_FinalAllowed_WriteFinal) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/
+      "(self \"https://c.test:{{port}}\")",
+      /*is_image=*/false,
+      /*redirect_hostnames=*/std::vector<std::string>({"c.test"}));
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/false,
+      /*http_status=*/net::HTTP_FOUND,
+      /*extra_headers=*/
+      {base::StrCat({"Location: ", redirect_urls_.back().spec()}),
+       "Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  ASSERT_TRUE(observer_);
+
+  // No operations are invoked.
+  EXPECT_TRUE(observer_->header_results().empty());
+  EXPECT_TRUE(observer_->operations().empty());
+
+  WaitForRedirectRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: delete;key=a, set;value=will;key=set"});
+
+  observer_->WaitForOperations(2);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first,
+            redirect_origins_.back());
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
+                                           OperationResult::kSuccess),
+                           SetOperation(redirect_origins_.back(), "set", "will",
+                                        absl::nullopt, OperationResult::kSet)));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  // Create an iframe that's same-origin to the original iframe URL.
+  FrameTreeNode* iframe_node2 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
+
+  EvalJsResult result = EvalJs(iframe_node2, R"(
+        sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
+      )");
+
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("The \"shared-storage\" Permissions Policy "
+                                 "denied the method on window.sharedStorage."));
+
+  // Create an iframe that's same-origin to the redirect URL.
+  FrameTreeNode* iframe_node3 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), redirect_urls_.back());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node3, R"(
+      console.log(await sharedStorage.get('set'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  // one key was set in c.test's shared storage.
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("will", base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+}
+
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Iframe_ContentAttributeIncluded_Set) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());

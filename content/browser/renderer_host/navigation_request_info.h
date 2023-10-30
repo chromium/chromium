@@ -153,7 +153,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // Whether or not the request is eligible to write to shared storage from
   // response headers. See
   // https://github.com/WICG/shared-storage#from-response-headers.
-  bool shared_storage_writable;
+  bool shared_storage_writable_eligible;
 };
 
 }  // namespace content

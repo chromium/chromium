@@ -17,6 +17,9 @@
     const sameOriginImageUrl =
       `/shared-storage/resources/shared-storage-writable-pixel-write.png`
       + `?write=${setHeader}`;
+    const sameOriginIframeUrl =
+      `/shared-storage/resources/shared-storage-write-notify-parent.py`
+      + `?write=${setHeader}`;
     const sameOrigin = generateURL(sameOriginFetchUrl, []).origin;
     const crossOrigin = 'https://{{domains[www]}}:{{ports[https][0]}}';
 
@@ -62,6 +65,39 @@
       await deleteKeyForOrigin('hello', sameOrigin);
     }, header + ' allows the \'Shared-Storage-Writable\' header to be sent '
        + 'for the redirect of a shared storage image request, '
+       + 'where the redirect has a same-origin URL, even if an '
+       + 'intermediate redirect has a cross-origin URL.');
+
+    promise_test(async t => {
+      let redirectURL = crossOrigin
+        + '/shared-storage/resources/cors-redirect.py?location='
+        + sameOrigin + sameOriginIframeUrl;
+      let frame = document.createElement('iframe');
+      frame.src = '/shared-storage/resources/cors-redirect.py?location='
+                  + encodeURIComponent(redirectURL);
+      frame.sharedStorageWritable = true;
+
+      const promise = new Promise((resolve, reject) => {
+        window.addEventListener('message', async function handler(evt) {
+          if (evt.source === frame.contentWindow) {
+            assert_equals(evt.data.sharedStorageWritableHeader, '?1');
+            document.body.removeChild(frame);
+            window.removeEventListener('message', handler);
+            resolve();
+          }
+        });
+        window.addEventListener('error', () => {
+          reject(new Error('Navigation error'));
+        });
+      });
+      document.body.appendChild(frame);
+
+      await promise;
+
+      await verifyKeyValueForOrigin('hello', 'world', sameOrigin);
+      await deleteKeyForOrigin('hello', sameOrigin);
+    }, header + ' allows the \'Shared-Storage-Writable\' header to be sent '
+       + 'for the redirect of a shared storage iframe request, '
        + 'where the redirect has a same-origin URL, even if an '
        + 'intermediate redirect has a cross-origin URL.');
   </script>

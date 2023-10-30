@@ -338,7 +338,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   }
 
   new_request->shared_storage_writable_eligible =
-      request_info.shared_storage_writable;
+      request_info.shared_storage_writable_eligible;
 
   return new_request;
 }
