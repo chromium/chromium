@@ -1,0 +1,19 @@
+traceable_part_object_in_unmanaged.cpp:29:1: warning: [blink-gc] Class 'OffHeapObjectBad1' contains invalid fields.
+class OffHeapObjectBad1 {
+^
+traceable_part_object_in_unmanaged.cpp:33:3: warning: [blink-gc] Traceable part object field 'm_part' found in unmanaged class:
+  PartObject m_part;
+  ^
+traceable_part_object_in_unmanaged.cpp:46:1: warning: [blink-gc] Class 'TemplatedObject<blink::PartObject>' requires a trace method.
+class TemplatedObject {
+^
+traceable_part_object_in_unmanaged.cpp:48:3: note: [blink-gc] Untraced field 'm_part' declared here:
+  T m_part;
+  ^
+traceable_part_object_in_unmanaged.cpp:46:1: warning: [blink-gc] Class 'TemplatedObject<blink::PartObject>' contains invalid fields.
+class TemplatedObject {
+^
+traceable_part_object_in_unmanaged.cpp:48:3: warning: [blink-gc] Traceable part object field 'm_part' found in unmanaged class:
+  T m_part;
+  ^
+5 warnings generated.

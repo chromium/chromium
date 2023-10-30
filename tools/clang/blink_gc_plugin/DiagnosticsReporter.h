@@ -170,6 +170,7 @@ class DiagnosticsReporter {
   unsigned diag_member_in_stack_allocated_class_;
   unsigned diag_member_on_stack_;
   unsigned diag_additional_padding_;
+  unsigned diag_part_object_in_unmanaged_;
   unsigned diag_task_runner_timer_in_gc_class_note;
   unsigned diag_forbidden_field_part_object_class_note;
   unsigned diag_mojo_remote_in_gc_class_note;

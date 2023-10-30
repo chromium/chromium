@@ -26,8 +26,10 @@ private:
 
 template<typename T>
 class TemplatedObject {
-private:
-    T m_part;
+  DISALLOW_NEW();
+
+ private:
+  T m_part;
 };
 
 }
