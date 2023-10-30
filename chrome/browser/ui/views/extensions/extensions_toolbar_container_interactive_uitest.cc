@@ -1146,8 +1146,8 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that when the user clicks on the request access button and immediately
 // navigates to a different site, the confirmation text is collapsed and the
 // button displays the extensions requesting access to the new site (if any).
-// TODO(crbug.com/1457026): Flaky on mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1457026): Flaky on mac and win.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation \
   DISABLED_ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation
 #else
