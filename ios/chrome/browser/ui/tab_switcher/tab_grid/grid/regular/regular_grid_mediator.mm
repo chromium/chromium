@@ -24,6 +24,10 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 // TODO(crbug.com/1457146): Needed for `TabPresentationDelegate`, should be
 // refactored.
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
@@ -64,11 +68,15 @@
       return;
     }
 
-    _closedSessionWindow = SerializeWebStateList(self.webStateList);
+    if (!web::features::UseSessionSerializationOptimizations()) {
+      _closedSessionWindow = SerializeWebStateList(self.webStateList);
+    }
     self.webStateList->CloseAllNonPinnedWebStates(
         WebStateList::CLOSE_USER_ACTION);
   } else {
-    _closedSessionWindow = SerializeWebStateList(self.webStateList);
+    if (!web::features::UseSessionSerializationOptimizations()) {
+      _closedSessionWindow = SerializeWebStateList(self.webStateList);
+    }
     self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
   }
 
@@ -81,13 +89,15 @@
 - (void)undoCloseAllItems {
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridUndoCloseAllRegularTabs"));
-  if (!_closedSessionWindow) {
-    return;
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    if (!_closedSessionWindow) {
+      return;
+    }
+    SessionRestorationBrowserAgent::FromBrowser(self.browser)
+        ->RestoreSessionWindow(_closedSessionWindow,
+                               SessionRestorationScope::kRegularOnly);
+    _closedSessionWindow = nil;
   }
-  SessionRestorationBrowserAgent::FromBrowser(self.browser)
-      ->RestoreSessionWindow(_closedSessionWindow,
-                             SessionRestorationScope::kRegularOnly);
-  _closedSessionWindow = nil;
   [self removeEntriesFromTabRestoreService];
   _syncedClosedTabsCount = 0;
 }

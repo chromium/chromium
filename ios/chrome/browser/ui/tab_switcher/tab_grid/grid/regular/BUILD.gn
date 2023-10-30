@@ -35,6 +35,7 @@ source_set("regular") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+    "//ios/web/common:features",
   ]
 }
 
