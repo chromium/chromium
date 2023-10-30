@@ -276,8 +276,16 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
 
 // JavaScript initiated link captures from about:blank cleans up the about:blank
 // page.
+// TODO(https://crbug.com/1497363): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_JavascriptAboutBlankNavigationCleanUp \
+  DISABLED_JavascriptAboutBlankNavigationCleanUp
+#else
+#define MAYBE_JavascriptAboutBlankNavigationCleanUp \
+  JavascriptAboutBlankNavigationCleanUp
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
-                       JavascriptAboutBlankNavigationCleanUp) {
+                       MAYBE_JavascriptAboutBlankNavigationCleanUp) {
   const auto [app_id, in_scope_1, _, scope] =
       InstallTestApp("/web_apps/basic.html");
   TurnOnLinkCapturing(app_id);
