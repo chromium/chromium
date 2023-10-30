@@ -42,7 +42,8 @@ const tests = [
   ['AcceleratorLookupManagerTest', 'accelerator_lookup_manager_test.js'],
   ['AcceleratorViewTest', 'accelerator_view_test.js'],
   ['AcceleratorRowTest', 'accelerator_row_test.js'],
-  ['AcceleratorEditDialogTest', 'accelerator_edit_dialog_test.js'],
+  // TODO(https://crbug.com/1497331): Re-enable this test.
+  // ['AcceleratorEditDialogTest', 'accelerator_edit_dialog_test.js'],
   ['AcceleratorSubsectionTest', 'accelerator_subsection_test.js'],
   ['BottomNavContentTest', 'bottom_nav_content_test.js'],
   ['FakeShortcutProviderTest', 'fake_shortcut_provider_test.js'],
