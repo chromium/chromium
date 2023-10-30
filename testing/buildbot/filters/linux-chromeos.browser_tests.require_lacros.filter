@@ -26,9 +26,12 @@ WebKioskLacrosTest*
 CrosapiSystemLogSourceTest*
 TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 # TODO(b/262789941) Enable more accessibility tests.
+# TODO(b/260289935): Flaky in Lacros.
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
 -ChromeVoxPortalsTest.PortalName
 -ChromeVoxPortalsTest.ShouldFocusPortal
+# TODO(b/276914335): Flaky in Lacros.
+-ChromeVoxAutoScrollHandlerTest.RecyclerViewByCharacter
 # TODO(b/301253962): Some Switch Access tests fail/flake on Lacros.
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
@@ -41,6 +44,8 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -ChromeVoxEditingTest.GiantTextAreaPerformance
 # TODO(crbug.com/1478586): Flaky.
 -AutoclickWithAccessibilityServiceTest.ScrollableBoundsPlumbing
+# TODO(b/277256412): Test is flaky
+-DictationUIE2ETest.HintsTimeoutWithChromeVox
 # TODO(accessibility): these are native C++ tests that need investigation.
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.NavigateChromeVoxMenu*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.ShowFormControlsList*
