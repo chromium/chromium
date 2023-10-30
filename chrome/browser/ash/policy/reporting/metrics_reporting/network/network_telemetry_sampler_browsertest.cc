@@ -265,7 +265,13 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, PRE_Default) {
   // PRE-condition.
 }
 
-IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
+// TODO(https://crbug.com/1497648): Test is flaky on multiple CrOS builders.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Default DISABLED_Default
+#else
+#define MAYBE_Default Default
+#endif
+IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, MAYBE_Default) {
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsNetworkTelemetry));
 
