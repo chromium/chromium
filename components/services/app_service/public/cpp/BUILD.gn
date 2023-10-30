@@ -329,6 +329,7 @@ source_set("unit_tests") {
       "instance_registry_unittest.cc",
       "instance_unittest.cc",
       "instance_update_unittest.cc",
+      "permission_unittest.cc",
     ]
 
     deps += [

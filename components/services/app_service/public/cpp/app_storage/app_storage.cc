@@ -151,6 +151,11 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
   IS_APP_VALUE_CHANGED(last_launch_time);
   IS_APP_VALUE_CHANGED(install_time);
 
+  if (!app->permissions.empty() &&
+      !IsEqual(app->permissions, it->second->permissions)) {
+    return true;
+  }
+
   IS_APP_VALUE_CHANGED_FOR_ENUM(install_reason, InstallReason::kUnknown)
   IS_APP_VALUE_CHANGED_FOR_ENUM(install_source, InstallSource::kUnknown)
 
@@ -168,7 +173,8 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
   IS_APP_VALUE_CHANGED(handles_intents);
   IS_APP_VALUE_CHANGED(allow_uninstall);
 
-  if (!IsEqual(app->intent_filters, it->second->intent_filters)) {
+  if (!app->intent_filters.empty() &&
+      !IsEqual(app->intent_filters, it->second->intent_filters)) {
     return true;
   }
 

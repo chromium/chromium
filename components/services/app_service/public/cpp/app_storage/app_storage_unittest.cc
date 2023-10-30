@@ -78,6 +78,7 @@ class FakeAppStorage : public AppStorage {
 
   std::vector<AppPtr>& GetAppInfo() { return apps_; }
   std::set<AppType>& GetAppTypeInfo() { return app_types_; }
+  bool is_app_changed() { return is_app_changed_; }
 
   void WaitForSaveFinished(size_t expect_app_count) {
     expect_app_count_ = expect_app_count;
@@ -86,6 +87,12 @@ class FakeAppStorage : public AppStorage {
   }
 
  private:
+  // Override to call to AppStorage::OnAppUpdate.
+  void OnAppUpdate(const apps::AppUpdate& update) override {
+    is_app_changed_ = IsAppChanged(update);
+    AppStorage::OnAppUpdate(update);
+  }
+
   // Override to call to AppStorage::OnGetAppInfoData.
   void OnGetAppInfoData(base::OnceCallback<void()> callback,
                         std::unique_ptr<AppInfo> app_info) override {
@@ -116,6 +123,8 @@ class FakeAppStorage : public AppStorage {
 
   std::unique_ptr<base::test::TestFuture<void>> write_result_;
   size_t expect_app_count_ = -1;
+
+  bool is_app_changed_ = false;
 };
 
 class AppStorageTest : public testing::Test {
@@ -167,6 +176,14 @@ class AppStorageTest : public testing::Test {
                       /*resource_id=*/65535, apps::IconEffects::kNone);
     app2->last_launch_time = base::Time() + base::Days(2);
     app2->install_time = base::Time() + base::Days(1);
+
+    app2->permissions.push_back(std::make_unique<Permission>(
+        PermissionType::kLocation, /*PermissionValue=*/false,
+        /*is_managed=*/true, "details"));
+    app2->permissions.push_back(std::make_unique<Permission>(
+        PermissionType::kPrinting, /*PermissionValue=*/TriState::kBlock,
+        /*is_managed=*/false));
+
     app2->install_reason = InstallReason::kUser;
     app2->install_source = InstallSource::kBrowser;
     app2->policy_ids = {"plicy1", "policy2"};
@@ -208,6 +225,17 @@ class AppStorageTest : public testing::Test {
   MODIFY_FIELD(show_in_management, true)
   MODIFY_FIELD(handles_intents, false)
   MODIFY_FIELD(allow_uninstall, false)
+
+  void ModifyPermissions() {
+    AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
+    app->permissions.push_back(std::make_unique<Permission>(
+        PermissionType::kLocation, /*PermissionValue=*/false,
+        /*is_managed=*/true, "details"));
+    std::vector<AppPtr> apps;
+    apps.push_back(std::move(app));
+    app_registry_cache_.OnApps(std::move(apps), kAppType1,
+                               /*should_notify_initialized=*/false);
+  }
 
   void ModifyIntentFilters() {
     AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
@@ -351,11 +379,29 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
   VERIFY_MODIFY_FIELD(handles_intents, false);
   VERIFY_MODIFY_FIELD(allow_uninstall, false);
 
+  ModifyPermissions();
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);
+  apps[0]->permissions.push_back(std::make_unique<Permission>(
+      PermissionType::kLocation, /*PermissionValue=*/false,
+      /*is_managed=*/true, "details"));
+  VerifySavedApps(apps);
+
   ModifyIntentFilters();
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->activity_name = "activity_name";
   apps[0]->intent_filters.push_back(std::move(intent_filter));
+  VerifySavedApps(apps);
+
+  // Verify `apps` are not changed.
+  AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
+  // Set `paused` as true to call `OnAppUpdate`.
+  app->paused = true;
+  std::vector<AppPtr> deltas;
+  deltas.push_back(std::move(app));
+  OnApps(std::move(deltas), AppType::kUnknown,
+         /*should_notify_initialized=*/false);
+  EXPECT_FALSE(app_storage()->is_app_changed());
   VerifySavedApps(apps);
 
   RemoveOneApp(kAppType1, kAppId1);

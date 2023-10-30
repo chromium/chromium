@@ -13,6 +13,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/permission.h"
 
 namespace apps {
 
@@ -33,6 +34,7 @@ constexpr char kAdditionalSearchTermsKey[] = "additional_search_terms";
 constexpr char kIconResourceIdKey[] = "icon_resource_id";
 constexpr char kLastLaunchTimeKey[] = "last_launch_time";
 constexpr char kInstallTimeKey[] = "install_time";
+constexpr char kPermissionsKey[] = "permissions";
 constexpr char kInstallReasonKey[] = "install_reason";
 constexpr char kInstallSourceKey[] = "install_source";
 constexpr char kPolicyIdsKey[] = "policy_ids";
@@ -103,6 +105,12 @@ base::Value GetValue(const AppPtr& app,
     intent_filters.Append(apps_util::ConvertIntentFilterToDict(intent_filter));
   }
   return base::Value(std::move(intent_filters));
+}
+
+template <>
+base::Value GetValue(const AppPtr& app,
+                     std::vector<PermissionPtr> App::*field) {
+  return base::Value(ConvertPermissionsToList(app.get()->*field));
 }
 
 template <typename T>
@@ -217,6 +225,7 @@ base::Value AppStorageFileHandler::ConvertAppsToValue(
 
     SetKey(app, &App::last_launch_time, kLastLaunchTimeKey, dict);
     SetKey(app, &App::install_time, kInstallTimeKey, dict);
+    SetKey(app, &App::permissions, kPermissionsKey, dict);
     SetKey(app, &App::install_reason, kInstallReasonKey, dict);
     SetKey(app, &App::install_source, kInstallSourceKey, dict);
     SetKey(app, &App::policy_ids, kPolicyIdsKey, dict);
@@ -278,6 +287,14 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     app->description = GetStringValueFromDict(*value, kDescriptionKey);
     app->version = GetStringValueFromDict(*value, kVersionKey);
 
+    auto* additional_search_terms = value->FindList(kAdditionalSearchTermsKey);
+    if (additional_search_terms) {
+      for (auto& additional_search_term : *additional_search_terms) {
+        app->additional_search_terms.push_back(
+            additional_search_term.GetString());
+      }
+    }
+
     auto icon_resource_id = value->FindInt(kIconResourceIdKey);
     if (icon_resource_id.has_value()) {
       app->icon_key =
@@ -288,13 +305,8 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ConvertValueToApps(
     app->last_launch_time = base::ValueToTime(value->Find(kLastLaunchTimeKey));
     app->install_time = base::ValueToTime(value->Find(kInstallTimeKey));
 
-    auto* additional_search_terms = value->FindList(kAdditionalSearchTermsKey);
-    if (additional_search_terms) {
-      for (auto& additional_search_term : *additional_search_terms) {
-        app->additional_search_terms.push_back(
-            additional_search_term.GetString());
-      }
-    }
+    app->permissions =
+        ConvertListToPermissions(value->FindList(kPermissionsKey));
 
     GetEnumFromKey(value, &App::install_reason, kInstallReasonKey, app);
     GetEnumFromKey(value, &App::install_source, kInstallSourceKey, app);

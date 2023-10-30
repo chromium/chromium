@@ -119,6 +119,14 @@ class AppStorageFileHandlerTest : public testing::Test {
                       /*resource_id=*/65535, apps::IconEffects::kNone);
     app2->last_launch_time = base::Time() + base::Days(2);
     app2->install_time = base::Time() + base::Days(1);
+
+    app2->permissions.push_back(std::make_unique<Permission>(
+        PermissionType::kLocation, /*PermissionValue=*/false,
+        /*is_managed=*/true, "details"));
+    app2->permissions.push_back(std::make_unique<Permission>(
+        PermissionType::kPrinting, /*PermissionValue=*/TriState::kBlock,
+        /*is_managed=*/false));
+
     app2->install_reason = InstallReason::kUser;
     app2->install_source = InstallSource::kBrowser;
     app2->policy_ids = {"plicy1", "policy2"};

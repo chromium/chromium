@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/values.h"
 #include "components/services/app_service/public/cpp/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -82,6 +83,41 @@ Permissions ClonePermissions(const Permissions& source_permissions);
 
 COMPONENT_EXPORT(APP_TYPES)
 bool IsEqual(const Permissions& source, const Permissions& target);
+
+// Converts `permission` to base::Value::Dict, e.g.:
+// {
+//   "PermissionType": 3,
+//   "TriState": 2,
+//   "is_managed": false,
+//   "details": "xyz",
+// }
+COMPONENT_EXPORT(APP_TYPES)
+base::Value::Dict ConvertPermissionToDict(const PermissionPtr& permission);
+
+// Converts base::Value::Dict to PermissionPtr.
+COMPONENT_EXPORT(APP_TYPES)
+PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict);
+
+// Converts `permissions` to base::Value::List, e.g.:
+// {
+//   {
+//     "PermissionType": 3,
+//     "TriState": 2,
+//     "is_managed": false,
+//     "details": "xyz",
+//   },
+//   {
+//     "PermissionType": 1,
+//     "Value": true,
+//     "is_managed": true,
+//   },
+// }
+COMPONENT_EXPORT(APP_TYPES)
+base::Value::List ConvertPermissionsToList(const Permissions& permissions);
+
+// Converts base::Value::List to Permissions.
+COMPONENT_EXPORT(APP_TYPES)
+Permissions ConvertListToPermissions(const base::Value::List* list);
 
 }  // namespace apps
 
