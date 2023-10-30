@@ -23,6 +23,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
+class Profile;
+class EnterpriseProfileWelcomeHandleTest;
 struct AccountInfo;
 
 namespace base {
@@ -75,6 +77,16 @@ class EnterpriseProfileWelcomeHandler
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      EnterpriseProfileWelcomeHandleTest,
+      GetManagedAccountTitleWithEmailInterceptionEnforcedAtMachineLevel);
+  FRIEND_TEST_ALL_PREFIXES(
+      EnterpriseProfileWelcomeHandleTest,
+      GetManagedAccountTitleWithEmailInterceptionEnforcedByExistingProfile);
+  FRIEND_TEST_ALL_PREFIXES(
+      EnterpriseProfileWelcomeHandleTest,
+      GetManagedAccountTitleWithEmailInterceptionEnforcedByInterceptedAccount);
+
   void HandleInitialized(const base::Value::List& args);
   // Handles the web ui message sent when the html content is done being laid
   // out and it's time to resize the native view hosting it to fit. |args| is
@@ -87,6 +99,13 @@ class EnterpriseProfileWelcomeHandler
   // `profile_path` is the path of the profile being updated, this function does
   // nothing if the profile path does not match the current profile.
   void UpdateProfileInfo(const base::FilePath& profile_path);
+
+  // Returns a string stating the management status.
+  static std::string GetManagedAccountTitleWithEmail(
+      Profile* profile,
+      ProfileAttributesEntry* entry,
+      const std::string& account_domain_name,
+      const std::u16string& email);
 
   // Computes the profile info (avatar and strings) to be sent to the WebUI.
   base::Value::Dict GetProfileInfoValue();

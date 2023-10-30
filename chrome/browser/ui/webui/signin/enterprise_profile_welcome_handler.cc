@@ -58,67 +58,6 @@ std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
       base::UTF8ToUTF16(domain_name));
 }
 
-std::string GetManagedAccountTitleWithEmail(
-    Profile* profile,
-    ProfileAttributesEntry* entry,
-    const std::string& account_domain_name,
-    const std::u16string& email) {
-  DCHECK(profile);
-  DCHECK(entry);
-  DCHECK(!email.empty());
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  absl::optional<std::string> account_manager =
-      chrome::GetAccountManagerIdentity(profile);
-
-  if (!signin_util::IsProfileSeparationEnforcedByProfile(
-          profile, base::UTF16ToUTF8(email))) {
-    // The profile is managed but does not enforce profile separation. The
-    // intercepted account requires it.
-    if (account_manager && !account_manager->empty()) {
-      return l10n_util::GetStringFUTF8(
-          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_SEPARATION,
-          base::UTF8ToUTF16(*account_manager), email,
-          base::UTF8ToUTF16(account_domain_name));
-    }
-    // The profile is not managed. The intercepted account requires profile
-    // separation.
-    return l10n_util::GetStringFUTF8(
-        IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
-        base::UTF8ToUTF16(account_domain_name));
-  } else if (profile->GetPrefs()->GetBoolean(
-                 prefs::kManagedAccountsSigninRestrictionScopeMachine)) {
-    // The device is managed and requires profile separation.
-    absl::optional<std::string> device_manager =
-        chrome::GetDeviceManagerIdentity();
-    if (device_manager && !device_manager->empty()) {
-      return l10n_util::GetStringFUTF8(
-          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED_BY,
-          base::UTF8ToUTF16(*device_manager), email);
-    } else {
-      return l10n_util::GetStringFUTF8(
-          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED,
-          email);
-    }
-  } else {
-    DCHECK(account_manager);
-    DCHECK(!account_manager->empty());
-    return l10n_util::GetStringFUTF8(
-        IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_STRICT_SEPARATION,
-        base::UTF8ToUTF16(*account_manager), email);
-  }
-#else
-  if (entry->GetHostedDomain() == kNoHostedDomainFound)
-    return std::string();
-  const std::string domain_name = entry->GetHostedDomain().empty()
-                                      ? account_domain_name
-                                      : entry->GetHostedDomain();
-  return l10n_util::GetStringFUTF8(
-      IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
-      base::UTF8ToUTF16(domain_name));
-#endif  //  !BUILDFLAG(IS_CHROMEOS)
-}
-
 std::string GetManagedDeviceTitle() {
   absl::optional<std::string> device_manager =
       chrome::GetDeviceManagerIdentity();
@@ -269,6 +208,66 @@ void EnterpriseProfileWelcomeHandler::UpdateProfileInfo(
   if (profile_path != profile_path_)
     return;
   FireWebUIListener("on-profile-info-changed", GetProfileInfoValue());
+}
+
+// static
+std::string EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+    Profile* profile,
+    ProfileAttributesEntry* entry,
+    const std::string& account_domain_name,
+    const std::u16string& email) {
+  DCHECK(profile);
+  DCHECK(entry);
+  DCHECK(!email.empty());
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  absl::optional<std::string> account_manager =
+      chrome::GetAccountManagerIdentity(profile);
+  absl::optional<std::string> device_manager =
+      chrome::GetDeviceManagerIdentity();
+
+  if (!signin_util::IsProfileSeparationEnforcedByProfile(
+          profile, base::UTF16ToUTF8(email))) {
+    // The profile is managed but does not enforce profile separation. The
+    // intercepted account requires it.
+    if (account_manager && !account_manager->empty()) {
+      return l10n_util::GetStringFUTF8(
+          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_SEPARATION,
+          base::UTF8ToUTF16(*account_manager), email,
+          base::UTF8ToUTF16(account_domain_name));
+    }
+    // The profile is not managed. The intercepted account requires profile
+    // separation.
+    return l10n_util::GetStringFUTF8(
+        IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
+        base::UTF8ToUTF16(account_domain_name));
+  }
+  if (!profile->GetPrefs()->GetBoolean(
+          prefs::kManagedAccountsSigninRestrictionScopeMachine) &&
+      account_manager && !account_manager->empty()) {
+    return l10n_util::GetStringFUTF8(
+        IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_STRICT_SEPARATION,
+        base::UTF8ToUTF16(*account_manager), email);
+  }
+  if (device_manager && !device_manager->empty()) {
+    // The device is managed and requires profile separation.
+    return l10n_util::GetStringFUTF8(
+        IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED_BY,
+        base::UTF8ToUTF16(*device_manager), email);
+  }
+  return l10n_util::GetStringFUTF8(
+      IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED, email);
+#else
+  if (entry->GetHostedDomain() == kNoHostedDomainFound) {
+    return std::string();
+  }
+  const std::string domain_name = entry->GetHostedDomain().empty()
+                                      ? account_domain_name
+                                      : entry->GetHostedDomain();
+  return l10n_util::GetStringFUTF8(
+      IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
+      base::UTF8ToUTF16(domain_name));
+#endif  //  !BUILDFLAG(IS_CHROMEOS)
 }
 
 base::Value::Dict EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {

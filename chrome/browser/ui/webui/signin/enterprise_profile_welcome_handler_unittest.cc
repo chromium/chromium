@@ -6,21 +6,45 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using testing::_;
 using testing::Invoke;
+
+namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS)
+ProfileAttributesEntry* GetProfileEntry(Profile* profile) {
+  return g_browser_process->profile_manager()
+      ->GetProfileAttributesStorage()
+      .GetProfileAttributesWithPath(profile->GetPath());
+}
+#endif
+
+}  // namespace
 
 class EnterpriseProfileWelcomeHandlerTestBase
     : public BrowserWithTestWindowTest {
@@ -108,3 +132,211 @@ TEST_P(EnterpriseProfileWelcomeHandleProceedTest, HandleProceed) {
 INSTANTIATE_TEST_SUITE_P(All,
                          EnterpriseProfileWelcomeHandleProceedTest,
                          testing::ValuesIn(kHandleProceedParams));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class EnterpriseProfileWelcomeHandleTest
+    : public EnterpriseProfileWelcomeHandlerTestBase {
+ protected:
+  ProfileManager* profile_manager() {
+    return g_browser_process->profile_manager();
+  }
+};
+
+TEST_F(EnterpriseProfileWelcomeHandleTest,
+       GetManagedAccountTitleWithEmailInterceptionEnforcedByExistingProfile) {
+  auto& managed_profile = profiles::testing::CreateProfileSync(
+      profile_manager(), profile_manager()->GenerateNextProfileDirectoryPath());
+  GetProfileEntry(&managed_profile)->SetHostedDomain("example.com");
+
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(&managed_profile),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  auto& unmanaged_profile = profiles::testing::CreateProfileSync(
+      profile_manager(), profile_manager()->GenerateNextProfileDirectoryPath());
+
+  managed_profile.GetPrefs()->SetList(
+      prefs::kProfileSeparationDomainExceptionList, base::Value::List());
+  unmanaged_profile.GetPrefs()->SetList(
+      prefs::kProfileSeparationDomainExceptionList, base::Value::List());
+
+  // No account manager, no device manager
+  {
+    const std::string unknown_device_manager = "";
+    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+        unknown_device_manager.c_str());
+    std::string title =
+        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+            &unmanaged_profile, GetProfileEntry(&unmanaged_profile),
+            "intercepted.com", u"alice@intercepted.com");
+    EXPECT_EQ(
+        title,
+        l10n_util::GetStringFUTF8(
+            IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED,
+            u"alice@intercepted.com"));
+  }
+  // No account manager, existing device manager
+  {
+    const std::string device_manager = "devicemanager.com";
+    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+        device_manager.c_str());
+    std::string title =
+        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+            &unmanaged_profile, GetProfileEntry(&unmanaged_profile),
+            "intercepted.com", u"alice@intercepted.com");
+    EXPECT_EQ(
+        title,
+        l10n_util::GetStringFUTF8(
+            IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED_BY,
+            base::UTF8ToUTF16(device_manager), u"alice@intercepted.com"));
+  }
+  // Existing account manager, no device manager
+  {
+    const std::string unknown_device_manager = "";
+    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+        unknown_device_manager.c_str());
+    std::string title =
+        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+            &managed_profile, GetProfileEntry(&managed_profile),
+            "intercepted.com", u"alice@intercepted.com");
+    EXPECT_EQ(
+        title,
+        l10n_util::GetStringFUTF8(
+            IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_STRICT_SEPARATION,
+            u"example.com", u"alice@intercepted.com"));
+  }
+  // Existing account manager and device manager
+  {
+    const std::string device_manager = "devicemanager.com";
+    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+        device_manager.c_str());
+    std::string title =
+        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+            &managed_profile, GetProfileEntry(&managed_profile),
+            "intercepted.com", u"alice@intercepted.com");
+    EXPECT_EQ(
+        title,
+        l10n_util::GetStringFUTF8(
+            IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_STRICT_SEPARATION,
+            u"example.com", u"alice@intercepted.com"));
+  }
+}
+
+TEST_F(EnterpriseProfileWelcomeHandleTest,
+       GetManagedAccountTitleWithEmailInterceptionEnforcedAtMachineLevel) {
+  auto& managed_profile = profiles::testing::CreateProfileSync(
+      profile_manager(), profile_manager()->GenerateNextProfileDirectoryPath());
+  GetProfileEntry(&managed_profile)->SetHostedDomain("example.com");
+
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(&managed_profile),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  auto& unmanaged_profile = profiles::testing::CreateProfileSync(
+      profile_manager(), profile_manager()->GenerateNextProfileDirectoryPath());
+
+  managed_profile.GetPrefs()->SetString(
+      prefs::kManagedAccountsSigninRestriction, "primary_account");
+  managed_profile.GetPrefs()->SetBoolean(
+      prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
+  unmanaged_profile.GetPrefs()->SetString(
+      prefs::kManagedAccountsSigninRestriction, "primary_account");
+  unmanaged_profile.GetPrefs()->SetBoolean(
+      prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
+
+  // No account manager, no device manager
+  {
+    const std::string unknown_device_manager = "";
+    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+        unknown_device_manager.c_str());
+    std::string title =
+        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+            &unmanaged_profile, GetProfileEntry(&unmanaged_profile),
+            "intercepted.com", u"alice@intercepted.com");
+    EXPECT_EQ(
+        title,
+        l10n_util::GetStringFUTF8(
+            IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED,
+            u"alice@intercepted.com"));
+  }
+  // No account manager, existing device manager
+  {
+    const std::string device_manager = "devicemanager.com";
+    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+        device_manager.c_str());
+    std::string title =
+        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+            &unmanaged_profile, GetProfileEntry(&unmanaged_profile),
+            "intercepted.com", u"alice@intercepted.com");
+    EXPECT_EQ(
+        title,
+        l10n_util::GetStringFUTF8(
+            IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED_BY,
+            base::UTF8ToUTF16(device_manager), u"alice@intercepted.com"));
+  }
+  // Existing account manager, no device manager
+  {
+    const std::string unknown_device_manager = "";
+    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+        unknown_device_manager.c_str());
+    std::string title =
+        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+            &managed_profile, GetProfileEntry(&managed_profile),
+            "intercepted.com", u"alice@intercepted.com");
+    l10n_util::GetStringFUTF8(
+        IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED,
+        u"alice@intercepted.com");
+  }
+  // Existing account manager and device manager
+  {
+    const std::string device_manager = "devicemanager.com";
+    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+        device_manager.c_str());
+    std::string title =
+        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+            &managed_profile, GetProfileEntry(&managed_profile),
+            "intercepted.com", u"alice@intercepted.com");
+    EXPECT_EQ(
+        title,
+        l10n_util::GetStringFUTF8(
+            IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED_BY,
+            base::UTF8ToUTF16(device_manager), u"alice@intercepted.com"));
+  }
+}
+
+TEST_F(
+    EnterpriseProfileWelcomeHandleTest,
+    GetManagedAccountTitleWithEmailInterceptionEnforcedByInterceptedAccount) {
+  auto& profile = profiles::testing::CreateProfileSync(
+      profile_manager(), profile_manager()->GenerateNextProfileDirectoryPath());
+
+  // No account manager
+  {
+    std::string title =
+        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+            &profile, GetProfileEntry(&profile), "intercepted.com",
+            u"alice@intercepted.com");
+    EXPECT_EQ(title,
+              l10n_util::GetStringFUTF8(
+                  IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY,
+                  u"alice@intercepted.com", u"intercepted.com"));
+  }
+  // Known Account manager
+  {
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForProfile(&profile),
+        policy::EnterpriseManagementAuthority::CLOUD);
+    // Set account manager
+    GetProfileEntry(&profile)->SetHostedDomain("example.com");
+    std::string title =
+        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+            &profile, GetProfileEntry(&profile), "intercepted.com",
+            u"alice@intercepted.com");
+    EXPECT_EQ(
+        title,
+        l10n_util::GetStringFUTF8(
+            IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_SEPARATION,
+            u"example.com", u"alice@intercepted.com", u"intercepted.com"));
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
