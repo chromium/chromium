@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "ui/latency/latency_info.h"
 
 namespace content {
@@ -167,11 +168,10 @@ void SyntheticTouchscreenPinchGesture::SetupCoordinatesAndStopTime(
 
   max_pointer_delta_0_ = initial_distance_to_anchor - final_distance_to_anchor;
 
-  int64_t total_duration_in_us = static_cast<int64_t>(
-      1e6 * (static_cast<double>(std::abs(2 * max_pointer_delta_0_)) /
-             params().relative_pointer_speed_in_pixels_s));
-  DCHECK_GT(total_duration_in_us, 0);
-  stop_time_ = start_time_ + base::Microseconds(total_duration_in_us);
+  const auto duration =
+      base::Seconds(double{std::abs(2 * max_pointer_delta_0_)} /
+                    params().relative_pointer_speed_in_pixels_s);
+  stop_time_ = start_time_ + duration;
 }
 
 float SyntheticTouchscreenPinchGesture::GetDeltaForPointer0AtTime(
