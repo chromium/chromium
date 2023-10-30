@@ -59,6 +59,7 @@ class OnDeviceModelServiceController {
   base::FilePath model_path_;
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
   mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;
+  mojo::Remote<on_device_model::mojom::Session> session_remote_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
