@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -225,7 +226,9 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
               ? IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY
               : IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY;
     }
-  } else if (cookie_info.expiration.is_null()) {
+  } else if (cookie_info.expiration.is_null() ||
+             cookie_info.enforcement ==
+                 CookieControlsEnforcement::kEnforcedByCookieSetting) {
     // Handle permanent site exception.
     title_text = l10n_util::GetStringUTF16(
         tracking_protection_3pcd

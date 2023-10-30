@@ -58,7 +58,8 @@ class CookieControlsBubbleViewController
   void OnReloadingViewTimeout();
 
   void SwitchToReloadingView();
-  void ApplyThirdPartyCookiesAllowedState(base::Time expiration);
+  void ApplyThirdPartyCookiesAllowedState(CookieControlsEnforcement enforcement,
+                                          base::Time expiration);
   void ApplyThirdPartyCookiesBlockedState();
   void CloseBubble();
 

@@ -272,52 +272,7 @@ INSTANTIATE_TEST_SUITE_P(
 class CookieControlsBubbleViewController3pcdStatusesTest
     : public CookieControlsBubbleViewControllerTest,
       public testing::WithParamInterface<CookieBlocking3pcdStatus> {
- protected:
-  void ExpectEnforcementValues(const char* icon_name,
-                               int tooltip,
-                               bool labels_visible = false) {
-    EXPECT_CALL(*mock_content_view(), SetContentLabelsVisible(labels_visible));
-    EXPECT_CALL(*mock_content_view(), SetToggleVisible(false));
-    EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(false));
-    EXPECT_CALL(
-        *mock_content_view(),
-        SetEnforcedIcon(testing::Field(&gfx::VectorIcon::name, icon_name),
-                        l10n_util::GetStringUTF16(tooltip)));
-  }
 };
-
-// Verify enforcement states
-TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
-       DisplaysPolicyEnforcement) {
-  ExpectEnforcementValues(vector_icons::kBusinessIcon.name,
-                          IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY);
-  blocking_status_ = GetParam();
-  enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
-  status_ = CookieControlsStatus::kDisabledForSite;
-  OnStatusChanged();
-}
-
-TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
-       DisplaysCookieEnforcement) {
-  ExpectEnforcementValues(
-      vector_icons::kSettingsIcon.name,
-      IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP,
-      /*labels_visible=*/true);
-  blocking_status_ = GetParam();
-  enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
-  status_ = CookieControlsStatus::kDisabledForSite;
-  OnStatusChanged();
-}
-
-TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
-       DisplaysExtensionEnforcement) {
-  ExpectEnforcementValues(vector_icons::kExtensionIcon.name,
-                          IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION);
-  blocking_status_ = GetParam();
-  enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
-  status_ = CookieControlsStatus::kDisabledForSite;
-  OnStatusChanged();
-}
 
 // Verify toggle states
 TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
@@ -414,18 +369,7 @@ TEST_F(CookieControlsBubbleViewControllerTest,
   OnStatusChanged(kDaysToExpiration);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CookieControlsBubbleViewController3pcdStatusesTest,
-                         testing::Values(CookieBlocking3pcdStatus::kLimited,
-                                         CookieBlocking3pcdStatus::kAll));
-
-class CookieControlsBubbleViewController3pcdCookieEnforcementLabelTest
-    : public CookieControlsBubbleViewControllerTest,
-      public testing::WithParamInterface<
-          testing::tuple<CookieBlocking3pcdStatus, CookieControlsEnforcement>> {
-};
-
-TEST_P(CookieControlsBubbleViewController3pcdCookieEnforcementLabelTest,
+TEST_P(CookieControlsBubbleViewController3pcdStatusesTest,
        DisplaysTitleAndDescriptionWhenSiteHasPermanentException) {
   EXPECT_CALL(
       *mock_content_view(),
@@ -435,19 +379,80 @@ TEST_P(CookieControlsBubbleViewController3pcdCookieEnforcementLabelTest,
           l10n_util::GetStringUTF16(
               IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)));
   status_ = CookieControlsStatus::kDisabledForSite;
-  enforcement_ = testing::get<1>(GetParam());
-  blocking_status_ = testing::get<0>(GetParam());
+  blocking_status_ = GetParam();
   OnStatusChanged();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CookieControlsBubbleViewController3pcdStatusesTest,
+                         testing::Values(CookieBlocking3pcdStatus::kLimited,
+                                         CookieBlocking3pcdStatus::kAll));
+
+class CookieControlsBubbleViewController3pcdEnforcementTest
+    : public CookieControlsBubbleViewControllerTest,
+      public testing::WithParamInterface<
+          testing::tuple<CookieBlocking3pcdStatus,
+                         /*is_permanent_exception*/ bool>> {
+ protected:
+  void VerifyEnforcementValues(const char* icon_name,
+                               int tooltip,
+                               bool labels_visible = false) {
+    EXPECT_CALL(*mock_content_view(), SetContentLabelsVisible(labels_visible));
+    EXPECT_CALL(*mock_content_view(), SetToggleVisible(false));
+    EXPECT_CALL(*mock_content_view(), SetFeedbackSectionVisibility(false));
+    EXPECT_CALL(
+        *mock_content_view(),
+        SetEnforcedIcon(testing::Field(&gfx::VectorIcon::name, icon_name),
+                        l10n_util::GetStringUTF16(tooltip)));
+  }
+};
+
+TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
+       DisplaysCookieEnforcement) {
+  VerifyEnforcementValues(
+      vector_icons::kSettingsIcon.name,
+      IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP,
+      /*labels_visible=*/true);
+  EXPECT_CALL(
+      *mock_content_view(),
+      UpdateContentLabels(
+          l10n_util::GetStringUTF16(
+              IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)));
+  blocking_status_ = testing::get<0>(GetParam());
+  enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
+  status_ = CookieControlsStatus::kDisabledForSite;
+  OnStatusChanged(testing::get<1>(GetParam()) ? kDaysToExpiration : 0);
+}
+
+// Verify enforcement states
+TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
+       DisplaysPolicyEnforcement) {
+  VerifyEnforcementValues(vector_icons::kBusinessIcon.name,
+                          IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY);
+  blocking_status_ = testing::get<0>(GetParam());
+  enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
+  status_ = CookieControlsStatus::kDisabledForSite;
+  OnStatusChanged(testing::get<1>(GetParam()) ? kDaysToExpiration : 0);
+}
+
+TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
+       DisplaysExtensionEnforcement) {
+  VerifyEnforcementValues(vector_icons::kExtensionIcon.name,
+                          IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION);
+  blocking_status_ = testing::get<0>(GetParam());
+  enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
+  status_ = CookieControlsStatus::kDisabledForSite;
+  OnStatusChanged(testing::get<1>(GetParam()) ? kDaysToExpiration : 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    CookieControlsBubbleViewController3pcdCookieEnforcementLabelTest,
-    testing::Combine(
-        testing::Values(CookieBlocking3pcdStatus::kLimited,
-                        CookieBlocking3pcdStatus::kAll),
-        testing::Values(CookieControlsEnforcement::kNoEnforcement,
-                        CookieControlsEnforcement::kEnforcedByCookieSetting)));
+    CookieControlsBubbleViewController3pcdEnforcementTest,
+    testing::Combine(testing::Values(CookieBlocking3pcdStatus::kLimited,
+                                     CookieBlocking3pcdStatus::kAll),
+                     testing::Bool()));
 
 class CookieControlsBubbleViewControllerPre3pcdTest
     : public CookieControlsBubbleViewControllerTest,
@@ -555,6 +560,7 @@ TEST_P(CookieControlsBubbleViewControllerPre3pcdTest,
   view_controller()->OnSitesCountChanged(kAllowedSitesCount,
                                          kBlockedSitesCount);
 }
+
 // Runs all tests with two versions of user bypass - one that creates
 // temporary exceptions and one that creates permanent exceptions.
 INSTANTIATE_TEST_SUITE_P(All,

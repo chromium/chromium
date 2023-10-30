@@ -114,6 +114,7 @@ void CookieControlsBubbleViewController::OnFaviconFetched(
 }
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
+    CookieControlsEnforcement enforcement,
     base::Time expiration) {
   bool is_permanent_exception = expiration == base::Time();
   std::u16string label_title;
@@ -135,7 +136,8 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
     }
   } else {
     bubble_title = IDS_TRACKING_PROTECTION_BUBBLE_TITLE;
-    if (is_permanent_exception) {
+    if (is_permanent_exception ||
+        enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting) {
       label_title = l10n_util::GetStringUTF16(
           IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_TITLE);
       label_description =
@@ -200,7 +202,7 @@ void CookieControlsBubbleViewController::OnStatusChanged(
       ApplyThirdPartyCookiesBlockedState();
       break;
     case CookieControlsStatus::kDisabledForSite:
-      ApplyThirdPartyCookiesAllowedState(expiration);
+      ApplyThirdPartyCookiesAllowedState(enforcement, expiration);
       break;
     case CookieControlsStatus::kDisabled:
     case CookieControlsStatus::kUninitialized:
