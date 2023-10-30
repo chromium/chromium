@@ -194,22 +194,6 @@ targets.variant(
     ],
 )
 
-# In Xcode 12, "iPad Pro (12.9-inch)" requires a generation suffix in
-# "platform" arg.
-targets.variant(
-    name = "SIM_IPAD_PRO_5TH_GEN_15_5",
-    identifier = "iPad Pro (12.9-inch) (5th generation) 15.5",
-    mixins = [
-        "ios_runtime_cache_15_5",
-    ],
-    args = [
-        "--platform",
-        "iPad Pro (12.9-inch) (5th generation)",
-        "--version",
-        "15.5",
-    ],
-)
-
 targets.variant(
     name = "SIM_IPAD_PRO_6TH_GEN_16_4",
     identifier = "iPad Pro (12.9-inch) (6th generation) 16.4",
