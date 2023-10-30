@@ -28,14 +28,10 @@ namespace {
 ServerFieldTypeSet GetNecessaryTypesFor(ServerFieldType type) {
   switch (type) {
     case PHONE_HOME_COUNTRY_CODE: {
-      ServerFieldTypeSet necessary_types{PHONE_HOME_NUMBER,
-                                         PHONE_HOME_NUMBER_PREFIX,
-                                         PHONE_HOME_CITY_AND_NUMBER};
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableSupportForPhoneNumberTrunkTypes)) {
-        necessary_types.insert(PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX);
-      }
-      return necessary_types;
+      return ServerFieldTypeSet{
+          PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX,
+          PHONE_HOME_CITY_AND_NUMBER,
+          PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
     }
     default:
       return {};
