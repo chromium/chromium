@@ -196,8 +196,8 @@ std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
     answers.push_back(i->second);
   }
 
-  VLOG(1) << "Serving " << answers.size() << " records for " << *name
-          << ", qtype " << dns_query.qtype();
+  LOG(INFO) << "Serving " << answers.size() << " records for " << *name
+            << ", qtype " << dns_query.qtype();
 
   // Note `answers` may be empty. NOERROR with no answers is how to express
   // NODATA, so there is no need handle it specially.
