@@ -9,7 +9,7 @@ import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {FocusRow} from '//resources/js/focus_row.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {isMac, isWindows} from '//resources/js/platform.js';
-import {getDeepActiveElement} from '//resources/js/util_ts.js';
+import {getDeepActiveElement} from '//resources/js/util.js';
 import {FlattenedNodesObserver, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_action_menu.html.js';

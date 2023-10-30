@@ -38,6 +38,7 @@ build_webui("build") {
     "store_ts.ts",
     "test_loader.ts",
     "test_loader_util.ts",
+    "util.ts",
     "util_ts.ts",
   ]
 
