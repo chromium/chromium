@@ -43,11 +43,12 @@ public class PaneListBuilder {
      *                     {@link Pane} is lazily initialized.
      */
     public PaneListBuilder registerPane(@PaneId int paneId, @NonNull Supplier<Pane> paneSupplier) {
-        assert mRegisteredPanes != null : "build() already invoked.";
+        if (isBuilt()) {
+            throw new IllegalStateException(
+                    "PaneListBuilder#build() was already invoked. Cannot add a pane for " + paneId);
+        }
         assert !mRegisteredPanes.containsKey(paneId)
             : String.format(Locale.ENGLISH, "a pane for %d was already registered.", paneId);
-
-        if (mRegisteredPanes == null) return this;
 
         mRegisteredPanes.put(paneId, paneSupplier);
 
@@ -55,11 +56,22 @@ public class PaneListBuilder {
     }
 
     /**
+     * Returns whether {@link #build()} has already been invoked on this builder. If this returns
+     * true, future calls to {@link #registerPane(int, Supplier)} will throw an {@link
+     * IllegalStateException}.
+     */
+    public boolean isBuilt() {
+        return mRegisteredPanes == null;
+    }
+
+    /**
      * Builds a {@link ImmutableMap} of Panes keyed by {@link PaneId} and ordered according to the
      * supplied {@link PaneOrderController}.
      */
     ImmutableMap<Integer, Supplier<Pane>> build() {
-        assert mRegisteredPanes != null : "build() already invoked.";
+        if (isBuilt()) {
+            throw new IllegalStateException("PaneListBuilder#build() was already invoked");
+        }
 
         ImmutableMap.Builder<Integer, Supplier<Pane>> panesBuilder = ImmutableMap.builder();
         for (@PaneId int paneId : mPaneOrderController.getPaneOrder()) {

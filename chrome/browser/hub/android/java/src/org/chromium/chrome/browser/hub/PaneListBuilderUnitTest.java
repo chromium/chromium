@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import androidx.test.filters.SmallTest;
 
@@ -84,6 +85,38 @@ public class PaneListBuilderUnitTest {
         assertEquals(1, panes.size());
         assertTrue(panes.containsKey(PaneId.TAB_SWITCHER));
         assertFalse(panes.containsKey(PaneId.BOOKMARKS));
+    }
+
+    @Test
+    @SmallTest
+    public void testAlreadyBuiltThrowsException() {
+        PaneOrderController orderController = new DefaultPaneOrderController();
+
+        PaneListBuilder builder = new PaneListBuilder(orderController);
+
+        assertFalse(builder.isBuilt());
+
+        builder.registerPane(PaneId.TAB_SWITCHER, mMockSupplier);
+
+        assertFalse(builder.isBuilt());
+
+        builder.build();
+
+        assertTrue(builder.isBuilt());
+
+        try {
+            builder.registerPane(PaneId.INCOGNITO_TAB_SWITCHER, mMockSupplier);
+            fail("IllegalStateException should have been thrown for registerPane().");
+        } catch (IllegalStateException e) {
+            // This should catch the exception silently.
+        }
+
+        try {
+            builder.build();
+            fail("IllegalStateException should have been thrown for build().");
+        } catch (IllegalStateException e) {
+            // This should catch the exception silently.
+        }
     }
 
     private PaneOrderController createReverseDefaultOrderController() {
