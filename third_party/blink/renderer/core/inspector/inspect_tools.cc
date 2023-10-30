@@ -631,18 +631,18 @@ void SourceOrderTool::Draw(float scale) {
   for (Node& child_node : NodeTraversal::ChildrenOf(*node_)) {
     // Don't draw if it's not an element or is not the direct child of the
     // parent node.
-    if (!child_node.IsElementNode())
+    auto* element = DynamicTo<Element>(child_node);
+    if (!element) {
       continue;
-    // Don't draw if it's not rendered/would be ignored by a screen reader.
-    if (child_node.GetComputedStyle()) {
-      bool display_none =
-          child_node.GetComputedStyle()->Display() == EDisplay::kNone;
-      bool visibility_hidden =
-          child_node.GetComputedStyle()->Visibility() == EVisibility::kHidden;
-      if (display_none || visibility_hidden)
-        continue;
     }
-    DrawNode(&child_node, position_number);
+    // Don't draw if it's not rendered/would be ignored by a screen reader.
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (style->Display() == EDisplay::kNone ||
+          style->Visibility() == EVisibility::kHidden) {
+        continue;
+      }
+    }
+    DrawNode(element, position_number);
     position_number++;
   }
 }
