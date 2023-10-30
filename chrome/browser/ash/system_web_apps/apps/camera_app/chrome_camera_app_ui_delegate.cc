@@ -231,6 +231,7 @@ ChromeCameraAppUIDelegate::StorageMonitor::GetCurrentStatus() {
   auto current_storage = base::SysInfo::AmountOfFreeDiskSpace(monitor_path_);
   auto status = StorageMonitorStatus::NORMAL;
   if (current_storage < 0) {
+    LOG(ERROR) << "Failed to get the amount of free disk space.";
     status = StorageMonitorStatus::ERROR;
   } else if (current_storage < kStorageCriticallyLowThreshold) {
     status = StorageMonitorStatus::CRITICALLY_LOW;
@@ -447,6 +448,8 @@ void ChromeCameraAppUIDelegate::MaybeTriggerSurvey() {
 void ChromeCameraAppUIDelegate::StartStorageMonitor(
     base::RepeatingCallback<void(StorageMonitorStatus)> monitor_callback) {
   if (!storage_monitor_) {
+    LOG(ERROR) << "Failed to start monitoring storage due to missing monitor "
+                  "instance.";
     monitor_callback.Run(StorageMonitorStatus::ERROR);
     return;
   }
