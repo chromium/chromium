@@ -118,7 +118,7 @@ bool HasCredentials(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   return
       /* Can be null if Chrome signin is disabled. */ identity_manager &&
-      identity_manager->GetAccountsInCookieJar().signed_in_accounts.size() > 0;
+      !identity_manager->GetAccountsInCookieJar().signed_in_accounts.empty();
 }
 
 void AddRawStringOrDefault(content::WebUIDataSource* source,
