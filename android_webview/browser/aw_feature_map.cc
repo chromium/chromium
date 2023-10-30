@@ -42,6 +42,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewSupervisedUserSiteDetection,
     &features::kWebViewSupervisedUserSiteBlock,
     &base::features::kCollectAndroidFrameTimelineMetrics,
+    &features::kWebViewInjectPlatformJsApis,
 };
 
 // static

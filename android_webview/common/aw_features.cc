@@ -173,7 +173,8 @@ BASE_FEATURE(kWebViewWideColorGamutSupport,
              "WebViewWideColorGamutSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Control the default behaviour for the XRequestedWith header
+// Control the default behaviour for the XRequestedWith header.
+// TODO(crbug.com/1493963): enable by default after M120 branch point.
 BASE_FEATURE(kWebViewXRequestedWithHeaderControl,
              "WebViewXRequestedWithHeaderControl",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -195,6 +196,11 @@ BASE_FEATURE(kWebViewXRequestedWithHeaderManifestAllowList,
 BASE_FEATURE(kWebViewImageDrag,
              "WebViewImageDrag",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables injection of platform-specific JavaScript APIs.
+BASE_FEATURE(kWebViewInjectPlatformJsApis,
+             "WebViewInjectPlatformJsApis",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This enables uploading UMA data with a higher frequency.
 // This Feature is checked and used in downstream internal code.

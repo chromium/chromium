@@ -769,6 +769,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8FlushCodeBasedOnTabVisibility"),
         Flag.baseFeature("V8SingleThreadedGCInBackground"),
         Flag.baseFeature("V8MemoryReducer"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS,
+                "Inject platform-specific Javascript APIs.")
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

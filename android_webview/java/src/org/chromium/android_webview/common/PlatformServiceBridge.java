@@ -5,6 +5,7 @@
 package org.chromium.android_webview.common;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 
@@ -13,6 +14,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.content_public.browser.MessagePayload;
+import org.chromium.content_public.browser.MessagePort;
 
 /**
  * This class manages platform-specific services. (i.e. Google Services) The platform
@@ -142,5 +145,82 @@ public abstract class PlatformServiceBridge {
 
     public @Nullable AwSupervisedUserUrlClassifierDelegate getUrlClassifierDelegate() {
         return null;
+    }
+
+    /**
+     * Inject optional JS interfaces provided by the platform.
+     *
+     * @param context App context
+     * @param receiver Reference to {@link org.chromium.android_webview.AwContents} where interfaces
+     *     should be injected.
+     */
+    public void injectPlatformJsInterfaces(
+            @NonNull Context context, @NonNull AwContentsWrapper receiver) {}
+
+    /**
+     * Wrapper interface to allow us to pass an {@link org.chromium.android_webview.AwContents}
+     * instance through the {@link PlatformServiceBridge} without adding a dependency on the {@code
+     * org.chromium.android_webview package}.
+     *
+     * <p>If this interface is changed, the downstream implementation of {@link
+     * PlatformServiceBridge} must also be updated to use the new interface. Typically, this will
+     * require a 3-way commit.
+     */
+    public interface AwContentsWrapper {
+
+        /**
+         * @see org.chromium.android_webview.AwContents#addDocumentStartJavaScript(String, String[])
+         */
+        void addDocumentStartJavaScript(
+                @NonNull String script, @NonNull String[] allowedOriginRules);
+
+        /**
+         * Add a WebMessageListener to the wrapped AwContents. The WebMessageListener itself is also
+         * a wrapper interface to avoid illegal dependencies.
+         *
+         * @see org.chromium.android_webview.AwContents#addWebMessageListener(String, String[],
+         *     org.chromium.android_webview.WebMessageListener)
+         */
+        void addWrappedWebMessageListener(
+                @NonNull String jsObjectName,
+                @NonNull String[] allowedOriginRules,
+                @NonNull WebMessageListenerWrapper listener);
+
+        /**
+         * Get an identifier for the current profile used by the AwContents.
+         *
+         * <p>This can be used as partitioning information for in-app caches that should be keyed on
+         * Profile.
+         */
+        ProfileIdentifier getProfileIdentifier();
+    }
+
+    /**
+     * @see {@link org.chromium.android_webview.WebMessageListener}
+     */
+    public interface WebMessageListenerWrapper {
+        void onPostMessage(
+                MessagePayload payload,
+                Uri topLevelOrigin,
+                Uri sourceOrigin,
+                boolean isMainFrame,
+                JsReplyProxyWrapper jsReplyProxy,
+                MessagePort[] ports);
+    }
+
+    /**
+     * @see org.chromium.android_webview.JsReplyProxy;
+     */
+    public interface JsReplyProxyWrapper {
+        void postMessage(@NonNull final MessagePayload payload);
+    }
+
+    /** Interface for objects that identifies a profile. */
+    public interface ProfileIdentifier {
+        @Override
+        boolean equals(Object o);
+
+        @Override
+        int hashCode();
     }
 }

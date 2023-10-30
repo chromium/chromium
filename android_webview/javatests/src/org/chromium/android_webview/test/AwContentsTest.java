@@ -12,6 +12,7 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROC
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
 import android.content.ComponentCallbacks2;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -25,6 +26,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 
+import androidx.annotation.NonNull;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -43,6 +45,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -85,6 +88,7 @@ import java.util.function.Predicate;
 @RunWith(AwJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Tests that need browser start are incompatible with @Batch")
 public class AwContentsTest {
+
     private static final String TAG = "AwContentsTest";
 
     @Rule
@@ -563,6 +567,7 @@ public class AwContentsTest {
     }
 
     static class JavaScriptObject {
+
         private CallbackHelper mCallbackHelper;
 
         public JavaScriptObject(CallbackHelper callbackHelper) {
@@ -918,8 +923,9 @@ public class AwContentsTest {
         Assert.assertEquals(renderProcess, null);
     }
 
-    /** Regression test for https://crbug.com/732976. Load a data URL, then immediately
-     * after that load a javascript URL. The data URL navigation shouldn't be blocked.
+    /**
+     * Regression test for https://crbug.com/732976. Load a data URL, then immediately after that
+     * load a javascript URL. The data URL navigation shouldn't be blocked.
      */
     @Test
     @LargeTest
@@ -1028,12 +1034,12 @@ public class AwContentsTest {
      * that the legacy behavior is preserved (i.e. that the URL is fixed + that no crashes happen in
      * the product).
      *
-     * The main test verification is that there are no crashes.  In particular, this test tries
-     * to verify that the `loadUrl` call above won't trigger:
-     * - NOTREACHED and DwoC in content::NavigationRequest's constructor for about: scheme
-     *   navigations that aren't about:blank nor about:srcdoc
-     * - CHECK in content::NavigationRequest::GetOriginForURLLoaderFactory caused by the
-     *   mismatch between the result of this method and the "about:" process lock.
+     * <p>The main test verification is that there are no crashes. In particular, this test tries to
+     * verify that the `loadUrl` call above won't trigger:
+     * <li>NOTREACHED and DwoC in content::NavigationRequest's constructor for about: scheme
+     *     navigations that aren't about:blank nor about:srcdoc
+     * <li>CHECK in content::NavigationRequest::GetOriginForURLLoaderFactory caused by the mismatch
+     *     between the result of this method and the "about:" process lock.
      */
     @Test
     @LargeTest
@@ -1619,6 +1625,7 @@ public class AwContentsTest {
     }
 
     private class FakePostDelayedTask implements BiFunction<Runnable, Long, Void> {
+
         @Override
         public Void apply(Runnable runnable, Long delay) {
             long time = TimeUtils.uptimeMillis() + delay;
@@ -1638,10 +1645,14 @@ public class AwContentsTest {
             // modification errors.
             var toRun = new ArrayList<Pair<Runnable, Long>>();
             for (var p : mTasks) {
-                if (deadlinePassed.test(p)) toRun.add(p);
+                if (deadlinePassed.test(p)) {
+                    toRun.add(p);
+                }
             }
             mTasks.removeIf(deadlinePassed);
-            for (var p : toRun) p.first.run();
+            for (var p : toRun) {
+                p.first.run();
+            }
         }
 
         public int getPendingTasksCount() {
@@ -1947,5 +1958,68 @@ public class AwContentsTest {
                 });
 
         Assert.assertFalse(testView.isBackedByHardwareView());
+    }
+
+    private static final class InjectingPlatformServiceBridge extends PlatformServiceBridge {
+        private static final String DEMO_JAVASCRIPT =
+                """
+            function injectionDemo() {
+              return "injected";
+            }
+            """;
+
+        @Override
+        public void injectPlatformJsInterfaces(
+                @NonNull Context context, @NonNull AwContentsWrapper receiver) {
+            receiver.addDocumentStartJavaScript(DEMO_JAVASCRIPT, new String[] {"*"});
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS})
+    public void testPlatformJsInjectedIfEnabled() throws Exception {
+        mActivityTestRule.startBrowserProcess();
+
+        InjectingPlatformServiceBridge bridge = new InjectingPlatformServiceBridge();
+        PlatformServiceBridge.injectInstance(bridge);
+
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
+
+        String result =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "injectionDemo();");
+        Assert.assertEquals("\"injected\"", result);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS})
+    public void testPlatformJsNotInjectedIfDisabled() throws Exception {
+        mActivityTestRule.startBrowserProcess();
+
+        InjectingPlatformServiceBridge bridge = new InjectingPlatformServiceBridge();
+        PlatformServiceBridge.injectInstance(bridge);
+
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
+
+        String result =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents,
+                        mContentsClient,
+                        "window.injectionDemo ? 'exists unexpectedly' : 'does not exist';");
+        Assert.assertEquals("\"does not exist\"", result);
     }
 }

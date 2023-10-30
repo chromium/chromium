@@ -61,6 +61,7 @@ import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.gfx.AwFunctor;
 import org.chromium.android_webview.gfx.AwGLFunctor;
@@ -158,12 +159,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Exposes the native AwContents class, and together these classes wrap the WebContents
- * and Browser components that are required to implement Android WebView API. This is the
- * primary entry point for the WebViewProvider implementation; it holds a 1:1 object
- * relationship with application WebView instances.
- * (We define this class independent of the hidden WebViewProvider interfaces, to allow
- * continuous build &amp; test in the open source SDK-based tree).
+ * Exposes the native AwContents class, and together these classes wrap the WebContents and Browser
+ * components that are required to implement Android WebView API. This is the primary entry point
+ * for the WebViewProvider implementation; it holds a 1:1 object relationship with application
+ * WebView instances. (We define this class independent of the hidden WebViewProvider interfaces, to
+ * allow continuous build &amp; test in the open source SDK-based tree).
  */
 @Lifetime.WebView
 @JNINamespace("android_webview")
@@ -1244,6 +1244,12 @@ public class AwContents implements SmartClipProvider {
 
             setNewAwContents(
                     AwContentsJni.get().init(mBrowserContext.getNativeBrowserContextPointer()));
+
+            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS)) {
+                PlatformServiceBridge.getInstance()
+                        .injectPlatformJsInterfaces(
+                                mContext, new PlatformServiceBridgeAwContentsWrapper(this));
+            }
 
             onContainerViewChanged();
         }
