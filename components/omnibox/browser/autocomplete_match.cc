@@ -1311,8 +1311,7 @@ bool AutocompleteMatch::IsUrlScoringEligible() const {
 }
 
 bool AutocompleteMatch::IsTrendSuggestion() const {
-  return type == AutocompleteMatchType::SEARCH_SUGGEST &&
-         subtypes.contains(/*omnibox::SUBTYPE_TRENDS=*/143);
+  return subtypes.contains(/*omnibox::SUBTYPE_TRENDS=*/143);
 }
 
 void AutocompleteMatch::FilterOmniboxActions(
