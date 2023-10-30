@@ -1973,6 +1973,15 @@ class CORE_EXPORT Document : public ContainerNode,
     return ignore_destructive_write_module_script_count_;
   }
 
+  void IncrementDataListCount() { ++data_list_count_; }
+  void DecrementDataListCount() {
+    DCHECK_GT(data_list_count_, 0u);
+    --data_list_count_;
+  }
+  // Returns true if the Document has at least one data-list associated with
+  // it.
+  bool HasAtLeastOneDataList() const { return data_list_count_; }
+
   void ResetAgent(Agent& agent);
 
   bool SupportsLegacyDOMMutations();
@@ -2683,6 +2692,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // This is incremented when a module script is evaluated.
   // http://crbug.com/1079044
   unsigned ignore_destructive_write_module_script_count_ = 0;
+
+  // Number of data-list elements in this document.
+  unsigned data_list_count_ = 0;
 
   // If legacy DOM Mutation event listeners are supported by the embedder.
   absl::optional<bool> legacy_dom_mutations_supported_;

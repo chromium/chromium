@@ -35,11 +35,13 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace blink {
 
 class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
+  USING_PRE_FINALIZER(HTMLDataListElement, Prefinalize);
 
  public:
   HTMLDataListElement(Document&);
@@ -51,6 +53,10 @@ class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
  private:
   void ChildrenChanged(const ChildrenChange&) override;
   void FinishParsingChildren() override;
+  void DidMoveToNewDocument(Document&) override;
+
+  // Called when no longer reachable and about to be deleted.
+  void Prefinalize();
 };
 
 }  // namespace blink
