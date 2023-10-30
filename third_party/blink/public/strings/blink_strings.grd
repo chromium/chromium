@@ -688,6 +688,10 @@ below:
         Share location
       </message>
 
+      <message name="IDS_STRONG_PASSWORD_LABEL" desc="Label displayed in the password input form in the sign-up flow when it is generated">
+        Strong password
+      </message>
+
 <!-- The following IDS_FORM_VALIDATION_* messages were taken from Mozilla's dom.properties file.
 
 # ***** BEGIN LICENSE BLOCK *****
