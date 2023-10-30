@@ -32,6 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -320,10 +321,21 @@ base::Value::Dict EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
                        ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
                        : IDS_WELCOME_SIGNIN_VIEW_SIGNIN));
 #if !BUILDFLAG(IS_CHROMEOS)
+      // We apply the checkLinkDataCheckboxByDefault to true value only if the
+      // link data checkbox is visible and the policy
+      // ProfileSeparationDataMigrationSettings is set to its OPTOUT value (2)
+      // or the legacy policy EnterpriseProfileCreationKeepBrowsingData is set
+      // to True.
+      bool profile_separation_data_migration_settings_optout =
+          Profile::FromWebUI(web_ui())->GetPrefs()->GetInteger(
+              prefs::kProfileSeparationDataMigrationSettings) == 2;
+      bool check_link_Data_checkbox_by_default_from_legacy_policy =
+          g_browser_process->local_state()->GetBoolean(
+              prefs::kEnterpriseProfileCreationKeepBrowsingData);
       dict.Set("checkLinkDataCheckboxByDefault",
                show_link_data_option_ &&
-                   g_browser_process->local_state()->GetBoolean(
-                       prefs::kEnterpriseProfileCreationKeepBrowsingData));
+                   (profile_separation_data_migration_settings_optout ||
+                    check_link_Data_checkbox_by_default_from_legacy_policy));
 #endif
       break;
   }

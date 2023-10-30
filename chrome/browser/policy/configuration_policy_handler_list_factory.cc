@@ -1743,9 +1743,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAlwaysOpenPdfExternally,
     prefs::kPluginsAlwaysOpenPdfExternally,
     base::Value::Type::BOOLEAN },
-  { key::kEnterpriseProfileCreationKeepBrowsingData,
-    prefs::kEnterpriseProfileCreationKeepBrowsingData,
-    base::Value::Type::BOOLEAN },
   { key::kNativeMessagingUserLevelHosts,
     extensions::pref_names::kNativeMessagingUserLevelHosts,
     base::Value::Type::BOOLEAN },
@@ -2421,8 +2418,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                             prefs::kProfileSeparationSettings,
                                             base::Value::Type::INTEGER)));
 
-  handlers->AddHandler(std::make_unique<PolicyWithDependencyHandler>(
-      key::kProfileSeparationSettings,
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kEnterpriseProfileCreationKeepBrowsingData,
+          prefs::kEnterpriseProfileCreationKeepBrowsingData,
+          base::Value::Type::BOOLEAN),
       std::make_unique<SimplePolicyHandler>(
           key::kProfileSeparationDataMigrationSettings,
           prefs::kProfileSeparationDataMigrationSettings,

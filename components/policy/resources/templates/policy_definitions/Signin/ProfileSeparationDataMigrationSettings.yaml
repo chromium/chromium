@@ -7,17 +7,15 @@ caption: Profile separation data migration settings
 desc: |-
   This policy controls whether users are allowed to bring existing browsing data into a managed profile created after a managed account signs into the content area.
 
-  If this policy is unset or set to UserOptInData, the user can choose whether to bring existing browsing data into the managed profile. The checkbox in the profile creation dialog will be visible and unchecked by default.
+  If this policy is unset or set to <ph name="USER_OPTIN_DATA_ENUM_NAME">UserOptInData</ph> (value 1), the user can choose whether to bring existing browsing data into the managed profile. The checkbox in the profile creation dialog will be visible and unchecked by default.
 
-  If this policy is set to UserOptOutData, the user can choose whether to bring existing browsing data into the managed profile. The checkbox in the profile creation dialog will be visible and checked by default. This option is only allowed on managed devices.
+  If this policy is set to <ph name="USER_OPTOUT_DATA_ENUM_NAME">UserOptOutData</ph> (value 2), the user can choose whether to bring existing browsing data into the managed profile. The checkbox in the profile creation dialog will be visible and checked by default. This option is only allowed on managed devices.
 
-  If this policy is set to AlwaysSeparateData, the user cannot bring any existing browsing data into the managed profile. The checkbox in the profile creation dialog will not be visible.
+  If this policy is set to <ph name="USER_ALWAYS_SEPARATE_DATA_ENUM_NAME">AlwaysSeparateData</ph> (value 3), the user cannot bring any existing browsing data into the managed profile. The checkbox in the profile creation dialog will not be visible.
 
   Bringing existing browsing data into the managed profile means that the current profile will become managed. No new profile will be created.
 
   Not bringing existing browsing data into the managed profile means that a new clean profile will be created. The existing browsing data will stay in an unmanaged profile which will still be accessible to the user via the profile picker.
-
-  This policy requires the <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME">ProfileSeparationSettings</ph> policy to be set to take effect.
 
 supported_on:
 - chrome.*:119-
@@ -40,7 +38,7 @@ items:
 - caption: Let users decide to bring existing browsing data into their managed profile
   name: UserOptInData
   value: 1
-- caption: Suggest to users to bring their existing data in the managed profile and give them a choice not too
+- caption: Suggest to users to bring their existing data in the managed profile and give them a choice not to
   name: UserOptOutData
   value: 2
 - caption: Users cannot bring existing browsing data in their managed profile
