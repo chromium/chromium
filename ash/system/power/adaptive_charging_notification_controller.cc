@@ -12,13 +12,13 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -76,10 +76,7 @@ void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
       kAdaptiveChargingBatteryIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
-  notification->set_accent_color(
-      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-          ? gfx::kGoogleGreen300
-          : gfx::kGoogleGreen600);
+  notification->set_accent_color_id(cros_tokens::kCrosSysPositive);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
