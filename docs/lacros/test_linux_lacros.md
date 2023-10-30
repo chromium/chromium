@@ -125,16 +125,17 @@ There are two ways to run Linux based version skew testing:
 First follow the previous section to build your target. Then download ash.
 Assuming you want to test against ash 92.0.4515.130.
 ```
+version=92.0.4515.130
 cipd auth-login
-echo "chromium/testing/linux-ash-chromium/x86_64/ash.zip version:92.0.4515.130" > /tmp/ensure-file.txt
-cipd ensure -ensure-file /tmp/ensure-file.txt -root lacros_version_skew_tests_v92.0.4515.130
+echo "chromium/testing/linux-ash-chromium/x86_64/ash.zip version:$version" > /tmp/ensure-file.txt
+cipd ensure -ensure-file /tmp/ensure-file.txt -root lacros_version_skew_tests_v$version
 ```
 
 Then you can use
 ```
 ./build/lacros/test_runner.py test \
 out_linux_lacros_lacros/Release/lacros_chrome_browsertests \
---ash-chrome-path-override=lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
+--ash-chrome-path-override=lacros_version_skew_tests_v$version/test_ash_chrome
 ```
 to run the test against that version of ash.
 
