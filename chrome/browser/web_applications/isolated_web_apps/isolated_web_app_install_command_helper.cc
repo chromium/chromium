@@ -4,9 +4,9 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 
-#include <array>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -450,7 +450,7 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
         "Failed to convert manifest `version` from UTF16 to UTF8.");
   }
 
-  base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
+  base::expected<std::vector<uint32_t>, IwaVersionParseError>
       version_components = ParseIwaVersionIntoComponents(version_string);
   if (!version_components.has_value()) {
     return base::unexpected(base::StrCat(

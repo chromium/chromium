@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 
-#include <array>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -46,13 +45,12 @@ UpdateManifest::CreateFromJson(const base::Value& json,
       continue;
     }
 
-    base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
+    base::expected<std::vector<uint32_t>, IwaVersionParseError>
         version_components = ParseIwaVersionIntoComponents(*version_string);
     if (!version_components.has_value()) {
       continue;
     }
-    base::Version version(std::vector<uint32_t>(version_components->begin(),
-                                                version_components->end()));
+    base::Version version(std::move(*version_components));
     CHECK(version.IsValid());
 
     GURL src = update_manifest_url.Resolve(*src_string);

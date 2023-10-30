@@ -564,7 +564,7 @@ INSTANTIATE_TEST_SUITE_P(
             .version = u"\xD801",
             .error = "Failed to convert manifest `version` from UTF16 to UTF8",
             .test_name = "InvalidUtf8"},
-        InvalidVersionParam{.version = u"10",
+        InvalidVersionParam{.version = u"10abc",
                             .error = "Failed to parse `version`",
                             .test_name = "InvalidVersionFormat"}),
     [](const ::testing::TestParamInfo<

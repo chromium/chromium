@@ -759,14 +759,13 @@ TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedDevModeProxyIsolationData) {
 
 TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedIsolationDataVersion) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
-  // The version must have three numeric parts, thus using five parts here
-  // should break deserialization.
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
-      InstalledBundle{.path = path}, base::Version("1.2.3.4.5")));
+      InstalledBundle{.path = path}, base::Version("1.2.3")));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
   ASSERT_THAT(web_app_proto, NotNull());
+  web_app_proto->mutable_isolation_data()->mutable_version()->assign("abc");
 
   std::unique_ptr<WebApp> protoed_web_app =
       WebAppDatabase::CreateWebApp(*web_app_proto);
@@ -776,16 +775,18 @@ TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedIsolationDataVersion) {
 TEST_F(WebAppDatabaseProtoDataTest,
        HandlesCorruptedIsolationDataPendingUpdateVersion) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
-  // The version must have three numeric parts, thus using five parts here
-  // should break deserialization.
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
       InstalledBundle{.path = path}, base::Version("1.2.3"), {},
       WebApp::IsolationData::PendingUpdateInfo(InstalledBundle{.path = path},
-                                               base::Version("1.2.3.4.5"))));
+                                               base::Version("1.2.3"))));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
   ASSERT_THAT(web_app_proto, NotNull());
+  web_app_proto->mutable_isolation_data()
+      ->mutable_pending_update_info()
+      ->mutable_version()
+      ->assign("abc");
 
   std::unique_ptr<WebApp> protoed_web_app =
       WebAppDatabase::CreateWebApp(*web_app_proto);

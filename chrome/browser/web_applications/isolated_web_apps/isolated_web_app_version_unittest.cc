@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 
-#include <array>
 #include <string>
 #include <vector>
 
@@ -22,20 +21,19 @@ using testing::IsTrue;
 
 struct IwaVersionTestParam {
   std::string version_string;
-  base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
+  base::expected<std::vector<uint32_t>, IwaVersionParseError>
       expected_components;
 };
 
 using IwaVersionTest = testing::TestWithParam<IwaVersionTestParam>;
 
 TEST_P(IwaVersionTest, ParsesSuccessfully) {
-  base::expected<std::array<uint32_t, 3>, IwaVersionParseError> components =
+  base::expected<std::vector<uint32_t>, IwaVersionParseError> components =
       ParseIwaVersionIntoComponents(GetParam().version_string);
 
   ASSERT_THAT(components, Eq(GetParam().expected_components));
   if (components.has_value()) {
-    base::Version version(
-        std::vector<uint32_t>(components->begin(), components->end()));
+    base::Version version(*components);
     EXPECT_THAT(version.IsValid(), IsTrue());
   }
 }
@@ -45,30 +43,32 @@ INSTANTIATE_TEST_SUITE_P(
     IwaVersionTest,
     testing::ValuesIn(std::vector<IwaVersionTestParam>{
         {.version_string = "1",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
+         .expected_components = std::vector<uint32_t>{1}},
         {.version_string = "1.2",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
+         .expected_components = std::vector<uint32_t>{1, 2}},
+        {.version_string = "1.2",
+         .expected_components = std::vector<uint32_t>{1, 2}},
+        {.version_string = "4294967295.4294967294.4294967293",
+         .expected_components = std::vector<uint32_t>{4294967295, 4294967294,
+                                                      4294967293}},
         // This is bigger than what uint32_t can handle
         {.version_string = "999994294967295.2.3",
          .expected_components =
              base::unexpected(IwaVersionParseError::kCannotConvertToNumber)},
         {.version_string = "0.0.0",
-         .expected_components = std::array<uint32_t, 3>{0, 0, 0}},
+         .expected_components = std::vector<uint32_t>{0, 0, 0}},
         {.version_string = "1.2.3",
-         .expected_components = std::array<uint32_t, 3>{1, 2, 3}},
+         .expected_components = std::vector<uint32_t>{1, 2, 3}},
         {.version_string = "1.2.3.4",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
+         .expected_components = std::vector<uint32_t>{1, 2, 3, 4}},
         {.version_string = "10.20.30",
-         .expected_components = std::array<uint32_t, 3>{10, 20, 30}},
+         .expected_components = std::vector<uint32_t>{10, 20, 30}},
         {.version_string = "1.-2.3",
          .expected_components =
              base::unexpected(IwaVersionParseError::kNonDigit)},
         {.version_string = "1..2.3",
          .expected_components =
-             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
+             base::unexpected(IwaVersionParseError::kEmptyComponent)},
         {.version_string = "1..3",
          .expected_components =
              base::unexpected(IwaVersionParseError::kEmptyComponent)},
@@ -118,8 +118,8 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IwaVersionParseErrorToStringTest,
     ::testing::Values(
-        std::make_pair(IwaVersionParseError::kNotThreeComponents,
-                       "exactly three components"),
+        std::make_pair(IwaVersionParseError::kNoComponents,
+                       "at least one number"),
         std::make_pair(IwaVersionParseError::kEmptyComponent,
                        "may not be empty"),
         std::make_pair(IwaVersionParseError::kNonDigit, "only contain digits"),
