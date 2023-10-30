@@ -4386,6 +4386,7 @@ crbug.com/1204234 css3/blending/background-blend-mode-single-accelerated-element
 
 # DevTools roll
 crbug.com/1414773 http/tests/devtools/tabbed-pane-closeable-persistence.js [ Failure Pass ]
+crbug.com/1497451 http/tests/devtools/console/console-format-classes.js [ Failure Pass ]
 
 #Mixed content autoupgrades make these tests not applicable, since they check for mixed content audio/video
 crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/audio-tag.https.html [ Failure ]
