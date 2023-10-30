@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"
 
 #include "ash/public/cpp/app_list/app_list_controller.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/app_list/search/common/keyword_util.h"
@@ -51,6 +52,11 @@ void SearchSessionMetricsManager::OnSearchSessionStarted() {
 
 void SearchSessionMetricsManager::OnSearchSessionEnded(
     const std::u16string& query) {
+  if (!session_active_) {
+    LOG(ERROR) << "A request for a launcher search session to end has been "
+                  "made when there was no active session.";
+    return;
+  }
   EndSearchSession(query);
 }
 

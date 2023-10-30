@@ -137,6 +137,11 @@ TEST_F(SearchSessionMetricsManagerTest, AbandonResult) {
   histogram_tester()->ExpectTotalCount(SearchKeyHistogram, 1);
   histogram_tester()->ExpectUniqueSample(
       SearchKeyHistogram, ash::SearchSessionConclusion::kQuit, 1);
+
+  // No additional session should be logged if no session was started
+  metrics_manager()->OnSearchSessionEnded(u"");
+
+  histogram_tester()->ExpectTotalCount(SearchKeyHistogram, 1);
 }
 
 }  // namespace app_list::test
