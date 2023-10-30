@@ -34,11 +34,13 @@ PowerPreference ConvertBlinkPowerPreferenceToMojo(
 void MLContextMojo::ValidateAndCreateAsync(ScriptPromiseResolver* resolver,
                                            MLContextOptions* options,
                                            ML* ml) {
+  CHECK_EQ(options->deviceType(), V8MLDeviceType::Enum::kGpu);
   // TODO(crbug.com/1273291): Remove unsupported options (ex. model_format)
   // once the context gets implemented for non-mojo too.
   auto* context = MakeGarbageCollected<MLContextMojo>(
-      options->devicePreference(), options->powerPreference(),
-      options->modelFormat(), options->numThreads(), ml);
+      options->devicePreference(), options->deviceType(),
+      options->powerPreference(), options->modelFormat(), options->numThreads(),
+      ml);
   context->CreateAsync(resolver, options);
 }
 
@@ -47,9 +49,11 @@ MLContext* MLContextMojo::ValidateAndCreateSync(ScriptState* script_state,
                                                 ExceptionState& exception_state,
                                                 MLContextOptions* options,
                                                 ML* ml) {
+  CHECK_EQ(options->deviceType(), V8MLDeviceType::Enum::kGpu);
   auto* context = MakeGarbageCollected<MLContextMojo>(
-      options->devicePreference(), options->powerPreference(),
-      options->modelFormat(), options->numThreads(), ml);
+      options->devicePreference(), options->deviceType(),
+      options->powerPreference(), options->modelFormat(), options->numThreads(),
+      ml);
   return context->CreateSync(script_state, options, exception_state);
 }
 
@@ -94,11 +98,13 @@ MLContext* MLContextMojo::CreateSyncImpl(ScriptState* script_state,
 }
 
 MLContextMojo::MLContextMojo(const V8MLDevicePreference device_preference,
+                             const V8MLDeviceType device_type,
                              const V8MLPowerPreference power_preference,
                              const V8MLModelFormat model_format,
                              const unsigned int num_threads,
                              ML* ml)
     : MLContext(device_preference,
+                device_type,
                 power_preference,
                 model_format,
                 num_threads,

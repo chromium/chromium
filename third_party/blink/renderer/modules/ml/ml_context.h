@@ -8,6 +8,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -32,6 +33,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // The constructor shouldn't be called directly. The callers should use
   // CreateAsync() or CreateSync() method instead.
   MLContext(const V8MLDevicePreference device_preference,
+            const V8MLDeviceType device_type,
             const V8MLPowerPreference power_preference,
             const V8MLModelFormat model_format,
             const unsigned int num_threads,
@@ -43,6 +45,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   ~MLContext() override;
 
   V8MLDevicePreference GetDevicePreference() const;
+  V8MLDeviceType GetDeviceType() const;
   V8MLPowerPreference GetPowerPreference() const;
   V8MLModelFormat GetModelFormat() const;
   unsigned int GetNumThreads() const;
@@ -95,6 +98,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
  private:
   V8MLDevicePreference device_preference_;
+  V8MLDeviceType device_type_;
   V8MLPowerPreference power_preference_;
   V8MLModelFormat model_format_;
   unsigned int num_threads_;

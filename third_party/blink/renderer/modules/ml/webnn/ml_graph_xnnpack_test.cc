@@ -46,11 +46,11 @@ TEST_P(MLGraphXnnpackTest, SharedXnnpackContextTest) {
     EXPECT_NE(graph, nullptr);
   }
   {
-    // Test building MLGraphXnnpack with devicePreference = "cpu". The promise
+    // Test building MLGraphXnnpack with deviceType = "cpu". The promise
     // should be resoveld with an MLGraphXnnpack object. The XNNPACK library
     // should be initialized successfully.
     auto* context_options = MLContextOptions::Create();
-    context_options->setDevicePreference(V8MLDevicePreference::Enum::kCpu);
+    context_options->setDeviceType(V8MLDeviceType::Enum::kCpu);
     auto* builder = CreateMLGraphBuilder(
         scope.GetExecutionContext(), scope.GetScriptState(),
         scope.GetExceptionState(), context_options);

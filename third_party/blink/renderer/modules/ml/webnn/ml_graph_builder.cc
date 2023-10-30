@@ -1737,8 +1737,7 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
   }
 
 #if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
-  if (ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kAuto ||
-      ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kCpu) {
+  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
     MLGraphXnnpack::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
     return promise;
   }
@@ -1746,8 +1745,7 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
 
 #if BUILDFLAG(BUILD_WEBNN_ON_CROS)
   // On ChromeOS, ML model inferencing is off-loaded to ModelLoader service.
-  if (ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kAuto ||
-      ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kCpu) {
+  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
     MLGraphCrOS::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
     return promise;
   }
@@ -1757,7 +1755,8 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
   // The runtime enable feature is used to disable the cross process hardware
   // acceleration by default.
   if (base::FeatureList::IsEnabled(
-          webnn::features::kEnableMachineLearningNeuralNetworkService)) {
+          webnn::features::kEnableMachineLearningNeuralNetworkService) &&
+      ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu) {
     // Reject unsupported error on unimplemented platform when getting
     // `WebNNContext` mojo interface with BrowserInterfaceBroker's
     // GetInterface() method before creating `WebNNGraph` message pipe.
@@ -1782,8 +1781,7 @@ MLGraph* MLGraphBuilder::buildSync(const MLNamedOperands& named_outputs,
   }
 
 #if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
-  if (ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kAuto ||
-      ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kCpu) {
+  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
     return MLGraphXnnpack::ValidateAndBuildSync(ml_context_, named_outputs,
                                                 exception_state);
   }

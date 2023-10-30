@@ -18,6 +18,13 @@ enum MLDevicePreference {
   "cpu"
 };
 
+// Corresponds to WebNN MLDeviceType enum
+// https://www.w3.org/TR/webnn/#enumdef-mldevicetype
+enum MLDeviceType {
+  "cpu",
+  "gpu"
+};
+
 enum MLPowerPreference {
   // Let the backend selects the most suitable behavior.
   "auto",
@@ -34,8 +41,11 @@ enum MLModelFormat {
 };
 
 dictionary MLContextOptions {
-  // Preferred kind of device used.
+  // Preferred kind of device used for model loader API.
   MLDevicePreference devicePreference = "auto";
+
+  // Specified type of device used for WebNN API.
+  MLDeviceType deviceType = "cpu";
 
   // Preference as related to power consumption.
   MLPowerPreference powerPreference = "auto";

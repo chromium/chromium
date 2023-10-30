@@ -34,6 +34,7 @@ class MODULES_EXPORT MLContextMojo : public MLContext {
                                           ML* ml);
 
   MLContextMojo(const V8MLDevicePreference device_preference,
+                const V8MLDeviceType device_type,
                 const V8MLPowerPreference power_preference,
                 const V8MLModelFormat model_format,
                 const unsigned int num_threads,

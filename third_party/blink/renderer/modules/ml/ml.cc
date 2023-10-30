@@ -70,7 +70,7 @@ void ML::Trace(Visitor* visitor) const {
 }
 
 ScriptPromise ML::createContext(ScriptState* script_state,
-                                MLContextOptions* option,
+                                MLContextOptions* options,
                                 ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -83,22 +83,15 @@ ScriptPromise ML::createContext(ScriptState* script_state,
 
   auto promise = resolver->Promise();
 
-// TODO(crbug.com/1273291): Support async context creation for all contexts.
-#if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK) || BUILDFLAG(BUILD_WEBNN_ON_CROS)
-  if (option->devicePreference() == V8MLDevicePreference::Enum::kAuto ||
-      option->devicePreference() == V8MLDevicePreference::Enum::kCpu) {
-    auto* ml_context = MakeGarbageCollected<MLContext>(
-        option->devicePreference(), option->powerPreference(),
-        option->modelFormat(), option->numThreads(), this);
-    resolver->Resolve(ml_context);
-    return promise;
-  }
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          webnn::features::kEnableMachineLearningNeuralNetworkService)) {
-    MLContextMojo::ValidateAndCreateAsync(resolver, option, this);
+  if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
+    if (base::FeatureList::IsEnabled(
+            webnn::features::kEnableMachineLearningNeuralNetworkService)) {
+      MLContextMojo::ValidateAndCreateAsync(resolver, options, this);
+    } else {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError, "Not implemented"));
+    }
     return promise;
   }
 #endif
@@ -106,11 +99,9 @@ ScriptPromise ML::createContext(ScriptState* script_state,
   // Notice that currently, we just create the context in the renderer. In the
   // future we may add backend query ability to check whether a context is
   // supportable or not. At that time, this function will be truly asynced.
-  auto* ml_context = MakeGarbageCollected<MLContext>(
-      option->devicePreference(), option->powerPreference(),
-      option->modelFormat(), option->numThreads(), this);
-  resolver->Resolve(ml_context);
-
+  //
+  // TODO(crbug.com/1273291): Support async context creation for all contexts.
+  resolver->Resolve(MLContext::ValidateAndCreateSync(options, this));
   return promise;
 }
 
@@ -123,28 +114,22 @@ MLContext* ML::createContextSync(ScriptState* script_state,
     return nullptr;
   }
 
-// TODO(crbug.com/1273291): support sync context creation for all contexts.
-#if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK) || BUILDFLAG(BUILD_WEBNN_ON_CROS)
-  if (options->devicePreference() == V8MLDevicePreference::Enum::kAuto ||
-      options->devicePreference() == V8MLDevicePreference::Enum::kCpu) {
-    return MLContext::ValidateAndCreateSync(options, this);
-  }
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS)
   // The runtime enable feature is used to disable the cross process hardware
   // acceleration by default.
-  if (base::FeatureList::IsEnabled(
-          webnn::features::kEnableMachineLearningNeuralNetworkService) &&
-      (options->devicePreference() == V8MLDevicePreference::Enum::kAuto ||
-       options->devicePreference() == V8MLDevicePreference::Enum::kGpu)) {
-    return MLContextMojo::ValidateAndCreateSync(script_state, exception_state,
-                                                options, this);
+  if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
+    if (base::FeatureList::IsEnabled(
+            webnn::features::kEnableMachineLearningNeuralNetworkService)) {
+      return MLContextMojo::ValidateAndCreateSync(script_state, exception_state,
+                                                  options, this);
+    } else {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                        "Not implemented");
+      return nullptr;
+    }
   }
 #endif
 
-  // TODO(crbug.com/1273291): throw exception once tests support all context
-  // types.
   return MLContext::ValidateAndCreateSync(options, this);
 }
 
