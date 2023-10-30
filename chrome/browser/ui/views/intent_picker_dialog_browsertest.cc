@@ -9,7 +9,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerDialogTest, MAYBE_InvokeUi_default) {
 class IntentPickerDialogGridViewTest : public IntentPickerDialogTest {
  public:
   IntentPickerDialogGridViewTest() {
-    feature_list_.InitAndEnableFeature(apps::features::kLinkCapturingUiUpdate);
+    apps::EnableLinkCapturingUXForTesting(feature_list_);
   }
 
   void ShowUi(const std::string& name) override {

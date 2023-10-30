@@ -623,7 +623,7 @@ IntentPickerBubbleView::IntentPickerBubbleView(
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       intent_picker_cb_(std::move(intent_picker_cb)),
       app_info_(std::move(app_info)),
-      use_grid_view_(apps::features::LinkCapturingUiUpdateEnabled() &&
+      use_grid_view_(apps::features::ShouldShowLinkCapturingUX() &&
                      bubble_type == BubbleType::kLinkCapturing),
       show_stay_in_chrome_(show_stay_in_chrome && !use_grid_view_),
       show_remember_selection_(show_remember_selection),

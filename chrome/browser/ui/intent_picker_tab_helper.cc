@@ -167,7 +167,7 @@ void IntentPickerTabHelper::ShowOrHideIcon(content::WebContents* web_contents,
   if (!tab_helper)
     return;
 
-  if (apps::features::LinkCapturingUiUpdateEnabled()) {
+  if (apps::features::ShouldShowLinkCapturingUX()) {
     tab_helper->current_app_icon_ = ui::ImageModel();
     tab_helper->show_expanded_chip_from_usage_ = false;
     tab_helper->current_app_id_ = std::string();
@@ -181,7 +181,7 @@ void IntentPickerTabHelper::ShowOrHideIcon(content::WebContents* web_contents,
 // static
 int IntentPickerTabHelper::GetIntentPickerBubbleIconSize() {
   const int kIntentPickerUiUpdateIconSize = 40;
-  return apps::features::LinkCapturingUiUpdateEnabled()
+  return apps::features::ShouldShowLinkCapturingUX()
              ? kIntentPickerUiUpdateIconSize
              : gfx::kFaviconSize;
 }
@@ -202,7 +202,7 @@ void IntentPickerTabHelper::MaybeShowIconForApps(
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  if (apps::features::LinkCapturingUiUpdateEnabled()) {
+  if (apps::features::ShouldShowLinkCapturingUX()) {
     if (apps.size() == 1 && apps[0].launch_name != current_app_id_) {
       current_app_id_ = apps[0].launch_name;
 
@@ -323,7 +323,7 @@ void IntentPickerTabHelper::OnAppIconLoadedForChip(const std::string& app_id,
 }
 
 void IntentPickerTabHelper::ShowIconForLinkIntent(bool should_show_icon) {
-  if (apps::features::LinkCapturingUiUpdateEnabled()) {
+  if (apps::features::ShouldShowLinkCapturingUX()) {
     UpdateExpandedState(should_show_icon);
   }
 
@@ -362,7 +362,7 @@ void IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl(
                               url, apps[0].launch_name)) {
     // TODO(b/305075981): Move IntentChipDisplayPrefs to
     // c/b/apps/link_capturing.
-    if (apps::features::LinkCapturingUiUpdateEnabled()) {
+    if (apps::features::ShouldShowLinkCapturingUX()) {
       Profile* profile =
           Profile::FromBrowserContext(web_contents()->GetBrowserContext());
       IntentChipDisplayPrefs::ResetIntentChipCounter(profile, url);
@@ -414,7 +414,7 @@ void IntentPickerTabHelper::OnIntentPickerClosedMaybeLaunch(
   if (should_launch_app) {
     // TODO(b/305075981): Move IntentChipDisplayPrefs to
     // c/b/apps/link_capturing.
-    if (apps::features::LinkCapturingUiUpdateEnabled()) {
+    if (apps::features::ShouldShowLinkCapturingUX()) {
       Profile* profile =
           Profile::FromBrowserContext(web_contents()->GetBrowserContext());
       IntentChipDisplayPrefs::ResetIntentChipCounter(profile, url);

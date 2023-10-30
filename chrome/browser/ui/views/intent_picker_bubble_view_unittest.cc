@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -60,7 +61,7 @@ using content::Referrer;
 class IntentPickerBubbleViewTest : public TestWithBrowserView {
  public:
   IntentPickerBubbleViewTest() {
-    feature_list_.InitAndDisableFeature(apps::features::kLinkCapturingUiUpdate);
+    apps::DisableLinkCapturingUXForTesting(feature_list_);
   }
 
   IntentPickerBubbleViewTest(const IntentPickerBubbleViewTest&) = delete;
@@ -139,7 +140,7 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
   }
 
   views::LabelButton* GetLabelButtonAtIndex(size_t index) {
-    CHECK(!apps::features::LinkCapturingUiUpdateEnabled());
+    CHECK(!apps::features::ShouldShowLinkCapturingUX());
     return static_cast<views::LabelButton*>(GetButtonAtIndex(index));
   }
 
@@ -350,11 +351,9 @@ class IntentPickerBubbleViewLayoutTest
  public:
   IntentPickerBubbleViewLayoutTest() {
     if (GetParam() == BubbleInterfaceType::kGridView) {
-      feature_list_.InitAndEnableFeature(
-          apps::features::kLinkCapturingUiUpdate);
+      apps::EnableLinkCapturingUXForTesting(feature_list_);
     } else {
-      feature_list_.InitAndDisableFeature(
-          apps::features::kLinkCapturingUiUpdate);
+      apps::DisableLinkCapturingUXForTesting(feature_list_);
     }
   }
 
@@ -504,9 +503,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          BubbleInterfaceType::kGridView));
 
 class IntentPickerBubbleViewGridLayoutTest : public IntentPickerBubbleViewTest {
+ public:
+  IntentPickerBubbleViewGridLayoutTest() {
+    apps::EnableLinkCapturingUXForTesting(feature_list_);
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{
-      apps::features::kLinkCapturingUiUpdate};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionOneApp) {

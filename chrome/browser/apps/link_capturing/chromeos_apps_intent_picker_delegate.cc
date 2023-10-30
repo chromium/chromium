@@ -155,10 +155,10 @@ bool ChromeOsAppsIntentPickerDelegate::ShouldLaunchAppDirectly(
     const GURL& url,
     const std::string& app_name) {
   // If there is only a single available app, immediately launch it if
-  // LinkCapturingUiUpdateEnabled() is enabled and the app is preferred for this
+  // ShouldShowLinkCapturingUX() is enabled and the app is preferred for this
   // link.
   CHECK(proxy_);
-  return apps::features::LinkCapturingUiUpdateEnabled() &&
+  return apps::features::ShouldShowLinkCapturingUX() &&
          (proxy_->PreferredAppsList().FindPreferredAppForUrl(url) == app_name);
 }
 

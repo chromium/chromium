@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
+#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
@@ -49,20 +49,23 @@ content::WebContents* GetActiveWebContents(Browser* browser) {
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 
-// TODO(dmurph): Remove this after all of the updating to the launch page action
-// view and we can know that updating is synchronous. https://crbug.com/1491258
-class OneOffIconObserver : public PageActionIconViewObserver {
+class IntentChipVisibilityObserver : public OmniboxChipButton::Observer {
  public:
-  explicit OneOffIconObserver(base::OnceClosure on_shown)
-      : on_shown_(std::move(on_shown)) {}
+  explicit IntentChipVisibilityObserver(IntentChipButton* intent_chip) {
+    observation_.Observe(intent_chip);
+  }
 
-  void OnPageActionIconViewShown(PageActionIconView* view) override {
-    std::move(on_shown_).Run();
-    view->RemovePageIconViewObserver(this);
+  void WaitForChipToBeVisible() { run_loop.Run(); }
+  void OnChipVisibilityChanged(bool is_visible) override {
+    if (is_visible) {
+      run_loop.Quit();
+    }
   }
 
  private:
-  base::OnceClosure on_shown_;
+  base::ScopedObservation<IntentChipButton, OmniboxChipButton::Observer>
+      observation_{this};
+  base::RunLoop run_loop;
 };
 
 class EnableLinkCapturingInfobarBrowserTest
@@ -73,10 +76,10 @@ class EnableLinkCapturingInfobarBrowserTest
         apps::features::kDesktopPWAsLinkCapturing);
   }
 
-  PageActionIconView* GetIntentPickerIcon() {
+  IntentChipButton* GetIntentPickerIcon() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar_button_provider()
-        ->GetPageActionIconView(PageActionIconType::kIntentPicker);
+        ->GetIntentChipButton();
   }
 
   // Returns [app_id, in_scope_url]
@@ -144,19 +147,19 @@ class EnableLinkCapturingInfobarBrowserTest
              << "Intent picker app did not resolve an applicable app.";
     }
 
-    PageActionIconView* intent_picker_icon = GetIntentPickerIcon();
+    IntentChipButton* intent_picker_icon = GetIntentPickerIcon();
     if (!intent_picker_icon) {
       return testing::AssertionFailure()
              << "Intent picker icon does not exist.";
     }
 
     if (!intent_picker_icon->GetVisible()) {
-      base::test::TestFuture<void> icon_visible;
-      OneOffIconObserver observer(icon_visible.GetCallback());
-      intent_picker_icon->AddPageIconViewObserver(&observer);
-      if (!icon_visible.Wait()) {
+      IntentChipVisibilityObserver intent_chip_visibility_observer(
+          intent_picker_icon);
+      intent_chip_visibility_observer.WaitForChipToBeVisible();
+      if (!intent_picker_icon->GetVisible()) {
         return testing::AssertionFailure()
-               << "Intent picker icon never became visible.";
+               << "Intent picker icon did not become visible.";
       }
     }
     EXPECT_TRUE(intent_picker_icon->GetVisible());

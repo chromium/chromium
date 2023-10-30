@@ -74,6 +74,18 @@ source_set("link_capturing") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "link_capturing_feature_test_support.cc",
+    "link_capturing_feature_test_support.h",
+  ]
+  deps = [
+    ":link_capturing",
+    "//base/test:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "link_capturing_navigation_throttle_unittest.cc" ]

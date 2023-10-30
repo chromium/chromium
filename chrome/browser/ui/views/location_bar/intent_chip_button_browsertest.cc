@@ -16,7 +16,7 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
@@ -50,8 +50,7 @@ class IntentChipButtonBrowserTest
     : public web_app::WebAppNavigationBrowserTest {
  public:
   IntentChipButtonBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        apps::features::kLinkCapturingUiUpdate);
+    apps::EnableLinkCapturingUXForTesting(scoped_feature_list_);
   }
 
   void SetUpOnMainThread() override {
@@ -297,52 +296,47 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, ShowsAppIconInChip) {
 
 class IntentChipButtonBrowserUiTest : public UiBrowserTest {
  public:
-  IntentChipButtonBrowserUiTest();
+  IntentChipButtonBrowserUiTest() {
+    apps::EnableLinkCapturingUXForTesting(scoped_feature_list_);
+  }
 
   // UiBrowserTest:
-  void ShowUi(const std::string& name) override;
-  bool VerifyUi() override;
-  void WaitForUserDismissal() override;
+  void ShowUi(const std::string& name) override {
+    auto* const web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    auto* const tab_helper =
+        IntentPickerTabHelper::FromWebContents(web_contents);
+    base::RunLoop run_loop;
+    tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
+    tab_helper->MaybeShowIconForApps(
+        {{apps::PickerEntryType::kWeb, ui::ImageModel(), "app_id",
+          "Test app"}});
+    run_loop.Run();
+  }
+
+  bool VerifyUi() override {
+    auto* const location_bar =
+        BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+    const auto* const intent_chip = location_bar->intent_chip();
+    if (!intent_chip || !intent_chip->GetVisible() ||
+        intent_chip->is_fully_collapsed()) {
+      return false;
+    }
+
+    const auto* const test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    return VerifyPixelUi(location_bar, test_info->test_case_name(),
+                         test_info->name()) != ui::test::ActionResult::kFailed;
+  }
+
+  void WaitForUserDismissal() override {
+    // Consider closing the browser to be dismissal.
+    ui_test_utils::WaitForBrowserToClose();
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-IntentChipButtonBrowserUiTest::IntentChipButtonBrowserUiTest() {
-  scoped_feature_list_.InitAndEnableFeature(
-      apps::features::kLinkCapturingUiUpdate);
-}
-
-void IntentChipButtonBrowserUiTest::ShowUi(const std::string& name) {
-  auto* const web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  auto* const tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
-  base::RunLoop run_loop;
-  tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
-  tab_helper->MaybeShowIconForApps(
-      {{apps::PickerEntryType::kWeb, ui::ImageModel(), "app_id", "Test app"}});
-  run_loop.Run();
-}
-
-bool IntentChipButtonBrowserUiTest::VerifyUi() {
-  auto* const location_bar =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-  const auto* const intent_chip = location_bar->intent_chip();
-  if (!intent_chip || !intent_chip->GetVisible() ||
-      intent_chip->is_fully_collapsed()) {
-    return false;
-  }
-
-  const auto* const test_info =
-      testing::UnitTest::GetInstance()->current_test_info();
-  return VerifyPixelUi(location_bar, test_info->test_case_name(),
-                       test_info->name()) != ui::test::ActionResult::kFailed;
-}
-
-void IntentChipButtonBrowserUiTest::WaitForUserDismissal() {
-  // Consider closing the browser to be dismissal.
-  ui_test_utils::WaitForBrowserToClose();
-}
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserUiTest, InvokeUi_default) {
   ShowAndVerifyUi();

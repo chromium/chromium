@@ -614,7 +614,7 @@ void ToolbarView::ShowIntentPickerBubble(
     highlighted_button =
 
         GetPageActionIconView(PageActionIconType::kClickToCall);
-  } else if (apps::features::LinkCapturingUiUpdateEnabled()) {
+  } else if (apps::features::ShouldShowLinkCapturingUX()) {
     highlighted_button = GetIntentChipButton();
   } else {
     highlighted_button =

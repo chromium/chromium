@@ -11,18 +11,15 @@ namespace apps::features {
 
 // TODO(crbug.com/1357905): Remove feature on ChromeOS once all tests pass with
 // updated UI.
+#if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kLinkCapturingUiUpdate,
              "LinkCapturingUiUpdate",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 BASE_FEATURE(kDesktopPWAsLinkCapturing,
              "DesktopPWAsLinkCapturing",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kAppToAppLinkCapturing,
@@ -34,8 +31,12 @@ BASE_FEATURE(kAppToAppLinkCapturingWorkspaceApps,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-bool LinkCapturingUiUpdateEnabled() {
+bool ShouldShowLinkCapturingUX() {
+#if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(kLinkCapturingUiUpdate);
+#else
+  return base::FeatureList::IsEnabled(kDesktopPWAsLinkCapturing);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace apps::features

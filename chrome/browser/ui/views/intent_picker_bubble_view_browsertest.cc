@@ -80,7 +80,7 @@ class IntentPickerBrowserTest
   }
 
   views::Button* GetIntentPickerIcon() {
-    if (apps::features::LinkCapturingUiUpdateEnabled()) {
+    if (apps::features::ShouldShowLinkCapturingUX()) {
       return BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar_button_provider()
           ->GetIntentChipButton();
