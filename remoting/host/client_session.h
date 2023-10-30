@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "remoting/base/constants.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
@@ -356,8 +357,8 @@ class ClientSession : public protocol::HostStub,
   DesktopDisplayInfo desktop_display_info_;
 
   // Default DPI values to use if a display reports 0 for DPI.
-  int default_x_dpi_;
-  int default_y_dpi_;
+  int default_x_dpi_ = kDefaultDpi;
+  int default_y_dpi_ = kDefaultDpi;
 
   // The index of the desktop display to show to the user.
   // Default is webrtc::kInvalidScreenScreenId because we need to perform
