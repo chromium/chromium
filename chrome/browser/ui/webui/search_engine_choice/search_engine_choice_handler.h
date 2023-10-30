@@ -15,7 +15,8 @@ class SearchEngineChoiceHandler
   explicit SearchEngineChoiceHandler(
       mojo::PendingReceiver<search_engine_choice::mojom::PageHandler> receiver,
       base::OnceCallback<void()> display_dialog_callback,
-      base::OnceCallback<void(int)> handle_choice_selected_callback);
+      base::OnceCallback<void(int)> handle_choice_selected_callback,
+      base::RepeatingCallback<void()> handle_learn_more_clicked_callback);
 
   SearchEngineChoiceHandler(const SearchEngineChoiceHandler&) = delete;
   SearchEngineChoiceHandler& operator=(const SearchEngineChoiceHandler&) =
@@ -26,11 +27,13 @@ class SearchEngineChoiceHandler
   // search_engine_choice::mojom::PageHandler:
   void DisplayDialog() override;
   void HandleSearchEngineChoiceSelected(int32_t prepopulate_id) override;
+  void HandleLearnMoreLinkClicked() override;
 
  private:
   mojo::Receiver<search_engine_choice::mojom::PageHandler> receiver_;
   base::OnceCallback<void()> display_dialog_callback_;
   base::OnceCallback<void(int)> handle_choice_selected_callback_;
+  base::RepeatingCallback<void()> handle_learn_more_clicked_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_HANDLER_H_

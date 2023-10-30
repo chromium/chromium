@@ -6383,6 +6383,10 @@ test("unit_tests") {
     ]
   }
 
+  if (enable_search_engine_choice) {
+    sources += [ "../browser/search_engine_choice/search_engine_choice_service_unittest.cc" ]
+  }
+
   if (is_linux) {
     sources += [ "../browser/metrics/pressure/pressure_metrics_unittest.cc" ]
   }

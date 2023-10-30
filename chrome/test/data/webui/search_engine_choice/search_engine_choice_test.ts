@@ -53,4 +53,11 @@ suite('SearchEngineChoiceTest', function() {
     testElement.$.submitButton.click();
     assertEquals(handler.getCallCount('handleSearchEngineChoiceSelected'), 1);
   });
+
+  test('Click learn more link', function() {
+    testElement.$.infoLink.click();
+
+    assertTrue(testElement.$.infoDialog.open);
+    assertEquals(handler.getCallCount('handleLearnMoreLinkClicked'), 1);
+  });
 });

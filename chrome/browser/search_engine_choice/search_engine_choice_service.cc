@@ -267,3 +267,12 @@ bool SearchEngineChoiceService::IsUrlSuitableForDialog(GURL url) {
   // Don't show the dialog over remaining urls that start with 'chrome://'.
   return !url.SchemeIs(content::kChromeUIScheme);
 }
+
+void SearchEngineChoiceService::NotifyLearnMoreLinkClicked(
+    EntryPoint entry_point) {
+  RecordChoiceScreenEvent(entry_point == EntryPoint::kDialog
+                              ? search_engines::SearchEngineChoiceScreenEvents::
+                                    kLearnMoreWasDisplayed
+                              : search_engines::SearchEngineChoiceScreenEvents::
+                                    kFreLearnMoreWasDisplayed);
+}

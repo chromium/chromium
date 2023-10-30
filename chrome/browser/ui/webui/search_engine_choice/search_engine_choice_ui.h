@@ -53,6 +53,10 @@ class SearchEngineChoiceUI
   // Notifies the search engine choice service that a choice has been made.
   void HandleSearchEngineChoiceMade(int prepopulate_id);
 
+  // Notifies the search engine choice service that the learn more link was
+  // clicked.
+  void HandleLearnMoreLinkClicked();
+
   std::unique_ptr<SearchEngineChoiceHandler> page_handler_;
 
   mojo::Receiver<search_engine_choice::mojom::PageHandlerFactory>

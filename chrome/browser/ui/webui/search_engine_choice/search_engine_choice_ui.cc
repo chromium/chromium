@@ -144,10 +144,19 @@ void SearchEngineChoiceUI::HandleSearchEngineChoiceMade(int prepopulate_id) {
   }
 }
 
+void SearchEngineChoiceUI::HandleLearnMoreLinkClicked() {
+  SearchEngineChoiceService* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(&profile_.get());
+
+  search_engine_choice_service->NotifyLearnMoreLinkClicked(entry_point_);
+}
+
 void SearchEngineChoiceUI::CreatePageHandler(
     mojo::PendingReceiver<search_engine_choice::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<SearchEngineChoiceHandler>(
       std::move(receiver), std::move(display_dialog_callback_),
       base::BindOnce(&SearchEngineChoiceUI::HandleSearchEngineChoiceMade,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&SearchEngineChoiceUI::HandleLearnMoreLinkClicked,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
