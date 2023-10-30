@@ -1832,7 +1832,7 @@ BASE_FEATURE(kNotificationExpansionAnimation,
 // Enables dragging the image from a notification by mouse or gesture.
 BASE_FEATURE(kNotificationImageDrag,
              "NotificationImageDrag",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables notification scroll bar in UnifiedSystemTray.
 BASE_FEATURE(kNotificationScrollBar,
