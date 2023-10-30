@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
+#include "base/types/expected.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/compression/test_compression_module.h"
 #include "components/reporting/encryption/decryption.h"
@@ -133,7 +134,7 @@ class SingleDecryptionContext {
             [](SingleDecryptionContext* self,
                StatusOr<std::string> private_key_result) {
               if (!private_key_result.has_value()) {
-                self->Respond(private_key_result.error());
+                self->Respond(base::unexpected(private_key_result.error()));
                 return;
               }
               base::ThreadPool::PostTask(
@@ -150,7 +151,7 @@ class SingleDecryptionContext {
     auto shared_secret_result = decryptor_->DecryptSecret(
         private_key, encrypted_record_.encryption_info().encryption_key());
     if (!shared_secret_result.has_value()) {
-      Respond(shared_secret_result.error());
+      Respond(base::unexpected(shared_secret_result.error()));
       return;
     }
     base::ThreadPool::PostTask(
@@ -166,7 +167,7 @@ class SingleDecryptionContext {
             [](SingleDecryptionContext* self,
                StatusOr<test::Decryptor::Handle*> handle_result) {
               if (!handle_result.has_value()) {
-                self->Respond(handle_result.error());
+                self->Respond(base::unexpected(handle_result.error()));
                 return;
               }
               base::ThreadPool::PostTask(
@@ -185,7 +186,7 @@ class SingleDecryptionContext {
             [](SingleDecryptionContext* self, test::Decryptor::Handle* handle,
                Status status) {
               if (!status.ok()) {
-                self->Respond(status);
+                self->Respond(base::unexpected(status));
                 return;
               }
               base::ThreadPool::PostTask(
@@ -201,7 +202,7 @@ class SingleDecryptionContext {
     handle->CloseRecord(base::BindOnce(
         [](SingleDecryptionContext* self,
            StatusOr<std::string_view> decryption_result) {
-          self->Respond(decryption_result);
+          self->Respond(std::move(decryption_result));
         },
         base::Unretained(this)));
   }
@@ -872,11 +873,11 @@ class StorageTest
                   LOG(ERROR) << "Upload not expected, reason="
                              << UploaderInterface::ReasonToString(reason);
                   std::move(start_uploader_cb)
-                      .Run(Status(
+                      .Run(base::unexpected(Status(
                           error::CANCELLED,
                           base::StrCat(
                               {"Unexpected upload ignored, reason=",
-                               UploaderInterface::ReasonToString(reason)})));
+                               UploaderInterface::ReasonToString(reason)}))));
                   return;
                 }
                 --(self->expected_uploads_count_);
@@ -890,7 +891,8 @@ class StorageTest
                 LOG(ERROR) << "Upload not allowed, reason="
                            << UploaderInterface::ReasonToString(reason) << " "
                            << result.error();
-                std::move(start_uploader_cb).Run(result.error());
+                std::move(start_uploader_cb)
+                    .Run(base::unexpected(result.error()));
                 return;
               }
               auto uploader = std::move(result.value());
@@ -905,7 +907,8 @@ class StorageTest
     if (reason == UploaderInterface::UploadReason::KEY_DELIVERY &&
         key_delivery_failure_.load()) {
       std::move(start_uploader_cb)
-          .Run(Status(error::FAILED_PRECONDITION, "Test cannot start upload"));
+          .Run(base::unexpected(
+              Status(error::FAILED_PRECONDITION, "Test cannot start upload")));
       return;
     }
     AsyncStartMockUploader(reason, std::move(start_uploader_cb));
@@ -1854,7 +1857,8 @@ TEST_P(StorageTest, WriteAndImmediateUploadWithFailure) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(Invoke([](UploaderInterface::UploadReason reason) {
-          return Status(error::UNAVAILABLE, "Intended failure in test");
+          return base::unexpected(
+              Status(error::UNAVAILABLE, "Intended failure in test"));
         }))
         .RetiresOnSaturation();
     EXPECT_CALL(set_mock_uploader_expectations_,
@@ -1889,7 +1893,8 @@ TEST_P(StorageTest, WriteEncryptFailure) {
   EXPECT_CALL(*test_encryption_module, EncryptRecordImpl(_, _))
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
-            std::move(cb).Run(Status(error::UNKNOWN, "Failing for tests"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::UNKNOWN, "Failing for tests")));
           })))
       .RetiresOnSaturation();
   const Status result = WriteString(FAST_BATCH, "TEST_MESSAGE");
@@ -2078,7 +2083,8 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
         .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
-          return Status(error::UNAVAILABLE, "Skipped upload in test");
+          return base::unexpected(
+              Status(error::UNAVAILABLE, "Skipped upload in test"));
         }))
         .RetiresOnSaturation();
 

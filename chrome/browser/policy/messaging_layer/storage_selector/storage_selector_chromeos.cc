@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/dbus/missive/missive_client.h"
@@ -40,9 +41,9 @@ void StorageSelector::CreateMissiveStorageModule(
         cb) {
   MissiveClient* const missive_client = MissiveClient::Get();
   if (!missive_client) {
-    std::move(cb).Run(Status(
+    std::move(cb).Run(base::unexpected(Status(
         error::FAILED_PRECONDITION,
-        "Missive Client unavailable, probably has not been initialized"));
+        "Missive Client unavailable, probably has not been initialized")));
     return;
   }
   // Refer to the storage module.
@@ -58,8 +59,9 @@ void StorageSelector::CreateMissiveStorageModule(
   auto missive_storage_module =
       MissiveStorageModule::Create(std::move(missive_storage_module_delegate));
   if (!missive_storage_module) {
-    std::move(cb).Run(Status(error::FAILED_PRECONDITION,
-                             "Missive Storage Module failed to create"));
+    std::move(cb).Run(
+        base::unexpected(Status(error::FAILED_PRECONDITION,
+                                "Missive Storage Module failed to create")));
     return;
   }
   LOG(WARNING) << "Store reporting data by a Missive daemon";

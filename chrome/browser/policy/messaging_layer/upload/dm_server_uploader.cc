@@ -13,6 +13,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/types/expected.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -54,20 +55,21 @@ DmServerUploader::~DmServerUploader() = default;
 void DmServerUploader::OnStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (handler_ == nullptr) {
-    Finalize(Status(error::INVALID_ARGUMENT, "handler was null"));
+    Finalize(
+        base::unexpected(Status(error::INVALID_ARGUMENT, "handler was null")));
     return;
   }
   // Early exit if we don't have any records and do not need encryption key.
   if (encrypted_records_.empty() && !need_encryption_key_) {
-    Finalize(
-        Status(error::INVALID_ARGUMENT, "No records received for upload."));
+    Finalize(base::unexpected(
+        Status(error::INVALID_ARGUMENT, "No records received for upload.")));
     return;
   }
 
   if (!encrypted_records_.empty()) {
     const auto process_status = ProcessRecords();
     if (!process_status.ok()) {
-      Finalize(process_status);
+      Finalize(base::unexpected(process_status));
       return;
     }
   }

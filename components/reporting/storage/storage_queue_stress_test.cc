@@ -21,6 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/compression/test_compression_module.h"
 #include "components/reporting/encryption/test_encryption_module.h"
@@ -195,10 +196,10 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
       LOG(ERROR) << "Upload not expected, reason="
                  << UploaderInterface::ReasonToString(reason);
       std::move(start_uploader_cb)
-          .Run(Status(
+          .Run(base::unexpected(Status(
               error::CANCELLED,
               base::StrCat({"Unexpected upload ignored, reason=",
-                            UploaderInterface::ReasonToString(reason)})));
+                            UploaderInterface::ReasonToString(reason)}))));
       return;
     }
     std::move(start_uploader_cb)

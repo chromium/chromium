@@ -18,6 +18,7 @@
 #include "base/rand_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -246,12 +247,12 @@ void ReportingServerConnector::UploadEncryptedReport(
     // Initialize the cloud policy client
     auto client_status = connector->EnsureUsableClient();
     if (!client_status.ok()) {
-      std::move(callback).Run(client_status);
+      std::move(callback).Run(base::unexpected(std::move(client_status)));
       return;
     }
     if (connector->client_->dm_token().empty()) {
-      std::move(callback).Run(
-          Status(error::UNAVAILABLE, "Device DM token not set"));
+      std::move(callback).Run(base::unexpected(
+          Status(error::UNAVAILABLE, "Device DM token not set")));
       return;
     }
     context.SetByDottedPath("device.dmToken", connector->client_->dm_token());
@@ -315,8 +316,9 @@ ReportingServerConnector::GetUserCloudPolicyManager() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!g_browser_process || !g_browser_process->platform_part() ||
       !g_browser_process->platform_part()->browser_policy_connector_ash()) {
-    return Status(error::UNAVAILABLE,
-                  "Browser process not fit to retrieve CloudPolicyManager");
+    return base::unexpected(
+        Status(error::UNAVAILABLE,
+               "Browser process not fit to retrieve CloudPolicyManager"));
   }
   return g_browser_process->platform_part()
       ->browser_policy_connector_ash()
@@ -325,14 +327,16 @@ ReportingServerConnector::GetUserCloudPolicyManager() {
   // Android doesn't have access to a device level CloudPolicyClient, so get
   // the PrimaryUserProfile CloudPolicyClient.
   if (!ProfileManager::GetPrimaryUserProfile()) {
-    return Status(error::UNAVAILABLE,
-                  "PrimaryUserProfile not fit to retrieve CloudPolicyManager");
+    return base::unexpected(Status(error::UNAVAILABLE,
+                                   "PrimaryUserProfile not fit to retrieve "
+                                   "CloudPolicyManager"));
   }
   return ProfileManager::GetPrimaryUserProfile()->GetUserCloudPolicyManager();
 #else
   if (!g_browser_process || !g_browser_process->browser_policy_connector()) {
-    return Status(error::UNAVAILABLE,
-                  "Browser process not fit to retrieve CloudPolicyManager");
+    return base::unexpected(Status(error::UNAVAILABLE,
+                                   "Browser process not fit to retrieve "
+                                   "CloudPolicyManager"));
   }
   return g_browser_process->browser_policy_connector()
       ->machine_level_user_cloud_policy_manager();
@@ -367,7 +371,7 @@ Status ReportingServerConnector::EnsureUsableClient() {
   // The `policy::CloudPolicyClient` object is retrieved in two different ways
   // for ChromeOS and non-ChromeOS browsers.
   if (!client_) {
-    RETURN_IF_ERROR(EnsureUsableCore());
+    RETURN_IF_ERROR_STATUS(EnsureUsableCore());
 
     if (core_->client() == nullptr) {
       return Status(error::NOT_FOUND, "No usable CloudPolicyClient found");

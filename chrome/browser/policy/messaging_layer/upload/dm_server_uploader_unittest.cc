@@ -16,6 +16,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -221,8 +222,8 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
 
   EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _, _))
       .WillOnce(WithArgs<4>(Invoke([](CompletionCallback callback) {
-        std::move(callback).Run(
-            Status(error::FAILED_PRECONDITION, "Fail for test"));
+        std::move(callback).Run(base::unexpected(
+            Status(error::FAILED_PRECONDITION, "Fail for test")));
       })));
 
   StrictMock<TestSuccessfulUpload> successful_upload;
@@ -308,7 +309,8 @@ TEST_P(DmServerFailureTest, ReportsFailureToUpload) {
 
   EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _, _))
       .WillOnce(WithArgs<4>(Invoke([error_code](CompletionCallback callback) {
-        std::move(callback).Run(Status(error_code, "Failing for test"));
+        std::move(callback).Run(
+            base::unexpected(Status(error_code, "Failing for test")));
       })));
 
   StrictMock<TestSuccessfulUpload> successful_upload;

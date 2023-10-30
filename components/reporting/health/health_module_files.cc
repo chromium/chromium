@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/types/expected.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace reporting {
@@ -129,7 +130,7 @@ void HealthModuleFiles::PopulateHistory(ERPHealthData* data) const {
 Status HealthModuleFiles::Write(std::string_view data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status free_status = ReserveStorage(data.size());
-  RETURN_IF_ERROR(free_status);
+  RETURN_IF_ERROR_STATUS(free_status);
 
   if (files_.empty()) {
     CreateNewFile();
@@ -194,9 +195,9 @@ StatusOr<uint32_t> HealthModuleFiles::FileSize(
   base::File::Info file_info;
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid() || !file.GetInfo(&file_info)) {
-    return Status(error::DATA_LOSS,
-                  base::StrCat({"Failed to read health data file info ",
-                                file_path.MaybeAsASCII()}));
+    return base::unexpected(Status(
+        error::DATA_LOSS, base::StrCat({"Failed to read health data file info ",
+                                        file_path.MaybeAsASCII()})));
   }
   return file_info.size;
 }

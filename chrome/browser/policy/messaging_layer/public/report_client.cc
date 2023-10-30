@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequence_bound.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/storage_selector/storage_selector.h"
@@ -106,10 +107,11 @@ void ReportingClient::ConfigureReportQueue(
   // found
   if (!dm_token_retriever) {
     std::move(completion_cb)
-        .Run(Status(error::INTERNAL,
-                    base::StrCat({"No DM token retriever found for event type=",
-                                  base::NumberToString(static_cast<int>(
-                                      configuration->event_type()))})));
+        .Run(base::unexpected(
+            Status(error::INTERNAL,
+                   base::StrCat({"No DM token retriever found for event type=",
+                                 base::NumberToString(static_cast<int>(
+                                     configuration->event_type()))}))));
     return;
   }
 
@@ -121,7 +123,8 @@ void ReportingClient::ConfigureReportQueue(
             // Trigger completion callback with error if there was an error
             // retrieving DM token.
             if (!dm_token_result.has_value()) {
-              std::move(completion_cb).Run(dm_token_result.error());
+              std::move(completion_cb)
+                  .Run(base::unexpected(dm_token_result.error()));
               return;
             }
 
@@ -132,7 +135,7 @@ void ReportingClient::ConfigureReportQueue(
 
             // Fail on error
             if (!config_result.ok()) {
-              std::move(completion_cb).Run(config_result);
+              std::move(completion_cb).Run(base::unexpected(config_result));
               return;
             }
 
@@ -317,7 +320,8 @@ void ReportingClient::DeliverAsyncStartUploader(
               if (!StorageSelector::is_uploader_required() ||
                   StorageSelector::is_use_missive()) {
                 std::move(start_uploader_cb)
-                    .Run(Status(error::UNAVAILABLE, "Uploader not available"));
+                    .Run(base::unexpected(
+                        Status(error::UNAVAILABLE, "Uploader not available")));
                 return;
               }
               instance->upload_provider_ =

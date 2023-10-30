@@ -30,7 +30,6 @@ static_library("status") {
   sources = [
     "status.cc",
     "status.h",
-    "statusor.cc",
     "statusor.h",
   ]
   public_deps = [ "//components/reporting/proto:status_proto" ]
@@ -38,7 +37,10 @@ static_library("status") {
 }
 
 source_set("status_macros") {
-  sources = [ "status_macros.h" ]
+  sources = [
+    "status_macros.cc",
+    "status_macros.h",
+  ]
   public_deps = [ "//base" ]
   deps = [ ":status" ]
 }
@@ -153,7 +155,6 @@ source_set("unit_tests") {
     "refcounted_closure_list_unittest.cc",
     "status_macros_unittest.cc",
     "status_unittest.cc",
-    "statusor_unittest.cc",
     "task_runner_context_unittest.cc",
     "wrapped_rate_limiter_unittest.cc",
   ]

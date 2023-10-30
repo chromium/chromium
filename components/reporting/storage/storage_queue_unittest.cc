@@ -23,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/reporting/compression/compression_module.h"
@@ -723,11 +724,11 @@ class StorageQueueTest
                 LOG(ERROR) << "Upload not expected, reason="
                            << UploaderInterface::ReasonToString(reason);
                 std::move(start_uploader_cb)
-                    .Run(Status(
+                    .Run(base::unexpected(Status(
                         error::CANCELLED,
                         base::StrCat(
                             {"Unexpected upload ignored, reason=",
-                             UploaderInterface::ReasonToString(reason)})));
+                             UploaderInterface::ReasonToString(reason)}))));
                 return;
               }
               --(self->expected_uploads_count_);
@@ -740,7 +741,8 @@ class StorageQueueTest
                 LOG(ERROR) << "Upload not allowed, reason="
                            << UploaderInterface::ReasonToString(reason) << " "
                            << result.error();
-                std::move(start_uploader_cb).Run(result.error());
+                std::move(start_uploader_cb)
+                    .Run(base::unexpected(result.error()));
                 return;
               }
               auto uploader = std::move(result.value());
@@ -1051,7 +1053,8 @@ TEST_P(StorageQueueTest,
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
         .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
-          return Status(error::UNAVAILABLE, "Skipped upload in test");
+          return base::unexpected(
+              Status(error::UNAVAILABLE, "Skipped upload in test"));
         }))
         .RetiresOnSaturation();
 
@@ -1124,7 +1127,8 @@ TEST_P(
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
         .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
-          return Status(error::UNAVAILABLE, "Skipped upload in test");
+          return base::unexpected(
+              Status(error::UNAVAILABLE, "Skipped upload in test"));
         }))
         .RetiresOnSaturation();
 
@@ -1178,7 +1182,8 @@ TEST_P(StorageQueueTest,
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
         .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
-          return Status(error::UNAVAILABLE, "Skipped upload in test");
+          return base::unexpected(
+              Status(error::UNAVAILABLE, "Skipped upload in test"));
         }))
         .RetiresOnSaturation();
 
@@ -1300,7 +1305,8 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndFlush) {
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
         .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
-          return Status(error::UNAVAILABLE, "Skipped upload in test");
+          return base::unexpected(
+              Status(error::UNAVAILABLE, "Skipped upload in test"));
         }))
         .RetiresOnSaturation();
 
@@ -1591,7 +1597,8 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
         .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
-          return Status(error::UNAVAILABLE, "Skipped upload in test");
+          return base::unexpected(
+              Status(error::UNAVAILABLE, "Skipped upload in test"));
         }))
         .RetiresOnSaturation();
 
@@ -1726,7 +1733,8 @@ TEST_P(StorageQueueTest,
                 Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
         .WillOnce(Invoke([&waiter](UploaderInterface::UploadReason reason) {
           waiter.Signal();
-          return Status(error::UNAVAILABLE, "Skipped upload in test");
+          return base::unexpected(
+              Status(error::UNAVAILABLE, "Skipped upload in test"));
         }))
         .RetiresOnSaturation();
 
@@ -1982,7 +1990,8 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithFailure) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(Invoke([](UploaderInterface::UploadReason reason) {
-          return Status(error::UNAVAILABLE, "Intended failure in test");
+          return base::unexpected(
+              Status(error::UNAVAILABLE, "Intended failure in test"));
         }))
         .RetiresOnSaturation();
     EXPECT_CALL(set_mock_uploader_expectations_,
@@ -2054,7 +2063,8 @@ TEST_P(StorageQueueTest, WriteEncryptFailure) {
   EXPECT_CALL(*test_encryption_module_, EncryptRecordImpl(_, _))
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
-            std::move(cb).Run(Status(error::UNKNOWN, "Failing for tests"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::UNKNOWN, "Failing for tests")));
           })));
   const Status result = WriteString("TEST_MESSAGE");
   EXPECT_FALSE(result.ok());

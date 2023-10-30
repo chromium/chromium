@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -53,8 +54,9 @@ void EncryptedReportingClient::UploadReport(
   policy::DeviceManagementService* const device_management_service =
       delegate_->device_management_service();
   if (!device_management_service) {
-    std::move(callback).Run(Status(
-        error::NOT_FOUND, "Device management service required, but not found"));
+    std::move(callback).Run(base::unexpected(
+        Status(error::NOT_FOUND,
+               "Device management service required, but not found")));
     return;
   }
 
@@ -106,19 +108,20 @@ void EncryptedReportingClient::OnReportUploadCompleted(
     request_jobs_.erase(job);
   }
   if (response_code == ::policy::DeviceManagementService::kTooManyRequests) {
-    std::move(callback).Run(
-        Status(error::OUT_OF_RANGE, "Too many upload requests"));
+    std::move(callback).Run(base::unexpected(
+        Status(error::OUT_OF_RANGE, "Too many upload requests")));
     return;
   }
   if (response_code != ::policy::DeviceManagementService::kSuccess) {
-    std::move(callback).Run(Status(
-        error::DATA_LOSS, base::StrCat({"Response code: ",
-                                        base::NumberToString(response_code)})));
+    std::move(callback).Run(base::unexpected(
+        Status(error::DATA_LOSS,
+               base::StrCat(
+                   {"Response code: ", base::NumberToString(response_code)}))));
     return;
   }
   if (!response.has_value()) {
-    std::move(callback).Run(
-        Status(error::DATA_LOSS, "Success response is empty"));
+    std::move(callback).Run(base::unexpected(
+        Status(error::DATA_LOSS, "Success response is empty")));
     return;
   }
   std::move(callback).Run(std::move(response.value()));

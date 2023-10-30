@@ -28,6 +28,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/primitives.h"
@@ -106,7 +107,8 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
       UploaderInterfaceResultCb start_uploader_cb,
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
     if (!uploader_result.has_value()) {
-      std::move(start_uploader_cb).Run(uploader_result.error());
+      std::move(start_uploader_cb)
+          .Run(base::unexpected(uploader_result.error()));
       return;
     }
     std::move(start_uploader_cb)
@@ -194,7 +196,8 @@ class Storage::KeyDelivery {
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
     if (!uploader_result.has_value()) {
-      std::move(start_uploader_cb).Run(uploader_result.error());
+      std::move(start_uploader_cb)
+          .Run(base::unexpected(uploader_result.error()));
       return;
     }
     std::move(start_uploader_cb)
@@ -236,7 +239,8 @@ class Storage::KeyInStorage {
     // Atomically reserve file index (none else will get the same index).
     uint64_t new_file_index = next_key_file_index_.fetch_add(1);
     // Write into file.
-    RETURN_IF_ERROR(WriteKeyInfoFile(new_file_index, signed_encryption_key));
+    RETURN_IF_ERROR_STATUS(
+        WriteKeyInfoFile(new_file_index, signed_encryption_key));
 
     // Enumerate data files and delete all files with lower index.
     RemoveKeyFilesWithLowerIndexes(new_file_index);
@@ -252,11 +256,11 @@ class Storage::KeyInStorage {
     // Make sure the assigned directory exists.
     base::File::Error error;
     if (!base::CreateDirectoryAndGetError(directory_, &error)) {
-      return Status(
+      return base::unexpected(Status(
           error::UNAVAILABLE,
           base::StrCat(
               {"Storage directory '", directory_.MaybeAsASCII(),
-               "' does not exist, error=", base::File::ErrorToString(error)}));
+               "' does not exist, error=", base::File::ErrorToString(error)})));
     }
 
     // Enumerate possible key files, collect the ones that have valid name,
@@ -270,7 +274,8 @@ class Storage::KeyInStorage {
 
     // If not found, return error.
     if (!signed_encryption_key_result.has_value()) {
-      return Status(error::NOT_FOUND, "No valid encryption key found");
+      return base::unexpected(
+          Status(error::NOT_FOUND, "No valid encryption key found"));
     }
 
     // Found and validated, delete all other files.
@@ -596,7 +601,7 @@ void Storage::Create(
         return;
       }
       if (!final_status_.ok()) {
-        Response(final_status_);
+        Response(base::unexpected(final_status_));
         return;
       }
       // Now all queues are ready, assign degradation vectors to them
@@ -792,9 +797,9 @@ StatusOr<scoped_refptr<StorageQueue>> Storage::GetQueue(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = queues_.find(priority);
   if (it == queues_.end()) {
-    return Status(
+    return base::unexpected(Status(
         error::NOT_FOUND,
-        base::StrCat({"Undefined priority=", base::NumberToString(priority)}));
+        base::StrCat({"Undefined priority=", base::NumberToString(priority)})));
   }
   return it->second;
 }

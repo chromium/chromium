@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -519,7 +520,7 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
 
   test_env_.SimulateCustomResponseForRequest(
-      0, Status(error::INTERNAL, "Test injected error"));
+      0, base::unexpected(Status(error::INTERNAL, "Test injected error")));
 
   const auto result = response_event.result();
   EXPECT_THAT(result.error(),

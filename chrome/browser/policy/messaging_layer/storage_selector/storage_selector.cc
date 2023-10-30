@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/types/expected.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module.h"
@@ -53,7 +54,7 @@ void StorageSelector::CreateLocalStorageModule(
                  StatusOr<scoped_refptr<StorageModuleInterface>>)> cb,
              StatusOr<scoped_refptr<StorageModule>> result) {
             if (!result.has_value()) {
-              std::move(cb).Run(result.error());
+              std::move(cb).Run(base::unexpected(result.error()));
               return;
             }
             std::move(cb).Run(result.value());

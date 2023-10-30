@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
@@ -162,7 +163,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     // Let everything ongoing to finish.
     task_environment_.RunUntilIdle();
 
-    return std::move(report_queue_result);
+    return report_queue_result;
   }
 
   std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
@@ -314,8 +315,8 @@ TEST_P(ReportClientTest, CreatesReportQueueGivenEventType) {
 // Tests that a ReportQueue cannot be created when there is DM token retrieval
 // failure
 TEST_P(ReportClientTest, CreateReportQueueWhenDMTokenRetrievalFailure) {
-  MockDMTokenRetrieverWithResult(
-      Status(error::INTERNAL, "Simulated DM token retrieval failure"));
+  MockDMTokenRetrieverWithResult(base::unexpected(
+      Status(error::INTERNAL, "Simulated DM token retrieval failure")));
   auto report_queue_result = CreateQueue();
   ASSERT_FALSE(report_queue_result.has_value());
   EXPECT_EQ(report_queue_result.error().error_code(), error::INTERNAL);

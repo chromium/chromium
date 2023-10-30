@@ -5,74 +5,55 @@
 #ifndef COMPONENTS_REPORTING_UTIL_STATUS_MACROS_H_
 #define COMPONENTS_REPORTING_UTIL_STATUS_MACROS_H_
 
-#include <utility>
-
-#include "base/macros/uniquify.h"
+#include "base/types/expected.h"
 #include "components/reporting/util/status.h"
-#include "components/reporting/util/statusor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+// TODO(b/300464285): Remove this header inclusion here.
+#include "base/types/expected_macros.h"
 
-namespace reporting {
+namespace reporting::internal {
+// Helper functions for the macro RETURN_IF_ERROR_STATUS. Overloads of the
+// following functions to return if the given status is OK. If yes, the return
+// value is empty. If not, the desired return value is returned.
+absl::optional<Status> ShouldReturnStatus(const Status& status);
+absl::optional<Status> ShouldReturnStatus(Status&& status);
+absl::optional<base::unexpected<Status>> ShouldReturnStatus(
+    const base::unexpected<Status>& status);
+absl::optional<base::unexpected<Status>> ShouldReturnStatus(
+    base::unexpected<Status>&& status);
+
+// Helper struct to display T in error message for the static_assert
+// failure.
+template <typename...>
+struct always_false {
+  static constexpr bool value = false;
+};
+
+template <typename T>
+void ShouldReturnStatus(T) {
+  static_assert(always_false<T>::value,
+                "T must be either Status or base::expected<Status>");
+}
+}  // namespace reporting::internal
 
 // Run a command that returns a Status.  If the called code returns an
-// error status, return that status up out of this method too.
+// error status, return that status up out of this method too. The macro can
+// also apply on `base::unexpected<Status>`, which is needed when the return
+// type is StatusOr.
 //
-// Example:
-//   RETURN_IF_ERROR(DoThings(4));
-#define RETURN_IF_ERROR(expr)                                                \
+// Examples:
+//
+//   RETURN_IF_ERROR_STATUS(DoThing(4));  // Return type is Status
+//
+//   // Return type is StatusOr
+//   RETURN_IF_ERROR_STATUS(base::unexpected(DoThing(4)));
+#define RETURN_IF_ERROR_STATUS(expr)                                         \
   do {                                                                       \
     /* Using _status below to avoid capture problems if expr is "status". */ \
-    const ::reporting::Status _status = (expr);                              \
-    if (__builtin_expect(!_status.ok(), 0))                                  \
-      return _status;                                                        \
+    if (auto _status = reporting::internal::ShouldReturnStatus((expr));      \
+        _status.has_value()) {                                               \
+      return std::move(_status).value();                                     \
+    }                                                                        \
   } while (0)
-
-#define ASSIGN_OR_RETURN_IMPL(result, lhs, rexpr) \
-  auto result = rexpr;                            \
-  if (__builtin_expect(!result.has_value(), 0)) { \
-    return result.error();                        \
-  }                                               \
-  lhs = std::move(result).value()
-
-// Executes an expression that returns a StatusOr, extracting its value
-// into the variable defined by lhs (or returning on error).
-//
-// Example: Assigning to an existing value
-//   ValueType value;
-//   ASSIGN_OR_RETURN(value, MaybeGetValue(arg));
-//
-// Example: Creating and assigning variable in one line.
-//   ASSIGN_OR_RETURN(ValueType value, MaybeGetValue(arg));
-//   DoSomethingWithValueType(value);
-//
-// WARNING: ASSIGN_OR_RETURN expands into multiple statements; it cannot be used
-//  in a single statement (e.g. as the body of an if statement without {})!
-#define ASSIGN_OR_RETURN(lhs, rexpr) \
-  ASSIGN_OR_RETURN_IMPL(BASE_UNIQUIFY(_status_or_value), lhs, rexpr)
-
-#define ASSIGN_OR_ONCE_CALLBACK_AND_RETURN_IMPL(result, lhs, callback, rexpr) \
-  const auto result = (rexpr);                                                \
-  if (__builtin_expect(!result.has_value(), 0)) {                             \
-    std::move(callback).Run(result.error());                                  \
-    return;                                                                   \
-  }                                                                           \
-  lhs = result.value();
-
-// Executes an expression that returns a StatusOr, extracting its value into the
-// variabled defined by lhs (or calls callback with error and returns).
-//
-// Example:
-//   base::OnceCallback<void(Status)> callback =
-//     base::BindOnce([](Status status) {...});
-//   ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(ValueType value,
-//                                      callback,
-//                                      MaybeGetValue(arg));
-//
-// WARNING: ASSIGN_OR_RETURN expands into multiple statements; it cannot be used
-//  in a single statement (e.g. as the body of an if statement without {})!
-#define ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(lhs, callback, rexpr)           \
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN_IMPL(BASE_UNIQUIFY(_status_or_value), \
-                                          lhs, callback, rexpr)
-
-}  // namespace reporting
 
 #endif  // COMPONENTS_REPORTING_UTIL_STATUS_MACROS_H_

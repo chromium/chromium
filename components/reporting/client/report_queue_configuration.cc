@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/types/expected.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/status.h"
@@ -22,20 +23,21 @@ ReportQueueConfiguration::Builder::Builder(
     const ReportQueueConfiguration::Settings& settings)
     : final_value_(base::WrapUnique<ReportQueueConfiguration>(
           new ReportQueueConfiguration())) {
-  auto status = final_value_.value()->SetEventType(settings.event_type);
-  if (!status.ok()) {
-    final_value_ = status;
+  if (auto status = final_value_.value()->SetEventType(settings.event_type);
+      !status.ok()) {
+    final_value_ = base::unexpected(std::move(status));
     return;
   }
-  status = final_value_.value()->SetDestination(settings.destination);
-  if (!status.ok()) {
-    final_value_ = status;
+  if (auto status = final_value_.value()->SetDestination(settings.destination);
+      !status.ok()) {
+    final_value_ = base::unexpected(std::move(status));
     return;
   }
   if (settings.reserved_space != 0L) {
-    status = final_value_.value()->SetReservedSpace(settings.reserved_space);
-    if (!status.ok()) {
-      final_value_ = status;
+    if (auto status =
+            final_value_.value()->SetReservedSpace(settings.reserved_space);
+        !status.ok()) {
+      final_value_ = base::unexpected(std::move(status));
       return;
     }
   }
@@ -53,7 +55,7 @@ ReportQueueConfiguration::Builder::SetPolicyCheckCallback(
     auto status =
         final_value_.value()->SetPolicyCheckCallback(policy_check_callback);
     if (!status.ok()) {
-      final_value_ = status;
+      final_value_ = base::unexpected(std::move(status));
     }
   }
   return std::move(*this);
@@ -65,7 +67,7 @@ ReportQueueConfiguration::Builder::SetRateLimiter(
   if (final_value_.has_value()) {
     auto status = final_value_.value()->SetRateLimiter(std::move(rate_limiter));
     if (!status.ok()) {
-      final_value_ = status;
+      final_value_ = base::unexpected(std::move(status));
     }
   }
   return std::move(*this);
@@ -76,7 +78,7 @@ ReportQueueConfiguration::Builder ReportQueueConfiguration::Builder::SetDMToken(
   if (final_value_.has_value()) {
     auto status = final_value_.value()->SetDMToken(dm_token);
     if (!status.ok()) {
-      final_value_ = status;
+      final_value_ = base::unexpected(std::move(status));
     }
   }
   return std::move(*this);
@@ -88,7 +90,7 @@ ReportQueueConfiguration::Builder::SetSourceInfo(
   if (final_value_.has_value()) {
     auto status = final_value_.value()->SetSourceInfo(std::move(source_info));
     if (!status.ok()) {
-      final_value_ = status;
+      final_value_ = base::unexpected(std::move(status));
     }
   }
   return std::move(*this);
@@ -97,8 +99,8 @@ ReportQueueConfiguration::Builder::SetSourceInfo(
 StatusOr<std::unique_ptr<ReportQueueConfiguration>>
 ReportQueueConfiguration::Builder::Build() {
   auto result = std::move(final_value_);
-  final_value_ =
-      Status(error::ALREADY_EXISTS, "Configuration has already been returned");
+  final_value_ = base::unexpected(
+      Status(error::ALREADY_EXISTS, "Configuration has already been returned"));
   return result;
 }
 

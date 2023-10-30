@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job_test_util.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
 #include "components/reporting/util/status.h"
@@ -240,7 +241,8 @@ TEST_F(FileUploadJobTest, FailToInitiate) {
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(*mock_delegate_, DoDeleteFile(StrEq(kUploadFileName)))
@@ -274,7 +276,8 @@ TEST_F(FileUploadJobTest, FailToInitiateWithMoreRetries) {
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   EXPECT_CALL(*mock_delegate_, DoDeleteFile).Times(0);
   RunAsyncJobAndWait(*job, &FileUploadJob::Initiate);
@@ -356,7 +359,8 @@ TEST_F(FileUploadJobTest, FailToPerformNextStep) {
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
             EXPECT_THAT(uploaded, AllOf(Ge(0L), Lt(total)));
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   EXPECT_CALL(*mock_delegate_, DoDeleteFile).Times(0);
   ScopedReservation scoped_reservation(0uL, memory_resource_);
@@ -414,7 +418,8 @@ TEST_F(FileUploadJobTest, FailToPerformNextStepWithMoreRetries) {
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
             EXPECT_THAT(uploaded, AllOf(Ge(0L), Lt(total)));
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   EXPECT_CALL(*mock_delegate_, DoDeleteFile).Times(0);
   ScopedReservation scoped_reservation(0uL, memory_resource_);
@@ -476,7 +481,8 @@ TEST_F(FileUploadJobTest, FailToFinalize) {
           Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(*mock_delegate_, DoDeleteFile(StrEq(kUploadFileName)))
@@ -538,7 +544,8 @@ TEST_F(FileUploadJobTest, FailToFinalizeWithMoreRetries) {
           Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   EXPECT_CALL(*mock_delegate_, DoDeleteFile).Times(0);
   RunAsyncJobAndWait(*job, &FileUploadJob::Finalize);

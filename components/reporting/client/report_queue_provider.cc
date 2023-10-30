@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_impl.h"
@@ -48,8 +49,8 @@ class ReportQueueProvider::CreateReportQueueRequest {
                std::unique_ptr<CreateReportQueueRequest> request) {
               if (!provider) {
                 std::move(request->release_create_cb())
-                    .Run(Status(error::UNAVAILABLE,
-                                "Provider has been shut down"));
+                    .Run(base::unexpected(Status(
+                        error::UNAVAILABLE, "Provider has been shut down")));
                 return;
               }
               DCHECK_CALLED_ON_VALID_SEQUENCE(provider->sequence_checker_);
@@ -108,7 +109,8 @@ ReportQueueProvider::~ReportQueueProvider() {
   while (!create_request_queue_.empty()) {
     auto& report_queue_request = create_request_queue_.front();
     std::move(report_queue_request->release_create_cb())
-        .Run(Status(error::UNAVAILABLE, "ReportQueueProvider shut down"));
+        .Run(base::unexpected(
+            Status(error::UNAVAILABLE, "ReportQueueProvider shut down")));
     create_request_queue_.pop();
   }
 }
@@ -137,8 +139,8 @@ void ReportQueueProvider::CreateNewQueue(
              std::unique_ptr<ReportQueueConfiguration> config,
              CreateReportQueueCallback cb) {
             if (!provider) {
-              std::move(cb).Run(
-                  Status(error::UNAVAILABLE, "Provider has been shut down"));
+              std::move(cb).Run(base::unexpected(
+                  Status(error::UNAVAILABLE, "Provider has been shut down")));
               return;
             }
             // Configure report queue config with an appropriate DM token and
@@ -152,7 +154,7 @@ void ReportQueueProvider::CreateNewQueue(
                   // If configuration hit an error, we abort and
                   // report this through the callback
                   if (!config_result.has_value()) {
-                    std::move(cb).Run(config_result.error());
+                    std::move(cb).Run(base::unexpected(config_result.error()));
                     return;
                   }
 
@@ -188,7 +190,7 @@ void ReportQueueProvider::CreateQueue(
         "The Encrypted Reporting Pipeline is not enabled. Please enable it on "
         "the command line using --enable-features=EncryptedReportingPipeline");
     VLOG(1) << not_enabled;
-    std::move(create_cb).Run(not_enabled);
+    std::move(create_cb).Run(base::unexpected(not_enabled));
     return;
   }
   CreateReportQueueRequest::New(std::move(config), std::move(create_cb));
@@ -204,7 +206,7 @@ ReportQueueProvider::CreateSpeculativeQueue(
         "The Encrypted Reporting Pipeline is not enabled. Please enable it on "
         "the command line using --enable-features=EncryptedReportingPipeline");
     VLOG(1) << not_enabled;
-    return not_enabled;
+    return base::unexpected(not_enabled);
   }
   // Instantiate speculative queue, bail out in case of an error.
   ASSIGN_OR_RETURN(auto speculative_queue,
@@ -260,7 +262,8 @@ void ReportQueueProvider::OnStorageModuleConfigured(
     while (!create_request_queue_.empty()) {
       auto& report_queue_request = create_request_queue_.front();
       std::move(report_queue_request->release_create_cb())
-          .Run(Status(error::UNAVAILABLE, "Unable to build a ReportQueue"));
+          .Run(base::unexpected(
+              Status(error::UNAVAILABLE, "Unable to build a ReportQueue")));
       create_request_queue_.pop();
     }
     return;

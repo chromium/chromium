@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
@@ -32,7 +33,7 @@ void AddToRecord(std::string_view record,
              base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
              Status status) {
             if (!status.ok()) {
-              std::move(cb).Run(status);
+              std::move(cb).Run(base::unexpected(status));
               return;
             }
             base::ThreadPool::PostTask(
@@ -65,7 +66,7 @@ void EncryptionModule::EncryptRecordImpl(
          base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
          StatusOr<Encryptor::Handle*> handle_result) {
         if (!handle_result.has_value()) {
-          std::move(cb).Run(handle_result.error());
+          std::move(cb).Run(base::unexpected(handle_result.error()));
           return;
         }
         base::ThreadPool::PostTask(

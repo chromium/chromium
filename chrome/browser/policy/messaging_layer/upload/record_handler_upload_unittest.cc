@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
@@ -506,7 +507,8 @@ TEST_F(RecordHandlerUploadTest, FailedProcessing) {
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Failure by test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Failure by test")));
           });
   EXPECT_CALL(*delegate_, DoFinalize).Times(0);
   EXPECT_CALL(*delegate_, DoDeleteFile(StrEq(kUploadFileName))).Times(1);
@@ -602,7 +604,8 @@ TEST_F(RecordHandlerUploadTest, InitiationFailureTriggersRetry) {
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Failure by test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Failure by test")));
           }));
   EXPECT_CALL(*delegate_, DoNextStep).Times(0);
   EXPECT_CALL(*delegate_, DoFinalize).Times(0);
@@ -731,7 +734,8 @@ TEST_F(RecordHandlerUploadTest, NextStepFailureTriggersRetry) {
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Failure by test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Failure by test")));
           });
   EXPECT_CALL(*delegate_, DoFinalize).Times(0);
 
@@ -854,7 +858,8 @@ TEST_F(RecordHandlerUploadTest, FinalizeFailureTriggersRetry) {
           Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Failure by test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Failure by test")));
           }));
 
   // Record retry event and then original with status.
