@@ -9,6 +9,7 @@ import './site_favicon.js';
 import './credential_details/password_details_card.js';
 import './credential_details/passkey_details_card.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -24,7 +25,8 @@ export interface PasswordDetailsSectionElement {
   };
 }
 
-const PasswordDetailsSectionElementBase = RouteObserverMixin(PolymerElement);
+const PasswordDetailsSectionElementBase =
+    PrefsMixin(RouteObserverMixin(PolymerElement));
 
 export class PasswordDetailsSectionElement extends
     PasswordDetailsSectionElementBase {
