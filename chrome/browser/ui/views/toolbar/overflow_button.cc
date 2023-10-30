@@ -24,7 +24,7 @@ OverflowButton::OverflowButton() {
   SetProperty(views::kElementIdentifierKey, kToolbarOverflowButtonElementId);
   SetButtonController(std::move(menu_button_controller));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_OVERFLOW_BUTTON));
-  SetVectorIcon(kOverflowChevronIcon);
+  SetVectorIcons(kOverflowButtonIcon, kOverflowButtonTouchIcon);
 }
 
 void OverflowButton::RunMenu() {
