@@ -98133,6 +98133,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="FRE Choice Screen Was Displayed"/>
   <int value="3" label="Default Was Set"/>
   <int value="4" label="FRE Default Was Set"/>
+  <int value="5" label="Learn More Screen Was Displayed"/>
+  <int value="6" label="Learn More Screen Was Displayed in the FRE"/>
 </enum>
 
 <enum name="SearchEntryPoint">

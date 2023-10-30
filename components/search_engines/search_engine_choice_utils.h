@@ -57,7 +57,11 @@ enum class SearchEngineChoiceScreenEvents {
   // The user clicked/tapped `Set as default` on the
   // FRE-specific screen.
   kFreDefaultWasSet = 4,
-  kMaxValue = kFreDefaultWasSet,
+  // The "Learn more" screen was displayed on the non-FRE screen.
+  kLearnMoreWasDisplayed = 5,
+  // The "Learn more" screen was displayed on the FRE-specific screen.
+  kFreLearnMoreWasDisplayed = 6,
+  kMaxValue = kFreLearnMoreWasDisplayed,
 };
 
 // Profile properties that need to be passed to
