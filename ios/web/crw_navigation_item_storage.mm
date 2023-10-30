@@ -65,8 +65,12 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
 }
 
 - (void)serializeToProto:(web::proto::NavigationItemStorage&)storage {
-  storage.set_url(_URL.spec());
-  storage.set_virtual_url(_virtualURL.spec());
+  if (_URL.is_valid()) {
+    storage.set_url(_URL.spec());
+  }
+  if (_virtualURL.is_valid()) {
+    storage.set_virtual_url(_virtualURL.spec());
+  }
   storage.set_title(base::UTF16ToUTF8(_title));
   web::SerializeTimeToProto(_timestamp, *storage.mutable_timestamp());
   storage.set_user_agent(web::UserAgentTypeToProto(_userAgentType));
@@ -178,29 +182,38 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
   // `virtualUrl_`. Chrome on iOS is persisting `url_`.
   int serializedSizeInBytes = 0;
   int serializedVirtualURLSizeInBytes = 0;
-  if (_virtualURL != _URL) {
+  if (_virtualURL != _URL && _virtualURL.is_valid()) {
     // In most cases _virtualURL is the same as URL. Not storing virtual URL
     // will save memory during unarchiving.
+    const std::string& virtualURLSpec = _virtualURL.spec();
     web::nscoder_util::EncodeString(
-        aCoder, web::kNavigationItemStorageVirtualURLKey, _virtualURL.spec());
-    serializedVirtualURLSizeInBytes = _virtualURL.spec().size();
+        aCoder, web::kNavigationItemStorageVirtualURLKey, virtualURLSpec);
+    serializedVirtualURLSizeInBytes = virtualURLSpec.size();
     serializedSizeInBytes += serializedVirtualURLSizeInBytes;
   }
   base::UmaHistogramMemoryKB(
       web::kNavigationItemSerializedVirtualURLSizeHistogram,
       serializedVirtualURLSizeInBytes / 1024);
 
-  web::nscoder_util::EncodeString(aCoder, web::kNavigationItemStorageURLKey,
-                                  _URL.spec());
-  int serializedURLSizeInBytes = _URL.spec().size();
-  serializedSizeInBytes += serializedURLSizeInBytes;
+  int serializedURLSizeInBytes = 0;
+  if (_URL.is_valid()) {
+    const std::string& URLSpec = _URL.spec();
+    web::nscoder_util::EncodeString(aCoder, web::kNavigationItemStorageURLKey,
+                                    URLSpec);
+    serializedURLSizeInBytes = URLSpec.size();
+    serializedSizeInBytes += serializedURLSizeInBytes;
+  }
   base::UmaHistogramMemoryKB(web::kNavigationItemSerializedURLSizeHistogram,
                              serializedURLSizeInBytes / 1024);
 
-  web::nscoder_util::EncodeString(
-      aCoder, web::kNavigationItemStorageReferrerURLKey, _referrer.url.spec());
-  int serializedReferrerURLSizeInBytes = _referrer.url.spec().size();
-  serializedSizeInBytes += serializedReferrerURLSizeInBytes;
+  int serializedReferrerURLSizeInBytes = 0;
+  if (_referrer.url.is_valid()) {
+    const std::string& referrerURLSpec = _referrer.url.spec();
+    web::nscoder_util::EncodeString(
+        aCoder, web::kNavigationItemStorageReferrerURLKey, referrerURLSpec);
+    serializedReferrerURLSizeInBytes = referrerURLSpec.size();
+    serializedSizeInBytes += serializedReferrerURLSizeInBytes;
+  }
   base::UmaHistogramMemoryKB(
       web::kNavigationItemSerializedReferrerURLSizeHistogram,
       serializedReferrerURLSizeInBytes / 1024);

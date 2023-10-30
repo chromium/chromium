@@ -119,7 +119,9 @@ NSString* const kTabIdKey = @"TabId";
       if (!pageURL.is_valid()) {
         pageURL = activePageItem.URL;
       }
-      pageMetadataStorage->set_page_url(pageURL.spec());
+      if (pageURL.is_valid()) {
+        pageMetadataStorage->set_page_url(pageURL.spec());
+      }
     }
   }
 }
