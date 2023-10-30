@@ -19,6 +19,10 @@
 // Indicate to the model delegate that the Tab Resumption enabled state changed.
 - (void)tabResumptionEnabledChanged:(BOOL)tabResumptionEnabled;
 
+// Indicates to the model delegate that the Parcel Tracking enabled state
+// changed.
+- (void)parcelTrackingEnabledChanged:(BOOL)parcelTrackingEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_HALF_SHEET_MODEL_DELEGATE_H_

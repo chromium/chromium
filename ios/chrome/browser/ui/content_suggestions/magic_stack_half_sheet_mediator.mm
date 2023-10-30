@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -25,6 +27,7 @@
   PrefBackedBoolean* _setUpListDisabled;
   PrefBackedBoolean* _safetyCheckDisabled;
   PrefBackedBoolean* _tabResumptionDisabled;
+  PrefBackedBoolean* _parcelTrackingDisabled;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
@@ -51,6 +54,12 @@
                      prefName:tab_resumption_prefs::kTabResumptioDisabledPref];
       [_tabResumptionDisabled setObserver:self];
     }
+    if (IsIOSParcelTrackingEnabled()) {
+      _parcelTrackingDisabled = [[PrefBackedBoolean alloc]
+          initWithPrefService:_prefService
+                     prefName:kParcelTrackingDisabled];
+      [_parcelTrackingDisabled setObserver:self];
+    }
   }
   return self;
 }
@@ -75,6 +84,9 @@
   if (_tabResumptionDisabled) {
     [self.consumer setTabResumptionDisabled:_tabResumptionDisabled.value];
   }
+  if (_parcelTrackingDisabled) {
+    [self.consumer setParcelTrackingDisabled:_parcelTrackingDisabled.value];
+  }
 }
 
 #pragma mark - Boolean Observer
@@ -86,6 +98,8 @@
     [self.consumer setSafetyCheckDisabled:_safetyCheckDisabled.value];
   } else if (observableBoolean == _tabResumptionDisabled) {
     [self.consumer setTabResumptionDisabled:_tabResumptionDisabled.value];
+  } else if (observableBoolean == _parcelTrackingDisabled) {
+    [self.consumer setParcelTrackingDisabled:_parcelTrackingDisabled.value];
   }
 }
 
@@ -101,6 +115,10 @@
 
 - (void)tabResumptionEnabledChanged:(BOOL)tabResumptionEnabled {
   [_tabResumptionDisabled setValue:!tabResumptionEnabled];
+}
+
+- (void)parcelTrackingEnabledChanged:(BOOL)parcelTrackingEnabled {
+  [_parcelTrackingDisabled setValue:!parcelTrackingEnabled];
 }
 
 @end

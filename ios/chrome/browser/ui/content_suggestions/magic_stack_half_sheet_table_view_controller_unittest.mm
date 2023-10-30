@@ -7,6 +7,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/home/features.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -19,8 +20,9 @@
 class MagicStackHalfSheetTableViewControllerUnittest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {kMagicStack, kSafetyCheckMagicStack, kTabResumption}, {});
+    scoped_feature_list_.InitWithFeatures({kMagicStack, kSafetyCheckMagicStack,
+                                           kTabResumption, kIOSParcelTracking},
+                                          {});
 
     view_controller_ = [[MagicStackHalfSheetTableViewController alloc] init];
   }
@@ -39,11 +41,12 @@ TEST_F(MagicStackHalfSheetTableViewControllerUnittest, TestLoadModel) {
   [view_controller_ setSetUpListDisabled:NO];
   [view_controller_ setSafetyCheckDisabled:NO];
   [view_controller_ setTabResumptionDisabled:NO];
+  [view_controller_ setParcelTrackingDisabled:NO];
 
   [view_controller_ loadViewIfNeeded];
 
   TableViewModel* model = view_controller_.tableViewModel;
-  ASSERT_TRUE([model numberOfItemsInSection:0] == 3);
+  ASSERT_TRUE([model numberOfItemsInSection:0] == 4);
 
   TableViewSwitchItem* setUpListItem = static_cast<TableViewSwitchItem*>(
       [model itemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
@@ -56,4 +59,8 @@ TEST_F(MagicStackHalfSheetTableViewControllerUnittest, TestLoadModel) {
   TableViewSwitchItem* tabResumptionItem = static_cast<TableViewSwitchItem*>(
       [model itemAtIndexPath:[NSIndexPath indexPathForItem:2 inSection:0]]);
   EXPECT_TRUE(tabResumptionItem.on);
+
+  TableViewSwitchItem* parcelTrackingItem = static_cast<TableViewSwitchItem*>(
+      [model itemAtIndexPath:[NSIndexPath indexPathForItem:3 inSection:0]]);
+  EXPECT_TRUE(parcelTrackingItem.on);
 }

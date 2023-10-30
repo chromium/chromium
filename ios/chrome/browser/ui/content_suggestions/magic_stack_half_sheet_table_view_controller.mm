@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/home/features.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
@@ -34,6 +35,7 @@ enum ItemType : NSInteger {
   ItemTypeToggleSetUpList = kItemTypeEnumZero,
   ItemTypeToggleSafetyCheck,
   ItemTypeToggleTabResumption,
+  ItemTypeToggleParcelTracking,
 };
 
 }  // namespace
@@ -46,10 +48,12 @@ enum ItemType : NSInteger {
   BOOL _setUpListDisabled;
   BOOL _safetyCheckDisabled;
   BOOL _tabResumptionDisabled;
+  BOOL _parcelTrackingDisabled;
 
   TableViewSwitchItem* _setUpListToggle;
   TableViewSwitchItem* _safetyCheckToggle;
   TableViewSwitchItem* _tabResumptionToggle;
+  TableViewSwitchItem* _parcelTrackingToggle;
 }
 
 - (instancetype)init {
@@ -101,6 +105,14 @@ enum ItemType : NSInteger {
   _tabResumptionToggle.on = !_tabResumptionDisabled;
 }
 
+- (void)setParcelTrackingDisabled:(BOOL)parcelTrackingDisabled {
+  if (_parcelTrackingDisabled == parcelTrackingDisabled) {
+    return;
+  }
+  _parcelTrackingDisabled = parcelTrackingDisabled;
+  _parcelTrackingToggle.on = !_parcelTrackingDisabled;
+}
+
 #pragma mark - ChromeTableViewController
 
 - (void)loadModel {
@@ -146,6 +158,18 @@ enum ItemType : NSInteger {
     [self.tableViewModel addItem:_tabResumptionToggle
          toSectionWithIdentifier:SectionIdentifierOptions];
   }
+  if (IsIOSParcelTrackingEnabled()) {
+    _parcelTrackingToggle = [self
+        switchItemWithType:ItemTypeToggleParcelTracking
+                     title:
+                         l10n_util::GetNSString(
+                             IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)
+                    symbol:DefaultSymbolWithPointSize(kShippingBoxSymbol,
+                                                      kIconPointSize)];
+    _parcelTrackingToggle.on = !_parcelTrackingDisabled;
+    [self.tableViewModel addItem:_parcelTrackingToggle
+         toSectionWithIdentifier:SectionIdentifierOptions];
+  }
 }
 
 #pragma mark - UITableViewDataSource
@@ -176,6 +200,11 @@ enum ItemType : NSInteger {
                                 action:@selector(tabResumptionEnabledChanged:)
                       forControlEvents:UIControlEventValueChanged];
       break;
+    case ItemTypeToggleParcelTracking:
+      [switchCell.switchView addTarget:self
+                                action:@selector(parcelTrackingEnabledChanged:)
+                      forControlEvents:UIControlEventValueChanged];
+      break;
   }
   return cell;
 }
@@ -204,6 +233,10 @@ enum ItemType : NSInteger {
 
 - (void)tabResumptionEnabledChanged:(UISwitch*)switchView {
   [self.modelDelegate tabResumptionEnabledChanged:switchView.isOn];
+}
+
+- (void)parcelTrackingEnabledChanged:(UISwitch*)switchView {
+  [self.modelDelegate parcelTrackingEnabledChanged:switchView.isOn];
 }
 
 @end

@@ -237,6 +237,7 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser/ntp:set_up_list_prefs",
     "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
+    "//ios/chrome/browser/parcel_tracking:prefs",
     "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/safety_check/model:constants",
     "//ios/chrome/browser/shared/model/prefs",

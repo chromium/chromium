@@ -22,6 +22,9 @@
 // Indicates to the consumer that `tabResumptionDisabled`.
 - (void)setTabResumptionDisabled:(BOOL)tabResumptionDisabled;
 
+// Indicates to the consumer that `parcelTrackingDisabled`.
+- (void)setParcelTrackingDisabled:(BOOL)parcelTrackingDisabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_HALF_SHEET_CONSUMER_H_
