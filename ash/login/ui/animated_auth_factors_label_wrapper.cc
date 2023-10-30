@@ -65,8 +65,8 @@ class AuthFactorsLabel : public views::Label {
     views::Label::GetAccessibleNodeData(node_data);
   }
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kAuthFactorsViewWidthDp, kLabelWrapperHeightDp);
   }
 

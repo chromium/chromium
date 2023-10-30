@@ -84,8 +84,9 @@ void NewBadgeLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetNameChecked(accessible_name);
 }
 
-gfx::Size NewBadgeLabel::CalculatePreferredSize() const {
-  gfx::Size size = Label::CalculatePreferredSize();
+gfx::Size NewBadgeLabel::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = Label::CalculatePreferredSize(available_size);
   if (display_new_badge_)
     size.SetToMax(GetNewBadgeSize());
   return size;

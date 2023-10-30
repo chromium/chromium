@@ -107,7 +107,8 @@ class ZoomValue : public views::Label {
   ~ZoomValue() override = default;
 
   // views::Label:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(max_width_, GetHeightForWidth(max_width_));
   }
 

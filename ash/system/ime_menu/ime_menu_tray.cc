@@ -173,7 +173,8 @@ class ImeMenuLabel : public views::Label {
   ~ImeMenuLabel() override = default;
 
   // views:Label:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kTrayItemSize, kTrayItemSize);
   }
   int GetHeightForWidth(int width) const override { return kTrayItemSize; }

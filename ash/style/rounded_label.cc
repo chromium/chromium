@@ -38,8 +38,9 @@ RoundedLabel::RoundedLabel(int horizontal_padding,
 
 RoundedLabel::~RoundedLabel() = default;
 
-gfx::Size RoundedLabel::CalculatePreferredSize() const {
-  return gfx::Size(views::Label::CalculatePreferredSize().width(),
+gfx::Size RoundedLabel::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(views::Label::CalculatePreferredSize(available_size).width(),
                    preferred_height_);
 }
 
