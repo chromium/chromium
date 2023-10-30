@@ -91,6 +91,7 @@ if (use_centipede) {
     deps = [
       ":centipede_common",
       "//third_party/abseil-cpp:absl",
+      "//third_party/abseil-cpp/absl/log:log",
     ]
     configs += [ ":fuzztest_internal_config" ]
     configs -= fuzzing_engine_remove_configs
@@ -257,14 +258,7 @@ source_set("fuzztest_internal") {
     # Depends transitively on fuzzing_engine so that we are automatically built in builds
     # destined for ClusterFuzz.
     "//testing/libfuzzer:fuzzing_engine",
-    "//third_party/abseil-cpp/absl/flags:config",
     "//third_party/abseil-cpp/absl/flags:flag",
-    "//third_party/abseil-cpp/absl/flags:parse",
-    "//third_party/abseil-cpp/absl/flags:reflection",
-    "//third_party/abseil-cpp/absl/log",
-    "//third_party/abseil-cpp/absl/log:check",
-    "//third_party/abseil-cpp/absl/log:globals",
-    "//third_party/abseil-cpp/absl/log:initialize",
     "//third_party/abseil-cpp/absl/random:bit_gen_ref",
   ]
 
@@ -298,6 +292,7 @@ source_set("fuzztest") {
   sources = [ "src/fuzztest/fuzztest_gtest_main.cc" ]
   deps = [
     "//testing/gtest",
+    "//third_party/abseil-cpp/absl/flags:flag",
     "//third_party/abseil-cpp/absl/flags:parse",
   ]
 
