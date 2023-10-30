@@ -1851,6 +1851,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Viz.BeginFrameSource.VrrFrameCount" units="frames"
+    expires_after="2023-12-13">
+  <owner>aswolfers@chromium.org</owner>
+  <owner>chromeos-gfx-compositor@chromium.org</owner>
+  <summary>
+    This is logged once per session of the variable refresh rate (VRR) feature
+    being enabled. This counts the number of BeginFrames which are issued using
+    VRR.
+  </summary>
+</histogram>
+
 <histogram name="Viz.DelegatedCompositing.Status" enum="DelegatedStatus"
     expires_after="2024-02-04">
   <owner>petermcneeley@chromium.org</owner>
