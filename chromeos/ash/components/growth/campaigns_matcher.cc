@@ -102,6 +102,32 @@ bool CampaignsMatcher::MatchDemoModeTier(
   return true;
 }
 
+bool CampaignsMatcher::MatchDemoModeAppVersion(
+    const DemoModeTargeting& targeting) const {
+  const auto* min_version = targeting.GetAppMinVersion();
+  const auto* max_version = targeting.GetAppMaxVersion();
+  if (!min_version && !max_version) {
+    // Match if no app version targeting.
+    return true;
+  }
+
+  const auto version = client_->GetDemoModeAppVersion();
+  if (!version.IsValid()) {
+    // Not match if the app version is invalid.
+    return false;
+  }
+
+  if (min_version && version.CompareTo(base::Version(*min_version)) == -1) {
+    return false;
+  }
+
+  if (max_version && version.CompareTo(base::Version(*max_version)) == 1) {
+    return false;
+  }
+
+  return true;
+}
+
 bool CampaignsMatcher::MaybeMatchDemoModeTargeting(
     const DemoModeTargeting& targeting) const {
   if (!targeting.IsValid()) {
@@ -115,7 +141,9 @@ bool CampaignsMatcher::MaybeMatchDemoModeTargeting(
     return false;
   }
 
-  // TODO(b/298467438): Add demo mode app version targeting.
+  if (!MatchDemoModeAppVersion(targeting)) {
+    return false;
+  }
 
   if (!MatchDemoModeTier(targeting)) {
     return false;
