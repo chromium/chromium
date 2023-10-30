@@ -96,4 +96,8 @@ executable("skia_demo") {
     "//ui/gl/init",
     "//ui/ozone",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ui/gfx/linux:gbm" ]
+  }
 }
