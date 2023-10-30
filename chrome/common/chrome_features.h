@@ -725,6 +725,13 @@ BASE_DECLARE_FEATURE(kInsecureDownloadWarnings);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionSentimentSurvey);
 
+// Probability to pick "IMMEDIATE" over "DELAYED" surveying.
+// A value of 0.0 means Always choose "DELAYED"
+// A value of 1.0 means Always choose "IMMEDIATE"
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyImmediateOverDelayedProbability;
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<double>
     kTrackingProtectionSentimentSurveyControlImmediateProbability;

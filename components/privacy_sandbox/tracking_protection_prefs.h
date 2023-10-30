@@ -139,16 +139,16 @@ enum class TrackingProtectionOnboardingAckAction {
 enum class TrackingProtectionSentimentSurveyGroup {
   // No Group Set.
   kNotSet = 0,
-  // Profile is be surveyed shortly after being added to the Mode B Control
+  // Profile is to be surveyed shortly after being added to the Mode B Control
   // Group.
   kControlImmediate = 1,
-  // Profile is be surveyed shortly after being added to the Mode B Treatment
+  // Profile is to be surveyed shortly after being added to the Mode B Treatment
   // Group.
   kTreatmentImmediate = 2,
-  // Profile is be surveyed after a delay after being added to the Mode B
+  // Profile is to be surveyed after a delay after being added to the Mode B
   // Control Group.
   kControlDelayed = 3,
-  // Profile is be surveyed after a delay after being added to the Mode B
+  // Profile is to be surveyed after a delay after being added to the Mode B
   // Treatment Group.
   kTreatmentDelayed = 4,
   kMaxValue = kTreatmentDelayed,

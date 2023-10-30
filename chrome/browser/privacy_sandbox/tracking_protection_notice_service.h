@@ -9,6 +9,7 @@
 #include <memory>
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -16,6 +17,7 @@
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -73,6 +75,9 @@ class TrackingProtectionNoticeService
     // contents::WebContentsObserver:
     void DidFinishNavigation(
         content::NavigationHandle* navigation_handle) override;
+
+    // contents::WebContentsObserver:
+    void PrimaryPageChanged(content::Page& page) override;
 
     WEB_CONTENTS_USER_DATA_KEY_DECL();
   };
@@ -150,6 +155,13 @@ class TrackingProtectionNoticeService
   // TrackingProtectionOnboarding::Observer
   void OnShouldShowNoticeUpdated() override;
 
+  // Runs the Hats Logic, which means could either Register the profile for a
+  // group if eligible, or trigger a survey.
+  void RunHatsLogic();
+
+  // Whether or not the Hats logic is required for the current client/profile.
+  bool IsHatsLogicRequired();
+
   raw_ptr<Profile> profile_;
   raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
   std::unique_ptr<BaseIPHNotice> onboarding_notice_;
@@ -158,6 +170,8 @@ class TrackingProtectionNoticeService
   base::ScopedObservation<TrackingProtectionOnboarding,
                           TrackingProtectionOnboarding::Observer>
       onboarding_observation_{this};
+
+  bool has_opened_first_ntp_ = false;
 };
 
 }  // namespace privacy_sandbox

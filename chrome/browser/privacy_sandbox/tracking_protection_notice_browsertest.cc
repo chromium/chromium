@@ -2,21 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_notice_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/version_info/channel.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -24,7 +37,15 @@
 
 namespace privacy_sandbox {
 
+namespace {
+
+using ::testing::_;
+
+using NoticeAction =
+    privacy_sandbox::TrackingProtectionOnboarding::NoticeAction;
 using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
+using SentimentSurveyGroup =
+    privacy_sandbox::TrackingProtectionOnboarding::SentimentSurveyGroup;
 
 void WaitForFeatureEngagement(Browser* browser) {
   BrowserView* const browser_view =
@@ -60,6 +81,43 @@ void PressPromoButton(Browser* browser,
       return;
   }
 }
+
+std::vector<base::test::FeatureRefAndParams> HatsImmediateControlFeatures() {
+  return {
+      {features::kCookieDeprecationFacilitatedTesting,
+       {{tpcd::experiment::kDisable3PCookiesName, "false"},
+        {tpcd::experiment::kForceEligibleForTestingName, "true"}}},
+      {features::kTrackingProtectionSentimentSurvey,
+       {{"tracking-protection-immediate-over-delayed-probability", "1"},
+        {"tracking-protection-control-immediate-probability", "1.0"},
+        {"tracking-protection-control-immediate-trigger-id", "trigger-1"}}}};
+}
+
+std::vector<base::test::FeatureRefAndParams> HatsImmediateModeBFeatures() {
+  return {
+      {features::kCookieDeprecationFacilitatedTesting,
+       {{tpcd::experiment::kDisable3PCookiesName, "true"},
+        {features::kCookieDeprecationTestingDisableAdsAPIsName, "false"},
+        {tpcd::experiment::kForceEligibleForTestingName, "true"}}},
+      {features::kTrackingProtectionSentimentSurvey,
+       {{"tracking-protection-immediate-over-delayed-probability", "1"},
+        {"tracking-protection-treatment-immediate-probability", "1.0"},
+        {"tracking-protection-treatment-immediate-trigger-id", "trigger-1"}}}};
+}
+
+std::vector<base::test::FeatureRefAndParams> HatsImmediateModeBPrimeFeatures() {
+  return {
+      {features::kCookieDeprecationFacilitatedTesting,
+       {{tpcd::experiment::kDisable3PCookiesName, "true"},
+        {features::kCookieDeprecationTestingDisableAdsAPIsName, "true"},
+        {tpcd::experiment::kForceEligibleForTestingName, "true"}}},
+      {features::kTrackingProtectionSentimentSurvey,
+       {{"tracking-protection-immediate-over-delayed-probability", "1"},
+        {"tracking-protection-treatment-immediate-probability", "1.0"},
+        {"tracking-protection-treatment-immediate-trigger-id", "trigger-1"}}}};
+}
+
+}  // namespace
 
 class TrackingProtectionBaseNoticeBrowserTest : public InProcessBrowserTest {
  protected:
@@ -700,6 +758,326 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
   // Goes back to eligible tab. Promo will not show.
   browser()->tab_strip_model()->SelectPreviousTab();
   EXPECT_FALSE(IsOffboardingPromoActive(browser()));
+}
+
+struct TrackingProtectionSurveyTestData {
+  // Inputs
+  std::vector<base::test::FeatureRefAndParams> features;
+  bool has_3pc_blocked = false;
+  bool has_topics_enabled = false;
+  bool has_fledge_enabled = false;
+  bool has_measurement_enabled = false;
+  std::optional<NoticeAction> ack_action = std::nullopt;
+
+  // Expectations
+  std::string trigger_id;
+  SentimentSurveyGroup group;
+  bool is_b_prime = false;
+};
+
+class TrackingProtectionHatsBaseTest : public InProcessBrowserTest {
+ protected:
+  explicit TrackingProtectionHatsBaseTest(
+      const std::vector<base::test::FeatureRefAndParams>&
+          allow_and_enable_features) {
+    feature_list_.InitWithFeaturesAndParameters(allow_and_enable_features, {});
+  }
+
+  void SetUpOnMainThread() override {
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+    EXPECT_CALL(*mock_hats_service_, CanShowAnySurvey(testing::_))
+        .WillRepeatedly(testing::Return(true));
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+
+    content::SetupCrossSiteRedirector(&https_server_);
+    ASSERT_TRUE(https_server_.Start());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  privacy_sandbox::TrackingProtectionOnboarding* onboarding_service() {
+    return TrackingProtectionOnboardingFactory::GetForProfile(
+        browser()->profile());
+  }
+
+  virtual std::vector<base::test::FeatureRefAndParams>
+  EnabledFeaturesWithParams() = 0;
+
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  raw_ptr<MockHatsService, DanglingUntriaged> mock_hats_service_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class TrackingProtectionHatsBrowserTest
+    : public TrackingProtectionHatsBaseTest,
+      public testing::WithParamInterface<TrackingProtectionSurveyTestData> {
+ protected:
+  TrackingProtectionHatsBrowserTest()
+      : TrackingProtectionHatsBaseTest(EnabledFeaturesWithParams()) {}
+
+  std::vector<base::test::FeatureRefAndParams> EnabledFeaturesWithParams()
+      override {
+    return GetParam().features;
+  }
+};
+
+base::Time Now() {
+  static base::Time now = base::subtle::TimeNowIgnoringOverride();
+  return now;
+}
+
+IN_PROC_BROWSER_TEST_P(TrackingProtectionHatsBrowserTest,
+                       CallHatsServiceWithProductData) {
+  TrackingProtectionSurveyTestData params = GetParam();
+  // Setup
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
+                                               params.has_3pc_blocked);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kPrivacySandboxM1TopicsEnabled, params.has_topics_enabled);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kPrivacySandboxM1FledgeEnabled, params.has_fledge_enabled);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kPrivacySandboxM1AdMeasurementEnabled,
+      params.has_measurement_enabled);
+
+  // Ack if necessary.
+  if (params.ack_action.has_value()) {
+    // Onboarding first
+    {
+      base::subtle::ScopedTimeClockOverrides override([]() { return Now(); },
+                                                      nullptr, nullptr);
+      onboarding_service()->OnboardingNoticeShown();
+    }
+    // Ack after 65 seconds
+    {
+      base::subtle::ScopedTimeClockOverrides override(
+          []() { return Now() + base::Seconds(65); }, nullptr, nullptr);
+      onboarding_service()->OnboardingNoticeActionTaken(
+          params.ack_action.value());
+    }
+  }
+
+  // Navigation to first NTP, triggering group registration.
+  browser()->window()->Activate();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+
+  // Verification
+  // After the start delay, a survey should be required.
+  {
+    base::subtle::ScopedTimeClockOverrides override(
+        []() { return Now() + base::Minutes(5); }, nullptr, nullptr);
+    EXPECT_EQ(onboarding_service()->GetEligibleSurveyGroup(), params.group);
+
+    SurveyBitsData product_bits{
+        {"3P cookies blocked", params.has_3pc_blocked},
+        {"Fledge enabled", params.has_fledge_enabled},
+        {"Is Mode B'", params.is_b_prime},
+        {"Measurement enabled", params.has_measurement_enabled},
+        {"Onboarding Settings Clicked",
+         params.ack_action == NoticeAction::kSettings},
+        {"Topics enabled", params.has_topics_enabled}};
+    SurveyStringData product_strings{
+        {"Seconds to acknowledge", params.ack_action.has_value()
+                                       ? "65"  // 65 seconds to ack above.
+                                       : "-1"}};
+
+    EXPECT_CALL(
+        *mock_hats_service_,
+        LaunchSurvey(params.trigger_id, _, _, product_bits, product_strings));
+
+    // Navigation actually triggering the survey;
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL(chrome::kChromeUINewTabURL)));
+
+    testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TrackingProtectionHatsBrowserTest,
+    testing::Values(
+        // only measuerement enabled.
+        TrackingProtectionSurveyTestData{
+            .features = HatsImmediateControlFeatures(),
+            .has_3pc_blocked = false,
+            .has_topics_enabled = false,
+            .has_fledge_enabled = false,
+            .has_measurement_enabled = true,
+            .trigger_id = kHatsSurveyTriggerTrackingProtectionControlImmediate,
+            .group = SentimentSurveyGroup::kControlImmediate,
+        },
+        // Only fledge enabled
+        TrackingProtectionSurveyTestData{
+            .features = HatsImmediateControlFeatures(),
+            .has_3pc_blocked = false,
+            .has_topics_enabled = false,
+            .has_fledge_enabled = true,
+            .has_measurement_enabled = false,
+            .trigger_id = kHatsSurveyTriggerTrackingProtectionControlImmediate,
+            .group = SentimentSurveyGroup::kControlImmediate,
+        },
+        // Only topics Enabled
+        TrackingProtectionSurveyTestData{
+            .features = HatsImmediateControlFeatures(),
+            .has_3pc_blocked = false,
+            .has_topics_enabled = true,
+            .has_fledge_enabled = false,
+            .has_measurement_enabled = false,
+            .trigger_id = kHatsSurveyTriggerTrackingProtectionControlImmediate,
+            .group = SentimentSurveyGroup::kControlImmediate,
+        },
+        // No Ads API Enabled
+        TrackingProtectionSurveyTestData{
+            .features = HatsImmediateControlFeatures(),
+            .has_3pc_blocked = true,
+            .has_topics_enabled = false,
+            .has_fledge_enabled = false,
+            .has_measurement_enabled = false,
+            .trigger_id = kHatsSurveyTriggerTrackingProtectionControlImmediate,
+            .group = SentimentSurveyGroup::kControlImmediate,
+        },  // Mode B acked with "Settings" button
+        TrackingProtectionSurveyTestData{
+            .features = HatsImmediateModeBFeatures(),
+            .has_3pc_blocked = true,
+            .has_topics_enabled = false,
+            .has_fledge_enabled = false,
+            .has_measurement_enabled = false,
+            .ack_action = NoticeAction::kSettings,
+            .trigger_id =
+                kHatsSurveyTriggerTrackingProtectionTreatmentImmediate,
+            .group = SentimentSurveyGroup::kTreatmentImmediate,
+        },
+        // Mode B Acked with "Got It" button
+        TrackingProtectionSurveyTestData{
+            .features = HatsImmediateModeBFeatures(),
+            .has_3pc_blocked = true,
+            .has_topics_enabled = false,
+            .has_fledge_enabled = false,
+            .has_measurement_enabled = false,
+            .ack_action = NoticeAction::kGotIt,
+            .trigger_id =
+                kHatsSurveyTriggerTrackingProtectionTreatmentImmediate,
+            .group = SentimentSurveyGroup::kTreatmentImmediate,
+        },
+        // Mode B Prime
+        TrackingProtectionSurveyTestData{
+            .features = HatsImmediateModeBPrimeFeatures(),
+            .has_3pc_blocked = true,
+            .has_topics_enabled = false,
+            .has_fledge_enabled = false,
+            .has_measurement_enabled = false,
+            .ack_action = NoticeAction::kGotIt,
+            .trigger_id =
+                kHatsSurveyTriggerTrackingProtectionTreatmentImmediate,
+            .group = SentimentSurveyGroup::kTreatmentImmediate,
+            .is_b_prime = true,
+        }));
+
+class TrackingProtectionHatsIneligibleClientBrowserTest
+    : public TrackingProtectionHatsBaseTest {
+ protected:
+  TrackingProtectionHatsIneligibleClientBrowserTest()
+      : TrackingProtectionHatsBaseTest(EnabledFeaturesWithParams()) {}
+
+  std::vector<base::test::FeatureRefAndParams> EnabledFeaturesWithParams()
+      override {
+    return {
+        {features::kCookieDeprecationFacilitatedTesting,
+         {{tpcd::experiment::kDisable3PCookiesName, "false"},
+          {tpcd::experiment::kForceEligibleForTestingName, "false"}}},
+        {features::kTrackingProtectionSentimentSurvey,
+         {{"tracking-protection-immediate-over-delayed-probability", "1"},
+          {"tracking-protection-control-immediate-probability", "1.0"},
+          {"tracking-protection-control-immediate-trigger-id", "trigger-1"}}}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionHatsIneligibleClientBrowserTest,
+                       IneligibleClientDoesntSurvey) {
+  // Navigation to first NTP, triggering group registration.
+  browser()->window()->Activate();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+
+  // Verification
+  // After the start delay, a survey should not be required.
+  {
+    base::subtle::ScopedTimeClockOverrides override(
+        []() { return Now() + base::Minutes(5); }, nullptr, nullptr);
+    EXPECT_EQ(onboarding_service()->GetEligibleSurveyGroup(),
+              SentimentSurveyGroup::kNotSet);
+
+    // Navigation will not trigger the survey.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL(chrome::kChromeUINewTabURL)));
+
+    EXPECT_CALL(*mock_hats_service_, LaunchSurvey).Times(0);
+    testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
+  }
+}
+
+class TrackingProtectionHatsDelayedBrowserTest
+    : public TrackingProtectionHatsBaseTest {
+ protected:
+  TrackingProtectionHatsDelayedBrowserTest()
+      : TrackingProtectionHatsBaseTest(EnabledFeaturesWithParams()) {}
+
+  std::vector<base::test::FeatureRefAndParams> EnabledFeaturesWithParams()
+      override {
+    return {
+        {features::kCookieDeprecationFacilitatedTesting,
+         {{tpcd::experiment::kDisable3PCookiesName, "false"},
+          {tpcd::experiment::kForceEligibleForTestingName, "true"}}},
+        {features::kTrackingProtectionSentimentSurvey,
+         {{"tracking-protection-immediate-over-delayed-probability", "0"},
+          {"tracking-protection-control-delayed-probability", "1.0"},
+          {"tracking-protection-control-delayed-trigger-id", "trigger-1"}}}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionHatsDelayedBrowserTest,
+                       DelayedClientTriggersOk) {
+  // Navigation to first NTP, triggering group registration.
+  browser()->window()->Activate();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+
+  // Survey shouldn't yet trigger.
+  EXPECT_CALL(*mock_hats_service_, LaunchSurvey).Times(0);
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
+
+  // Verification
+  // After the start delay, a survey should be required.
+  {
+    base::subtle::ScopedTimeClockOverrides override(
+        []() { return Now() + base::Days(14); }, nullptr, nullptr);
+    EXPECT_EQ(onboarding_service()->GetEligibleSurveyGroup(),
+              SentimentSurveyGroup::kControlDelayed);
+
+    SurveyBitsData product_bits{{"3P cookies blocked", false},
+                                {"Fledge enabled", false},
+                                {"Is Mode B'", false},
+                                {"Measurement enabled", false},
+                                {"Onboarding Settings Clicked", false},
+                                {"Topics enabled", false}};
+    SurveyStringData product_strings{{"Seconds to acknowledge", "-1"}};
+
+    EXPECT_CALL(*mock_hats_service_,
+                LaunchSurvey(kHatsSurveyTriggerTrackingProtectionControlDelayed,
+                             _, _, product_bits, product_strings));
+
+    // Navigation actually triggering the survey;
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL(chrome::kChromeUINewTabURL)));
+
+    testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
+  }
 }
 
 }  // namespace privacy_sandbox

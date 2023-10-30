@@ -1278,6 +1278,11 @@ BASE_FEATURE(kTrackingProtectionSentimentSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyImmediateOverDelayedProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-immediate-over-delayed-probability", 0.5};
+
+extern const base::FeatureParam<double>
     kTrackingProtectionSentimentSurveyControlImmediateProbability{
         &kTrackingProtectionSentimentSurvey,
         "tracking-protection-control-immediate-probability", 0.0};

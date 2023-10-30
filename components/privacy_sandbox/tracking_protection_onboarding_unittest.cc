@@ -673,12 +673,12 @@ TEST_F(TrackingProtectionSentimentTracking, RegistersTreatmentAndAcksLater) {
   tracking_protection_onboarding()->OnboardingNoticeActionTaken(
       NoticeAction::kGotIt);
 
-  // Notice still not returned after Acking the notice
+  // Registered group still not returned after Acking the notice
   EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
             SentimentSurveyGroup::kNotSet);
 
-  // Registered returned after the survey start time, and before the survey end
-  // time.
+  // Registered group returned after the survey start time, and before the
+  // survey end time.
   task_env_.FastForwardBy(base::Minutes(3));
   EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
             SentimentSurveyGroup::kTreatmentImmediate);
