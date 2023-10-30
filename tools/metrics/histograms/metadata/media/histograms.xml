@@ -976,30 +976,13 @@ chromium-metrics-reviews@google.com.
     Duration of the interval between the moment OutputDeviceMixer started mixed
     playback (referece playback signal is requested by at least one listener and
     there is at least one stream managed by the mixer playing) and the moment
-    OutputDeviceMixer stopped mixed playback (there are no more listeners). It
-    may include intervals recorded by
-    Media.Audio.OutputDeviceMixer.NoopMixingDuration histogram.
+    OutputDeviceMixer stopped mixed playback (there are no more listeners).
   </summary>
   <token key="Device">
     <variant name="" summary="All"/>
     <variant name=".Default" summary="Default device mixer"/>
     <variant name=".NonDefault" summary="Non-default device mixer"/>
   </token>
-</histogram>
-
-<histogram name="Media.Audio.OutputDeviceMixer.NoopMixingDuration" units="ms"
-    expires_after="2024-09-01">
-  <owner>olka@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Duration of the interval when there are no output streams to mix but there
-    are reference signal listeners present, so OutputDeviceMixer renders silence
-    and feeds it to the listeners as well. Recorded when an output stream starts
-    playing (and thus playback is not empty any more) or when all listeners are
-    gone (and thus mixing stops). There may be multiple such intervals during an
-    interval recorded by Media.Audio.OutputDeviceMixer.MixingDuration.
-  </summary>
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.OvertimeCount" units="count"
@@ -1014,32 +997,6 @@ chromium-metrics-reviews@google.com.
     100 (1/10 of all callbacks). Not logged if the mixer was called less than
     1000 times.
   </summary>
-</histogram>
-
-<histogram
-    name="Media.Audio.OutputDeviceMixer.StreamDuration.{MixingStatus}.{LatencyTag}"
-    units="ms" expires_after="2024-09-01">
-  <owner>olka@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Duration of the interval when an output stream managed by OutputDeviceMixer
-    is playing independently (Unmixed) or as a part of the mix (Mixed). Measured
-    between the moment the stream starts playing or its playback mode
-    (Mixed/Unmixed) changes, and the moment the stream stops playing or its
-    playback mode changes.
-  </summary>
-  <token key="MixingStatus">
-    <variant name="Mixed" summary="Stream is played as a part of the mix"/>
-    <variant name="Unmixed" summary="Stream is played independently"/>
-  </token>
-  <token key="LatencyTag">
-    <variant name="LatencyExactMs"/>
-    <variant name="LatencyInteractive"/>
-    <variant name="LatencyPlayback"/>
-    <variant name="LatencyRtc"/>
-    <variant name="LatencyUnknown"/>
-  </token>
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.StreamStatus"
@@ -1165,8 +1122,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.GetSourceDataTime.WebRTC"
-    units="microseconds" expires_after="2023-12-04">
-  <owner>guidou@chromium.org</owner>
+    units="microseconds" expires_after="2024-10-01">
+  <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -1183,8 +1140,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.GetSourceDataTimeMax.WebRTC"
-    units="microseconds" expires_after="2023-11-12">
-  <owner>guidou@chromium.org</owner>
+    units="microseconds" expires_after="2024-10-01">
+  <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -1792,14 +1749,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioOutputStreamProxy.StreamFormat"
-    enum="AudioOutputProxyStreamFormat" expires_after="2023-12-04">
+    enum="AudioOutputProxyStreamFormat" expires_after="2024-10-01">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Records format used by AudioManager to create audio output stream proxy. If
-    a fake stream is created it results in muted audio playback. Warning: this
-    histogram was expired from 2021-01-01 to 2022-01-21; data may be missing.
+    a fake stream is created it results in muted audio playback.
   </summary>
 </histogram>
 
