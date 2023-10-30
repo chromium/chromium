@@ -42,10 +42,20 @@ void CaptureController::Detach(aura::Window* root) {
   aura::client::SetCaptureClient(root, nullptr);
 }
 
+void CaptureController::PrepareForShutdown() {
+  DCHECK(!destroying_);
+  SetCapture(nullptr);
+  destroying_ = true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // CaptureController, aura::client::CaptureClient implementation:
 
 void CaptureController::SetCapture(aura::Window* new_capture_window) {
+  if (destroying_) {
+    return;
+  }
+
   if (capture_window_ == new_capture_window)
     return;
 

@@ -219,6 +219,21 @@ TEST_F(CaptureControllerTest, ReparentedWhileCaptured) {
   EXPECT_FALSE(delegate2->HasNativeCapture());
 }
 
+// Test that a call to `PrepareForShutdown()` releases capture from capture
+// window and also prevents capture window from being set afterwards.
+TEST_F(CaptureControllerTest, PrepareForShutdown) {
+  aura::Window* w = CreateNormalWindow(1, root_window(), nullptr);
+  w->SetCapture();
+  EXPECT_EQ(CaptureController::Get()->GetCaptureWindow(), w);
+
+  CaptureController::Get()->PrepareForShutdown();
+  EXPECT_EQ(CaptureController::Get()->GetCaptureWindow(), nullptr);
+
+  w->SetCapture();
+  // Once `PrepareForShutdown()` is called, capture window cannot be set.
+  EXPECT_EQ(CaptureController::Get()->GetCaptureWindow(), nullptr);
+}
+
 // A delegate that deletes a window on scroll cancel gesture event.
 class GestureEventDeleteWindowOnScrollEnd
     : public aura::test::TestWindowDelegate {

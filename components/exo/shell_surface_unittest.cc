@@ -7,6 +7,7 @@
 #include <sstream>
 #include <vector>
 
+#include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -2327,6 +2328,43 @@ TEST_F(ShellSurfaceTest, PopupWithInputRegion) {
     ui::Event::DispatcherApi(&event).set_target(window.get());
     EXPECT_EQ(nullptr, GetTargetSurfaceForLocatedEvent(&event));
   }
+}
+
+// Test that popup does not close when trying to take a screenshot.
+TEST_F(ShellSurfaceTest, PopupWithCaptureMode) {
+  // Setup popup_shell_surface.
+  constexpr gfx::Size kBufferSize(256, 256);
+  auto shell_surface =
+      test::ShellSurfaceBuilder(kBufferSize).BuildShellSurface();
+  auto popup_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(kBufferSize));
+  auto popup_surface = std::make_unique<Surface>();
+  popup_surface->Attach(popup_buffer.get());
+  std::unique_ptr<ShellSurface> popup_shell_surface(CreatePopupShellSurface(
+      popup_surface.get(), shell_surface.get(), gfx::Point(50, 50)));
+  popup_shell_surface->Grab();
+  popup_surface->Commit();
+
+  bool closed = false;
+  auto callback =
+      base::BindRepeating([](bool* closed) { *closed = true; }, &closed);
+  popup_shell_surface->set_close_callback(callback);
+
+  // This simulates enabling (screenshot) capture mode.
+  ash::GetTestDelegate()->OnSessionStateChanged(true);
+  popup_shell_surface->OnCaptureChanged(
+      popup_shell_surface->GetWidget()->GetNativeWindow(), nullptr);
+  // With (screenshot) capture mode on, losing capture should not close the
+  // shell surface.
+  EXPECT_FALSE(closed);
+
+  // This simulates ending (screenshot) capture mode.
+  ash::GetTestDelegate()->OnSessionStateChanged(false);
+  popup_shell_surface->OnCaptureChanged(
+      popup_shell_surface->GetWidget()->GetNativeWindow(), nullptr);
+  // With (screenshot) capture mode off, losing capture should close the shell
+  // surface.
+  EXPECT_TRUE(closed);
 }
 
 TEST_F(ShellSurfaceTest, PopupWithInvisibleParent) {

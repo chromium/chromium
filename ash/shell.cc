@@ -282,6 +282,7 @@
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/accelerator_filter.h"
+#include "ui/wm/core/capture_controller.h"
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/focus_controller.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -864,6 +865,17 @@ Shell::~Shell() {
   // `capture_mode_controller_`.
   projector_controller_.reset();
   game_dashboard_controller_.reset();
+
+  // This must be called before `capture_mode_controller_` is destroyed. Note
+  // that 'capture' in `CaptureModeController` means 'screenshot capture, while
+  // 'capture' in `wm::CaptureController` means 'input capture'. Some windows
+  // like popup windows close themselves when losing 'input capture' but if
+  // 'screenshot capture' is in progress, they do not close themselves. For this
+  // reason, change of 'input capture' can cause a call to
+  // `CaptureModeController::Get()`. By calling `PrepareForShutdown()` here, it
+  // prevents `CaptureModeController::Get()` from being called after the object
+  // is destroyed.
+  wm::CaptureController::Get()->PrepareForShutdown();
 
   // This must be destroyed before deleting all the windows below in
   // `CloseAllRootWindowChildWindows()`, since shutting down the session will

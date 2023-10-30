@@ -66,6 +66,7 @@
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_config.h"
+#include "ui/views/views_delegate.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -1324,6 +1325,13 @@ void ShellSurfaceBase::OnCaptureChanged(aura::Window* lost_capture,
                                         aura::Window* gained_capture) {
   if (lost_capture != widget_->GetNativeWindow() || !is_popup_)
     return;
+
+  // If the capture mode is active, do not close the popup to include it in a
+  // screenshot.
+  if (!views::ViewsDelegate::GetInstance()
+           ->ShouldCloseMenuIfMouseCaptureLost()) {
+    return;
+  }
 
   WMHelper::GetInstance()->GetCaptureClient()->RemoveObserver(this);
 
