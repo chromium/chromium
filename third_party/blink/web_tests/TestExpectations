@@ -2721,8 +2721,6 @@ crbug.com/626703 [ Mac12 ] virtual/split-http-cache/external/wpt/signed-exchange
 crbug.com/626703 [ Mac12 ] virtual/split-http-cache/external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.sharedworker.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-image-type-001.htm [ Failure ]
-crbug.com/626703 external/wpt/css/css-backgrounds/border-image-image-type-004.htm [ Failure ]
-crbug.com/626703 external/wpt/css/css-backgrounds/border-image-image-type-005.htm [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-001.htm [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-004.htm [ Failure ]
 crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-004.htm [ Failure ]
