@@ -77,6 +77,15 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
     public void forceAnimationToFinish() {
         if (mAnimationState == AnimationState.FINISHED) return;
 
+        // If forceAnimationToFinish is called without calling runWithWaitForAnimatorTimeout then
+        // the downstream calls onAnimatorReady will fail with an assertion. While this is not a
+        // state that is expected to happen, it is recoverable by advancing to the
+        // WAITING_FOR_ANIMATOR state.
+        // TODO(crbug/1492207): Consider changing this to an assert or exception.
+        if (mAnimationState == AnimationState.INITIALIZING) {
+            mAnimationState = AnimationState.WAITING_FOR_ANIMATOR;
+        }
+
         mWasForcedToFinish = true;
         SyncOneshotSupplier<HubLayoutAnimator> animatorSupplier =
                 mAnimatorProvider.getAnimatorSupplier();

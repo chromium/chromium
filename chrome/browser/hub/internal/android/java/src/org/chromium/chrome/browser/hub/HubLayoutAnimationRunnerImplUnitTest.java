@@ -213,4 +213,32 @@ public class HubLayoutAnimationRunnerImplUnitTest {
         verify(mAnimatorListener).afterEnd();
         verify(mListener).afterEnd();
     }
+
+    @Test
+    @SmallTest
+    public void testForceAnimationToFinishWithoutRunWithTimeout() {
+        mRunner.addListener(mListener);
+
+        assertEquals(AnimationState.INITIALIZING, mRunner.getAnimationState());
+
+        mAnimatorSupplier.set(mAnimator);
+
+        assertEquals(AnimationState.INITIALIZING, mRunner.getAnimationState());
+
+        mRunner.forceAnimationToFinish();
+
+        verify(mAnimatorListener).beforeStart();
+        verify(mListener).beforeStart();
+
+        assertEquals(AnimationState.FINISHED, mRunner.getAnimationState());
+
+        verify(mAnimatorListener).onStart();
+        verify(mListener).onStart();
+
+        assertEquals(AnimationState.FINISHED, mRunner.getAnimationState());
+        verify(mAnimatorListener).onEnd(eq(true));
+        verify(mListener).onEnd(eq(true));
+        verify(mAnimatorListener).afterEnd();
+        verify(mListener).afterEnd();
+    }
 }
