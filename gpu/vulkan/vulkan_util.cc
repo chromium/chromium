@@ -94,6 +94,7 @@ bool IsBlockedByBuildInfo() {
 }
 
 BASE_FEATURE(kVulkanV2, "VulkanV2", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVulkanV3, "VulkanV3", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDeviceBlockedByFeatureParams(const GPUInfo& gpu_info,
                                     const base::Feature* feature) {
@@ -250,6 +251,41 @@ bool IsVulkanV2EnabledForAdreno(const GPUInfo& gpu_info,
 
   // Don't run vulkan for old gpus or if we are not in v2.
   return !is_slow_gpu_for_v2 && IsVulkanV2Enabled(gpu_info, "Adreno");
+}
+
+// Adreno 610+ and drivers 502+.
+bool IsVulkanV3EnabledForAdreno(const GPUInfo& gpu_info,
+                                const VulkanPhysicalDeviceInfo& device_info) {
+  std::vector<const char*> slow_gpus_for_v3 = {
+      "Adreno (TM) 2??",
+      "Adreno (TM) 3??",
+      "Adreno (TM) 4??",
+      "Adreno (TM) 5??",
+  };
+
+  const bool is_slow_gpu_for_v3 =
+      base::ranges::any_of(slow_gpus_for_v3, [&](const char* pattern) {
+        return base::MatchPattern(device_info.properties.deviceName, pattern);
+      });
+
+  if (is_slow_gpu_for_v3) {
+    return false;
+  }
+
+  constexpr uint32_t kMinVersion = 0x801F6000;  // 502.0
+  if (device_info.properties.driverVersion < kMinVersion) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(kVulkanV3)) {
+    return false;
+  }
+
+  if (IsDeviceBlockedByFeatureParams(gpu_info, &kVulkanV3)) {
+    return false;
+  }
+
+  return true;
 }
 
 #endif
@@ -469,7 +505,8 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
 
   if (device_info.properties.vendorID == kVendorQualcomm) {
     return IsVulkanV1EnabledForAdreno(gpu_info, device_info) ||
-           IsVulkanV2EnabledForAdreno(gpu_info, device_info);
+           IsVulkanV2EnabledForAdreno(gpu_info, device_info) ||
+           IsVulkanV3EnabledForAdreno(gpu_info, device_info);
   }
 
   // https://crbug.com/1122650: Poor performance and untriaged crashes with
