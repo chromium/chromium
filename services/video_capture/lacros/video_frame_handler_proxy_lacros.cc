@@ -124,9 +124,14 @@ void VideoFrameHandlerProxyLacros::OnNewBuffer(
   }
 }
 
-void VideoFrameHandlerProxyLacros::OnFrameReadyInBuffer(
+void VideoFrameHandlerProxyLacros::DEPRECATED_OnFrameReadyInBuffer(
     crosapi::mojom::ReadyFrameInBufferPtr buffer,
     std::vector<crosapi::mojom::ReadyFrameInBufferPtr> /*scaled_buffers*/) {
+  OnFrameReadyInBuffer(std::move(buffer));
+}
+
+void VideoFrameHandlerProxyLacros::OnFrameReadyInBuffer(
+    crosapi::mojom::ReadyFrameInBufferPtr buffer) {
   if (handler_.is_bound()) {
     if (!access_permission_proxy_map_) {
       access_permission_proxy_map_ = new AccessPermissionProxyMap();

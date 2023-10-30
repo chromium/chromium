@@ -39,9 +39,12 @@ class ReceiverMediaToCrosapiAdapter : public crosapi::mojom::VideoFrameHandler {
   void OnCaptureConfigurationChanged() override;
   void OnNewBuffer(int buffer_id,
                    crosapi::mojom::VideoBufferHandlePtr buffer_handle) override;
-  void OnFrameReadyInBuffer(crosapi::mojom::ReadyFrameInBufferPtr buffer,
-                            std::vector<crosapi::mojom::ReadyFrameInBufferPtr>
-                                scaled_buffers) override;
+  void DEPRECATED_OnFrameReadyInBuffer(
+      crosapi::mojom::ReadyFrameInBufferPtr buffer,
+      std::vector<crosapi::mojom::ReadyFrameInBufferPtr> scaled_buffers)
+      override;
+  void OnFrameReadyInBuffer(
+      crosapi::mojom::ReadyFrameInBufferPtr buffer) override;
   void OnBufferRetired(int buffer_id) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
   void DEPRECATED_OnNewCropVersion(uint32_t crop_version) override;

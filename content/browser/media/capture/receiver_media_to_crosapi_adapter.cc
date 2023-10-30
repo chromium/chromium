@@ -33,9 +33,14 @@ void ReceiverMediaToCrosapiAdapter::OnNewBuffer(
                         ConvertToMediaVideoBuffer(std::move(buffer_handle)));
 }
 
-void ReceiverMediaToCrosapiAdapter::OnFrameReadyInBuffer(
+void ReceiverMediaToCrosapiAdapter::DEPRECATED_OnFrameReadyInBuffer(
     crosapi::mojom::ReadyFrameInBufferPtr buffer,
     std::vector<crosapi::mojom::ReadyFrameInBufferPtr> /*scaled_buffers*/) {
+  OnFrameReadyInBuffer(std::move(buffer));
+}
+
+void ReceiverMediaToCrosapiAdapter::OnFrameReadyInBuffer(
+    crosapi::mojom::ReadyFrameInBufferPtr buffer) {
   handler_->OnFrameReadyInBuffer(ConvertToMediaReadyFrame(std::move(buffer)));
 }
 
