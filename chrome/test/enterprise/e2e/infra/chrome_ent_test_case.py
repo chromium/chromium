@@ -294,6 +294,30 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
                     os.path.join(base_path, 'common', 'histogram', 'util.py'),
                     dest_path)
 
+  def EnableDemoAgent(self, instance_name):
+    # enterprise/e2e/connector/common/demo_agent
+    base_path = dir = os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__)))
+    agent_path = os.path.join(base_path, 'connector', 'common', 'demo_agent')
+
+    # create dest path
+    dest_path = join('c:', 'temp', 'demo_agent')
+    cmd = r'New-Item -ItemType Directory -Force -Path ' + dest_path
+    self.clients[instance_name].RunPowershell(cmd)
+
+    # Install Microsoft Visual C++ Redistributable package as demo agent's dependency
+    gspath = "gs://%s/%s" % (self.gsbucket, 'secrets/VC_redist.x64.exe')
+    cmd = r'gsutil cp ' + gspath + ' ' + dest_path
+
+    cmd = r'C:\temp\demo_agent\VC_redist.x64.exe /passive'
+    self.RunCommand(instance_name, cmd)
+
+    # upload demo agent
+    self.UploadFile(self.win_config['client'],
+                    os.path.join(agent_path, 'agent.zip'), dest_path)
+    cmd = r'Expand-Archive -Path c:\temp\demo_agent\agent.zip -DestinationPath c:\temp\demo_agent'
+    self.clients[instance_name].RunPowershell(cmd)
+
   def RunUITest(self, instance_name, test_file, timeout=300, args=[]):
     """Runs a UI test on an instance.
 
