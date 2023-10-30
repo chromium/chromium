@@ -67,7 +67,8 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
 // Tests that navigating to a page and then backgrounding and foregrounding, an
 // NTP page is opened. Then, verifying that tapping on the tab resumption module
 // switches back to the last tab.
-- (void)testWarmStartOpenStartSurface {
+// Disable due to https://crbug.com/1494900.
+- (void)DISABLED_testWarmStartOpenStartSurface {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
