@@ -409,6 +409,23 @@ enum ServerFieldType {
   // phone number.
   // EMAIL_OR_PHONE_NUMBER = 155 is server-side only.
 
+  // All the information related to the apartment. Normally a combination of the
+  // apartment type (ADDRESS_HOME_APT_TYPE) and number (ADDRESS_HOME_APT_NUM).
+  // E.g. "Apt 5".
+  // ADDRESS_HOME_APT and ADDRESS_HOME_APT_TYPE are intended to remain
+  // experimental types (i.e. we don't classify fields with this type) because
+  // we don't expect that fields ask for "Apt" or "Apt 5" as entries for
+  // example. There is a risk that "Apt 5" votes might turn ADDRESS_HOME_LINE2
+  // into ADDRESS_HOME_APT entries. We'd need to be very intentional with such a
+  // change as it affects the US for example.
+  // ADDRESS_HOME_APT = 156 is server-side only.
+
+  // Information describing the type of apartment (e.g. Apt, Apartamento, Sala,
+  // Departamento).
+  // ADDRESS_HOME_APT_TYPE = 157 is server-side only.
+
+  // Reserved for a server-side-only use: 158
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with ServerFieldType from
@@ -416,7 +433,7 @@ enum ServerFieldType {
   // * tools/typescript/definitions/autofill_private.d.ts
   // Please update `tools/metrics/histograms/enums.xml` by executing
   // `tools/metrics/histograms/update_autofill_enums.py`.
-  MAX_VALID_FIELD_TYPE = 156,
+  MAX_VALID_FIELD_TYPE = 159,
 };
 
 enum class FieldTypeGroup {
@@ -508,7 +525,7 @@ constexpr ServerFieldType ToSafeServerFieldType(
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 127 && !(130 <= t && t <= 132) &&
            t != 134 && !(137 <= t && t <= 139) && !(145 <= t && t <= 150) &&
-           t != 153 && t != 155;
+           t != 153 && !(155 <= t && t <= 158);
   };
   return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
                             : fallback_value;
