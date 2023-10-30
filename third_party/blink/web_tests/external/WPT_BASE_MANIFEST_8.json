@@ -601,6 +601,13 @@
        {}
       ]
      ],
+     "block-in-inline-010-crash.html": [
+      "78233992932bd04518ec604687cd4c4e5f8772db",
+      [
+       null,
+       {}
+      ]
+     ],
      "break-after-in-parallel-flow-crash.html": [
       "b59563295028f487543d79524ea81543b8a78046",
       [
@@ -1471,6 +1478,13 @@
        ],
        "pseudo-container-crash.html": [
         "f998c3a4464ca3eb3ce07687cf24d9dcdc9a16af",
+        [
+         null,
+         {}
+        ]
+       ],
+       "remove-dom-child-change-style.html": [
+        "739af63ccb4248df2119b7c48d0d4568e50896cb",
         [
          null,
          {}
@@ -88617,6 +88631,19 @@
      ],
      "block-in-inline-009.html": [
       "0acb317464f847405df6f8061f5c23fd66eebb2f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-in-inline-011.html": [
+      "1906feffdd7d0a1f6301c3f7b89f250c5df21c1b",
       [
        null,
        [
@@ -285321,11 +285348,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "9525934422d64875b56e8768e31c5a1e1f53db7f",
+     "89e16ef5ce73ad2a4d2626de31bd74aa0c4d54e0",
      []
     ],
     "mtime.json": [
-     "bbf85171748f39f840a598a36067387b730ec7bb",
+     "0d24c5be4563fda8767b1eca0f8cbaf22c115c76",
      []
     ]
    },
@@ -289172,7 +289199,7 @@
       []
      ],
      "dispatcher.js": [
-      "a0f9f43e622483c3ab4df2621a4e4be40692eebf",
+      "ce17a7c9145311fe06e68e201caf732aaf8badcd",
       []
      ],
      "dispatcher.py": [
@@ -366345,23 +366372,23 @@
       "remote-context-helper": {
        "resources": {
         "executor-common.js": [
-         "8df42de28c0a3e6be4c3c7f1ad2a355f3123c998",
+         "ce9b5f9116322af0440d3b2f5c6756c828e48757",
          []
         ],
         "executor-window.js": [
-         "bc9ff6faf10e665d8c84a555217f53a711d9051a",
+         "54df6735c9eeb0f1128b898615c129a8da705d7f",
          []
         ],
         "executor-window.py": [
-         "3ccba723892403e119cab1593bdf3040cf3295a6",
+         "1a660100b9cca765464281fecf167b49a71b6f99",
          []
         ],
         "executor-worker.js": [
-         "49ce6bd52a5a829799078823c8f3b7a450a28233",
+         "0ca136191e869c36e2a5f331897d194776dfd826",
          []
         ],
         "remote-context-helper.js": [
-         "b62c9ac491a7643becdf0f8bc56c18e519eae06a",
+         "aa24b36e8ba11bb07885a28090087e64300d876e",
          []
         ]
        }
@@ -404050,15 +404077,19 @@
     },
     "declarative": {
      "declarative-shadow-dom-basic-expected.txt": [
-      "547ae1912cc3ef5f0360ae157eb6fa96c1d77db7",
+      "cd7d3eccd41f128d0be0cba9713ed201ab071360",
+      []
+     ],
+     "declarative-shadow-dom-opt-in-expected.txt": [
+      "4a1523b1c217cc4ca67f34b0fea6f927e0998c0c",
       []
      ],
      "getinnerhtml-expected.txt": [
       "a58d46d609d0ea616dba82c206d0dbfe8840a776",
       []
      ],
-     "getinnerhtml.html.ini": [
-      "745c64423701c205b767a3e2c68c5ebb8ca9a5db",
+     "getinnerhtml.tentative-expected.txt": [
+      "a58d46d609d0ea616dba82c206d0dbfe8840a776",
       []
      ],
      "support": {
@@ -414001,7 +414032,7 @@
          []
         ],
         "url_patterns.py.ini": [
-         "b5e572fc6bf9846dc457dbacc3b998a7f0f01181",
+         "fb028ac9df5b6f25f377605e42e72ed9db4a545b",
          []
         ]
        },
@@ -468387,7 +468418,7 @@
     "css-fonts": {
      "animations": {
       "font-palette-animation-not-specified-endpoints.html": [
-       "f3d103983c6747b28369704e81cff40f85674fab",
+       "1539bd18a1785aaa82a7aa346207f830895e841e",
        [
         null,
         {}
@@ -489264,21 +489295,21 @@
        ]
       ],
       "field-sizing-computed.html": [
-       "02853032b37d28d9c745697e350ae0a0735b68ff",
+       "3471c9b8744f43709b7e5d6186e976b87c59533d",
        [
         null,
         {}
        ]
       ],
       "field-sizing-invalid.html": [
-       "58091a7f2bc6233ca237011d4187210a92163ce2",
+       "ac6823b5b747d70def1a4220eb8b8f58d7195acc",
        [
         null,
         {}
        ]
       ],
       "field-sizing-valid.html": [
-       "148b8c40288750ca8ed755f293696b00bc199dfa",
+       "9973bc09a69a39dd73d3be8c1c27e7dc2a077b2f",
        [
         null,
         {}
@@ -501972,7 +502003,7 @@
       ]
      ],
      "edit-context-input.tentative.html": [
-      "f65dfbc915de7ba9f50917768daa40d99687007e",
+      "a3bfcdb48af45f7fdfd51e6dcccc3d1eef98aa68",
       [
        null,
        {
@@ -545504,6 +545535,74 @@
          }
         ]
        ],
+       "addIframe-srcdoc-startOn.window.js": [
+        "2ef047c212b12684dacb54c3e5caae9fdf0bcfda",
+        [
+         "html/browsers/browsing-the-web/remote-context-helper-tests/addIframe-srcdoc-startOn.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "RemoteContextWrapper addIframe with srcdoc and startOn"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/test-helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "addIframe-srcdoc.window.js": [
+        "1a959cbaf05095a3682ea7ba99a8f618415d4090",
+        [
+         "html/browsers/browsing-the-web/remote-context-helper-tests/addIframe-srcdoc.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "RemoteContextWrapper addIframe with srcdoc"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/test-helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
        "addIframe.window.js": [
         "c1630e46800ea37dcd0d961776b2bc467c82be5a",
         [
@@ -579627,28 +579726,28 @@
        ]
       },
       "field-sizing-input-number.tentative.html": [
-       "198fec56d36ca3e1b2e3d8f913348db7fc6bb937",
+       "859d35197b05ee31f350d157604308f5309ad372",
        [
         null,
         {}
        ]
       ],
       "field-sizing-input-text.tentative.html": [
-       "23af2d9da94a2b717cddc2d59f2adb199fd7aa7b",
+       "f421ad602c9391debca69ef282e8014271d7a4ec",
        [
         null,
         {}
        ]
       ],
       "field-sizing-select.tentative.html": [
-       "f8c115a88512dfddd2c6b11fc3b4964bb60377a5",
+       "d55898105e8f6884dc61bddf8b8dcf91cf62c3c0",
        [
         null,
         {}
        ]
       ],
       "field-sizing-textarea.tentative.html": [
-       "3682a5165900f71ce94fd20da67337474287ef4a",
+       "f8d90dc659b119133cce6f651e7331d83c35fd3c",
        [
         null,
         {}
@@ -641392,14 +641491,14 @@
       ]
      ],
      "declarative-shadow-dom-basic.html": [
-      "6f3739b63ca43a7b19829896a363d26d48aa76b1",
+      "20ca34f6f3e2594f80b304c9a8339d4f751dafa7",
       [
        null,
        {}
       ]
      ],
      "declarative-shadow-dom-opt-in.html": [
-      "0a59768d22e04dbde6fc4cec4061371efbb8c6e4",
+      "670e5fd0901c3254ef2913f6325da484e1195905",
       [
        null,
        {}
@@ -641412,7 +641511,7 @@
        {}
       ]
      ],
-     "getinnerhtml.html": [
+     "getinnerhtml.tentative.html": [
       "ad7734d51e692f839627804d779190bdd85b244d",
       [
        null,
@@ -641441,7 +641540,7 @@
       ]
      ],
      "script-access.html": [
-      "6c927b1bd75258520b6035fec9d179152ae6218a",
+      "7e1340d477796089a759da01c3db261084be521d",
       [
        null,
        {}
