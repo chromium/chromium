@@ -88,7 +88,8 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
       return ScriptPromise();
 
     probe::WillSendXMLHttpOrFetchNetworkRequest(execution_context, r->url());
-    FetchRequestData* request_data = r->PassRequestData(script_state);
+    FetchRequestData* request_data =
+        r->PassRequestData(script_state, exception_state);
     MeasureFetchProperties(execution_context, request_data);
     auto promise = fetch_manager_->Fetch(script_state, request_data,
                                          r->signal(), exception_state);
@@ -134,7 +135,8 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     }
 
     probe::WillSendXMLHttpOrFetchNetworkRequest(ec, r->url());
-    FetchRequestData* request_data = r->PassRequestData(script_state);
+    FetchRequestData* request_data =
+        r->PassRequestData(script_state, exception_state);
     MeasureFetchProperties(ec, request_data);
     // 6. If init is given and init ["activateAfter"] exists, then set
     // `activate_after` to init ["activateAfter"].

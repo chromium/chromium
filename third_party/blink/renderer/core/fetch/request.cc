@@ -824,7 +824,7 @@ Request* Request::CreateRequestWithRequestOrString(
     input_request->request_->SetBuffer(dummy_stream);
     // "Let |reader| be the result of getting reader from |dummyStream|."
     // "Read all bytes from |dummyStream| with |reader|."
-    input_request->BodyBuffer()->CloseAndLockAndDisturb();
+    input_request->BodyBuffer()->CloseAndLockAndDisturb(exception_state);
   }
 
   // "Return |r|."
@@ -1078,9 +1078,10 @@ Request* Request::clone(ScriptState* script_state,
   return MakeGarbageCollected<Request>(script_state, request, headers, signal);
 }
 
-FetchRequestData* Request::PassRequestData(ScriptState* script_state) {
+FetchRequestData* Request::PassRequestData(ScriptState* script_state,
+                                           ExceptionState& exception_state) {
   DCHECK(!IsBodyUsed());
-  FetchRequestData* data = request_->Pass(script_state);
+  FetchRequestData* data = request_->Pass(script_state, exception_state);
   // |data|'s buffer('s js wrapper) has no retainer, but it's OK because
   // the only caller is the fetch function and it uses the body buffer
   // immediately.

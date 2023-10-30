@@ -279,7 +279,8 @@ FetchRequestData* FetchRequestData::Clone(ScriptState* script_state,
   return request;
 }
 
-FetchRequestData* FetchRequestData::Pass(ScriptState* script_state) {
+FetchRequestData* FetchRequestData::Pass(ScriptState* script_state,
+                                         ExceptionState& exception_state) {
   FetchRequestData* request = FetchRequestData::CloneExceptBody();
   if (buffer_) {
     request->buffer_ = buffer_;
@@ -287,7 +288,7 @@ FetchRequestData* FetchRequestData::Pass(ScriptState* script_state) {
     buffer_ = BodyStreamBuffer::Create(
         script_state, BytesConsumer::CreateClosed(), nullptr /* AbortSignal */,
         /*cached_metadata_handler=*/nullptr);
-    buffer_->CloseAndLockAndDisturb();
+    buffer_->CloseAndLockAndDisturb(exception_state);
     buffer_byte_length_ = 0;
   }
   request->url_loader_factory_ = std::move(url_loader_factory_);

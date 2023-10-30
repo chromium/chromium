@@ -129,7 +129,7 @@ class TestTransferringOptimizer final
     explicit Source(ScriptState* script_state)
         : UnderlyingSourceBase(script_state) {}
 
-    ScriptPromise Start(ScriptState* script_state) override {
+    ScriptPromise Start(ScriptState* script_state, ExceptionState&) override {
       Controller()->Enqueue("foo");
       Controller()->Enqueue(", bar");
       Controller()->Close();

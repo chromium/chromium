@@ -566,7 +566,7 @@ class WebTransport::StreamVendingUnderlyingSource final
         script_state_(script_state),
         vendor_(vendor) {}
 
-  ScriptPromise pull(ScriptState* script_state) override {
+  ScriptPromise Pull(ScriptState* script_state, ExceptionState&) override {
     if (!is_opened_) {
       is_pull_waiting_ = true;
       return ScriptPromise::CastUndefined(script_state);
@@ -591,7 +591,8 @@ class WebTransport::StreamVendingUnderlyingSource final
 
     if (is_pull_waiting_) {
       ScriptState::Scope scope(script_state_);
-      pull(script_state_);
+      NonThrowableExceptionState exception_state;
+      Pull(script_state_, exception_state);
       is_pull_waiting_ = false;
     }
   }

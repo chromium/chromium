@@ -781,15 +781,17 @@ class CrossRealmTransformReadable::CancelAlgorithm final
 
 class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
  public:
-  using Constant = ScriptFunction::Constant;
-
   class PullSource2 final : public ScriptFunction::Callable {
    public:
-    explicit PullSource2(ConcatenatingUnderlyingSource* source)
-        : source_(source) {}
+    explicit PullSource2(ConcatenatingUnderlyingSource* source,
+                         const ExceptionContext& exception_context)
+        : source_(source), exception_context_(exception_context) {}
 
     ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-      return source_->source2_->pull(script_state).AsScriptValue();
+      ExceptionState exception_state(script_state->GetIsolate(),
+                                     exception_context_);
+      return source_->source2_->Pull(script_state, exception_state)
+          .AsScriptValue();
     }
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
@@ -798,6 +800,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
 
    private:
     const Member<ConcatenatingUnderlyingSource> source_;
+    const ExceptionContext exception_context_;
   };
 
   class ConcatenatingUnderlyingSourceReadRequest final : public ReadRequest {
@@ -820,10 +823,14 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
           source_->Controller()->GetOriginalController();
       auto* isolate = script_state->GetIsolate();
       if (controller) {
+        ExceptionState exception_state(script_state->GetIsolate(),
+                                       ExceptionContextType::kUnknown, "", "");
         resolver_->Resolve(
             script_state,
-            ToV8(source_->source2_->startWrapper(script_state, controller)
-                     .Then(CreateFunction<PullSource2>(script_state, source_)),
+            ToV8(source_->source2_
+                     ->StartWrapper(script_state, controller, exception_state)
+                     .Then(CreateFunction<PullSource2>(
+                         script_state, source_, exception_state.GetContext())),
                  script_state->GetContext()->Global(), isolate));
       } else {
         // TODO(crbug.com/1418910): Investigate how to handle cases when the
@@ -875,9 +882,8 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
         stream1_(stream1),
         source2_(source2) {}
 
-  ScriptPromise Start(ScriptState* script_state) override {
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+  ScriptPromise Start(ScriptState* script_state,
+                      ExceptionState& exception_state) override {
     reader_for_stream1_ = ReadableStream::AcquireDefaultReader(
         script_state, stream1_, exception_state);
     if (exception_state.HadException()) {
@@ -887,9 +893,10 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     return ScriptPromise::CastUndefined(script_state);
   }
 
-  ScriptPromise pull(ScriptState* script_state) override {
+  ScriptPromise Pull(ScriptState* script_state,
+                     ExceptionState& exception_state) override {
     if (has_finished_reading_stream1_) {
-      return source2_->pull(script_state);
+      return source2_->Pull(script_state, exception_state);
     }
     auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
     auto* read_request =

@@ -11,8 +11,9 @@
 
 namespace blink {
 
-ScriptPromise BodyStreamBufferUnderlyingSource::pull(
-    ScriptState* script_state) {
+ScriptPromise BodyStreamBufferUnderlyingSource::Pull(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   DCHECK_EQ(script_state, script_state_);
   if (!body_stream_buffer_->consumer_) {
     // This is a speculative workaround for a crash. See
@@ -26,7 +27,10 @@ ScriptPromise BodyStreamBufferUnderlyingSource::pull(
   }
   body_stream_buffer_->stream_needs_more_ = true;
   if (!body_stream_buffer_->in_process_data_) {
-    body_stream_buffer_->ProcessData();
+    body_stream_buffer_->ProcessData(exception_state);
+  }
+  if (exception_state.HadException()) {
+    return ScriptPromise::Reject(script_state, exception_state);
   }
   return ScriptPromise::CastUndefined(script_state);
 }

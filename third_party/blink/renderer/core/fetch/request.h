@@ -86,7 +86,7 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   // This function must be called with entering an appropriate V8 context.
   Request* clone(ScriptState*, ExceptionState&);
 
-  FetchRequestData* PassRequestData(ScriptState*);
+  FetchRequestData* PassRequestData(ScriptState*, ExceptionState&);
   mojom::blink::FetchAPIRequestPtr CreateFetchAPIRequest() const;
   bool HasBody() const;
   BodyStreamBuffer* BodyBuffer() override { return request_->Buffer(); }

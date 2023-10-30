@@ -313,7 +313,7 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
   TestReadableStreamSource(ScriptState* script_state, Type type)
       : UnderlyingSourceBase(script_state), type_(type) {}
 
-  ScriptPromise Start(ScriptState* script_state) override {
+  ScriptPromise Start(ScriptState* script_state, ExceptionState&) override {
     if (generator_) {
       return ScriptPromise::CastUndefined(script_state);
     }
@@ -321,7 +321,7 @@ class TestReadableStreamSource : public UnderlyingSourceBase {
     return resolver_->Promise();
   }
 
-  ScriptPromise pull(ScriptState* script_state) override {
+  ScriptPromise Pull(ScriptState* script_state, ExceptionState&) override {
     if (!generator_) {
       return ScriptPromise::CastUndefined(script_state);
     }

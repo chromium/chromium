@@ -116,7 +116,8 @@ scoped_refptr<BlobDataHandle> ExtractBlobHandle(
     return nullptr;
 
   auto blob_handle = buffer->DrainAsBlobDataHandle(
-      BytesConsumer::BlobSizePolicy::kDisallowBlobWithInvalidSize);
+      BytesConsumer::BlobSizePolicy::kDisallowBlobWithInvalidSize,
+      exception_state);
 
   return blob_handle;
 }

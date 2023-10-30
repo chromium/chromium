@@ -143,7 +143,8 @@ TEST_F(FetchLaterTest, CreateSameOriginFetchLaterRequest) {
       CreateFetchLaterRequest(scope, target_url, controller->signal());
 
   auto* result = fetch_later_manager->FetchLater(
-      scope.GetScriptState(), request->PassRequestData(scope.GetScriptState()),
+      scope.GetScriptState(),
+      request->PassRequestData(scope.GetScriptState(), exception_state),
       request->signal(), absl::nullopt, exception_state);
 
   EXPECT_THAT(result, Not(IsNull()));
@@ -166,7 +167,8 @@ TEST_F(FetchLaterTest, NegativeActivationTimeoutThrowRangeError) {
       CreateFetchLaterRequest(scope, target_url, controller->signal());
 
   auto* result = fetch_later_manager->FetchLater(
-      scope.GetScriptState(), request->PassRequestData(scope.GetScriptState()),
+      scope.GetScriptState(),
+      request->PassRequestData(scope.GetScriptState(), exception_state),
       request->signal(), /*activate_after=*/absl::make_optional(-1),
       exception_state);
 
@@ -194,7 +196,8 @@ TEST_F(FetchLaterTest, AbortBeforeFetchLater) {
   controller->abort(scope.GetScriptState());
   // Sets up a FetchLater request.
   auto* result = fetch_later_manager->FetchLater(
-      scope.GetScriptState(), request->PassRequestData(scope.GetScriptState()),
+      scope.GetScriptState(),
+      request->PassRequestData(scope.GetScriptState(), exception_state),
       request->signal(), /*activate_after_ms=*/absl::nullopt, exception_state);
 
   EXPECT_THAT(result, IsNull());
@@ -219,7 +222,8 @@ TEST_F(FetchLaterTest, AbortAfterFetchLater) {
       CreateFetchLaterRequest(scope, target_url, controller->signal());
   // Sets up a FetchLater request.
   auto* result = fetch_later_manager->FetchLater(
-      scope.GetScriptState(), request->PassRequestData(scope.GetScriptState()),
+      scope.GetScriptState(),
+      request->PassRequestData(scope.GetScriptState(), exception_state),
       request->signal(), /*activate_after_ms=*/absl::nullopt, exception_state);
   EXPECT_THAT(result, Not(IsNull()));
 
@@ -249,7 +253,8 @@ TEST_F(FetchLaterTest, ActivationTimeout) {
       CreateFetchLaterRequest(scope, target_url, controller->signal());
   // Sets up a FetchLater request.
   auto* result = fetch_later_manager->FetchLater(
-      scope.GetScriptState(), request->PassRequestData(scope.GetScriptState()),
+      scope.GetScriptState(),
+      request->PassRequestData(scope.GetScriptState(), exception_state),
       request->signal(), absl::make_optional(activate_after_ms),
       exception_state);
   EXPECT_THAT(result, Not(IsNull()));
@@ -287,8 +292,9 @@ TEST_F(FetchLaterTest, ContextDestroyed) {
     // Sets up a FetchLater request.
     result = fetch_later_manager->FetchLater(
         scope.GetScriptState(),
-        request->PassRequestData(scope.GetScriptState()), request->signal(),
-        /*activate_after_ms=*/absl::nullopt, exception_state);
+        request->PassRequestData(scope.GetScriptState(), exception_state),
+        request->signal(), /*activate_after_ms=*/absl::nullopt,
+        exception_state);
   }
   // `scope` and its execution context are destroyed.
 

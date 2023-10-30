@@ -71,8 +71,9 @@ class CORE_EXPORT BodyStreamBuffer final
 
   // Callable only when neither locked nor disturbed.
   scoped_refptr<BlobDataHandle> DrainAsBlobDataHandle(
-      BytesConsumer::BlobSizePolicy);
-  scoped_refptr<EncodedFormData> DrainAsFormData();
+      BytesConsumer::BlobSizePolicy,
+      ExceptionState&);
+  scoped_refptr<EncodedFormData> DrainAsFormData(ExceptionState&);
   void DrainAsChunkedDataPipeGetter(
       ScriptState*,
       mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>,
@@ -102,7 +103,7 @@ class CORE_EXPORT BodyStreamBuffer final
 
   // Closes the stream if necessary, and then locks and disturbs it. Should not
   // be called if |stream_broken_| is true.
-  void CloseAndLockAndDisturb();
+  void CloseAndLockAndDisturb(ExceptionState&);
 
   bool IsAborted();
 
@@ -140,11 +141,11 @@ class CORE_EXPORT BodyStreamBuffer final
 
   BytesConsumer* ReleaseHandle(ExceptionState&);
   void Abort();
-  void Close();
+  void Close(ExceptionState&);
   void GetError();
   void RaiseOOMError();
   void CancelConsumer();
-  void ProcessData();
+  void ProcessData(ExceptionState&);
   void EndLoading();
   void StopLoading();
 

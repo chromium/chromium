@@ -79,8 +79,9 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
 }
 
 template <typename NativeFrameType>
-ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::pull(
-    ScriptState* script_state) {
+ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Pull(
+    ScriptState* script_state,
+    ExceptionState&) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   {
     base::AutoLock locker(lock_);
@@ -106,7 +107,8 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::pull(
 
 template <typename NativeFrameType>
 ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Start(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   if (is_closed_) {
     // This was intended to be closed before Start() was called.
@@ -115,11 +117,9 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Start(
     if (!StartFrameDelivery()) {
       // There is only one way in which this can fail for now. Perhaps
       // implementations should return their own failure messages.
-      return ScriptPromise::Reject(
-          script_state,
-          V8ThrowDOMException::CreateOrEmpty(
-              script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
-              "Invalid track"));
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Invalid track");
+      return ScriptPromise();
     }
   }
 

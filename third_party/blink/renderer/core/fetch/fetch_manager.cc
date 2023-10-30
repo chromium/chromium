@@ -234,7 +234,7 @@ class FetchLoaderBase : public GarbageCollectedMixin {
   // https://fetch.spec.whatwg.org/#fetching
   // Note that the actual loading is delegated to subclass via `CreateLoader()`,
   // which may or may not start loading immediately.
-  void Start();
+  void Start(ExceptionState&);
 
   // Disposes this loader.
   // The owner of this loader uses this method to notify disposing of this
@@ -274,13 +274,13 @@ class FetchLoaderBase : public GarbageCollectedMixin {
       absl::optional<String> devtools_request_id = absl::nullopt,
       absl::optional<base::UnguessableToken> issue_id = absl::nullopt) = 0;
 
-  void PerformSchemeFetch();
+  void PerformSchemeFetch(ExceptionState&);
   void PerformNetworkError(
       const String& message,
       absl::optional<base::UnguessableToken> issue_id = absl::nullopt);
   void FileIssueAndPerformNetworkError(RendererCorsIssueCode,
                                        int64_t identifier);
-  void PerformHTTPFetch();
+  void PerformHTTPFetch(ExceptionState&);
   void PerformDataFetch();
   bool AddConsoleMessage(const String& message,
                          absl::optional<base::UnguessableToken> issue_id);
@@ -724,7 +724,7 @@ void FetchManager::Loader::DidFailRedirectCheck(uint64_t identifier) {
          IdentifiersFactory::SubresourceRequestId(identifier));
 }
 
-void FetchLoaderBase::Start() {
+void FetchLoaderBase::Start(ExceptionState& exception_state) {
   // "1. If |request|'s url contains a Known HSTS Host, modify it per the
   // requirements of the 'URI [sic] Loading and Port Mapping' chapter of HTTP
   // Strict Transport Security."
@@ -770,7 +770,7 @@ void FetchLoaderBase::Start() {
        fetch_request_data_->IsolatedWorldOrigin()->CanReadContent(url)) ||
       fetch_request_data_->Mode() == network::mojom::RequestMode::kNavigate) {
     // "The result of performing a scheme fetch using request."
-    PerformSchemeFetch();
+    PerformSchemeFetch(exception_state);
     return;
   }
 
@@ -800,7 +800,7 @@ void FetchLoaderBase::Start() {
     // service.
     //
     // "The result of performing a scheme fetch using |request|."
-    PerformSchemeFetch();
+    PerformSchemeFetch(exception_state);
     return;
   }
 
@@ -821,7 +821,7 @@ void FetchLoaderBase::Start() {
 
   // "The result of performing an HTTP fetch using |request| with the
   // |CORS flag| set."
-  PerformHTTPFetch();
+  PerformHTTPFetch(exception_state);
 }
 
 void FetchManager::Loader::Dispose() {
@@ -856,14 +856,14 @@ void FetchManager::Loader::Abort() {
   NotifyFinished();
 }
 
-void FetchLoaderBase::PerformSchemeFetch() {
+void FetchLoaderBase::PerformSchemeFetch(ExceptionState& exception_state) {
   // "To perform a scheme fetch using |request|, switch on |request|'s url's
   // scheme, and run the associated steps:"
   if (SchemeRegistry::ShouldTreatURLSchemeAsSupportingFetchAPI(
           fetch_request_data_->Url().Protocol()) ||
       fetch_request_data_->Url().ProtocolIs("blob")) {
     // "Return the result of performing an HTTP fetch using |request|."
-    PerformHTTPFetch();
+    PerformHTTPFetch(exception_state);
   } else if (fetch_request_data_->Url().ProtocolIsData()) {
     PerformDataFetch();
   } else {
@@ -929,7 +929,7 @@ void FetchLoaderBase::PerformNetworkError(
   Failed(message, nullptr, absl::nullopt, issue_id);
 }
 
-void FetchLoaderBase::PerformHTTPFetch() {
+void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
   // CORS preflight fetch procedure is implemented inside ThreadableLoader.
 
   // "1. Let |HTTPRequest| be a copy of |request|, except that |HTTPRequest|'s
@@ -960,7 +960,7 @@ void FetchLoaderBase::PerformHTTPFetch() {
       fetch_request_data_->Method() != http_names::kHEAD) {
     if (fetch_request_data_->Buffer()) {
       scoped_refptr<EncodedFormData> form_data =
-          fetch_request_data_->Buffer()->DrainAsFormData();
+          fetch_request_data_->Buffer()->DrainAsFormData(exception_state);
       if (form_data) {
         request.SetHttpBody(form_data);
       } else if (RuntimeEnabledFeatures::FetchUploadStreamingEnabled(
@@ -1384,7 +1384,7 @@ ScriptPromise FetchManager::Fetch(ScriptState* script_state,
       GetExecutionContext(), this, resolver, request, script_state, signal);
   loaders_.insert(loader);
   // TODO(ricea): Reject the Response body with AbortError, not TypeError.
-  loader->Start();
+  loader->Start(exception_state);
   return promise;
 }
 
@@ -1503,7 +1503,7 @@ FetchLaterResult* FetchLaterManager::FetchLater(
   // fetch records.
   deferred_loaders_.insert(deferred_loader);
 
-  deferred_loader->Start();
+  deferred_loader->Start(exception_state);
   return deferred_loader->fetch_later_result();
 }
 
