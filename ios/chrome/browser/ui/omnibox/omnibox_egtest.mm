@@ -62,6 +62,36 @@ const char kLogoPagePath[] = "/chromium_logo_page.html";
 const char kLogoPageText[] = "Page with some text and the chromium logo image.";
 // The DOM element ID of the chromium image on the logo page.
 const char kLogoPageChromiumImageId[] = "chromium_image";
+// Y offset to tap on the middle of the text.
+const CGFloat kOmniboxTextFieldMidY = 18;
+// X offset to tap on the beginning of the text, tapping on the left edge
+// inserts a carret instead of showing the menu.
+const CGFloat kOmniboxTextFieldOffsetX = 30;
+
+// Defocus the omnibox.
+void DefocusOmnibox() {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // "escape" is a hardcoded key string in hardware_keyboard_util that maps to
+    // a HIDUsageCode.
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
+  } else {
+    id<GREYMatcher> cancel_button =
+        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(cancel_button,
+                                            grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+  }
+  [ChromeEarlGreyUI waitForAppToIdle];
+}
+
+// Taps the pre edit text in the omnibox.
+void TapOnPreEditTextInOmnibox() {
+  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_tapAtPoint(CGPointMake(kOmniboxTextFieldOffsetX,
+                                                kOmniboxTextFieldMidY))];
+}
 
 // Provides responses for the different pages.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
@@ -129,6 +159,13 @@ id<GREYMatcher> SelectAllButton() {
 id<GREYMatcher> CutButton() {
   NSString* a11yLabelCut = @"Cut";
   return grey_allOf(grey_accessibilityLabel(a11yLabelCut),
+                    chrome_test_util::SystemSelectionCallout(), nil);
+}
+
+// Returns Copy button from UIMenuController.
+id<GREYMatcher> CopyButton() {
+  NSString* a11yLabelCopy = @"Copy";
+  return grey_allOf(grey_accessibilityLabel(a11yLabelCopy),
                     chrome_test_util::SystemSelectionCallout(), nil);
 }
 
@@ -253,6 +290,13 @@ void FocusFakebox() {
 }
 
 #pragma mark - Helpers
+
+// Navigates to Page 1 in a tab and waits for it to load.
+- (void)openPage1 {
+  // Go to a web page to have a normal location bar.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+}
 
 // Copies image from `kLogoPagePath` into the clipboard using web context menu
 // interactions.
@@ -505,6 +549,91 @@ void FocusFakebox() {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
         assertWithMatcher:chrome_test_util::OmniboxContainingText("google")];
   }
+}
+
+// Tests that copying in the omnibox will trigger the share button IPH to be
+// displayed, if certain conditions are met, with bottom omnibox for phone form
+// factor.
+- (void)testCopyInOmniboxTriggersShareButtonIPHWithBottomOmnibox {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no bottom omnibox in tablet)");
+  }
+  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.additional_args.push_back(
+      base::StringPrintf("--enable-features=%s:chosen_feature/"
+                         "IPH_iOSShareToolbarItemFeature,IPHForSafariSwitcher",
+                         feature_engagement::kIPHDemoMode.name));
+  // Force the conditions that allow the iph to show.
+  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+  config.additional_args.push_back("SyncedAndFirstDevice");
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [self openPage1];
+
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // By default the address should be selected. Tapping should open the system
+  // menu.
+  TapOnPreEditTextInOmnibox();
+
+  // Verify that the Copy button is displayed.
+  [[EarlGrey selectElementWithMatcher:CopyButton()]
+      assertWithMatcher:grey_notNil()];
+
+  // Tapping it should copy the URL.
+  [[EarlGrey selectElementWithMatcher:CopyButton()] performAction:grey_tap()];
+  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
+
+  DefocusOmnibox();
+
+  // Verify the share button IPH is shown.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              @"BubbleViewLabelIdentifier")];
+}
+
+// Tests that copying in the omnibox will trigger the share button IPH to be
+// displayed, if certain conditions are met, when omnibox is at the top.
+- (void)testCopyInOmniboxTriggersShareButtonIPHWithTopOmnibox {
+  // Enable the IPH Demo Mode feature to ensure the IPH triggers
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.additional_args.push_back(
+      base::StringPrintf("--enable-features=%s:chosen_feature/"
+                         "IPH_iOSShareToolbarItemFeature,IPHForSafariSwitcher",
+                         feature_engagement::kIPHDemoMode.name));
+  // Force the conditions that allow the iph to show.
+  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+  config.additional_args.push_back("SyncedAndFirstDevice");
+  config.additional_args.push_back(
+      base::StringPrintf("--disable-features=BottomOmniboxSteadyState"));
+
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [self openPage1];
+
+  [ChromeEarlGreyUI focusOmnibox];
+
+  // By default the address should be selected. Tapping should open the system
+  // menu.
+  TapOnPreEditTextInOmnibox();
+
+  // Verify that the Copy button is displayed.
+  [[EarlGrey selectElementWithMatcher:CopyButton()]
+      assertWithMatcher:grey_notNil()];
+
+  // Tapping it should copy the URL.
+  [[EarlGrey selectElementWithMatcher:CopyButton()] performAction:grey_tap()];
+  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
+
+  DefocusOmnibox();
+
+  // Verify the share button IPH is shown.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              @"BubbleViewLabelIdentifier")];
 }
 
 @end
@@ -953,7 +1082,7 @@ void FocusFakebox() {
   [ChromeEarlGrey copyTextToPasteboard:@"hello"];
 
   // Tap on Omnibox on pre edit state.
-  [self tapOnPreEditTextInOmnibox];
+  TapOnPreEditTextInOmnibox();
 
   // Wait for callout copy button to be displayed.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -983,7 +1112,7 @@ void FocusFakebox() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on Omnibox on pre edit state.
-  [self tapOnPreEditTextInOmnibox];
+  TapOnPreEditTextInOmnibox();
 
   // Wait for callout cut button to be displayed.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -1015,7 +1144,7 @@ void FocusFakebox() {
   [ChromeEarlGrey copyTextToPasteboard:@"hello"];
 
   // Tap on Omnibox on pre edit state.
-  [self tapOnPreEditTextInOmnibox];
+  TapOnPreEditTextInOmnibox();
 
   // Wait for callout paste button to be displayed.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -1029,19 +1158,6 @@ void FocusFakebox() {
   // Omnibox now should be empty.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText("hello")];
-}
-
-// Taps the pre edit text in the omnibox.
-- (void)tapOnPreEditTextInOmnibox {
-  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
-  // Y offset to tap on the middle of the text.
-  const CGFloat kOmniboxTextFieldMidY = 18;
-  // X offset to tap on the beginning of the text, tapping on the left edge
-  // inserts a carret instead of showing the menu.
-  const CGFloat kOmniboxTextFieldOffsetX = 30;
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_tapAtPoint(CGPointMake(kOmniboxTextFieldOffsetX,
-                                                kOmniboxTextFieldMidY))];
 }
 
 @end
@@ -1373,7 +1489,7 @@ void FocusFakebox() {
       assertWithMatcher:chrome_test_util::OmniboxText(_URL1.GetContent() +
                                                       "hello")];
 
-  [self defocusOmnibox];
+  DefocusOmnibox();
 
   [ChromeEarlGreyUI focusOmnibox];
   // Omnibox contains the page url.
@@ -1405,7 +1521,7 @@ void FocusFakebox() {
   [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
 
   // Defocus the omnibox.
-  [self defocusOmnibox];
+  DefocusOmnibox();
 
   [ChromeEarlGrey loadURL:_URL2];
   [ChromeEarlGrey waitForWebStateContainingText:kPage2];
@@ -1502,23 +1618,6 @@ void FocusFakebox() {
 }
 
 #pragma mark - Helpers
-
-// defocus the omnibox.
-- (void)defocusOmnibox {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // "escape" is a hardcoded key string in hardware_keyboard_util that maps to
-    // a HIDUsageCode.
-    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
-  } else {
-    id<GREYMatcher> cancelButton =
-        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(cancelButton,
-                                            grey_sufficientlyVisible(), nil)]
-        performAction:grey_tap()];
-  }
-  [ChromeEarlGreyUI waitForAppToIdle];
-}
 
 // Populate history by visiting the 2 different pages.
 - (void)populateHistory {

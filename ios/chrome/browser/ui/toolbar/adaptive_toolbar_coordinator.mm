@@ -161,6 +161,10 @@
   [self.mediator updateConsumerWithNewTabButtonIPHHighlighted:iphHighlighted];
 }
 
+- (void)showShareButtonIPHAfterLocationBarUnfocus {
+  // no-op, handled in ToolbarCoordinator.
+}
+
 #pragma mark - ToolbarCoordinatee
 
 - (id<PopupMenuUIUpdating>)popupMenuUIUpdater {

@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
@@ -89,6 +90,9 @@
 
   /// Object handling interactions in the keyboard accessory view.
   OmniboxAssistiveKeyboardMediator* _keyboardMediator;
+
+  // The handler for ToolbarCommands.
+  id<ToolbarCommands> _toolbarHandler;
 }
 @synthesize locationBar = _locationBar;
 @synthesize viewController = _viewController;
@@ -98,6 +102,9 @@
 
 - (void)start {
   DCHECK(!self.popupCoordinator);
+
+  _toolbarHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), ToolbarCommands);
 
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
 
@@ -136,11 +143,11 @@
 
   DCHECK(self.locationBar);
 
-  id<OmniboxCommands> focuser =
-      static_cast<id<OmniboxCommands>>(self.browser->GetCommandDispatcher());
+  id<OmniboxCommands> omniboxHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   _editView = std::make_unique<OmniboxViewIOS>(self.textField, self.locationBar,
                                                self.browser->GetBrowserState(),
-                                               focuser);
+                                               omniboxHandler, _toolbarHandler);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 

@@ -41,6 +41,8 @@
 /// Initializes this coordinator with its `browser` and a nil base view
 /// controller.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+/// Initializes this coordinator with its `browser` and a nil base view
+/// controller.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 

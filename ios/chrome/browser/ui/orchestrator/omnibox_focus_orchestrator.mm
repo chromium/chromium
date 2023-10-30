@@ -165,6 +165,11 @@
         }];
   } else {
     cleanup();
+
+    if (_completion) {
+      _completion();
+      _completion = nil;
+    }
   }
 }
 
@@ -239,6 +244,11 @@
 
   } else {
     cleanup();
+
+    if (_completion) {
+      _completion();
+      _completion = nil;
+    }
   }
 }
 

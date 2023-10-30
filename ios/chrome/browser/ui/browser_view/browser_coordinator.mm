@@ -920,7 +920,6 @@ enum class ToolbarKind {
 
   _toolbarCoordinator =
       [[ToolbarCoordinator alloc] initWithBrowser:self.browser];
-  _toolbarCoordinator.bubblePresenter = _bubblePresenter;
 
   _toolbarAccessoryPresenter = [[ToolbarAccessoryPresenter alloc]
       initWithIsIncognito:browserState->IsOffTheRecord()];
