@@ -257,8 +257,7 @@ function onCompanionMessageEvent(event: MessageEvent) {
     companionProxy.handler.onExpsOptInStatusAvailable(
         data[ParamType.IS_EXPS_OPTED_IN]);
   } else if (methodType === MethodType.kOnOpenInNewTabButtonURLChanged) {
-    const openInNewTabUrl = new Url();
-    openInNewTabUrl.url = data[ParamType.URL_FOR_OPEN_IN_NEW_TAB];
+    const openInNewTabUrl: Url = {url: data[ParamType.URL_FOR_OPEN_IN_NEW_TAB]};
     companionProxy.handler.onOpenInNewTabButtonURLChanged(openInNewTabUrl);
   } else if (methodType === MethodType.kRecordUiSurfaceShown) {
     const uiSurfacePosition = data[ParamType.UI_SURFACE_POSITION] || -1;
@@ -281,8 +280,7 @@ function onCompanionMessageEvent(event: MessageEvent) {
   } else if (methodType === MethodType.kOnCqJumptagClicked) {
     companionProxy.handler.onCqJumptagClicked(data[ParamType.CQ_JUMPTAG_TEXT]);
   } else if (methodType === MethodType.kOpenUrlInBrowser) {
-    const urlToOpen = new Url();
-    urlToOpen.url = data[ParamType.URL_TO_OPEN] || '';
+    const urlToOpen: Url = {url: data[ParamType.URL_TO_OPEN] || ''};
     companionProxy.handler.openUrlInBrowser(
         urlToOpen, data[ParamType.USE_NEW_TAB]);
   } else if (methodType === MethodType.kCompanionLoadingState) {

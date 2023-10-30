@@ -8164,11 +8164,7 @@ grit("resources") {
         rebase_path(additional_modules_list_file, root_build_dir),
   ]
 
-  deps = [
-    ":chrome_internal_resources_gen",
-    "//url/mojom:url_mojom_gurl_js",
-    "//url/mojom:url_mojom_origin_js",
-  ]
+  deps = [ ":chrome_internal_resources_gen" ]
 
   if (is_win) {
     deps += [ "//chrome/browser/resources/conflicts:build_ts" ]
@@ -8199,6 +8195,7 @@ grit("resources") {
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/vm:mojo_bindings_js__generator",
+      "//url/mojom:url_mojom_gurl_js",
     ]
   }
 

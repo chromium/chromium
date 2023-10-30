@@ -25,7 +25,6 @@ mojo_js_files = [
   "mojo/public/mojom/base/token.mojom-webui.js",
   "mojo/public/mojom/base/unguessable_token.mojom-webui.js",
   "mojo/public/mojom/base/values.mojom-webui.js",
-  "url/mojom/url.mojom-webui.js",
 ]
 
 mojo_ts_files = [
@@ -59,6 +58,7 @@ if (is_chromeos_ash) {
     "chromeos/services/network_health/public/mojom/network_health.mojom-webui.js",
     "chromeos/services/network_health/public/mojom/network_health_types.mojom-webui.js",
     "services/network/public/mojom/ip_address.mojom-webui.js",
+    "url/mojom/url.mojom-webui.js",
   ]
 
   mojo_ts_files += [
@@ -72,6 +72,8 @@ if (is_chromeos_ash) {
     "ui/events/mojom/event_constants.mojom-webui.ts",
     "ui/latency/mojom/latency_info.mojom-webui.ts",
   ]
+} else {
+  mojo_ts_files += [ "url/mojom/url.mojom-webui.ts" ]
 }
 
 preprocess_if_expr("copy_mojo_ts") {
@@ -99,6 +101,8 @@ preprocess_if_expr("copy_mojo_ts") {
       "//ui/events/mojom:mojom_ts__generator",
       "//ui/latency/mojom:mojom_ts__generator",
     ]
+  } else {
+    deps += [ "//url/mojom:url_mojom_gurl_ts__generator" ]
   }
 }
 
@@ -110,10 +114,7 @@ preprocess_if_expr("copy_mojo") {
   out_folder = "$target_gen_dir/preprocessed"
   in_files = mojo_js_files
 
-  deps = [
-    "//mojo/public/mojom/base:base_js__generator",
-    "//url/mojom:url_mojom_gurl_js__generator",
-  ]
+  deps = [ "//mojo/public/mojom/base:base_js__generator" ]
 
   if (is_chromeos_ash) {
     deps += [
@@ -127,6 +128,7 @@ preprocess_if_expr("copy_mojo") {
       "//chromeos/services/network_health/public/mojom:mojom_js__generator",
       "//chromeos/services/network_health/public/mojom:types_js__generator",
       "//services/network/public/mojom:mojom_ip_address_js__generator",
+      "//url/mojom:url_mojom_gurl_js__generator",
     ]
   }
 }

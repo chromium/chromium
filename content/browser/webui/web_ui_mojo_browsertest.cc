@@ -40,8 +40,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/data/web_ui_test.test-mojom.h"
-#include "content/test/data/web_ui_test_types.test-mojom.h"
 #include "content/test/data/web_ui_ts_test.test-mojom.h"
 #include "content/test/data/web_ui_ts_test_types.test-mojom.h"
 #include "content/test/grit/web_ui_mojo_test_resources.h"
@@ -51,6 +49,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/test/data/web_ui_test.test-mojom.h"
+#include "content/test/data/web_ui_test_types.test-mojom.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -58,6 +61,7 @@ const char kMojoWebUiHost[] = "mojo-web-ui";
 const char kMojoWebUiTsHost[] = "mojo-web-ui-ts";
 const char kDummyWebUiHost[] = "dummy-web-ui";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class WebUIMojoTestCacheImpl : public mojom::WebUIMojoTestCache {
  public:
   explicit WebUIMojoTestCacheImpl(
@@ -82,6 +86,7 @@ class WebUIMojoTestCacheImpl : public mojom::WebUIMojoTestCache {
   mojo::Receiver<mojom::WebUIMojoTestCache> receiver_;
   std::map<GURL, std::string> cache_;
 };
+#endif
 
 // Duplicate for the TypeScript version of the test. We can't re-use because
 // the TS interface has to be named differently to avoid conflicting symbols.
@@ -146,6 +151,7 @@ class TestWebUIController : public WebUIController {
         base::make_span(kWebUiMojoTestResources, kWebUiMojoTestResourcesSize);
 
     web_ui->SetBindings(bindings);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {
       WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(), kMojoWebUiHost);
@@ -156,6 +162,7 @@ class TestWebUIController : public WebUIController {
       data_source->AddResourcePaths(kMojoWebUiResources);
       data_source->AddResourcePath("", IDR_WEB_UI_MOJO_HTML);
     }
+#endif
     {
       WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(), kMojoWebUiTsHost);
@@ -182,7 +189,9 @@ class TestWebUIController : public WebUIController {
   TestWebUIController& operator=(const TestWebUIController&) = delete;
 
  protected:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<WebUIMojoTestCacheImpl> cache_;
+#endif
   std::unique_ptr<WebUITsMojoTestCacheImpl> ts_cache_;
 };
 
@@ -195,16 +204,20 @@ class CacheTestWebUIController : public TestWebUIController {
       : TestWebUIController(web_ui) {}
   ~CacheTestWebUIController() override = default;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void BindInterface(
       mojo::PendingReceiver<mojom::WebUIMojoTestCache> receiver) {
     cache_ = std::make_unique<WebUIMojoTestCacheImpl>(std::move(receiver));
     ASSERT_FALSE(ts_cache_);
   }
+#endif
 
   void BindInterface(
       mojo::PendingReceiver<mojom::WebUITsMojoTestCache> receiver) {
     ts_cache_ = std::make_unique<WebUITsMojoTestCacheImpl>(std::move(receiver));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ASSERT_FALSE(cache_);
+#endif
   }
 
   WEB_UI_CONTROLLER_TYPE_DECL();
@@ -294,8 +307,10 @@ class TestWebUIContentBrowserClient
   void RegisterBrowserInterfaceBindersForFrame(
       RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     RegisterWebUIControllerInterfaceBinder<mojom::WebUIMojoTestCache,
                                            CacheTestWebUIController>(map);
+#endif
     RegisterWebUIControllerInterfaceBinder<mojom::WebUITsMojoTestCache,
                                            CacheTestWebUIController>(map);
   }
@@ -342,7 +357,13 @@ class WebUIMojoTest : public ContentBrowserTest,
   std::unique_ptr<TestWebUIContentBrowserClient> client_;
 };
 
+// Test both JS and TS on Ash, since Ash widely uses both types of WebUI
+// bindings. Test TS only on other platforms.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE_P(All, WebUIMojoTest, testing::Bool());
+#else
+INSTANTIATE_TEST_SUITE_P(All, WebUIMojoTest, testing::Values(true));
+#endif
 
 // Loads a WebUI page that contains Mojo JS bindings and verifies a message
 // round-trip between the page and the browser.

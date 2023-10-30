@@ -1936,11 +1936,8 @@ template("mojom") {
   # Don't allow new JavaScript WebUI bindings on non-ChromeOS platforms.
   if (!use_typescript_for_target && defined(invoker.webui_module_path)) {
     assert(
-        is_chromeos_ash ||
-            invoker.webui_module_path ==
-                "chrome://resources/mojo/mojo/public/mojom/base" ||
-            invoker.webui_module_path == "chrome://resources/mojo/url/mojom" ||
-            invoker.webui_module_path == "/content/test/data",
+        is_chromeos_ash || invoker.webui_module_path ==
+                               "chrome://resources/mojo/mojo/public/mojom/base",
         "WebUI bindings should be in TypeScript on non-ChromeOS platforms. " +
             "Remove use_typescript_sources = false")
   }
@@ -1948,6 +1945,11 @@ template("mojom") {
   generate_legacy_js = !use_typescript_for_target ||
                        (defined(invoker.generate_legacy_js_bindings) &&
                         invoker.generate_legacy_js_bindings)
+
+  if (!use_typescript_for_target &&
+      defined(invoker.generate_legacy_js_bindings)) {
+    not_needed(invoker, [ "generate_legacy_js_bindings" ])
+  }
 
   # Targets needed by both TS and JS bindings targets. These are needed
   # unconditionally for JS bindings targets, and are needed for TS bindings

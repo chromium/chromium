@@ -96,8 +96,7 @@ async function iwaInstallSubmit() {
 
   iwaInstallMessageDiv.innerText = `Installing IWA: ${iwaInstallUrl.value}...`;
 
-  const location = new Url();
-  location.url = iwaInstallUrl.value;
+  const location: Url = {url: iwaInstallUrl.value};
 
   const installFromDevProxy =
       await webAppInternalsHandler.installIsolatedWebAppFromDevProxy(location);

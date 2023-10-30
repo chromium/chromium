@@ -512,7 +512,6 @@ static_library("test_support") {
   deps = [
     ":content_test_mojo_bindings",
     ":web_ui_mojo_test_resources",
-    ":web_ui_test_mojo_bindings",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc:test_support",
@@ -633,6 +632,10 @@ static_library("test_support") {
       "../browser/serial/serial_test_utils.cc",
       "../browser/serial/serial_test_utils.h",
     ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ ":web_ui_test_mojo_bindings" ]
   }
 
   # HID support is not available without udev.
@@ -1065,18 +1068,23 @@ mojom("content_test_mojo_bindings") {
   ]
 }
 
-mojom("web_ui_test_mojo_bindings") {
-  testonly = true
-  sources = [
-    "data/web_ui_test.test-mojom",
-    "data/web_ui_test_types.test-mojom",
-  ]
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
-  webui_module_path = "/content/test/data"
+# Testing JS bindings only on Ash, since they are primarily used there and
+# because this test relies on the URL WebUI mojo bindings, which are
+# TypeScript only on other platforms.
+if (is_chromeos_ash) {
+  mojom("web_ui_test_mojo_bindings") {
+    testonly = true
+    sources = [
+      "data/web_ui_test.test-mojom",
+      "data/web_ui_test_types.test-mojom",
+    ]
+    public_deps = [ "//url/mojom:url_mojom_gurl" ]
+    webui_module_path = "/content/test/data"
 
-  # Generate WebUI bindings in JavaScript instead of TypeScript. This is
-  # necessary since this target is intentionally testing JS WebUI bindings.
-  use_typescript_sources = false
+    # Generate WebUI bindings in JavaScript instead of TypeScript. This is
+    # necessary since this target is intentionally testing JS WebUI bindings.
+    use_typescript_sources = false
+  }
 }
 
 mojom_with_webui_js_bridge("web_ui_js_bridge_test_bindings") {
@@ -1682,7 +1690,6 @@ test("content_browsertests") {
     ":test_support",
     ":web_ui_js_bridge_test_bindings__generator",
     ":web_ui_js_bridge_test_bindings_webui_js_bridge_impl",
-    ":web_ui_test_mojo_bindings",
     ":web_ui_ts_test_mojo_bindings",
     "//base/test:proto_test_support",
     "//base/test:test_support",
@@ -1829,6 +1836,10 @@ test("content_browsertests") {
       "//testing/buildbot/filters:content_browsertests_filters",
       "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
     ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ ":web_ui_test_mojo_bindings" ]
   }
 
   if (enable_plugins) {
@@ -2244,10 +2255,11 @@ grit("web_ui_mojo_test_resources") {
     "grit/web_ui_mojo_test_resources_map.h",
     "web_ui_mojo_test_resources.pak",
   ]
-  deps = [
-    ":web_ui_mojo_test_build_ts",
-    ":web_ui_test_mojo_bindings_js__generator",
-  ]
+  deps = [ ":web_ui_mojo_test_build_ts" ]
+
+  if (is_chromeos_ash) {
+    deps += [ ":web_ui_test_mojo_bindings_js__generator" ]
+  }
 }
 
 static_library("run_all_unittests") {

@@ -185,8 +185,7 @@ export class SiteEngagementAppElement extends CustomElement {
     } catch {
       return;
     }
-    const origin = new Url();
-    origin.url = originInput.value;
+    const origin: Url = {url: originInput.value};
     const score = parseFloat(scoreInput.value);
 
     this.engagementDetailsProvider.setSiteEngagementBaseScoreForUrl(
