@@ -1032,9 +1032,11 @@ void AshNotificationView::PopulateGroupNotifications(
   for (auto* notification : notifications) {
     auto notification_view =
         MessageViewFactory::Create(*notification, /*shown_in_popup=*/false);
-    // The child can either be an AshNotificationView or a custom notification
-    // view.
-    if (notification->type() != message_center::NOTIFICATION_TYPE_CUSTOM) {
+    // The child can either be an AshNotificationView or an ARC custom
+    // notification view.
+    if (notification->type() != message_center::NOTIFICATION_TYPE_CUSTOM ||
+        notification->notifier_id().type !=
+            message_center::NotifierType::ARC_APPLICATION) {
       auto* ash_notification_view =
           static_cast<AshNotificationView*>(notification_view.get());
       ash_notification_view->SetGroupedChildExpanded(IsExpanded());
