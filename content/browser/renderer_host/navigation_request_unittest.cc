@@ -977,6 +977,19 @@ TEST_F(NavigationRequestTest, IsolatedAppPolicyInjection) {
   EXPECT_EQ("'script'", csp->raw_directives[Directive::RequireTrustedTypesFor]);
 }
 
+TEST_F(NavigationRequestTest, UpdatePrivateNetworkRequestPolicy) {
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(GURL("https://example.com/"),
+                                                   main_test_rfh());
+  navigation->SetSocketAddress(net::IPEndPoint());
+
+  navigation->ReadyToCommit();
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  EXPECT_FALSE(request->GetSocketAddress().address().IsValid());
+  navigation->Commit();
+}
+
 // Test that the required CSP of every frame is computed/inherited correctly and
 // that the Sec-Required-CSP header is set.
 class CSPEmbeddedEnforcementUnitTest : public NavigationRequestTest {
