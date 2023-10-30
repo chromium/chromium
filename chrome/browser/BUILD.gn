@@ -7998,7 +7998,6 @@ static_library("browser") {
       "//chrome/common/compose:mojo_bindings",
       "//components/autofill/core/common",
       "//components/compose/core/browser",
-      "//components/compose/proto",
       "//components/optimization_guide/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
     ]

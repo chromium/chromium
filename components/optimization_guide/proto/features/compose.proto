@@ -1,0 +1,137 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "ComposeProto";
+
+package optimization_guide.proto;
+
+// ComposeFeatureLoggingData is the wrapper containing of ModelExecution
+// request, response and quality data for one compose execution run.
+message ComposeLoggingData {
+  // Model request data contains the compose request sent to the model execution
+  // server.
+  ComposeRequest request_data = 1;
+
+  // Model response data contains the compose response sent from the model
+  // execution server.
+  ComposeResponse response_data = 2;
+
+  // Model quality data contains the compose result quality data from the user.
+  ComposeQuality quality_data = 3;
+}
+
+//  User selected tone. Here the UNSPECIFIED entry is used to specify the tone
+//  is
+// unaltered or 'default'.
+enum ComposeTone {
+  COMPOSE_UNSPECIFIED_TONE = 0;
+  COMPOSE_FORMAL = 1;
+  COMPOSE_INFORMAL = 2;
+}
+
+//  User selected length. Here the UNSPECIFIED entry is used to specify the
+// tone is unaltered or 'default'.
+enum ComposeLength {
+  COMPOSE_UNSPECIFIED_LENGTH = 0;
+  COMPOSE_SHORTER = 1;
+  COMPOSE_LONGER = 2;
+}
+
+// Information about a previous response in a compose session.
+message ComposePriorResponse {
+  // The model response.
+  string response_text = 1;
+  // The tone and length options used to generate the response.
+  // Allows the service to identify if tone/length options have changed,
+  // and potentially apply a lengthen/formalize operation on top of the
+  // response.
+  ComposeTone tone = 2;
+  ComposeLength length = 3;
+  // If true, we may ensure the next response is not too similar to
+  // this one.
+  bool regenerate_requested_since = 4;
+}
+
+// Stores the metadata associated with a single call to the model execution.
+// This excludes any explicit user input.
+message ComposePageMetadata {
+  // URL of the page the input field is on.
+  string page_url = 1;
+  // The title of the page the input field is on.
+  string page_title = 2;
+  // The innerText of the page the input field is on. This is temporary. We do
+  // not intend to send inner text in the long run.
+  string page_inner_text = 3;
+}
+
+// The final status of the feature.
+enum FinalStatus {
+  // The dialog was not closed, and a subsequent model request should be
+  // logged.
+  STATUS_UNSPECIFIED = 0;
+  // The user inserted this response into the page.
+  STATUS_INSERTED = 1;
+  // User pressed 'X'.
+  STATUS_ABANDONED = 2;
+  // This case includes: close tab, starting new session, navigation, etc.
+  STATUS_FINISHED_WITHOUT_INSERT = 3;
+}
+
+// The explicit feedback provided by the user.
+enum UserFeedback {
+  FEEDBACK_UNSPECIFIED = 0;
+  FEEDBACK_THUMBS_UP = 1;
+  FEEDBACK_THUMBS_DOWN = 2;
+}
+
+// How the user used their clipboard with the feature.
+enum ClipboardUse {
+  CLIPBOARD_UNSPECIFIED = 0;
+  // User copied the compose response to the clipboard.
+  CLIPBOARD_RESPONSE_COPIED = 1;
+}
+
+// Stores all data associated with a single call to the model execution run for
+// compose.
+message ComposeRequest {
+  // Purely the user input text.
+  string user_input = 2;
+
+  // Contains information scraped from the page.
+  ComposePageMetadata page_metadata = 3;
+
+  // Stores the tone selection that the user chose.
+  ComposeTone tone = 4;
+
+  // Stores the length selection that the user chose.
+  ComposeLength length = 5;
+
+  // The previous Compose responses, which may be used when the user is
+  // selecting a different tone or length. Specified only for responses where
+  // the user prompt (and page context) stay the same.
+  repeated ComposePriorResponse previous_responses = 6;
+}
+
+// Stores the response text from the model execution run.
+message ComposeResponse {
+  string output = 1;
+}
+
+// Any data collected on the client outside of the model request and response.
+// This includes user feedback, and metrics about feature usage.
+message ComposeQuality {
+  FinalStatus final_status = 1;
+  UserFeedback user_feedback = 2;
+  ClipboardUse clipboard_use = 3;
+  // How long the user had to wait before seeing the model response.
+  int64 request_latency_ms = 4;
+  // How much was the text modified before commit only valid iff
+  // final_status = INSERTED.
+  optional int64 edit_distance = 5;
+}

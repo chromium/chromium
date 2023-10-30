@@ -20,10 +20,10 @@
 #include "chrome/common/compose/type_conversions.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
-#include "components/compose/proto/compose_metadata.pb.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -78,14 +78,16 @@ void ComposeSession::Compose(compose::mojom::StyleModifiersPtr style,
     return;
   }
 
-  compose_proto::ComposePageMetadata page_metadata;
+  optimization_guide::proto::ComposePageMetadata page_metadata;
   page_metadata.set_page_url(web_contents_->GetLastCommittedURL().spec());
   page_metadata.set_page_title(base::UTF16ToUTF8(web_contents_->GetTitle()));
 
-  compose_proto::ComposeRequest request;
+  optimization_guide::proto::ComposeRequest request;
   request.set_user_input(input);
-  request.set_tone(ComposeTone(current_state_->style->tone));
-  request.set_length(ComposeLength(current_state_->style->length));
+  request.set_tone(
+      optimization_guide::proto::ComposeTone(current_state_->style->tone));
+  request.set_length(
+      optimization_guide::proto::ComposeLength(current_state_->style->length));
   *request.mutable_page_metadata() = std::move(page_metadata);
   executor_->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
@@ -107,9 +109,8 @@ void ComposeSession::ModelExecutionCallback(
     return;
   }
 
-  auto response =
-      optimization_guide::ParsedAnyMetadata<compose_proto::ComposeResponse>(
-          result.value());
+  auto response = optimization_guide::ParsedAnyMetadata<
+      optimization_guide::proto::ComposeResponse>(result.value());
 
   if (!response) {
     ProcessError(compose::mojom::ComposeStatus::kTryAgain);

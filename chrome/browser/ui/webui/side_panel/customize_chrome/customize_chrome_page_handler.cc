@@ -38,8 +38,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
-#include "components/optimization_guide/proto/wallpaper_search.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
@@ -493,7 +493,7 @@ void CustomizeChromePageHandler::GetWallpaperSearchResults(
   if (!optimization_guide_keyed_service) {
     return;
   }
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   auto& descriptors = *request.mutable_descriptors();
   descriptors.set_descriptor_a(descriptor_a);
   if (descriptor_b.has_value()) {
@@ -627,8 +627,7 @@ void CustomizeChromePageHandler::OnWallpaperSearchResultsRetrieved(
     return;
   }
   auto response = optimization_guide::ParsedAnyMetadata<
-      chrome_intelligence_modelexecution_proto::WallpaperSearchResponse>(
-      result.value());
+      optimization_guide::proto::WallpaperSearchResponse>(result.value());
   if (response->images().empty()) {
     return;
   }

@@ -1,0 +1,44 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "WallpaperSearchProto";
+
+package optimization_guide.proto;
+
+// WallpaperSearchLoggingData consists of ModelExecutionRequest, Response
+// and Quality data.
+message WallpaperSearchLoggingData {
+  WallpaperSearchRequest request_data = 1;
+  WallpaperSearchResponse response_data = 2;
+  WallpaperSearchQuality quality_data = 3;
+}
+
+message Descriptors {
+  string descriptor_a = 1;
+  string descriptor_b = 2;
+  string descriptor_c = 3;
+  string descriptor_d = 4;
+}
+
+message Image {
+  bytes encoded_image = 1;
+}
+
+message WallpaperSearchRequest {
+  reserved 1;
+  Descriptors descriptors = 2;
+}
+
+message WallpaperSearchResponse {
+  reserved 1;
+  repeated Image images = 2;
+}
+
+// TODO(b/307692084): Add model quality data for wallpaper search.
+message WallpaperSearchQuality {}

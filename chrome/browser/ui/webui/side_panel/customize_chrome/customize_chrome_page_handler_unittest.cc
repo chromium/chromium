@@ -48,8 +48,8 @@
 #include "components/image_fetcher/core/mock_image_decoder.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
-#include "components/optimization_guide/proto/wallpaper_search.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
@@ -1077,7 +1077,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
        GetWallpaperSearchResults_Success) {
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
@@ -1122,7 +1122,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   EXPECT_EQ("baz", request.descriptors().descriptor_c());
   EXPECT_EQ("#FFFFFF", request.descriptors().descriptor_d());
 
-  chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
+  optimization_guide::proto::WallpaperSearchResponse response;
 
   // Create test bitmap 1 and add it to response.
   SkBitmap bitmap1;
@@ -1182,7 +1182,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
        GetWallpaperSearchResults_TwoDescriptorsQueryFormatCorrect) {
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
@@ -1204,14 +1204,14 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
       callback.Get());
 
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
-  EXPECT_FALSE(request.descriptors().has_descriptor_b());
-  EXPECT_FALSE(request.descriptors().has_descriptor_c());
+  EXPECT_TRUE(request.descriptors().descriptor_b().empty());
+  EXPECT_TRUE(request.descriptors().descriptor_c().empty());
   EXPECT_EQ("#FF0000", request.descriptors().descriptor_d());
 }
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
        GetWallpaperSearchResults_ConvertsHueToHex) {
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
       .WillOnce(Invoke(
@@ -1232,14 +1232,14 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
       side_panel::mojom::DescriptorDValue::NewHue(0), callback.Get());
 
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
-  EXPECT_FALSE(request.descriptors().has_descriptor_b());
-  EXPECT_FALSE(request.descriptors().has_descriptor_c());
+  EXPECT_TRUE(request.descriptors().descriptor_b().empty());
+  EXPECT_TRUE(request.descriptors().descriptor_c().empty());
   EXPECT_EQ("#FF0000", request.descriptors().descriptor_d());
 }
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
        GetWallpaperSearchResults_NoResponse) {
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
@@ -1262,9 +1262,9 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
                                       nullptr, callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
-  EXPECT_FALSE(request.descriptors().has_descriptor_b());
-  EXPECT_FALSE(request.descriptors().has_descriptor_c());
-  EXPECT_FALSE(request.descriptors().has_descriptor_d());
+  EXPECT_TRUE(request.descriptors().descriptor_b().empty());
+  EXPECT_TRUE(request.descriptors().descriptor_c().empty());
+  EXPECT_TRUE(request.descriptors().descriptor_d().empty());
 
   std::vector<side_panel::mojom::WallpaperSearchResultPtr> images;
   EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
@@ -1281,7 +1281,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
        GetWallpaperSearchResults_NoImages) {
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
@@ -1304,11 +1304,11 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
                                       nullptr, callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
-  EXPECT_FALSE(request.descriptors().has_descriptor_b());
-  EXPECT_FALSE(request.descriptors().has_descriptor_c());
-  EXPECT_FALSE(request.descriptors().has_descriptor_d());
+  EXPECT_TRUE(request.descriptors().descriptor_b().empty());
+  EXPECT_TRUE(request.descriptors().descriptor_c().empty());
+  EXPECT_TRUE(request.descriptors().descriptor_d().empty());
 
-  chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
+  optimization_guide::proto::WallpaperSearchResponse response;
   std::string serialized_metadata;
   response.SerializeToString(&serialized_metadata);
   optimization_guide::proto::Any result;
@@ -1326,7 +1326,7 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
        SetBackgroundToWallpaperSearchResult) {
   // Fill wallpaper_search_results_ with 2 bitmaps.
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  optimization_guide::proto::WallpaperSearchRequest request;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
@@ -1365,11 +1365,11 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
   handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
                                       nullptr, callback.Get());
   EXPECT_EQ("foo", request.descriptors().descriptor_a());
-  EXPECT_FALSE(request.descriptors().has_descriptor_b());
-  EXPECT_FALSE(request.descriptors().has_descriptor_c());
-  EXPECT_FALSE(request.descriptors().has_descriptor_d());
+  EXPECT_TRUE(request.descriptors().descriptor_b().empty());
+  EXPECT_TRUE(request.descriptors().descriptor_c().empty());
+  EXPECT_TRUE(request.descriptors().descriptor_d().empty());
 
-  chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
+  optimization_guide::proto::WallpaperSearchResponse response;
 
   // Create test bitmap 1 and add it to response.
   SkBitmap bitmap1;

@@ -20,9 +20,9 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/compose/core/browser/compose_features.h"
-#include "components/compose/proto/compose_metadata.pb.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/test_renderer_host.h"
@@ -40,7 +40,8 @@ using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;
 
 namespace {
 
-constexpr char kTypeURL[] = "type.googleapis.com/compose_proto.ComposeResponse";
+constexpr char kTypeURL[] =
+    "type.googleapis.com/optimization_guide.proto.ComposeResponse";
 constexpr char kExampleURL[] = "https://example.com";
 
 class MockModelExecutor
@@ -184,30 +185,34 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  compose_proto::ComposeRequest ComposeRequest(std::string user_input) {
-    compose_proto::ComposePageMetadata page_metadata;
+  optimization_guide::proto::ComposeRequest ComposeRequest(
+      std::string user_input) {
+    optimization_guide::proto::ComposePageMetadata page_metadata;
     page_metadata.set_page_url(GetPageUrl().spec());
     page_metadata.set_page_title(base::UTF16ToUTF8(
         browser()->tab_strip_model()->GetWebContentsAt(0)->GetTitle()));
 
-    compose_proto::ComposeRequest request;
+    optimization_guide::proto::ComposeRequest request;
     request.set_user_input(user_input);
-    request.set_tone(compose_proto::ComposeTone::COMPOSE_UNSPECIFIED_TONE);
+    request.set_tone(
+        optimization_guide::proto::ComposeTone::COMPOSE_UNSPECIFIED_TONE);
     request.set_length(
-        compose_proto::ComposeLength::COMPOSE_UNSPECIFIED_LENGTH);
+        optimization_guide::proto::ComposeLength::COMPOSE_UNSPECIFIED_LENGTH);
     *request.mutable_page_metadata() = std::move(page_metadata);
 
     return request;
   }
 
-  compose_proto::ComposeResponse ComposeResponse(bool ok, std::string output) {
-    compose_proto::ComposeResponse response;
+  optimization_guide::proto::ComposeResponse ComposeResponse(
+      bool ok,
+      std::string output) {
+    optimization_guide::proto::ComposeResponse response;
     response.set_output(ok ? output : "");
     return response;
   }
 
   optimization_guide::proto::Any OptimizationGuideResponse(
-      const compose_proto::ComposeResponse compose_response) {
+      const optimization_guide::proto::ComposeResponse compose_response) {
     optimization_guide::proto::Any any;
     any.set_type_url(kTypeURL);
     compose_response.SerializeToString(any.mutable_value());
