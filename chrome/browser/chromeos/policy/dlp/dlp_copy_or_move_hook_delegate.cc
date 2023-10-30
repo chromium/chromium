@@ -119,8 +119,10 @@ void DlpCopyOrMoveHookDelegate::OnEndMove(
 void DlpCopyOrMoveHookDelegate::OnError(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
-    base::File::Error error) {
+    base::File::Error error,
+    ErrorCallback callback) {
   OnEnd(source_url, destination_url);
+  std::move(callback).Run(ErrorAction::kDefault);
 }
 
 void DlpCopyOrMoveHookDelegate::OnEnd(

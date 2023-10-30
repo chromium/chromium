@@ -194,7 +194,9 @@ class CopyOrMoveRecordAndSecurityDelegate : public CopyOrMoveHookDelegate {
 
   void OnError(const FileSystemURL& source_url,
                const FileSystemURL& destination_url,
-               base::File::Error error) override {
+               base::File::Error error,
+               ErrorCallback callback) override {
+    std::move(callback).Run(ErrorAction::kDefault);
     AddRecord(ProgressRecord::Type::kError, source_url, destination_url, 0,
               error);
   }
@@ -1380,15 +1382,18 @@ class CopyOrMoveOperationDelegateTestHelper {
   // Force Copy or Move error when a given URL is encountered.
   void SetErrorUrl(const FileSystemURL& url) { error_url_ = url; }
 
-  base::File::Error Copy(const FileSystemURL& src, const FileSystemURL& dest) {
+  base::File::Error Copy(
+      const FileSystemURL& src,
+      const FileSystemURL& dest,
+      std::unique_ptr<storage::CopyOrMoveHookDelegate> hook_delegate =
+          std::make_unique<storage::CopyOrMoveHookDelegate>()) {
     base::RunLoop run_loop;
     base::File::Error result = base::File::FILE_ERROR_FAILED;
 
     CopyOrMoveOperationDelegate copy_or_move_operation_delegate(
         file_system_context_.get(), src, dest,
         CopyOrMoveOperationDelegate::OPERATION_COPY, options_,
-        FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-        std::make_unique<storage::CopyOrMoveHookDelegate>(),
+        FileSystemOperation::ERROR_BEHAVIOR_ABORT, std::move(hook_delegate),
         base::BindOnce(&AssignAndQuit, &run_loop, base::Unretained(&result)));
     if (error_url_.is_valid()) {
       copy_or_move_operation_delegate.SetErrorUrlForTest(error_url_);
@@ -1398,15 +1403,18 @@ class CopyOrMoveOperationDelegateTestHelper {
     return result;
   }
 
-  base::File::Error Move(const FileSystemURL& src, const FileSystemURL& dest) {
+  base::File::Error Move(
+      const FileSystemURL& src,
+      const FileSystemURL& dest,
+      std::unique_ptr<storage::CopyOrMoveHookDelegate> hook_delegate =
+          std::make_unique<storage::CopyOrMoveHookDelegate>()) {
     base::RunLoop run_loop;
     base::File::Error result = base::File::FILE_ERROR_FAILED;
 
     CopyOrMoveOperationDelegate copy_or_move_operation_delegate(
         file_system_context_.get(), src, dest,
         CopyOrMoveOperationDelegate::OPERATION_MOVE, options_,
-        FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-        std::make_unique<storage::CopyOrMoveHookDelegate>(),
+        FileSystemOperation::ERROR_BEHAVIOR_ABORT, std::move(hook_delegate),
         base::BindOnce(&AssignAndQuit, &run_loop, base::Unretained(&result)));
     if (error_url_.is_valid()) {
       copy_or_move_operation_delegate.SetErrorUrlForTest(error_url_);
@@ -1469,6 +1477,109 @@ TEST(CopyOrMoveOperationDelegateTest, StopRecursionOnCopyError) {
   EXPECT_TRUE(helper.FileExists(src_file_1, kDefaultFileSize));
   EXPECT_FALSE(
       helper.FileExists(dest_file_1, AsyncFileTestHelper::kDontCheckSize));
+}
+
+TEST(CopyOrMoveOperationDelegateTest, ContinueRecursionOnCopyIgnored) {
+  FileSystemOperation::CopyOrMoveOptionSet options;
+  CopyOrMoveOperationDelegateTestHelper helper(
+      "http://foo", kFileSystemTypePersistent, kFileSystemTypePersistent,
+      options);
+  helper.SetUp();
+
+  FileSystemURL src = helper.GenerateSourceUrlFromPath("a");
+  FileSystemURL src_file_1 = helper.GenerateSourceUrlFromPath("a/file 1");
+  FileSystemURL src_file_2 = helper.GenerateSourceUrlFromPath("a/file 2");
+  FileSystemURL dest = helper.GenerateDestinationUrlFromPath("b");
+  FileSystemURL dest_file_1 = helper.GenerateDestinationUrlFromPath("b/file 1");
+  FileSystemURL dest_file_2 = helper.GenerateDestinationUrlFromPath("b/file 2");
+
+  // Set up source files.
+  ASSERT_EQ(base::File::FILE_OK, helper.CreateDirectory(src));
+  ASSERT_EQ(base::File::FILE_OK,
+            helper.CreateFile(src_file_1, kDefaultFileSize));
+  ASSERT_EQ(base::File::FILE_OK,
+            helper.CreateFile(src_file_2, kDefaultFileSize));
+
+  // Create a hook delegate which will skip errors.
+  auto delegate = std::make_unique<MockCopyOrMoveHookDelegate>();
+  ON_CALL(*delegate.get(), OnBeginProcessFile)
+      .WillByDefault([](const FileSystemURL&, const FileSystemURL&,
+                        base::OnceCallback<void(base::File::Error)> cb) {
+        std::move(cb).Run(base::File::FILE_OK);
+      });
+  ON_CALL(*delegate.get(), OnError)
+      .WillByDefault([](const FileSystemURL&, const FileSystemURL&,
+                        base::File::Error,
+                        CopyOrMoveHookDelegate::ErrorCallback cb) {
+        std::move(cb).Run(CopyOrMoveHookDelegate::ErrorAction::kSkip);
+      });
+  // One file out of two is expected to be copied successfully, add one more
+  // call for the directory itself.
+  EXPECT_CALL(*delegate.get(), OnEndCopy).Times(2);
+
+  // [file 1, file 2] are processed as a LIFO. An error is returned after
+  // copying file 1 and ignored by the hook delegate.
+  helper.SetErrorUrl(src_file_1);
+  ASSERT_EQ(base::File::FILE_OK, helper.Copy(src, dest, std::move(delegate)));
+
+  // Check that the second file was actually copied, but the sources remained
+  // untouched.
+  EXPECT_TRUE(helper.FileExists(src_file_1, kDefaultFileSize));
+  EXPECT_TRUE(helper.FileExists(src_file_2, kDefaultFileSize));
+  EXPECT_TRUE(helper.FileExists(dest_file_2, kDefaultFileSize));
+}
+
+TEST(CopyOrMoveOperationDelegateTest, ContinueRecursionOnMoveIgnored) {
+  FileSystemOperation::CopyOrMoveOptionSet options;
+  CopyOrMoveOperationDelegateTestHelper helper(
+      "http://foo", kFileSystemTypeTemporary, kFileSystemTypePersistent,
+      options);
+  helper.SetUp();
+
+  FileSystemURL src = helper.GenerateSourceUrlFromPath("a");
+  FileSystemURL src_file_1 = helper.GenerateSourceUrlFromPath("a/file 1");
+  FileSystemURL src_file_2 = helper.GenerateSourceUrlFromPath("a/file 2");
+  FileSystemURL dest = helper.GenerateDestinationUrlFromPath("b");
+  FileSystemURL dest_file_1 = helper.GenerateDestinationUrlFromPath("b/file 1");
+  FileSystemURL dest_file_2 = helper.GenerateDestinationUrlFromPath("b/file 2");
+
+  // Set up source files.
+  ASSERT_EQ(base::File::FILE_OK, helper.CreateDirectory(src));
+  ASSERT_EQ(base::File::FILE_OK,
+            helper.CreateFile(src_file_1, kDefaultFileSize));
+  ASSERT_EQ(base::File::FILE_OK,
+            helper.CreateFile(src_file_2, kDefaultFileSize));
+
+  // Create a hook delegate which will skip errors.
+  auto delegate = std::make_unique<MockCopyOrMoveHookDelegate>();
+  ON_CALL(*delegate.get(), OnBeginProcessFile)
+      .WillByDefault([](const FileSystemURL&, const FileSystemURL&,
+                        base::OnceCallback<void(base::File::Error)> cb) {
+        std::move(cb).Run(base::File::FILE_OK);
+      });
+  ON_CALL(*delegate.get(), OnError)
+      .WillByDefault([](const FileSystemURL&, const FileSystemURL&,
+                        base::File::Error,
+                        CopyOrMoveHookDelegate::ErrorCallback cb) {
+        std::move(cb).Run(CopyOrMoveHookDelegate::ErrorAction::kSkip);
+      });
+  // One file out of two is expected to be moved successfully, add one more
+  // call for the directory itself. The event is `OnEndCopy`, not `OnEndMove`
+  // because we do a cross-filesystem move.
+  EXPECT_CALL(*delegate.get(), OnEndCopy).Times(2);
+  EXPECT_CALL(*delegate.get(), OnEndMove).Times(0);
+
+  // [file 1, file 2] are processed as a LIFO. An error is returned after
+  // copying file 1 and ignored by the hook delegate.
+  helper.SetErrorUrl(src_file_1);
+  ASSERT_EQ(base::File::FILE_OK, helper.Move(src, dest, std::move(delegate)));
+
+  // Check that the second file was actually copied, but the sources remained
+  // untouched.
+  EXPECT_TRUE(helper.FileExists(src_file_1, kDefaultFileSize));
+  EXPECT_FALSE(
+      helper.FileExists(src_file_2, AsyncFileTestHelper::kDontCheckSize));
+  EXPECT_TRUE(helper.FileExists(dest_file_2, kDefaultFileSize));
 }
 
 TEST(CopyOrMoveOperationDelegateTest, RemoveDestFileOnCopyError) {

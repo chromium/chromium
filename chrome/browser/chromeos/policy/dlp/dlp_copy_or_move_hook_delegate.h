@@ -42,7 +42,8 @@ class DlpCopyOrMoveHookDelegate : public storage::CopyOrMoveHookDelegate {
                  const storage::FileSystemURL& destination_url) override;
   void OnError(const storage::FileSystemURL& source_url,
                const storage::FileSystemURL& destination_url,
-               base::File::Error error) override;
+               base::File::Error error,
+               ErrorCallback callback) override;
 
  private:
   void OnEnd(const storage::FileSystemURL& source_url,

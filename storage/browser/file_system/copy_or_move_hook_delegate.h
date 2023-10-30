@@ -50,9 +50,16 @@ class FileSystemURL;
 // OnError is called for any occurring error.
 // The `source_url` and the `destination_url` are the URLs of the source and
 // the destination entries. `error` is the base::File::Error that was noticed.
-// NotifyError is also called if an OnBeginProcessFile or
-// OnBeginProcessDirectory function passes an error to their respective
-// callbacks.
+// `callback` might be used to skip/suppress the error (when invoked with
+// kSkip), otherwise should be just called with kDefault.
+// Note that:
+//  * OnError is also called if an OnBeginProcessFile or
+//  OnBeginProcessDirectory function passes an error to their respective
+//  callbacks.
+//  * The operation is paused until the `callback` gets called.
+//  * Using kSkip will continue the operation even if it was run with
+//  ERROR_BEHAVIOR_ABORT, which makes possible to make abort/skip
+//  decision per every error encountered.
 //
 // OnEndCopy is called for each destination entry that has been successfully
 // copied (for both file and directory). The `source_url` and the
@@ -124,7 +131,9 @@ class FileSystemURL;
 class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveHookDelegate
     : public base::SupportsWeakPtr<CopyOrMoveHookDelegate> {
  public:
+  enum class ErrorAction { kDefault, kSkip };
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
+  using ErrorCallback = base::OnceCallback<void(ErrorAction)>;
 
   explicit CopyOrMoveHookDelegate(bool is_composite = false);
 
@@ -143,7 +152,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveHookDelegate
                           int64_t size);
   virtual void OnError(const FileSystemURL& source_url,
                        const FileSystemURL& destination_url,
-                       base::File::Error error);
+                       base::File::Error error,
+                       ErrorCallback callback);
 
   virtual void OnEndCopy(const FileSystemURL& source_url,
                          const FileSystemURL& destination_url);

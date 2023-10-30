@@ -42,8 +42,10 @@ void CopyOrMoveHookDelegate::OnProgress(const FileSystemURL& source_url,
 
 void CopyOrMoveHookDelegate::OnError(const FileSystemURL& source_url,
                                      const FileSystemURL& destination_url,
-                                     base::File::Error error) {
+                                     base::File::Error error,
+                                     ErrorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(ErrorAction::kDefault);
 }
 
 void CopyOrMoveHookDelegate::OnEndCopy(const FileSystemURL& source_url,

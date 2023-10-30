@@ -43,7 +43,8 @@ class MockCopyOrMoveHookDelegate : public CopyOrMoveHookDelegate {
               OnError,
               (const FileSystemURL& source_url,
                const FileSystemURL& destination_url,
-               base::File::Error error),
+               base::File::Error error,
+               ErrorCallback callback),
               (override));
 
   MOCK_METHOD(void,
