@@ -720,13 +720,12 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
     return false;
   // If `browser_context` is null, then `Profile::FromBrowserContext` below
   // will return nullptr, and the subsequent call to `GetPrimaryOTRProfile`
-  // will crash. For now, we'll add a DUMP_WILL_BE_CHECK to determine cases
-  // where `browser_context` is null, with the intent of determining if that's a
-  // valid use-case we need to handle in the following logic.
-  // TODO(https://crbug.com/1492697) Determine if we need to handle nullptr
-  // `browser_context` here, and if not simplify the expression for
-  // `incognito_profile` below.
-  DUMP_WILL_BE_CHECK(browser_context);
+  // will crash. Since this can happen during shutdown, early-out to avoid
+  // crashing.
+  if (!browser_context) {
+    return false;
+  }
+
   Profile* profile = Profile::FromBrowserContext(browser_context);
   Profile* incognito_profile =
       include_incognito
