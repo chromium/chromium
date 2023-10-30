@@ -4705,6 +4705,10 @@ const char kReadAnythingWebUIToolbarDescription[] =
     "Enables the Reading Mode toolbar implemented with WebUI instead of with "
     "Views.";
 
+const char kReadAnythingReadAloudName[] = "Reading Mode Read Aloud";
+const char kReadAnythingReadAloudDescription[] =
+    "Enables the experimental Read Aloud feature in Reading Mode.";
+
 const char kEnableWebHidOnExtensionServiceWorkerName[] =
     "Enable WebHID on extension service workers";
 const char kEnableWebHidOnExtensionServiceWorkerDescription[] =

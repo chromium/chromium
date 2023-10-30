@@ -7351,6 +7351,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnything)},
 
+    {"read-anything-read-aloud", flag_descriptions::kReadAnythingReadAloudName,
+     flag_descriptions::kReadAnythingReadAloudDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAnythingReadAloud)},
+
     {"read-anything-with-screen2x",
      flag_descriptions::kReadAnythingWithScreen2xName,
      flag_descriptions::kReadAnythingWithScreen2xDescription, kOsDesktop,

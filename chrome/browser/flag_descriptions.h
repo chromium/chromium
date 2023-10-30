@@ -2735,6 +2735,9 @@ extern const char kReadAnythingWithScreen2xDescription[];
 extern const char kReadAnythingWebUIToolbarName[];
 extern const char kReadAnythingWebUIToolbarDescription[];
 
+extern const char kReadAnythingReadAloudName[];
+extern const char kReadAnythingReadAloudDescription[];
+
 extern const char kEnableWebHidOnExtensionServiceWorkerName[];
 extern const char kEnableWebHidOnExtensionServiceWorkerDescription[];
 

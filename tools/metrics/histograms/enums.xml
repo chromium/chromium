@@ -63612,6 +63612,7 @@ from previous Chrome versions.
   <int value="-1083736482" label="OmniboxCompactSuggestions:enabled"/>
   <int value="-1083547717" label="NotificationExpansionAnimation:disabled"/>
   <int value="-1083146397" label="AutofillTypeSpecificPopupWidth:enabled"/>
+  <int value="-1082602234" label="ReadAnythingReadAloud:enabled"/>
   <int value="-1082302549" label="scan-cards-in-web-payments"/>
   <int value="-1082053427"
       label="OmniboxUIExperimentElideToRegistrableDomain:disabled"/>
@@ -69424,6 +69425,7 @@ from previous Chrome versions.
   <int value="1739507233" label="EarlyEstablishGpuChannel:enabled"/>
   <int value="1739782037" label="LinkDoctorDeprecationAndroid:enabled"/>
   <int value="1739919484" label="ZstdContentEncoding:disabled"/>
+  <int value="1741851701" label="ReadAnythingReadAloud:disabled"/>
   <int value="1741855651"
       label="OmniboxTabSwitchSuggestionsDedicatedRow:disabled"/>
   <int value="1741958365"
