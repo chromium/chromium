@@ -1347,6 +1347,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Error.ErrorDialogType" enum="FedCmErrorDialogType"
+    expires_after="M130">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the type of error dialog shown. Recorded at most once per API call
+    when the error dialog is displayed.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.IdpSigninRequestInitiatedByUser"
     enum="BooleanYesNo" expires_after="2024-03-17">
   <owner>cbiesinger@chromium.org</owner>

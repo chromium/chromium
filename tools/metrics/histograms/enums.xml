@@ -44812,6 +44812,23 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="FailedOrigin"/>
 </enum>
 
+<enum name="FedCmErrorDialogType">
+  <int value="0" label="Generic empty string without URL"/>
+  <int value="1" label="Generic empty string with URL"/>
+  <int value="2" label="Generic non-empty string without URL"/>
+  <int value="3" label="Generic non-empty string with URL"/>
+  <int value="4" label="Invalid request without URL"/>
+  <int value="5" label="Invalid request with URL"/>
+  <int value="6" label="Unauthorized client without URL"/>
+  <int value="7" label="Unauthorized client with URL"/>
+  <int value="8" label="Access denied without URL"/>
+  <int value="9" label="Access denied with URL"/>
+  <int value="10" label="Temporarily unavailable without URL"/>
+  <int value="11" label="Temporarily unavailable with URL"/>
+  <int value="12" label="Server error without URL"/>
+  <int value="13" label="Server error with URL"/>
+</enum>
+
 <enum name="FedCmIdpSigninMatchStatus">
   <int value="0"
       label="Match. Browser has signed-in IDP status, accounts endpoint

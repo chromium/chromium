@@ -353,6 +353,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void CompleteRevokeRequest(RevokeCallback callback,
                              blink::mojom::RevokeStatus status);
 
+  void RecordErrorMetrics(
+      blink::mojom::IdentityProviderRequestOptionsPtr idp,
+      absl::optional<IdpNetworkRequestManager::FedCmErrorDialogType>
+          error_dialog_type);
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
 

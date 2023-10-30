@@ -161,6 +161,28 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kError,
   };
 
+  // This enum describes the type of error dialog shown.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FedCmErrorDialogType {
+    kGenericEmptyWithoutUrl = 0,
+    kGenericEmptyWithUrl = 1,
+    kGenericNonEmptyWithoutUrl = 2,
+    kGenericNonEmptyWithUrl = 3,
+    kInvalidRequestWithoutUrl = 4,
+    kInvalidRequestWithUrl = 5,
+    kUnauthorizedClientWithoutUrl = 6,
+    kUnauthorizedClientWithUrl = 7,
+    kAccessDeniedWithoutUrl = 8,
+    kAccessDeniedWithUrl = 9,
+    kTemporarilyUnavailableWithoutUrl = 10,
+    kTemporarilyUnavailableWithUrl = 11,
+    kServerErrorWithoutUrl = 12,
+    kServerErrorWithUrl = 13,
+
+    kMaxValue = kServerErrorWithUrl
+  };
+
   using AccountList = std::vector<IdentityRequestAccount>;
   using AccountsRequestCallback =
       base::OnceCallback<void(FetchStatus, AccountList)>;
@@ -182,6 +204,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using TokenRequestCallback =
       base::OnceCallback<void(FetchStatus, TokenResult)>;
   using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
+  using RecordErrorMetricsCallback =
+      base::OnceCallback<void(absl::optional<FedCmErrorDialogType>)>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
       RenderFrameHostImpl* host);
@@ -220,11 +244,13 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                    AccountsRequestCallback callback);
 
   // Request a new token for this user account and RP from the IDP.
-  virtual void SendTokenRequest(const GURL& token_url,
-                                const std::string& account,
-                                const std::string& url_encoded_post_data,
-                                TokenRequestCallback callback,
-                                ContinueOnCallback continue_on);
+  virtual void SendTokenRequest(
+      const GURL& token_url,
+      const std::string& account,
+      const std::string& url_encoded_post_data,
+      TokenRequestCallback callback,
+      ContinueOnCallback continue_on,
+      RecordErrorMetricsCallback record_error_metrics_callback);
 
   // Sends metrics to metrics endpoint after a token was successfully generated.
   virtual void SendSuccessfulTokenRequestMetrics(

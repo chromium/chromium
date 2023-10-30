@@ -4410,6 +4410,12 @@ be describing additional metrics about the same event.
       `kFederatedIdentityAutoReauthnEmbargoDuration`).
     </summary>
   </metric>
+  <metric name="Error.ErrorDialogType" enum="FedCmErrorDialogType">
+    <summary>
+      Records the type of error dialog shown. Recorded at most once per API call
+      when the error dialog is displayed.
+    </summary>
+  </metric>
   <metric name="FedCmSessionID">
     <summary>
       Records the session ID associated to the FedCM call for which this event
@@ -4539,6 +4545,12 @@ be describing additional metrics about the same event.
   <metric name="AccountsRequestSent" enum="BooleanHit">
     <summary>
       Records a 1 each time a request is sent to the accounts endpoint.
+    </summary>
+  </metric>
+  <metric name="Error.ErrorDialogType" enum="FedCmErrorDialogType">
+    <summary>
+      Records the type of error dialog shown. Recorded at most once per API call
+      when the error dialog is displayed.
     </summary>
   </metric>
   <metric name="FedCmSessionID">

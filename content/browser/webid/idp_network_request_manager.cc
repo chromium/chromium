@@ -50,6 +50,7 @@ using TokenError = content::IdentityCredentialTokenError;
 using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using AccountsResponseInvalidReason =
     content::IdpNetworkRequestManager::AccountsResponseInvalidReason;
+using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
 
 // TODO(kenrb): These need to be defined in the explainer or draft spec and
 // referenced here.
@@ -113,6 +114,14 @@ constexpr char kUrlEncodedContentType[] = "application/x-www-form-urlencoded";
 constexpr char kPlusJson[] = "+json";
 constexpr char kApplicationJson[] = "application/json";
 constexpr char kTextJson[] = "text/json";
+
+// Error API codes.
+constexpr char kGenericEmpty[] = "";
+constexpr char kInvalidRequest[] = "invalid_request";
+constexpr char kUnauthorizedClient[] = "unauthorized_client";
+constexpr char kAccessDenied[] = "access_denied";
+constexpr char kTemporarilyUnavailable[] = "temporarily_unavailable";
+constexpr char kServerError[] = "server_error";
 
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
@@ -620,9 +629,36 @@ GURL GetErrorUrl(const std::string* url, const GURL& idp_url) {
   return error_url;
 }
 
+ErrorDialogType GetErrorDialogType(const std::string& code, const GURL& url) {
+  bool has_url = !url.is_empty();
+  if (code == kGenericEmpty) {
+    return has_url ? ErrorDialogType::kGenericEmptyWithUrl
+                   : ErrorDialogType::kGenericEmptyWithoutUrl;
+  } else if (code == kInvalidRequest) {
+    return has_url ? ErrorDialogType::kInvalidRequestWithUrl
+                   : ErrorDialogType::kInvalidRequestWithoutUrl;
+  } else if (code == kUnauthorizedClient) {
+    return has_url ? ErrorDialogType::kUnauthorizedClientWithUrl
+                   : ErrorDialogType::kUnauthorizedClientWithoutUrl;
+  } else if (code == kAccessDenied) {
+    return has_url ? ErrorDialogType::kAccessDeniedWithUrl
+                   : ErrorDialogType::kAccessDeniedWithoutUrl;
+  } else if (code == kTemporarilyUnavailable) {
+    return has_url ? ErrorDialogType::kTemporarilyUnavailableWithUrl
+                   : ErrorDialogType::kTemporarilyUnavailableWithoutUrl;
+  } else if (code == kServerError) {
+    return has_url ? ErrorDialogType::kServerErrorWithUrl
+                   : ErrorDialogType::kServerErrorWithoutUrl;
+  }
+  return has_url ? ErrorDialogType::kGenericNonEmptyWithUrl
+                 : ErrorDialogType::kGenericNonEmptyWithoutUrl;
+}
+
 void OnTokenRequestParsed(
     IdpNetworkRequestManager::TokenRequestCallback callback,
     IdpNetworkRequestManager::ContinueOnCallback continue_on_callback,
+    IdpNetworkRequestManager::RecordErrorMetricsCallback
+        record_error_metrics_callback,
     const GURL& token_url,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
@@ -630,7 +666,9 @@ void OnTokenRequestParsed(
 
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     if (IsFedCmErrorEnabled()) {
-      token_result.error = TokenError{"server_error", GURL()};
+      token_result.error = TokenError{kServerError, GURL()};
+      std::move(record_error_metrics_callback)
+          .Run(ErrorDialogType::kServerErrorWithoutUrl);
     }
     std::move(callback).Run(fetch_status, token_result);
     return;
@@ -649,6 +687,8 @@ void OnTokenRequestParsed(
       const std::string* url = response_error->FindString(kErrorUrlKey);
       GURL error_url = GetErrorUrl(url, token_url);
       token_result.error = TokenError{error_code, error_url};
+      std::move(record_error_metrics_callback)
+          .Run(GetErrorDialogType(error_code, error_url));
       std::move(callback).Run(
           {ParseStatus::kSuccess, fetch_status.response_code}, token_result);
       return;
@@ -672,6 +712,8 @@ void OnTokenRequestParsed(
     }
   }
 
+  std::move(record_error_metrics_callback)
+      .Run(ErrorDialogType::kGenericEmptyWithoutUrl);
   std::move(callback).Run(
       {ParseStatus::kInvalidResponseError, fetch_status.response_code},
       token_result);
@@ -817,7 +859,8 @@ void IdpNetworkRequestManager::SendTokenRequest(
     const std::string& account,
     const std::string& url_encoded_post_data,
     TokenRequestCallback callback,
-    ContinueOnCallback continue_on) {
+    ContinueOnCallback continue_on,
+    RecordErrorMetricsCallback record_error_metrics_callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
           token_url,
@@ -827,7 +870,8 @@ void IdpNetworkRequestManager::SendTokenRequest(
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
       base::BindOnce(&OnTokenRequestParsed, std::move(callback),
-                     std::move(continue_on), token_url),
+                     std::move(continue_on),
+                     std::move(record_error_metrics_callback), token_url),
       maxResponseSizeInKiB * 1024);
 }
 

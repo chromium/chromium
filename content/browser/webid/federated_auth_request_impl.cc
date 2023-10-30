@@ -61,6 +61,7 @@ using FederatedApiPermissionStatus =
 using RevokeStatusForMetrics = content::FedCmRevokeStatus;
 using TokenStatus = content::FedCmRequestIdTokenStatus;
 using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
+using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using CompleteRequestWithErrorCallback =
@@ -1806,6 +1807,9 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
                      idp_info.provider->Clone()),
       base::BindOnce(&FederatedAuthRequestImpl::OnContinueOnResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
+                     idp_info.provider->Clone()),
+      base::BindOnce(&FederatedAuthRequestImpl::RecordErrorMetrics,
+                     weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()));
 }
 
@@ -2702,6 +2706,30 @@ void FederatedAuthRequestImpl::Revoke(
       base::BindOnce(&FederatedAuthRequestImpl::CompleteRevokeRequest,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       api_permission_delegate_.get());
+}
+
+void FederatedAuthRequestImpl::RecordErrorMetrics(
+    IdentityProviderRequestOptionsPtr idp,
+    absl::optional<ErrorDialogType> error_dialog_type) {
+  if (!IsFedCmErrorEnabled()) {
+    return;
+  }
+
+  if (!fedcm_metrics_) {
+    // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
+    // prerendering page. As FederatedAuthRequest runs behind the
+    // BrowserInterfaceBinders, the service doesn't receive any request while
+    // prerendering, and the CHECK should always meet the condition.
+    CHECK(!render_frame_host().IsInLifecycleState(
+        RenderFrameHost::LifecycleState::kPrerendering));
+    fedcm_metrics_ = CreateFedCmMetrics(
+        idp->config->config_url, render_frame_host().GetPageUkmSourceId(),
+        /*is_disabled=*/false);
+  }
+
+  if (error_dialog_type) {
+    fedcm_metrics_->RecordErrorDialogType(*error_dialog_type);
+  }
 }
 
 }  // namespace content

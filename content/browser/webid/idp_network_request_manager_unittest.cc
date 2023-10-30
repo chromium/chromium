@@ -44,6 +44,7 @@ using AccountsRequestCallback =
 using LoginState = content::IdentityRequestAccount::LoginState;
 using AccountsResponseInvalidReason =
     content::IdpNetworkRequestManager::AccountsResponseInvalidReason;
+using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
 
 namespace content {
 
@@ -230,7 +231,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
     manager->SendTokenRequest(token_endpoint, account, request,
-                              std::move(callback), base::DoNothing());
+                              std::move(callback), base::DoNothing(),
+                              base::DoNothing());
     run_loop.Run();
     return {fetch_status, token_result};
   }
@@ -1242,7 +1244,8 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
 
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request",
-                            std::move(callback), std::move(on_continue));
+                            std::move(callback), std::move(on_continue),
+                            base::DoNothing());
   run_loop.Run();
 }
 
@@ -1271,7 +1274,8 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
 
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request",
-                            std::move(callback), std::move(on_continue));
+                            std::move(callback), std::move(on_continue),
+                            base::DoNothing());
   run_loop.Run();
 }
 
@@ -1288,6 +1292,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithProperField) {
           "url": "https://idp.test/error"
         }
       })");
+
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("invalid_request", token_result.error->code);
   EXPECT_EQ("https://idp.test/error", token_result.error->url);
@@ -1364,6 +1369,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithEmptyUrl) {
           "url": ""
         }
       })");
+
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("invalid_request", token_result.error->code);
   EXPECT_EQ(GURL(), token_result.error->url);
@@ -1377,6 +1383,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestServerError) {
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
       "account", "request", net::HTTP_OK, "application/json", R"({}})");
+
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("server_error", token_result.error->code);
   EXPECT_EQ(GURL(), token_result.error->url);
@@ -1396,6 +1403,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithErrorAndHttpError) {
           "url": "https://idp.test/error"
         }
       })");
+
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("temporarily_unavailable", token_result.error->code);
   EXPECT_EQ("https://idp.test/error", token_result.error->url);
@@ -1415,6 +1423,40 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithTokenAndHttpError) {
   EXPECT_FALSE(token_result.error);
   EXPECT_EQ(net::HTTP_FORBIDDEN, fetch_status.response_code);
   EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorDialogType) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  net::HttpStatusCode http_status = net::HTTP_OK;
+  const std::string& mime_type = "application/json";
+
+  const char response[] =
+      R"({
+        "error": {
+          "code": "invalid_request",
+          "url": ""
+        }
+      })";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+
+  auto record_error_metrics_callback = base::BindLambdaForTesting(
+      [&](absl::optional<ErrorDialogType> error_dialog_type) {
+        EXPECT_TRUE(error_dialog_type);
+        EXPECT_EQ(ErrorDialogType::kInvalidRequestWithoutUrl,
+                  *error_dialog_type);
+        run_loop.Quit();
+      });
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            base::DoNothing(), base::DoNothing(),
+                            std::move(record_error_metrics_callback));
+  run_loop.Run();
 }
 
 }  // namespace

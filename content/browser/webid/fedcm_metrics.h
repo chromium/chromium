@@ -247,6 +247,10 @@ class CONTENT_EXPORT FedCmMetrics {
   // Records the status of the |Revoke| call.
   void RecordRevokeStatus(FedCmRevokeStatus status);
 
+  // Records the type of error dialog shown.
+  void RecordErrorDialogType(
+      IdpNetworkRequestManager::FedCmErrorDialogType type);
+
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;
