@@ -76,6 +76,10 @@ config("mediapipe_flags") {
     # and use pthreads, since they will be unavailable.
     defines += [ "MEDIAPIPE_DISABLE_PTHREADS=1" ]
   }
+
+  if (is_android) {
+    defines += [ "MEDIAPIPE_NO_JNI=1" ]
+  }
 }
 
 source_set("any_lite_proto_impl") {
