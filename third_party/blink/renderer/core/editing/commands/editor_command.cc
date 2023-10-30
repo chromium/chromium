@@ -202,6 +202,14 @@ StaticRangeVector* RangesFromCurrentSelectionOrExtendCaret(
     const LocalFrame& frame,
     SelectionModifyDirection direction,
     TextGranularity granularity) {
+  // Due to interoperability differences in getTargetRanges() when deleting
+  // content, we do not provide these ranges for EditContext. Developers are
+  // expected to compute the ranges themselves based on selection position.
+  // See https://github.com/w3c/input-events/issues/146.
+  if (frame.GetInputMethodController().GetActiveEditContext()) {
+    return nullptr;
+  }
+
   frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   SelectionModifier selection_modifier(
       frame, frame.Selection().GetSelectionInDOMTree());

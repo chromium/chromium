@@ -610,7 +610,7 @@ String StyleCommands::SelectionStartCSSPropertyValue(
 
 String StyleCommands::ValueStyle(LocalFrame& frame, CSSPropertyID property_id) {
   if (frame.GetInputMethodController().GetActiveEditContext()) {
-    return "";
+    return g_empty_string;
   }
 
   frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
