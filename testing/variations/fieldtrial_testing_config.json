@@ -6852,6 +6852,22 @@
             ]
         }
     ],
+    "FasterSplitScreenSetup": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood_20231030",
+                    "enable_features": [
+                        "FasterSplitScreenSetup"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeatureNotificationGuide": [
         {
             "platforms": [
