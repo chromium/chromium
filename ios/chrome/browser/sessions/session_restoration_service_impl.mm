@@ -9,6 +9,7 @@
 #import "base/files/file_enumerator.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
@@ -86,12 +87,6 @@ std::unique_ptr<web::WebState> CreateWebState(
       base::BindOnce(&LoadWebStateSession, web_state_session_path));
 
   return web_state;
-}
-
-// Returns a callback that return `value` when invoked.
-template <typename T>
-base::OnceCallback<T()> ReturnValueOnce(T&& value) {
-  return base::BindOnce([](T value) { return value; }, std::forward<T>(value));
 }
 
 }  // anonymous namespace
@@ -365,7 +360,8 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
   // main thread while it is being written to disk on a background thread.
   return web::WebState::CreateWithStorage(
       browser->GetBrowserState(), web_state_id, std::move(metadata),
-      ReturnValueOnce(std::move(storage)), ReturnValueOnce<NSData*>(nil));
+      base::ReturnValueOnce(std::move(storage)),
+      base::ReturnValueOnce<NSData*>(nil));
 }
 
 #pragma mark - Private

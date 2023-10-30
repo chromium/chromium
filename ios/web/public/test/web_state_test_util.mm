@@ -5,6 +5,7 @@
 #import "ios/web/public/test/web_state_test_util.h"
 
 #import "base/check.h"
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -31,12 +32,6 @@ using base::test::ios::kWaitForPageLoadTimeout;
 
 namespace web {
 namespace test {
-
-// Returns a callback that return `value` when invoked.
-template <typename T>
-base::OnceCallback<T()> ReturnValueOnce(T&& value) {
-  return base::BindOnce([](T value) { return value; }, std::forward<T>(value));
-}
 
 id ExecuteJavaScript(NSString* script, web::WebState* web_state) {
   __block id execution_result = nil;
@@ -218,7 +213,8 @@ std::unique_ptr<WebState> CreateUnrealizedWebStateWithItems(
 
   std::unique_ptr<WebState> web_state = WebState::CreateWithStorage(
       browser_state, WebStateID::NewUnique(), std::move(metadata),
-      ReturnValueOnce(std::move(storage)), ReturnValueOnce<NSData*>(nil));
+      base::ReturnValueOnce(std::move(storage)),
+      base::ReturnValueOnce<NSData*>(nil));
 
   DCHECK(!web_state->IsRealized());
   return web_state;

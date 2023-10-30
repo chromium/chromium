@@ -12,6 +12,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #import "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
@@ -148,12 +149,6 @@ NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
   return ns_dictionary;
 }
 
-// Returns a callback that return `value` when invoked.
-template <typename T>
-base::OnceCallback<T()> ReturnValueOnce(T&& value) {
-  return base::BindOnce([](T value) { return value; }, std::forward<T>(value));
-}
-
 // A WebStateUserData to hold a reference to a corresponding CWVWebView.
 class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
  public:
@@ -246,7 +241,8 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   DCHECK(web::features::UseSessionSerializationOptimizations());
   return web::WebState::CreateWithStorage(
       browserState, self.webStateID, _storage.metadata(),
-      ReturnValueOnce(std::move(_storage)), ReturnValueOnce<NSData*>(nil));
+      base::ReturnValueOnce(std::move(_storage)),
+      base::ReturnValueOnce<NSData*>(nil));
 }
 
 - (const web::proto::WebStateStorage&)storage {

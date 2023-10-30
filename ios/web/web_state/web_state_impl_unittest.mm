@@ -11,6 +11,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/base64.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -65,12 +66,6 @@ using base::test::ios::kWaitForPageLoadTimeout;
 
 namespace web {
 namespace {
-
-// Returns a callback that return `value` when invoked.
-template <typename T>
-base::OnceCallback<T()> ReturnValueOnce(T&& value) {
-  return base::BindOnce([](T value) { return value; }, std::forward<T>(value));
-}
 
 // Test observer to check that the GlobalWebStateObserver methods are called as
 // expected.
@@ -859,9 +854,10 @@ TEST_F(WebStateImplTest, UncommittedRestoreSessionOptimisedStorage) {
   active_page->set_page_title("Title");
   active_page->set_page_url(url.spec());
 
-  WebStateImpl web_state = WebStateImpl(
-      GetBrowserState(), web::WebStateID::NewUnique(), metadata,
-      ReturnValueOnce(std::move(storage)), ReturnValueOnce<NSData*>(nil));
+  WebStateImpl web_state =
+      WebStateImpl(GetBrowserState(), web::WebStateID::NewUnique(), metadata,
+                   base::ReturnValueOnce(std::move(storage)),
+                   base::ReturnValueOnce<NSData*>(nil));
 
   // Check that the title and url are correct.
   ASSERT_FALSE(web_state.IsRealized());
