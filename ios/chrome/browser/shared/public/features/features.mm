@@ -302,3 +302,7 @@ BASE_FEATURE(kSettingsWillBeDismissedBugFixKillSwitch,
 BASE_FEATURE(kEnableUIEditMenuInteraction,
              "EnableUIEditMenuInteraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin,
+             "HistoryOptInForRestoreShortyAndReSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);

@@ -628,22 +628,34 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Disabled", "disable-features",
      "ReplaceSyncPromosWithSignInPromos,"
      "ConsistencyNewAccountInterface,"
-     "FeedBottomSyncStringRemoval"},
-    {"Base only", "enable-features",
-     "ReplaceSyncPromosWithSignInPromos,"
-     "ConsistencyNewAccountInterface,"
-     "FeedBottomSyncStringRemoval"},
-    {"Everything (bookmarks, reading list, etc)", "enable-features",
+     "FeedBottomSyncStringRemoval,"
+     "SyncEnableContactInfoDataTypeInTransportMode,"
+     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
+     "SyncEnableBatchUploadLocalData,"
+     "SyncEnableWalletMetadataInTransportMode,"
+     "SyncEnableWalletOfferInTransportMode,"
+     "IOSPasswordSettingsBulkUploadLocalPasswords"},
+    {"Enabled without fast-follows", "enable-features",
      "ReplaceSyncPromosWithSignInPromos,"
      "ConsistencyNewAccountInterface,"
      "FeedBottomSyncStringRemoval,"
      "SyncEnableContactInfoDataTypeInTransportMode,"
      "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
      "SyncEnableBatchUploadLocalData,"
-     "EnablePreferencesAccountStorage,"
      "SyncEnableWalletMetadataInTransportMode,"
      "SyncEnableWalletOfferInTransportMode,"
      "IOSPasswordSettingsBulkUploadLocalPasswords"},
+    {"Enabled with fast-follows", "enable-features",
+     "ReplaceSyncPromosWithSignInPromos,"
+     "ConsistencyNewAccountInterface,"
+     "FeedBottomSyncStringRemoval,"
+     "SyncEnableContactInfoDataTypeInTransportMode,"
+     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
+     "SyncEnableBatchUploadLocalData,"
+     "SyncEnableWalletMetadataInTransportMode,"
+     "SyncEnableWalletOfferInTransportMode,"
+     "IOSPasswordSettingsBulkUploadLocalPasswords,"
+     "HistoryOptInForRestoreShortyAndReSignin"},
 };
 
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {

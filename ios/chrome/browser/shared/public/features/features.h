@@ -260,4 +260,9 @@ BASE_DECLARE_FEATURE(kSettingsWillBeDismissedBugFixKillSwitch);
 // has been increased to iOS 16.
 BASE_DECLARE_FEATURE(kEnableUIEditMenuInteraction);
 
+// Causes the restore shorty and re-signin flows to offer a history opt-in
+// screen. This only has any effect if kReplaceSyncPromosWithSignInPromos is
+// also enabled.
+BASE_DECLARE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
