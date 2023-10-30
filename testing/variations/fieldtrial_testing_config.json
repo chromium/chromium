@@ -11305,6 +11305,21 @@
             ]
         }
     ],
+    "OmniboxShortcutBoostIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxPopulateShortcutsDatabase"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxTailSuggestIOS": [
         {
             "platforms": [
