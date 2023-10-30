@@ -634,6 +634,10 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
     icon_ = AddChildView(std::make_unique<views::ImageView>());
     icon_->SetCanProcessEventsWithinSubtree(false);
     icon_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+
+    if (has_host_badge_) {
+      SetHostBadgeIcon(item_weak_->GetHostBadgeIcon(), true);
+    }
   } else {
     // Refreshed folder icons are painted on FolderIconView directly instead of
     // using the folder item icon.
