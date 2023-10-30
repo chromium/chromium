@@ -95,6 +95,19 @@
     Run Chrome safety check button, activate to run a safety check in Chrome settings
   </message>
 
+  <message name="IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_HINT" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status about the stored passwords, extensions, permisisons and security settings. If user types any command that would trigger omnibox pedal for safety check (e.g. typing safety check to omnnibox), a pedal will be shown on the omnibox. This string is the button text contents to suggest pedal action for safety check pedal.">
+    Go to Chrome safety check
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_SUGGESTION_CONTENTS" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status about the stored passwords, extensions, permisisons and security settings. If user types any command that would trigger omnibox pedal for safety check (e.g. typing safety check to omnnibox), a pedal will be shown on the omnibox. This string is the button hover tooltip text to describe pedal action for safety check pedal.">
+    Go to Chrome safety check page in settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2_SUFFIX" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status about the stored passwords, extensions, permisisons and security settings. If user types any command that would trigger omnibox pedal for safety check (e.g. typing safety check to omnnibox), a pedal will be shown on the omnibox. This string is the suffix for spoken suggestion description with pedal action button, to explain keystroke used for safety check pedal.">
+    <ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to go to Chrome safety check page in settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_V2" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status about the stored passwords, extensions, permisisons and security settings. If user types any command that would trigger omnibox pedal for safety check (e.g. typing safety check to omnnibox), a pedal will be shown on the omnibox. This string is for the announcement when pedal action button is focused for safety check pedal.">
+    Go to Chrome safety check button, activate to visit Chrome safety check page in settings
+  </message>
+
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_HINT" desc="The button text contents to suggest pedal action, MANAGE_SECURITY_SETTINGS">
     Manage security settings
   </message>
