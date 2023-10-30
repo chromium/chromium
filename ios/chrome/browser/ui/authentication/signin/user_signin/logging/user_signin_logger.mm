@@ -32,9 +32,7 @@ using signin_metrics::PromoAction;
 }
 
 - (void)dealloc {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.accountManagerService);
+  DCHECK(!self.accountManagerService);
 }
 
 - (void)disconnect {
