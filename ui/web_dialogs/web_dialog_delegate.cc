@@ -91,7 +91,17 @@ bool WebDialogDelegate::ShouldShowDialogTitle() const {
 }
 
 void WebDialogDelegate::OnDialogClosed(const std::string& json_retval) {
-  delete this;
+  if (closed_callback_) {
+    std::move(closed_callback_).Run(json_retval);
+  }
+  if (delete_on_close_) {
+    delete this;
+  }
+}
+
+void WebDialogDelegate::RegisterOnDialogClosedCallback(
+    OnDialogClosedCallback callback) {
+  closed_callback_ = std::move(callback);
 }
 
 void WebDialogDelegate::OnDialogCloseFromWebUI(

@@ -141,8 +141,19 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // registering it as a message handler in the WebUI object).
   //
   // The default behavior of this method is to delete |this| and return.
-  // TODO(ellyjones): Change that, and maybe make this class not self-deleting.
+  // Do not add new overrides of this method; instead use
+  // RegisterOnDialogClosedCallback() (if you need to do things during dialog
+  // close) or set_delete_on_close() (if you need to control lifetime).
+  // TODO(ellyjones): Get rid of all overrides of this method.
   virtual void OnDialogClosed(const std::string& json_retval);
+
+  void set_delete_on_close(bool delete_on_close) {
+    delete_on_close_ = delete_on_close;
+  }
+  bool delete_on_close() const { return delete_on_close_; }
+
+  using OnDialogClosedCallback = base::OnceCallback<void(const std::string&)>;
+  void RegisterOnDialogClosedCallback(OnDialogClosedCallback callback);
 
   // A callback to notify the delegate that the dialog is being closed in
   // response to a "dialogClose" message from WebUI.
@@ -253,6 +264,8 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   bool center_title_text_ = false;
   GURL content_url_;
   bool close_on_escape_ = true;
+  // TODO(ellyjones): Make this default to false.
+  bool delete_on_close_ = true;
   FrameKind frame_kind_ = FrameKind::kNonClient;
   absl::optional<gfx::Size> minimum_size_;
   ModalType modal_type_ = ui::MODAL_TYPE_NONE;
@@ -261,6 +274,8 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   bool show_title_ = true;
   gfx::Size size_;
   std::u16string title_;
+
+  OnDialogClosedCallback closed_callback_;
 
   std::vector<std::unique_ptr<content::WebUIMessageHandler>>
       added_message_handlers_;

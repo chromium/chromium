@@ -4,8 +4,12 @@
 
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
+#include "base/test/bind.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace ui {
+namespace {
 
 using WebDialogDelegateTest = testing::Test;
 
@@ -54,3 +58,56 @@ TEST(WebDialogDelegateTest, MessageHandlerOwnershipIsPassed) {
   EXPECT_TRUE(destroyed_1);
   EXPECT_TRUE(destroyed_2);
 }
+
+TEST(WebDialogDelegateTest, CallbackOnClose) {
+  bool called = false;
+  auto delegate = std::make_unique<WebDialogDelegate>();
+
+  delegate->set_delete_on_close(false);
+  delegate->RegisterOnDialogClosedCallback(
+      base::BindLambdaForTesting([&](const std::string&) { called = true; }));
+
+  EXPECT_FALSE(called);
+  delegate->OnDialogClosed("{}");
+  EXPECT_TRUE(called);
+
+  called = false;
+  delegate.reset();
+  EXPECT_FALSE(called);
+}
+
+class DeletionTestWebDialogDelegate : public WebDialogDelegate {
+ public:
+  explicit DeletionTestWebDialogDelegate(bool* deleted) : deleted_(deleted) {}
+  ~DeletionTestWebDialogDelegate() override { *deleted_ = true; }
+
+ private:
+  raw_ptr<bool> deleted_;
+};
+
+TEST(WebDialogDelegateTest, DeleteOnClose) {
+  bool deleted = false;
+  auto delegate = std::make_unique<DeletionTestWebDialogDelegate>(&deleted);
+
+  delegate->set_delete_on_close(true);
+  delegate.release()->OnDialogClosed("{}");
+
+  EXPECT_TRUE(deleted);
+}
+
+TEST(WebDialogDelegateTest, NoDeleteOnClose) {
+  bool deleted = false;
+  auto delegate = std::make_unique<DeletionTestWebDialogDelegate>(&deleted);
+
+  delegate->set_delete_on_close(false);
+  delegate->OnDialogClosed("{}");
+
+  EXPECT_FALSE(deleted);
+
+  delegate.reset();
+
+  EXPECT_TRUE(deleted);
+}
+
+}  // namespace
+}  // namespace ui
