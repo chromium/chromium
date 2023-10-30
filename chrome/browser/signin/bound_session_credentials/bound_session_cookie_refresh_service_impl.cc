@@ -44,10 +44,12 @@ BoundSessionCookieRefreshServiceImpl::~BoundSessionCookieRefreshServiceImpl() =
     default;
 
 void BoundSessionCookieRefreshServiceImpl::Initialize() {
-  absl::optional<bound_session_credentials::BoundSessionParams>
-      bound_session_params = session_params_storage_->ReadParams();
-  if (bound_session_params.has_value()) {
-    InitializeBoundSession(bound_session_params.value());
+  std::vector<bound_session_credentials::BoundSessionParams>
+      bound_session_params = session_params_storage_->ReadAllParams();
+  if (!bound_session_params.empty()) {
+    // Only a single bound session is currently supported.
+    // TODO(http://b/274774185): support multiple parallel bound sessions.
+    InitializeBoundSession(bound_session_params.front());
   }
 }
 
@@ -58,7 +60,11 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     return;
   }
   // New session should override an existing one.
-  cookie_controller_.reset();
+  if (cookie_controller_) {
+    session_params_storage_->ClearParams(cookie_controller_->url().spec(),
+                                         cookie_controller_->session_id());
+    cookie_controller_.reset();
+  }
   InitializeBoundSession(params);
 }
 
@@ -162,7 +168,9 @@ void BoundSessionCookieRefreshServiceImpl::
 
 void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
   cookie_controller_.reset();
-  session_params_storage_->ClearParams();
+  // TODO(b/300627729): stop clearing all params once multiple sessions are
+  // supported.
+  session_params_storage_->ClearAllParams();
   UpdateAllRenderers();
 }
 

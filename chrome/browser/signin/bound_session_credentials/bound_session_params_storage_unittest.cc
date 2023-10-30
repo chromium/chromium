@@ -4,6 +4,9 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/test/base/testing_profile.h"
@@ -11,6 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace {
 
@@ -30,13 +34,16 @@ bound_session_credentials::BoundSessionParams CreateValidBoundSessionParams() {
 
 bound_session_credentials::BoundSessionParams
 CreateInvalidBoundSessionParams() {
-  bound_session_credentials::BoundSessionParams params;
-  // Leaves a required `session_id` field empty.
+  bound_session_credentials::BoundSessionParams params =
+      CreateValidBoundSessionParams();
+  // Removes a required `wrapped_key` field empty.
+  params.clear_wrapped_key();
   return params;
 }
 
-MATCHER_P(EqualsProto, message, "") {
-  return message.SerializeAsString() == arg.SerializeAsString();
+MATCHER(TupleEqualsProto, "") {
+  return testing::ExplainMatchResult(base::EqualsProto(std::get<1>(arg)),
+                                     std::get<0>(arg), result_listener);
 }
 
 }  // namespace
@@ -65,29 +72,30 @@ class BoundSessionParamsStorageTest : public testing::TestWithParam<bool> {
 };
 
 TEST_P(BoundSessionParamsStorageTest, InitiallyEmpty) {
-  EXPECT_EQ(storage().ReadParams(), absl::nullopt);
+  EXPECT_THAT(storage().ReadAllParams(), testing::IsEmpty());
 }
 
 TEST_P(BoundSessionParamsStorageTest, SaveAndRead) {
   bound_session_credentials::BoundSessionParams params =
       CreateValidBoundSessionParams();
   ASSERT_TRUE(storage().SaveParams(params));
-  EXPECT_THAT(storage().ReadParams(), testing::Optional(EqualsProto(params)));
+  EXPECT_THAT(storage().ReadAllParams(),
+              testing::Pointwise(TupleEqualsProto(), {params}));
 }
 
 TEST_P(BoundSessionParamsStorageTest, SaveInvalidParams) {
   EXPECT_FALSE(storage().SaveParams(CreateInvalidBoundSessionParams()));
-  EXPECT_EQ(storage().ReadParams(), absl::nullopt);
+  EXPECT_THAT(storage().ReadAllParams(), testing::IsEmpty());
 }
 
 TEST_P(BoundSessionParamsStorageTest, OverwriteWithValidParams) {
   ASSERT_TRUE(storage().SaveParams(CreateValidBoundSessionParams()));
   bound_session_credentials::BoundSessionParams new_params =
       CreateValidBoundSessionParams();
-  new_params.set_session_id("unique_id");
+  new_params.set_wrapped_key("new_wrapped_key");
   EXPECT_TRUE(storage().SaveParams(new_params));
-  EXPECT_THAT(storage().ReadParams(),
-              testing::Optional(EqualsProto(new_params)));
+  EXPECT_THAT(storage().ReadAllParams(),
+              testing::Pointwise(TupleEqualsProto(), {new_params}));
 }
 
 TEST_P(BoundSessionParamsStorageTest, OverwriteWithInvalidParams) {
@@ -95,28 +103,115 @@ TEST_P(BoundSessionParamsStorageTest, OverwriteWithInvalidParams) {
       CreateValidBoundSessionParams();
   ASSERT_TRUE(storage().SaveParams(valid_params));
   EXPECT_FALSE(storage().SaveParams(CreateInvalidBoundSessionParams()));
-  EXPECT_THAT(storage().ReadParams(),
-              testing::Optional(EqualsProto(valid_params)));
+  EXPECT_THAT(storage().ReadAllParams(),
+              testing::Pointwise(TupleEqualsProto(), {valid_params}));
+}
+
+TEST_P(BoundSessionParamsStorageTest, SaveMultipleParamsSameSite) {
+  std::vector<bound_session_credentials::BoundSessionParams> all_params;
+  for (size_t i = 0; i < 3; ++i) {
+    bound_session_credentials::BoundSessionParams params =
+        CreateValidBoundSessionParams();
+    params.set_session_id(base::StrCat({"session_", base::NumberToString(i)}));
+    EXPECT_TRUE(storage().SaveParams(params));
+    all_params.push_back(std::move(params));
+  }
+  EXPECT_THAT(storage().ReadAllParams(),
+              testing::UnorderedPointwise(TupleEqualsProto(), all_params));
+}
+
+TEST_P(BoundSessionParamsStorageTest, SaveMultipleParamsDifferentSites) {
+  std::vector<bound_session_credentials::BoundSessionParams> all_params;
+  for (size_t i = 0; i < 3; ++i) {
+    bound_session_credentials::BoundSessionParams params =
+        CreateValidBoundSessionParams();
+    params.set_site(base::StrCat(
+        {"https://domain", base::NumberToString(i), ".example.org"}));
+    EXPECT_TRUE(storage().SaveParams(params));
+    all_params.push_back(std::move(params));
+  }
+  EXPECT_THAT(storage().ReadAllParams(),
+              testing::UnorderedPointwise(TupleEqualsProto(), all_params));
 }
 
 TEST_P(BoundSessionParamsStorageTest, Clear) {
+  const std::string kSite = "https://mydomain.example.org";
+  const std::string kSessionId = "my_session";
+  bound_session_credentials::BoundSessionParams params_to_be_removed =
+      CreateValidBoundSessionParams();
+  params_to_be_removed.set_site(kSite);
+  params_to_be_removed.set_session_id(kSessionId);
+
+  // Populate storage with params matching by either a site or a session_id.
+  std::vector<bound_session_credentials::BoundSessionParams> expected_params;
+  for (size_t i = 0; i < 3; ++i) {
+    bound_session_credentials::BoundSessionParams same_site_params =
+        CreateValidBoundSessionParams();
+    same_site_params.set_site(kSite);
+    same_site_params.set_session_id(
+        base::StrCat({"session_", base::NumberToString(i)}));
+    ASSERT_TRUE(storage().SaveParams(same_site_params));
+    expected_params.push_back(std::move(same_site_params));
+  }
+  for (size_t i = 0; i < 3; ++i) {
+    bound_session_credentials::BoundSessionParams same_session_id_params =
+        CreateValidBoundSessionParams();
+    same_session_id_params.set_session_id(kSessionId);
+    same_session_id_params.set_site(base::StrCat(
+        {"https://domain", base::NumberToString(i), ".example.org"}));
+    EXPECT_TRUE(storage().SaveParams(same_session_id_params));
+    expected_params.push_back(std::move(same_session_id_params));
+  }
+  // Add `params_to_be_removed` last to easily `pop_back()` later.
+  ASSERT_TRUE(storage().SaveParams(params_to_be_removed));
+  expected_params.push_back(params_to_be_removed);
+  // Verify that the storage is populated as expected.
+  ASSERT_THAT(storage().ReadAllParams(),
+              testing::UnorderedPointwise(TupleEqualsProto(), expected_params));
+
+  EXPECT_TRUE(storage().ClearParams(params_to_be_removed.site(),
+                                    params_to_be_removed.session_id()));
+  // Removes `params_to_be_removed`.
+  expected_params.pop_back();
+
+  EXPECT_THAT(storage().ReadAllParams(),
+              testing::UnorderedPointwise(TupleEqualsProto(), expected_params));
+}
+
+TEST_P(BoundSessionParamsStorageTest, ClearNonExisting) {
+  bound_session_credentials::BoundSessionParams params =
+      CreateValidBoundSessionParams();
+  params.set_session_id("my_session_id");
+  ASSERT_TRUE(storage().SaveParams(params));
+  bound_session_credentials::BoundSessionParams other_params = params;
+  other_params.set_session_id("other_session_id");
+
+  EXPECT_FALSE(
+      storage().ClearParams(other_params.site(), other_params.session_id()));
+
+  EXPECT_THAT(storage().ReadAllParams(),
+              testing::Pointwise(TupleEqualsProto(), {params}));
+}
+
+TEST_P(BoundSessionParamsStorageTest, ClearAll) {
   ASSERT_TRUE(storage().SaveParams(CreateValidBoundSessionParams()));
-  storage().ClearParams();
-  EXPECT_EQ(storage().ReadParams(), absl::nullopt);
+  storage().ClearAllParams();
+  EXPECT_THAT(storage().ReadAllParams(), testing::IsEmpty());
 }
 
 TEST_P(BoundSessionParamsStorageTest, Persistence) {
   bound_session_credentials::BoundSessionParams params =
       CreateValidBoundSessionParams();
   ASSERT_TRUE(storage().SaveParams(params));
-  EXPECT_TRUE(storage().ReadParams().has_value());
+  EXPECT_THAT(storage().ReadAllParams(), testing::Not(testing::IsEmpty()));
 
   ResetStorage();
 
   if (IsOffTheRecord()) {
-    EXPECT_EQ(storage().ReadParams(), absl::nullopt);
+    EXPECT_THAT(storage().ReadAllParams(), testing::IsEmpty());
   } else {
-    EXPECT_THAT(storage().ReadParams(), testing::Optional(EqualsProto(params)));
+    EXPECT_THAT(storage().ReadAllParams(),
+                testing::Pointwise(TupleEqualsProto(), {params}));
   }
 }
 
@@ -144,20 +239,21 @@ TEST_F(BoundSessionParamsStorageOTRTest, NoInheritance) {
   bound_session_credentials::BoundSessionParams params =
       CreateValidBoundSessionParams();
   ASSERT_TRUE(parent_storage->SaveParams(params));
-  EXPECT_TRUE(parent_storage->ReadParams().has_value());
+  EXPECT_THAT(parent_storage->ReadAllParams(),
+              testing::Not(testing::IsEmpty()));
 
   std::unique_ptr<BoundSessionParamsStorage> otr_storage =
       BoundSessionParamsStorage::CreateForProfile(
           *parent_profile().GetPrimaryOTRProfile(/*create_if_needed=*/true));
-  EXPECT_EQ(otr_storage->ReadParams(), absl::nullopt);
+  EXPECT_THAT(otr_storage->ReadAllParams(), testing::IsEmpty());
   bound_session_credentials::BoundSessionParams params2 =
       CreateValidBoundSessionParams();
   params2.set_session_id("otr_session");
   ASSERT_TRUE(otr_storage->SaveParams(params2));
-  EXPECT_THAT(otr_storage->ReadParams(),
-              testing::Optional(EqualsProto(params2)));
+  EXPECT_THAT(otr_storage->ReadAllParams(),
+              testing::Pointwise(TupleEqualsProto(), {params2}));
 
   // Parent storage hasn't changed.
-  EXPECT_THAT(parent_storage->ReadParams(),
-              testing::Optional(EqualsProto(params)));
+  EXPECT_THAT(parent_storage->ReadAllParams(),
+              testing::Pointwise(TupleEqualsProto(), {params}));
 }

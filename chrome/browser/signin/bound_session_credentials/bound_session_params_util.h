@@ -19,6 +19,10 @@ base::Time TimestampToTime(const Timestamp& timestamp);
 bool AreParamsValid(const BoundSessionParams& bound_session_params);
 
 bool IsCookieCredentialValid(const Credential& credential, const GURL& site);
+
+bool AreSameSessionParams(const BoundSessionParams& lhs,
+                          const BoundSessionParams& rhs);
+
 }  // namespace bound_session_credentials
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_PARAMS_UTIL_H_

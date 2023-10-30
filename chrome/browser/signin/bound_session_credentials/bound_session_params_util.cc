@@ -66,4 +66,10 @@ bool IsCookieCredentialValid(const Credential& credential, const GURL& site) {
   }
   return true;
 }
+
+bool AreSameSessionParams(const BoundSessionParams& lhs,
+                          const BoundSessionParams& rhs) {
+  return lhs.site() == rhs.site() && lhs.session_id() == rhs.session_id();
+}
+
 }  // namespace bound_session_credentials
