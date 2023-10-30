@@ -88,6 +88,8 @@ constexpr char kKbdTopRowLayoutDrallionTag[] = "4";
 constexpr int kTouchpadId1 = 10;
 constexpr int kTouchpadId2 = 11;
 
+constexpr int kMouseDeviceId = 456;
+
 // A default example of the layout string read from the function_row_physmap
 // sysfs attribute. The values represent the scan codes for each position
 // in the top row, which maps to F-Keys.
@@ -6348,4 +6350,70 @@ TEST_F(EventRewriterRemapToRightClickTest, RemapToRightClickIsDisabled) {
   EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, result.changed_button_flags());
   EXPECT_EQ(notification_count(), 1);
 }
+
+class FKeysRewritingPeripheralCustomizationTest : public EventRewriterTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({features::kInputDeviceSettingsSplit,
+                                           features::kPeripheralCustomization},
+                                          {});
+    EventRewriterTest::SetUp();
+  }
+
+ protected:
+  mojom::MouseSettings mouse_settings_;
+  mojom::KeyboardSettings keyboard_settings_;
+};
+
+TEST_F(FKeysRewritingPeripheralCustomizationTest, FKeysNotRewritten) {
+  EXPECT_CALL(*input_device_settings_controller_mock_,
+              GetKeyboardSettings(kMouseDeviceId))
+      .WillRepeatedly(testing::Return(nullptr));
+  EXPECT_CALL(*input_device_settings_controller_mock_,
+              GetMouseSettings(kMouseDeviceId))
+      .WillRepeatedly(testing::Return(&mouse_settings_));
+
+  // Mice that press F-Keys do not get rewritten to actions.
+  TestExternalGenericKeyboard({
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
+       kMouseDeviceId},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
+       kMouseDeviceId},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
+       kMouseDeviceId},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
+       kMouseDeviceId},
+  });
+
+  // Keyboards that press F-Keys do get rewritten to actions.
+  TestExternalGenericKeyboard({
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
+       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
+        ui::DomKey::BROWSER_BACK},
+       kKeyboardDeviceId},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
+       {ui::VKEY_BROWSER_FORWARD, ui::DomCode::BROWSER_FORWARD, ui::EF_NONE,
+        ui::DomKey::BROWSER_FORWARD},
+       kKeyboardDeviceId},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
+       kKeyboardDeviceId},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_NONE, ui::DomKey::F2},
+       kKeyboardDeviceId},
+  });
+}
+
 }  // namespace ash

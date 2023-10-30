@@ -124,8 +124,18 @@ bool EventRewriterDelegateImpl::TopRowKeysAreFunctionKeys(int device_id) const {
 
   const mojom::KeyboardSettings* settings =
       input_device_settings_controller_->GetKeyboardSettings(device_id);
-  // TODO(dpad): Add metric for when settings are not able to be found.
-  return settings && settings->top_row_are_fkeys;
+  if (settings) {
+    return settings->top_row_are_fkeys;
+  }
+
+  if (ash::features::IsPeripheralCustomizationEnabled()) {
+    // If it is a mouse or graphics tablet, do not rewrite function keys.
+    return input_device_settings_controller_->GetMouseSettings(device_id) ||
+           input_device_settings_controller_->GetGraphicsTabletSettings(
+               device_id);
+  }
+
+  return false;
 }
 
 bool EventRewriterDelegateImpl::IsExtensionCommandRegistered(
@@ -176,8 +186,18 @@ bool EventRewriterDelegateImpl::RewriteMetaTopRowKeyComboEvents(
 
   const mojom::KeyboardSettings* settings =
       input_device_settings_controller_->GetKeyboardSettings(device_id);
-  // TODO(dpad): Add metric for when settings are not able to be found.
-  return !(settings && settings->suppress_meta_fkey_rewrites);
+  if (settings) {
+    return !settings->suppress_meta_fkey_rewrites;
+  }
+
+  if (ash::features::IsPeripheralCustomizationEnabled()) {
+    // If it is a mouse or graphics tablet, do not rewrite function keys.
+    return !(input_device_settings_controller_->GetMouseSettings(device_id) ||
+             input_device_settings_controller_->GetGraphicsTabletSettings(
+                 device_id));
+  }
+
+  return true;
 }
 
 void EventRewriterDelegateImpl::SuppressMetaTopRowKeyComboRewrites(
