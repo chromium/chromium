@@ -188,7 +188,7 @@ remoting::ChromeOsEnterpriseParams GetEnterpriseParameters(
 }
 }  // namespace
 
-class CrdAdminSessionController::CrdHostSession {
+class CrdAdminSessionController::CrdHostSession : private CrdSessionObserver {
  public:
   explicit CrdHostSession(RemotingServiceProxy& remoting_service)
       : CrdHostSession(remoting_service,
@@ -204,10 +204,11 @@ class CrdAdminSessionController::CrdHostSession {
         std::move(success_callback), std::move(error_callback)));
     AddOwnedObserver(std::make_unique<SessionDurationObserver>(
         std::move(session_finished_callback)));
+    AddObserver(this);
   }
   CrdHostSession(const CrdHostSession&) = delete;
   CrdHostSession& operator=(const CrdHostSession&) = delete;
-  ~CrdHostSession() = default;
+  ~CrdHostSession() override = default;
 
   void Start(const SessionParameters& parameters) {
     CRD_DVLOG(3) << "Starting CRD session with parameters " << parameters;
@@ -231,10 +232,14 @@ class CrdAdminSessionController::CrdHostSession {
     observer_proxy_.AddObserver(observer);
   }
 
-  bool IsSessionCurtained() {
+  bool IsSessionCurtained() const {
     return session_parameters_.has_value() &&
            session_parameters_->curtain_local_user_session;
   }
+
+  // We only have a valid, active CRD session (to which the remote admin
+  // can connect/is connected) as long as the CRD host is bound.
+  bool IsHostBound() const { return observer_proxy_.IsBound(); }
 
  private:
   void ReconnectToSession(absl::optional<remoting::SessionId> id) {
@@ -265,6 +270,13 @@ class CrdAdminSessionController::CrdHostSession {
     }
 
     observer_proxy_.Bind(std::move(response->get_observer()));
+  }
+
+  // `CrdSessionObserver` implementation:
+  void OnHostStopped(ResultCode, const std::string&) override {
+    // Signal the CRD host has stopped by unbinding our observer, which will
+    // allow the remoting code to do a full cleanup.
+    observer_proxy_.Unbind();
   }
 
   raw_ref<RemotingServiceProxy> remoting_service_;
@@ -313,7 +325,7 @@ StartCrdSessionJobDelegate& CrdAdminSessionController::GetDelegate() {
 }
 
 bool CrdAdminSessionController::HasActiveSession() const {
-  return active_session_ != nullptr;
+  return active_session_ != nullptr && active_session_->IsHostBound();
 }
 
 void CrdAdminSessionController::TerminateSession() {
@@ -323,7 +335,7 @@ void CrdAdminSessionController::TerminateSession() {
 
 void CrdAdminSessionController::TryToReconnect(
     base::OnceClosure done_callback) {
-  CHECK(!active_session_);
+  CHECK(!HasActiveSession());
 
   active_session_ = std::make_unique<CrdHostSession>(*remoting_service_);
   active_session_->TryToReconnect(std::move(done_callback));
@@ -334,7 +346,7 @@ void CrdAdminSessionController::StartCrdHostAndGetCode(
     AccessCodeCallback success_callback,
     ErrorCallback error_callback,
     SessionEndCallback session_finished_callback) {
-  CHECK(!active_session_);
+  CHECK(!HasActiveSession());
   active_session_ = std::make_unique<CrdHostSession>(
       *remoting_service_, std::move(success_callback),
       std::move(error_callback), std::move(session_finished_callback));

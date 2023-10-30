@@ -36,6 +36,8 @@ class SupportHostObserverProxy : public remoting::mojom::SupportHostObserver {
 
   void Bind(
       mojo::PendingReceiver<remoting::mojom::SupportHostObserver> receiver);
+  void Unbind();
+  bool IsBound() const;
 
   // `remoting::mojom::SupportHostObserver` implementation:
   void OnHostStateStarting() override;

@@ -26,6 +26,14 @@ void SupportHostObserverProxy::Bind(
   receiver_.Bind(std::move(receiver));
 }
 
+void SupportHostObserverProxy::Unbind() {
+  receiver_.reset();
+}
+
+bool SupportHostObserverProxy::IsBound() const {
+  return receiver_.is_bound();
+}
+
 // `remoting::mojom::SupportHostObserver` implementation:
 void SupportHostObserverProxy::OnHostStateStarting() {
   CRD_DVLOG(3) << __func__;
@@ -62,14 +70,15 @@ void SupportHostObserverProxy::OnHostStateDisconnected(
     const absl::optional<std::string>& disconnect_reason) {
   // We always want to log this event, as it could help customers debug why
   // their CRD connection is failing/disconnecting.
-  LOG(WARNING) << "CRD session disconnected with reason: "
+  LOG(WARNING) << "CRD client disconnected with reason: "
                << disconnect_reason.value_or("<none>");
 
   for (auto& observer : observers_) {
     observer.OnClientDisconnected();
   }
 
-  ReportHostStopped(ResultCode::HOST_SESSION_DISCONNECTED, "host disconnected");
+  ReportHostStopped(ResultCode::HOST_SESSION_DISCONNECTED,
+                    "client disconnected");
 }
 
 void SupportHostObserverProxy::OnNatPolicyChanged(
