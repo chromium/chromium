@@ -19,7 +19,7 @@ otherwise manipulates that input, it definitely should be fuzzed!
 1. Find your existing unit test target. Create a new similar target
    alongside. (In the future, you'll be able to add them right into your
    unit test code directly.)
-2. Add `enable_fuzztests = true` to that target's `gn` definition. Add
+2. Add `enable_fuzztest = true` to that target's `gn` definition. Add
    a .cc file.
 3. In the unit tests code, `#include "third_party/fuzztest/src/fuzztest/fuzztest.h"`
 4. Add a `FUZZ_TEST` macro, which might be as simple as `FUZZ_TEST(MyApiTest, ExistingFunctionWhichTakesUntrustedInput)`
@@ -51,14 +51,14 @@ file for now.
 
 It's generally good practice to place a `FUZZ_TEST` alongside associated unit
 tests. If you're using the existing gn [`test` template] then simple add
-an extra `enable_fuzztests = true` line:
+an extra `enable_fuzztest = true` line:
 
 ```
 if (is_linux) {
   test("hypothetical_fuzztests") {
     sources = [ "hypothetical_fuzztests.cc" ]
 
-    enable_fuzztests = true   # add this!
+    enable_fuzztest = true   # add this!
 
     deps = [
       ":hypothetical_component",
@@ -74,6 +74,10 @@ This will:
 * cause the target to be built on all our [fuzzer builders]
 * construct metadata so that [ClusterFuzz] knows how to run the resulting
   binary.
+
+(If you have other code targets, such as `source_set`s, contributing to your
+unit test target they may need to explicitly depend upon `//third_party/fuzztest`
+too.)
 
 ## Adding `FUZZ_TEST`s in the code
 
