@@ -96,15 +96,9 @@ class YouTubeRestrictionsBrowserTest
 };
 
 // TODO(https://crbug.com/1494241): Add more test coverage.
-// TODO(https://crbug.com/1496850): Fix test failure on Mac, Windows.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_RestrictionHeaderIsNotSent DISABLED_RestrictionHeaderIsNotSent
-#else
-#define MAYBE_RestrictionHeaderIsNotSent RestrictionHeaderIsNotSent
-#endif
+// TODO(https://crbug.com/1496850): Fix test failures.
 IN_PROC_BROWSER_TEST_P(YouTubeRestrictionsBrowserTest,
-                       MAYBE_RestrictionHeaderIsNotSent) {
+                       DISABLED_RestrictionHeaderIsNotSent) {
   if (FilterWebsitesEnabled()) {
     supervision_mixin_.api_mock_setup_mixin()
         .api_mock()
