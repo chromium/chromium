@@ -3184,7 +3184,13 @@ bool Element::SkipStyleRecalcForContainer(
 
   if (!child_change.ReattachLayoutTree()) {
     LayoutObject* layout_object = GetLayoutObject();
-    if (!layout_object ||
+    // It may be possible to defer style recalc of the subtree to layout, if
+    // we're guaranteed to visit this element during layout. We can only do this
+    // if WhitespaceChildrenMayChange isn't set, though, because that means that
+    // this element needs to be re-attached. The flag is set when removing DOM
+    // children, and has to be taken care of during style recalc, since it's too
+    // late for the node to reattach itself when laying out itself.
+    if (!layout_object || layout_object->WhitespaceChildrenMayChange() ||
         !WillUpdateSizeContainerDuringLayout(*layout_object)) {
       return false;
     }
