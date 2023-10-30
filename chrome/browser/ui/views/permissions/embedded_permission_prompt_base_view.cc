@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -28,10 +29,21 @@ constexpr int DISTANCE_BUTTON_VERTICAL = 8;
 
 }  // namespace
 
+const std::vector<permissions::PermissionRequest*>&
+EmbeddedPermissionPromptBaseView::Delegate::Requests() const {
+  if (auto permission_prompt_delegate = GetPermissionPromptDelegate()) {
+    return permission_prompt_delegate->Requests();
+  }
+  NOTREACHED();
+  static const std::vector<permissions::PermissionRequest*> empty_requests;
+  return empty_requests;
+}
+
 EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
     Browser* browser,
-    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
-    : PermissionPromptBaseView(browser, delegate),
+    base::WeakPtr<Delegate> delegate)
+    : PermissionPromptBaseView(browser,
+                               delegate->GetPermissionPromptDelegate()),
       browser_(browser),
       delegate_(delegate) {}
 
@@ -58,6 +70,10 @@ void EmbeddedPermissionPromptBaseView::ClosingPermission() {
   if (delegate()) {
     delegate()->Dismiss();
   }
+}
+
+void EmbeddedPermissionPromptBaseView::PrepareToClose() {
+  DialogDelegate::SetCloseCallback(base::DoNothing());
 }
 
 void EmbeddedPermissionPromptBaseView::ShowWidget() {

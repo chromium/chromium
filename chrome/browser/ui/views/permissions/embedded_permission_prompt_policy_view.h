@@ -16,10 +16,9 @@ class Browser;
 class EmbeddedPermissionPromptPolicyView
     : public EmbeddedPermissionPromptBaseView {
  public:
-  EmbeddedPermissionPromptPolicyView(
-      Browser* browser,
-      base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
-      bool is_permission_allowed);
+  EmbeddedPermissionPromptPolicyView(Browser* browser,
+                                     base::WeakPtr<Delegate> delegate,
+                                     bool is_permission_allowed);
   EmbeddedPermissionPromptPolicyView(
       const EmbeddedPermissionPromptPolicyView&) = delete;
   EmbeddedPermissionPromptPolicyView& operator=(

@@ -20,7 +20,7 @@ class EmbeddedPermissionPromptPreviouslyDeniedView
  public:
   EmbeddedPermissionPromptPreviouslyDeniedView(
       Browser* browser,
-      base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate);
+      base::WeakPtr<Delegate> delegate);
   EmbeddedPermissionPromptPreviouslyDeniedView(
       const EmbeddedPermissionPromptPreviouslyDeniedView&) = delete;
   EmbeddedPermissionPromptPreviouslyDeniedView& operator=(

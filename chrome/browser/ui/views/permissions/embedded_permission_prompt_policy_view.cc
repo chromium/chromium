@@ -11,7 +11,7 @@
 
 EmbeddedPermissionPromptPolicyView::EmbeddedPermissionPromptPolicyView(
     Browser* browser,
-    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
+    base::WeakPtr<Delegate> delegate,
     bool is_permission_allowed)
     : EmbeddedPermissionPromptBaseView(browser, delegate),
       is_permission_allowed_(is_permission_allowed) {}
@@ -33,7 +33,7 @@ void EmbeddedPermissionPromptPolicyView::RunButtonCallback(int button_id) {
   DCHECK_EQ(button, ButtonType::kPolicyOK);
 
   if (delegate()) {
-    delegate()->Dismiss();
+    delegate()->Acknowledge();
   }
 }
 

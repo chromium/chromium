@@ -55,6 +55,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void Deny() override {}
   void Dismiss() override {}
   void Ignore() override {}
+  void FinalizeCurrentRequests() override {}
   void OpenHelpCenterLink(const ui::Event& event) override {}
   void PreIgnoreQuietPrompt() override {}
   void SetManageClicked() override {}

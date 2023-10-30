@@ -49,6 +49,10 @@ absl::optional<gfx::Rect> MockPermissionPrompt::GetViewBoundsInScreen() const {
   return absl::make_optional<gfx::Rect>(100, 100, 100, 100);
 }
 
+bool MockPermissionPrompt::ShouldFinalizeRequestAfterDecided() const {
+  return true;
+}
+
 MockPermissionPrompt::MockPermissionPrompt(MockPermissionPromptFactory* factory,
                                            Delegate* delegate)
     : factory_(factory), delegate_(delegate) {

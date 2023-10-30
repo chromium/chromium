@@ -70,6 +70,10 @@ class PermissionPrompt {
     virtual void Dismiss() = 0;
     virtual void Ignore() = 0;
 
+    // Called to explicitly finalize the request, if
+    // |ShouldFinalizeRequestAfterDecided| returns false.
+    virtual void FinalizeCurrentRequests() = 0;
+
     virtual void OpenHelpCenterLink(const ui::Event& event) = 0;
 
     // This method preemptively ignores a permission request but does not
@@ -153,6 +157,11 @@ class PermissionPrompt {
 
   // Get the prompt view bounds in screen coordinates.
   virtual absl::optional<gfx::Rect> GetViewBoundsInScreen() const = 0;
+
+  // Get whether the permission request is allowed to be finalized as soon a
+  // decision is transmitted. If this returns `false` the delegate should wait
+  // for an explicit |Delegate::FinalizeCurrentRequests()| call to be made.
+  virtual bool ShouldFinalizeRequestAfterDecided() const = 0;
 };
 
 }  // namespace permissions

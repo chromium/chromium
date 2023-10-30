@@ -41,9 +41,20 @@ class Browser;
 
 class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
  public:
-  EmbeddedPermissionPromptBaseView(
-      Browser* browser,
-      base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate);
+  class Delegate {
+   public:
+    virtual void Allow() = 0;
+    virtual void AllowThisTime() = 0;
+    virtual void Dismiss() = 0;
+    virtual void Acknowledge() = 0;
+    virtual void StopAllowing() = 0;
+    virtual base::WeakPtr<permissions::PermissionPrompt::Delegate>
+    GetPermissionPromptDelegate() const = 0;
+    const std::vector<permissions::PermissionRequest*>& Requests() const;
+  };
+
+  EmbeddedPermissionPromptBaseView(Browser* browser,
+                                   base::WeakPtr<Delegate> delegate);
   EmbeddedPermissionPromptBaseView(const EmbeddedPermissionPromptBaseView&) =
       delete;
   EmbeddedPermissionPromptBaseView& operator=(
@@ -54,6 +65,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   void UpdateAnchorPosition();
   void ShowWidget();
   void ClosingPermission();
+  void PrepareToClose();
 
   // views::BubbleDialogDelegateView:
   bool ShouldShowCloseButton() const override;
@@ -92,13 +104,8 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
       const = 0;
   virtual std::vector<ButtonConfiguration> GetButtonsConfiguration() const = 0;
 
-  base::WeakPtr<permissions::PermissionPrompt::Delegate>& delegate() {
-    return delegate_;
-  }
-  const base::WeakPtr<permissions::PermissionPrompt::Delegate>& delegate()
-      const {
-    return delegate_;
-  }
+  base::WeakPtr<Delegate>& delegate() { return delegate_; }
+  const base::WeakPtr<Delegate>& delegate() const { return delegate_; }
 
  private:
   void CreateWidget();
@@ -107,7 +114,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
                  const ButtonConfiguration& button);
 
   const raw_ptr<Browser> browser_;
-  base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate_;
+  base::WeakPtr<Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_BASE_VIEW_H_

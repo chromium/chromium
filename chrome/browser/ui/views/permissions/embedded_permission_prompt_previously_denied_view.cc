@@ -15,7 +15,7 @@
 EmbeddedPermissionPromptPreviouslyDeniedView::
     EmbeddedPermissionPromptPreviouslyDeniedView(
         Browser* browser,
-        base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
+        base::WeakPtr<Delegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptPreviouslyDeniedView::
@@ -45,11 +45,11 @@ void EmbeddedPermissionPromptPreviouslyDeniedView::RunButtonCallback(
   }
 
   if (button == ButtonType::kAllowThisTime) {
-    delegate()->AcceptThisTime();
+    delegate()->AllowThisTime();
   }
 
   if (button == ButtonType::kAllow) {
-    delegate()->Accept();
+    delegate()->Allow();
   }
 }
 

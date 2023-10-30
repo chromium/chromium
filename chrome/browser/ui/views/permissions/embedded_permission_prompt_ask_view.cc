@@ -13,7 +13,7 @@
 
 EmbeddedPermissionPromptAskView::EmbeddedPermissionPromptAskView(
     Browser* browser,
-    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
+    base::WeakPtr<Delegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptAskView::~EmbeddedPermissionPromptAskView() = default;
@@ -33,9 +33,9 @@ void EmbeddedPermissionPromptAskView::RunButtonCallback(int button_id) {
 
   if (delegate()) {
     if (button == ButtonType::kAllowThisTime) {
-      delegate()->AcceptThisTime();
+      delegate()->AllowThisTime();
     } else if (button == ButtonType::kAllow) {
-      delegate()->Accept();
+      delegate()->Allow();
     }
   }
 }

@@ -43,6 +43,7 @@ class PermissionPromptAndroid : public PermissionPrompt {
   bool UpdateAnchor() override;
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
   absl::optional<gfx::Rect> GetViewBoundsInScreen() const override;
+  bool ShouldFinalizeRequestAfterDecided() const override;
 
   void Closing();
   void Accept();

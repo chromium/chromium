@@ -39,6 +39,7 @@ class PermissionPromptDesktop : public permissions::PermissionPrompt {
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override = 0;
   absl::optional<gfx::Rect> GetViewBoundsInScreen() const override;
+  bool ShouldFinalizeRequestAfterDecided() const override;
 
   virtual views::Widget* GetPromptBubbleWidgetForTesting();
 

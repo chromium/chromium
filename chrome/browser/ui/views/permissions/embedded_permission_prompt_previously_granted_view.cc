@@ -14,7 +14,7 @@
 EmbeddedPermissionPromptPreviouslyGrantedView::
     EmbeddedPermissionPromptPreviouslyGrantedView(
         Browser* browser,
-        base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
+        base::WeakPtr<Delegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptPreviouslyGrantedView::
@@ -39,12 +39,11 @@ void EmbeddedPermissionPromptPreviouslyGrantedView::RunButtonCallback(
 
   ButtonType button = GetButtonType(button_id);
   if (button == ButtonType::kContinueAllowing) {
-    // The permission is already allowed.
-    return;
+    delegate()->Acknowledge();
   }
 
   if (button == ButtonType::kStopAllowing) {
-    delegate()->Deny();
+    delegate()->StopAllowing();
   }
 }
 

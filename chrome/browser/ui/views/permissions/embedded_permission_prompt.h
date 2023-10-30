@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
+#include "components/permissions/permission_prompt.h"
 
 class Browser;
 
@@ -14,11 +16,13 @@ namespace content {
 class WebContents;
 }
 
-class EmbeddedPermissionPrompt : public PermissionPromptDesktop {
+class EmbeddedPermissionPrompt
+    : public PermissionPromptDesktop,
+      public EmbeddedPermissionPromptBaseView::Delegate {
  public:
   EmbeddedPermissionPrompt(Browser* browser,
                            content::WebContents* web_contents,
-                           Delegate* delegate);
+                           permissions::PermissionPrompt::Delegate* delegate);
   ~EmbeddedPermissionPrompt() override;
   EmbeddedPermissionPrompt(const EmbeddedPermissionPrompt&) = delete;
   EmbeddedPermissionPrompt& operator=(const EmbeddedPermissionPrompt&) = delete;
@@ -50,20 +54,36 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop {
     kAdministratorDenied = 7,
   };
 
+  void CloseCurrentViewAndMaybeShowNext(bool first_prompt);
+
+  void CloseView();
+
   // permissions::PermissionPrompt:
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
+  bool ShouldFinalizeRequestAfterDecided() const override;
+
+  // EmbeddedPermissionPromptBaseView::Delegate
+  void Allow() override;
+  void AllowThisTime() override;
+  void Dismiss() override;
+  void Acknowledge() override;
+  void StopAllowing() override;
+  base::WeakPtr<permissions::PermissionPrompt::Delegate>
+  GetPermissionPromptDelegate() const override;
 
  private:
   static Variant DeterminePromptVariant(
       ContentSetting setting,
       const content_settings::SettingInfo& info);
 
-  Variant embedded_prompt_variant_;
+  Variant embedded_prompt_variant_ = Variant::kUninitialized;
   raw_ptr<EmbeddedPermissionPromptBaseView> prompt_view_;
 
   raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
+
+  base::WeakPtrFactory<EmbeddedPermissionPrompt> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_

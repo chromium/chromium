@@ -40,6 +40,10 @@ absl::optional<gfx::Rect> PermissionPromptAndroid::GetViewBoundsInScreen()
   return absl::nullopt;
 }
 
+bool PermissionPromptAndroid::ShouldFinalizeRequestAfterDecided() const {
+  return true;
+}
+
 void PermissionPromptAndroid::Closing() {
   delegate_->Dismiss();
 }

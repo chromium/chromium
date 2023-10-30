@@ -20,7 +20,7 @@ class EmbeddedPermissionPromptShowSystemPromptView
  public:
   EmbeddedPermissionPromptShowSystemPromptView(
       Browser* browser,
-      base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate);
+      base::WeakPtr<Delegate> delegate);
   EmbeddedPermissionPromptShowSystemPromptView(
       const EmbeddedPermissionPromptShowSystemPromptView&) = delete;
   EmbeddedPermissionPromptShowSystemPromptView& operator=(

@@ -42,67 +42,19 @@ bool IsPermissionSetByAdministator(ContentSetting setting,
 EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
     Browser* browser,
     content::WebContents* web_contents,
-    Delegate* delegate)
+    permissions::PermissionPrompt::Delegate* delegate)
     : PermissionPromptDesktop(browser, web_contents, delegate),
       delegate_(delegate) {
-  raw_ptr<HostContentSettingsMap> map =
-      HostContentSettingsMapFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  content_settings::SettingInfo info;
-
-  embedded_prompt_variant_ = Variant::kUninitialized;
-  for (const auto* request : delegate->Requests()) {
-    ContentSettingsType type = request->GetContentSettingsType();
-    ContentSetting setting =
-        map->GetContentSetting(delegate->GetRequestingOrigin(),
-                               delegate_->GetEmbeddingOrigin(), type, &info);
-    Variant current_request_variant = DeterminePromptVariant(setting, info);
-    embedded_prompt_variant_ = HigherPriorityVariant(embedded_prompt_variant_,
-                                                     current_request_variant);
-  }
-
-  switch (embedded_prompt_variant_) {
-    case Variant::kAsk:
-      prompt_view_ =
-          new EmbeddedPermissionPromptAskView(browser, delegate->GetWeakPtr());
-      break;
-    case Variant::kPreviouslyGranted:
-      prompt_view_ = new EmbeddedPermissionPromptPreviouslyGrantedView(
-          browser, delegate->GetWeakPtr());
-      break;
-    case Variant::kPreviouslyDenied:
-      prompt_view_ = new EmbeddedPermissionPromptPreviouslyDeniedView(
-          browser, delegate->GetWeakPtr());
-      break;
-    case Variant::kOsPrompt:
-      prompt_view_ = new EmbeddedPermissionPromptShowSystemPromptView(
-          browser, delegate->GetWeakPtr());
-      break;
-    case Variant::kOsSystemSettings:
-      prompt_view_ = new EmbeddedPermissionPromptSystemSettingsView(
-          browser, delegate->GetWeakPtr());
-      break;
-    case Variant::kAdministratorGranted:
-      prompt_view_ = new EmbeddedPermissionPromptPolicyView(
-          browser, delegate->GetWeakPtr(), /*is_permission_allowed=*/true);
-      break;
-    case Variant::kAdministratorDenied:
-      prompt_view_ = new EmbeddedPermissionPromptPolicyView(
-          browser, delegate->GetWeakPtr(), /*is_permission_allowed=*/false);
-      break;
-    case Variant::kUninitialized:
-      NOTREACHED();
-  }
-
-  if (prompt_view_) {
-    prompt_view_->Show();
-  }
+  CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/true);
 }
 
 EmbeddedPermissionPrompt::~EmbeddedPermissionPrompt() {
-  if (prompt_view_) {
-    prompt_view_->GetWidget()->Close();
-  }
+  CloseView();
+}
+
+base::WeakPtr<permissions::PermissionPrompt::Delegate>
+EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
+  return delegate_->GetWeakPtr();
 }
 
 // static
@@ -129,6 +81,82 @@ EmbeddedPermissionPrompt::DeterminePromptVariant(
   return Variant::kUninitialized;
 }
 
+void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
+    bool first_prompt) {
+  if (!first_prompt) {
+    CloseView();
+  }
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  content_settings::SettingInfo info;
+
+  embedded_prompt_variant_ = Variant::kUninitialized;
+  for (const auto* request : delegate()->Requests()) {
+    ContentSettingsType type = request->GetContentSettingsType();
+    ContentSetting setting =
+        map->GetContentSetting(delegate()->GetRequestingOrigin(),
+                               delegate()->GetEmbeddingOrigin(), type, &info);
+    Variant current_request_variant = DeterminePromptVariant(setting, info);
+    embedded_prompt_variant_ = HigherPriorityVariant(embedded_prompt_variant_,
+                                                     current_request_variant);
+  }
+
+  switch (embedded_prompt_variant_) {
+    case Variant::kAsk:
+      prompt_view_ = new EmbeddedPermissionPromptAskView(
+          browser(), weak_factory_.GetWeakPtr());
+      break;
+    case Variant::kPreviouslyGranted:
+      if (first_prompt) {
+        prompt_view_ = new EmbeddedPermissionPromptPreviouslyGrantedView(
+            browser(), weak_factory_.GetWeakPtr());
+      } else {
+        delegate()->FinalizeCurrentRequests();
+        return;
+      }
+      break;
+    case Variant::kPreviouslyDenied:
+      prompt_view_ = new EmbeddedPermissionPromptPreviouslyDeniedView(
+          browser(), weak_factory_.GetWeakPtr());
+      break;
+    case Variant::kOsPrompt:
+      prompt_view_ = new EmbeddedPermissionPromptShowSystemPromptView(
+          browser(), weak_factory_.GetWeakPtr());
+      break;
+    case Variant::kOsSystemSettings:
+      prompt_view_ = new EmbeddedPermissionPromptSystemSettingsView(
+          browser(), weak_factory_.GetWeakPtr());
+      break;
+    case Variant::kAdministratorGranted:
+      prompt_view_ = new EmbeddedPermissionPromptPolicyView(
+          browser(), weak_factory_.GetWeakPtr(),
+          /*is_permission_allowed=*/true);
+      break;
+    case Variant::kAdministratorDenied:
+      prompt_view_ = new EmbeddedPermissionPromptPolicyView(
+          browser(), weak_factory_.GetWeakPtr(),
+          /*is_permission_allowed=*/false);
+      break;
+    case Variant::kUninitialized:
+      NOTREACHED();
+  }
+
+  if (prompt_view_) {
+    prompt_view_->Show();
+  }
+}
+
+void EmbeddedPermissionPrompt::CloseView() {
+  if (!prompt_view_) {
+    return;
+  }
+
+  prompt_view_->PrepareToClose();
+  prompt_view_->GetWidget()->Close();
+  prompt_view_ = nullptr;
+}
+
 EmbeddedPermissionPrompt::TabSwitchingBehavior
 EmbeddedPermissionPrompt::GetTabSwitchingBehavior() {
   return TabSwitchingBehavior::kKeepPromptAlive;
@@ -137,4 +165,34 @@ EmbeddedPermissionPrompt::GetTabSwitchingBehavior() {
 permissions::PermissionPromptDisposition
 EmbeddedPermissionPrompt::GetPromptDisposition() const {
   return permissions::PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE;
+}
+
+bool EmbeddedPermissionPrompt::ShouldFinalizeRequestAfterDecided() const {
+  return false;
+}
+
+void EmbeddedPermissionPrompt::Allow() {
+  delegate_->Accept();
+  CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
+}
+
+void EmbeddedPermissionPrompt::AllowThisTime() {
+  delegate_->AcceptThisTime();
+  CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
+}
+
+void EmbeddedPermissionPrompt::Dismiss() {
+  delegate_->Dismiss();
+  delegate_->FinalizeCurrentRequests();
+}
+
+void EmbeddedPermissionPrompt::Acknowledge() {
+  // TOOO(crbug.com/1462930): Find how to distinguish between a dismiss and an
+  // acknowledge.
+  delegate_->FinalizeCurrentRequests();
+}
+
+void EmbeddedPermissionPrompt::StopAllowing() {
+  // TODO(crbug.com/1462930): Implement.
+  NOTREACHED();
 }

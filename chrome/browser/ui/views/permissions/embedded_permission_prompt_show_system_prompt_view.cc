@@ -15,7 +15,7 @@
 EmbeddedPermissionPromptShowSystemPromptView::
     EmbeddedPermissionPromptShowSystemPromptView(
         Browser* browser,
-        base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
+        base::WeakPtr<Delegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptShowSystemPromptView::
