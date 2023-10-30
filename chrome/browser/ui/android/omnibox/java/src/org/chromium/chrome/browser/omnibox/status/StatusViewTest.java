@@ -242,35 +242,6 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @Feature({"Omnibox"})
-    public void testSearchEngineLogo_noIncognito_statusDimensions() {
-        doReturn(true).when(mSearchEngineLogoUtils).shouldShowSearchEngineLogo(false);
-        runOnUiThreadBlocking(
-                () -> {
-                    mStatusModel.set(
-                            StatusProperties.STATUS_ICON_RESOURCE,
-                            new StatusIconResource(R.drawable.ic_logo_googleg_24dp, 0));
-                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
-                });
-        int expectedWidth =
-                getActivity()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
-        onView(withId(R.id.location_bar_status_icon))
-                .check(
-                        (view, e) -> {
-                            assertEquals(expectedWidth, view.getMeasuredWidth());
-                        });
-        int expectedPadding = 0;
-        onView(withId(R.id.location_bar_status))
-                .check(
-                        (view, e) -> {
-                            assertEquals(expectedPadding, view.getPaddingEnd());
-                        });
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Omnibox"})
     public void testStatusViewAnimationStatusResetOnHide() {
         runOnUiThreadBlocking(
                 () -> {

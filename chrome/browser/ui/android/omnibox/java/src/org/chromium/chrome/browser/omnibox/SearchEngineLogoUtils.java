@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -25,15 +23,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.HashMap;
-import java.util.Map;
 
 /** Collection of shared code for displaying search engine logos. */
 public class SearchEngineLogoUtils {
@@ -43,13 +38,17 @@ public class SearchEngineLogoUtils {
 
     private static SearchEngineLogoUtils sInstance;
     // Cached values to prevent duplicate work.
-    private static Bitmap sCachedComposedBackground;
+    private static Bitmap sCachedComposedImage;
     private static String sCachedComposedBackgroundLogoUrl;
     private static int sSearchEngineLogoTargetSizePixels;
     private static int sSearchEngineLogoComposedSizePixels;
     private Boolean mNeedToCheckForSearchEnginePromo;
 
-    /** Get the singleton instance of SearchEngineLogoUtils */
+    /**
+     * Get the singleton instance of SearchEngineLogoUtils. Avoid using in new code; instead - rely
+     * on plumbing supplied instance.
+     */
+    @Deprecated
     public static SearchEngineLogoUtils getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
@@ -60,7 +59,6 @@ public class SearchEngineLogoUtils {
 
     // Lazy initialization for native-bound dependencies.
     private FaviconHelper mFaviconHelper;
-    private RoundedIconGenerator mRoundedIconGenerator;
     private boolean mDoesSearchProviderHaveLogo;
 
     /**
@@ -68,6 +66,7 @@ public class SearchEngineLogoUtils {
      * persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
+    @VisibleForTesting
     @IntDef({
         Events.FETCH_NON_GOOGLE_LOGO_REQUEST,
         Events.FETCH_FAILED_NULL_URL,
@@ -77,7 +76,7 @@ public class SearchEngineLogoUtils {
         Events.FETCH_SUCCESS
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface Events {
+    @interface Events {
         int FETCH_NON_GOOGLE_LOGO_REQUEST = 0;
         int FETCH_FAILED_NULL_URL = 1;
         int FETCH_FAILED_FAVICON_HELPER_ERROR = 2;
@@ -105,7 +104,9 @@ public class SearchEngineLogoUtils {
      * @param templateUrlService The TemplateUrlService to use to derive the logo url.
      * @return the search URL of the current DSE or null if one cannot be found.
      */
-    public @Nullable String getSearchLogoUrl(@Nullable TemplateUrlService templateUrlService) {
+    @VisibleForTesting
+    @Nullable
+    String getSearchLogoUrl(@Nullable TemplateUrlService templateUrlService) {
         if (templateUrlService == null) return null;
 
         String logoUrlWithPath = templateUrlService.getUrlForSearchQuery(DUMMY_URL_QUERY);
@@ -121,7 +122,7 @@ public class SearchEngineLogoUtils {
      * @param resources Android resources object, used to read the dimension.
      * @return The size that the logo favicon should be.
      */
-    public int getSearchEngineLogoSizePixels(@NonNull Resources resources) {
+    private int getSearchEngineLogoSizePixels(@NonNull Resources resources) {
         if (sSearchEngineLogoTargetSizePixels == 0) {
             sSearchEngineLogoTargetSizePixels =
                     resources.getDimensionPixelSize(
@@ -129,20 +130,6 @@ public class SearchEngineLogoUtils {
         }
 
         return sSearchEngineLogoTargetSizePixels;
-    }
-
-    /**
-     * @param resources Android resources object, used to read the dimension.
-     * @return The total size the logo will be on screen.
-     */
-    public static int getSearchEngineLogoComposedSizePixels(@NonNull Resources resources) {
-        if (sSearchEngineLogoComposedSizePixels == 0) {
-            sSearchEngineLogoComposedSizePixels =
-                    resources.getDimensionPixelSize(
-                            R.dimen.omnibox_search_engine_logo_composed_size);
-        }
-
-        return sSearchEngineLogoComposedSizePixels;
     }
 
     /**
@@ -187,9 +174,9 @@ public class SearchEngineLogoUtils {
         }
 
         // Return a cached copy if it's available.
-        if (sCachedComposedBackground != null && sCachedComposedBackgroundLogoUrl.equals(logoUrl)) {
+        if (sCachedComposedImage != null && sCachedComposedBackgroundLogoUrl.equals(logoUrl)) {
             recordEvent(Events.FETCH_SUCCESS_CACHE_HIT);
-            return Promise.fulfilled(new StatusIconResource(logoUrl, sCachedComposedBackground, 0));
+            return Promise.fulfilled(new StatusIconResource(logoUrl, sCachedComposedImage, 0));
         }
 
         Promise<StatusIconResource> promise = new Promise<>();
@@ -257,13 +244,8 @@ public class SearchEngineLogoUtils {
     }
 
     /**
-     * Process the image returned from a network fetch or cache hit. This method processes the logo
-     * to make it eligible for display. The logo is resized to ensure it will fill the required
-     * size. This is done because the icon returned from native could be a different size. If the
-     * rounded edges variant is active, then a smaller icon is downloaded and drawn on top of a
-     * circle background. This looks better and also has more predictable behavior than rounding the
-     * edges of the full size icon. The circle background is a solid color made up of the result
-     * from a call to getMostCommonEdgeColor(...).
+     * Process the image returned from a network fetch or cache hit. Reduces the size of the
+     * retrieved favicon to reduce memory footprint.
      *
      * @param logoUrl The url for the given logo.
      * @param image The logo to process.
@@ -277,89 +259,12 @@ public class SearchEngineLogoUtils {
             Promise<StatusIconResource> promise) {
         // Scale the logo up to the desired size.
         int logoSizePixels = getSearchEngineLogoSizePixels(resources);
-        Bitmap scaledIcon =
-                Bitmap.createScaledBitmap(
-                        image,
-                        getSearchEngineLogoSizePixels(resources),
-                        getSearchEngineLogoSizePixels(resources),
-                        true);
+        Bitmap scaledIcon = Bitmap.createScaledBitmap(image, logoSizePixels, logoSizePixels, true);
 
-        int composedSizePixels = getSearchEngineLogoComposedSizePixels(resources);
-        if (mRoundedIconGenerator == null) {
-            mRoundedIconGenerator =
-                    new RoundedIconGenerator(
-                            composedSizePixels,
-                            composedSizePixels,
-                            composedSizePixels,
-                            Color.TRANSPARENT,
-                            0);
-        }
-        int color =
-                (image.getWidth() == 0 || image.getHeight() == 0)
-                        ? Color.TRANSPARENT
-                        : getMostCommonEdgeColor(image);
-        mRoundedIconGenerator.setBackgroundColor(color);
-
-        // Generate a rounded background with no text.
-        Bitmap composedIcon = mRoundedIconGenerator.generateIconForText("");
-        Canvas canvas = new Canvas(composedIcon);
-        // Draw the logo in the middle of the generated background.
-        int dx = (composedSizePixels - logoSizePixels) / 2;
-        canvas.drawBitmap(scaledIcon, dx, dx, null);
-
-        // Cache the result icon to reduce future work.
-        sCachedComposedBackground = composedIcon;
+        sCachedComposedImage = image;
         sCachedComposedBackgroundLogoUrl = logoUrl;
 
-        promise.fulfill(new StatusIconResource(logoUrl, sCachedComposedBackground, 0));
-    }
-
-    /**
-     * Samples the edges of given bitmap and returns the most common color.
-     *
-     * @param icon Bitmap to be sampled.
-     */
-    @VisibleForTesting
-    int getMostCommonEdgeColor(Bitmap icon) {
-        Map<Integer, Integer> colorCount = new HashMap<>();
-        for (int i = 0; i < icon.getWidth(); i++) {
-            // top edge
-            int color = icon.getPixel(i, 0);
-            if (!colorCount.containsKey(color)) colorCount.put(color, 0);
-            colorCount.put(color, colorCount.get(color) + 1);
-
-            // bottom edge
-            color = icon.getPixel(i, icon.getHeight() - 1);
-            if (!colorCount.containsKey(color)) colorCount.put(color, 0);
-            colorCount.put(color, colorCount.get(color) + 1);
-
-            // Measure the lateral edges offset by 1 on each side.
-            if (i > 0 && i < icon.getWidth() - 1) {
-                // left edge
-                color = icon.getPixel(0, i);
-                if (!colorCount.containsKey(color)) colorCount.put(color, 0);
-                colorCount.put(color, colorCount.get(color) + 1);
-
-                // right edge
-                color = icon.getPixel(icon.getWidth() - 1, i);
-                if (!colorCount.containsKey(color)) colorCount.put(color, 0);
-                colorCount.put(color, colorCount.get(color) + 1);
-            }
-        }
-
-        // Find the most common color out of the map.
-        int maxKey = Color.TRANSPARENT;
-        int maxVal = -1;
-        for (int color : colorCount.keySet()) {
-            int count = colorCount.get(color);
-            if (count > maxVal) {
-                maxKey = color;
-                maxVal = count;
-            }
-        }
-        assert maxVal > -1;
-
-        return maxKey;
+        promise.fulfill(new StatusIconResource(logoUrl, sCachedComposedImage, 0));
     }
 
     /**
@@ -375,20 +280,15 @@ public class SearchEngineLogoUtils {
     }
 
     /** Set the favicon helper for testing. */
+    @VisibleForTesting
     void setFaviconHelperForTesting(FaviconHelper faviconHelper) {
         var oldValue = mFaviconHelper;
         mFaviconHelper = faviconHelper;
         ResettersForTesting.register(() -> mFaviconHelper = oldValue);
     }
 
-    /** Set the RoundedIconGenerator for testing. */
-    void setRoundedIconGeneratorForTesting(RoundedIconGenerator roundedIconGenerator) {
-        var oldValue = mRoundedIconGenerator;
-        mRoundedIconGenerator = roundedIconGenerator;
-        ResettersForTesting.register(() -> mRoundedIconGenerator = oldValue);
-    }
-
     /** Set the instance for testing. */
+    @VisibleForTesting
     static void setInstanceForTesting(SearchEngineLogoUtils instance) {
         var oldValue = sInstance;
         sInstance = instance;
@@ -396,9 +296,10 @@ public class SearchEngineLogoUtils {
     }
 
     /** Reset the cache values for testing. */
+    @VisibleForTesting
     static void resetForTesting() {
         sInstance = null;
-        sCachedComposedBackground = null;
+        sCachedComposedImage = null;
         sCachedComposedBackgroundLogoUrl = null;
     }
 

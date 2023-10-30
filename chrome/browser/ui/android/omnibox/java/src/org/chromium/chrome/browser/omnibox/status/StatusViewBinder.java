@@ -28,7 +28,6 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             view.setSeparatorColor(model.get(StatusProperties.SEPARATOR_COLOR));
         } else if (StatusProperties.SHOW_STATUS_ICON.equals(propertyKey)) {
             applyStatusIconAndTooltipProperties(model, view);
-            ;
         } else if (StatusProperties.STATUS_VIEW_TOOLTIP_TEXT.equals(propertyKey)) {
             applyStatusIconAndTooltipProperties(model, view);
         } else if (StatusProperties.STATUS_VIEW_HOVER_HIGHLIGHT.equals(propertyKey)) {
