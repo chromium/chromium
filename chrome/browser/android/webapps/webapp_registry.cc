@@ -56,7 +56,7 @@ std::vector<std::string> WebappRegistry::GetOriginsWithInstalledApp() {
 }
 
 std::vector<std::unique_ptr<sync_pb::WebApkSpecifics>>
-WebappRegistry::GetWebApkSpecifics() {
+WebappRegistry::GetWebApkSpecifics() const {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   ScopedJavaLocalRef<jobjectArray> java_result =

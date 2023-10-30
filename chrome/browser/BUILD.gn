@@ -3047,6 +3047,8 @@ static_library("browser") {
       "android/webapk/webapk_install_service_factory.h",
       "android/webapk/webapk_installer.cc",
       "android/webapk/webapk_installer.h",
+      "android/webapk/webapk_specifics_fetcher.cc",
+      "android/webapk/webapk_specifics_fetcher.h",
       "android/webapk/webapk_sync_bridge.cc",
       "android/webapk/webapk_sync_bridge.h",
       "android/webapk/webapk_update_manager.cc",
@@ -8390,6 +8392,8 @@ static_library("test_support") {
 
   if (is_android) {
     sources += [
+      "android/webapk/test/fake_webapk_specifics_fetcher.cc",
+      "android/webapk/test/fake_webapk_specifics_fetcher.h",
       "download/android/mock_download_controller.cc",
       "download/android/mock_download_controller.h",
       "fast_checkout/mock_fast_checkout_capabilities_fetcher.cc",

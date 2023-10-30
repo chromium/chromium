@@ -45,7 +45,7 @@ class WebappRegistry {
   // Returns a vector of |sync_pb::WebApkSpecifics| with information for each
   // installed WebAPK.
   virtual std::vector<std::unique_ptr<sync_pb::WebApkSpecifics>>
-  GetWebApkSpecifics();
+  GetWebApkSpecifics() const;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_
