@@ -9,7 +9,7 @@
 
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
-#include "chrome/browser/android/webapk/fake_webapk_database_factory.h"
+#include "chrome/browser/android/webapk/test/fake_webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_registrar.h"
 #include "chrome/test/base/testing_browser_process.h"

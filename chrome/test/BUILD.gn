@@ -7361,7 +7361,7 @@ test("unit_tests") {
       "//chrome/browser/android/auxiliary_search/proto",
       "//chrome/browser/android/httpclient:unittests",
       "//chrome/browser/android/webapk:webapk_sources",
-      "//chrome/browser/android/webapk:webapk_test_support",
+      "//chrome/browser/android/webapk/test:webapk_test_support",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/long_screenshots:services",

@@ -9,7 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/android/webapk/fake_webapk_database_factory.h"
+#include "chrome/browser/android/webapk/test/fake_webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "components/sync/model/data_batch.h"

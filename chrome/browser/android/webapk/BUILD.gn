@@ -43,17 +43,3 @@ source_set("webapk_sources") {
   ]
   defines = [ "REQUEST_UPDATE_FOR_SHELL_APK_VERSION_VALUE=$request_update_for_shell_apk_version" ]
 }
-
-source_set("webapk_test_support") {
-  testonly = true
-  sources = [
-    "fake_webapk_database_factory.cc",
-    "fake_webapk_database_factory.h",
-  ]
-  deps = [
-    ":webapk_sources",
-    "//base/test:test_support",
-    "//chrome/browser",
-    "//components/sync:test_support",
-  ]
-}
