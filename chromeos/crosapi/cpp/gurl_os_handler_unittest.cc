@@ -45,11 +45,11 @@ TEST(GurlOsHandlerUtilsTest, SanitizeAshUrl) {
   // Valid examples.
   EXPECT_EQ(SanitizeAshUrl(GURL("chrome://version")), GURL("chrome://version"));
   EXPECT_EQ(SanitizeAshUrl(GURL("chrome://abc/def/ghi?jkl")),
-            GURL("chrome://abc/def/ghi"));  // Query removed.
+            GURL("chrome://abc/def/ghi?jkl"));  // Query preserved.
   EXPECT_EQ(SanitizeAshUrl(GURL("chrome://abc:123/def/ghi?jkl#mno")),
-            GURL("chrome://abc/def/ghi"));  // Port and ref too.
+            GURL("chrome://abc/def/ghi?jkl"));  // Port and ref removed.
   EXPECT_EQ(SanitizeAshUrl(GURL("https://abc:123/def/ghi?jkl#mno")),
-            GURL("https://abc/def/ghi"));  // Here too.
+            GURL("https://abc/def/ghi?jkl"));  // Here too.
 }
 
 TEST(GurlOsHandlerUtilsTest, IsAshUrlInList) {

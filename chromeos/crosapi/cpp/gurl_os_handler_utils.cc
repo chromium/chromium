@@ -22,24 +22,32 @@ const char kChromeUIOSSettingsHost[] = "os-settings";
 // The start of the host portion of a GURL which starts with the os scheme.
 const size_t kHostStart = sizeof(kOsUrlPrefix) - 1;
 
-GURL NormalizeAshUrl(GURL gurl) {
-  if (!gurl.is_valid() || !gurl.has_host()) {
+GURL NormalizeAshUrl(GURL url,
+                     bool keep_path = false,
+                     bool keep_query = false) {
+  if (!url.is_valid() || !url.has_host()) {
     return GURL();
   }
 
-  if (!gurl.has_ref() && !gurl.has_username() && !gurl.has_password() &&
-      !gurl.has_query() && !gurl.has_port() && !gurl.has_path()) {
-    return gurl;
+  // Shortcut.
+  if (!url.has_ref() && !url.has_username() && !url.has_password() &&
+      (keep_query || !url.has_query()) && !url.has_port() &&
+      (keep_path || !url.has_path())) {
+    return url;
   }
 
   GURL::Replacements replacements;
   replacements.ClearPassword();
-  replacements.ClearPath();
+  if (!keep_path) {
+    replacements.ClearPath();
+  }
   replacements.ClearPort();
-  replacements.ClearQuery();
+  if (!keep_query) {
+    replacements.ClearQuery();
+  }
   replacements.ClearRef();
   replacements.ClearUsername();
-  return gurl.ReplaceComponents(replacements);
+  return url.ReplaceComponents(replacements);
 }
 
 }  // namespace
@@ -48,25 +56,8 @@ namespace crosapi {
 
 namespace gurl_os_handler_utils {
 
-// Like NormalizeAshUrl but keep path.
-GURL SanitizeAshUrl(const GURL& gurl) {
-  if (!gurl.is_valid() || !gurl.has_host()) {
-    return GURL();
-  }
-
-  // Shortcut.
-  if (!gurl.has_ref() && !gurl.has_username() && !gurl.has_password() &&
-      !gurl.has_query() && !gurl.has_port()) {
-    return gurl;
-  }
-
-  GURL::Replacements replacements;
-  replacements.ClearRef();
-  replacements.ClearUsername();
-  replacements.ClearPassword();
-  replacements.ClearQuery();
-  replacements.ClearPort();
-  return gurl.ReplaceComponents(replacements);
+GURL SanitizeAshUrl(const GURL& url) {
+  return NormalizeAshUrl(url, /*keep_path*/ true, /*keep_query*/ true);
 }
 
 GURL GetAshUrlFromLacrosUrl(GURL url) {
@@ -86,17 +77,13 @@ GURL GetAshUrlFromLacrosUrl(GURL url) {
   return url;
 }
 
-bool IsAshUrlInList(const GURL& test_url, const std::vector<GURL>& list) {
-  GURL normalized_test_url = NormalizeAshUrl(test_url);
-  const bool normalized_match =
-      std::any_of(list.begin(), list.end(), [&](const GURL& elem) {
-        DCHECK(elem.is_valid());
-        DCHECK_EQ(elem, SanitizeAshUrl(elem));
-        return elem == normalized_test_url;
-      });
-  return normalized_match ||
-         std::find(list.begin(), list.end(), SanitizeAshUrl(test_url)) !=
-             std::end(list);
+bool IsAshUrlInList(const GURL& url, const std::vector<GURL>& list) {
+  return std::any_of(list.begin(), list.end(), [&](const GURL& elem) {
+    DCHECK(elem.is_valid());
+    DCHECK_EQ(elem, NormalizeAshUrl(elem, /*keep_path*/ true));
+    return elem == NormalizeAshUrl(url, /*keep_path*/ false) ||
+           elem == NormalizeAshUrl(url, /*keep_path*/ true);
+  });
 }
 
 bool HasOsScheme(const GURL& url) {

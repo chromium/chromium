@@ -34,7 +34,7 @@ COMPONENT_EXPORT(CROSAPI)
 GURL GetAshUrlFromLacrosUrl(GURL url);
 
 // Sanitize an Ash URL by stripping away certain parts.
-// Example: chrome://os-settings/network?query => chrome://os-settings/network
+// Example: chrome://os-settings/network#ref => chrome://os-settings/network
 COMPONENT_EXPORT(CROSAPI)
 GURL SanitizeAshUrl(const GURL& url);
 
