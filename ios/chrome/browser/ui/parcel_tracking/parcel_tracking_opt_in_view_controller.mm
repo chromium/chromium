@@ -28,6 +28,10 @@ CGFloat const kTableViewCornerRadius = 10;
 CGFloat const kTableViewEstimatedRowHeight = 48;
 // Margin for the options view.
 CGFloat const kOptionsViewMargin = 17;
+// Spacing before the image.
+CGFloat const kSpacingBeforeImage = 23;
+// Size of the radio buttons.
+CGFloat const kRadioButtonSize = 20;
 }  // namespace
 
 @interface ParcelTrackingOptInViewController () <UITableViewDelegate,
@@ -58,10 +62,14 @@ CGFloat const kOptionsViewMargin = 17;
   self.image = [UIImage imageNamed:kOptInIcon];
   self.imageHasFixedSize = true;
   self.topAlignedLayout = YES;
-  self.sheetPresentationController.detents = @[
-    UISheetPresentationControllerDetent.largeDetent
-  ];
-
+  if (@available(iOS 16, *)) {
+    self.sheetPresentationController.detents = @[
+      UISheetPresentationControllerDetent.largeDetent,
+      self.preferredHeightDetent
+    ];
+  }
+  self.customSpacingAfterImage = 0;
+  self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImage;
   [super viewDidLoad];
 
   // Assign table view's width anchor now that it is in the same hierarchy as
@@ -149,9 +157,9 @@ CGFloat const kOptionsViewMargin = 17;
   cell.userInteractionEnabled = YES;
   cell.textLabel.text = title;
 
-  cell.accessoryView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolTemplateWithPointSize(
-                        kCircleSymbol, kSymbolAccessoryPointSize)];
+  cell.accessoryView =
+      [[UIImageView alloc] initWithImage:DefaultSymbolTemplateWithPointSize(
+                                             kCircleSymbol, kRadioButtonSize)];
   cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
 
   return cell;
@@ -219,9 +227,9 @@ CGFloat const kOptionsViewMargin = 17;
   UIButton* button = self.primaryActionButton;
   if (state == UIControlStateDisabled) {
     button.userInteractionEnabled = NO;
-    [button setBackgroundColor:[UIColor colorNamed:kDisabledTintColor]];
-    [button setTitleColor:[UIColor colorNamed:kTextPrimaryColor]
-                 forState:UIControlStateDisabled];
+    [button setBackgroundColor:[UIColor colorNamed:kGrey200Color]];
+    [button setTitleColor:[UIColor colorNamed:kGrey600Color]
+                 forState:UIControlStateNormal];
   } else if (state == UIControlStateNormal) {
     button.userInteractionEnabled = YES;
     [button setBackgroundColor:[UIColor colorNamed:kBlueColor]];
