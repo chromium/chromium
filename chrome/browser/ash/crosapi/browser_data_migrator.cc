@@ -189,8 +189,9 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
       default:
         // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
         // remove this log message or reduce to VLOG(1).
-        if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
-                local_state, user_id_hash, true /* print_mode */)) {
+        if (ash::standalone_browser::migrator_util::
+                IsProfileMigrationCompletedForUser(local_state, user_id_hash,
+                                                   true /* print_mode */)) {
           LOG(WARNING) << "Migration was attempted and successfully completed.";
         } else {
           LOG(WARNING) << "Migration was attempted but failed or was skipped.";
@@ -266,8 +267,8 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
     // migration when re-enabling Lacros.
     ash::standalone_browser::migrator_util::ClearMigrationAttemptCountForUser(
         local_state, user_id_hash);
-    crosapi::browser_util::ClearProfileMigrationCompletedForUser(local_state,
-                                                                 user_id_hash);
+    ash::standalone_browser::migrator_util::
+        ClearProfileMigrationCompletedForUser(local_state, user_id_hash);
     MoveMigrator::ClearResumeStepForUser(local_state, user_id_hash);
     MoveMigrator::ClearResumeAttemptCountForUser(local_state, user_id_hash);
     return false;
@@ -280,8 +281,9 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
     return false;
   }
 
-  if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
-          local_state, user_id_hash, true /* print_mode */)) {
+  if (ash::standalone_browser::migrator_util::
+          IsProfileMigrationCompletedForUser(local_state, user_id_hash,
+                                             true /* print_mode */)) {
     LOG(WARNING) << "Profile migration is already completed at version "
                  << crosapi::browser_util::GetDataVer(local_state, user_id_hash)
                         .GetString();
@@ -303,8 +305,8 @@ bool BrowserDataMigratorImpl::RestartToMigrate(
   ash::standalone_browser::migrator_util::UpdateMigrationAttemptCountForUser(
       local_state, user_id_hash);
 
-  crosapi::browser_util::ClearProfileMigrationCompletedForUser(local_state,
-                                                               user_id_hash);
+  ash::standalone_browser::migrator_util::ClearProfileMigrationCompletedForUser(
+      local_state, user_id_hash);
   crosapi::browser_util::ClearProfileMigrationCompletionTimeForUser(
       local_state, user_id_hash);
 
@@ -405,9 +407,10 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
 
   switch (result.data_migration_result.kind) {
     case ResultKind::kSucceeded:
-      crosapi::browser_util::SetProfileMigrationCompletedForUser(
-          local_state_, user_id_hash_,
-          crosapi::browser_util::MigrationMode::kMove);
+      ash::standalone_browser::migrator_util::
+          SetProfileMigrationCompletedForUser(
+              local_state_, user_id_hash_,
+              ash::standalone_browser::migrator_util::MigrationMode::kMove);
 
       // Profile migration is marked as completed both when the migration is
       // performed (here) and for a new user without actually performing data

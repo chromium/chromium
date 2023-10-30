@@ -232,9 +232,9 @@ TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
     // false.
     EXPECT_FALSE(browser_util::IsLacrosEnabled());
 
-    browser_util::SetProfileMigrationCompletedForUser(
+    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
         &pref_service_, user->username_hash(),
-        browser_util::MigrationMode::kCopy);
+        ash::standalone_browser::migrator_util::MigrationMode::kCopy);
 
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
   }
@@ -663,61 +663,9 @@ TEST_F(BrowserUtilTest, StatefulLacrosSelectionUpdateChannel) {
   cmdline->RemoveSwitch(browser_util::kLacrosStabilitySwitch);
 }
 
-TEST_F(BrowserUtilTest, IsProfileMigrationCompletedForUser) {
-  const std::string user_id_hash = "abcd";
-  // `IsProfileMigrationCompletedForUser()` should return
-  // false by default.
-  EXPECT_FALSE(browser_util::IsProfileMigrationCompletedForUser(&pref_service_,
-                                                                user_id_hash));
-
-  // Calling `SetProfileMigrationCompletedForUser()` with kCopy sets profile
-  // migration as completed.
-  browser_util::SetProfileMigrationCompletedForUser(
-      &pref_service_, user_id_hash, browser_util::MigrationMode::kCopy);
-  EXPECT_EQ(
-      browser_util::GetCompletedMigrationMode(&pref_service_, user_id_hash),
-      browser_util::MigrationMode::kCopy);
-  EXPECT_TRUE(browser_util::IsProfileMigrationCompletedForUser(&pref_service_,
-                                                               user_id_hash));
-
-  browser_util::ClearProfileMigrationCompletedForUser(&pref_service_,
-                                                      user_id_hash);
-  EXPECT_FALSE(browser_util::IsProfileMigrationCompletedForUser(&pref_service_,
-                                                                user_id_hash));
-
-  // Calling `SetProfileMigrationCompletedForUser()` with kMove sets profile
-  // migration as completed.
-  browser_util::SetProfileMigrationCompletedForUser(
-      &pref_service_, user_id_hash, browser_util::MigrationMode::kMove);
-  EXPECT_EQ(
-      browser_util::GetCompletedMigrationMode(&pref_service_, user_id_hash),
-      browser_util::MigrationMode::kMove);
-  EXPECT_TRUE(browser_util::IsProfileMigrationCompletedForUser(&pref_service_,
-                                                               user_id_hash));
-
-  browser_util::ClearProfileMigrationCompletedForUser(&pref_service_,
-                                                      user_id_hash);
-
-  // Calling `SetProfileMigrationCompletedForUser()` with kSkipForNewUser sets
-  // profile migration as completed.
-  browser_util::SetProfileMigrationCompletedForUser(
-      &pref_service_, user_id_hash,
-      browser_util::MigrationMode::kSkipForNewUser);
-  EXPECT_EQ(
-      browser_util::GetCompletedMigrationMode(&pref_service_, user_id_hash),
-      browser_util::MigrationMode::kSkipForNewUser);
-  EXPECT_TRUE(browser_util::IsProfileMigrationCompletedForUser(&pref_service_,
-                                                               user_id_hash));
-
-  browser_util::ClearProfileMigrationCompletedForUser(&pref_service_,
-                                                      user_id_hash);
-  EXPECT_FALSE(browser_util::IsProfileMigrationCompletedForUser(&pref_service_,
-                                                                user_id_hash));
-}
-
 TEST_F(BrowserUtilTest, GetMigrationStatus) {
+  using ash::standalone_browser::migrator_util::MigrationMode;
   using browser_util::GetMigrationStatus;
-  using browser_util::MigrationMode;
   using browser_util::MigrationStatus;
 
   AddRegularUser("user@test.com");
@@ -751,36 +699,42 @@ TEST_F(BrowserUtilTest, GetMigrationStatus) {
   }
 
   {
-    browser_util::SetProfileMigrationCompletedForUser(
-        &pref_service_, user->username_hash(), MigrationMode::kCopy);
+    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
+        &pref_service_, user->username_hash(),
+        ash::standalone_browser::migrator_util::MigrationMode::kCopy);
 
     EXPECT_EQ(GetMigrationStatus(&pref_service_, user),
               MigrationStatus::kCopyCompleted);
 
-    browser_util::ClearProfileMigrationCompletedForUser(&pref_service_,
-                                                        user->username_hash());
+    ash::standalone_browser::migrator_util::
+        ClearProfileMigrationCompletedForUser(&pref_service_,
+                                              user->username_hash());
   }
 
   {
-    browser_util::SetProfileMigrationCompletedForUser(
-        &pref_service_, user->username_hash(), MigrationMode::kMove);
+    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
+        &pref_service_, user->username_hash(),
+        ash::standalone_browser::migrator_util::MigrationMode::kMove);
 
     EXPECT_EQ(GetMigrationStatus(&pref_service_, user),
               MigrationStatus::kMoveCompleted);
 
-    browser_util::ClearProfileMigrationCompletedForUser(&pref_service_,
-                                                        user->username_hash());
+    ash::standalone_browser::migrator_util::
+        ClearProfileMigrationCompletedForUser(&pref_service_,
+                                              user->username_hash());
   }
 
   {
-    browser_util::SetProfileMigrationCompletedForUser(
-        &pref_service_, user->username_hash(), MigrationMode::kSkipForNewUser);
+    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
+        &pref_service_, user->username_hash(),
+        ash::standalone_browser::migrator_util::MigrationMode::kSkipForNewUser);
 
     EXPECT_EQ(GetMigrationStatus(&pref_service_, user),
               MigrationStatus::kSkippedForNewUser);
 
-    browser_util::ClearProfileMigrationCompletedForUser(&pref_service_,
-                                                        user->username_hash());
+    ash::standalone_browser::migrator_util::
+        ClearProfileMigrationCompletedForUser(&pref_service_,
+                                              user->username_hash());
   }
 }
 

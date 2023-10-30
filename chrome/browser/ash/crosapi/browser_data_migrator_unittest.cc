@@ -102,8 +102,9 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
   // Check that `First Run` file is created inside the new data directory.
   EXPECT_TRUE(base::PathExists(new_user_data_dir.Append(kFirstRun)));
   // Check that migration is marked as completed for the user.
-  EXPECT_TRUE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
-      &pref_service_, user_id_hash));
+  EXPECT_TRUE(
+      ash::standalone_browser::migrator_util::
+          IsProfileMigrationCompletedForUser(&pref_service_, user_id_hash));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(BrowserDataMigrator::ResultKind::kSucceeded, result->kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
@@ -147,8 +148,9 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
   const base::FilePath new_profile_data_dir =
       new_user_data_dir.Append("Default");
   EXPECT_FALSE(base::PathExists(new_user_data_dir.Append(kFirstRun)));
-  EXPECT_FALSE(crosapi::browser_util::IsProfileMigrationCompletedForUser(
-      &pref_service_, user_id_hash));
+  EXPECT_FALSE(
+      ash::standalone_browser::migrator_util::
+          IsProfileMigrationCompletedForUser(&pref_service_, user_id_hash));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(BrowserDataMigrator::ResultKind::kCancelled, result->kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
@@ -387,9 +389,9 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   }
 
   // Mark copy migration as completed.
-  crosapi::browser_util::SetProfileMigrationCompletedForUser(
+  ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
       local_state(), user->username_hash(),
-      crosapi::browser_util::MigrationMode::kCopy);
+      ash::standalone_browser::migrator_util::MigrationMode::kCopy);
   {
     // If copy migration is marked as completed then migration should not run
     // even if move migration is not completed.
@@ -402,11 +404,11 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   }
 
   // Mark move migration as completed.
-  crosapi::browser_util::ClearProfileMigrationCompletedForUser(
+  ash::standalone_browser::migrator_util::ClearProfileMigrationCompletedForUser(
       local_state(), user->username_hash());
-  crosapi::browser_util::SetProfileMigrationCompletedForUser(
+  ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
       local_state(), user->username_hash(),
-      crosapi::browser_util::MigrationMode::kMove);
+      ash::standalone_browser::migrator_util::MigrationMode::kMove);
   {
     // If move migration is marked as completed, move migration should not run.
     base::test::ScopedFeatureList feature_list;

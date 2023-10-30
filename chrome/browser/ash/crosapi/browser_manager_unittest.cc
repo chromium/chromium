@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_id/account_id.h"
@@ -259,9 +260,9 @@ class BrowserManagerTest : public testing::Test {
                                      /*is_child=*/false);
     fake_user_manager_->SimulateUserProfileLoad(account_id);
 
-    browser_util::SetProfileMigrationCompletedForUser(
+    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
         local_state_.Get(), user->username_hash(),
-        browser_util::MigrationMode::kCopy);
+        ash::standalone_browser::migrator_util::MigrationMode::kCopy);
 
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
     EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());

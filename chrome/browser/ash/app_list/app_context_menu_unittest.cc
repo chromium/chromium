@@ -44,6 +44,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/app_constants/constants.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -730,7 +731,8 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
     feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(),
         {ash::features::kEnforceAshExtensionKeeplist});
-    crosapi::browser_util::SetProfileMigrationCompletedForTest(true);
+    ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForTest(
+        true);
   }
   AppContextMenuLacrosTest(const AppContextMenuLacrosTest&) = delete;
   AppContextMenuLacrosTest& operator=(const AppContextMenuLacrosTest&) = delete;
