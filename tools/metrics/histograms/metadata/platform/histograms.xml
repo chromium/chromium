@@ -622,8 +622,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.ActivateStatus" enum="FwupdReturnValue"
-    expires_after="2023-11-12">
-  <owner>campello@google.com</owner>
+    expires_after="2024-05-12">
+  <owner>rishbhagr@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
     Indicates the return value of a firmware activation operation via fwupd.
@@ -632,8 +632,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.UpdateDuration" units="seconds"
-    expires_after="2023-11-12">
-  <owner>campello@google.com</owner>
+    expires_after="2024-05-12">
+  <owner>rishabhagr@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
     Time elapsed during the firmware update operation. Sent after every
@@ -642,8 +642,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.UpdateStatus" enum="FwupdReturnValue"
-    expires_after="2023-11-12">
-  <owner>campello@google.com</owner>
+    expires_after="2024-05-12">
+  <owner>rishabhagr@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
     Indicates the return value of a firmware update operation via fwupd.
