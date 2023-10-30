@@ -16,15 +16,16 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ObserverList;
-import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -72,6 +73,8 @@ public class PermissionDialogController
     private final ObserverList<Observer> mObservers;
 
     private PropertyModel mDialogModel;
+    private PropertyModel mCustomViewModel;
+    private PropertyModelChangeProcessor mCustomViewModelChangeProcessor;
     private PropertyModel mOverlayDetectedDialogModel;
     private PermissionDialogDelegate mDialogDelegate;
     private ModalDialogManager mModalDialogManager;
@@ -206,8 +209,21 @@ public class PermissionDialogController
             return;
         }
 
-        mDialogModel = PermissionDialogModel.getModel(
-                this, mDialogDelegate, () -> showFilteredTouchEventDialog(context));
+        // Setting up the MVC model for the dialog's custom view.
+        View customView = LayoutInflaterUtils.inflate(context, R.layout.permission_dialog, null);
+        mCustomViewModel = PermissionDialogCustomViewModelFactory.getModel(mDialogDelegate);
+        mCustomViewModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mCustomViewModel, customView, PermissionDialogCustomViewBinder::bind);
+
+        // Setting up the Permission's dialog.
+        mDialogModel =
+                PermissionDialogModelFactory.getModel(
+                        this,
+                        mDialogDelegate,
+                        customView,
+                        () -> showFilteredTouchEventDialog(context));
+
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
         mState = State.PROMPT_OPEN;
     }
@@ -268,17 +284,15 @@ public class PermissionDialogController
         delegate.destroy();
     }
 
-    // TODO(crbug.com/1478113): Refractor these classes to use an actual MVC model.
     public void updateIcon(Bitmap icon) {
-        if (mDialogModel == null) {
+        if (mCustomViewModel == null) {
             return;
         }
 
-        View customView = mDialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
-        TextViewWithCompoundDrawables messageTextView = customView.findViewById(R.id.text);
-        messageTextView.setDrawableTintColor(null);
-        messageTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                new BitmapDrawable(getContext().getResources(), icon), null, null, null);
+        mCustomViewModel.set(
+                PermissionDialogCustomViewProperties.ICON,
+                new BitmapDrawable(getContext().getResources(), icon));
+        mCustomViewModel.set(PermissionDialogCustomViewProperties.ICON_TINT, null);
     }
 
     public int getIconSizeInPx() {
@@ -299,6 +313,8 @@ public class PermissionDialogController
         // When the dialog is dismissed, the delegate's native pointers are
         // freed, and the next queued dialog (if any) is displayed.
         mDialogModel = null;
+        mCustomViewModel = null;
+        mCustomViewModelChangeProcessor.destroy();
         if (mDialogDelegate == null) {
             // We get into here if a tab navigates or is closed underneath the
             // prompt.

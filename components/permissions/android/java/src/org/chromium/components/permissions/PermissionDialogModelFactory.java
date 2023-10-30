@@ -7,32 +7,25 @@ package org.chromium.components.permissions;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.TextView;
 
-import androidx.core.widget.TextViewCompat;
-
-import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * This class creates the model for permission dialog.
+ * This class creates the model for the permission dialog.
  */
-class PermissionDialogModel {
-    public static PropertyModel getModel(ModalDialogProperties.Controller controller,
-            PermissionDialogDelegate delegate, Runnable touchFilteredCallback) {
+class PermissionDialogModelFactory {
+    public static PropertyModel getModel(
+            ModalDialogProperties.Controller controller,
+            PermissionDialogDelegate delegate,
+            View customView,
+            Runnable touchFilteredCallback) {
         Context context = delegate.getWindow().getContext().get();
         assert context != null;
-        View customView = loadDialogView(context);
 
         String messageText = delegate.getMessageText();
         assert !TextUtils.isEmpty(messageText);
-
-        TextView messageTextView = customView.findViewById(R.id.text);
-        messageTextView.setText(messageText);
-        TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                messageTextView, delegate.getDrawableId(), 0, 0, 0);
 
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, controller)
@@ -46,9 +39,5 @@ class PermissionDialogModel {
                 .with(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
                         UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
                 .build();
-    }
-
-    private static View loadDialogView(Context context) {
-        return LayoutInflaterUtils.inflate(context, R.layout.permission_dialog, null);
     }
 }
