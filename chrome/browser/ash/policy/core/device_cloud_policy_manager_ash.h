@@ -28,7 +28,6 @@ class UserEventReporterHelper;
 
 namespace ash {
 namespace attestation {
-class AttestationPolicyObserver;
 class EnrollmentCertificateUploader;
 class EnrollmentIdUploadManager;
 class MachineCertificateUploader;
@@ -252,8 +251,6 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
       enrollment_id_upload_manager_;
   std::unique_ptr<ash::attestation::MachineCertificateUploader>
       machine_certificate_uploader_;
-  std::unique_ptr<ash::attestation::AttestationPolicyObserver>
-      attestation_policy_observer_;
   std::unique_ptr<EuiccStatusUploader> euicc_status_uploader_;
 
   // Uploader for remote server unlock related lookup keys.

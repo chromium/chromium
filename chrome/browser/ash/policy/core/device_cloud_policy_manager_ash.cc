@@ -18,7 +18,6 @@
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/attestation/attestation_policy_observer.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader_impl.h"
 #include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
@@ -151,6 +150,8 @@ void DeviceCloudPolicyManagerAsh::Shutdown() {
   state_keys_broker_ = nullptr;
   managed_session_service_.reset();
   euicc_status_uploader_.reset();
+  core()->Disconnect();
+  machine_certificate_uploader_.reset();
   external_data_manager_->Disconnect();
   state_keys_update_subscription_ = {};
   CloudPolicyManager::Shutdown();
@@ -237,16 +238,14 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   euicc_status_uploader_ = std::make_unique<EuiccStatusUploader>(
       client(), g_browser_process->local_state());
 
-  // Don't create a MachineCertificateUploader or start the
-  // AttestationPolicyObserver if machine cert requests are disabled.
+  // Don't create a MachineCertificateUploader if machine cert requests are
+  // disabled.
   if (!(base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kDisableMachineCertRequest))) {
     machine_certificate_uploader_ =
         std::make_unique<ash::attestation::MachineCertificateUploaderImpl>(
             client());
-    attestation_policy_observer_ =
-        std::make_unique<ash::attestation::AttestationPolicyObserver>(
-            machine_certificate_uploader_.get());
+    machine_certificate_uploader_->UploadCertificateIfNeeded(base::DoNothing());
   }
 
   // Start remote commands services now that we have setup everything they need.
