@@ -48,7 +48,7 @@ namespace scripting {
     // A JavaScript function to inject. This function will be serialized, and
     // then deserialized for injection. This means that any bound parameters
     // and execution context will be lost.
-    // Exactly one of <code>files</code> and <code>func</code> must be
+    // Exactly one of <code>files</code> or <code>func</code> must be
     // specified.
     [serializableFunction]InjectedFunction? func;
 
@@ -66,7 +66,7 @@ namespace scripting {
 
     // The path of the JS or CSS files to inject, relative to the extension's
     // root directory.
-    // Exactly one of <code>files</code> and <code>func</code> must be
+    // Exactly one of <code>files</code> or <code>func</code> must be
     // specified.
     DOMString[]? files;
 
