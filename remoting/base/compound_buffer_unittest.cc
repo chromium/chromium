@@ -173,7 +173,8 @@ class CompoundBufferTest : public testing::Test {
     const char* data = kTestData.data();
     for (int i = 0; i < segments; ++i) {
       int size = i % 2 == 0 ? 1 : 2;
-      result->Append(base::MakeRefCounted<net::WrappedIOBuffer>(data), size);
+      result->Append(base::MakeRefCounted<net::WrappedIOBuffer>(data, size),
+                     size);
       data += size;
     }
     result->Lock();

@@ -93,7 +93,8 @@ constexpr net::NetworkTrafficAnnotationTag kUpdateCheckTrafficAnnotation =
 class ServiceWorkerSingleScriptUpdateChecker::WrappedIOBuffer
     : public net::WrappedIOBuffer {
  public:
-  WrappedIOBuffer(const char* data) : net::WrappedIOBuffer(data) {}
+  WrappedIOBuffer(const char* data, size_t size)
+      : net::WrappedIOBuffer(data, size) {}
 
  private:
   ~WrappedIOBuffer() override = default;
@@ -560,7 +561,8 @@ void ServiceWorkerSingleScriptUpdateChecker::CompareData(
 
   DCHECK(pending_buffer || bytes_to_compare == 0);
   auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
-      pending_buffer ? pending_buffer->buffer() : nullptr);
+      pending_buffer ? pending_buffer->buffer() : nullptr,
+      pending_buffer ? pending_buffer->size() : 0);
 
   // Compare the network data and the stored data.
   net::Error error = cache_writer_->MaybeWriteData(

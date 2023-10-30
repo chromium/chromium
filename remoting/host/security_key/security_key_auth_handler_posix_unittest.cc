@@ -127,7 +127,7 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
     scoped_refptr<net::DrainableIOBuffer> request_buffer =
         base::MakeRefCounted<net::DrainableIOBuffer>(
             base::MakeRefCounted<net::WrappedIOBuffer>(
-                reinterpret_cast<const char*>(kRequestData)),
+                reinterpret_cast<const char*>(kRequestData), request_len),
             request_len);
     net::TestCompletionCallback write_callback;
     int bytes_written = 0;

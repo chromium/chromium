@@ -136,9 +136,8 @@ PickledIOBuffer::~PickledIOBuffer() {
   data_ = nullptr;
 }
 
-WrappedIOBuffer::WrappedIOBuffer(const char* data)
-    : IOBuffer(const_cast<char*>(data)) {
-}
+WrappedIOBuffer::WrappedIOBuffer(const char* data, size_t size)
+    : IOBufferWithSize(const_cast<char*>(data), size) {}
 
 WrappedIOBuffer::~WrappedIOBuffer() {
   data_ = nullptr;

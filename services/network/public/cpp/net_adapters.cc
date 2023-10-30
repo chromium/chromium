@@ -54,7 +54,8 @@ mojo::ScopedDataPipeProducerHandle NetToMojoPendingBuffer::Complete(
 
 NetToMojoIOBuffer::NetToMojoIOBuffer(NetToMojoPendingBuffer* pending_buffer,
                                      int offset)
-    : net::WrappedIOBuffer(pending_buffer->buffer() + offset),
+    : net::WrappedIOBuffer(pending_buffer->buffer() + offset,
+                           pending_buffer->size() - offset),
       pending_buffer_(pending_buffer) {}
 
 NetToMojoIOBuffer::~NetToMojoIOBuffer() {}
@@ -102,7 +103,7 @@ bool MojoToNetPendingBuffer::IsComplete() const {
 
 MojoToNetIOBuffer::MojoToNetIOBuffer(MojoToNetPendingBuffer* pending_buffer,
                                      int bytes_to_be_read)
-    : net::WrappedIOBuffer(pending_buffer->buffer()),
+    : net::WrappedIOBuffer(pending_buffer->buffer(), pending_buffer->size()),
       pending_buffer_(pending_buffer),
       bytes_to_be_read_(bytes_to_be_read) {}
 

@@ -143,7 +143,8 @@ static void SendMulticastPacket(base::OnceClosure quit_run_loop,
                                 int result) {
   if (result == 0) {
     scoped_refptr<net::IOBuffer> data =
-        base::MakeRefCounted<net::WrappedIOBuffer>(kTestMessage);
+        base::MakeRefCounted<net::WrappedIOBuffer>(kTestMessage,
+                                                   kTestMessageLength);
     src->Write(data, kTestMessageLength, base::BindOnce(&OnSendCompleted));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,

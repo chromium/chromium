@@ -245,9 +245,9 @@ class NET_EXPORT PickledIOBuffer : public IOBuffer {
 // A good example is the buffer for a synchronous operation, where we can be
 // sure that nobody is keeping an extra reference to this object so the lifetime
 // of the buffer can be completely managed by its intended owner.
-class NET_EXPORT WrappedIOBuffer : public IOBuffer {
+class NET_EXPORT WrappedIOBuffer : public IOBufferWithSize {
  public:
-  explicit WrappedIOBuffer(const char* data);
+  WrappedIOBuffer(const char* data, size_t size);
 
  protected:
   ~WrappedIOBuffer() override;

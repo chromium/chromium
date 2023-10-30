@@ -85,7 +85,8 @@ std::unique_ptr<base::Pickle> ConvertToPickle(
 class WrappedPickleIOBuffer : public net::WrappedIOBuffer {
  public:
   explicit WrappedPickleIOBuffer(std::unique_ptr<const base::Pickle> pickle)
-      : net::WrappedIOBuffer(reinterpret_cast<const char*>(pickle->data())),
+      : net::WrappedIOBuffer(reinterpret_cast<const char*>(pickle->data()),
+                             pickle->size()),
         pickle_(std::move(pickle)) {
     DCHECK(pickle_->data());
   }

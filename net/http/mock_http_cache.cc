@@ -716,9 +716,9 @@ bool MockHttpCache::WriteResponseInfo(disk_cache::Entry* disk_entry,
       &pickle, skip_transient_headers, response_truncated);
 
   TestCompletionCallback cb;
-  scoped_refptr<WrappedIOBuffer> data = base::MakeRefCounted<WrappedIOBuffer>(
-      reinterpret_cast<const char*>(pickle.data()));
   int len = static_cast<int>(pickle.size());
+  scoped_refptr<WrappedIOBuffer> data = base::MakeRefCounted<WrappedIOBuffer>(
+      reinterpret_cast<const char*>(pickle.data()), len);
 
   int rv = disk_entry->WriteData(0, 0, data.get(), len, cb.callback(), true);
   rv = cb.GetResult(rv);

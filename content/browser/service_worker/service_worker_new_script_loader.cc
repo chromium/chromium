@@ -47,7 +47,8 @@ const uint32_t ServiceWorkerNewScriptLoader::kReadBufferSize = 32768;
 class ServiceWorkerNewScriptLoader::WrappedIOBuffer
     : public net::WrappedIOBuffer {
  public:
-  explicit WrappedIOBuffer(const char* data) : net::WrappedIOBuffer(data) {}
+  WrappedIOBuffer(const char* data, size_t size)
+      : net::WrappedIOBuffer(data, size) {}
 
  private:
   ~WrappedIOBuffer() override = default;
@@ -595,7 +596,8 @@ void ServiceWorkerNewScriptLoader::WriteData(
   uint32_t bytes_written = std::min<uint32_t>(kReadBufferSize, bytes_available);
 
   auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
-      pending_buffer ? pending_buffer->buffer() : nullptr);
+      pending_buffer ? pending_buffer->buffer() : nullptr,
+      pending_buffer ? pending_buffer->size() : 0);
   MojoResult result = client_producer_->WriteData(
       buffer->data(), &bytes_written, MOJO_WRITE_DATA_FLAG_NONE);
   TRACE_EVENT_WITH_FLOW1("ServiceWorker",

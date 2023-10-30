@@ -140,12 +140,13 @@ base::Value::Dict NetLogFailParam(uint16_t code,
 
 class DependentIOBuffer : public WrappedIOBuffer {
  public:
-  DependentIOBuffer(scoped_refptr<IOBuffer> buffer, size_t offset)
-      : WrappedIOBuffer(buffer->data() + offset), buffer_(std::move(buffer)) {}
+  DependentIOBuffer(scoped_refptr<IOBufferWithSize> buffer, size_t offset)
+      : WrappedIOBuffer(buffer->data() + offset, buffer->size() - offset),
+        buffer_(std::move(buffer)) {}
 
  private:
   ~DependentIOBuffer() override = default;
-  scoped_refptr<IOBuffer> buffer_;
+  scoped_refptr<IOBufferWithSize> buffer_;
 };
 
 }  // namespace
