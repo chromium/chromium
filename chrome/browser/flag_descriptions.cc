@@ -3468,6 +3468,12 @@ const char kUsernameFirstFlowWithIntermediateValuesDescription[] =
     "and then password on another page. Intermediate fields are usually an OTP "
     "field or CAPTCHA.";
 
+const char kUsernameFirstFlowWithIntermediateValuesPredictionsName[] =
+    "Predictions on Username first flow with intermediate values";
+const char kUsernameFirstFlowWithIntermediateValuesPredictionsDescription[] =
+    "New single username predictions based on voting from Username First Flow "
+    "with intermediate values.";
+
 const char kUsernameFirstFlowWithIntermediateValuesVotingName[] =
     "Username first flow with intermediate values voting";
 const char kUsernameFirstFlowWithIntermediateValuesVotingDescription[] =

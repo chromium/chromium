@@ -4741,6 +4741,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          password_manager::features::kUsernameFirstFlowWithIntermediateValues)},
+    {"username-first-flow-with-intermediate-values-predictions",
+     flag_descriptions::kUsernameFirstFlowWithIntermediateValuesPredictionsName,
+     flag_descriptions::
+         kUsernameFirstFlowWithIntermediateValuesPredictionsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::
+             kUsernameFirstFlowWithIntermediateValuesPredictions)},
     {"username-first-flow-with-intermediate-values-voting",
      flag_descriptions::kUsernameFirstFlowWithIntermediateValuesVotingName,
      flag_descriptions::

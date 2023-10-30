@@ -7972,6 +7972,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "username-first-flow-with-intermediate-values-predictions",
+    "owners": [ "kazinova@google.com", "shaikhitdin@google.com" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "username-first-flow-with-intermediate-values-voting",
     "owners": [ "kazinova@google.com", "shaikhitdin@google.com" ],
     "expiry_milestone": 122

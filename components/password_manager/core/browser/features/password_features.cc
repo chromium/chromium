@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
 namespace password_manager::features {
@@ -194,6 +195,12 @@ extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore{
 // between username and password fields in Username First Flow.
 BASE_FEATURE(kUsernameFirstFlowWithIntermediateValues,
              "UsernameFirstFlowWithIntermediateValues",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables new prediction that is based on votes from Username First Flow with
+// Intermediate Values.
+BASE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions,
+             "UsernameFirstFlowWithIntermediateValuesPredictions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables voting for more text fields outside of the password form in Username

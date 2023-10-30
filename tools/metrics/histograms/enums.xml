@@ -63284,6 +63284,8 @@ from previous Chrome versions.
   <int value="-1250222445" label="WebMidi:enabled"/>
   <int value="-1249349654" label="UseAndroidStagingSmds:disabled"/>
   <int value="-1248478422" label="enable-zip-archiver-packer"/>
+  <int value="-1248232229"
+      label="UsernameFirstFlowWithIntermediateValuesPredictions:enabled"/>
   <int value="-1246840031" label="OptInImeMenu:disabled"/>
   <int value="-1246477455" label="ClipboardUnsanitizedContent:disabled"/>
   <int value="-1245617305" label="NewProfilePicker:enabled"/>
@@ -63815,6 +63817,8 @@ from previous Chrome versions.
   <int value="-989671895" label="OfflineIndicatorAlwaysHttpProbe:enabled"/>
   <int value="-989140298" label="UseSyncInvalidations:disabled"/>
   <int value="-989050085" label="AppStoreBillingDebug:enabled"/>
+  <int value="-988839020"
+      label="UsernameFirstFlowWithIntermediateValuesPredictions:disabled"/>
   <int value="-988758700"
       label="AdaptiveSuggestionsVisibleGroupEligibilityUpdate:enabled"/>
   <int value="-987470173" label="ClickToCallOpenDialerDirectly:disabled"/>

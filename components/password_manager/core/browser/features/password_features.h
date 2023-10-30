@@ -66,6 +66,7 @@ BASE_DECLARE_FEATURE(kUsernameFirstFlowStoreSeveralValues);
 extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore;
 
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValues);
+BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting);
 
 // All features parameters in alphabetical order.
