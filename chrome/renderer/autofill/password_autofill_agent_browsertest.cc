@@ -377,7 +377,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
     // TODO(crbug/862989): Remove workaround preventing non-test classes to bind
     // fake_driver_ or fake_pw_client_.
-    password_autofill_agent_->SetAutofillAgent(autofill_agent_);
+    password_autofill_agent_->Init(autofill_agent_);
     password_autofill_agent_->GetPasswordManagerDriver();
     password_generation_->RequestPasswordManagerClientForTesting();
     base::RunLoop().RunUntilIdle();  // Executes binding the interfaces.

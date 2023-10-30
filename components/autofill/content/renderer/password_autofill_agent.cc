@@ -687,24 +687,16 @@ PasswordAutofillAgent::PasswordAutofillAgent(
       &PasswordAutofillAgent::BindPendingReceiver, base::Unretained(this)));
 }
 
-PasswordAutofillAgent::~PasswordAutofillAgent() {
-  AutofillAgent* agent = autofill_agent_.get();
-  if (agent)
-    agent->RemoveFormObserver(this);
+PasswordAutofillAgent::~PasswordAutofillAgent() = default;
+
+void PasswordAutofillAgent::Init(AutofillAgent* autofill_agent) {
+  autofill_agent_ = autofill_agent;
 }
 
 void PasswordAutofillAgent::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::PasswordAutofillAgent>
         pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
-}
-
-void PasswordAutofillAgent::SetAutofillAgent(AutofillAgent* autofill_agent) {
-  AutofillAgent* agent = autofill_agent_.get();
-  if (agent)
-    agent->RemoveFormObserver(this);
-  autofill_agent_ = autofill_agent->GetWeakPtr();
-  autofill_agent->AddFormObserver(this);
 }
 
 void PasswordAutofillAgent::SetPasswordGenerationAgent(
@@ -1421,8 +1413,6 @@ void PasswordAutofillAgent::OnFrameDetached() {
 
 void PasswordAutofillAgent::OnDestruct() {
   receiver_.reset();
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                this);
 }
 
 bool PasswordAutofillAgent::IsPrerendering() const {
@@ -1612,7 +1602,7 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
     return nullptr;
   return CreateFormDataFromUnownedInputElements(
       *web_frame, field_data_manager_.get(), &username_detector_cache_,
-      autofill_agent_ && autofill_agent_->is_heavy_form_data_scraping_enabled()
+      autofill_agent_->is_heavy_form_data_scraping_enabled()
           ? &button_titles_cache_
           : nullptr);
 }
@@ -1975,7 +1965,7 @@ void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
 }
 
 void PasswordAutofillAgent::HidePopup() {
-  if (autofill_agent_ && autofill_agent_->unsafe_autofill_driver()) {
+  if (autofill_agent_->unsafe_autofill_driver()) {
     autofill_agent_->unsafe_autofill_driver()->HidePopup();
   }
 }

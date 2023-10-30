@@ -175,20 +175,18 @@ class AutofillAgentTest : public content::RenderViewTest {
         base::BindRepeating(&MockAutofillDriver::BindPendingReceiver,
                             base::Unretained(&autofill_driver_)));
 
-    password_autofill_agent_ = std::make_unique<TestPasswordAutofillAgent>(
+    auto password_autofill_agent = std::make_unique<TestPasswordAutofillAgent>(
         GetMainRenderFrame(), &associated_interfaces_);
-    password_generation_ = std::make_unique<PasswordGenerationAgent>(
-        GetMainRenderFrame(), password_autofill_agent_.get(),
+    auto password_generation = std::make_unique<PasswordGenerationAgent>(
+        GetMainRenderFrame(), password_autofill_agent.get(),
         &associated_interfaces_);
     autofill_agent_ = std::make_unique<AutofillAgent>(
-        GetMainRenderFrame(), password_autofill_agent_.get(),
-        password_generation_.get(), &associated_interfaces_);
+        GetMainRenderFrame(), std::move(password_autofill_agent),
+        std::move(password_generation), &associated_interfaces_);
   }
 
   void TearDown() override {
     autofill_agent_.reset();
-    password_generation_.reset();
-    password_autofill_agent_.reset();
     RenderViewTest::TearDown();
   }
 
@@ -205,8 +203,6 @@ class AutofillAgentTest : public content::RenderViewTest {
 
  private:
   blink::AssociatedInterfaceRegistry associated_interfaces_;
-  std::unique_ptr<PasswordAutofillAgent> password_autofill_agent_;
-  std::unique_ptr<PasswordGenerationAgent> password_generation_;
 };
 
 class AutofillAgentTestWithFeatures : public AutofillAgentTest {

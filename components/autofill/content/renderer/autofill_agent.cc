@@ -299,24 +299,26 @@ void AutofillAgent::FocusStateNotifier::NotifyIfChanged(
   focused_field_id_ = new_focused_field_id;
 }
 
-AutofillAgent::AutofillAgent(content::RenderFrame* render_frame,
-                             PasswordAutofillAgent* password_autofill_agent,
-                             PasswordGenerationAgent* password_generation_agent,
-                             blink::AssociatedInterfaceRegistry* registry)
+AutofillAgent::AutofillAgent(
+    content::RenderFrame* render_frame,
+    std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
+    std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
+    blink::AssociatedInterfaceRegistry* registry)
     : content::RenderFrameObserver(render_frame),
       form_cache_(std::make_unique<FormCache>(render_frame->GetWebFrame())),
-      password_autofill_agent_(password_autofill_agent),
-      password_generation_agent_(password_generation_agent),
+      password_autofill_agent_(std::move(password_autofill_agent)),
+      password_generation_agent_(std::move(password_generation_agent)),
       query_node_autofill_state_(WebAutofillState::kNotFilled),
       is_popup_possibly_visible_(false),
       is_user_gesture_required_(true),
       is_secure_context_required_(false),
       form_tracker_(render_frame),
-      field_data_manager_(password_autofill_agent->GetFieldDataManager()),
+      field_data_manager_(password_autofill_agent_->GetFieldDataManager()),
       focus_state_notifier_(this) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
-  password_autofill_agent->SetAutofillAgent(this);
+  password_autofill_agent_->Init(this);
   AddFormObserver(this);
+  AddFormObserver(password_autofill_agent_.get());
   registry->AddInterface<mojom::AutofillAgent>(base::BindRepeating(
       &AutofillAgent::BindPendingReceiver, base::Unretained(this)));
 }
@@ -326,6 +328,7 @@ AutofillAgent::AutofillAgent(content::RenderFrame* render_frame,
 // The process may be killed before this deletion can happen.
 AutofillAgent::~AutofillAgent() {
   RemoveFormObserver(this);
+  RemoveFormObserver(password_autofill_agent_.get());
 }
 
 void AutofillAgent::BindPendingReceiver(
@@ -1202,7 +1205,7 @@ void AutofillAgent::DidAddOrRemoveFormRelatedElementsDynamically() {
               password_autofill_agent->OnDynamicFormsSeen();
             }
           },
-          base::Unretained(password_autofill_agent_)));
+          base::Unretained(password_autofill_agent_.get())));
 }
 
 void AutofillAgent::DidCompleteFocusChangeInFrame() {

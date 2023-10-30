@@ -82,10 +82,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   // PasswordAutofillAgent is guaranteed to outlive AutofillAgent.
   // PasswordGenerationAgent and AutofillAssistantAgent may be nullptr. If they
   // are not, then they are also guaranteed to outlive AutofillAgent.
-  AutofillAgent(content::RenderFrame* render_frame,
-                PasswordAutofillAgent* password_autofill_agent,
-                PasswordGenerationAgent* password_generation_agent,
-                blink::AssociatedInterfaceRegistry* registry);
+  AutofillAgent(
+      content::RenderFrame* render_frame,
+      std::unique_ptr<PasswordAutofillAgent> password_autofill_agent,
+      std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
+      blink::AssociatedInterfaceRegistry* registry);
 
   AutofillAgent(const AutofillAgent&) = delete;
   AutofillAgent& operator=(const AutofillAgent&) = delete;
@@ -367,10 +368,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // reset when the AutofillAgent is pending deletion.
   std::unique_ptr<FormCache> form_cache_;
 
-  raw_ptr<PasswordAutofillAgent, DanglingUntriaged>
-      password_autofill_agent_;  // Weak reference.
-  raw_ptr<PasswordGenerationAgent, DanglingUntriaged>
-      password_generation_agent_;  // Weak reference.
+  std::unique_ptr<PasswordAutofillAgent> password_autofill_agent_;
+  std::unique_ptr<PasswordGenerationAgent> password_generation_agent_;
 
   // The element corresponding to the last request sent for form field Autofill.
   blink::WebFormControlElement last_queried_element_;

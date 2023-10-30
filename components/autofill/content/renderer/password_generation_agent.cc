@@ -281,8 +281,6 @@ void PasswordGenerationAgent::DidChangeScrollOffset() {
 
 void PasswordGenerationAgent::OnDestruct() {
   receiver_.reset();
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                this);
 }
 
 void PasswordGenerationAgent::OnFieldAutofilled(

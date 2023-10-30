@@ -119,11 +119,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   ~PasswordAutofillAgent() override;
 
+  // Must be called prior to calling other methods.
+  void Init(AutofillAgent* autofill_agent);
+
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::PasswordAutofillAgent>
           pending_receiver);
-
-  void SetAutofillAgent(AutofillAgent* autofill_agent);
 
   void SetPasswordGenerationAgent(PasswordGenerationAgent* generation_agent);
 
@@ -518,7 +519,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Records the username typed before suggestions preview.
   std::u16string username_query_prefix_;
 
-  base::WeakPtr<AutofillAgent> autofill_agent_;
+  raw_ptr<AutofillAgent> autofill_agent_;
 
   raw_ptr<PasswordGenerationAgent, ExperimentalRenderer>
       password_generation_agent_;  // Weak reference.
