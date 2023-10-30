@@ -1490,8 +1490,6 @@ enum class ToolbarKind {
                       originView:positioner.sourceView
                       originRect:positioner.sourceRect
                           anchor:anchor];
-  self.sharingCoordinator.activityHandler =
-      HandlerForProtocol(self.dispatcher, ActivityServiceCommands);
   [self.sharingCoordinator start];
 }
 
