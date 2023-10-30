@@ -155,9 +155,11 @@ void AppListNotifierImpl::OnAppListVisibilityWillChange(bool shown,
       DoStateTransition(Location::kRecentApps, State::kShown);
     // kList is not shown until a search query is entered.
   } else {
-    search_session_in_progress_ = false;
-    for (auto& observer : observers_) {
-      observer.OnSearchSessionEnded(query_);
+    if (search_session_in_progress_) {
+      search_session_in_progress_ = false;
+      for (auto& observer : observers_) {
+        observer.OnSearchSessionEnded(query_);
+      }
     }
 
     DoStateTransition(Location::kList, State::kNone);
@@ -168,7 +170,7 @@ void AppListNotifierImpl::OnAppListVisibilityWillChange(bool shown,
 }
 
 void AppListNotifierImpl::OnViewStateChanged(ash::AppListViewState state) {
-  if (state == ash::AppListViewState::kFullscreenSearch) {
+  if (state == ash::AppListViewState::kFullscreenSearch && !query_.empty()) {
     search_session_in_progress_ = true;
     for (auto& observer : observers_) {
       observer.OnSearchSessionStarted();
