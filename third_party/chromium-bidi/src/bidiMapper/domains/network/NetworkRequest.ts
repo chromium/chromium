@@ -73,14 +73,13 @@ export class NetworkRequest {
   } = {};
 
   #response: {
-    info?: {
-      hasExtraInfo: boolean;
-      response: Protocol.Network.Response;
-    };
+    hasExtraInfo?: boolean;
+    info?: Protocol.Network.Response;
     extraInfo?: Protocol.Network.ResponseReceivedExtraInfoEvent;
   } = {};
 
   #beforeRequestSentDeferred = new Deferred<Result<void>>();
+  #responseStartedDeferred = new Deferred<Result<void>>();
   #responseCompletedDeferred = new Deferred<Result<void>>();
 
   #cdpTarget: CdpTarget;
@@ -98,7 +97,7 @@ export class NetworkRequest {
   }
 
   get url(): string | undefined {
-    return this.#response.info?.response.url ?? this.#request.info?.request.url;
+    return this.#response.info?.url ?? this.#request.info?.request.url;
   }
 
   get redirectCount() {
@@ -114,11 +113,10 @@ export class NetworkRequest {
   }
 
   handleRedirect(event: Protocol.Network.RequestWillBeSentEvent): void {
+    this.#queueResponseStartedEvent();
     this.#queueResponseCompletedEvent();
-    this.#response.info = {
-      hasExtraInfo: event.redirectHasExtraInfo,
-      response: event.redirectResponse!,
-    };
+    this.#response.hasExtraInfo = event.redirectHasExtraInfo;
+    this.#response.info = event.redirectResponse!;
     this.#emitEventsIfReady(true);
   }
 
@@ -131,7 +129,7 @@ export class NetworkRequest {
       this.#servedFromCache ||
       // Sometimes there is no extra info and the response
       // is the only place we can find out
-      Boolean(this.#response.info && !this.#response.info.hasExtraInfo) ||
+      Boolean(this.#response.info && !this.#response.hasExtraInfo) ||
       this.#interceptPhase === Network.InterceptPhase.BeforeRequestSent;
 
     if (this.#request.info && requestExtraInfoCompleted) {
@@ -146,10 +144,14 @@ export class NetworkRequest {
       // Response from cache don't have extra info
       this.#servedFromCache ||
       // Don't expect extra info if the flag is false
-      Boolean(this.#response.info && !this.#response.info.hasExtraInfo) ||
+      Boolean(this.#response.info && !this.#response.hasExtraInfo) ||
       this.#interceptPhase === Network.InterceptPhase.ResponseStarted;
 
     if (this.#response.info && responseExtraInfoCompleted) {
+      this.#responseStartedDeferred.resolve({
+        kind: 'success',
+        value: undefined,
+      });
       this.#responseCompletedDeferred.resolve({
         kind: 'success',
         value: undefined,
@@ -178,7 +180,9 @@ export class NetworkRequest {
   }
 
   onResponseReceivedEvent(event: Protocol.Network.ResponseReceivedEvent) {
-    this.#response.info = event;
+    this.#response.hasExtraInfo = event.hasExtraInfo;
+    this.#response.info = event.response;
+    this.#queueResponseStartedEvent();
     this.#queueResponseCompletedEvent();
     this.#emitEventsIfReady();
   }
@@ -192,6 +196,10 @@ export class NetworkRequest {
     this.#beforeRequestSentDeferred.resolve({
       kind: 'success',
       value: undefined,
+    });
+    this.#responseStartedDeferred.resolve({
+      kind: 'error',
+      error: new Error('Network event loading failed'),
     });
     this.#responseCompletedDeferred.resolve({
       kind: 'error',
@@ -370,6 +378,7 @@ export class NetworkRequest {
       error: new Error('Network processor detached'),
     };
     this.#beforeRequestSentDeferred.resolve(result);
+    this.#responseStartedDeferred.resolve(result);
     this.#responseCompletedDeferred.resolve(result);
   }
 
@@ -380,9 +389,7 @@ export class NetworkRequest {
   /** Returns the HTTP status code associated with this request if any. */
   get statusCode(): number {
     return (
-      this.#response.info?.response.status ??
-      this.#response.extraInfo?.statusCode ??
-      200 // TODO: Throw an exception or use some other status code?
+      this.#response.info?.status ?? this.#response.extraInfo?.statusCode ?? -1 // TODO: Throw an exception or use some other status code?
     );
   }
 
@@ -434,6 +441,7 @@ export class NetworkRequest {
       timings: this.#getTimings(),
     };
   }
+
   // TODO: implement.
   #getTimings(): Network.FetchTimingInfo {
     return {
@@ -497,6 +505,77 @@ export class NetworkRequest {
     };
   }
 
+  #queueResponseStartedEvent() {
+    if (this.#isIgnoredEvent()) {
+      return;
+    }
+    this.#eventManager.registerPromiseEvent(
+      this.#responseStartedDeferred.then((result) => {
+        if (result.kind === 'success') {
+          try {
+            return {
+              kind: 'success',
+              value: Object.assign(this.#getResponseStartedEvent(), {
+                type: 'event' as const,
+              }),
+            };
+          } catch (error) {
+            return {
+              kind: 'error',
+              error: error instanceof Error ? error : new Error('Unknown'),
+            };
+          }
+        }
+        return result;
+      }),
+      this.#context,
+      ChromiumBidi.Network.EventNames.ResponseStarted
+    );
+  }
+
+  #getResponseStartedEvent(): Network.ResponseStarted {
+    assert(this.#request.info, 'RequestWillBeSentEvent is not set');
+    assert(this.#response.info, 'ResponseReceivedEvent is not set');
+
+    // Chromium sends wrong extraInfo events for responses served from cache.
+    // See https://github.com/puppeteer/puppeteer/issues/9965 and
+    // https://crbug.com/1340398.
+    if (this.#response.info.fromDiskCache) {
+      this.#response.extraInfo = undefined;
+    }
+
+    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
+      this.#response.info.headers
+    );
+
+    return {
+      method: ChromiumBidi.Network.EventNames.ResponseStarted,
+      params: {
+        ...this.#getBaseEventParams(),
+        response: {
+          url: this.#response.info.url ?? NetworkRequest.#unknown,
+          protocol: this.#response.info.protocol ?? '',
+          status: this.statusCode,
+          statusText: this.#response.info.statusText,
+          fromCache:
+            this.#response.info.fromDiskCache ||
+            this.#response.info.fromPrefetchCache ||
+            this.#servedFromCache,
+          headers,
+          mimeType: this.#response.info.mimeType,
+          bytesReceived: this.#response.info.encodedDataLength,
+          headersSize: computeResponseHeadersSize(headers),
+          // TODO: consider removing from spec.
+          bodySize: 0,
+          content: {
+            // TODO: consider removing from spec.
+            size: 0,
+          },
+        },
+      },
+    };
+  }
+
   #queueResponseCompletedEvent() {
     if (this.#isIgnoredEvent()) {
       return;
@@ -532,12 +611,12 @@ export class NetworkRequest {
     // Chromium sends wrong extraInfo events for responses served from cache.
     // See https://github.com/puppeteer/puppeteer/issues/9965 and
     // https://crbug.com/1340398.
-    if (this.#response.info.response.fromDiskCache) {
+    if (this.#response.info.fromDiskCache) {
       this.#response.extraInfo = undefined;
     }
 
     const headers = bidiNetworkHeadersFromCdpNetworkHeaders(
-      this.#response.info.response.headers
+      this.#response.info.headers
     );
 
     return {
@@ -545,17 +624,17 @@ export class NetworkRequest {
       params: {
         ...this.#getBaseEventParams(),
         response: {
-          url: this.#response.info.response.url ?? NetworkRequest.#unknown,
-          protocol: this.#response.info.response.protocol ?? '',
+          url: this.#response.info.url ?? NetworkRequest.#unknown,
+          protocol: this.#response.info.protocol ?? '',
           status: this.statusCode,
-          statusText: this.#response.info.response.statusText,
+          statusText: this.#response.info.statusText,
           fromCache:
-            this.#response.info.response.fromDiskCache ||
-            this.#response.info.response.fromPrefetchCache ||
+            this.#response.info.fromDiskCache ||
+            this.#response.info.fromPrefetchCache ||
             this.#servedFromCache,
           headers,
-          mimeType: this.#response.info.response.mimeType,
-          bytesReceived: this.#response.info.response.encodedDataLength,
+          mimeType: this.#response.info.mimeType,
+          bytesReceived: this.#response.info.encodedDataLength,
           headersSize: computeResponseHeadersSize(headers),
           // TODO: consider removing from spec.
           bodySize: 0,
