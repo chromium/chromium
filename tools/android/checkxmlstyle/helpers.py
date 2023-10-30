@@ -62,3 +62,7 @@ COLOR_STATE_LIST_DIRS = {
     normpath('components/browser_ui/widget/android/java/res/color/'),
     normpath('components/permissions/android/res/color/'),
 }
+
+KNOWN_STYLE_ATTRIBUTE = re.compile(
+    r' (android:theme|android:textAppearance|style)=\"(.*)\"')
+STYLE_REF_PREFIX = re.compile('^(@style|\?attr|\?android:attr)/')

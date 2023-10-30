@@ -78,6 +78,7 @@ def _CommonChecks(input_api, output_api):
   result.extend(_CheckStringResourceQuotesPunctuations(input_api, output_api))
   result.extend(_CheckStringResourceEllipsisPunctuations(input_api, output_api))
   result.extend(_CheckImportantForAccessibility(input_api, output_api))
+  result.extend(_CheckBadStyleReference(input_api, output_api))
   # Add more checks here
   return result
 
@@ -549,6 +550,29 @@ def _CheckImportantForAccessibility(input_api, output_api):
   ''', warnings)
     ]
 
+  return []
+
+
+### bad style reference below ###
+def _CheckBadStyleReference(input_api, output_api):
+  """Checks whether style attribute reference could work."""
+  errors = []
+  for f in IncludedFiles(input_api):
+    for line_number, line in f.ChangedContents():
+      match = helpers.KNOWN_STYLE_ATTRIBUTE.search(line)
+      if match and not helpers.STYLE_REF_PREFIX.search(match.group(2)):
+        errors.append('  %s:%d\n    \t%s' %
+                      (f.LocalPath(), line_number, line.strip()))
+  if errors:
+    return [
+        output_api.PresubmitPromptWarning(
+            '''
+  Style Reference Check failed:
+    Your modified resource file has declared a style attribute, but does not
+    prefix the style reference with a ? (for attributes) or @ (for styles). It's
+    very likely this style is not being resolved correctly at runtime.
+  ''', errors)
+    ]
   return []
 
 

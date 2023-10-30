@@ -206,7 +206,7 @@ class DuplicateColorsTest(unittest.TestCase):
     self.assertEqual('  %s:2' % helpers.COLOR_PALETTE_RELATIVE_PATH,
                      errors[0].items[1].splitlines()[0])
 
-  def testSucess(self):
+  def testSuccess(self):
     lines = ['<color name="color1">#61000000</color>',
              '<color name="color1">#FFFFFF</color>']
     mock_input_api = MockInputApi()
@@ -266,7 +266,7 @@ class XmlNamespacePrefixesTest(unittest.TestCase):
     self.assertEqual('  chrome/java/res_test/file.xml:1',
                      errors[0].items[0].splitlines()[0])
 
-  def testSucess(self):
+  def testSuccess(self):
     lines = ['xmlns:app="http://schemas.android.com/apk/res-auto"']
     mock_input_api = MockInputApi()
     mock_input_api.files = [MockFile('chrome/java/res_test/file.xml', lines)]
@@ -582,6 +582,54 @@ class StringResourcesTest(unittest.TestCase):
     self.assertEqual(1, len(result[0].items))
     self.assertEqual('  ui/android/string/chrome_android_string.grd:3',
                      result[0].items[0].splitlines()[0])
+
+
+class BadStyleReferenceTest(unittest.TestCase):
+  def testFailure(self):
+    lines = [
+        ' android:theme="style/foo"',
+        ' android:theme="@stylefoo"',
+        ' android:theme="@foo"',
+        ' android:theme="@foo/foo"',
+        ' android:theme="attr/foo"',
+        ' android:theme="?attrfoo"',
+        ' android:theme="@attr/foo"',
+        ' android:theme="?anroid:attrfoo"',
+        ' android:theme="?foo"',
+        ' android:theme="?foo/foo"',
+        ' android:textAppearance="foo"',
+        ' style="foo"',
+    ]
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile(helpers.COLOR_PALETTE_RELATIVE_PATH, lines)
+    ]
+    warnings = checkxmlstyle._CheckBadStyleReference(mock_input_api,
+                                                     MockOutputApi())
+    self.assertEqual(1, len(warnings))
+    self.assertEqual(12, len(warnings[0].items))
+
+  def testSuccess(self):
+    lines = [
+        ' android:theme="@style/foo"',
+        ' android:theme="?attr/foo"',
+        ' android:theme="?android:attr/foo"',
+        ' android:textAppearance="@style/foo"',
+        ' android:textAppearance="?attr/foo"',
+        ' android:textAppearance="?android:attr/foo"',
+        ' style="@style/foo"',
+        ' style="?attr/foo"',
+        ' style="?android:attr/foo"',
+        ' foo="foo/stuff"',
+        ' foo="foo"',
+        ' foo="@foo"',
+        ' foo="?foo"',
+    ]
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [MockFile('chrome/java/res_test/colors.xml', lines)]
+    warnings = checkxmlstyle._CheckBadStyleReference(mock_input_api,
+                                                     MockOutputApi())
+    self.assertEqual(0, len(warnings))
 
 
 if __name__ == '__main__':
