@@ -133,8 +133,6 @@ class NET_EXPORT ProxyServer {
 NET_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,
                                             const ProxyServer& proxy_server);
 
-typedef std::pair<HostPortPair, ProxyServer> HostPortProxyPair;
-
 }  // namespace net
 
 #endif  // NET_BASE_PROXY_SERVER_H_

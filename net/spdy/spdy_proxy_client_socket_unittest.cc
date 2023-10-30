@@ -212,7 +212,7 @@ class SpdyProxyClientSocketTest : public PlatformTest,
   GURL url_;
   HostPortPair proxy_host_port_;
   HostPortPair endpoint_host_port_pair_;
-  ProxyServer proxy_;
+  ProxyChain proxy_;
   SpdySessionKey endpoint_spdy_session_key_;
   std::unique_ptr<CommonConnectJobParams> common_connect_job_params_;
   SSLSocketDataProvider ssl_;

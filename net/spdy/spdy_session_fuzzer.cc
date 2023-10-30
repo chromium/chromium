@@ -126,7 +126,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       net::SpdySessionDependencies::SpdyCreateSessionWithSocketFactory(
           &deps, &socket_factory));
 
-  net::ProxyServer direct_connect(net::ProxyServer::Direct());
+  net::ProxyChain direct_connect(net::ProxyChain::Direct());
   net::SpdySessionKey session_key(
       net::HostPortPair("127.0.0.1", 80), direct_connect,
       net::PRIVACY_MODE_DISABLED, net::SpdySessionKey::IsProxySession::kFalse,

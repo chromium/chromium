@@ -812,7 +812,7 @@ std::string HttpProxyConnectJob::GetUserAgent() const {
 
 SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
   return SpdySessionKey(
-      GetDestination(), ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+      GetDestination(), ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
       SpdySessionKey::IsProxySession::kTrue, socket_tag(),
       params_->network_anonymization_key(),
       params_->ssl_params()->GetDirectConnectionParams()->secure_dns_policy());

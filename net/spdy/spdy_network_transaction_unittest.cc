@@ -431,7 +431,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
     // session.  Once we have the session, we verify that the streams are
     // all closed and not leaked at this point.
     SpdySessionKey key(HostPortPair::FromURL(request_.url),
-                       ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+                       ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
                        SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                        request_.network_anonymization_key,
                        SecureDnsPolicy::kAllow);
@@ -677,8 +677,8 @@ TEST_P(SpdyNetworkTransactionTest, RequestsOrderedByPriority) {
   // could not use the same connection, whereas running the message loop after
   // starting the first transaction would call Socket::Write() with the first
   // HEADERS frame, so the second transaction could not get ahead of it.
-  SpdySessionKey key(HostPortPair("www.example.org", 443),
-                     ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key(HostPortPair("www.example.org", 443), ProxyChain::Direct(),
+                     PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   auto spdy_session = CreateSpdySession(helper.session(), key, log_);
@@ -2478,7 +2478,7 @@ TEST_P(SpdyNetworkTransactionTest, NoConnectionPoolingOverTunnel) {
 
   // A new SPDY session should have been created.
   SpdySessionKey key1(HostPortPair("www.example.org", 443),
-                      PacResultElementToProxyServer(kPacString),
+                      PacResultElementToProxyChain(kPacString),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -2540,7 +2540,7 @@ TEST_P(SpdyNetworkTransactionTest, NoConnectionPoolingOverTunnel) {
 
   // Inspect the new session.
   SpdySessionKey key2(HostPortPair("example.test", 443),
-                      PacResultElementToProxyServer(kPacString),
+                      PacResultElementToProxyChain(kPacString),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -2584,7 +2584,7 @@ TEST_P(SpdyNetworkTransactionTest, ConnectionPoolingSessionClosedBeforeUse) {
 
   // A new SPDY session should have been created.
   SpdySessionKey key1(HostPortPair("www.example.org", 443),
-                      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+                      ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->FindAvailableSession(
@@ -2630,7 +2630,7 @@ TEST_P(SpdyNetworkTransactionTest, ConnectionPoolingSessionClosedBeforeUse) {
   // immediately, but the task to use the session for the second request should
   // run asynchronously, so it hasn't run yet.
   helper.session_deps()->host_resolver->ResolveOnlyRequestNow();
-  SpdySessionKey key2(HostPortPair("example.test", 443), ProxyServer::Direct(),
+  SpdySessionKey key2(HostPortPair("example.test", 443), ProxyChain::Direct(),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -2740,7 +2740,7 @@ TEST_P(SpdyNetworkTransactionTest, ConnectionPoolingMultipleSocketTags) {
 
   // A new SPDY session should have been created.
   SpdySessionKey key1(HostPortPair("www.example.org", 443),
-                      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+                      ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->FindAvailableSession(
@@ -2786,7 +2786,7 @@ TEST_P(SpdyNetworkTransactionTest, ConnectionPoolingMultipleSocketTags) {
   // for the SpdySession immediately, but the task to use the session for the
   // second request should run asynchronously, so it hasn't run yet.
   helper.session_deps()->host_resolver->ResolveNow(2);
-  SpdySessionKey key2(HostPortPair("example.test", 443), ProxyServer::Direct(),
+  SpdySessionKey key2(HostPortPair("example.test", 443), ProxyChain::Direct(),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, kSocketTag2,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -2794,7 +2794,7 @@ TEST_P(SpdyNetworkTransactionTest, ConnectionPoolingMultipleSocketTags) {
   // Complete the third requests's DNS lookup now, which should hijack the
   // SpdySession from the second request.
   helper.session_deps()->host_resolver->ResolveNow(3);
-  SpdySessionKey key3(HostPortPair("example.test", 443), ProxyServer::Direct(),
+  SpdySessionKey key3(HostPortPair("example.test", 443), ProxyChain::Direct(),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, kSocketTag3,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -2883,7 +2883,7 @@ TEST_P(SpdyNetworkTransactionTest, SocketTagChangeSessionTagWithDnsAliases) {
 
   // A new SPDY session should have been created.
   EXPECT_EQ(1u, helper.GetSpdySessionCount());
-  SpdySessionKey key1(HostPortPair(url.host(), 443), ProxyServer::Direct(),
+  SpdySessionKey key1(HostPortPair(url.host(), 443), ProxyChain::Direct(),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, socket_tag_1,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -2905,7 +2905,7 @@ TEST_P(SpdyNetworkTransactionTest, SocketTagChangeSessionTagWithDnsAliases) {
   request2.load_flags = 0;
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  SpdySessionKey key2(HostPortPair(url.host(), 443), ProxyServer::Direct(),
+  SpdySessionKey key2(HostPortPair(url.host(), 443), ProxyChain::Direct(),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, socket_tag_2,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -3026,7 +3026,7 @@ TEST_P(SpdyNetworkTransactionTest,
 
   // A new SPDY session should have been created.
   EXPECT_EQ(1u, helper.GetSpdySessionCount());
-  SpdySessionKey key1(HostPortPair(url1.host(), 443), ProxyServer::Direct(),
+  SpdySessionKey key1(HostPortPair(url1.host(), 443), ProxyChain::Direct(),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, socket_tag_1,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -3044,7 +3044,7 @@ TEST_P(SpdyNetworkTransactionTest,
   request2.load_flags = 0;
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  SpdySessionKey key2(HostPortPair(url2.host(), 443), ProxyServer::Direct(),
+  SpdySessionKey key2(HostPortPair(url2.host(), 443), ProxyChain::Direct(),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, socket_tag_1,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -3089,7 +3089,7 @@ TEST_P(SpdyNetworkTransactionTest,
   request3.load_flags = 0;
   request3.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  SpdySessionKey key3(HostPortPair(url2.host(), 443), ProxyServer::Direct(),
+  SpdySessionKey key3(HostPortPair(url2.host(), 443), ProxyChain::Direct(),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, socket_tag_2,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -3137,7 +3137,7 @@ TEST_P(SpdyNetworkTransactionTest,
   request4.load_flags = 0;
   request4.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  SpdySessionKey key4(HostPortPair(url1.host(), 443), ProxyServer::Direct(),
+  SpdySessionKey key4(HostPortPair(url1.host(), 443), ProxyChain::Direct(),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, socket_tag_2,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -4067,7 +4067,7 @@ TEST_P(SpdyNetworkTransactionTest, GracefulGoaway) {
 
   // GOAWAY frame has not yet been received, SpdySession should be available.
   SpdySessionPool* spdy_session_pool = helper.session()->spdy_session_pool();
-  SpdySessionKey key(host_port_pair_, ProxyServer::Direct(),
+  SpdySessionKey key(host_port_pair_, ProxyChain::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -4754,13 +4754,13 @@ TEST_P(SpdyNetworkTransactionTest, DirectConnectProxyReconnect) {
 
   // Check that the SpdySession is still in the SpdySessionPool.
   SpdySessionKey session_pool_key_direct(
-      host_port_pair_, ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+      host_port_pair_, ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   EXPECT_TRUE(HasSpdySession(spdy_session_pool, session_pool_key_direct));
   SpdySessionKey session_pool_key_proxy(
       host_port_pair_,
-      ProxyUriToProxyServer("www.foo.com", ProxyServer::SCHEME_HTTP),
+      ProxyUriToProxyChain("www.foo.com", ProxyServer::SCHEME_HTTP),
       PRIVACY_MODE_DISABLED, SpdySessionKey::IsProxySession::kFalse,
       SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   EXPECT_FALSE(HasSpdySession(spdy_session_pool, session_pool_key_proxy));
@@ -6558,7 +6558,7 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketOpensNewConnection) {
   EXPECT_THAT(rv, IsOk());
   EXPECT_EQ("hello!", response_data);
 
-  SpdySessionKey key(HostPortPair::FromURL(request_.url), ProxyServer::Direct(),
+  SpdySessionKey key(HostPortPair::FromURL(request_.url), ProxyChain::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -6705,7 +6705,7 @@ TEST_P(SpdyNetworkTransactionTest,
   EXPECT_THAT(rv, IsOk());
   EXPECT_EQ("hello!", response_data);
 
-  SpdySessionKey key(HostPortPair::FromURL(request_.url), ProxyServer::Direct(),
+  SpdySessionKey key(HostPortPair::FromURL(request_.url), ProxyChain::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -6785,7 +6785,7 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketOverHTTP2) {
   // Create HTTP/2 connection.
   base::RunLoop().RunUntilIdle();
 
-  SpdySessionKey key(HostPortPair::FromURL(request_.url), ProxyServer::Direct(),
+  SpdySessionKey key(HostPortPair::FromURL(request_.url), ProxyChain::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -6976,7 +6976,7 @@ TEST_P(SpdyNetworkTransactionTest,
 
   SpdySessionKey key(
       HostPortPair::FromURL(request_.url),
-      ProxyUriToProxyServer("https://proxy:70", ProxyServer::SCHEME_HTTPS),
+      ProxyUriToProxyChain("https://proxy:70", ProxyServer::SCHEME_HTTPS),
       PRIVACY_MODE_DISABLED, SpdySessionKey::IsProxySession::kFalse,
       SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
 
@@ -7087,8 +7087,8 @@ TEST_P(SpdyNetworkTransactionTest,
   helper.session_deps()->host_resolver->ResolveNow(1);
   base::RunLoop().RunUntilIdle();
 
-  SpdySessionKey key1(HostPortPair::FromURL(request_.url),
-                      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key1(HostPortPair::FromURL(request_.url), ProxyChain::Direct(),
+                      PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->HasAvailableSession(
@@ -7104,8 +7104,8 @@ TEST_P(SpdyNetworkTransactionTest,
   helper.session_deps()->host_resolver->ResolveNow(2);
   ASSERT_TRUE(spdy_session1);
 
-  SpdySessionKey key2(HostPortPair::FromURL(request2.url),
-                      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key2(HostPortPair::FromURL(request2.url), ProxyChain::Direct(),
+                      PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->HasAvailableSession(
@@ -7244,8 +7244,8 @@ TEST_P(SpdyNetworkTransactionTest,
   EXPECT_THAT(rv, IsOk());
   EXPECT_EQ("hello!", response_data);
 
-  SpdySessionKey key1(HostPortPair::FromURL(request_.url),
-                      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key1(HostPortPair::FromURL(request_.url), ProxyChain::Direct(),
+                      PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> spdy_session1 =
@@ -7260,8 +7260,8 @@ TEST_P(SpdyNetworkTransactionTest,
   // alias..
   helper.session_deps()->host_resolver->ResolveNow(2);
 
-  SpdySessionKey key2(HostPortPair::FromURL(request2.url),
-                      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key2(HostPortPair::FromURL(request2.url), ProxyChain::Direct(),
+                      PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> spdy_session2 =
@@ -7407,7 +7407,7 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketHttp11Required) {
   // Create HTTP/2 connection.
   base::RunLoop().RunUntilIdle();
 
-  SpdySessionKey key(HostPortPair::FromURL(request_.url), ProxyServer::Direct(),
+  SpdySessionKey key(HostPortPair::FromURL(request_.url), ProxyChain::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);

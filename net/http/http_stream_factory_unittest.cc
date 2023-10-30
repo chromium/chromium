@@ -599,7 +599,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
 
     // Put a SpdySession in the pool.
     HostPortPair host_port_pair("www.google.com", 443);
-    SpdySessionKey key(host_port_pair, ProxyServer::Direct(),
+    SpdySessionKey key(host_port_pair, ProxyChain::Direct(),
                        PRIVACY_MODE_DISABLED,
                        SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);

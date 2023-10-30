@@ -13,7 +13,6 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_chain.h"
-#include "net/base/proxy_server.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log_event_type.h"
@@ -187,16 +186,18 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
         &OnHostResolution, common_connect_job_params_->spdy_session_pool,
         // TODO(crbug.com/1206799): Pass along as SchemeHostPort.
         SpdySessionKey(HostPortPair::FromSchemeHostPort(group_id.destination()),
-                       proxy_chain.proxy_server(), group_id.privacy_mode(),
+                       proxy_chain, group_id.privacy_mode(),
                        SpdySessionKey::IsProxySession::kFalse, socket_tag,
                        group_id.network_anonymization_key(),
                        group_id.secure_dns_policy()),
         is_for_websockets_);
   } else if (proxy_chain.proxy_server().is_https()) {
+    // TODO(crbug.com/1491092): Determine how to handle session aliasing for
+    // multi-proxy chains. See comments on https://crrev.com/c/4968319.
     resolution_callback = base::BindRepeating(
         &OnHostResolution, common_connect_job_params_->spdy_session_pool,
         SpdySessionKey(proxy_chain.proxy_server().host_port_pair(),
-                       ProxyServer::Direct(), group_id.privacy_mode(),
+                       ProxyChain::Direct(), group_id.privacy_mode(),
                        SpdySessionKey::IsProxySession::kTrue, socket_tag,
                        group_id.network_anonymization_key(),
                        group_id.secure_dns_policy()),

@@ -426,15 +426,15 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
   // In the case that we're using an HTTPS proxy for an HTTP url, look for a
   // HTTP/2 proxy session *to* the proxy, instead of to the origin server.
   if (proxy_server.is_https() && origin_url.SchemeIs(url::kHttpScheme)) {
-    return SpdySessionKey(proxy_server.host_port_pair(), ProxyServer::Direct(),
+    return SpdySessionKey(proxy_server.host_port_pair(), ProxyChain::Direct(),
                           PRIVACY_MODE_DISABLED,
                           SpdySessionKey::IsProxySession::kTrue, socket_tag,
                           network_anonymization_key, secure_dns_policy);
   }
-  return SpdySessionKey(HostPortPair::FromURL(origin_url), proxy_server,
-                        privacy_mode, SpdySessionKey::IsProxySession::kFalse,
-                        socket_tag, network_anonymization_key,
-                        secure_dns_policy);
+  return SpdySessionKey(HostPortPair::FromURL(origin_url),
+                        ProxyChain(proxy_server), privacy_mode,
+                        SpdySessionKey::IsProxySession::kFalse, socket_tag,
+                        network_anonymization_key, secure_dns_policy);
 }
 
 bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {

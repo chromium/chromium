@@ -345,7 +345,7 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
         if (!compare_result.is_socket_tag_match) {
           SpdySessionKey old_key = available_session->spdy_session_key();
           SpdySessionKey new_key(old_key.host_port_pair(),
-                                 old_key.proxy_server(), old_key.privacy_mode(),
+                                 old_key.proxy_chain(), old_key.privacy_mode(),
                                  old_key.is_proxy_session(), key.socket_tag(),
                                  old_key.network_anonymization_key(),
                                  old_key.secure_dns_policy());
@@ -393,7 +393,7 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
                 GetDnsAliasesForSessionKey(*it);
             UnmapKey(*it);
             SpdySessionKey new_pool_alias_key = SpdySessionKey(
-                it->host_port_pair(), it->proxy_server(), it->privacy_mode(),
+                it->host_port_pair(), it->proxy_chain(), it->privacy_mode(),
                 it->is_proxy_session(), key.socket_tag(),
                 it->network_anonymization_key(), it->secure_dns_policy());
             MapKeyToAvailableSession(new_pool_alias_key, available_session,
@@ -544,6 +544,7 @@ void SpdySessionPool::OnSSLConfigForServersChanged(
     if (!session)
       continue;
 
+    // TODO(crbug.com/1491092): Update to support multi-proxy chains.
     const ProxyServer& proxy_server =
         session->spdy_session_key().proxy_server();
     if (servers.contains(session->host_port_pair()) ||
@@ -724,7 +725,7 @@ base::WeakPtr<SpdySession> SpdySessionPool::InsertSession(
   // potentially be pooled with this one. Because GetPeerAddress()
   // reports the proxy's address instead of the origin server, check
   // to see if this is a direct connection.
-  if (key.proxy_server().is_direct()) {
+  if (key.proxy_chain().is_direct()) {
     IPEndPoint address;
     if (available_session->GetPeerAddress(&address) == OK)
       aliases_.insert(AliasMap::value_type(address, key));

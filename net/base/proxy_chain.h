@@ -141,6 +141,10 @@ class NET_EXPORT ProxyChain {
 NET_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,
                                             const ProxyChain& proxy_chain);
 
+// A HostPortProxyPair holds a host/port destination and a ProxyChain describing
+// how that destination is reached.
+typedef std::pair<HostPortPair, ProxyChain> HostPortProxyPair;
+
 }  // namespace net
 
 #endif  // NET_BASE_PROXY_CHAIN_H_
