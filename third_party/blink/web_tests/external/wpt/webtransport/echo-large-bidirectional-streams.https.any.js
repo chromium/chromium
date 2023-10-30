@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<meta charset="utf-8"/>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/common/get-host-info.sub.js"></script>
-<script src="resources/webtransport-test-helpers.sub.js"></script>
-<script>
+// META: global=window,worker
+// META: script=/common/get-host-info.sub.js
+// META: script=resources/webtransport-test-helpers.sub.js
+
 // A test that aims to reproduce https://crbug.com/1369030 -- note that since
 // the bug in question is a race condition, this test will probably be flaky if
 // this is actually broken.
@@ -23,5 +20,3 @@ promise_test(async t => {
     assert_equals(response.byteLength, numBytes);
   }
 }, 'Ensure large bidirectional streams does not cause race condition');
-
-</script>

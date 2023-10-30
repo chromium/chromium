@@ -13,13 +13,8 @@ This is a testharness.js-based test.
 [FAIL] AudioWorklet module fetches with a "audioworklet" Request.destination
   promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
 [PASS] HTMLLinkElement with rel=stylesheet fetches with a "style" Request.destination
-[FAIL] Import declaration with `type: "css"` fetches with a "style" Request.destination
-  promise_test: Unhandled rejection with value: "Uncaught SyntaxError: Unexpected token 'with'"
-[FAIL] Import declaration with `type: "json"` fetches with a "json" Request.destination
-  promise_test: Unhandled rejection with value: "Uncaught SyntaxError: Unexpected token 'with'"
 [PASS] HTMLLinkElement with rel=preload and as=fetch fetches with an empty string Request.destination
 [PASS] HTMLLinkElement with rel=preload and as=style fetches with a "style" Request.destination
-[PASS] HTMLLinkElement with rel=preload and as=json fetches with a "json" Request.destination
 [PASS] HTMLLinkElement with rel=preload and as=script fetches with a "script" Request.destination
 [PASS] HTMLLinkElement with rel=preload and as=font fetches with a "font" Request.destination
 [PASS] HTMLLinkElement with rel=preload and as=image fetches with a "image" Request.destination

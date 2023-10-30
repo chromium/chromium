@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+[PASS] checkVisibility on visibility:hidden element.
+[PASS] checkVisibility on content-visibility:hidden element.
+[PASS] checkVisibility on element slotted in content-visibility: hidden shadow host.
+[PASS] checkVisibility on content-visibility:auto element.
+[FAIL] checkVisibility on content-visibility:auto element which is outside the viewport.
+  assert_false: checkContentVisibilityAuto: true expected false got true
+[PASS] checkVisibility on display:none element.
+[PASS] checkVisibility on element slotted in display:none shadow host.
+[PASS] checkVisibility on display:contents element.
+[PASS] checkVisibility on opacity:0 element.
+[PASS] checkVisibility on element slotted in opacity: 0; shadow host.
+[FAIL] checkVisibility on content-visibility:auto with visibility:hidden inside.
+  assert_false: expected false got true
+[PASS] checkVisibility on nested content-visibility:auto containers reports that the content is visible.
+[PASS] checkVisibility on content-visibility:hidden child after forced layout update.
+[PASS] checkVisibility on content-visibility:hidden element after forced layout update.
+[PASS] checkVisibility on root element with content-visibility: hidden returns true.
+Harness: the test ran to completion.
+
