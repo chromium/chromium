@@ -237,8 +237,8 @@ void AutofillContextMenuManager::
     return;
   }
   driver.browser_events().RendererShouldTriggerSuggestions(
-      field->global_id(), AutofillSuggestionTriggerSource::
-                              kManualFallbackForAutocompleteUnrecognized);
+      field->global_id(),
+      AutofillSuggestionTriggerSource::kManualFallbackAddress);
   static_cast<BrowserAutofillManager&>(manager)
       .GetAutocompleteUnrecognizedFallbackEventLogger()
       .ContextMenuEntryAccepted(

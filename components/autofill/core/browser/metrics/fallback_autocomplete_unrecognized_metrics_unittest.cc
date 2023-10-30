@@ -24,7 +24,7 @@ class AutocompleteUnrecognizedFallbackEventLoggerTest
   // Show suggestions on the first field of the `form`.
   void ShowSuggestions(const FormData& form) {
     // On desktop, suggestion on an ac=unrecognized field can only be triggered
-    // through source kManualFallbackForAutocompleteUnrecognized. However, on
+    // through source kManualFallbackAddress. However, on
     // mobile any trigger source works. For the test, it is irrelevant, since
     // the metric only cares about the autocomplete attribute, not the trigger
     // source.

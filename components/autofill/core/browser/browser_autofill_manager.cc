@@ -524,8 +524,8 @@ bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields(
   return base::FeatureList::IsEnabled(
       features::kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile);
 #else
-  return trigger_source == AutofillSuggestionTriggerSource::
-                               kManualFallbackForAutocompleteUnrecognized;
+  return trigger_source ==
+         AutofillSuggestionTriggerSource::kManualFallbackAddress;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
@@ -1066,8 +1066,7 @@ bool BrowserAutofillManager::WasSuggestionPreviouslyHidden(
                 /*optional_type_groups_originally_filled=*/nullptr,
                 /*skip_unrecognized_autocomplete_fields=*/
                 trigger_source !=
-                    AutofillSuggestionTriggerSource::
-                        kManualFallbackForAutocompleteUnrecognized,
+                    AutofillSuggestionTriggerSource::kManualFallbackAddress,
                 /*is_refill=*/false)
           : std::vector<FieldFillingSkipReason>(
                 form_structure->field_count(),
@@ -2495,8 +2494,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       filling_context ? &filling_context->type_groups_originally_filled
                       : nullptr,
       /*skip_unrecognized_autocomplete_fields=*/
-      trigger_details.trigger_source !=
-          AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized,
+      trigger_details.trigger_source != AutofillTriggerSource::kManualFallback,
       is_refill);
 
   constexpr DenseSet<FieldFillingSkipReason> pre_ukm_logging_skips{
@@ -2825,8 +2823,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
                     : kAllServerFieldTypes,
                 /*optional_type_groups_originally_filled=*/nullptr,
                 /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
-                    AutofillSuggestionTriggerSource::
-                        kManualFallbackForAutocompleteUnrecognized,
+                    AutofillSuggestionTriggerSource::kManualFallbackAddress,
                 /*is_refill=*/false)
           : std::vector<FieldFillingSkipReason>(
                 form_structure.field_count(),

@@ -203,10 +203,9 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
   // Whether the `mouse_observed_outside_item_bounds_` will be ignored or not.
   // Today this happens when:
-  // 1. The AutofillSuggestionTriggerSource is
-  // `kManualFallbackForAutocompleteUnrecognized`. This is because in this
-  // situation even though the popup could appear behind the cursor, the user
-  // intention about opening it is explicit.
+  // 1. The AutofillSuggestionTriggerSource is `kManualFallbackAddress`. This is
+  // because in this situation even though the popup could appear behind the
+  // cursor, the user intention about opening it is explicit.
   //
   // 2. The suggestions are of autocomplete type and were regenerated due to a
   // suggestion being removed. We want to ignore the check in this case because

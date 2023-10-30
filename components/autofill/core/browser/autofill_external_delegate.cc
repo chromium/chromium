@@ -144,12 +144,11 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
 #else
       return AutofillTriggerSource::kPopup;
 #endif  // BUILDFLAG(IS_ANDROID)
-    case AutofillSuggestionTriggerSource::
-        kManualFallbackForAutocompleteUnrecognized:
+    case AutofillSuggestionTriggerSource::kManualFallbackAddress:
       // Manual fallbacks are both a suggestion trigger source (e.g. through the
       // context menu) and a trigger source (by selecting a suggestion generated
       // through the context menu).
-      return AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized;
+      return AutofillTriggerSource::kManualFallback;
   }
   NOTREACHED_NORETURN();
 }

@@ -1209,12 +1209,10 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
   external_delegate_->DidAcceptSuggestion(suggestion, /*position=*/1,
                                           suggestion_source);
 
-  // Expect that `kManualFallbackForAutocompleteUnrecognized` translates to
-  // trigger source of the same name.
-  suggestion_source = AutofillSuggestionTriggerSource::
-      kManualFallbackForAutocompleteUnrecognized;
-  expected_source =
-      AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized;
+  // Expect that `kManualFallbackAddress` translates to the manual fallback
+  // trigger source.
+  suggestion_source = AutofillSuggestionTriggerSource::kManualFallbackAddress;
+  expected_source = AutofillTriggerSource::kManualFallback;
   EXPECT_CALL(
       *browser_autofill_manager_,
       FillOrPreviewProfileForm(

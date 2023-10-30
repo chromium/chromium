@@ -1529,8 +1529,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
                 ->GetSuggestionsForProfiles(
                     {NAME_FIRST}, triggering_field, NAME_FIRST,
                     /*last_targeted_fields=*/absl::nullopt,
-                    AutofillSuggestionTriggerSource::
-                        kManualFallbackForAutocompleteUnrecognized)
+                    AutofillSuggestionTriggerSource::kManualFallbackAddress)
                 .size(),
             2u);
 }

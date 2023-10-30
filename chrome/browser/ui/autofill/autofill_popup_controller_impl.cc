@@ -188,8 +188,8 @@ void AutofillPopupControllerImpl::Show(
 
   trigger_source_ = trigger_source;
   should_ignore_mouse_observed_outside_item_bounds_check_ =
-      trigger_source_ == AutofillSuggestionTriggerSource::
-                             kManualFallbackForAutocompleteUnrecognized;
+      trigger_source_ ==
+      AutofillSuggestionTriggerSource::kManualFallbackAddress;
 
   if (view_) {
     OnSuggestionsChanged();

@@ -697,8 +697,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   // available profiles should be shown. Selecting a suggestion overwrites the
   // triggering field's value.
   const std::u16string field_value_for_filtering =
-      trigger_source != AutofillSuggestionTriggerSource::
-                            kManualFallbackForAutocompleteUnrecognized
+      trigger_source != AutofillSuggestionTriggerSource::kManualFallbackAddress
           ? triggering_field.value
           : u"";
 

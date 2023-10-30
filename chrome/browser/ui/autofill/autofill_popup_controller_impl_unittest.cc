@@ -513,8 +513,7 @@ TEST_F(AutofillPopupControllerImplTest,
 TEST_F(AutofillPopupControllerImplTest,
        ManualFallBackTriggerSource_IgnoresClickOutsideCheck) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry},
-                  AutofillSuggestionTriggerSource::
-                      kManualFallbackForAutocompleteUnrecognized);
+                  AutofillSuggestionTriggerSource::kManualFallbackAddress);
 
   // Generate a popup, so it can be hidden later. It doesn't matter what the
   // external_delegate thinks is being shown in the process, since we are just

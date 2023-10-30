@@ -1603,9 +1603,8 @@ TEST_F(BrowserAutofillManagerTest,
   // suggestions are returned.
   // Two, because the fixture created three profiles during set up, one of which
   // is empty and cannot be suggested (see `CreateTestAutofillProfiles()`).
-  GetAutofillSuggestions(form, field0,
-                         AutofillSuggestionTriggerSource::
-                             kManualFallbackForAutocompleteUnrecognized);
+  GetAutofillSuggestions(
+      form, field0, AutofillSuggestionTriggerSource::kManualFallbackAddress);
   external_delegate()->CheckSuggestionCount(field0.global_id(), 2);
 
   // Expect that two suggestions are returned for all other fields.
@@ -3732,8 +3731,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFillingBehavior) {
   browser_autofill_manager_->FillOrPreviewProfileForm(
       mojom::ActionPersistence::kFill, form, form.fields[0],
       *personal_data().GetProfileByGUID(kElvisProfileGuid),
-      {.trigger_source =
-           AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized});
+      {.trigger_source = AutofillTriggerSource::kManualFallback});
 
   ExpectFilledForm(filled_form, GetElvisAddressFillData(),
                    /*card_fill_data=*/absl::nullopt);

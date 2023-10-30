@@ -572,9 +572,9 @@ enum AutofillSuggestionTriggerSource {
   // This code currently doesn't distinguish between different suggestion
   // trigger sources. They are all treated as `kiOS`. See crbug.com/1448447.
   kiOS,
-  // Suggestions triggered by selecting the manual fallback entry for
-  // autocomplete=unrecognized fields in the context menu.
-  kManualFallbackForAutocompleteUnrecognized,
+  // Suggestions triggered by selecting the Autofill address manual fallback
+  // entry from the Chrome context menu.
+  kManualFallbackAddress,
   // Suggestions triggered by the user closing a dialog after performing some
   // action.
   kShowPromptAfterDialogClosed,

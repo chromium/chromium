@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that when the fallback entry for ac=unrecognized fields is selected,
 // suggestions are triggered with suggestion trigger source
-// `kManualFallbackForAutocompleteUnrecognized`.
+// `kManualFallbackAddress`.
 IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
                        AutocompleteUnrecognizedFallback_TriggerSuggestions) {
   AddAutofillProfile(test::GetFullProfile());
@@ -454,8 +454,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteUnrecognizedFieldsTest,
       RendererShouldTriggerSuggestions(
           FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
                         form.fields[0].unique_renderer_id},
-          AutofillSuggestionTriggerSource::
-              kManualFallbackForAutocompleteUnrecognized));
+          AutofillSuggestionTriggerSource::kManualFallbackAddress));
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
 }
