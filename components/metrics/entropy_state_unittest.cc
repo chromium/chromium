@@ -164,6 +164,34 @@ TEST_F(EntropyStateTest, CorruptOldLowEntropySources) {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(EntropyStateTest, ClearPrefs) {
+  // On Lacros we expect that there will be no clearing of prefs.
+  prefs_.SetInteger(prefs::kMetricsLowEntropySource, 1234);
+  prefs_.SetInteger(prefs::kMetricsOldLowEntropySource, 5678);
+  prefs_.SetInteger(prefs::kMetricsPseudoLowEntropySource, 4321);
+
+  EntropyState::ClearPrefs(&prefs_);
+
+  EXPECT_TRUE(prefs_.HasPrefPath(prefs::kMetricsLowEntropySource));
+  EXPECT_TRUE(prefs_.HasPrefPath(prefs::kMetricsOldLowEntropySource));
+  EXPECT_TRUE(prefs_.HasPrefPath(prefs::kMetricsPseudoLowEntropySource));
+}
+
+TEST_F(EntropyStateTest, SetExternalPrefs) {
+  prefs_.ClearPref(prefs::kMetricsLowEntropySource);
+  prefs_.ClearPref(prefs::kMetricsOldLowEntropySource);
+  prefs_.ClearPref(prefs::kMetricsPseudoLowEntropySource);
+
+  EntropyState::SetExternalPrefs(&prefs_, 1234, 4567, 3456);
+
+  EXPECT_EQ(prefs_.GetInteger(prefs::kMetricsLowEntropySource), 1234);
+  EXPECT_EQ(prefs_.GetInteger(prefs::kMetricsOldLowEntropySource), 4567);
+  EXPECT_EQ(prefs_.GetInteger(prefs::kMetricsPseudoLowEntropySource), 3456);
+}
+
+#else
+
 TEST_F(EntropyStateTest, ClearPrefs) {
   prefs_.SetInteger(prefs::kMetricsLowEntropySource, 1234);
   prefs_.SetInteger(prefs::kMetricsOldLowEntropySource, 5678);
@@ -175,5 +203,6 @@ TEST_F(EntropyStateTest, ClearPrefs) {
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kMetricsOldLowEntropySource));
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kMetricsPseudoLowEntropySource));
 }
+#endif
 
 }  // namespace metrics

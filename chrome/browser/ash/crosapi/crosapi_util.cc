@@ -540,6 +540,10 @@ void InjectBrowserInitParams(
     if (!client_id.empty()) {
       params->metrics_service_client_id = client_id;
     }
+    params->entropy_source = crosapi::mojom::EntropySource::New(
+        metrics_service->GetLowEntropySource(),
+        metrics_service->GetOldLowEntropySource(),
+        metrics_service->GetPseudoLowEntropySource());
   }
 
   if (auto* metrics_services_manager =

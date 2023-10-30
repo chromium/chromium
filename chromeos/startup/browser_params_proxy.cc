@@ -162,6 +162,11 @@ const absl::optional<std::string>& BrowserParamsProxy::MetricsServiceClientId()
   return BrowserInitParams::Get()->metrics_service_client_id;
 }
 
+const crosapi::mojom::EntropySourcePtr& BrowserParamsProxy::EntropySource()
+    const {
+  return BrowserInitParams::Get()->entropy_source;
+}
+
 uint64_t BrowserParamsProxy::UkmClientId() const {
   return BrowserInitParams::Get()->ukm_client_id;
 }

@@ -926,6 +926,23 @@ struct DeviceProperties {
   bool? has_stylus_enabled_touchscreen@9;
 };
 
+// Entropy variables which need to be kept in sync between Ash and Lacros
+// throughout a session.
+//
+// Next version: 1
+// Next id: 3
+[Stable]
+struct EntropySource {
+  // Metrics service low entropy source of ash chrome.
+  int32 low_entropy@0;
+
+  // Metrics service old low entropy source of ash chrome.
+  int32 old_low_entropy@1;
+
+  // Metrics service pseudo low entropy source of ash chrome.
+  int32 pseudo_low_entropy@2;
+};
+
 [Stable, Extensible]
 enum ExoImeSupport {
   kUnsupported = 0,
@@ -1044,8 +1061,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 73
-// Next id: 73
+// Next version: 74
+// Next id: 74
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1487,6 +1504,11 @@ struct BrowserInitParams {
   // app service and displayed with updated UI in ash.
   [MinVersion=72]
   bool is_cros_web_app_shortcut_ui_update_enabled@72;
+
+  // Metrics service low entropy source of ash chrome.
+  // Lacros needs to use the same entropy values to be trustworthy for UMA data.
+  [MinVersion=73]
+  EntropySource? entropy_source@73;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

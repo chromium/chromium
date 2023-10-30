@@ -31,6 +31,15 @@ class EntropyState final {
   // Registers low_entropy_source and old_low_entropy_source in the prefs.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Overriding the entropy source preferences with new values as given by
+  // Ash upon initialization, before the MetricsService gets created.
+  static void SetExternalPrefs(PrefService* local_state,
+                               int low_entropy_source,
+                               int old_low_entropy_source,
+                               int pseudo_low_entropy_source);
+#endif
+
   // Returns the high entropy source for this client, which is composed of a
   // client ID and the low entropy source. This is intended to be unique for
   // each install. |initial_client_id| is the client_id that was used to

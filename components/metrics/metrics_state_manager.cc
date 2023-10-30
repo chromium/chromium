@@ -344,6 +344,14 @@ int MetricsStateManager::GetLowEntropySource() {
   return entropy_state_.GetLowEntropySource();
 }
 
+int MetricsStateManager::GetOldLowEntropySource() {
+  return entropy_state_.GetOldLowEntropySource();
+}
+
+int MetricsStateManager::GetPseudoLowEntropySource() {
+  return entropy_state_.GetPseudoLowEntropySource();
+}
+
 void MetricsStateManager::InstantiateFieldTrialList() {
   // Instantiate the FieldTrialList to support field trials. If an instance
   // already exists, this is likely a test scenario with a ScopedFeatureList, so
@@ -612,10 +620,6 @@ std::string MetricsStateManager::GetHighEntropySource() {
   }
   UpdateEntropySourceReturnedValue(ENTROPY_SOURCE_HIGH);
   return entropy_state_.GetHighEntropySource(initial_client_id_);
-}
-
-int MetricsStateManager::GetOldLowEntropySource() {
-  return entropy_state_.GetOldLowEntropySource();
 }
 
 void MetricsStateManager::UpdateEntropySourceReturnedValue(
