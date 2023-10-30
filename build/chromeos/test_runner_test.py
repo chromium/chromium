@@ -319,6 +319,7 @@ class GTestTest(TestRunnerTest):
 
       if use_test_sudo_helper:
         expected_device_script += dedent("""\
+            pkill -P $TEST_SUDO_HELPER_PID
             kill $TEST_SUDO_HELPER_PID
             unlink ${TEST_SUDO_HELPER_PATH}
           """)

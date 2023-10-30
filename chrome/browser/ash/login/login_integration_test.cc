@@ -24,9 +24,7 @@ class LoginIntegrationTest : public InteractiveAshTest {
   ~LoginIntegrationTest() override = default;
 };
 
-// Disable due to failure on amd64-generic.
-// TODO(b/307386689): Enable after fix.
-IN_PROC_BROWSER_TEST_F(LoginIntegrationTest, DISABLED_TestLogin) {
+IN_PROC_BROWSER_TEST_F(LoginIntegrationTest, TestLogin) {
   login_mixin().Login();
 
   // Waits for the primary user session to start.
@@ -52,9 +50,7 @@ class GaiaLoginIntegrationTest : public InteractiveAshTest {
   ~GaiaLoginIntegrationTest() override = default;
 };
 
-// Disable due to failure on chromeos-betty-pi-arc-chrome.
-// TODO(b/307386689): Enable after fix.
-IN_PROC_BROWSER_TEST_F(GaiaLoginIntegrationTest, DISABLED_GaiaLogin) {
+IN_PROC_BROWSER_TEST_F(GaiaLoginIntegrationTest, GaiaLogin) {
   login_mixin().Login();
 
   // Waits for the primary user session to start.

@@ -645,6 +645,7 @@ class GTestTest(RemoteTest):
     # Stop the crosier helper.
     if self._run_test_sudo_helper:
       device_test_script_contents.extend([
+          'pkill -P $TEST_SUDO_HELPER_PID',
           'kill $TEST_SUDO_HELPER_PID',
           'unlink ${TEST_SUDO_HELPER_PATH}',
       ])
