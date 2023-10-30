@@ -1030,6 +1030,8 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     blink::mojom::IdpSigninStatus status) {
   if (render_frame_host().IsNestedWithinFencedFrame()) {
+    RecordSetLoginStatusIgnoredReason(
+        FedCmSetLoginStatusIgnoredReason::kInFencedFrame);
     return;
   }
   // We only allow setting the IDP signin status when the subresource is loaded
@@ -1038,6 +1040,8 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
   // that would set this signin status for the tracker, enabling the FedCM
   // request.
   if (!webid::IsSameOriginWithAncestors(idp_origin, &render_frame_host())) {
+    RecordSetLoginStatusIgnoredReason(
+        FedCmSetLoginStatusIgnoredReason::kCrossOrigin);
     return;
   }
   permission_delegate_->SetIdpSigninStatus(

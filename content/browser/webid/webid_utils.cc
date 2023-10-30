@@ -50,16 +50,22 @@ void SetIdpSigninStatus(content::BrowserContext* context,
     // If the id was not kFrameTreeNodeInvalidId, but the lookup failed, we
     // ignore the load because we cannot do same-origin checks.
     if (!frame_tree_node) {
+      RecordSetLoginStatusIgnoredReason(
+          FedCmSetLoginStatusIgnoredReason::kFrameTreeLookupFailed);
       return;
     }
   }
   // Make sure we're same-origin with our ancestors.
   if (frame_tree_node) {
     if (frame_tree_node->IsInFencedFrameTree()) {
+      RecordSetLoginStatusIgnoredReason(
+          FedCmSetLoginStatusIgnoredReason::kInFencedFrame);
       return;
     }
 
     if (!IsSameOriginWithAncestors(origin, frame_tree_node->parent())) {
+      RecordSetLoginStatusIgnoredReason(
+          FedCmSetLoginStatusIgnoredReason::kCrossOrigin);
       return;
     }
   }

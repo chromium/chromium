@@ -44980,6 +44980,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Continue"/>
 </enum>
 
+<enum name="FedCmSetLoginStatusIgnoredReason">
+  <int value="0" label="Looking up the FrameTreeNode by ID failed"/>
+  <int value="1" label="Request came from within a fenced frame tree"/>
+  <int value="2" label="Request came from a cross-origin context"/>
+</enum>
+
 <enum name="FedCmSheetType">
   <int value="0" label="Account selection"/>
   <int value="1" label="Verifying"/>

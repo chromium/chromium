@@ -454,4 +454,9 @@ void RecordAccountsResponseInvalidReason(
       "Blink.FedCm.Status.AccountsResponseInvalidReason", reason);
 }
 
+void RecordSetLoginStatusIgnoredReason(
+    FedCmSetLoginStatusIgnoredReason reason) {
+  base::UmaHistogramEnumeration("Blink.FedCm.SetLoginStatusIgnored", reason);
+}
+
 }  // namespace content

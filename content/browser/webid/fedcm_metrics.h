@@ -136,6 +136,16 @@ enum class FedCmRevokeStatus {
   kMaxValue = kConfigInvalidContentType
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FedCmSetLoginStatusIgnoredReason {
+  kFrameTreeLookupFailed = 0,
+  kInFencedFrame = 1,
+  kCrossOrigin = 2,
+
+  kMaxValue = kCrossOrigin
+};
+
 class CONTENT_EXPORT FedCmMetrics {
  public:
   FedCmMetrics(const GURL& provider,
@@ -279,6 +289,10 @@ void RecordIdpSignOutNetError(int response_code);
 // Records why there's no valid account in the response.
 void RecordAccountsResponseInvalidReason(
     IdpNetworkRequestManager::AccountsResponseInvalidReason reason);
+
+// Records the reason why we ignored an attempt to set a login status.
+void RecordSetLoginStatusIgnoredReason(FedCmSetLoginStatusIgnoredReason reason);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_
