@@ -859,6 +859,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Clients.LCPP.PaintTiming.PredictLCPSuccess"
+    enum="Boolean" expires_after="2024-03-31">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records whether the LCP timing predicor predicted the right LCP. The metric
+    is emitted only for navigations that LCP Critical Path Predictor provided
+    non-empty hint data.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.MultiTabLoading{OtherLoadingCount}.{Timing}{Background}"
     units="ms" expires_after="2024-02-20">

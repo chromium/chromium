@@ -14,7 +14,7 @@ namespace internal {
 // Expose metrics for tests.
 extern const char kHistogramLCPPFirstContentfulPaint[];
 extern const char kHistogramLCPPLargestContentfulPaint[];
-
+extern const char kHistogramLCPPPredictSuccess[];
 }  // namespace internal
 
 // PageLoadMetricsObserver responsible for:
@@ -80,6 +80,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   void FinalizeLCP();
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void ReportUMAForTimingPredictor(
+      absl::optional<predictors::LcppData> lcpp_data_prelearn);
 
   // True if the page is prerendered.
   bool is_prerender_ = false;

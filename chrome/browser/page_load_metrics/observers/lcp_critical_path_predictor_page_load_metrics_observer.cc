@@ -19,6 +19,8 @@ const char kHistogramLCPPFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
 const char kHistogramLCPPLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToLargestContentfulPaint";
+const char kHistogramLCPPPredictSuccess[] =
+    HISTOGRAM_PREFIX "PaintTiming.PredictLCPSuccess";
 
 }  // namespace internal
 
@@ -122,24 +124,28 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
   }
 
   // * Finalize the staged LCPP signals to the database.
-
+  predictors::ResourcePrefetchPredictor* predictor = nullptr;
   // `loading_predictor` is nullptr in
   // `LcpCriticalPathPredictorPageLoadMetricsObserverTest`, or if the profile
   // `IsOffTheRecord`.
+  if (auto* loading_predictor =
+          predictors::LoadingPredictorFactory::GetForProfile(
+              Profile::FromBrowserContext(
+                  GetDelegate().GetWebContents()->GetBrowserContext()))) {
+    predictor = loading_predictor->resource_prefetch_predictor();
+  }
+  // Take the learned LCPP here so that we can report it after overwriting it
+  // with the new data below.
+  absl::optional<predictors::LcppData> lcpp_data_prelearn =
+      predictor ? predictor->GetLcppData(*commit_url_) : absl::nullopt;
+
   // TODO(crbug.com/715525): kSpeculativePreconnectFeature flag can also affect
   // this. Unflag the feature.
   if (lcpp_data_inputs_.has_value()
       // Don't learn LCPP when prerender to avoid data skew. Activation LCP
       // should be much shorter than regular LCP.
-      && !is_prerender_) {
-    if (auto* loading_predictor =
-            predictors::LoadingPredictorFactory::GetForProfile(
-                Profile::FromBrowserContext(
-                    GetDelegate().GetWebContents()->GetBrowserContext()))) {
-      predictors::ResourcePrefetchPredictor* predictor =
-          loading_predictor->resource_prefetch_predictor();
-      predictor->LearnLcpp(commit_url_->host(), *lcpp_data_inputs_);
-    }
+      && !is_prerender_ && predictor) {
+    predictor->LearnLcpp(commit_url_->host(), *lcpp_data_inputs_);
   }
 
   // * Emit LCPP breakdown PageLoad UMAs.
@@ -153,6 +159,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
             GetDelegate(), largest_contentful_paint.Time().value());
     PAGE_LOAD_HISTOGRAM(internal::kHistogramLCPPLargestContentfulPaint,
                         corrected);
+    ReportUMAForTimingPredictor(std::move(lcpp_data_prelearn));
   }
 }
 
@@ -196,4 +203,24 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
     lcpp_data_inputs_.emplace();
   }
   lcpp_data_inputs_->lcp_influencer_scripts = lcp_influencer_scripts;
+}
+
+void LcpCriticalPathPredictorPageLoadMetricsObserver::
+    ReportUMAForTimingPredictor(
+        absl::optional<predictors::LcppData> lcpp_data_prelearn) {
+  if (!lcpp_data_inputs_.has_value() || !commit_url_ || !lcpp_data_prelearn ||
+      !IsValidLcppStat(lcpp_data_prelearn->lcpp_stat())) {
+    return;
+  }
+  absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
+      hint = ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
+          *lcpp_data_prelearn);
+  if (!hint || !hint->lcp_element_locators.size()) {
+    return;
+  }
+  // Predicted the most frequent LCP would be next LCP and record the
+  // actual result. see PredictLcpElementLocators() for the `hint` contents.
+  const bool predicted =
+      (hint->lcp_element_locators[0] == lcpp_data_inputs_->lcp_element_locator);
+  base::UmaHistogramBoolean(internal::kHistogramLCPPPredictSuccess, predicted);
 }
