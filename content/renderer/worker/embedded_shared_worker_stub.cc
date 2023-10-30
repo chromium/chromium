@@ -109,8 +109,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
   }
 
   scoped_refptr<blink::WebWorkerFetchContext> web_worker_fetch_context =
-      CreateWorkerFetchContext(info->url, constructor_key.IsThirdPartyContext(),
-                               std::move(renderer_preferences),
+      CreateWorkerFetchContext(constructor_key, std::move(renderer_preferences),
                                std::move(preference_watcher_receiver),
                                cors_exempt_header_list);
 
@@ -146,8 +145,7 @@ void EmbeddedSharedWorkerStub::WorkerContextDestroyed() {
 
 scoped_refptr<blink::WebWorkerFetchContext>
 EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
-    const GURL& url,
-    bool is_third_party_context,
+    const blink::StorageKey& constructor_key,
     const blink::RendererPreferences& renderer_preferences,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         preference_watcher_receiver,
@@ -176,8 +174,7 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
               /*pending_resource_load_info_notifier=*/mojo::NullRemote());
 
   web_dedicated_or_shared_worker_fetch_context->set_site_for_cookies(
-      is_third_party_context ? net::SiteForCookies()
-                             : net::SiteForCookies::FromUrl(url));
+      constructor_key.ToNetSiteForCookies());
 
   return web_dedicated_or_shared_worker_fetch_context;
 }

@@ -100,8 +100,7 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
   void Terminate() override;
 
   scoped_refptr<blink::WebWorkerFetchContext> CreateWorkerFetchContext(
-      const GURL& url,
-      bool is_third_party_context,
+      const blink::StorageKey& constructor_key,
       const blink::RendererPreferences& renderer_preferences,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
           preference_watcher_receiver,
