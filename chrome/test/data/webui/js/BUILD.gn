@@ -13,6 +13,7 @@ build_webui_tests("build") {
     "custom_element_test.ts",
     "icon_test.ts",
     "load_time_data_test.ts",
+    "mojo_type_util_test.ts",
     "parse_html_subset_test.ts",
     "parse_html_subset_trusted_types_test.ts",
     "promise_resolver_test.ts",

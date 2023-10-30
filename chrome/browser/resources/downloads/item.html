@@ -307,7 +307,7 @@
   <div id="details">
     <div id="title-area" role="gridcell"><!--
       Can't have any line breaks.
-      --><a is="action-link" id="file-link" href="[[data.url]]"
+      --><a is="action-link" id="file-link" href="[[data.url.url]]"
           on-click="onFileLinkClick_" focus-row-control
           focus-type="fileLink"
           hidden="[[!completelyOnDisk_]]">[[data.fileName]]</a><!--
@@ -321,7 +321,7 @@
 
     <div role="gridcell">
       <a id="url" target="_blank" on-click="onUrlClick_" focus-row-control
-          focus-type="url">[[chopUrl_(data.url)]]</a>
+          focus-type="url">[[getDisplayUrlStr_(data.displayUrl)]]</a>
     </div>
 
     <div id="description" role="gridcell"

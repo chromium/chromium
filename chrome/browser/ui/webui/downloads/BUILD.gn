@@ -10,4 +10,9 @@ mojom("mojo_bindings") {
   sources = [ "downloads.mojom" ]
   webui_module_path = "/"
   use_typescript_sources = true
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }

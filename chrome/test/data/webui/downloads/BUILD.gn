@@ -22,5 +22,6 @@ build_webui_tests("build") {
     "//chrome/browser/resources/downloads:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

@@ -4,6 +4,9 @@
 
 module downloads.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
+
 // This is the information associated with a download used for rendering in the
 // UI.
 struct Data {
@@ -38,7 +41,13 @@ struct Data {
   // confirmation, the state will indicate the download is in progress, complete
   // or cancelled.
   string state;
-  string url;
+  // The URL of the download item. Present if this field is populated with the
+  // original URL. Omitted if the URL should not be clickable on the downloads
+  // page, due to URL size limits requiring truncation.
+  url.mojom.Url? url;
+  // The display string for the URL in the UI. May be truncated/elided from the
+  // original URL, and IDN domains may be converted to Unicode.
+  mojo_base.mojom.String16 display_url;
 };
 
 interface PageHandlerFactory {

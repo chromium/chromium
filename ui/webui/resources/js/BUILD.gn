@@ -27,6 +27,7 @@ build_webui("build") {
     "load_time_data.ts",
     "metrics_reporter/browser_proxy.ts",
     "metrics_reporter/metrics_reporter.ts",
+    "mojo_type_util.ts",
     "open_window_proxy.ts",
     "parse_html_subset.ts",
     "platform.ts",

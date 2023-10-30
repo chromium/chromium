@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/unicodestring.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -27,6 +28,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
@@ -36,6 +38,7 @@
 #include "net/base/filename_util.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
 #include "ui/base/l10n/time_format.h"
+#include "url/url_constants.h"
 
 using content::BrowserContext;
 using content::DownloadManager;
@@ -44,9 +47,6 @@ using download::DownloadItem;
 using DownloadVector = DownloadManager::DownloadVector;
 
 namespace {
-
-// Max URL length to be sent to the download page.
-const int kMaxURLLength = 2 * 1024 * 1024;
 
 // Returns a string constant to be used as the |danger_type| value in
 // CreateDownloadData(). This can be the empty string, if the danger type is not
@@ -103,6 +103,17 @@ std::string TimeFormatLongDate(const base::Time& time) {
   icu::UnicodeString date_string;
   formatter->format(static_cast<UDate>(time.ToDoubleT() * 1000), date_string);
   return base::UTF16ToUTF8(base::i18n::UnicodeStringToString16(date_string));
+}
+
+std::u16string GetFormattedDisplayUrl(const GURL& url) {
+  std::u16string result = url_formatter::FormatUrlForSecurityDisplay(url);
+  // Truncate long URL to avoid surpassing mojo data limit (c.f.
+  // crbug.com/1070451). If it's really this long, the user won't be able to see
+  // the end of it anyway.
+  if (result.size() > url::kMaxURLChars) {
+    result.resize(url::kMaxURLChars);
+  }
+  return result;
 }
 
 }  // namespace
@@ -262,10 +273,12 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_name = base::i18n::GetDisplayStringInLTRDirectionality(file_name);
 
   file_value->file_name = base::UTF16ToUTF8(file_name);
-  file_value->url = download_item->GetURL().spec();
-  // If URL is too long, truncate it.
-  if (file_value->url.size() > kMaxURLLength)
-    file_value->url.resize(kMaxURLLength);
+  // If URL is too long, don't make it clickable.
+  if (download_item->GetURL().is_valid() &&
+      download_item->GetURL().spec().length() <= url::kMaxURLChars) {
+    file_value->url = absl::make_optional<GURL>(download_item->GetURL());
+  }
+  file_value->display_url = GetFormattedDisplayUrl(download_item->GetURL());
   file_value->total = static_cast<int>(download_item->GetTotalBytes());
   file_value->file_externally_removed =
       download_item->GetFileExternallyRemoved();

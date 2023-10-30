@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {DangerType, IconLoader, MojomData, PageCallbackRouter, PageHandlerInterface, PageRemote, States} from 'chrome://downloads/downloads.js';
+import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestDownloadsProxy {
@@ -105,7 +106,8 @@ export function createDownload(config?: Partial<MojomData>): MojomData {
         started: Date.now() - 10000,
         state: States.COMPLETE,
         total: -1,
-        url: 'http://permission.site',
+        url: stringToMojoUrl('http://permission.site'),
+        displayUrl: stringToMojoString16('http://permission.site'),
       },
       config || {});
 }
