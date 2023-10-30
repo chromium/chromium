@@ -4263,10 +4263,10 @@ IntersectionUpdateResult LocalFrameView::UpdateViewportIntersectionsForSubtree(
 
   UMA_HISTOGRAM_COUNTS_1000(
       "Blink.IntersectionObservation.FrameMinScrollDeltaToUpdateX",
-      min_scroll_delta_to_update_intersection_.x());
+      base::saturated_cast<int>(min_scroll_delta_to_update_intersection_.x()));
   UMA_HISTOGRAM_COUNTS_1000(
       "Blink.IntersectionObservation.FrameMinScrollDeltaToUpdateY",
-      min_scroll_delta_to_update_intersection_.y());
+      base::saturated_cast<int>(min_scroll_delta_to_update_intersection_.y()));
 
   if (DocumentFencedFrames* fenced_frames =
           DocumentFencedFrames::Get(*frame_->GetDocument())) {
