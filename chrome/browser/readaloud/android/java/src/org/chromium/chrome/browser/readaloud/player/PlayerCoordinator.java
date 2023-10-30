@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.modules.readaloud.Playback;
@@ -46,7 +47,13 @@ public class PlayerCoordinator implements Player {
 
     public PlayerCoordinator(Delegate delegate) {
         mObserverList = new ObserverList<Observer>();
-        PropertyModel model = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
+        PropertyModel model =
+                new PropertyModel.Builder(PlayerProperties.ALL_KEYS)
+                        // TODO Set voice and highlighting from settings when needed.
+                        .with(
+                                PlayerProperties.SPEED,
+                                ReadAloudPrefs.getSpeed(delegate.getPrefService()))
+                        .build();
         // This Context can be used to inflate views from the split.
         Context contextForInflation =
                 BundleUtils.createContextForInflation(

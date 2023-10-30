@@ -10,6 +10,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
 
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,9 @@ public interface Player {
 
         /** Returns the Activity in which the player UI should live. */
         Activity getActivity();
+
+        /** Returns the current profile's PrefService. */
+        PrefService getPrefService();
     }
 
     /** Observer interface to provide updates about player UI. */

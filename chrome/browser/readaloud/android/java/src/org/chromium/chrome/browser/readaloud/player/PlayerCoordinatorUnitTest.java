@@ -28,14 +28,17 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.expanded.Menu;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerLayout;
+import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link PlayerCoordinator}. */
@@ -57,6 +60,7 @@ public class PlayerCoordinatorUnitTest {
     @Mock private View mForwardButton;
     @Mock private View mBackButton;
     @Mock private Resources mResources;
+    private MockPrefServiceHelper mMockPrefServiceHelper;
 
     private PlayerCoordinator mPlayerCoordinator;
     private PropertyModel mModel;
@@ -96,10 +100,18 @@ public class PlayerCoordinatorUnitTest {
 
         doReturn(mMiniPlayerLayout).when(mMiniPlayerViewStub).inflate();
         doReturn(mBottomSheetController).when(mDelegate).getBottomSheetController();
+
+        mMockPrefServiceHelper = new MockPrefServiceHelper();
+        PrefService prefs = mMockPrefServiceHelper.getPrefService();
+        ReadAloudPrefs.setSpeed(prefs, 2f);
+        doReturn(prefs).when(mDelegate).getPrefService();
+
         mPlayerCoordinator = new PlayerCoordinator(mDelegate);
 
         // Mini player should be inflated and attached.
         verify(mMiniPlayerViewStub).inflate();
+        // User prefs should be read into the model.
+        verify(prefs).getString(eq("readaloud.speed"));
     }
 
     @Test

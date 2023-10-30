@@ -12,6 +12,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
@@ -107,13 +108,20 @@ class PlayerMediator implements InteractionHandler {
     public void onSeekForwardClick() {}
 
     @Override
-    public void onVoiceSelected(PlaybackVoice voice) {}
+    public void onVoiceSelected(PlaybackVoice voice) {
+        // TODO request playback with new voice
+        ReadAloudPrefs.setVoice(
+                mDelegate.getPrefService(), voice.getLanguage(), voice.getVoiceId());
+    }
 
     @Override
     public void onPreviewVoiceClick(PlaybackVoice voice) {}
 
     @Override
-    public void onHighlightingChange(boolean enabled) {}
+    public void onHighlightingChange(boolean enabled) {
+        // TODO enable or disable highlighting
+        ReadAloudPrefs.setHighlightingEnabled(mDelegate.getPrefService(), enabled);
+    }
 
     @Override
     public OnSeekBarChangeListener getSeekBarChangeListener() {
@@ -122,7 +130,10 @@ class PlayerMediator implements InteractionHandler {
     }
 
     @Override
-    public void onSpeedChange(float newSpeed) {}
+    public void onSpeedChange(float newSpeed) {
+        // TODO change playback speed
+        ReadAloudPrefs.setSpeed(mDelegate.getPrefService(), newSpeed);
+    }
 
     @Override
     public void onTranslateLanguageChange(String targetLanguage) {}

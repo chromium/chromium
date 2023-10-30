@@ -29,6 +29,8 @@ import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksProvider;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.url.GURL;
 
@@ -234,9 +236,13 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                 mPlayback = null;
             }
 
-            PlaybackArgs args = new PlaybackArgs(tab.getUrl().getSpec(),
-                    TranslateBridge.getCurrentLanguage(tab),
-                    /* voice=*/null, /* dateModifiedMsSinceEpock=*/0);
+            // TODO Create voice list from settings.
+            PlaybackArgs args =
+                    new PlaybackArgs(
+                            tab.getUrl().getSpec(),
+                            TranslateBridge.getCurrentLanguage(tab),
+                            /* voice= */ null,
+                            /* dateModifiedMsSinceEpock= */ 0);
             mPlaybackHooks.createPlayback(args, mPlaybackCallback);
 
             // Notify player UI that playback is happening soon.
@@ -391,6 +397,11 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     @Override
     public Activity getActivity() {
         return mActivity;
+    }
+
+    @Override
+    public PrefService getPrefService() {
+        return UserPrefs.get(mProfileSupplier.get());
     }
 
     // Player.Observer
