@@ -11,9 +11,4 @@ namespace content {
 BASE_FEATURE(kPrivateAggregationApiBundledEnhancements,
              "PrivateAggregationApiBundledEnhancements",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrivateAggregationApiMultipleCloudProviders,
-             "PrivateAggregationApiMultipleCloudProviders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace content

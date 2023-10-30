@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -23,6 +25,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "url/origin.h"
 
 namespace blink {
 
@@ -377,8 +380,11 @@ ScriptPromise SharedStorageWorklet::SelectURL(
   keep_alive_after_operation_ = keep_alive;
 
   WTF::String context_id;
-  if (!CheckPrivateAggregationContextId(*options, *script_state, *resolver,
-                                        /*out_string=*/&context_id)) {
+  scoped_refptr<SecurityOrigin> aggregation_coordinator_origin;
+  if (!CheckPrivateAggregationConfig(*options, *script_state, *resolver,
+                                     /*out_context_id=*/context_id,
+                                     /*out_aggregation_coordinator_origin=*/
+                                     aggregation_coordinator_origin)) {
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return promise;
@@ -386,7 +392,7 @@ ScriptPromise SharedStorageWorklet::SelectURL(
 
   worklet_host_->SelectURL(
       name, std::move(converted_urls), std::move(*serialized_data), keep_alive,
-      std::move(context_id),
+      std::move(context_id), aggregation_coordinator_origin,
       WTF::BindOnce(
           [](ScriptPromiseResolver* resolver,
              SharedStorageWorklet* shared_storage_worklet,
@@ -484,14 +490,18 @@ ScriptPromise SharedStorageWorklet::Run(
   keep_alive_after_operation_ = keep_alive;
 
   WTF::String context_id;
-  if (!CheckPrivateAggregationContextId(*options, *script_state, *resolver,
-                                        /*out_string=*/&context_id)) {
+  scoped_refptr<SecurityOrigin> aggregation_coordinator_origin;
+  if (!CheckPrivateAggregationConfig(*options, *script_state, *resolver,
+                                     /*out_context_id=*/context_id,
+                                     /*out_aggregation_coordinator_origin=*/
+                                     aggregation_coordinator_origin)) {
     LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
     return promise;
   }
 
   worklet_host_->Run(
       name, std::move(*serialized_data), keep_alive, std::move(context_id),
+      std::move(aggregation_coordinator_origin),
       WTF::BindOnce(
           [](ScriptPromiseResolver* resolver,
              SharedStorageWorklet* shared_storage_worklet,

@@ -848,10 +848,10 @@ TEST_F(PrivateAggregationHostTest, ContextIdNotSet_NoNullReportSent) {
 TEST_F(PrivateAggregationHostTest, AggregationCoordinatorOrigin) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{::aggregation_service::
-                                 kAggregationServiceMultipleCloudProviders,
-                             {{"aws_cloud", "https://aws.example"}}},
-                            {kPrivateAggregationApiMultipleCloudProviders, {}}},
+      /*enabled_features=*/
+      {{::aggregation_service::kAggregationServiceMultipleCloudProviders,
+        {{"aws_cloud", "https://aws.example"}}},
+       {blink::features::kPrivateAggregationApiMultipleCloudProviders, {}}},
       /*disabled_features=*/{});
 
   const url::Origin kExampleOrigin =
@@ -935,7 +935,8 @@ TEST_F(PrivateAggregationHostTest,
       /*enabled_features=*/{{::aggregation_service::
                                  kAggregationServiceMultipleCloudProviders,
                              {{"aws_cloud", "https://aws.example"}}}},
-      /*disabled_features=*/{kPrivateAggregationApiMultipleCloudProviders});
+      /*disabled_features=*/{
+          blink::features::kPrivateAggregationApiMultipleCloudProviders});
 
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));

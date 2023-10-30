@@ -33,5 +33,10 @@ blink_modules_sources("shared_storage") {
     "window_shared_storage.h",
   ]
 
-  deps = [ "//third_party/blink/renderer/modules/crypto:crypto" ]
+  deps = [
+    "//components/aggregation_service",
+    "//third_party/blink/renderer/modules/crypto:crypto",
+  ]
+
+  public_deps = [ "//url" ]
 }

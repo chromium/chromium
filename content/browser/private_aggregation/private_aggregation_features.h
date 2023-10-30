@@ -21,11 +21,6 @@ namespace content {
 // - Whether to reduce the delay for reports if a context ID is specified.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApiBundledEnhancements);
 
-// Allows for different aggregation coordinators to be set. If disabled, any
-// selection will be ignored and replaced with the default.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kPrivateAggregationApiMultipleCloudProviders);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_FEATURES_H_

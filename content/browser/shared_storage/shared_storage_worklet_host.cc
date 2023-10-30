@@ -285,6 +285,7 @@ void SharedStorageWorkletHost::SelectURL(
     blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
     const absl::optional<std::string>& context_id,
+    const absl::optional<url::Origin>& aggregation_coordinator_origin,
     SelectURLCallback callback) {
   // TODO(https://crbug.com/1473742): `page_` can somehow be null.
   if (!page_) {
@@ -443,7 +444,8 @@ void SharedStorageWorkletHost::SelectURL(
 
   GetAndConnectToSharedStorageWorkletService()->RunURLSelectionOperation(
       name, urls, std::move(serialized_data),
-      MaybeBindPrivateAggregationHost(context_id),
+      MaybeBindPrivateAggregationHost(context_id,
+                                      aggregation_coordinator_origin),
       base::BindOnce(
           &SharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletScriptExecutionFinished,
@@ -455,6 +457,7 @@ void SharedStorageWorkletHost::Run(
     blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
     const absl::optional<std::string>& context_id,
+    const absl::optional<url::Origin>& aggregation_coordinator_origin,
     RunCallback callback) {
   // TODO(https://crbug.com/1473742): `page_` can somehow be null.
   if (!page_) {
@@ -505,7 +508,8 @@ void SharedStorageWorkletHost::Run(
 
   GetAndConnectToSharedStorageWorkletService()->RunOperation(
       name, std::move(serialized_data),
-      MaybeBindPrivateAggregationHost(context_id),
+      MaybeBindPrivateAggregationHost(context_id,
+                                      aggregation_coordinator_origin),
       base::BindOnce(&SharedStorageWorkletHost::OnRunOperationOnWorkletFinished,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
@@ -1117,7 +1121,8 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 
 mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
 SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
-    const absl::optional<std::string>& context_id) {
+    const absl::optional<std::string>& context_id,
+    const absl::optional<url::Origin>& aggregation_coordinator_origin) {
   DCHECK(browser_context_);
 
   if (!blink::ShouldDefinePrivateAggregationInSharedStorage()) {
@@ -1137,13 +1142,10 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
           ? absl::optional<base::TimeDelta>(base::Seconds(5))
           : absl::nullopt;
 
-  // TODO(crbug.com/1481254): Allow specifying the
-  // `aggregation_coordinator_origin`.
   bool success = private_aggregation_manager->BindNewReceiver(
       shared_storage_origin_, main_frame_origin_,
       PrivateAggregationBudgetKey::Api::kSharedStorage, context_id,
-      std::move(timeout),
-      /*aggregation_coordinator_origin=*/absl::nullopt,
+      std::move(timeout), aggregation_coordinator_origin,
       pending_pa_host_remote.InitWithNewPipeAndPassReceiver());
   CHECK(success);
 

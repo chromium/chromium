@@ -1969,6 +1969,15 @@ _CONFIG = [
             'webnn::features::.+',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/ad_auction/',
+            'third_party/blink/renderer/modules/shared_storage/',
+        ],
+        'allowed': [
+            'aggregation_service::.+',
+        ]
+    },
 ]
 
 

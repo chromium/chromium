@@ -1472,6 +1472,12 @@ constexpr base::FeatureParam<bool> kPrivateAggregationApiDebugModeEnabledAtAll{
     &kPrivateAggregationApi, "debug_mode_enabled_at_all",
     /*default_value=*/true};
 
+// Allows for different aggregation coordinators to be set. If disabled, any
+// selection will be ignored and replaced with the default.
+BASE_FEATURE(kPrivateAggregationApiMultipleCloudProviders,
+             "PrivateAggregationApiMultipleCloudProviders",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kProcessHtmlDataImmediately,
              "ProcessHtmlDataImmediately",
              base::FEATURE_DISABLED_BY_DEFAULT);

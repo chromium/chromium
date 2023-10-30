@@ -79,17 +79,20 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   ~SharedStorageWorkletHost() override;
 
   // blink::mojom::SharedStorageWorkletHost.
-  void SelectURL(const std::string& name,
-                 std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
-                     urls_with_metadata,
-                 blink::CloneableMessage serialized_data,
-                 bool keep_alive_after_operation,
-                 const absl::optional<std::string>& context_id,
-                 SelectURLCallback callback) override;
+  void SelectURL(
+      const std::string& name,
+      std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
+          urls_with_metadata,
+      blink::CloneableMessage serialized_data,
+      bool keep_alive_after_operation,
+      const absl::optional<std::string>& context_id,
+      const absl::optional<url::Origin>& aggregation_coordinator_origin,
+      SelectURLCallback callback) override;
   void Run(const std::string& name,
            blink::CloneableMessage serialized_data,
            bool keep_alive_after_operation,
            const absl::optional<std::string>& context_id,
+           const absl::optional<url::Origin>& aggregation_coordinator_origin,
            RunCallback callback) override;
 
   // Whether there are unfinished worklet operations (i.e. `addModule()`,
@@ -212,7 +215,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // invalid `PendingRemote`.
   mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
   MaybeBindPrivateAggregationHost(
-      const absl::optional<std::string>& context_id);
+      const absl::optional<std::string>& context_id,
+      const absl::optional<url::Origin>& aggregation_coordinator_origin);
 
   bool IsSharedStorageAllowed();
   bool IsSharedStorageSelectURLAllowed();
