@@ -899,4 +899,72 @@ TEST(StableVideoDecoderTypesMojomTraitsTest,
       serialized_decoder_buffer_side_data,
       &deserialized_decoder_buffer_side_data));
 }
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, ValidColorVolumeMetadata) {
+  auto color_volume_metadata = gfx::HdrMetadataSmpteSt2086(
+      {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f},
+      /*luminance_max=*/1000,
+      /*luminance_min=*/0);
+
+  std::vector<uint8_t> serialized_color_volume_metadata =
+      stable::mojom::ColorVolumeMetadata::Serialize(&color_volume_metadata);
+
+  gfx::HdrMetadataSmpteSt2086 deserialized_color_volume_metadata;
+  ASSERT_TRUE(stable::mojom::ColorVolumeMetadata::Deserialize(
+      serialized_color_volume_metadata, &deserialized_color_volume_metadata));
+
+  EXPECT_EQ(color_volume_metadata.primaries,
+            deserialized_color_volume_metadata.primaries);
+  EXPECT_EQ(color_volume_metadata.luminance_min,
+            deserialized_color_volume_metadata.luminance_min);
+  EXPECT_EQ(color_volume_metadata.luminance_max,
+            deserialized_color_volume_metadata.luminance_max);
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, ValidHDRMetadata) {
+  auto hdr_metadata =
+      gfx::HDRMetadata(gfx::HdrMetadataSmpteSt2086(
+                           {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f},
+                           /*luminance_max=*/1000,
+                           /*luminance_min=*/0),
+                       gfx::HdrMetadataCta861_3(123, 456));
+
+  std::vector<uint8_t> serialized_hdr_metadata =
+      stable::mojom::HDRMetadata::Serialize(&hdr_metadata);
+
+  gfx::HDRMetadata deserialized_hdr_metadata;
+  ASSERT_TRUE(stable::mojom::HDRMetadata::Deserialize(
+      serialized_hdr_metadata, &deserialized_hdr_metadata));
+
+  EXPECT_EQ(hdr_metadata.smpte_st_2086,
+            deserialized_hdr_metadata.smpte_st_2086);
+  EXPECT_EQ(hdr_metadata.cta_861_3, deserialized_hdr_metadata.cta_861_3);
+}
+
+TEST(StableVideoDecoderTypesMojomTraitsTest, ValidColorSpace) {
+  skcms_Matrix3x3 primary_matrix = {{
+      {0.205276f, 0.625671f, 0.060867f},
+      {0.149185f, 0.063217f, 0.744553f},
+      {0.609741f, 0.311111f, 0.019470f},
+  }};
+  skcms_TransferFunction transfer_fn = {2.1f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f};
+  auto color_space = gfx::ColorSpace::CreateCustom(primary_matrix, transfer_fn);
+
+  std::vector<uint8_t> serialized_color_space =
+      stable::mojom::ColorSpace::Serialize(&color_space);
+
+  gfx::ColorSpace deserialized_color_space;
+  ASSERT_TRUE(stable::mojom::ColorSpace::Deserialize(
+      serialized_color_space, &deserialized_color_space));
+
+  EXPECT_EQ(color_space.GetPrimaryID(),
+            deserialized_color_space.GetPrimaryID());
+  EXPECT_EQ(color_space.GetTransferID(),
+            deserialized_color_space.GetTransferID());
+  EXPECT_EQ(color_space.GetMatrixID(), deserialized_color_space.GetMatrixID());
+  EXPECT_EQ(color_space.GetRangeID(), deserialized_color_space.GetRangeID());
+  EXPECT_EQ(color_space.GetPrimaries(),
+            deserialized_color_space.GetPrimaries());
+  EXPECT_EQ(color_space, deserialized_color_space);
+}
 }  // namespace media
