@@ -125,9 +125,6 @@ TEST(FieldTypesTest, IsValidServerFieldType) {
 }
 
 TEST(FieldTypesTest, TestWith2DigitExpirationYear) {
-  FormFieldData field_data;
-  field_data.name = u"expiration_year";
-  field_data.value = u"23";
   ServerFieldType assumed_field_type =
       ToSafeServerFieldType(CREDIT_CARD_EXP_2_DIGIT_YEAR, NO_SERVER_DATA);
   size_t result = DetermineExpirationYearLength(assumed_field_type);
@@ -135,9 +132,6 @@ TEST(FieldTypesTest, TestWith2DigitExpirationYear) {
 }
 
 TEST(FieldTypesTest, TestWith4DigitExpirationYear) {
-  FormFieldData field_data;
-  field_data.name = u"expiration_year";
-  field_data.value = u"2023";
   ServerFieldType assumed_field_type =
       ToSafeServerFieldType(CREDIT_CARD_EXP_4_DIGIT_YEAR, NO_SERVER_DATA);
   size_t result = DetermineExpirationYearLength(assumed_field_type);
