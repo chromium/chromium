@@ -67,8 +67,12 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
     bool command = false;
 #endif
 
-    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), keycode, control,
-                                                shift, alt, command));
+    // Wait for "key press" instead of "key release" because some tests destroy
+    // the target in response to "key press", which prevents "key release" from
+    // being observed.
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+        browser(), keycode, control, shift, alt, command,
+        /* wait_for=*/ui_controls::KeyEventType::kKeyPress));
   }
 
   void SetUpOnMainThread() override {
@@ -164,10 +168,38 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest,
                        MAYBE_CmdWClosesWindow) {
   EXPECT_TRUE(browser()->window()->IsVisible());
 
-  SendAcceleratorSync(ui::VKEY_W, false, false);
+  class NoWidgetsWaiter : public views::WidgetObserver {
+   public:
+    NoWidgetsWaiter() {
+      EXPECT_NE(views::test::WidgetTest::GetAllWidgets().size(), 0U);
+      for (auto* widget : views::test::WidgetTest::GetAllWidgets()) {
+        widget->AddObserver(this);
+      }
+    }
 
-  // The window has been destroyed so there should be no widgets hanging around.
-  EXPECT_EQ(0u, views::test::WidgetTest::GetAllWidgets().size());
+    void Wait() {
+      run_loop_.Run();
+      EXPECT_EQ(views::test::WidgetTest::GetAllWidgets().size(), 0U);
+    }
+
+   private:
+    // views::WidgetObserver:
+    void OnWidgetDestroyed(views::Widget*) override {
+      if (views::test::WidgetTest::GetAllWidgets().empty()) {
+        run_loop_.Quit();
+      }
+    }
+
+    base::RunLoop run_loop_;
+  };
+
+  // On Windows, the WM_NCDESTROY message triggering Widget destruction may not
+  // have been processed by the time `SendAcceleratorSync` returns (only waits
+  // for WM_KEYDOWN). For that reason, wait until there are no more widgets
+  // instead of checking immediately that there are no more widgets.
+  NoWidgetsWaiter waiter;
+  SendAcceleratorSync(ui::VKEY_W, false, false);
+  waiter.Wait();
 }
 
 #if BUILDFLAG(IS_MAC)

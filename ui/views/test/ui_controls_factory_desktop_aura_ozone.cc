@@ -111,7 +111,11 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
                                 bool shift,
                                 bool alt,
                                 bool command,
-                                base::OnceClosure closure) {
+                                base::OnceClosure closure,
+                                KeyEventType wait_for) {
+  // This doesn't time out if `window` is deleted before the key release events
+  // are dispatched, so it's fine to ignore `wait_for` and always wait for key
+  // release events.
   DCHECK(!command);  // No command key on Aura
   return SendKeyEventsNotifyWhenDone(
       window, key, kKeyPress | kKeyRelease, std::move(closure),

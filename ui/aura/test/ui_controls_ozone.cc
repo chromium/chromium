@@ -28,14 +28,22 @@ bool UIControlsOzone::SendKeyEvents(gfx::NativeWindow window,
                                     int key_event_types,
                                     int accelerator_state) {
   return SendKeyEventsNotifyWhenDone(window, key, key_event_types,
-                                     base::OnceClosure(), accelerator_state);
+                                     base::OnceClosure(), accelerator_state,
+                                     ui_controls::KeyEventType::kKeyRelease);
 }
 
-bool UIControlsOzone::SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
-                                                  ui::KeyboardCode key,
-                                                  int key_event_types,
-                                                  base::OnceClosure closure,
-                                                  int accelerator_state) {
+bool UIControlsOzone::SendKeyEventsNotifyWhenDone(
+    gfx::NativeWindow window,
+    ui::KeyboardCode key,
+    int key_event_types,
+    base::OnceClosure closure,
+    int accelerator_state,
+    ui_controls::KeyEventType wait_for) {
+  CHECK(wait_for == ui_controls::KeyEventType::kKeyPress ||
+        wait_for == ui_controls::KeyEventType::kKeyRelease);
+  // This doesn't time out if `window` is deleted before the key release events
+  // are dispatched, so it's fine to ignore `wait_for` and always wait for key
+  // release events.
   WindowTreeHost* optional_host = nullptr;
   // Send the key event to the window's host, which may not match |host_|.
   // This logic should probably exist for the non-aura path as well.

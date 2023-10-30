@@ -14,10 +14,11 @@ namespace internal {
 // A utility functions for windows to send key or mouse events and
 // run the task. These functions are internal, but exported so that
 // aura implementation can use these utility functions.
-bool SendKeyPressImpl(HWND hwnd,
-                      ui::KeyboardCode key,
-                      int accelerator_state,
-                      base::OnceClosure task);
+bool SendKeyPressReleaseImpl(HWND hwnd,
+                             ui::KeyboardCode key,
+                             int accelerator_state,
+                             KeyEventType wait_for,
+                             base::OnceClosure task);
 bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task);
 bool SendMouseEventsImpl(MouseButton type,
                          int button_state,
