@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import collections
 import fnmatch
-import importlib.util
+import imp
 import logging
 import os
 import sys
@@ -53,10 +53,8 @@ def FindPythonDependencies(module_path):
   try:
     # Load the module to inherit its sys.path modifications.
     sys.path.insert(0, os.path.abspath(os.path.dirname(module_path)))
-    spec = importlib.util.spec_from_file_location(
+    imp.load_source(
         os.path.splitext(os.path.basename(module_path))[0], module_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
 
     # Analyze the module for its imports.
     graph = modulegraph.ModuleGraph()
