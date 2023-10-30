@@ -380,9 +380,8 @@ TEST_F(
      ],
    },
  ],
- // TODO(crbug.com/1495138): Re-enable after fixing flakiness.
  [
-   'DISABLED_DevicePagePower',
+   'DevicePagePower',
    'device_page/power_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
