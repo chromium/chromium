@@ -39,8 +39,8 @@ function loadScript(url: string): Promise<void> {
  *   - In case where a module was not specified, returns false (used for
  *     providing a way for UIs to wait for any test initialization, if run
  *     within the context of a test).
- *   - In case where loading failed (either incorrect URL or incorrect "host="
- *     parameter) a rejected Promise is returned.
+ *   - In case where loading failed (probably incorrect URL) a rejected Promise
+ *     is returned.
  */
 export async function loadTestModule(): Promise<boolean> {
   const params = new URLSearchParams(window.location.search);
@@ -49,12 +49,7 @@ export async function loadTestModule(): Promise<boolean> {
     return Promise.resolve(false);
   }
 
-  const host = params.get('host') || 'webui-test';
-  if (host !== 'test' && host !== 'webui-test') {
-    return Promise.reject(new Error(`Invalid host=${host} parameter`));
-  }
-
-  await loadScript(`chrome://${host}/${module}`);
+  await loadScript(`chrome://webui-test/${module}`);
   return Promise.resolve(true);
 }
 
