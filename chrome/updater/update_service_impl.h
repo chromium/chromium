@@ -158,7 +158,8 @@ void GetComponents(
 
 #if BUILDFLAG(IS_WIN)
 std::string GetInstallerText(UpdateService::ErrorCategory error_category,
-                             int error_code);
+                             int error_code,
+                             bool is_installer_error = false);
 #endif  // BUILDFLAG(IS_WIN)
 }  // namespace internal
 

@@ -1911,6 +1911,11 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="Error message displayed in the main dialog for runtime errors that occur in the update client service.">
           Service error: <ph name="SERVICE_ERROR">$1<ex>error-internal</ex></ph>.
         </message>
+        <!--Install errors.-->
+        <message name="IDS_GENERIC_INSTALL_ERROR"
+                 desc="Error message displayed in the main dialog for runtime errors that occur while installing.">
+          Install error: <ph name="INSTALL_ERROR">$1<ex>error-internal</ex></ph>
+        </message>
       </if>
       <!-- High Efficiency Chip strings -->
       <if expr="not is_android">

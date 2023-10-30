@@ -101,6 +101,7 @@ struct UpdateServiceImplGetInstallerTextTestCase {
   const UpdateService::ErrorCategory error_category;
   const int error_code;
   const std::string expected_completion_message;
+  absl::optional<bool> is_installer_error;
 };
 
 class UpdateServiceImplGetInstallerTextTest
@@ -315,10 +316,89 @@ INSTANTIATE_TEST_SUITE_P(
          base::WideToUTF8(
              GetLocalizedStringF(IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
                                  L"0xffff"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(
+             update_client::InstallError::FINGERPRINT_WRITE_FAILED),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::FINGERPRINT_WRITE_FAILED"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(update_client::InstallError::BAD_MANIFEST),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::BAD_MANIFEST"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(update_client::InstallError::GENERIC_ERROR),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::GENERIC_ERROR"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(update_client::InstallError::MOVE_FILES_ERROR),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::MOVE_FILES_ERROR"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(update_client::InstallError::SET_PERMISSIONS_FAILED),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::SET_PERMISSIONS_FAILED"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(update_client::InstallError::INVALID_VERSION),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::INVALID_VERSION"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(update_client::InstallError::VERSION_NOT_UPGRADED),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::VERSION_NOT_UPGRADED"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(update_client::InstallError::NO_DIR_COMPONENT_USER),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::NO_DIR_COMPONENT_USER"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(
+             update_client::InstallError::CLEAN_INSTALL_DIR_FAILED),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::CLEAN_INSTALL_DIR_FAILED"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(
+             update_client::InstallError::INSTALL_VERIFICATION_FAILED),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::INSTALL_VERIFICATION_FAILED"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(update_client::InstallError::MISSING_INSTALL_PARAMS),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::MISSING_INSTALL_PARAMS"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(update_client::InstallError::LAUNCH_PROCESS_FAILED),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::LAUNCH_PROCESS_FAILED"))},
+        {UpdateService::ErrorCategory::kInstall,
+         static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE),
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"update_client::InstallError::CUSTOM_ERROR_BASE"))},
+
+        // `2` is also the value for
+        // `update_client::InstallError::FINGERPRINT_WRITE_FAILED`, but since
+        // this is coded as an "installer_error", the error will be interpreted
+        // as the Windows error code for `ERROR_FILE_NOT_FOUND` instead.
+        {UpdateService::ErrorCategory::kInstall, 2,
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_INSTALL_ERROR_BASE,
+             L"The system cannot find the file specified. ")),
+         true},
     }));
 
 TEST_P(UpdateServiceImplGetInstallerTextTest, TestCases) {
-  ASSERT_EQ(GetInstallerText(GetParam().error_category, GetParam().error_code),
+  ASSERT_EQ(GetInstallerText(GetParam().error_category, GetParam().error_code,
+                             GetParam().is_installer_error.value_or(false)),
             GetParam().expected_completion_message);
 }
 #endif  // BUILDFLAG(IS_WIN)

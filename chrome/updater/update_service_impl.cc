@@ -186,6 +186,34 @@ void GetComponents(
 #if BUILDFLAG(IS_WIN)
 namespace {
 
+std::wstring GetTextForUpdateClientInstallError(int error_code) {
+#define INSTALL_SWITCH_ENTRY(error_code) \
+  case static_cast<int>(error_code):     \
+    return GetLocalizedStringF(IDS_GENERIC_INSTALL_ERROR_BASE, L#error_code)
+
+  switch (error_code) {
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::NONE);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::FINGERPRINT_WRITE_FAILED);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::BAD_MANIFEST);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::GENERIC_ERROR);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::MOVE_FILES_ERROR);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::SET_PERMISSIONS_FAILED);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::INVALID_VERSION);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::VERSION_NOT_UPGRADED);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::NO_DIR_COMPONENT_USER);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::CLEAN_INSTALL_DIR_FAILED);
+    INSTALL_SWITCH_ENTRY(
+        update_client::InstallError::INSTALL_VERIFICATION_FAILED);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::MISSING_INSTALL_PARAMS);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::LAUNCH_PROCESS_FAILED);
+    INSTALL_SWITCH_ENTRY(update_client::InstallError::CUSTOM_ERROR_BASE);
+    default:
+      return GetLocalizedStringF(IDS_GENERIC_INSTALL_ERROR_BASE,
+                                 GetTextForSystemError(error_code));
+  }
+#undef INSTALL_SWITCH_ENTRY
+}
+
 std::wstring GetTextForDownloadError(int error) {
 #define DOWNLOAD_SWITCH_ENTRY(error_code) \
   case static_cast<int>(error_code):      \
@@ -305,7 +333,6 @@ std::wstring GetTextForUpdateCheckError(int error) {
     case HRESULT_FROM_WIN32(ERROR_WINHTTP_NAME_NOT_RESOLVED):
       return GetLocalizedStringF(IDS_NO_NETWORK_PRESENT_ERROR_BASE,
                                  GetExecutableRelativePath().value());
-
     default:
       return GetLocalizedStringF(
           IDS_GENERIC_UPDATE_CHECK_ERROR_BASE,
@@ -319,14 +346,18 @@ std::wstring GetTextForUpdateCheckError(int error) {
 }  // namespace
 
 std::string GetInstallerText(UpdateService::ErrorCategory error_category,
-                             int error_code) {
+                             int error_code,
+                             bool is_installer_error) {
   if (!error_code) {
     return {};
   }
   return base::WideToUTF8([&]() -> std::wstring {
     switch (error_category) {
       case UpdateService::ErrorCategory::kInstall:
-        return GetTextForSystemError(error_code);
+        return is_installer_error
+                   ? GetLocalizedStringF(IDS_GENERIC_INSTALL_ERROR_BASE,
+                                         GetTextForSystemError(error_code))
+                   : GetTextForUpdateClientInstallError(error_code);
       case UpdateService::ErrorCategory::kDownload:
         return GetTextForDownloadError(error_code);
       case UpdateService::ErrorCategory::kUnpack:
@@ -441,6 +472,12 @@ MakeUpdateClientCrxStateChangeCallback(
               crx_update_item.installer_result->installer_cmd_line;
           update_state.installer_text =
               crx_update_item.installer_result->installer_text;
+#if BUILDFLAG(IS_WIN)
+          if (update_state.installer_text.empty())
+            update_state.installer_text = internal::GetInstallerText(
+                update_state.error_category, update_state.error_code,
+                /*is_installer_error=*/true);
+#endif  // BUILDFLAG(IS_WIN)
         }
 
         if (update_state.state == UpdateService::UpdateState::State::kUpdated ||
