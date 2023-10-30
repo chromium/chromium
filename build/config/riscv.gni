@@ -16,5 +16,16 @@ if (current_cpu == "riscv64" || v8_current_cpu == "riscv64" ||
     #   512
     #   1024
     riscv_rvv_vlen = 128
+
+    # RISCV profile compilation flag. Possible values are:
+    # rv64gc
+    # rvau22
+    riscv_profile = "rv64gc"
+
+    # RISCV B extension compilation flag.
+    # See https://github.com/riscv/riscv-bitmanip/blob/main/bitmanip/bitmanip.adoc#colophon
+    riscv_use_zba = false
+    riscv_use_zbb = false
+    riscv_use_zbs = false
   }
 }
