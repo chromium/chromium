@@ -6460,6 +6460,12 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingWithPacTwoRequests) {
 // Make sure that NetworkAnonymizationKeys are passed down to the proxy layer.
 TEST_P(HttpNetworkTransactionTest, ProxyResolvedWithNetworkAnonymizationKey) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
+  const SchemefulSite kOtherSite(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey =
+      NetworkIsolationKey(kSite, kOtherSite);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          kNetworkIsolationKey);
 
   ProxyConfig proxy_config;
   proxy_config.set_auto_detect(true);
@@ -6490,10 +6496,18 @@ TEST_P(HttpNetworkTransactionTest, ProxyResolvedWithNetworkAnonymizationKey) {
   request.url = GURL("http://foo.test/");
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  request.network_isolation_key = kNetworkIsolationKey;
+  request.network_anonymization_key = kNetworkAnonymizationKey;
   HttpNetworkTransaction trans(LOWEST, session.get());
   TestCompletionCallback callback;
   int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
   EXPECT_THAT(callback.GetResult(rv), IsError(ERR_FAILED));
+
+  ASSERT_EQ(1u, capturing_proxy_resolver.lookup_info().size());
+  ASSERT_EQ(
+      kNetworkAnonymizationKey,
+      capturing_proxy_resolver.lookup_info()[0].network_anonymization_key);
+  ASSERT_EQ(request.url, capturing_proxy_resolver.lookup_info()[0].url);
 }
 
 // Test that a failure in resolving the proxy hostname is retrievable.
