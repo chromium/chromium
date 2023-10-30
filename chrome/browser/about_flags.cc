@@ -9484,12 +9484,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHExtensionsRequestAccessButtonFeature)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {"extension-web-file-handlers",
      flag_descriptions::kExtensionWebFileHandlersName,
      flag_descriptions::kExtensionWebFileHandlersDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(extensions_features::kExtensionWebFileHandlers)},
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS
 #if BUILDFLAG(IS_WIN)
     {"launch-windows-native-hosts-directly",
      flag_descriptions::kLaunchWindowsNativeHostsDirectlyName,

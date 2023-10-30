@@ -612,7 +612,6 @@ source_set("unit_tests") {
     "manifest_handlers/default_locale_manifest_unittest.cc",
     "manifest_handlers/extension_action_handler_unittest.cc",
     "manifest_handlers/externally_connectable_unittest.cc",
-    "manifest_handlers/file_handler_manifest_unittest.cc",
     "manifest_handlers/icons_handler_unittest.cc",
     "manifest_handlers/incognito_manifest_unittest.cc",
     "manifest_handlers/kiosk_mode_info_unittest.cc",
@@ -667,6 +666,10 @@ source_set("unit_tests") {
     "//ui/gfx",
     "//url",
   ]
+
+  if (is_chromeos) {
+    sources += [ "manifest_handlers/file_handler_manifest_unittest.cc" ]
+  }
 
   if (is_chromeos_ash) {
     sources += [ "manifest_handlers/action_handlers_handler_unittest.cc" ]

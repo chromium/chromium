@@ -5,7 +5,6 @@
 #include <string>
 
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
@@ -16,15 +15,13 @@ namespace {
 
 class FileHandlingWithoutFeatureBrowserTest : public ExtensionBrowserTest {
  public:
-  FileHandlingWithoutFeatureBrowserTest()
-      : channel_(version_info::Channel::BETA) {
+  FileHandlingWithoutFeatureBrowserTest() {
     feature_list_.InitAndDisableFeature(
         extensions_features::kExtensionWebFileHandlers);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  extensions::ScopedCurrentChannel channel_;
 };
 
 // Web File Handlers are either parsed or emit a warning, depending on the
@@ -76,8 +73,15 @@ IN_PROC_BROWSER_TEST_F(FileHandlingWithoutFeatureBrowserTest, Warning) {
     // Verify that there are no file handlers and that a warning was observed.
     ASSERT_FALSE(WebFileHandlers::HasFileHandlers(*extension));
     ASSERT_EQ(1u, extension->install_warnings().size());
-    EXPECT_EQ(std::string("Unrecognized manifest key 'file_handlers'."),
+#if BUILDFLAG(IS_CHROMEOS)
+    EXPECT_EQ("Unrecognized manifest key 'file_handlers'.",
               extension->install_warnings().front().message);
+#else
+    EXPECT_EQ(
+        "'file_handlers' is only allowed for packaged apps, but this is a "
+        "extension.",
+        extension->install_warnings().front().message);
+#endif  // IS_CHROMEOS
   }
 }
 

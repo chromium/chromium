@@ -899,10 +899,10 @@ extern const char kCWSInfoFastCheckDescription[];
 extern const char kSafetyCheckExtensionsName[];
 extern const char kSafetyCheckExtensionsDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kExtensionWebFileHandlersName[];
 extern const char kExtensionWebFileHandlersDescription[];
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS
 #endif  // ENABLE_EXTENSIONS
 
 extern const char kExtensionsOnChromeUrlsName[];

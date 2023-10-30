@@ -1583,13 +1583,13 @@ const char kSafetyCheckExtensionsDescription[] =
     "desktop. The module will be shown if there are potentially unsafe "
     "extensions to review.";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kExtensionWebFileHandlersName[] = "Extensions Web File Handlers";
 const char kExtensionWebFileHandlersDescription[] =
     "Enable Extension Web File Handlers, which allows extensions to operate on "
     "the native file system. An extension can register to read and edit files, "
     "specified in the manifest, by their file extension or mime type.";
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS
 #endif  // ENABLE_EXTENSIONS
 
 const char kExtensionsOnChromeUrlsName[] = "Extensions on chrome:// URLs";
