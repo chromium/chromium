@@ -65,7 +65,7 @@ public class HubLayout extends Layout {
     private final ViewGroup mRootView;
     private final HubController mHubController;
     private final PaneManager mPaneManager;
-    private final @Nullable HubLayoutScrimController mScrimController;
+    private final HubLayoutScrimController mScrimController;
 
     private HubLayoutAnimationRunner mCurrentAnimationRunner;
 
@@ -82,30 +82,22 @@ public class HubLayout extends Layout {
      * @param updateHost The {@link LayoutUpdateHost} for the {@link LayoutManager}.
      * @param renderHost The {@link LayoutRenderHost} for the {@link LayoutManager}.
      * @param layoutStateProvider The {@link LayoutStateProvider} for the {@link LayoutManager}.
-     * @param rootView The {@link ViewGroup} to attach the Hub to.
-     * @param hubController The {@link HubController} for controlling the Hub.
-     * @param paneManager The {@link PaneManager} for managing Hub panes.
-     * @param scrimController The {@link HubLayoutScrimController} for controlling scrims.
+     * @param dependencyHolder The {@link HubLayoutDependencyHolder} that holds dependencies for
+     *     HubLayout.
      */
     public HubLayout(
             @NonNull Context context,
             @NonNull LayoutUpdateHost updateHost,
             @NonNull LayoutRenderHost renderHost,
             @NonNull LayoutStateProvider layoutStateProvider,
-            @NonNull ViewGroup rootView,
-            @NonNull HubController hubController,
-            @NonNull PaneManager paneManager,
-            @Nullable HubLayoutScrimController scrimController) {
+            @NonNull HubLayoutDependencyHolder dependencyHolder) {
         super(context, updateHost, renderHost);
         mLayoutStateProvider = layoutStateProvider;
-        mRootView = rootView;
-        mHubController = hubController;
-        mPaneManager = paneManager;
-        mScrimController = scrimController;
-
-        assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                        || mScrimController != null
-                : "A scrimController is required for large form factor UI.";
+        mRootView = dependencyHolder.getHubRootView();
+        HubManager hubManager = dependencyHolder.getHubManager();
+        mHubController = hubManager.getHubController();
+        mPaneManager = hubManager.getPaneManager();
+        mScrimController = dependencyHolder.getScrimController();
     }
 
     /** Returns the current {@link HubLayoutAnimationType}. */

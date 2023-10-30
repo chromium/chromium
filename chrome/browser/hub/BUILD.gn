@@ -18,6 +18,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationType.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimator.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimatorProvider.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutDependencyHolder.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutScrimController.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManager.java",
     "android/java/src/org/chromium/chrome/browser/hub/Pane.java",

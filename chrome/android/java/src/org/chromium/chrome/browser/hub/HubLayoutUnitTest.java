@@ -32,6 +32,7 @@ import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -49,6 +50,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -104,6 +107,7 @@ public class HubLayoutUnitTest {
     @Mock private ResourceManager mResourceManager;
     @Mock private SceneLayer.Natives mSceneLayerJni;
     @Mock private StaticTabSceneLayer.Natives mStaticTabSceneLayerJni;
+    @Mock private HubManager mHubManager;
     @Mock private HubController mHubController;
     @Mock private PaneManager mPaneManager;
     @Mock private HubLayoutScrimController mScrimController;
@@ -151,6 +155,23 @@ public class HubLayoutUnitTest {
                 .when(mStaticTabSceneLayerJni)
                 .init(any());
 
+        when(mHubManager.getPaneManager()).thenReturn(mPaneManager);
+        when(mHubManager.getHubController()).thenReturn(mHubController);
+        LazyOneshotSupplier<HubManager> hubManagerSupplier =
+                new LazyOneshotSupplierImpl<HubManager>() {
+                    @Override
+                    public void doSet() {
+                        set(mHubManager);
+                    }
+                };
+        LazyOneshotSupplier<ViewGroup> rootViewSupplier =
+                new LazyOneshotSupplierImpl<ViewGroup>() {
+                    @Override
+                    public void doSet() {
+                        set(mFrameLayout);
+                    }
+                };
+
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -162,6 +183,10 @@ public class HubLayoutUnitTest {
 
                             when(mHubController.getContainerView()).thenReturn(mHubContainerView);
 
+                            HubLayoutDependencyHolder dependencyHolder =
+                                    new HubLayoutDependencyHolder(
+                                            hubManagerSupplier, rootViewSupplier, mScrimController);
+
                             mHubLayout =
                                     spy(
                                             new HubLayout(
@@ -169,10 +194,7 @@ public class HubLayoutUnitTest {
                                                     mUpdateHost,
                                                     mRenderHost,
                                                     mLayoutStateProvider,
-                                                    mFrameLayout,
-                                                    mHubController,
-                                                    mPaneManager,
-                                                    mScrimController));
+                                                    dependencyHolder));
                             mHubLayout.setTabModelSelector(mTabModelSelector);
                             mHubLayout.setTabContentManager(mTabContentManager);
                             mHubLayout.onFinishNativeInitialization();
