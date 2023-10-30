@@ -95,7 +95,7 @@ struct App {
   [MinVersion=18, RenamedFrom="shortcuts"]
   // DEPRECATED, will be replaced by specific interfaces to update shortcuts.
   // This struct is not used in production yet, so it's safe to deprecate.
-  array<Shortcut>? deprecated_shortcuts@27;
+  array<REMOVED_01>? deprecated_shortcuts@27;
 
   [MinVersion=19]
   OptionalBool is_platform_app@28;
@@ -507,17 +507,41 @@ struct PreferredApp {
   string app_id;
 };
 
-// Represents an app shortcut.
+// Information about an app shortcut.
+
+// This struct is used to transport App Shortcut data between lacros-chrome and
+// ash-chrome. It is intended to be the minimal subset of apps::Shortcut
+// required for this purpose.
+//
+// See components/services/app_service/public/cpp/shortcut/shortcut.h for
+// details for the structs in this file.
 [Stable]
-struct Shortcut {
-  // Represents a particular shortcut in an app. Needs to be unique within an
-  // app as calls will be made using both app_id and shortcut_id.
-  string shortcut_id@0;
+struct AppShortcut {
+  // 'host_app_id' and 'local_id' should not be changeable after creation.
+  // The host app of the shortcut.
+  string host_app_id@0;
+
+  // The locally unique identifier for the shortcut within an app. This id would
+  // be used to launch the shortcut or load shortcut icon from the app.
+  string local_id@1;
 
   // Name of the shortcut.
+  string? name@2;
+
+  // Represents what icon should be loaded for this shortcut, icon key will
+  // change if the icon has been updated from the publisher.
+  IconKey? icon_key@3;
+};
+
+// DEPRECATED
+[Stable, RenamedFrom="crosapi.mojom.Shortcut"]
+struct REMOVED_01 {
+  // DEPRECATED
+  string shortcut_id@0;
+
+  // DEPRECATED
   string name@1;
 
-  // "Position" of a shortcut, which is a non-negative, sequential
-  // value. If position is 0, no position was specified.
+  // DEPRECATED
   uint8 position@2;
 };

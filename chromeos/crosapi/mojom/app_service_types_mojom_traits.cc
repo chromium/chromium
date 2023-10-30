@@ -33,21 +33,21 @@ absl::optional<bool> ConvertMojomOptionalBoolToOptionalBool(
   }
 }
 
+apps::IconKeyPtr ConvertOptionalIconKeyToIconKeyPtr(
+    const absl::optional<apps::IconKey>& icon_key) {
+  if (!icon_key.has_value()) {
+    return nullptr;
+  }
+  return icon_key->Clone();
+}
+
 }  // namespace
 
 namespace mojo {
 
 apps::IconKeyPtr StructTraits<crosapi::mojom::AppDataView,
                               apps::AppPtr>::icon_key(const apps::AppPtr& r) {
-  if (!r->icon_key.has_value()) {
-    return nullptr;
-  }
-
-  auto icon_key = std::make_unique<apps::IconKey>(
-      r->icon_key.value().timeline, r->icon_key.value().resource_id,
-      r->icon_key.value().icon_effects);
-  icon_key->raw_icon_updated = r->icon_key.value().raw_icon_updated;
-  return icon_key;
+  return ConvertOptionalIconKeyToIconKeyPtr(r->icon_key);
 }
 
 // static
@@ -1200,6 +1200,48 @@ bool StructTraits<crosapi::mojom::PreferredAppChangesDataView,
   preferred_app_changes->added_filters = std::move(added_filters);
   preferred_app_changes->removed_filters = std::move(removed_filters);
   *out = std::move(preferred_app_changes);
+  return true;
+}
+
+apps::IconKeyPtr
+StructTraits<crosapi::mojom::AppShortcutDataView, apps::ShortcutPtr>::icon_key(
+    const apps::ShortcutPtr& r) {
+  return ConvertOptionalIconKeyToIconKeyPtr(r->icon_key);
+}
+
+bool StructTraits<crosapi::mojom::AppShortcutDataView, apps::ShortcutPtr>::Read(
+    crosapi::mojom::AppShortcutDataView data,
+    apps::ShortcutPtr* out) {
+  std::string host_app_id;
+  if (!data.ReadHostAppId(&host_app_id)) {
+    return false;
+  }
+
+  std::string local_id;
+  if (!data.ReadLocalId(&local_id)) {
+    return false;
+  }
+
+  absl::optional<std::string> name;
+  if (!data.ReadName(&name)) {
+    return false;
+  }
+
+  apps::IconKeyPtr icon_key;
+  if (!data.ReadIconKey(&icon_key)) {
+    return false;
+  }
+
+  auto shortcut = std::make_unique<apps::Shortcut>(host_app_id, local_id);
+  shortcut->name = name;
+  // Currently all shortcuts are User created, will add this field on crosapi
+  // when we support developer created shortcuts.
+  shortcut->shortcut_source = apps::ShortcutSource::kUser;
+  if (icon_key) {
+    shortcut->icon_key = std::move(*icon_key);
+  }
+
+  *out = std::move(shortcut);
   return true;
 }
 

@@ -1200,3 +1200,43 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripCapabilityAccess) {
     EXPECT_TRUE(output->microphone.value_or(false));
   }
 }
+
+// Test that every field in apps::Shortcut in correctly converted.
+TEST(AppServiceTypesMojomTraitsTest, ShortcutRoundTrip) {
+  auto input = std::make_unique<apps::Shortcut>("host_app_id", "local_id");
+  input->name = "lacros test name";
+  input->icon_key = apps::IconKey(
+      /*timeline=*/1, apps::IconKey::kInvalidResourceId, /*icon_effects=*/2);
+  input->icon_key->raw_icon_updated = true;
+
+  apps::ShortcutPtr output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::AppShortcut>(
+      input, output));
+
+  EXPECT_EQ(output->host_app_id, "host_app_id");
+  EXPECT_EQ(output->local_id, "local_id");
+  EXPECT_EQ(output->shortcut_id,
+            apps::GenerateShortcutId("host_app_id", "local_id"));
+  EXPECT_EQ(output->name, "lacros test name");
+  EXPECT_EQ(output->shortcut_source, apps::ShortcutSource::kUser);
+
+  EXPECT_EQ(output->icon_key->timeline, 1U);
+  EXPECT_EQ(output->icon_key->icon_effects, 2U);
+  EXPECT_TRUE(output->icon_key->raw_icon_updated);
+}
+
+// Test that serialization and deserialization works with optional fields that
+// doesn't fill up.
+TEST(AppServiceTypesMojomTraitsTest, ShortcutRoundTripNoOptional) {
+  auto input = std::make_unique<apps::Shortcut>("host_app_id", "local_id");
+
+  apps::ShortcutPtr output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::AppShortcut>(
+      input, output));
+
+  EXPECT_EQ(output->host_app_id, "host_app_id");
+  EXPECT_EQ(output->local_id, "local_id");
+  EXPECT_EQ(output->shortcut_id,
+            apps::GenerateShortcutId("host_app_id", "local_id"));
+  EXPECT_EQ(output->shortcut_source, apps::ShortcutSource::kUser);
+}
