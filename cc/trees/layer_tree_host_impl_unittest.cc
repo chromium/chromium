@@ -916,6 +916,7 @@ class FluentOverlayScrollbarLayerTreeHostImplTest
     settings.scrollbar_animator = LayerTreeSettings::AURA_OVERLAY;
     settings.scrollbar_fade_delay = base::Milliseconds(500);
     settings.scrollbar_fade_duration = base::Milliseconds(300);
+    settings.idle_thickness_scale = 0.4f;
     CreateHostImpl(settings, CreateLayerTreeFrameSink());
   }
 
@@ -13851,9 +13852,10 @@ TEST_P(FluentOverlayScrollbarOpacityLayerTreeHostImplTest,
 
   int const step = GetParam();
   float const thickness_scale_step =
-      (1 - scrollbar->kIdleThicknessScale) / kParamSteps;
+      (1 - scrollbar->GetIdleThicknessScale()) / kParamSteps;
   VerifyCorrectOpacityForThickness(
-      scrollbar, scrollbar->kIdleThicknessScale + thickness_scale_step * step,
+      scrollbar,
+      scrollbar->GetIdleThicknessScale() + thickness_scale_step * step,
       step / static_cast<float>(kParamSteps));
 }
 

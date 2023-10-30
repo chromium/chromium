@@ -32,10 +32,11 @@ ScrollbarAnimationController::CreateScrollbarAnimationControllerAuraOverlay(
     base::TimeDelta fade_delay,
     base::TimeDelta fade_duration,
     base::TimeDelta thinning_duration,
-    float initial_opacity) {
+    float initial_opacity,
+    float idle_thickness_scale) {
   return base::WrapUnique(new ScrollbarAnimationController(
       scroll_element_id, client, fade_delay, fade_duration, thinning_duration,
-      initial_opacity));
+      initial_opacity, idle_thickness_scale));
 }
 
 ScrollbarAnimationController::ScrollbarAnimationController(
@@ -63,7 +64,8 @@ ScrollbarAnimationController::ScrollbarAnimationController(
     base::TimeDelta fade_delay,
     base::TimeDelta fade_duration,
     base::TimeDelta thinning_duration,
-    float initial_opacity)
+    float initial_opacity,
+    float idle_thickness_scale)
     : client_(client),
       fade_delay_(fade_delay),
       fade_duration_(fade_duration),
@@ -78,10 +80,10 @@ ScrollbarAnimationController::ScrollbarAnimationController(
       tickmarks_showing_(false) {
   vertical_controller_ = SingleScrollbarAnimationControllerThinning::Create(
       scroll_element_id, ScrollbarOrientation::kVertical, client,
-      thinning_duration);
+      thinning_duration, idle_thickness_scale);
   horizontal_controller_ = SingleScrollbarAnimationControllerThinning::Create(
       scroll_element_id, ScrollbarOrientation::kHorizontal, client,
-      thinning_duration);
+      thinning_duration, idle_thickness_scale);
 }
 
 ScrollbarAnimationController::~ScrollbarAnimationController() = default;

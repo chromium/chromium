@@ -1938,10 +1938,11 @@ LayerTreeImpl::CreateScrollbarAnimationController(ElementId scroll_element_id,
     case LayerTreeSettings::AURA_OVERLAY: {
       base::TimeDelta thinning_duration =
           settings().scrollbar_thinning_duration;
+      float idle_thickness_scale = settings().idle_thickness_scale;
       return ScrollbarAnimationController::
           CreateScrollbarAnimationControllerAuraOverlay(
               scroll_element_id, host_impl_, fade_delay, fade_duration,
-              thinning_duration, initial_opacity);
+              thinning_duration, initial_opacity, idle_thickness_scale);
     }
     case LayerTreeSettings::NO_ANIMATOR:
       NOTREACHED();

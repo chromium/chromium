@@ -74,6 +74,7 @@ void InitializeScrollbarFadeAndDelay(cc::LayerTreeSettings& settings) {
   if (ui::IsOverlayScrollbarEnabled()) {
     settings.scrollbar_fade_delay = ui::kOverlayScrollbarFadeDelay;
     settings.scrollbar_fade_duration = ui::kOverlayScrollbarFadeDuration;
+    settings.idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

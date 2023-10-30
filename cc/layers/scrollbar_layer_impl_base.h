@@ -93,6 +93,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
 
   bool IsFluentScrollbarEnabled() const;
   bool IsFluentOverlayScrollbarEnabled() const;
+  float GetIdleThicknessScale() const;
 
  protected:
   ScrollbarLayerImplBase(LayerTreeImpl* tree_impl,

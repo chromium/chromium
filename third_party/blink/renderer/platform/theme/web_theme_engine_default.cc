@@ -267,6 +267,7 @@ void WebThemeEngineDefault::Paint(
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
   style->fade_out_delay = ui::kOverlayScrollbarFadeDelay;
   style->fade_out_duration = ui::kOverlayScrollbarFadeDuration;
+  style->idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
   // The other fields in this struct are used only on Android to draw solid
   // color scrollbars. On other platforms the scrollbars are painted in
   // NativeTheme so these fields are unused.

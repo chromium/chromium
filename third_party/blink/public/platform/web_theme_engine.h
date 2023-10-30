@@ -264,6 +264,7 @@ class WebThemeEngine {
     SkColor4f color;
     base::TimeDelta fade_out_delay;
     base::TimeDelta fade_out_duration;
+    float idle_thickness_scale;
   };
 
   // Gets the overlay scrollbar style. Not used on Mac.

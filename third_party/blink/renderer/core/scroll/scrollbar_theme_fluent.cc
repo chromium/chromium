@@ -204,14 +204,15 @@ gfx::Rect ScrollbarThemeFluent::ShrinkMainThreadedMinimalModeThumbRect(
     Scrollbar& scrollbar,
     gfx::Rect& rect) const {
   CHECK(UsesOverlayScrollbars());
+  const float idle_thickness_scale = style_.idle_thickness_scale;
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
-    rect.set_y(rect.y() + rect.height() * (1 - kIdleThicknessScale));
-    rect.set_height(rect.height() * kIdleThicknessScale);
+    rect.set_y(rect.y() + rect.height() * (1 - idle_thickness_scale));
+    rect.set_height(rect.height() * idle_thickness_scale);
   } else {
     if (!scrollbar.IsLeftSideVerticalScrollbar()) {
-      rect.set_x(rect.x() + rect.width() * (1 - kIdleThicknessScale));
+      rect.set_x(rect.x() + rect.width() * (1 - idle_thickness_scale));
     }
-    rect.set_width(rect.width() * kIdleThicknessScale);
+    rect.set_width(rect.width() * idle_thickness_scale);
   }
   return rect;
 }

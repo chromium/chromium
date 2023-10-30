@@ -70,11 +70,6 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
   int scrollbar_track_inset_ = 0;
   bool is_fluent_overlay_scrollbar_enabled_ = false;
   WebThemeEngine::ScrollbarStyle style_;
-  // Note that this constant is a redefinition from
-  // SingleScrollbarAnimationControllerThinning.
-  // TODO(https://crbug.com/1487257): Move this and all kIdleThicknessScale
-  // definition to a single source of thruth.
-  static constexpr float kIdleThicknessScale = 0.4f;
 };
 
 }  // namespace blink

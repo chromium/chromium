@@ -42,9 +42,11 @@ SingleScrollbarAnimationControllerThinning::Create(
     ElementId scroll_element_id,
     ScrollbarOrientation orientation,
     ScrollbarAnimationControllerClient* client,
-    base::TimeDelta thinning_duration) {
+    base::TimeDelta thinning_duration,
+    float idle_thickness_scale) {
   return base::WrapUnique(new SingleScrollbarAnimationControllerThinning(
-      scroll_element_id, orientation, client, thinning_duration));
+      scroll_element_id, orientation, client, thinning_duration,
+      idle_thickness_scale));
 }
 
 SingleScrollbarAnimationControllerThinning::
@@ -52,7 +54,8 @@ SingleScrollbarAnimationControllerThinning::
         ElementId scroll_element_id,
         ScrollbarOrientation orientation,
         ScrollbarAnimationControllerClient* client,
-        base::TimeDelta thinning_duration)
+        base::TimeDelta thinning_duration,
+        float idle_thickness_scale)
     : client_(client),
       is_animating_(false),
       scroll_element_id_(scroll_element_id),
@@ -63,8 +66,9 @@ SingleScrollbarAnimationControllerThinning::
       mouse_is_near_scrollbar_track_(false),
       thickness_change_(AnimationChange::kNone),
       thinning_duration_(thinning_duration),
-      tickmarks_showing_(false) {
-  ApplyThumbThicknessScale(kIdleThicknessScale);
+      tickmarks_showing_(false),
+      idle_thickness_scale_(idle_thickness_scale) {
+  ApplyThumbThicknessScale(idle_thickness_scale_);
 }
 
 ScrollbarLayerImplBase*
@@ -269,7 +273,7 @@ float SingleScrollbarAnimationControllerThinning::ThumbThicknessScaleAt(
   float factor = thickness_change_ == AnimationChange::kIncrease
                      ? progress
                      : (1.f - progress);
-  return ((1.f - kIdleThicknessScale) * factor) + kIdleThicknessScale;
+  return ((1.f - idle_thickness_scale_) * factor) + idle_thickness_scale_;
 }
 
 float SingleScrollbarAnimationControllerThinning::AdjustScale(
@@ -305,7 +309,7 @@ float SingleScrollbarAnimationControllerThinning::
     thumb_should_be_expanded = mouse_is_near_scrollbar_thumb_;
   }
   thumb_should_be_expanded |= captured_;
-  return thumb_should_be_expanded ? 1.f : kIdleThicknessScale;
+  return thumb_should_be_expanded ? 1.f : idle_thickness_scale_;
 }
 
 void SingleScrollbarAnimationControllerThinning::UpdateThumbThicknessScale() {
@@ -328,7 +332,7 @@ void SingleScrollbarAnimationControllerThinning::ApplyThumbThicknessScale(
 
     float scale = AdjustScale(thumb_thickness_scale,
                               scrollbar->thumb_thickness_scale_factor(),
-                              thickness_change_, kIdleThicknessScale, 1);
+                              thickness_change_, idle_thickness_scale_, 1);
 
     scrollbar->SetThumbThicknessScaleFactor(scale);
   }

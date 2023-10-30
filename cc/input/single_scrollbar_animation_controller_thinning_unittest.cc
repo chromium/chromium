@@ -21,8 +21,8 @@ using ::testing::NiceMock;
 namespace cc {
 namespace {
 
-const float kIdleThicknessScale =
-    SingleScrollbarAnimationControllerThinning::kIdleThicknessScale;
+// Redefinition from ui/native_theme/overlay_scrollbar_constants_aura.h
+const float kIdleThicknessScale = 0.4f;
 
 class MockSingleScrollbarAnimationControllerClient
     : public ScrollbarAnimationControllerClient {
@@ -90,7 +90,7 @@ class SingleScrollbarAnimationControllerThinningTest
 
     scrollbar_controller_ = SingleScrollbarAnimationControllerThinning::Create(
         scroll_layer->element_id(), ScrollbarOrientation::kVertical, &client_,
-        kThinningDuration);
+        kThinningDuration, kIdleThicknessScale);
     mouse_move_distance_to_trigger_fade_in_ =
         scrollbar_controller_->MouseMoveDistanceToTriggerFadeIn();
     mouse_move_distance_to_trigger_expand_ =
