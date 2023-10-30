@@ -113,21 +113,14 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
   // This is called after maybe presenting a file dialog permission UI to ensure
   // that the extension is confirmed to be able to open the relevant file type.
   //
-  // LacrosExtensionAppsController::LaunchAppWithIntentCallback() copied the
-  // idea from ExtensionAppsChromeOs::LaunchAppWithIntentCallback(). The Ash
-  // version is implemented using intents, but the Lacros version uses params to
-  // be able to reuse an existing window with ease. Ash also reuses the existing
-  // window, but does so in a different location. They have the same name to
-  // make them easier to find in search, even though the name for the Lacros
-  // version could probably replace `Intent` with `Params`.
-  //
-  // TODO(crbug.com1448893): Rename these methods to something more generic to
-  // better fit both Ash and Lacros (e.g. Intent vs Params in the name).
-  void LaunchAppWithIntentCallback(Profile* profile,
-                                   apps::AppLaunchParams params,
-                                   LaunchCallback callback,
-                                   crosapi::mojom::LaunchResultPtr result,
-                                   bool should_open);
+  // Arguments is a single word that represents either intents or params.
+  // LacrosExtensionAppsController::LaunchAppWithIntentCallback() uses pararms.
+  // ExtensionAppsChromeOs::LaunchAppWithIntentCallback() uses intents.
+  void LaunchAppWithArgumentsCallback(Profile* profile,
+                                      apps::AppLaunchParams params,
+                                      LaunchCallback callback,
+                                      crosapi::mojom::LaunchResultPtr result,
+                                      bool should_open);
 
   // State to decide which extension type (e.g., Chrome Apps vs. Extensions)
   // to support.

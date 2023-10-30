@@ -302,7 +302,7 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
   }
 }
 
-void ExtensionAppsChromeOs::LaunchAppWithIntentCallback(
+void ExtensionAppsChromeOs::LaunchAppWithArgumentsCallback(
     LaunchSource launch_source,
     const std::string& app_id,
     int32_t event_flags,
@@ -350,7 +350,7 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
     // Confirm that the extension can open the file and then call the callback.
     web_file_handlers_permission_handler_->Confirm(
         *extension, base_names,
-        base::BindOnce(&ExtensionAppsChromeOs::LaunchAppWithIntentCallback,
+        base::BindOnce(&ExtensionAppsChromeOs::LaunchAppWithArgumentsCallback,
                        weak_factory_.GetWeakPtr(), launch_source, app_id,
                        event_flags, std::move(intent), std::move(window_info),
                        std::move(callback)));

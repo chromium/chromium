@@ -353,7 +353,7 @@ void LacrosExtensionAppsController::FinallyLaunch(
       web_file_handlers_permission_handler_->Confirm(
           *extension, base_names,
           base::BindOnce(
-              &LacrosExtensionAppsController::LaunchAppWithIntentCallback,
+              &LacrosExtensionAppsController::LaunchAppWithArgumentsCallback,
               weak_factory_.GetWeakPtr(), std::move(profile), std::move(params),
               std::move(callback), std::move(result)));
       return;
@@ -397,7 +397,7 @@ void LacrosExtensionAppsController::FinallyLaunch(
   std::move(callback).Run(std::move(result));
 }
 
-void LacrosExtensionAppsController::LaunchAppWithIntentCallback(
+void LacrosExtensionAppsController::LaunchAppWithArgumentsCallback(
     Profile* profile,
     apps::AppLaunchParams params,
     LaunchCallback callback,
