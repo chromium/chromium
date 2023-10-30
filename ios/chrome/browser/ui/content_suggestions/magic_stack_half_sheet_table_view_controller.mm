@@ -7,9 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
-#import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
@@ -17,7 +14,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_model_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -41,41 +38,22 @@ enum ItemType : NSInteger {
 
 }  // namespace
 
-@interface MagicStackHalfSheetTableViewController () <BooleanObserver>
+@interface MagicStackHalfSheetTableViewController ()
 @end
 
 @implementation MagicStackHalfSheetTableViewController {
-  PrefBackedBoolean* _setUpListDisabled;
-  PrefBackedBoolean* _safetyCheckDisabled;
-  PrefBackedBoolean* _tabResumptionDisabled;
+  BOOL _showSetUpList;
+  BOOL _setUpListDisabled;
+  BOOL _safetyCheckDisabled;
+  BOOL _tabResumptionDisabled;
 
   TableViewSwitchItem* _setUpListToggle;
   TableViewSwitchItem* _safetyCheckToggle;
   TableViewSwitchItem* _tabResumptionToggle;
 }
 
-- (instancetype)initWithPrefService:(PrefService*)prefService {
+- (instancetype)init {
   UITableViewStyle style = ChromeTableViewStyle();
-  if (IsIOSSetUpListEnabled()) {
-    _setUpListDisabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:prefService
-                   prefName:set_up_list_prefs::kDisabled];
-    [_setUpListDisabled setObserver:self];
-  }
-  if (IsSafetyCheckMagicStackEnabled()) {
-    _safetyCheckDisabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:prefService
-                   prefName:safety_check_prefs::
-                                kSafetyCheckInMagicStackDisabledPref];
-    [_safetyCheckDisabled setObserver:self];
-  }
-  if (IsTabResumptionEnabled()) {
-    _tabResumptionDisabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:prefService
-                   prefName:tab_resumption_prefs::kTabResumptioDisabledPref];
-    [_tabResumptionDisabled setObserver:self];
-  }
-
   return [super initWithStyle:style];
 }
 
@@ -93,6 +71,36 @@ enum ItemType : NSInteger {
   [self loadModel];
 }
 
+#pragma mark - MagicStackHalfSheetConsumer
+
+- (void)showSetUpList:(BOOL)showSetUpList {
+  _showSetUpList = showSetUpList;
+}
+
+- (void)setSetUpListDisabled:(BOOL)setUpListDisabled {
+  if (_setUpListDisabled == setUpListDisabled) {
+    return;
+  }
+  _setUpListDisabled = setUpListDisabled;
+  _setUpListToggle.on = !_setUpListDisabled;
+}
+
+- (void)setSafetyCheckDisabled:(BOOL)safetyCheckDisabled {
+  if (_safetyCheckDisabled == safetyCheckDisabled) {
+    return;
+  }
+  _safetyCheckDisabled = safetyCheckDisabled;
+  _safetyCheckToggle.on = !_safetyCheckDisabled;
+}
+
+- (void)setTabResumptionDisabled:(BOOL)tabResumptionDisabled {
+  if (_tabResumptionDisabled == tabResumptionDisabled) {
+    return;
+  }
+  _tabResumptionDisabled = tabResumptionDisabled;
+  _tabResumptionToggle.on = !_tabResumptionDisabled;
+}
+
 #pragma mark - ChromeTableViewController
 
 - (void)loadModel {
@@ -100,7 +108,7 @@ enum ItemType : NSInteger {
 
   [self.tableViewModel addSectionWithIdentifier:SectionIdentifierOptions];
 
-  if (IsIOSSetUpListEnabled()) {
+  if (IsIOSSetUpListEnabled() && _showSetUpList) {
     NSString* listSymbolName = kListBulletRectangleSymbol;
     if (@available(iOS 16.0, *)) {
       listSymbolName = kListBulletClipboardSymbol;
@@ -110,7 +118,7 @@ enum ItemType : NSInteger {
                      title:l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE)
                     symbol:DefaultSymbolWithPointSize(listSymbolName,
                                                       kIconPointSize)];
-    _setUpListToggle.on = !_setUpListDisabled.value;
+    _setUpListToggle.on = !_setUpListDisabled;
     [self.tableViewModel addItem:_setUpListToggle
          toSectionWithIdentifier:SectionIdentifierOptions];
   }
@@ -120,17 +128,21 @@ enum ItemType : NSInteger {
                      title:l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE)
                     symbol:DefaultSymbolWithPointSize(kCheckmarkShieldSymbol,
                                                       kIconPointSize)];
-    _safetyCheckToggle.on = !_safetyCheckDisabled.value;
+    _safetyCheckToggle.on = !_safetyCheckDisabled;
     [self.tableViewModel addItem:_safetyCheckToggle
          toSectionWithIdentifier:SectionIdentifierOptions];
   }
   if (IsTabResumptionEnabled()) {
+    NSString* listSymbolName = kLaptopAndIphoneSymbol;
+    if (@available(iOS 16.0, *)) {
+      listSymbolName = kMacbookAndIPhoneSymbol;
+    }
     _tabResumptionToggle = [self
         switchItemWithType:ItemTypeToggleTabResumption
                      title:l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_TITLE)
-                    symbol:DefaultSymbolWithPointSize(kMacbookAndIPhoneSymbol,
+                    symbol:DefaultSymbolWithPointSize(listSymbolName,
                                                       kIconPointSize)];
-    _tabResumptionToggle.on = !_tabResumptionDisabled.value;
+    _tabResumptionToggle.on = !_tabResumptionDisabled;
     [self.tableViewModel addItem:_tabResumptionToggle
          toSectionWithIdentifier:SectionIdentifierOptions];
   }
@@ -168,18 +180,6 @@ enum ItemType : NSInteger {
   return cell;
 }
 
-#pragma mark - Boolean Observer
-
-- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  if (observableBoolean == _setUpListDisabled) {
-    _setUpListToggle.on = !_setUpListDisabled.value;
-  } else if (observableBoolean == _safetyCheckDisabled) {
-    _safetyCheckToggle.on = !_safetyCheckDisabled.value;
-  } else if (observableBoolean == _tabResumptionDisabled) {
-    _tabResumptionToggle.on = !_tabResumptionDisabled.value;
-  }
-}
-
 #pragma mark - Private
 
 - (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
@@ -195,15 +195,15 @@ enum ItemType : NSInteger {
 }
 
 - (void)setUpListEnabledChanged:(UISwitch*)switchView {
-  [_setUpListDisabled setValue:!switchView.isOn];
+  [self.modelDelegate setUpListEnabledChanged:switchView.isOn];
 }
 
 - (void)safetyCheckEnabledChanged:(UISwitch*)switchView {
-  [_safetyCheckDisabled setValue:!switchView.isOn];
+  [self.modelDelegate safetyCheckEnabledChanged:switchView.isOn];
 }
 
 - (void)tabResumptionEnabledChanged:(UISwitch*)switchView {
-  [_tabResumptionDisabled setValue:!switchView.isOn];
+  [self.modelDelegate tabResumptionEnabledChanged:switchView.isOn];
 }
 
 @end
