@@ -172,21 +172,31 @@ public final class TrackingProtectionNoticeTest {
     @Test
     @SmallTest
     public void testNoticeNotShownMoreThanOnceWhenNewTabWithSecurePageIsOpened() {
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
+        sActivityTestRule.startMainActivityOnBlankPage();
+
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 NOTICE_CONTROLLER_EVENT_HISTOGRAM,
-                                NoticeControllerEvent.CONTROLLER_CREATED,
-                                NoticeControllerEvent.ACTIVE_TAB_CHANGED,
+                                NoticeControllerEvent.NAVIGATION_FINISHED,
                                 NoticeControllerEvent.CONTROLLER_NO_LONGER_OBSERVING,
                                 NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN)
                         .build();
 
-        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
-
-        sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
+        sActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
         onView(withId(R.id.message_banner)).check(matches(isDisplayed()));
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                NOTICE_CONTROLLER_EVENT_HISTOGRAM,
+                                // The same message is removed and then shown again when switching
+                                // tab.
+                                NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN)
+                        .build();
 
         sActivityTestRule.loadUrlInNewTab(UrlConstants.MY_ACTIVITY_HOME_URL);
         onView(withId(R.id.message_banner)).check(matches(isDisplayed()));
