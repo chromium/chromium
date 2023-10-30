@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ONBOARDING_H_
 #define COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ONBOARDING_H_
 
+#include <optional>
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/version_info/channel.h"
@@ -138,6 +140,9 @@ class TrackingProtectionOnboarding : public KeyedService {
   // Called by UI code to determine if we should show the onboarding notice to
   // the user.
   bool ShouldShowOnboardingNotice();
+
+  // Returns the time delta from Onboarded to Acknowledged.
+  std::optional<base::TimeDelta> OnboardedToAcknowledged();
 
  private:
   friend class tpcd::experiment::EligibilityServiceTest;

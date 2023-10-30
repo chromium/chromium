@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
+#include <optional>
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -358,9 +359,12 @@ void TrackingProtectionOnboarding::OnboardingNoticeActionTaken(
     return;
   }
 
-  pref_service_->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
+  pref_service_->SetTime(prefs::kTrackingProtectionOnboardingAckedSince,
+                         base::Time::Now());
   pref_service_->SetInteger(prefs::kTrackingProtectionOnboardingAckAction,
                             static_cast<int>(ToInternalAckAction(action)));
+  pref_service_->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
+
   auto onboarding_to_acked_duration =
       base::Time::Now() -
       pref_service_->GetTime(prefs::kTrackingProtectionOnboardedSince);
@@ -424,6 +428,20 @@ NoticeType TrackingProtectionOnboarding::GetRequiredNotice() {
 
 bool TrackingProtectionOnboarding::IsOffboarded() const {
   return GetOnboardingStatus() == OnboardingStatus::kOffboarded;
+}
+
+std::optional<base::TimeDelta>
+TrackingProtectionOnboarding::OnboardedToAcknowledged() {
+  if (!pref_service_->HasPrefPath(
+          prefs::kTrackingProtectionOnboardingAckedSince)) {
+    return std::nullopt;
+  }
+  if (!pref_service_->HasPrefPath(prefs::kTrackingProtectionOnboardedSince)) {
+    return std::nullopt;
+  }
+  return pref_service_->GetTime(
+             prefs::kTrackingProtectionOnboardingAckedSince) -
+         pref_service_->GetTime(prefs::kTrackingProtectionOnboardedSince);
 }
 
 TrackingProtectionOnboarding::OnboardingStatus

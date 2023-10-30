@@ -4,6 +4,7 @@
 
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include <memory>
+#include <optional>
 #include <utility>
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -302,6 +303,16 @@ TEST_F(TrackingProtectionOnboardingTest,
       TrackingProtectionOnboardingAckAction::kGotIt);
 }
 
+TEST_F(TrackingProtectionOnboardingTest, AckingNoticeSetsAckedSincePref) {
+  // Ack the notice.
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kGotIt);
+
+  // Verification
+  EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionOnboardingAckedSince),
+            base::Time::Now());
+}
+
 TEST_F(TrackingProtectionOnboardingTest,
        ShouldShowNoticeReturnsIsFalseIfProfileIneligible) {
   // Setup
@@ -408,6 +419,31 @@ TEST_F(TrackingProtectionOnboardingTest,
 
   // Expectation
   testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
+TEST_F(TrackingProtectionOnboardingTest, OnboardedToAckForNotOnboardedProfile) {
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  EXPECT_EQ(tracking_protection_onboarding()->OnboardedToAcknowledged(),
+            std::nullopt);
+}
+
+TEST_F(TrackingProtectionOnboardingTest, OnboardedToAckForNotAckedProfile) {
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
+  EXPECT_EQ(tracking_protection_onboarding()->OnboardedToAcknowledged(),
+            std::nullopt);
+}
+
+TEST_F(TrackingProtectionOnboardingTest, OnboardedToAckForAckedProfile) {
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
+  auto delay = base::Seconds(15);
+  task_env_.FastForwardBy(delay);
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kGotIt);
+
+  EXPECT_EQ(tracking_protection_onboarding()->OnboardedToAcknowledged(),
+            std::make_optional(delay));
 }
 
 TEST_F(TrackingProtectionOnboardingTest, UserActionMetrics) {

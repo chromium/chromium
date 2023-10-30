@@ -25,6 +25,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kTrackingProtectionNoticeLastShown,
                              base::Time());
 
+  registry->RegisterTimePref(prefs::kTrackingProtectionOnboardingAckedSince,
+                             base::Time());
+
   registry->RegisterBooleanPref(prefs::kTrackingProtectionOnboardingAcked,
                                 false);
 
