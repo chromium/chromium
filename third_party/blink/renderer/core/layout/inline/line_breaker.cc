@@ -715,6 +715,7 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
   line_info->SetBaseDirection(base_direction_);
   hyphen_index_.reset();
   has_any_hyphens_ = false;
+  resume_block_in_inline_in_same_flow_ = false;
 
   // Use 'text-indent' as the initial position. This lets tab positions to align
   // regardless of 'text-indent'.
@@ -2692,6 +2693,8 @@ void LineBreaker::HandleBlockInInline(
     const NGBlockBreakToken* block_break_token,
     LineInfo* line_info) {
   DCHECK_EQ(item.Type(), InlineItem::kBlockInInline);
+  DCHECK(!block_break_token || block_break_token->InputNode().GetLayoutBox() ==
+                                   item.GetLayoutObject());
 
   if (!line_info->Results().empty()) {
     // If there were any items, force a line break before this item.
@@ -2701,6 +2704,7 @@ void LineBreaker::HandleBlockInInline(
   }
 
   InlineItemResult* item_result = AddItem(item, line_info);
+  bool move_past_block = true;
   if (mode_ == LineBreakerMode::kContent) {
     // The exclusion spaces *must* match. If they don't we'll have an incorrect
     // layout (as it will potentially won't consider some preceeding floats).
@@ -2729,7 +2733,26 @@ void LineBreaker::HandleBlockInInline(
             .InlineSize();
 
     item_result->should_create_line_box = !layout_result->IsSelfCollapsing();
-    item_result->layout_result = std::move(layout_result);
+    item_result->layout_result = layout_result;
+
+    if (const auto* outgoing_block_break_token = To<NGBlockBreakToken>(
+            layout_result->PhysicalFragment().BreakToken())) {
+      // The block broke inside. If the block itself fits, but some content
+      // inside overflowed, we now need to enter a parallel flow, i.e. resume
+      // the block-in-inline in the next fragmentainer, but continue layout of
+      // any actual inline content after the block-in- inline in the current
+      // fragmentainer.
+      if (outgoing_block_break_token->IsAtBlockEnd()) {
+        const auto* parallel_token =
+            InlineBreakToken::CreateForParallelBlockFlow(
+                node_, current_, *outgoing_block_break_token);
+        line_info->PropagateParallelFlowBreakToken(parallel_token);
+      } else {
+        // The block-in-inline broke inside, and it's still in the same flow.
+        resume_block_in_inline_in_same_flow_ = true;
+        move_past_block = false;
+      }
+    }
   } else {
     DCHECK(mode_ == LineBreakerMode::kMaxContent ||
            mode_ == LineBreakerMode::kMinContent);
@@ -2741,21 +2764,10 @@ void LineBreaker::HandleBlockInInline(
   line_info->SetHasForcedBreak();
   is_after_forced_break_ = true;
   trailing_whitespace_ = WhitespaceState::kNone;
-  if (const auto* outgoing_block_break_token =
-          line_info->BlockInInlineBreakToken()) {
-    // The block broke inside. If the block itself fits, but some content inside
-    // overflowed, we now need to enter a parallel flow, i.e. resume the
-    // block-in-inline in the next fragmentainer, but continue layout of any
-    // actual inline content after the block-in- inline in the current
-    // fragmentainer.
-    if (outgoing_block_break_token->IsAtBlockEnd()) {
-      const auto* parallel_token = InlineBreakToken::CreateForParallelBlockFlow(
-          node_, current_, *outgoing_block_break_token);
-      line_info->PropagateParallelFlowBreakToken(parallel_token);
 
-      MoveToNextOf(item);
-    }
-  } else {
+  // If there's no break inside the block, or if the break inside the block is
+  // for a parallel flow, proceed to the next item for the next line.
+  if (move_past_block) {
     MoveToNextOf(item);
   }
   state_ = LineBreakState::kDone;
@@ -3637,8 +3649,9 @@ const InlineBreakToken* LineBreaker::CreateBreakToken(
   }
 
   const NGBlockBreakToken* sub_break_token = nullptr;
-  const NGLayoutResult* block_in_inline = line_info.BlockInInlineLayoutResult();
-  if (UNLIKELY(block_in_inline)) {
+  if (resume_block_in_inline_in_same_flow_) {
+    const auto* block_in_inline = line_info.BlockInInlineLayoutResult();
+    DCHECK(block_in_inline);
     if (UNLIKELY(block_in_inline->Status() != NGLayoutResult::kSuccess)) {
       return nullptr;
     }

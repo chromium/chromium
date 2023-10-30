@@ -337,6 +337,10 @@ class CORE_EXPORT LineBreaker {
   // True if ShouldCreateNewSvgSegment() should be called.
   bool needs_svg_segmentation_ = false;
 
+  // True if the block-in-inline broke inside, and it is to be resumed in the
+  // same flow.
+  bool resume_block_in_inline_in_same_flow_ = false;
+
 #if DCHECK_IS_ON()
   bool has_considered_creating_break_token_ = false;
 #endif

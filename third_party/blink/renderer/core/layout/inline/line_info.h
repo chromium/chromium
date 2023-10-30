@@ -78,13 +78,6 @@ class CORE_EXPORT LineInfo {
   // Returns true if this line is a block-in-inline.
   bool IsBlockInInline() const { return is_block_in_inline_; }
   void SetIsBlockInInline() { is_block_in_inline_ = true; }
-  const NGBlockBreakToken* BlockInInlineBreakToken() const {
-    if (!block_in_inline_layout_result_)
-      return nullptr;
-
-    return To<NGBlockBreakToken>(
-        block_in_inline_layout_result_->PhysicalFragment().BreakToken());
-  }
 
   // InlineItemResults for this line.
   InlineItemResults* MutableResults() { return &results_; }
