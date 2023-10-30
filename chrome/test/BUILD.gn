@@ -4322,6 +4322,7 @@ if (!is_android) {
         "../browser/ash/login/app_mode/test/web_kiosk_base_test.cc",
         "../browser/ash/login/app_mode/test/web_kiosk_base_test.h",
         "../browser/ash/login/app_mode/test/web_kiosk_browsertest.cc",
+        "../browser/ash/login/app_mode/test/web_kiosk_device_attributes_browsertest.cc",
         "../browser/ash/login/app_mode/test/web_kiosk_lacros_base_test.cc",
         "../browser/ash/login/app_mode/test/web_kiosk_lacros_base_test.h",
         "../browser/ash/login/app_mode/test/web_kiosk_lacros_browsertest.cc",

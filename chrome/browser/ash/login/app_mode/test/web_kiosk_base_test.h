@@ -44,11 +44,16 @@ class WebKioskBaseTest : public OobeBaseTest {
   // in web kiosk.
   void InitializeRegularOnlineKiosk();
 
+  void SetAppInstallUrl(const std::string& app_install_url);
+
  private:
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  const AccountId account_id_;
+
+  std::string app_install_url_;
+  AccountId account_id_;
+
   std::unique_ptr<ScopedDeviceSettings> settings_;
 
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
