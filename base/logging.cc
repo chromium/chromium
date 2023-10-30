@@ -730,7 +730,7 @@ LogMessage::~LogMessage() {
     std::string java_stack = base::android::GetJavaStackTraceIfPresent();
     if (!java_stack.empty()) {
       stream_ << "Java stack (may interleave with native stack):\n";
-      stream_ << java_stack;
+      stream_ << java_stack << '\n';
     }
 #endif
     base::debug::TaskTrace task_trace;
