@@ -4800,6 +4800,12 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_LOGIN_PIN_REQUEST_NEXT_NUMBER_PROMPT" desc="Accessible prompt read when next access code input field has been focused. Asks user to enter next piece of the access code.">
         Next number
       </message>
+      <message name="IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_TITLE" desc="Title of the local authentication input dialog that allows the user to login during the reauthenticate session.">
+        Finish verifying your identity
+      </message>
+      <message name="IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_DESCRIPTION" desc="Description shown on the local authentication input dialog. Explains local authentication credentials should be used to unlock the device.">
+        Enter device password for <ph name="EMAIL">$1<ex>john.doe@example.com</ex></ph>
+      </message>
       <message name="IDS_ASH_LOGIN_SECURITY_TOKEN_REQUEST_DIALOG_TITLE" desc="Title of the PIN dialog to unlock the device with a smart card.">
         Smart card PIN
       </message>

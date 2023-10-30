@@ -86,6 +86,7 @@
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_factory.h"
 #include "ash/login/login_screen_controller.h"
+#include "ash/login/ui/local_authentication_request_controller_impl.h"
 #include "ash/login_status.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
@@ -98,6 +99,7 @@
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/nearby_share_delegate.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -664,6 +666,8 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
           std::make_unique<KeyboardBrightnessController>()),
       locale_update_controller_(std::make_unique<LocaleUpdateControllerImpl>()),
       parent_access_controller_(std::make_unique<ParentAccessControllerImpl>()),
+      local_authentication_request_controller_(
+          std::make_unique<LocalAuthenticationRequestControllerImpl>()),
       session_controller_(std::make_unique<SessionControllerImpl>()),
       feature_discover_reporter_(
           std::make_unique<FeatureDiscoveryDurationReporterImpl>(

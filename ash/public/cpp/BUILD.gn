@@ -200,6 +200,8 @@ component("cpp") {
     "locale_update_controller.h",
     "lock_screen_widget_factory.cc",
     "lock_screen_widget_factory.h",
+    "login/local_authentication_request_controller.cc",
+    "login/local_authentication_request_controller.h",
     "login/login_utils.cc",
     "login/login_utils.h",
     "login_accelerators.cc",
