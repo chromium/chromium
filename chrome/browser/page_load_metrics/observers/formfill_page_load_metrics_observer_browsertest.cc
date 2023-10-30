@@ -55,12 +55,6 @@ class FormfillPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
-
-    // The tests generally assume that the page gets deleted after navigation,
-    // triggering metrics recording. Disable back/forward cache to ensure that
-    // pages don't get preserved in the cache.
-    content::DisableBackForwardCacheForTesting(
-        web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   }
 
   void ClearBrowsingData(uint64_t remove_mask) {
@@ -153,6 +147,10 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
                        ClearBrowsingData) {
+  // TODO(https://crbug.com/1487593): Re-enable this test on bfcache bot.
+  if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    return;
+  }
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
