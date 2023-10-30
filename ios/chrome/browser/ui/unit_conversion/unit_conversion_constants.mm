@@ -14,3 +14,9 @@ NSString* const kTargetUnitMenuButtonIdentifier =
     @"targetUnitMenuButtonIdentifier";
 NSString* const kSourceUnitFieldIdentifier = @"sourceUnitFieldIdentifier";
 NSString* const kTargetUnitFieldIdentifier = @"targetUnitFieldIdentifier";
+
+const char kSourceUnitChangeAfterUnitTypeChangeHistogram[] =
+    "IOS.UnitConversion.SourceUnitChangeAfterUnitTypeChange";
+const char kSourceUnitChangeBeforeUnitTypeChangeHistogram[] =
+    "IOS.UnitConversion.SourceUnitChangeBeforeUnitTypeChange";
+const char kTargetUnitChangeHistogram[] = "IOS.UnitConversion.TargetUnitChange";

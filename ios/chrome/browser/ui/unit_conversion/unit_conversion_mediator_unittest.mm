@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mediator.h"
 
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
+#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_constants.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_consumer.h"
 #import "ios/chrome/test/providers/unit_conversion/test_unit_conversion.h"
 #import "testing/platform_test.h"
@@ -96,8 +99,58 @@ TEST_F(UnitConversionMediatorTest, TestPossibleUnitTypeChange) {
 
   [mediator_ unitTypeDidChange:ios::provider::kUnitTypeMass
                      unitValue:kSourceUnitValue];
+
   // Test.
   EXPECT_OCMOCK_VERIFY(consumer_mock);
+}
+
+// Tests that the metrics are recorded correctly after a unit type change
+// followed with a source unit change.
+TEST_F(UnitConversionMediatorTest, TestUnitTypeAndSourceUnitChanges) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
+  mediator_.consumer = consumer_mock;
+  NSUnitMass* source_unit = [NSUnitMass kilograms];
+  NSUnitMass* target_unit = [NSUnitMass grams];
+  [consumer_mock setExpectationOrderMatters:YES];
+  OCMExpect([consumer_mock updateSourceUnit:source_unit reload:NO]);
+  OCMExpect([consumer_mock updateTargetUnit:target_unit reload:NO]);
+  OCMExpect([consumer_mock updateSourceUnitValue:kSourceUnitValue reload:NO]);
+  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue
+                                          reload:NO]);
+  OCMExpect([consumer_mock updateUnitTypeTitle:ios::provider::kUnitTypeMass]);
+  OCMExpect([consumer_mock updateSourceUnit:source_unit reload:YES]);
+  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue
+                                          reload:YES]);
+
+  [mediator_ unitTypeDidChange:ios::provider::kUnitTypeMass
+                     unitValue:kSourceUnitValue];
+  [mediator_ sourceUnitDidChange:source_unit
+                      targetUnit:target_unit
+                       unitValue:kSourceUnitValue
+                        unitType:ios::provider::kUnitTypeMass];
+
+  [mediator_ reportMetrics];
+
+  // Test.
+  EXPECT_OCMOCK_VERIFY(consumer_mock);
+
+  // Metric Test
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("IOS.UnitConversion.UnitTypeChange"),
+      1);
+  histogram_tester.ExpectBucketCount(
+      kSourceUnitChangeAfterUnitTypeChangeHistogram,
+      UnitConversionActionTypes::kMassImperial, 1);
+  histogram_tester.ExpectTotalCount(
+      kSourceUnitChangeAfterUnitTypeChangeHistogram, 1);
+
+  histogram_tester.ExpectBucketCount(
+      kSourceUnitChangeBeforeUnitTypeChangeHistogram,
+      UnitConversionActionTypes::kUnchanged, 1);
+  histogram_tester.ExpectTotalCount(
+      kSourceUnitChangeBeforeUnitTypeChangeHistogram, 1);
 }
 
 // Tests that no conversion and no consumer unit value update is taking place
@@ -130,19 +183,33 @@ TEST_F(UnitConversionMediatorTest, TestNilUnitTypeChange) {
 // Tests that the source unit change is handled properly when the conversion is
 // possible between source and target unit.
 TEST_F(UnitConversionMediatorTest, TestPossibleSourceUnitChange) {
+  base::HistogramTester histogram_tester;
   id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
   mediator_.consumer = consumer_mock;
   [consumer_mock setExpectationOrderMatters:YES];
-  NSUnitMass* sourceUnit = [NSUnitMass kilograms];
-  NSUnitMass* targetUnit = [NSUnitMass grams];
-  OCMExpect([consumer_mock updateSourceUnit:sourceUnit reload:YES]);
+  NSUnitMass* source_unit = [NSUnitMass kilograms];
+  NSUnitMass* target_unit = [NSUnitMass grams];
+  OCMExpect([consumer_mock updateSourceUnit:source_unit reload:YES]);
   OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue
                                           reload:YES]);
-  [mediator_ sourceUnitDidChange:sourceUnit
-                      targetUnit:targetUnit
-                       unitValue:kSourceUnitValue];
+  [mediator_ sourceUnitDidChange:source_unit
+                      targetUnit:target_unit
+                       unitValue:kSourceUnitValue
+                        unitType:ios::provider::kUnitTypeMass];
+  [mediator_ reportMetrics];
   // Test.
   EXPECT_OCMOCK_VERIFY(consumer_mock);
+  histogram_tester.ExpectBucketCount(
+      kSourceUnitChangeBeforeUnitTypeChangeHistogram,
+      UnitConversionActionTypes::kMassImperial, 1);
+  histogram_tester.ExpectTotalCount(
+      kSourceUnitChangeBeforeUnitTypeChangeHistogram, 1);
+
+  histogram_tester.ExpectBucketCount(
+      kSourceUnitChangeAfterUnitTypeChangeHistogram,
+      UnitConversionActionTypes::kUnchanged, 1);
+  histogram_tester.ExpectTotalCount(
+      kSourceUnitChangeAfterUnitTypeChangeHistogram, 1);
 }
 
 // Tests that no update is taking place after a source unit change when the
@@ -150,11 +217,12 @@ TEST_F(UnitConversionMediatorTest, TestPossibleSourceUnitChange) {
 TEST_F(UnitConversionMediatorTest, TestImpossibleSourceUnitChange) {
   id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
   mediator_.consumer = consumer_mock;
-  NSUnitMass* sourceUnit = [NSUnitMass kilograms];
-  NSUnitArea* targetUnit = [NSUnitArea squareMiles];
-  [mediator_ sourceUnitDidChange:sourceUnit
-                      targetUnit:targetUnit
-                       unitValue:kSourceUnitValue];
+  NSUnitMass* source_unit = [NSUnitMass kilograms];
+  NSUnitArea* target_unit = [NSUnitArea squareMiles];
+  [mediator_ sourceUnitDidChange:source_unit
+                      targetUnit:target_unit
+                       unitValue:kSourceUnitValue
+                        unitType:ios::provider::kUnitTypeMass];
   // Test.
   EXPECT_OCMOCK_VERIFY(consumer_mock);
 }
@@ -162,20 +230,26 @@ TEST_F(UnitConversionMediatorTest, TestImpossibleSourceUnitChange) {
 // Tests that the target unit change is handled properly when the conversion is
 // possible between source and target unit.
 TEST_F(UnitConversionMediatorTest, TestPossibleTargetUnitChange) {
+  base::HistogramTester histogram_tester;
   id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
   mediator_.consumer = consumer_mock;
-  NSUnitMass* sourceUnit = [NSUnitMass kilograms];
-  NSUnitMass* targetUnit = [NSUnitMass grams];
+  NSUnitMass* source_unit = [NSUnitMass kilograms];
+  NSUnitMass* target_unit = [NSUnitMass grams];
   [consumer_mock setExpectationOrderMatters:YES];
-  OCMExpect([consumer_mock updateTargetUnit:targetUnit reload:YES]);
+  OCMExpect([consumer_mock updateTargetUnit:target_unit reload:YES]);
   OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue
                                           reload:YES]);
 
-  [mediator_ targetUnitDidChange:targetUnit
-                      sourceUnit:sourceUnit
-                       unitValue:kSourceUnitValue];
+  [mediator_ targetUnitDidChange:target_unit
+                      sourceUnit:source_unit
+                       unitValue:kSourceUnitValue
+                        unitType:ios::provider::kUnitTypeMass];
+  [mediator_ reportMetrics];
   // Test.
   EXPECT_OCMOCK_VERIFY(consumer_mock);
+  histogram_tester.ExpectBucketCount(
+      kTargetUnitChangeHistogram, UnitConversionActionTypes::kMassImperial, 1);
+  histogram_tester.ExpectTotalCount(kTargetUnitChangeHistogram, 1);
 }
 
 // Tests that no update is taking place after a target unit change when the
@@ -183,11 +257,12 @@ TEST_F(UnitConversionMediatorTest, TestPossibleTargetUnitChange) {
 TEST_F(UnitConversionMediatorTest, TestImpossibleTargetUnitChange) {
   id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
   mediator_.consumer = consumer_mock;
-  NSUnitMass* sourceUnit = [NSUnitMass kilograms];
-  NSUnitArea* targetUnit = [NSUnitArea squareMiles];
-  [mediator_ targetUnitDidChange:targetUnit
-                      sourceUnit:sourceUnit
-                       unitValue:kSourceUnitValue];
+  NSUnitMass* source_unit = [NSUnitMass kilograms];
+  NSUnitArea* target_unit = [NSUnitArea squareMiles];
+  [mediator_ targetUnitDidChange:target_unit
+                      sourceUnit:source_unit
+                       unitValue:kSourceUnitValue
+                        unitType:ios::provider::kUnitTypeMass];
   // Test.
   EXPECT_OCMOCK_VERIFY(consumer_mock);
 }
@@ -195,19 +270,24 @@ TEST_F(UnitConversionMediatorTest, TestImpossibleTargetUnitChange) {
 // Tests that the source field unit is handled properly when the string to
 // NSNumber cast is possible.
 TEST_F(UnitConversionMediatorTest, TestValidSourceUnitValueFieldChange) {
+  base::UserActionTester user_action_tester;
   id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
   mediator_.consumer = consumer_mock;
-  NSUnitMass* sourceUnit = [NSUnitMass kilograms];
-  NSUnitMass* targetUnit = [NSUnitMass grams];
+  NSUnitMass* source_unit = [NSUnitMass kilograms];
+  NSUnitMass* target_unit = [NSUnitMass grams];
   [consumer_mock setExpectationOrderMatters:YES];
   OCMExpect([consumer_mock updateTargetUnitValue:kExpectedTargetUnitValue
                                           reload:YES]);
 
   [mediator_ sourceUnitValueFieldDidChange:kValidSourceUnitValueField
-                                sourceUnit:sourceUnit
-                                targetUnit:targetUnit];
+                                sourceUnit:source_unit
+                                targetUnit:target_unit];
+  [mediator_ reportMetrics];
   // Test.
   EXPECT_OCMOCK_VERIFY(consumer_mock);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "IOS.UnitConversion.SourceUnitValueChange"),
+            1);
 }
 
 // Tests that no update nor conversion is taking place when the source unit
@@ -215,11 +295,11 @@ TEST_F(UnitConversionMediatorTest, TestValidSourceUnitValueFieldChange) {
 TEST_F(UnitConversionMediatorTest, TestInvalidSourceUnitValueFieldChange) {
   id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
   mediator_.consumer = consumer_mock;
-  NSUnitMass* sourceUnit = [NSUnitMass kilograms];
-  NSUnitMass* targetUnit = [NSUnitMass grams];
+  NSUnitMass* source_unit = [NSUnitMass kilograms];
+  NSUnitMass* target_unit = [NSUnitMass grams];
   [mediator_ sourceUnitValueFieldDidChange:kInvalidSourceUnitValueField
-                                sourceUnit:sourceUnit
-                                targetUnit:targetUnit];
+                                sourceUnit:source_unit
+                                targetUnit:target_unit];
   // Test.
   EXPECT_OCMOCK_VERIFY(consumer_mock);
 }

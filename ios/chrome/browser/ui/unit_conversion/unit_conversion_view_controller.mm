@@ -391,12 +391,14 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
                     if (section == kSourceSection) {
                       [weakSelf.mutator sourceUnitDidChange:unit
                                                  targetUnit:weakSelf.targetUnit
-                                                  unitValue:weakSelf.unitValue];
+                                                  unitValue:weakSelf.unitValue
+                                                   unitType:weakSelf.unitType];
 
                     } else if (section == kTargetSection) {
                       [weakSelf.mutator targetUnitDidChange:unit
                                                  sourceUnit:weakSelf.sourceUnit
-                                                  unitValue:weakSelf.unitValue];
+                                                  unitValue:weakSelf.unitValue
+                                                   unitType:weakSelf.unitType];
                     }
                   }];
       [unitsSubMenu addObject:unitAction];

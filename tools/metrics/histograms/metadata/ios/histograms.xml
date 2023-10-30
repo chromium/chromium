@@ -3551,6 +3551,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.UnitConversion.{Type}" enum="UnitChangeTypes"
+    expires_after="2024-04-19">
+  <owner>erahmaoui@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs the changes in the source or target units change under a unit type
+    state (unchanged or changed).
+  </summary>
+  <token key="Type">
+    <variant name="SourceUnitChangeAfterUnitTypeChange"
+        summary="Recorded once when the source unit change after any unit
+                 type change."/>
+    <variant name="SourceUnitChangeBeforeUnitTypeChange"
+        summary="Recorded once after a source unit type change before any
+                 change of the unit type."/>
+    <variant name="TargetUnitChange"
+        summary="Recorded once, when the first target unit change occures,
+                 without taking into consideration the changes in the unit
+                 type."/>
+  </token>
+</histogram>
+
 <histogram name="IOS.Variations.CreateTrials.SeedExpiry"
     enum="VariationsSeedExpiry" expires_after="2024-03-31">
   <owner>ginnyhuang@chromium.org</owner>

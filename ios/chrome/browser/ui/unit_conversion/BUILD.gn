@@ -10,6 +10,7 @@ source_set("unit_conversion") {
     "unit_conversion_mediator.mm",
   ]
   deps = [
+    ":constants",
     ":unit_conversion_ui",
     "//components/prefs",
     "//ios/chrome/app/strings",
@@ -64,6 +65,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "unit_conversion_mediator_unittest.mm" ]
   deps = [
+    ":constants",
     ":unit_conversion",
     ":unit_conversion_ui",
     "//base",

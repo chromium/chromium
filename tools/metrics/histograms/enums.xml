@@ -110495,6 +110495,24 @@ Full version information for the fingerprint enum values:
   <int value="4" label="Uninstall by app migration."/>
 </enum>
 
+<enum name="UnitChangeTypes">
+  <int value="0" label="Unchanged"/>
+  <int value="1" label="Imperial Area"/>
+  <int value="2" label="Metric Area"/>
+  <int value="3" label="Imperial Information Storage"/>
+  <int value="4" label="Metric Information Storage"/>
+  <int value="5" label="Imperial Length"/>
+  <int value="6" label="Metric Length"/>
+  <int value="7" label="Imperial Mass"/>
+  <int value="8" label="Metric Mass"/>
+  <int value="9" label="Imperial Speed"/>
+  <int value="10" label="Metric Speed"/>
+  <int value="11" label="Imperial Temperature"/>
+  <int value="12" label="Metric Temperature"/>
+  <int value="13" label="Imperial Volume"/>
+  <int value="14" label="Metric Volume"/>
+</enum>
+
 <enum name="UnlockType">
   <int value="0" label="Password"/>
   <int value="1" label="Pin"/>
