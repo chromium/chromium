@@ -109,10 +109,22 @@ bool IsAnyShelfAutoHidden() {
 }
 
 VideoConferenceTray* GetVcTrayInActiveWindow() {
-  return RootWindowController::ForWindow(
-             Shell::Get()->GetRootWindowForNewWindows())
-      ->GetStatusAreaWidget()
-      ->video_conference_tray();
+  auto* window = Shell::Get()->GetRootWindowForNewWindows();
+  if (!window) {
+    return nullptr;
+  }
+
+  auto* root_window_controller = RootWindowController::ForWindow(window);
+  if (!root_window_controller) {
+    return nullptr;
+  }
+
+  auto* status_area_widget = root_window_controller->GetStatusAreaWidget();
+  if (!status_area_widget) {
+    return nullptr;
+  }
+
+  return status_area_widget->video_conference_tray();
 }
 
 }  // namespace
@@ -182,13 +194,13 @@ void VideoConferenceTrayController::CreateNudgeRequest(
   }
   requested_nudge_data_ = std::move(nudge_data);
 
-  auto* tray = GetVcTrayInActiveWindow();
-  if (!tray) {
+  auto* active_vc_tray = GetVcTrayInActiveWindow();
+  if (!active_vc_tray) {
     return;
   }
 
   // Attempt showing the nudge immediately if tray is not animating.
-  if (!tray->layer()->GetAnimator()->is_animating()) {
+  if (!active_vc_tray->layer()->GetAnimator()->is_animating()) {
     MaybeRunNudgeRequest();
   }
 }
@@ -201,13 +213,15 @@ void VideoConferenceTrayController::MaybeRunNudgeRequest() {
   requested_nudge_data_.reset();
 }
 
-void VideoConferenceTrayController::MaybeShowSpeakOnMuteOptInNudge(
-    VideoConferenceTray* video_conference_tray) {
+void VideoConferenceTrayController::MaybeShowSpeakOnMuteOptInNudge() {
+  auto* active_vc_tray = GetVcTrayInActiveWindow();
+  if (!active_vc_tray) {
+    return;
+  }
+
   // Only attempt to show the speak-on-mute opt-in nudge if the tray is visible
   // preferred in the active display, and microphone input is muted.
-  if (!video_conference_tray->visible_preferred() ||
-      GetVcTrayInActiveWindow() != video_conference_tray ||
-      !GetMicrophoneMuted()) {
+  if (!active_vc_tray->visible_preferred() || !GetMicrophoneMuted()) {
     return;
   }
 
@@ -228,7 +242,7 @@ void VideoConferenceTrayController::MaybeShowSpeakOnMuteOptInNudge(
   // Close all previously shown VC nudges, if any.
   CloseAllVcNudges();
 
-  views::View* anchor_view = GetVcTrayInActiveWindow()->audio_icon();
+  views::View* anchor_view = active_vc_tray->audio_icon();
   if (!anchor_view->GetVisible()) {
     return;
   }
@@ -517,7 +531,7 @@ void VideoConferenceTrayController::OnInputMuteChanged(
     speak_on_mute_nudge_shown_count_ = 0;
 
     // Attempt showing the speak-on-mute opt-in nudge when input is muted.
-    MaybeShowSpeakOnMuteOptInNudge(GetVcTrayInActiveWindow());
+    MaybeShowSpeakOnMuteOptInNudge();
   } else {
     auto* nudge_manager = AnchoredNudgeManager::Get();
 
@@ -552,6 +566,11 @@ void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
     return;
   }
 
+  auto* active_vc_tray = GetVcTrayInActiveWindow();
+  if (!active_vc_tray) {
+    return;
+  }
+
   const base::TimeTicks current_time = base::TimeTicks::Now();
 
   // Only shows "Speak on mute" nudge if one of the following conditions meets:
@@ -568,7 +587,7 @@ void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
         NudgeCatalogName::kVideoConferenceTraySpeakOnMuteDetected,
         l10n_util::GetStringUTF16(
             IDS_ASH_VIDEO_CONFERENCE_TOAST_SPEAK_ON_MUTE_DETECTED),
-        /*anchor_view=*/GetVcTrayInActiveWindow()->audio_icon());
+        /*anchor_view=*/active_vc_tray->audio_icon());
     // Opens the privacy hub settings page with the mute nudge focused when
     // clicking on the nudge.
     nudge_data.click_callback = base::BindRepeating([]() -> void {
@@ -806,6 +825,11 @@ void VideoConferenceTrayController::DisplayUsedWhileDisabledNudge(
     return;
   }
 
+  auto* active_vc_tray = GetVcTrayInActiveWindow();
+  if (!active_vc_tray) {
+    return;
+  }
+
   std::u16string device_name;
   int text_id;
   NudgeCatalogName catalog_name;
@@ -826,7 +850,7 @@ void VideoConferenceTrayController::DisplayUsedWhileDisabledNudge(
         catalog_name =
             NudgeCatalogName::kVideoConferenceTrayMicrophoneUseWhileSWDisabled;
       }
-      anchor_view = GetVcTrayInActiveWindow()->audio_icon();
+      anchor_view = active_vc_tray->audio_icon();
       break;
     case VideoConferenceTrayController::UsedWhileDisabledNudgeType::kCamera:
       device_name =
@@ -842,7 +866,7 @@ void VideoConferenceTrayController::DisplayUsedWhileDisabledNudge(
         catalog_name =
             NudgeCatalogName::kVideoConferenceTrayCameraUseWhileSWDisabled;
       }
-      anchor_view = GetVcTrayInActiveWindow()->camera_icon();
+      anchor_view = active_vc_tray->camera_icon();
       break;
     case VideoConferenceTrayController::UsedWhileDisabledNudgeType::kBoth:
       device_name = l10n_util::GetStringUTF16(
@@ -851,7 +875,7 @@ void VideoConferenceTrayController::DisplayUsedWhileDisabledNudge(
       nudge_id = kVideoConferenceTrayBothUseWhileDisabledNudgeId;
       catalog_name = NudgeCatalogName::
           kVideoConferenceTrayCameraMicrophoneUseWhileDisabled;
-      anchor_view = GetVcTrayInActiveWindow()->audio_icon();
+      anchor_view = active_vc_tray->audio_icon();
       break;
     default:
       NOTREACHED();
