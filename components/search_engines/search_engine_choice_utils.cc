@@ -179,8 +179,8 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
       template_url_service->GetDefaultSearchProvider();
   // Don't show the dialog if the user as a custom search engine set a
   // default.
-  if (default_search_engine->prepopulate_id() ==
-      kCustomSearchEnginePrepopulateId) {
+  if (default_search_engine && default_search_engine->prepopulate_id() ==
+                                   kCustomSearchEnginePrepopulateId) {
     RecordChoiceScreenProfileInitCondition(
         SearchEngineChoiceScreenConditions::kHasCustomSearchEngine);
     return false;

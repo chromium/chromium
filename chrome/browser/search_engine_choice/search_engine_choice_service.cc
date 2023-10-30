@@ -114,8 +114,11 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id,
     // Make sure that the default search engine is a custom search engine.
     const TemplateURL* default_search_provider =
         template_url_service_->GetDefaultSearchProvider();
-
-    CHECK_EQ(default_search_provider->prepopulate_id(), 0);
+    if (!default_search_provider) {
+      base::debug::DumpWithoutCrashing();
+    } else {
+      CHECK_EQ(default_search_provider->prepopulate_id(), 0);
+    }
   }
 
   // Closes the dialogs that are open on other browser windows that
