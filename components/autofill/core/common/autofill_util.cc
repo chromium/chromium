@@ -139,7 +139,13 @@ bool SanitizedFieldIsEmpty(const std::u16string& value) {
 
 size_t LevenshteinDistance(std::u16string_view a,
                            std::u16string_view b,
-                           size_t k) {
+                           std::optional<size_t> max_distance) {
+  if (a.size() > b.size()) {
+    a.swap(b);
+  }
+
+  // max(a.size(), b.size()) steps always suffice.
+  const size_t k = max_distance.value_or(b.size());
   // If the string's lengths differ by more than `k`, so does their
   // Levenshtein distance.
   if (a.size() + k < b.size() || a.size() > b.size() + k) {
