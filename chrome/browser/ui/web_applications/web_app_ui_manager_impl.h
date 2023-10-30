@@ -74,6 +74,8 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   void AddAppToQuickLaunchBar(const webapps::AppId& app_id) override;
   bool IsAppInQuickLaunchBar(const webapps::AppId& app_id) const override;
   bool IsInAppWindow(content::WebContents* web_contents) const override;
+  const webapps::AppId* GetAppIdForWindow(
+      content::WebContents* web_contents) const override;
   void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
       const absl::optional<webapps::AppId>& previous_app_id,
@@ -114,7 +116,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
 #endif
   content::WebContents* CreateNewTab() override;
   bool IsWebContentsActiveTabInBrowser(
-       content::WebContents* web_contents) override;
+      content::WebContents* web_contents) override;
   void TriggerInstallDialog(content::WebContents* web_contents) override;
 
   void PresentUserUninstallDialog(

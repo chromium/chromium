@@ -99,6 +99,11 @@ bool FakeWebAppUiManager::IsInAppWindow(
   return false;
 }
 
+const webapps::AppId* FakeWebAppUiManager::GetAppIdForWindow(
+    content::WebContents* web_contents) const {
+  return nullptr;
+}
+
 bool FakeWebAppUiManager::CanReparentAppTabToWindow(
     const webapps::AppId& app_id,
     bool shortcut_created) const {
@@ -172,7 +177,7 @@ content::WebContents* FakeWebAppUiManager::CreateNewTab() {
 }
 
 bool FakeWebAppUiManager::IsWebContentsActiveTabInBrowser(
-     content::WebContents* web_contents) {
+    content::WebContents* web_contents) {
   return true;
 }
 

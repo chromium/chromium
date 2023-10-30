@@ -51,6 +51,7 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
@@ -304,6 +305,15 @@ bool WebAppUiManagerImpl::IsInAppWindow(
   return AppBrowserController::IsWebApp(browser);
 }
 
+const webapps::AppId* WebAppUiManagerImpl::GetAppIdForWindow(
+    content::WebContents* web_contents) const {
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (AppBrowserController::IsWebApp(browser)) {
+    return &browser->app_controller()->app_id();
+  }
+  return nullptr;
+}
+
 void WebAppUiManagerImpl::NotifyOnAssociatedAppChanged(
     content::WebContents* web_contents,
     const absl::optional<webapps::AppId>& previous_app_id,
@@ -448,8 +458,7 @@ content::WebContents* WebAppUiManagerImpl::CreateNewTab() {
 bool WebAppUiManagerImpl::IsWebContentsActiveTabInBrowser(
     content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  return browser &&
-         browser->tab_strip_model() &&
+  return browser && browser->tab_strip_model() &&
          browser->tab_strip_model()->GetActiveWebContents() == web_contents;
 }
 

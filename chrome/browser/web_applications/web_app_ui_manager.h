@@ -135,6 +135,8 @@ class WebAppUiManager {
   // Returns whether |web_contents| is in a web app window or popup window
   // created from a web app window.
   virtual bool IsInAppWindow(content::WebContents* web_contents) const = 0;
+  virtual const webapps::AppId* GetAppIdForWindow(
+      content::WebContents* web_contents) const = 0;
   virtual void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
       const absl::optional<webapps::AppId>& previous_app_id,
