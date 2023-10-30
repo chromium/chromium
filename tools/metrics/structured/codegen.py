@@ -144,6 +144,7 @@ class EventInfo:
     self.validator_snake_name = Util.camel_to_snake(self.validator_name)
     self.project_name = project_info.name
     self.is_event_sequence = project_info.is_event_sequence
+    self.force_record = str(event.force_record).lower()
     self.metrics = event.metrics
 
   def build_metric_hash_map(self) -> str:

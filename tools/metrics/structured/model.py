@@ -85,7 +85,6 @@ class Model:
   ID_REGEX = r'^(none|per-project|uma)$'
   SCOPE_REGEX = r'^(profile|device)$'
   KEY_REGEX = r'^[0-9]+$'
-  CROS_EVENTS_REGEX = r'(?i)(true|false|)$'
 
   def __init__(self, xml_string):
     elem = ET.fromstring(xml_string)
@@ -143,12 +142,7 @@ class Project:
     self.owners = util.get_text_children(elem, 'owner', Model.OWNER_REGEX)
 
     self.key_rotation_period = DEFAULT_KEY_ROTATION_PERIOD
-    cros_events_attr = util.get_optional_attr(elem, 'cros_events',
-                                              Model.CROS_EVENTS_REGEX)
-    if cros_events_attr:
-      self.is_event_sequence_project = cros_events_attr.lower() == 'true'
-    else:
-      self.is_event_sequence_project = False
+    self.is_event_sequence_project = util.get_boolean_attr(elem, 'cros_events')
 
     # Check if key-rotation is specified. If so, then change the
     # key_rotation_period.
@@ -208,7 +202,7 @@ class Event:
   """
 
   def __init__(self, elem, project):
-    util.check_attributes(elem, {'name'})
+    util.check_attributes(elem, {'name'}, {'force_record'})
 
     if project.is_event_sequence_project:
       expected_children = {'summary'}
@@ -220,6 +214,7 @@ class Event:
     util.check_child_names_unique(elem, 'metric')
 
     self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
+    self.force_record = util.get_boolean_attr(elem, 'force_record')
     self.summary = util.get_text_child(elem, 'summary')
     self.metrics = [
         Metric(m, project) for m in util.get_compound_children(
@@ -230,14 +225,22 @@ class Event:
     metrics = '\n'.join(str(m) for m in self.metrics)
     metrics = indent(metrics, '  ')
     summary = wrap(self.summary, indent='    ')
+    if self.force_record:
+      force_record = ' force_record="true"'
+    else:
+      force_record = ''
+
     result = tw.dedent("""\
-               <event name="{name}">
+               <event name="{name}"{force_record}>
                  <summary>
                {summary}
                  </summary>
                {metrics}
                </event>""")
-    return result.format(name=self.name, summary=summary, metrics=metrics)
+    return result.format(name=self.name,
+                         summary=summary,
+                         metrics=metrics,
+                         force_record=force_record)
 
 
 class Metric:

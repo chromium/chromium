@@ -181,7 +181,8 @@ class {event.validator_name} final :
 }};
 
 {event.validator_name}::{event.validator_name}() :
-  ::metrics::structured::EventValidator({event.validator_name}::kEventNameHash)
+  ::metrics::structured::EventValidator({event.validator_name}::kEventNameHash,
+                                        {event.force_record})
   {{
   Initialize();
 }}

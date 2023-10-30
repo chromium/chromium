@@ -59,6 +59,8 @@ constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
 constexpr uint64_t kEventSevenHash = UINT64_C(16749091071228286247);
 // The name hash of "chrome::CrOSEvents::NoMetricsEvent".
 constexpr uint64_t kNoMetricsEventHash = UINT64_C(5106854608989380457);
+// The name has for "chrome::TestProjectSevent::TestEventEight".
+const uint64_t kEventEightHash = UINT64_C(16290206418240617738);
 
 // The name hash of "TestMetricOne".
 constexpr uint64_t kMetricOneHash = UINT64_C(637929385654885975);
@@ -1118,6 +1120,36 @@ TEST_F(StructuredMetricsRecorderTest, AppliesProcessorCorrectly) {
   const auto data = GetEventMetrics();
 
   EXPECT_TRUE(data.is_device_enrolled());
+}
+
+TEST_F(StructuredMetricsRecorderTest, ForceRecordedEvents) {
+  // Init and disable recorder.
+  Init();
+  OnRecordingDisabled();
+
+  events::v2::test_project_seven::TestEventEight().Record();
+
+  OnRecordingEnabled();
+  const auto data = GetEventMetrics();
+
+  ASSERT_EQ(data.events_size(), 1);
+  ASSERT_EQ(data.events(0).event_name_hash(), kEventEightHash);
+}
+
+TEST_F(StructuredMetricsRecorderTest, PurgeForceRecordedEvents) {
+  // Init and disable recorder.
+  Init();
+  OnRecordingDisabled();
+
+  events::v2::test_project_seven::TestEventEight().Record();
+
+  OnReportingStateChanged(false);
+
+  OnRecordingEnabled();
+
+  const auto data = GetEventMetrics();
+
+  ASSERT_EQ(data.events_size(), 0);
 }
 
 }  // namespace metrics::structured
