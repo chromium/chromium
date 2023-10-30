@@ -766,13 +766,12 @@ class CORE_EXPORT Node : public EventTarget {
   void ReattachLayoutTree(AttachContext&);
 
   // ---------------------------------------------------------------------------
-  // Inline ComputedStyle accessors
+  // Inline ComputedStyle accessor
   //
-  // Note that the following 'inline' functions are not defined in this header,
+  // Note that the following 'inline' function is not defined in this header,
   // but in node_computed_style.h. Please include that file if you want to use
-  // these functions.
+  // this function.
   inline const ComputedStyle* GetComputedStyle() const;
-  inline const ComputedStyle& ComputedStyleRef() const;
   bool ShouldSkipMarkingStyleDirty() const;
 
   // ---------------------------------------------------------------------------

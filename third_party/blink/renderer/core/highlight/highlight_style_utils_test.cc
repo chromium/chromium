@@ -56,7 +56,7 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
       To<HTMLInputElement>(GetDocument().QuerySelector(AtomicString("input")))
           ->InnerEditorElement()
           ->firstChild();
-  const ComputedStyle& text_style = text_node->ComputedStyleRef();
+  const ComputedStyle& text_style = text_node->GetLayoutObject()->StyleRef();
 
   std::unique_ptr<PaintController> controller{
       std::make_unique<PaintController>()};

@@ -34,8 +34,10 @@ Position CreatePositionForOffsetMapping(const Node& node, unsigned dom_offset) {
     // TODO(crbug.com/750990): Support 'text-transform' to remove this hack.
 #if DCHECK_IS_ON()
     // Ensures that the clamping hack kicks in only with text-transform.
-    if (node.ComputedStyleRef().TextTransform() == ETextTransform::kNone)
+    if (node.GetLayoutObject()->StyleRef().TextTransform() ==
+        ETextTransform::kNone) {
       DCHECK_LE(dom_offset, text_node->length());
+    }
 #endif
     const unsigned clamped_offset = std::min(dom_offset, text_node->length());
     return Position(&node, clamped_offset);

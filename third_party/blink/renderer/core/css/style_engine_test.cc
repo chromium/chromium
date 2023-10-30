@@ -2849,9 +2849,11 @@ TEST_F(StyleEngineTest, EnsureCustomComputedStyle) {
   // IsEnsuredInDisplayNone==true
   for (Node* node = progress; node;
        node = FlatTreeTraversal::Next(*node, progress)) {
-    ASSERT_TRUE(!node->GetComputedStyle() ||
-                !node->ComputedStyleRef().IsEnsuredInDisplayNone() ||
-                !node->GetLayoutObject());
+    if (auto* element = DynamicTo<Element>(node)) {
+      ASSERT_TRUE(!element->GetComputedStyle() ||
+                  !element->ComputedStyleRef().IsEnsuredInDisplayNone() ||
+                  !element->GetLayoutObject());
+    }
   }
 }
 

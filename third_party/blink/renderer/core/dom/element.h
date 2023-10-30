@@ -601,6 +601,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // NOTE: This shadows Node::GetComputedStyle().
   // The definition is in node_computed_style.h.
   inline const ComputedStyle* GetComputedStyle() const;
+  inline const ComputedStyle& ComputedStyleRef() const;
 
   using Node::DetachLayoutTree;
   void AttachLayoutTree(AttachContext&) override;
