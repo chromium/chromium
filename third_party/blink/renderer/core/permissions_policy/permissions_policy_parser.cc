@@ -499,7 +499,7 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
 
     if (!value.params.empty()) {
       for (const auto& param : value.params) {
-        if (param.first == "report-to") {
+        if (param.first == "report-to" && param.second.is_token()) {
           endpoint = String(param.second.GetString());
         }
       }

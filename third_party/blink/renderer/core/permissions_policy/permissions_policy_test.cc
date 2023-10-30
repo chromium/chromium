@@ -802,6 +802,44 @@ const PermissionsPolicyParserTestCase
                 },
             },
         },
+        {
+            /* test_name */ "InvalidReportingEndpointsBool",
+            /* feature_policy_string */ NOT_APPLICABLE,
+            /* permissions_policy_string */
+            "fullscreen=*;report-to",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ ORIGIN_B,
+            /* expected_parse_result */
+            {
+                {
+                    mojom::blink::PermissionsPolicyFeature::kFullscreen,
+                    /* self_if_matches */ absl::nullopt,
+                    /* matches_all_origins */ true,
+                    /* matches_opaque_src */ true,
+                    {},
+                    /* reporting_endpoint */ absl::nullopt,
+                },
+            },
+        },
+        {
+            /* test_name */ "InvalidReportingEndpointsNumber",
+            /* feature_policy_string */ NOT_APPLICABLE,
+            /* permissions_policy_string */
+            "fullscreen=*;report-to=7",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ ORIGIN_B,
+            /* expected_parse_result */
+            {
+                {
+                    mojom::blink::PermissionsPolicyFeature::kFullscreen,
+                    /* self_if_matches */ absl::nullopt,
+                    /* matches_all_origins */ true,
+                    /* matches_opaque_src */ true,
+                    {},
+                    /* reporting_endpoint */ absl::nullopt,
+                },
+            },
+        },
 };
 
 INSTANTIATE_TEST_SUITE_P(
