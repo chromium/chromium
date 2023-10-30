@@ -1832,7 +1832,7 @@ class AutotestPrivateIsFieldTrialActiveFunction : public ExtensionFunction {
 class AutotestPrivateGetArcWakefulnessModeFunction : public ExtensionFunction {
  public:
   AutotestPrivateGetArcWakefulnessModeFunction();
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getArcWakefulnessState",
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getArcWakefulnessMode",
                              AUTOTESTPRIVATE_GETARCWAKEFULNESSMODE)
 
  private:
