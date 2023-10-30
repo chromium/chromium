@@ -9,6 +9,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_launcher/model/fake_app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
@@ -76,6 +77,14 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
     abuse_detectors_[web_state] = abuse_detector;
     AppLauncherTabHelper::CreateForWebState(web_state, abuse_detector,
                                             incognito);
+    app_lancher_tab_helper_browser_presentation_provider_ = OCMProtocolMock(
+        @protocol(AppLauncherTabHelperBrowserPresentationProvider));
+    [[[app_lancher_tab_helper_browser_presentation_provider_ stub]
+        andReturnValue:@NO] isBrowserPresentingUI];
+    AppLauncherTabHelper::FromWebState(web_state)
+        ->SetBrowserPresentationProvider(
+            app_lancher_tab_helper_browser_presentation_provider_);
+
     // Insert the WebState into the Browser's WebStateList.
     int index = browser_->GetWebStateList()->count();
     browser_->GetWebStateList()->InsertWebState(
@@ -107,6 +116,7 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   std::map<web::WebState*, FakeAppLauncherAbuseDetector*> abuse_detectors_;
   id application_ = nil;
+  id app_lancher_tab_helper_browser_presentation_provider_ = nil;
 };
 
 // Tests that the browser agent shows an alert for app store URLs.

@@ -24,8 +24,7 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/signin/ios/browser/active_state_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
-#import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
-#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
@@ -253,6 +252,7 @@ enum class ToolbarKind {
 }  // anonymous namespace
 
 @interface BrowserCoordinator () <
+    AppLauncherTabHelperBrowserPresentationProvider,
     AutofillAddCreditCardCoordinatorDelegate,
     BrowserCoordinatorCommands,
     BubblePresenterDelegate,
@@ -1457,6 +1457,7 @@ enum class ToolbarKind {
       TabInsertionBrowserAgent::FromBrowser(browser);
   tabLifecycleMediator.snapshotGeneratorDelegate = self;
   tabLifecycleMediator.overscrollActionsDelegate = self;
+  tabLifecycleMediator.appLauncherBrowserPresentationProvider = self;
 
   self.tabLifecycleMediator = tabLifecycleMediator;
 }
@@ -3202,6 +3203,12 @@ enum class ToolbarKind {
     (AutofillAddCreditCardCoordinator*)coordinator {
   CHECK_EQ(coordinator, self.addCreditCardCoordinator);
   [self stopAutofillAddCreditCardCoordinator];
+}
+
+#pragma mark - AppLauncherTabHelperBrowserPresentationProvider
+
+- (BOOL)isBrowserPresentingUI {
+  return self.viewController.presentedViewController != nil;
 }
 
 @end

@@ -8,10 +8,11 @@
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
 
-class AppLauncherTabHelperDelegate;
 @class AppLauncherAbuseDetector;
-class GURL;
 enum class AppLauncherAlertCause;
+@protocol AppLauncherTabHelperBrowserPresentationProvider;
+class AppLauncherTabHelperDelegate;
+class GURL;
 
 // A tab helper that handles requests to launch another application.
 class AppLauncherTabHelper
@@ -29,6 +30,11 @@ class AppLauncherTabHelper
 
   // Sets the delegate.
   void SetDelegate(AppLauncherTabHelperDelegate* delegate);
+
+  // Sets the provider to retrieve the browser presentation state.
+  void SetBrowserPresentationProvider(
+      id<AppLauncherTabHelperBrowserPresentationProvider>
+          browser_presentation_provider);
 
   // Requests to open the application with `url`.
   // The method checks if the application for `url` has been opened repeatedly
@@ -111,6 +117,10 @@ class AppLauncherTabHelper
 
   // Used to launch apps and present UI.
   AppLauncherTabHelperDelegate* delegate_ = nullptr;
+
+  // Used to know if the browser is currently presenting another VC.
+  __weak id<AppLauncherTabHelperBrowserPresentationProvider>
+      browser_presentation_provider_ = nil;
 
   // Returns whether there is a prompt shown by `RequestToOpenUrl` or not.
   bool is_prompt_active_ = false;

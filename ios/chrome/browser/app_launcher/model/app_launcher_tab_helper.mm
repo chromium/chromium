@@ -12,6 +12,7 @@
 #import "components/policy/core/browser/url_blocklist_manager.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_util.h"
@@ -90,6 +91,12 @@ void AppLauncherTabHelper::SetDelegate(AppLauncherTabHelperDelegate* delegate) {
   delegate_ = delegate;
 }
 
+void AppLauncherTabHelper::SetBrowserPresentationProvider(
+    id<AppLauncherTabHelperBrowserPresentationProvider>
+        browser_presentation_provider) {
+  browser_presentation_provider_ = browser_presentation_provider;
+}
+
 void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
                                               const GURL& source_page_url,
                                               bool link_transition,
@@ -98,7 +105,8 @@ void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
   // web_state is not visible.
   if ([[UIApplication sharedApplication] applicationState] !=
           UIApplicationStateActive ||
-      !web_state_->IsVisible()) {
+      !web_state_->IsVisible() || !browser_presentation_provider_ ||
+      [browser_presentation_provider_ isBrowserPresentingUI]) {
     return;
   }
 

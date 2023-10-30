@@ -16,6 +16,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/app_launcher/model/fake_app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
@@ -121,6 +122,23 @@ class FakeNavigationManager : public web::FakeNavigationManager {
 
 }  // namespace
 
+// A fake AppLauncherTabHelperBrowserPresentationProvider to be used by the
+// AppLaunchTabHelper with customizable presentingUI property.
+@interface FakeAppLauncherTabHelperBrowserPresentationProvider
+    : NSObject <AppLauncherTabHelperBrowserPresentationProvider>
+
+@property(nonatomic, assign) BOOL presentingUI;
+
+@end
+
+@implementation FakeAppLauncherTabHelperBrowserPresentationProvider
+
+- (BOOL)isBrowserPresentingUI {
+  return _presentingUI;
+}
+
+@end
+
 // Test fixture for AppLauncherTabHelper class.
 class AppLauncherTabHelperTest : public PlatformTest {
  protected:
@@ -143,8 +161,11 @@ class AppLauncherTabHelperTest : public PlatformTest {
     web_state_.SetCurrentURL(GURL("https://chromium.org"));
     web_state_.SetBrowserState(browser_state_.get());
     web_state_.WasShown();
+    browser_presentation_provider_ =
+        [[FakeAppLauncherTabHelperBrowserPresentationProvider alloc] init];
     tab_helper_ = AppLauncherTabHelper::FromWebState(&web_state_);
     tab_helper_->SetDelegate(&delegate_);
+    tab_helper_->SetBrowserPresentationProvider(browser_presentation_provider_);
   }
 
   [[nodiscard]] bool TestShouldAllowRequest(
@@ -228,6 +249,8 @@ class AppLauncherTabHelperTest : public PlatformTest {
   FakeNavigationManager* navigation_manager_ = nullptr;
   FakeAppLauncherAbuseDetector* abuse_detector_ = nil;
   FakeAppLauncherTabHelperDelegate delegate_;
+  FakeAppLauncherTabHelperBrowserPresentationProvider*
+      browser_presentation_provider_;
   AppLauncherTabHelper* tab_helper_ = nullptr;
 };
 
@@ -476,6 +499,39 @@ TEST_F(AppLauncherTabHelperTest, InvalidUrls) {
                                       /*target_frame_is_cross_origin=*/false,
                                       /*is_user_initiated=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
+}
+
+// Tests that if web_state is not shown or if there is a UI on top of it, no
+// request is triggered.
+TEST_F(AppLauncherTabHelperTest, WebStateNotShown) {
+  // Base case.
+  NSString* url_string = @"valid://1234";
+  EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
+                                      /*is_user_initiated=*/true));
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
+
+  // WebState hidden.
+  web_state_.WasHidden();
+  EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
+                                      /*is_user_initiated=*/true));
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
+
+  // Browser not visible.
+  web_state_.WasShown();
+  browser_presentation_provider_.presentingUI = YES;
+  EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
+                                      /*is_user_initiated=*/true));
+  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
+
+  // Base case to check.
+  browser_presentation_provider_.presentingUI = NO;
+  EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
+                                      /*is_user_initiated=*/true));
+  EXPECT_EQ(2U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that when the last committed URL is invalid, the URL is only opened
