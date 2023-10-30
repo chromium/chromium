@@ -1525,9 +1525,8 @@ std::u16string RenderViewContextMenu::GetTargetLanguageDisplayName(
 }
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-compose::ComposeManager* RenderViewContextMenu::GetComposeManager() const {
-  auto* client = ChromeComposeClient::FromWebContents(source_web_contents_);
-  return client ? &client->GetManager() : nullptr;
+ChromeComposeClient* RenderViewContextMenu::GetChromeComposeClient() const {
+  return ChromeComposeClient::FromWebContents(source_web_contents_);
 }
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
@@ -2261,9 +2260,10 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
   }
 #if BUILDFLAG(ENABLE_COMPOSE)
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
-  if (render_frame_host && params_.form_control_type) {
-    compose::ComposeManager* compose_manager = GetComposeManager();
-    if (compose_manager && compose_manager->ShouldOfferComposeContextMenu()) {
+  if (render_frame_host) {
+    auto* compose_client = GetChromeComposeClient();
+    if (compose_client &&
+        compose_client->ShouldTriggerContextMenu(render_frame_host, params_)) {
       menu_model_.AddItemWithStringId(IDC_CONTEXT_COMPOSE,
                                       IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
       // TODO(b/303646344): Remove new feature tag when no longer new.
@@ -3283,16 +3283,20 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
 #if BUILDFLAG(ENABLE_COMPOSE)
     case IDC_CONTEXT_COMPOSE: {
-      auto* client = ChromeComposeClient::FromWebContents(source_web_contents_);
+      auto* client = GetChromeComposeClient();
       compose::ComposeManager* compose_manager =
           client ? &client->GetManager() : nullptr;
       RenderFrameHost* render_frame_host = GetRenderFrameHost();
       if (compose_manager && render_frame_host) {
-        compose_manager->OpenComposeFromContextMenu(
+        auto* content_autofill_driver =
             autofill::ContentAutofillDriver::GetForRenderFrameHost(
-                render_frame_host),
-            autofill::FormRendererId(params_.form_renderer_id),
-            autofill::FieldRendererId(params_.field_renderer_id));
+                render_frame_host);
+        if (content_autofill_driver) {
+          compose_manager->OpenComposeFromContextMenu(
+              content_autofill_driver,
+              autofill::FormRendererId(params_.form_renderer_id),
+              autofill::FieldRendererId(params_.field_renderer_id));
+        }
       }
       break;
     }

@@ -68,11 +68,6 @@ bool ComposeManagerImpl::ShouldOfferComposePopup(
                                      trigger_field.global_id());
 }
 
-bool ComposeManagerImpl::ShouldOfferComposeContextMenu() {
-  // TODO(b/301371110): Pass in the field type here when it is ready.
-  return client_->ShouldTriggerContextMenu();
-}
-
 bool ComposeManagerImpl::HasSavedState(
     const autofill::FieldGlobalId& trigger_field_id) {
   // State is saved as a ComposeSession in the ComposeClient. A user can resume

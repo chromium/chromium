@@ -17,6 +17,10 @@
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/compose/chrome_compose_client.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #endif
@@ -114,7 +118,7 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
 #endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-  void SetComposeManager(compose::ComposeManager* compose_manager_);
+  void SetChromeComposeClient(ChromeComposeClient* compose_client);
 #endif
   // If `browser` is not null, sets it as the return value of GetBrowser(),
   // overriding the base class behavior. If the Browser object is destroyed
@@ -127,7 +131,7 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   Browser* GetBrowser() const override;
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-  compose::ComposeManager* GetComposeManager() const override;
+  ChromeComposeClient* GetChromeComposeClient() const override;
 #endif
 
  private:
@@ -139,7 +143,7 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
 #endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-  raw_ptr<compose::ComposeManager> compose_manager_ = nullptr;
+  raw_ptr<ChromeComposeClient> compose_client_ = nullptr;
 #endif
 };
 

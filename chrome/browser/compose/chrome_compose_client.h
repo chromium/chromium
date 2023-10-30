@@ -22,6 +22,8 @@
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -59,7 +61,8 @@ class ChromeComposeClient
 
   bool ShouldTriggerPopup(std::string autocomplete_attribute,
                           autofill::FieldGlobalId field_id) override;
-  bool ShouldTriggerContextMenu() override;
+  virtual bool ShouldTriggerContextMenu(content::RenderFrameHost* rfh,
+                                        content::ContextMenuParams& params);
 
   void BindComposeDialog(
       mojo::PendingReceiver<compose::mojom::ComposeDialogClosePageHandler>
@@ -81,6 +84,7 @@ class ChromeComposeClient
   ComposeEnabling& GetComposeEnabling();
 
  protected:
+  explicit ChromeComposeClient(content::WebContents* web_contents);
   optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuide();
   std::unique_ptr<TranslateLanguageProvider> translate_language_provider_;
@@ -88,7 +92,6 @@ class ChromeComposeClient
 
  private:
   friend class content::WebContentsUserData<ChromeComposeClient>;
-  explicit ChromeComposeClient(content::WebContents* web_contents);
   raw_ptr<Profile> profile_;
 
   // Creates a session for `trigger_field` and initializes it as necessary.

@@ -11,6 +11,8 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "compose_enabling.h"
+#include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_frame_host.h"
 
 namespace {
 
@@ -114,12 +116,22 @@ bool ComposeEnabling::ShouldTriggerPopup(
     return false;
   }
 
+  // TODO(b/301609046): Add ContentEditable and TextArea checks.
+
   return true;
 }
 
 bool ComposeEnabling::ShouldTriggerContextMenu(
     Profile* profile,
-    translate::TranslateManager* translate_manager) {
+    translate::TranslateManager* translate_manager,
+    content::RenderFrameHost* rfh,
+    content::ContextMenuParams& params) {
+  if (!(params.is_content_editable_for_autofill ||
+        (params.form_control_type &&
+         *params.form_control_type ==
+             blink::mojom::FormControlType::kTextArea))) {
+    return false;
+  }
   return PageLevelChecks(profile, translate_manager);
 }
 

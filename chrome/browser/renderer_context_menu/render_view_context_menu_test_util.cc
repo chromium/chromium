@@ -139,12 +139,12 @@ void TestRenderViewContextMenu::set_dlp_rules_manager(
 #endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-compose::ComposeManager* TestRenderViewContextMenu::GetComposeManager() const {
-  return compose_manager_;
+ChromeComposeClient* TestRenderViewContextMenu::GetChromeComposeClient() const {
+  return compose_client_;
 }
 
-void TestRenderViewContextMenu::SetComposeManager(
-    compose::ComposeManager* compose_manager) {
-  compose_manager_ = compose_manager;
+void TestRenderViewContextMenu::SetChromeComposeClient(
+    ChromeComposeClient* compose_client) {
+  compose_client_ = compose_client;
 }
 #endif  // BUILDFLAG(ENABLE_COMPOSE)

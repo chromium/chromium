@@ -39,7 +39,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-#include "components/compose/core/browser/compose_manager.h"
+#include "chrome/browser/compose/chrome_compose_client.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -202,7 +202,7 @@ class RenderViewContextMenu
 #endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-  virtual compose::ComposeManager* GetComposeManager() const;
+  virtual ChromeComposeClient* GetChromeComposeClient() const;
 #endif
 
   // RenderViewContextMenuBase:

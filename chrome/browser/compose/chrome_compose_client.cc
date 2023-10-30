@@ -30,6 +30,8 @@
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -185,11 +187,13 @@ bool ChromeComposeClient::ShouldTriggerPopup(std::string autocomplete_attribute,
                                               translate_manager, saved_state);
 }
 
-bool ChromeComposeClient::ShouldTriggerContextMenu() {
+bool ChromeComposeClient::ShouldTriggerContextMenu(
+    content::RenderFrameHost* rfh,
+    content::ContextMenuParams& params) {
   translate::TranslateManager* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
-  return compose_enabling_.ShouldTriggerContextMenu(profile_,
-                                                    translate_manager);
+  return compose_enabling_.ShouldTriggerContextMenu(profile_, translate_manager,
+                                                    rfh, params);
 }
 
 optimization_guide::OptimizationGuideModelExecutor*

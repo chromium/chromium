@@ -13,9 +13,6 @@ namespace compose {
 class ComposeManager : public autofill::AutofillComposeDelegate {
  public:
   // TODO(b/300325327): Add non-Autofill specific methods.
-  // Returns whether the compose context menu option is available.
-  // TODO(b/301371110): Gate on the field type here too when it is ready.
-  virtual bool ShouldOfferComposeContextMenu() = 0;
   // Opens compose from the context menu given the 'driver',
   // 'form_renderer_id', and 'field_renderer_id'.
   virtual void OpenComposeFromContextMenu(

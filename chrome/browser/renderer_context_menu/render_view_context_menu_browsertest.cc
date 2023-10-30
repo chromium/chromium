@@ -135,7 +135,7 @@
 #include "ui/gfx/codec/png_codec.h"
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-#include "components/compose/core/browser/mock_compose_manager.h"
+#include "chrome/browser/compose/mock_chrome_compose_client.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -1168,7 +1168,7 @@ struct ContextMenuForComposeTestCase {
   std::optional<blink::mojom::FormControlType> form_control_type;
   uint64_t form_renderer_id;
   uint64_t field_renderer_id;
-  bool should_offer_compose_context_menu;
+  bool should_trigger_compose_context_menu;
   bool expected;
 };
 
@@ -1182,12 +1182,10 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForComposeBrowserTest,
 
   content::ContextMenuParams params;
   params.is_editable = test_case.is_editable;
-  params.form_control_type = test_case.form_control_type;
-  params.form_renderer_id = test_case.form_renderer_id;
-  params.field_renderer_id = test_case.field_renderer_id;
-  compose::MockComposeManager compose_manager;
-  ON_CALL(compose_manager, ShouldOfferComposeContextMenu())
-      .WillByDefault(Return(test_case.should_offer_compose_context_menu));
+  MockChromeComposeClient compose_client(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ON_CALL(compose_client, ShouldTriggerContextMenu(_, _))
+      .WillByDefault(Return(test_case.should_trigger_compose_context_menu));
 
   auto menu =
       std::make_unique<TestRenderViewContextMenu>(*browser()
@@ -1195,7 +1193,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForComposeBrowserTest,
                                                        ->GetActiveWebContents()
                                                        ->GetPrimaryMainFrame(),
                                                   params);
-  menu->SetComposeManager(&compose_manager);
+  menu->SetChromeComposeClient(&compose_client);
   menu->Init();
 
   ASSERT_EQ(menu->IsItemPresent(IDC_CONTEXT_COMPOSE), test_case.expected);
@@ -1207,31 +1205,15 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn<ContextMenuForComposeTestCase>({
         {.test_name = "Enabled",
          .is_editable = true,
-         .form_control_type = blink::mojom::FormControlType::kInputText,
-         .form_renderer_id = 123,
-         .field_renderer_id = 456,
-         .should_offer_compose_context_menu = true,
+         .should_trigger_compose_context_menu = true,
          .expected = true},
         {.test_name = "NotEditable",
          .is_editable = false,
-         .form_control_type = blink::mojom::FormControlType::kInputText,
-         .form_renderer_id = 123,
-         .field_renderer_id = 456,
-         .should_offer_compose_context_menu = true,
-         .expected = false},
-        {.test_name = "NoFormControlType",
-         .is_editable = true,
-         .form_control_type = std::nullopt,
-         .form_renderer_id = 0,
-         .field_renderer_id = 0,
-         .should_offer_compose_context_menu = true,
+         .should_trigger_compose_context_menu = true,
          .expected = false},
         {.test_name = "ShouldNotOffer",
          .is_editable = true,
-         .form_control_type = blink::mojom::FormControlType::kInputText,
-         .form_renderer_id = 123,
-         .field_renderer_id = 456,
-         .should_offer_compose_context_menu = false,
+         .should_trigger_compose_context_menu = false,
          .expected = false},
     }),
     [](const testing::TestParamInfo<

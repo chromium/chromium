@@ -986,6 +986,13 @@ static_library("test_support") {
   if (enable_ppapi) {
     public_deps += [ "//ppapi/shared_impl" ]
   }
+
+  if (enable_compose) {
+    sources += [
+      "../browser/compose/mock_chrome_compose_client.cc",
+      "../browser/compose/mock_chrome_compose_client.h",
+    ]
+  }
 }
 
 if (is_android) {
@@ -1692,7 +1699,6 @@ if (!is_android) {
       "//components/commerce/core:shopping_service_test_support",
       "//components/component_updater/installer_policies:installer_policies_no_content_deps",
       "//components/compose:buildflags",
-      "//components/compose/core/browser:test_support",
       "//components/constrained_window",
       "//components/content_settings/browser",
       "//components/content_settings/common:mojom",

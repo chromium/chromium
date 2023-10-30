@@ -63,6 +63,7 @@ class ComposeEnablingTest : public testing::Test {
         {compose::features::kEnableCompose,
          compose::features::kEnableComposeNudge},
         {});
+    context_menu_params_.is_content_editable_for_autofill = true;
   }
 
   void TearDown() override {
@@ -93,6 +94,7 @@ class ComposeEnablingTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<ComposeEnabling> compose_enabling_;
+  content::ContextMenuParams context_menu_params_;
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -194,7 +196,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {
       .WillByDefault(Return(std::string("en")));
 
   EXPECT_FALSE(compose_enabling.ShouldTriggerContextMenu(
-      test_profile_, &mock_translate_manager));
+      test_profile_, &mock_translate_manager, /*rfh=*/nullptr,
+      context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageTest) {
@@ -213,7 +216,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageTest) {
       .WillOnce(Return(std::string("eo")));
 
   EXPECT_FALSE(compose_enabling.ShouldTriggerContextMenu(
-      test_profile_, &mock_translate_manager));
+      test_profile_, &mock_translate_manager, /*rfh=*/nullptr,
+      context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageBypassTest) {
@@ -239,7 +243,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageBypassTest) {
   // Although the language is unsupported, ShouldTrigger should return true as
   // the bypass is enabled.
   EXPECT_TRUE(compose_enabling.ShouldTriggerContextMenu(
-      test_profile_, &mock_translate_manager));
+      test_profile_, &mock_translate_manager, /*rfh=*/nullptr,
+      context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLangugeTest) {
@@ -259,7 +264,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLangugeTest) {
       .WillOnce(Return(std::string()));
 
   EXPECT_TRUE(compose_enabling.ShouldTriggerContextMenu(
-      test_profile_, &mock_translate_manager));
+      test_profile_, &mock_translate_manager, /*rfh=*/nullptr,
+      context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuUndeterminedLangugeTest) {
@@ -279,10 +285,34 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuUndeterminedLangugeTest) {
       .WillOnce(Return(std::string("und")));
 
   EXPECT_TRUE(compose_enabling.ShouldTriggerContextMenu(
-      test_profile_, &mock_translate_manager));
+      test_profile_, &mock_translate_manager, /*rfh=*/nullptr,
+      context_menu_params_));
 }
 
-TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTest) {
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuFieldTypeTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Set ContextMenuParams to non-contenteditable and non-textarea, which we do
+  // not support.
+  context_menu_params_.is_content_editable_for_autofill = false;
+  context_menu_params_.form_control_type =
+      blink::mojom::FormControlType::kInputButton;
+
+  // Set the language to something we support. Not expected to be called.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  ON_CALL(mock_translate_language_provider, GetSourceLanguage(_))
+      .WillByDefault(Return(std::string("en")));
+
+  EXPECT_FALSE(compose_enabling.ShouldTriggerContextMenu(
+      test_profile_, &mock_translate_manager, /*rfh=*/nullptr,
+      context_menu_params_));
+}
+
+TEST_F(ComposeEnablingTest,
+       ShouldTriggerContextMenuAllEnabledContentEditableTest) {
   testing::NiceMock<MockTranslateLanguageProvider>
       mock_translate_language_provider;
   ComposeEnabling compose_enabling(&mock_translate_language_provider);
@@ -298,7 +328,33 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTest) {
       .WillOnce(Return(std::string("en")));
 
   EXPECT_TRUE(compose_enabling.ShouldTriggerContextMenu(
-      test_profile_, &mock_translate_manager));
+      test_profile_, &mock_translate_manager, /*rfh=*/nullptr,
+      context_menu_params_));
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTextAreaTest) {
+  testing::NiceMock<MockTranslateLanguageProvider>
+      mock_translate_language_provider;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider);
+  // Enable everything.
+  compose_enabling.SetEnabledForTesting();
+
+  // Set the language to something we support.
+  MockTranslateClient mock_translate_client(translate_driver(), nullptr);
+  testing::NiceMock<MockTranslateManager> mock_translate_manager(
+      &mock_translate_client);
+  EXPECT_CALL(mock_translate_language_provider,
+              GetSourceLanguage(&mock_translate_manager))
+      .WillOnce(Return(std::string("en")));
+
+  // Set ContextMenuParams to textarea, which we support.
+  context_menu_params_.is_content_editable_for_autofill = false;
+  context_menu_params_.form_control_type =
+      blink::mojom::FormControlType::kTextArea;
+
+  EXPECT_TRUE(compose_enabling.ShouldTriggerContextMenu(
+      test_profile_, &mock_translate_manager, /*rfh=*/nullptr,
+      context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
