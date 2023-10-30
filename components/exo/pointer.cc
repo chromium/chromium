@@ -457,11 +457,9 @@ void Pointer::OnSurfaceDestroying(Surface* surface) {
 void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   if (seat_->was_shutdown() || event->handled())
     return;
-
-  WMHelper* helper = WMHelper::GetInstance();
-  auto* drag_drop_client = helper->GetDragDropClient();
-  if (!static_cast<ash::DragDropController*>(drag_drop_client)
-           ->IsDragDropCompleted()) {
+  // Ask seat instead of ash's DragDropController because it ends
+  // asynchronously.
+  if (seat_->IsDragDropOperationInProgress()) {
     return;
   }
 

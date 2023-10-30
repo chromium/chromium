@@ -112,6 +112,12 @@ class Seat : public aura::client::FocusChangeObserver,
   // Abort any drag operations that haven't been started yet.
   void AbortPendingDragOperation();
 
+  // Returns true if the drag and drop has been started (which happens
+  // asynchronously) and hasn't been fully finished yet. This can return true
+  // even if ash's DND session is finished because wayland's dnd finished event
+  // is sent asynchronosly.
+  bool IsDragDropOperationInProgress() const;
+
   // Overridden from aura::client::FocusChangeObserver:
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;

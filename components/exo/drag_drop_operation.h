@@ -61,6 +61,9 @@ class DragDropOperation : public DataSourceObserver,
   // Abort the operation if it hasn't been started yet, otherwise do nothing.
   void AbortIfPending();
 
+  // The drag drop has started.
+  bool started() const { return started_; }
+
   // DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
 
@@ -126,8 +129,9 @@ class DragDropOperation : public DataSourceObserver,
   base::RepeatingClosure counter_;
 
   // Stores whether this object has just started a drag operation. If so, we
-  // want to ignore the OnDragStarted event.
-  bool started_by_this_object_ = false;
+  // want to ignore the OnDragStarted event, and self destruct the object when
+  // completed.
+  bool started_ = false;
 
   bool captured_icon_ = false;
 

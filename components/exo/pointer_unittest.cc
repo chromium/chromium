@@ -1025,7 +1025,7 @@ TEST_P(PointerTest, RegisterPointerEventsOnNonModal) {
   pointer.reset();
 }
 
-TEST_P(PointerTest, DragDropAbort) {
+TEST_P(PointerTest, DragDropAbortBeforeStart) {
   Seat seat(std::make_unique<TestDataExchangeDelegate>());
   MockPointerDelegate pointer_delegate;
   std::unique_ptr<Pointer> pointer(new Pointer(&pointer_delegate, &seat));
@@ -1090,12 +1090,21 @@ TEST_P(PointerTest, DragDropAndPointerEnterLeaveEvents) {
         // Mouse move should not produce mouse enter.
         generator.MoveMouseBy(1, 1);
         generator.ReleaseLeftButton();
+        // A user may move and click again, after the drag drop in ash is
+        // finished but before exo haven't sent the finished events.
+        // These events should not be sent to clients.
+        generator.MoveMouseBy(1, 1);
+        generator.ClickLeftButton();
       }),
       base::DoNothing());
 
   // Pointer leave should be called only once upon start.
   EXPECT_CALL(pointer_delegate, OnPointerLeave(_)).Times(1);
   EXPECT_CALL(pointer_delegate, OnPointerEnter(_, _, _)).Times(0);
+  EXPECT_CALL(pointer_delegate,
+              OnPointerButton(testing::_, testing::_, testing::_))
+      .Times(0);
+
   base::RunLoop().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(&pointer_delegate);
 

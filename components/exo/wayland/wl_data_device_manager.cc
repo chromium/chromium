@@ -312,6 +312,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
         serial_tracker_->GetEventType(serial);
     if (event_type == absl::nullopt) {
       LOG(ERROR) << "The serial passed to StartDrag does not exist.";
+      source->Cancelled();
       return;
     }
     if (event_type == wayland::SerialTracker::EventType::POINTER_BUTTON_DOWN) {
@@ -320,6 +321,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
             << "The serial passed to StartDrag for pointer does not match its "
                "expected types. serial="
             << serial << ", " << serial_tracker_->ToString();
+        source->Cancelled();
         return;
       }
       DCHECK(data_device);
@@ -331,6 +333,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
             << "The serial passed to StartDrag for touch does not match its "
                "expected types. serial="
             << serial << ", " << serial_tracker_->ToString();
+        source->Cancelled();
         return;
       }
       DCHECK(data_device);
@@ -340,6 +343,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       LOG(ERROR) << "Invalid event type for StartDrag:" << (int)*event_type
                  << ", serial=" << serial << ", "
                  << serial_tracker_->ToString();
+      source->Cancelled();
       return;
     }
     // TODO(crbug/1371493): Remove this when bug is fixed.

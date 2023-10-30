@@ -270,16 +270,18 @@ DragDropOperation::~DragDropOperation() {
   if (source_)
     source_->get()->Cancelled();
 
-  if (drag_drop_controller_->IsDragDropInProgress() && started_by_this_object_)
+  if (drag_drop_controller_->IsDragDropInProgress() && started_) {
     drag_drop_controller_->DragCancel();
+  }
 
   if (extended_drag_source_)
     ResetExtendedDragSource();
 }
 
 void DragDropOperation::AbortIfPending() {
-  if (!started_by_this_object_)
+  if (!started_) {
     delete this;
+  }
 }
 
 void DragDropOperation::OnDataTransferEndpointRead(const std::string& mime_type,
@@ -391,7 +393,7 @@ void DragDropOperation::StartDragDropOperation() {
 
   base::WeakPtr<DragDropOperation> weak_ptr = weak_ptr_factory_.GetWeakPtr();
 
-  started_by_this_object_ = true;
+  started_ = true;
   gfx::Point drag_start_point = gfx::ToFlooredPoint(drag_start_point_);
 
   // This triggers a nested run loop that terminates when the drag and drop
@@ -442,13 +444,15 @@ void DragDropOperation::StartDragDropOperation() {
 }
 
 void DragDropOperation::OnDragStarted() {
-  if (!started_by_this_object_)
+  if (!started_) {
     delete this;
+  }
 }
 
 void DragDropOperation::OnDragActionsChanged(int actions) {
-  if (!started_by_this_object_)
+  if (!started_) {
     return;
+  }
 
   DndAction dnd_action = DragOperationsToPreferredDndAction(actions);
   // We send a mime type along with the action to indicate to the application
