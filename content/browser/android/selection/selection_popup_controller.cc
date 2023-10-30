@@ -19,7 +19,6 @@
 #include "content/public/android/content_jni_headers/SelectionPopupControllerImpl_jni.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/common/content_features.h"
-#include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
@@ -278,13 +277,9 @@ void SelectionPopupController::OnSelectAroundCaretAck(
   if (obj.is_null()) {
     return;
   }
-  if (result.is_null()) {
+  if (result.is_null() || !IsOffsetAdjustValid(startOffset, endOffset,
+                                               surroundingTextLength, result)) {
     Java_SelectionPopupControllerImpl_onSelectAroundCaretFailure(env, obj);
-    return;
-  }
-  if (!IsOffsetAdjustValid(startOffset, endOffset, surroundingTextLength,
-                           result)) {
-    mojo::ReportBadMessage("SelectAroundCaretResult's offset is invalid.");
     return;
   }
 
