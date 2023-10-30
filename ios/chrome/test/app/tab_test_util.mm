@@ -9,7 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/sessions/session_restoration_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -48,6 +48,14 @@ Browser* GetCurrentBrowser() {
 WebStateList* GetCurrentWebStateList() {
   Browser* browser = GetCurrentBrowser();
   return browser ? browser->GetWebStateList() : nullptr;
+}
+
+// Close all tabs for `browser` and request the session to be saved.
+void CloseAllTabsForBrowser(Browser* browser) {
+  DCHECK(browser);
+  const int close_flags = WebStateList::CLOSE_USER_ACTION;
+  browser->GetWebStateList()->CloseAllWebStates(close_flags);
+  SaveSessionForBrowser(browser);
 }
 
 }  // namespace
@@ -187,40 +195,19 @@ void CloseAllTabsInCurrentMode() {
 
 void CloseAllTabs() {
   if (GetIncognitoTabCount() && GetForegroundActiveSceneController()) {
-    Browser* browser =
+    CloseAllTabsForBrowser(
         GetForegroundActiveSceneController()
-            .browserProviderInterface.incognitoBrowserProvider.browser;
-    DCHECK(browser);
-    browser->GetWebStateList()->CloseAllWebStates(
-        WebStateList::CLOSE_USER_ACTION);
-    if (!web::features::UseSessionSerializationOptimizations()) {
-      SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
-          /*immediately=*/true);
-    }
+            .browserProviderInterface.incognitoBrowserProvider.browser);
   }
   if (GetMainTabCount() && GetForegroundActiveScene()) {
-    Browser* browser =
+    CloseAllTabsForBrowser(
         GetForegroundActiveScene()
-            .browserProviderInterface.mainBrowserProvider.browser;
-    DCHECK(browser);
-    browser->GetWebStateList()->CloseAllWebStates(
-        WebStateList::CLOSE_USER_ACTION);
-    if (!web::features::UseSessionSerializationOptimizations()) {
-      SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
-          /*immediately=*/true);
-    }
+            .browserProviderInterface.mainBrowserProvider.browser);
   }
   if (GetInactiveTabCount() && GetForegroundActiveScene()) {
-    Browser* browser =
+    CloseAllTabsForBrowser(
         GetForegroundActiveScene()
-            .browserProviderInterface.mainBrowserProvider.inactiveBrowser;
-    DCHECK(browser);
-    browser->GetWebStateList()->CloseAllWebStates(
-        WebStateList::CLOSE_USER_ACTION);
-    if (!web::features::UseSessionSerializationOptimizations()) {
-      SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
-          /*immediately=*/true);
-    }
+            .browserProviderInterface.mainBrowserProvider.inactiveBrowser);
   }
 }
 

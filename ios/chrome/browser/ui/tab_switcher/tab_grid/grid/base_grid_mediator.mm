@@ -67,10 +67,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "ui/gfx/image/image.h"
 
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 using PinnedState = WebStateSearchCriteria::PinnedState;
 
 namespace {

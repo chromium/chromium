@@ -39,6 +39,10 @@ class SessionRestorationService : public KeyedService {
   // session restoration events.
   virtual void RemoveObserver(SessionRestorationObserver* observer) = 0;
 
+  // Requests that all pending changes to be saved to storage as soon as
+  // possible. Can be called at any time.
+  virtual void SaveSessions() = 0;
+
   // Sets the `identifier` used to save/load the session for `browser`. The
   // identifier is used to derive the location of the file on storage, thus
   // must be consistent across application restart.

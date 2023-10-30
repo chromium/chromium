@@ -42,7 +42,7 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/sessions/session_restoration_util.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -191,10 +191,9 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (void)saveSessionImmediately {
+  SaveSessionForBrowser(chrome_test_util::GetMainBrowser());
+
   if (!web::features::UseSessionSerializationOptimizations()) {
-    SessionRestorationBrowserAgent::FromBrowser(
-        chrome_test_util::GetMainBrowser())
-        ->SaveSession(/*immediately=*/true);
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     ProceduralBlock completionBlock = ^{
       dispatch_semaphore_signal(semaphore);

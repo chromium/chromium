@@ -40,8 +40,7 @@ source_set("model") {
     "//ios/chrome/browser/itunes_urls/model",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp:util",
-    "//ios/chrome/browser/sessions:restoration_agent",
-    "//ios/chrome/browser/sessions:serialisation",
+    "//ios/chrome/browser/sessions:session_util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -50,7 +49,6 @@ source_set("model") {
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/web",
-    "//ios/web/common:features",
     "//ui/base",
     "//url",
   ]

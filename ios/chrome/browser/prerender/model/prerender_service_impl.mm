@@ -7,7 +7,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/prerender/model/preload_controller.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/sessions/session_restoration_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/load_timing_tab_helper.h"
@@ -15,10 +15,6 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/page_transition_types.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 PrerenderServiceImpl::PrerenderServiceImpl(ChromeBrowserState* browser_state)
     : controller_(
@@ -95,10 +91,7 @@ bool PrerenderServiceImpl::MaybeLoadPrerenderedURL(
     LoadTimingTabHelper::FromWebState(active_web_state)
         ->DidPromotePrerenderTab();
   }
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
-        /*immediately=*/false);
-  }
+  ScheduleSaveSessionForBrowser(browser);
   return true;
 }
 

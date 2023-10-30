@@ -59,7 +59,6 @@ source_set("restoration_agent") {
     ":serialisation",
     ":session_constants",
     ":session_service",
-    "//base",
     "//components/previous_session_info",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -71,6 +70,7 @@ source_set("restoration_agent") {
     "//ios/web/public/navigation",
     "//ios/web/public/session",
   ]
+  public_deps = [ "//base" ]
 }
 
 source_set("session_service") {
@@ -124,14 +124,13 @@ source_set("session_saving") {
     "session_saving_scene_agent.mm",
   ]
   deps = [
-    ":restoration_agent",
+    ":session_util",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/web_state_list/web_usage_enabler",
-    "//ios/web/common:features",
   ]
 }
 
@@ -240,6 +239,20 @@ source_set("session_migration") {
     "//ios/chrome/browser/sessions/proto",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",
+  ]
+}
+
+source_set("session_util") {
+  sources = [
+    "session_restoration_util.h",
+    "session_restoration_util.mm",
+  ]
+  deps = [
+    ":restoration_agent",
+    ":session_restoration_service",
+    ":session_restoration_service_factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/web/common:features",
   ]
 }
 

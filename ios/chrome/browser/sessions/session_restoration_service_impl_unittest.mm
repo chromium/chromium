@@ -312,12 +312,8 @@ class SessionRestorationServiceImplTest : public PlatformTest {
     run_loop.Run();
   }
 
-  // Wait until any task posted by the service has completed, including
-  // any pending save.
+  // Wait until all task posted on the background sequence are complete.
   void WaitForBackgroundTaskComplete() {
-    // Fast forward the time to allow any delayed save to take effect.
-    web_task_environment_->FastForwardBy(kSaveDelay + base::Milliseconds(500));
-
     // Since the current TaskRunner is injected in the service to use for
     // background processing, posting a task to and waiting for it to be
     // invoked will ensure that all pending background processing is now
@@ -326,6 +322,16 @@ class SessionRestorationServiceImplTest : public PlatformTest {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
+  }
+
+  // Wait until the save delay expired and then for all background task
+  // to complete.
+  void WaitForSessionSaveComplete() {
+    // Fast forward the time to allow any timer to expire (and thus the
+    // delayed save to be scheduled).
+    web_task_environment_->FastForwardBy(kSaveDelay);
+
+    WaitForBackgroundTaskComplete();
   }
 
   // Take a snapshot of the existing files.
@@ -378,7 +384,7 @@ TEST_F(SessionRestorationServiceImplTest, SetSessionID) {
   // Check that calling Disconnect() when there are no changes on the
   // Browser does not cause the session to be saved.
   service()->Disconnect(&browser);
-  WaitForBackgroundTaskComplete();
+  WaitForSessionSaveComplete();
 
   // Check that no session file was written to disk.
   EXPECT_EQ(ModifiedFiles(), FilePathSet{});
@@ -400,7 +406,7 @@ TEST_F(SessionRestorationServiceImplTest, LoadSession) {
     InsertTabsWithUrls(browser, base::make_span(kURLs));
 
     // Check that the session was written to disk.
-    WaitForBackgroundTaskComplete();
+    WaitForSessionSaveComplete();
     EXPECT_EQ(ModifiedFiles(),
               ExpectedStorageFilesForBrowser(
                   SessionPathFromIdentifier(kIdentifier0), &browser));
@@ -414,7 +420,7 @@ TEST_F(SessionRestorationServiceImplTest, LoadSession) {
     SnapshotFiles();
     browser.GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
 
-    WaitForBackgroundTaskComplete();
+    WaitForSessionSaveComplete();
     EXPECT_EQ(ModifiedFiles(), FilePathSet{});
     EXPECT_EQ(DeletedFiles(), FilePathSet{});
   }
@@ -514,7 +520,7 @@ TEST_F(SessionRestorationServiceImplTest, SaveSessionOfModifiedBrowser) {
   InsertTabsWithUrls(browser1, base::make_span(kURLs));
 
   // Check that only browser1's session was written to disk.
-  WaitForBackgroundTaskComplete();
+  WaitForSessionSaveComplete();
   EXPECT_EQ(ModifiedFiles(),
             ExpectedStorageFilesForBrowser(
                 SessionPathFromIdentifier(kIdentifier1), &browser1));
@@ -532,7 +538,7 @@ TEST_F(SessionRestorationServiceImplTest, SaveSessionChangesOnlyRequiredFiles) {
   InsertTabsWithUrls(browser, base::make_span(kURLs));
 
   // Check that the session was written to disk.
-  WaitForBackgroundTaskComplete();
+  WaitForSessionSaveComplete();
   EXPECT_EQ(ModifiedFiles(),
             ExpectedStorageFilesForBrowser(
                 SessionPathFromIdentifier(kIdentifier0), &browser));
@@ -549,7 +555,7 @@ TEST_F(SessionRestorationServiceImplTest, SaveSessionChangesOnlyRequiredFiles) {
 
   // Check that session metadata storage file and the active WebState storage
   // files are eventually saved.
-  WaitForBackgroundTaskComplete();
+  WaitForSessionSaveComplete();
   EXPECT_EQ(ModifiedFiles(),
             ExpectedStorageFilesForWebStates(
                 SessionPathFromIdentifier(kIdentifier0),
@@ -577,7 +583,7 @@ TEST_F(SessionRestorationServiceImplTest, AdoptUnrealizedWebStateOnMove) {
     InsertTabsWithUrls(browser, base::make_span(kURLs));
 
     // Check that the session was written to disk.
-    WaitForBackgroundTaskComplete();
+    WaitForSessionSaveComplete();
     EXPECT_TRUE(base::DirectoryExists(SessionPathFromIdentifier(kIdentifier0)));
 
     // Disconnect the Browser before destroying it.
@@ -585,7 +591,7 @@ TEST_F(SessionRestorationServiceImplTest, AdoptUnrealizedWebStateOnMove) {
 
     // Check that closing the all the tabs after disconnecting the Browser
     // does not delete the sesion.
-    WaitForBackgroundTaskComplete();
+    WaitForSessionSaveComplete();
     EXPECT_EQ(ModifiedFiles(),
               ExpectedStorageFilesForBrowser(
                   SessionPathFromIdentifier(kIdentifier0), &browser));
@@ -650,7 +656,7 @@ TEST_F(SessionRestorationServiceImplTest, AdoptUnrealizedWebStateOnMove) {
 
   // Check that no files were deleted, the metadata for both session updated
   // and the WebState's storage copied from one Browser storage to the other.
-  WaitForBackgroundTaskComplete();
+  WaitForSessionSaveComplete();
 
   FilePathSet expected_browser0 = ExpectedStorageFilesForWebStates(
       SessionPathFromIdentifier(kIdentifier0),
@@ -674,7 +680,7 @@ TEST_F(SessionRestorationServiceImplTest, SavePendingChangesOnDisconnect) {
 
   // Inserting the tabs may take more time than the save delay. Always
   // wait for the state to be saved so that the test is deterministic.
-  WaitForBackgroundTaskComplete();
+  WaitForSessionSaveComplete();
   EXPECT_EQ(ModifiedFiles(),
             ExpectedStorageFilesForBrowser(
                 SessionPathFromIdentifier(kIdentifier0), &browser));
@@ -698,14 +704,9 @@ TEST_F(SessionRestorationServiceImplTest, SavePendingChangesOnDisconnect) {
   // Disconnect the Browser. This should save the session immediately.
   service()->Disconnect(&browser);
 
-  // Not using `WaitForBackgroundTaskComplete()` because we explicitly do
+  // Not using `WaitForSessionSaveComplete()` because we explicitly do
   // not want to wait for the kSaveDelay timeout.
-  {
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  WaitForBackgroundTaskComplete();
 
   // Check that even though the save delay has not expired, the data still
   // has been written to disk (because it was scheduled when the Browser
@@ -731,7 +732,7 @@ TEST_F(SessionRestorationServiceImplTest, DeleteObsoleteFilesOnLoadSession) {
 
     // Inserting the tabs may take more time than the save delay. Always
     // wait for the state to be saved so that the test is deterministic.
-    WaitForBackgroundTaskComplete();
+    WaitForSessionSaveComplete();
     EXPECT_EQ(ModifiedFiles(),
               ExpectedStorageFilesForBrowser(
                   SessionPathFromIdentifier(kIdentifier0), &browser));
@@ -746,7 +747,7 @@ TEST_F(SessionRestorationServiceImplTest, DeleteObsoleteFilesOnLoadSession) {
 
     // Wait for the sesssion to be saved, and check that no file were deleted,
     // but that the session metadata was updated.
-    WaitForBackgroundTaskComplete();
+    WaitForSessionSaveComplete();
     EXPECT_EQ(DeletedFiles(), FilePathSet{});
     EXPECT_EQ(ModifiedFiles(),
               ExpectedStorageFilesForWebStates(
@@ -781,7 +782,7 @@ TEST_F(SessionRestorationServiceImplTest, DeleteObsoleteFilesOnLoadSession) {
 
   // Wait for background processing to complete and check that the obsolete
   // session files have been deleted.
-  WaitForBackgroundTaskComplete();
+  WaitForSessionSaveComplete();
   EXPECT_EQ(DeletedFiles(), expected_deleted_files);
 
   // Disconnect the Browser before destroying it.
@@ -796,7 +797,7 @@ TEST_F(SessionRestorationServiceImplTest, RecordHistograms) {
     TestBrowser browser = TestBrowser(browser_state());
     service()->SetSessionID(&browser, kIdentifier0);
     InsertTabsWithUrls(browser, base::make_span(kURLs));
-    WaitForBackgroundTaskComplete();
+    WaitForSessionSaveComplete();
 
     // Check that session is saved and histogram is recorded when making
     // some changes to the Browser's WebStateList (changing the active
@@ -804,7 +805,7 @@ TEST_F(SessionRestorationServiceImplTest, RecordHistograms) {
     base::HistogramTester histogram_tester;
     ASSERT_NE(browser.GetWebStateList()->active_index(), 0);
     browser.GetWebStateList()->ActivateWebStateAt(0);
-    WaitForBackgroundTaskComplete();
+    WaitForSessionSaveComplete();
 
     // Check that the time spent to record the session was logged.
     histogram_tester.ExpectTotalCount(
@@ -863,11 +864,73 @@ TEST_F(SessionRestorationServiceImplTest, CreateUnrealizedWebState) {
   browser.GetWebStateList()->InsertWebState(
       WebStateList::kInvalidIndex, std::move(web_state),
       WebStateList::InsertionFlags::INSERT_ACTIVATE, WebStateOpener());
-  WaitForBackgroundTaskComplete();
+  WaitForSessionSaveComplete();
 
   // Check that the data for the WebState has been saved to disk.
   EXPECT_EQ(ModifiedFiles(), expected_files);
 
   // Disconnect the Browser before destroying it.
   service()->Disconnect(&browser);
+}
+
+// Tests that calling SaveSessions() can be done at any point in time.
+TEST_F(SessionRestorationServiceImplTest, SaveSessionsCallableAtAnyTime) {
+  // Check that calling SaveSessions() when no Browser is observed is a no-op.
+  service()->SaveSessions();
+
+  WaitForBackgroundTaskComplete();
+  EXPECT_EQ(ModifiedFiles(), FilePathSet{});
+
+  // Check that calling SaveSessions() when Browser are registered with no
+  // changes is a no-op
+  TestBrowser browser0 = TestBrowser(browser_state());
+  TestBrowser browser1 = TestBrowser(browser_state());
+  service()->SetSessionID(&browser0, kIdentifier0);
+  service()->SetSessionID(&browser1, kIdentifier1);
+
+  service()->SaveSessions();
+
+  WaitForBackgroundTaskComplete();
+  EXPECT_EQ(ModifiedFiles(), FilePathSet{});
+
+  // Insert a few WebStage in one of the Browser and wait for the changes
+  // to automatically be saved (this is because loading the pages will
+  // take time and may cause automatically saving the session).
+  {
+    InsertTabsWithUrls(browser0, base::make_span(kURLs));
+    WaitForSessionSaveComplete();
+
+    EXPECT_EQ(ModifiedFiles(),
+              ExpectedStorageFilesForBrowser(
+                  SessionPathFromIdentifier(kIdentifier0), &browser0));
+
+    SnapshotFiles();
+  }
+
+  // Check that making a modification and then calling SaveSessions() will
+  // result in a save immediately, even without waiting for the save delay.
+  ASSERT_NE(browser0.GetWebStateList()->active_index(), 0);
+  browser0.GetWebStateList()->ActivateWebStateAt(0);
+
+  WaitForBackgroundTaskComplete();
+  EXPECT_EQ(ModifiedFiles(), FilePathSet{});
+
+  service()->SaveSessions();
+  WaitForBackgroundTaskComplete();
+  EXPECT_EQ(ModifiedFiles(),
+            ExpectedStorageFilesForWebStates(
+                SessionPathFromIdentifier(kIdentifier0),
+                /* expect_session_metadata_storage */ true, {}));
+
+  SnapshotFiles();
+
+  // Check that calling SaveSessions() when all Browser have been disconnected
+  // is a no-op;
+  service()->Disconnect(&browser0);
+  service()->Disconnect(&browser1);
+
+  service()->SaveSessions();
+
+  WaitForBackgroundTaskComplete();
+  EXPECT_EQ(ModifiedFiles(), FilePathSet{});
 }

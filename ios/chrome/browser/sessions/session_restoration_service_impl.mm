@@ -216,6 +216,10 @@ void SessionRestorationServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void SessionRestorationServiceImpl::SaveSessions() {
+  SaveDirtySessions();
+}
+
 void SessionRestorationServiceImpl::SetSessionID(
     Browser* browser,
     const std::string& identifier) {
