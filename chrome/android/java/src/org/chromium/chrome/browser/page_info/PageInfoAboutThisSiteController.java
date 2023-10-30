@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
@@ -51,6 +50,7 @@ public class PageInfoAboutThisSiteController {
     private final PageInfoControllerDelegate mDelegate;
     private final WebContents mWebContents;
     private @Nullable SiteInfo mSiteInfo;
+    private EphemeralTabCoordinator mEphemeralTabCoordinator;
     private EphemeralTabObserver mEphemeralTabObserver;
     private final TabCreator mTabCreator;
 
@@ -73,8 +73,11 @@ public class PageInfoAboutThisSiteController {
 
     private void openUrl(String url, @PageInfoAction int action) {
         mMainController.recordAction(action);
-        if (mEphemeralTabCoordinatorSupplier != null
-                && mEphemeralTabCoordinatorSupplier.get() != null) {
+        mEphemeralTabCoordinator =
+                mEphemeralTabCoordinatorSupplier != null
+                        ? mEphemeralTabCoordinatorSupplier.get()
+                        : null;
+        if (mEphemeralTabCoordinator != null) {
             // Append parameter to open the page with reduced UI elements in the bottomsheet.
             Uri.Builder builder = Uri.parse(url).buildUpon();
             if (mSiteInfo.hasMoreAbout() && url.equals(mSiteInfo.getMoreAbout().getUrl())) {
@@ -83,11 +86,11 @@ public class PageInfoAboutThisSiteController {
             GURL bottomSheetUrl = new GURL(builder.toString());
             GURL fullPageUrl = new GURL(url);
 
-                createEphemeralTabObserver(bottomSheetUrl);
-                mEphemeralTabCoordinatorSupplier.get().addObserver(mEphemeralTabObserver);
+            createEphemeralTabObserver(bottomSheetUrl);
+            mEphemeralTabCoordinator.addObserver(mEphemeralTabObserver);
 
-            mEphemeralTabCoordinatorSupplier.get().requestOpenSheetWithFullPageUrl(
-                    bottomSheetUrl, fullPageUrl, getTitle(), /*isIncognito=*/false);
+            mEphemeralTabCoordinator.requestOpenSheetWithFullPageUrl(
+                    bottomSheetUrl, fullPageUrl, getTitle(), /* isIncognito= */ false);
 
             mMainController.dismiss();
         } else {
@@ -95,39 +98,39 @@ public class PageInfoAboutThisSiteController {
         }
     }
 
-    public void createEphemeralTabObserver(GURL originUrl) {
-        mEphemeralTabObserver = new EphemeralTabObserver() {
-            @Override
-            public void onToolbarCreated(ViewGroup toolbarView) {
-                TextView origin = toolbarView.findViewById(R.id.origin);
-                origin.setVisibility(View.GONE);
+    private void createEphemeralTabObserver(GURL originUrl) {
+        assert mEphemeralTabCoordinator != null;
+        mEphemeralTabObserver =
+                new EphemeralTabObserver() {
+                    @Override
+                    public void onToolbarCreated(ViewGroup toolbarView) {
+                        TextView origin = toolbarView.findViewById(R.id.origin);
+                        origin.setVisibility(View.GONE);
 
-                ImageView securityIcon = toolbarView.findViewById(R.id.security_icon);
-                securityIcon.setVisibility(View.GONE);
+                        ImageView securityIcon = toolbarView.findViewById(R.id.security_icon);
+                        securityIcon.setVisibility(View.GONE);
 
-                TextView title = toolbarView.findViewById(R.id.title);
-                title.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
-                // Style change affects the toolbar height. Requests layout again.
-                ViewUtils.requestLayout(
-                        toolbarView, "PageInfoAboutThisSiteController.onToolbarCreated");
-            }
+                        TextView title = toolbarView.findViewById(R.id.title);
+                        title.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
+                        // Style change affects the toolbar height. Requests layout again.
+                        ViewUtils.requestLayout(
+                                toolbarView, "PageInfoAboutThisSiteController.onToolbarCreated");
+                    }
 
-            @Override
-            public void onNavigationStarted(GURL clickedUrl,
-                    BottomSheetController bottomSheetController,
-                    EphemeralTabSheetContent ephemeralTabSheetContent) {
-                if (!clickedUrl.equals(originUrl)) {
-                    bottomSheetController.hideContent(ephemeralTabSheetContent, /* animate= */ true,
-                            BottomSheetController.StateChangeReason.PROMOTE_TAB);
-                    openInNewTab(clickedUrl.getSpec());
-                }
-            }
+                    @Override
+                    public void onNavigationStarted(GURL clickedUrl) {
+                        if (!clickedUrl.equals(originUrl)) {
+                            mEphemeralTabCoordinator.close();
+                            mEphemeralTabCoordinator.removeObserver(this);
+                            openInNewTab(clickedUrl.getSpec());
+                        }
+                    }
 
-            @Override
-            public void onTitleSet(EphemeralTabSheetContent sheetContent, String title) {
-                sheetContent.updateTitle(getTitle());
-            }
-        };
+                    @Override
+                    public void onTitleSet(EphemeralTabSheetContent sheetContent, String title) {
+                        sheetContent.updateTitle(getTitle());
+                    }
+                };
     }
 
     private void openInNewTab(String url) {

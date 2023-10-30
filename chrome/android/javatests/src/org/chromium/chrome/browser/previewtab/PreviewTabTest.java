@@ -79,10 +79,7 @@ public class PreviewTabTest {
         }
 
         @Override
-        public void onNavigationStarted(
-                GURL clickedUrl,
-                BottomSheetController bottomSheetController,
-                EphemeralTabSheetContent ephemeralTabSheetContent) {
+        public void onNavigationStarted(GURL clickedUrl) {
             onNavigationStartedCallback.notifyCalled();
         }
 
