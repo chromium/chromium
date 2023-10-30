@@ -1451,6 +1451,33 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="EventLatency.{ScrollEventType}.GenerationToBrowserMain"
+    units="microseconds" expires_after="2024-10-26">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks latency from when the user input causing the event is generated until
+    the the event is first processed on the Browser Main Thread. Reported for
+    {ScrollEventType}.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+  <token key="ScrollEventType">
+    <variant name="FirstGestureScrollUpdate"
+        summary="gesture-scroll-update events that are the first one in a
+                 scroll sequence"/>
+    <variant name="GestureScrollBegin" summary="gesture-scroll-begin events"/>
+    <variant name="GestureScrollEnd" summary="gesture-scroll-end events"/>
+    <variant name="GestureScrollUpdate"
+        summary="gesture-scroll-update events that are non-inertial (i.e. not
+                 generated due to a user fling) and not the first one in a
+                 scroll sequence"/>
+    <variant name="InertialGestureScrollUpdate"
+        summary="gesture-scroll-update events that are inertial (i.e.
+                 generated due to a user fling)"/>
+  </token>
+</histogram>
+
 <histogram name="EventLatency.{ScrollEventType}.TotalLatency{Version}"
     units="microseconds" expires_after="2024-03-17">
   <owner>jonross@chromium.org</owner>
