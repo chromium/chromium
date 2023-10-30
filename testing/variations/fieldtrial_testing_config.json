@@ -4090,6 +4090,7 @@
                         "DelayFirstPeriodicPAPurgeOrReclaim",
                         "DelayFirstWorkerWake",
                         "InhibitLoadingStateUpdate",
+                        "MacSetDefaultTaskRole",
                         "MainThreadCompositingPriority",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
                         "ReduceCookieIPCs",
@@ -9873,23 +9874,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "LowerMemoryLimitForNonMainRenderers"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MacChildProcessPriority": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AdjustGpuProcessPriority",
-                        "MacAllowBackgroundingRenderProcesses",
-                        "MacSetDefaultTaskRole"
                     ]
                 }
             ]
