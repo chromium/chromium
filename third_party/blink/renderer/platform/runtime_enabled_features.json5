@@ -888,7 +888,7 @@
     },
     {
       name: "CSSExponentialFunctions",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/1447058
