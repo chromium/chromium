@@ -3184,13 +3184,7 @@ bool Element::SkipStyleRecalcForContainer(
 
   if (!child_change.ReattachLayoutTree()) {
     LayoutObject* layout_object = GetLayoutObject();
-    // It may be possible to defer style recalc of the subtree to layout, if
-    // we're guaranteed to visit this element during layout. We can only do this
-    // if WhitespaceChildrenMayChange isn't set, though, because that means that
-    // this element needs to be re-attached. The flag is set when removing DOM
-    // children, and has to be taken care of during style recalc, since it's too
-    // late for the node to reattach itself when laying out itself.
-    if (!layout_object || layout_object->WhitespaceChildrenMayChange() ||
+    if (!layout_object ||
         !WillUpdateSizeContainerDuringLayout(*layout_object)) {
       return false;
     }
@@ -3323,30 +3317,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     return;
   }
 
-  if (LayoutObject* layout_object = GetLayoutObject()) {
-    // If a layout subtree was synchronously detached on DOM or flat tree
-    // changes, we need to revisit the element during layout tree rebuild for
-    // two reasons:
-    //
-    // 1. SubtreeDidChange() needs to be called on list-item layout objects
-    //    ancestors for markers (see SubtreeDidChange() implementation on list
-    //    item layout objects).
-    // 2. Whitespace siblings of removed subtrees may change to have their
-    //    layout object added or removed as the need for rendering the
-    //    whitespace may have changed.
-    bool mark_ancestors = layout_object->WasNotifiedOfSubtreeChange();
-    if (layout_object->WhitespaceChildrenMayChange()) {
-      if (LayoutTreeBuilderTraversal::FirstChild(*this)) {
-        mark_ancestors = true;
-      } else {
-        layout_object->SetWhitespaceChildrenMayChange(false);
-      }
-    }
-    if (mark_ancestors) {
-      MarkAncestorsWithChildNeedsReattachLayoutTree();
-    }
-  }
-
   StyleRecalcContext child_recalc_context = local_style_recalc_context;
 
   if (const ComputedStyle* style = GetComputedStyle()) {
@@ -3372,6 +3342,30 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     }
     if (style->IsContainerForSizeContainerQueries()) {
       child_recalc_context.container = this;
+    }
+  }
+
+  if (LayoutObject* layout_object = GetLayoutObject()) {
+    // If a layout subtree was synchronously detached on DOM or flat tree
+    // changes, we need to revisit the element during layout tree rebuild for
+    // two reasons:
+    //
+    // 1. SubtreeDidChange() needs to be called on list-item layout objects
+    //    ancestors for markers (see SubtreeDidChange() implementation on list
+    //    item layout objects).
+    // 2. Whitespace siblings of removed subtrees may change to have their
+    //    layout object added or removed as the need for rendering the
+    //    whitespace may have changed.
+    bool mark_ancestors = layout_object->WasNotifiedOfSubtreeChange();
+    if (layout_object->WhitespaceChildrenMayChange()) {
+      if (LayoutTreeBuilderTraversal::FirstChild(*this)) {
+        mark_ancestors = true;
+      } else {
+        layout_object->SetWhitespaceChildrenMayChange(false);
+      }
+    }
+    if (mark_ancestors) {
+      MarkAncestorsWithChildNeedsReattachLayoutTree();
     }
   }
 

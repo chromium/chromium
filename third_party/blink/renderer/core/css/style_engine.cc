@@ -3398,8 +3398,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 
   if (container.NeedsReattachLayoutTree()) {
     ReattachContainerSubtree(container);
-  } else if (container.ChildNeedsReattachLayoutTree()) {
-    DCHECK(layout_tree_rebuild_root_.GetRootNode());
+  } else if (NeedsLayoutTreeRebuild()) {
     if (layout_tree_rebuild_root_.GetRootNode()->IsDocumentNode()) {
       // Avoid traversing from outside the container root. We know none of the
       // elements outside the subtree should be marked dirty in this pass, but
