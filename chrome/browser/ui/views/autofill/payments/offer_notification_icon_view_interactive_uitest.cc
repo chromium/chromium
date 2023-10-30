@@ -119,8 +119,14 @@ class OfferNotificationIconViewInteractiveTest : public InteractiveBrowserTest {
       weak_ptr_factory_{this};
 };
 
+// TODO(crbug.com/1497347): Flaky on Linux MSAN.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_IconAutoCollapse DISABLED_IconAutoCollapse
+#else
+#define MAYBE_IconAutoCollapse IconAutoCollapse
+#endif
 IN_PROC_BROWSER_TEST_F(OfferNotificationIconViewInteractiveTest,
-                       IconAutoCollapse) {
+                       MAYBE_IconAutoCollapse) {
   base::MockRetainingOneShotTimer timer;
   SetIconAnimationTimer(&timer);
 
