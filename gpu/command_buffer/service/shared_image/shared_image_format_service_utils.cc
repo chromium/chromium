@@ -6,6 +6,7 @@
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+#include <GLES3/gl3.h>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -281,6 +282,26 @@ GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
           format, use_angle_rgbx_format, plane_index);
   gl_format.target = GL_TEXTURE_2D;
   return gl_format;
+}
+
+GLFormatDesc ToGLFormatDescOverrideHalfFloatType(viz::SharedImageFormat format,
+                                                 int plane_index,
+                                                 bool use_angle_rgbx_format,
+                                                 bool use_half_float_oes) {
+  GLFormatDesc format_desc =
+      ToGLFormatDesc(format, plane_index, use_angle_rgbx_format);
+  // GL_HALF_FLOAT and GL_HALF_FLOAT_OES have different values so cannot be used
+  // interchangeably.
+  if (format_desc.data_type == GL_HALF_FLOAT_OES && !use_half_float_oes) {
+    format_desc.data_type = GL_HALF_FLOAT;
+  }
+  // ES3 requires using sized internal format for GL_HALF_FLOAT.
+  if (format_desc.image_internal_format == GL_RGBA &&
+      format_desc.data_format == GL_RGBA &&
+      format_desc.data_type == GL_HALF_FLOAT) {
+    format_desc.image_internal_format = GL_RGBA16F;
+  }
+  return format_desc;
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)

@@ -73,6 +73,13 @@ ToGLFormatDescExternalSampler(viz::SharedImageFormat format);
 GPU_GLES2_EXPORT GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
                                              int plane_index,
                                              bool use_angle_rgbx_format);
+// Same as above with an additional param to control whether to use
+// HALF_FLOAT_OES extension types or core types for F16 format.
+GPU_GLES2_EXPORT GLFormatDesc
+ToGLFormatDescOverrideHalfFloatType(viz::SharedImageFormat format,
+                                    int plane_index,
+                                    bool use_angle_rgbx_format,
+                                    bool use_half_float_oes);
 
 // Following functions return the appropriate Vulkan format for a
 // SharedImageFormat.

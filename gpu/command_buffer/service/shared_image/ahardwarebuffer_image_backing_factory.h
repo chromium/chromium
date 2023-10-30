@@ -113,7 +113,8 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
   // be a supported format.
   static FormatInfo FormatInfoForSupportedFormat(
       viz::SharedImageFormat format,
-      const gles2::Validators* validators);
+      const gles2::Validators* validators,
+      bool use_half_float_oes);
 
   bool ValidateUsage(uint32_t usage,
                      const gfx::Size& size,
@@ -144,6 +145,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
   int32_t max_gl_texture_size_ = 0;
 
   const bool use_passthrough_;
+  const bool use_half_float_oes_;
 };
 
 }  // namespace gpu
