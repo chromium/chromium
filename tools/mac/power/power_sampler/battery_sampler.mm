@@ -54,8 +54,9 @@ std::unique_ptr<BatterySampler> BatterySampler::Create() {
   base::mac::ScopedIOObject<io_service_t> power_source(
       IOServiceGetMatchingService(kIOMasterPortDefault,
                                   IOServiceMatching("IOPMPowerSource")));
-  if (power_source == IO_OBJECT_NULL)
+  if (!power_source) {
     return nullptr;
+  }
 
   auto get_seconds_since_epoch_fn = []() -> int64_t {
     return (base::Time::Now() - base::Time::UnixEpoch()).InSeconds();
@@ -137,15 +138,15 @@ absl::optional<BatterySampler::BatteryData> BatterySampler::MaybeGetBatteryData(
   }
 
   absl::optional<bool> external_connected =
-      GetValueAsBoolean(dict, CFSTR("ExternalConnected"));
+      GetValueAsBoolean(dict.get(), CFSTR("ExternalConnected"));
   absl::optional<SInt64> voltage_mv =
-      GetValueAsSInt64(dict, CFSTR(kIOPSVoltageKey));
+      GetValueAsSInt64(dict.get(), CFSTR(kIOPSVoltageKey));
   absl::optional<SInt64> current_capacity_mah =
-      GetValueAsSInt64(dict, CFSTR("AppleRawCurrentCapacity"));
+      GetValueAsSInt64(dict.get(), CFSTR("AppleRawCurrentCapacity"));
   absl::optional<SInt64> max_capacity_mah =
-      GetValueAsSInt64(dict, CFSTR("AppleRawMaxCapacity"));
+      GetValueAsSInt64(dict.get(), CFSTR("AppleRawMaxCapacity"));
   absl::optional<SInt64> update_time =
-      GetValueAsSInt64(dict, CFSTR("UpdateTime"));
+      GetValueAsSInt64(dict.get(), CFSTR("UpdateTime"));
 
   if (!external_connected.has_value() || !voltage_mv.has_value() ||
       !current_capacity_mah.has_value() || !max_capacity_mah.has_value()) {
