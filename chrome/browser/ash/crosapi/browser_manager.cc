@@ -502,6 +502,38 @@ void RecordDataVerForPrimaryUser() {
                                        version_info::GetVersion());
 }
 
+bool ShouldPrelaunchLacrosAtLoginScreen() {
+  if (!base::FeatureList::IsEnabled(kLacrosLaunchAtLoginScreen)) {
+    LOG(WARNING)
+        << "Lacros will not be prelaunched: prelaunching feature is disabled";
+    return false;
+  }
+
+  // If the CPU of the device does not support running Lacros,
+  // prelaunching should be blocked too.
+  if (!ash::standalone_browser::BrowserSupport::IsCpuSupported()) {
+    LOG(WARNING) << "Lacros will not be prelaunched: CPU is not supported";
+    return false;
+  }
+
+  // We only want to pre-launch Lacros if Ash is launched in login
+  // manager mode. When the `kLoginUser` switch is passed, we are
+  // restarting the session for an already logged in user, either in
+  // production, or after PRE_ tests. In both of those cases, the user
+  // is already logged in, and we do not want Lacros to prelaunch.
+  // Originally introduced because of https://crbug.com/1432779, which
+  // causes PRE_ tests to restart back to login screen, but with the
+  // user still "logged in" (UserManager::IsUserLoggedIn() == true).
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kLoginUser)) {
+    LOG(WARNING)
+        << "Lacros will not be prelaunched: login-user switch was passed";
+    return false;
+  }
+
+  return true;
+}
+
 // The delegate keeps track of the most recent lacros-chrome binary version
 // loaded by the BrowserLoader.
 // It is the single source of truth for what is the most up-to-date launchable
@@ -604,19 +636,7 @@ BrowserManager::BrowserManager(
     component_updater::ComponentUpdateService* update_service)
     : browser_loader_(std::move(browser_loader)),
       environment_provider_(std::make_unique<EnvironmentProvider>()),
-      launch_at_login_screen_(
-          // NOTE: We only want to pre-launch Lacros if Ash is launched in login
-          // manager mode. When the `kLoginUser` switch is passed, we are
-          // restarting the session for an already logged in user, either in
-          // production, or after PRE_ tests. In both of those cases, the user
-          // is already logged in, and we do not want Lacros to prelaunch.
-          // Originally introduced because of https://crbug.com/1432779, which
-          // causes PRE_ tests to restart back to login screen, but with the
-          // user still "logged in" (UserManager::IsUserLoggedIn() == true).
-          !base::CommandLine::ForCurrentProcess()->HasSwitch(
-              ash::switches::kLoginUser) &&
-          ash::standalone_browser::BrowserSupport::IsCpuSupported() &&
-          base::FeatureList::IsEnabled(kLacrosLaunchAtLoginScreen)),
+      launch_at_login_screen_(ShouldPrelaunchLacrosAtLoginScreen()),
       disabled_for_testing_(g_disabled_for_testing),
       device_ownership_waiter_(std::make_unique<DeviceOwnershipWaiterImpl>()) {
   DCHECK(!g_instance);
