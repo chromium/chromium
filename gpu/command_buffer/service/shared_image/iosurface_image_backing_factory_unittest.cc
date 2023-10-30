@@ -214,6 +214,9 @@ class IOSurfaceImageBackingFactoryDawnTest
             wgpu::FeatureName::MultiPlanarFormatExtendedUsages)) {
       features.push_back(wgpu::FeatureName::MultiPlanarFormatExtendedUsages);
     }
+    if (adapter.HasFeature(wgpu::FeatureName::MultiPlanarFormatP010)) {
+      features.push_back(wgpu::FeatureName::MultiPlanarFormatP010);
+    }
 
     // We need to request internal usage to be able to do operations with
     // internal methods that would need specific usages.
@@ -761,8 +764,10 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
     return;
   }
 
-  // TODO(crbug.com/1450879): Enable once multi-planar rendering lands for Dawn.
+  // TODO(dawn:1337): Enable once multi-planar rendering lands for Dawn
+  // Vulkan-Swiftshader.
   if (get_gr_context_type() == GrContextType::kGraphiteDawn &&
+      GetDawnBackendType() == wgpu::BackendType::Vulkan &&
       format.is_multi_plane()) {
     return;
   }
@@ -806,12 +811,15 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
     }
   } else {
     CHECK_EQ(get_gr_context_type(), GrContextType::kGraphiteDawn);
-    auto graphite_texture = scoped_read_access->graphite_texture();
-    EXPECT_TRUE(graphite_texture.isValid());
     EXPECT_TRUE(begin_semaphores.empty());
     EXPECT_TRUE(end_semaphores.empty());
-    EXPECT_EQ(size.width(), graphite_texture.dimensions().width());
-    EXPECT_EQ(size.height(), graphite_texture.dimensions().height());
+    for (auto i = 0; i < format.NumberOfPlanes(); i++) {
+      auto graphite_texture = scoped_read_access->graphite_texture(i);
+      EXPECT_TRUE(graphite_texture.isValid());
+      auto plane_size = format.GetPlaneSize(i, size);
+      EXPECT_EQ(plane_size.width(), graphite_texture.dimensions().width());
+      EXPECT_EQ(plane_size.height(), graphite_texture.dimensions().height());
+    }
   }
   scoped_read_access.reset();
   skia_representation.reset();
@@ -1278,8 +1286,10 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
     return;
   }
 
-  // TODO(crbug.com/1450879): Enable once multi-planar rendering lands for Dawn.
+  // TODO(dawn:1337): Enable once multi-planar rendering lands for Dawn
+  // Vulkan-Swiftshader.
   if (get_gr_context_type() == GrContextType::kGraphiteDawn &&
+      GetDawnBackendType() == wgpu::BackendType::Vulkan &&
       format.is_multi_plane()) {
     return;
   }
