@@ -148,9 +148,9 @@ source_set("xnnpack_standalone") {
 _TARGET_TMPL = '''
 source_set("%TARGET_NAME%") {
   cflags = [
-%ARGS%
+%CFLAGS%
   ]
-
+%ASMFLAGS%
   sources = [
 %SRCS%
   ]
@@ -172,9 +172,9 @@ source_set("%TARGET_NAME%") {
 # This is a target that cannot depend on //base.
 source_set("%TARGET_NAME%_standalone") {
   cflags = [
-%ARGS%
+%CFLAGS%
   ]
-
+%ASMFLAGS%
   sources = [
 %SRCS%
   ]
@@ -562,7 +562,17 @@ def MakeTargetSourceSet(ss, arch):
   """
   target = _TARGET_TMPL
   target = target.replace(
-      '%ARGS%', ',\n'.join(['    "%s"' % arg for arg in sorted(ss.args)]))
+      '%CFLAGS%', ',\n'.join(['    "%s"' % arg for arg in sorted(ss.args)]))
+  have_asm_files = False
+  for src in ss.srcs:
+    if src.endswith('.S'):
+      have_asm_files = True
+      break
+  if have_asm_files:
+    target = target.replace('%ASMFLAGS%', '\n  asmflags = cflags\n')
+  else:
+    target = target.replace('%ASMFLAGS%', '')
+
   target = target.replace(
       '%SRCS%', ',\n'.join(['    "%s"' % src for src in sorted(ss.srcs)]))
   target = target.replace('%TARGET_NAME%', NameForSourceSet(ss, arch))

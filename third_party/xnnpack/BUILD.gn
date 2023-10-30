@@ -1666,6 +1666,8 @@ if (current_cpu == "arm64") {
   source_set("f16-gemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/f16-gemm/gen/f16-gemm-1x16-minmax-asm-aarch64-neonfp16arith-ld32.S",
       "src/src/f16-gemm/gen/f16-gemm-1x16-minmax-asm-aarch64-neonfp16arith-ld64.S",
@@ -1708,6 +1710,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("f16-gemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f16-gemm/gen/f16-gemm-1x16-minmax-asm-aarch64-neonfp16arith-ld32.S",
@@ -1755,6 +1759,8 @@ if (current_cpu == "arm64") {
   source_set("f16-igemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/f16-igemm/f16-igemm-1x16-minmax-asm-aarch64-neonfp16arith-ld32.S",
       "src/src/f16-igemm/f16-igemm-1x16-minmax-asm-aarch64-neonfp16arith-ld64.S",
@@ -1784,6 +1790,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("f16-igemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f16-igemm/f16-igemm-1x16-minmax-asm-aarch64-neonfp16arith-ld32.S",
@@ -1818,6 +1826,8 @@ if (current_cpu == "arm64") {
   source_set("f32-dwconv_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/f32-dwconv/f32-dwconv-9p4c-minmax-asm-aarch64-neonfma-cortex-a55.S",
       "src/src/f32-dwconv/f32-dwconv-9p4c-minmax-asm-aarch64-neonfma.S",
@@ -1840,6 +1850,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("f32-dwconv_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f32-dwconv/f32-dwconv-9p4c-minmax-asm-aarch64-neonfma-cortex-a55.S",
@@ -1866,6 +1878,8 @@ if (current_cpu == "arm64") {
 
   source_set("f32-gemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f32-gemm/gen/f32-gemm-1x12-minmax-asm-aarch64-neonfma-cortex-a53.S",
@@ -1933,6 +1947,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("f32-gemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f32-gemm/gen/f32-gemm-1x12-minmax-asm-aarch64-neonfma-cortex-a53.S",
@@ -2004,6 +2020,8 @@ if (current_cpu == "arm64") {
   source_set("f32-gemminc_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/f32-gemminc/gen/f32-gemminc-1x12-minmax-asm-aarch64-neonfma-cortex-a53.S",
       "src/src/f32-gemminc/gen/f32-gemminc-1x8-minmax-asm-aarch64-neonfma-cortex-a53.S",
@@ -2045,6 +2063,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("f32-gemminc_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f32-gemminc/gen/f32-gemminc-1x12-minmax-asm-aarch64-neonfma-cortex-a53.S",
@@ -2090,6 +2110,8 @@ if (current_cpu == "arm64") {
 
   source_set("f32-igemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f32-igemm/f32-igemm-1x12-minmax-asm-aarch64-neonfma-cortex-a53.S",
@@ -2139,6 +2161,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("f32-igemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f32-igemm/f32-igemm-1x12-minmax-asm-aarch64-neonfma-cortex-a53.S",
@@ -2192,6 +2216,8 @@ if (current_cpu == "arm64") {
   source_set("f32-ppmm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/f32-ppmm/gen/f32-ppmm-4x8-minmax-asm-aarch64-neonfma-cortex-a75-prfm.S",
       "src/src/f32-ppmm/gen/f32-ppmm-4x8-minmax-asm-aarch64-neonfma-cortex-a75.S",
@@ -2220,6 +2246,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("f32-ppmm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f32-ppmm/gen/f32-ppmm-4x8-minmax-asm-aarch64-neonfma-cortex-a75-prfm.S",
@@ -2252,6 +2280,8 @@ if (current_cpu == "arm64") {
 
   source_set("f32-qc4w-gemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f32-qc4w-gemm/gen/f32-qc4w-gemm-1x8-minmax-asm-aarch64-neon-ld128-acc2-prfm.S",
@@ -2295,6 +2325,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("f32-qc4w-gemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f32-qc4w-gemm/gen/f32-qc4w-gemm-1x8-minmax-asm-aarch64-neon-ld128-acc2-prfm.S",
@@ -2342,6 +2374,8 @@ if (current_cpu == "arm64") {
   source_set("f32-qc8w-gemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/f32-qc8w-gemm/gen/f32-qc8w-gemm-1x8-minmax-asm-aarch64-neon-ld128-acc2-prfm.S",
       "src/src/f32-qc8w-gemm/gen/f32-qc8w-gemm-1x8-minmax-asm-aarch64-neon-ld128-acc2.S",
@@ -2384,6 +2418,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("f32-qc8w-gemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/f32-qc8w-gemm/gen/f32-qc8w-gemm-1x8-minmax-asm-aarch64-neon-ld128-acc2-prfm.S",
@@ -2530,6 +2566,8 @@ if (current_cpu == "arm64") {
   source_set("qd8-f32-qc8w-gemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-4x16c4-minmax-asm-aarch64-neondot-cortex-a55.S",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-4x16c4-minmax-asm-aarch64-neondot-ld128.S",
@@ -2553,6 +2591,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("qd8-f32-qc8w-gemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-4x16c4-minmax-asm-aarch64-neondot-cortex-a55.S",
@@ -2580,6 +2620,8 @@ if (current_cpu == "arm64") {
 
   source_set("qs8-gemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/qs8-gemm/gen/qs8-gemm-1x16c4-minmax-fp32-asm-aarch64-neondot-ld32.S",
@@ -2643,6 +2685,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("qs8-gemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/qs8-gemm/gen/qs8-gemm-1x16c4-minmax-fp32-asm-aarch64-neondot-ld32.S",
@@ -2710,6 +2754,8 @@ if (current_cpu == "arm64") {
   source_set("qs8-igemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/qs8-igemm/gen/qs8-igemm-1x8c8-minmax-fp32-asm-aarch64-neon-mlal-cortex-a53-prfm.S",
       "src/src/qs8-igemm/gen/qs8-igemm-1x8c8-minmax-fp32-asm-aarch64-neon-mlal-cortex-a53.S",
@@ -2764,6 +2810,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("qs8-igemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/qs8-igemm/gen/qs8-igemm-1x8c8-minmax-fp32-asm-aarch64-neon-mlal-cortex-a53-prfm.S",
@@ -2823,6 +2871,8 @@ if (current_cpu == "arm64") {
   source_set("qs8-qc8w-gemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x16c4-minmax-fp32-asm-aarch64-neondot-ld32.S",
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x16c4-minmax-fp32-asm-aarch64-neondot-ld64.S",
@@ -2863,6 +2913,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("qs8-qc8w-gemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/qs8-qc8w-gemm/gen/qs8-qc8w-gemm-1x16c4-minmax-fp32-asm-aarch64-neondot-ld32.S",
@@ -2908,6 +2960,8 @@ if (current_cpu == "arm64") {
   source_set("qs8-qc8w-igemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x8c8-minmax-fp32-asm-aarch64-neon-mlal-cortex-a53-prfm.S",
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x8c8-minmax-fp32-asm-aarch64-neon-mlal-cortex-a53.S",
@@ -2944,6 +2998,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("qs8-qc8w-igemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/qs8-qc8w-igemm/gen/qs8-qc8w-igemm-1x8c8-minmax-fp32-asm-aarch64-neon-mlal-cortex-a53-prfm.S",
@@ -2985,6 +3041,8 @@ if (current_cpu == "arm64") {
   source_set("qu8-gemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/qu8-gemm/gen/qu8-gemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-cortex-a53-prfm.S",
       "src/src/qu8-gemm/gen/qu8-gemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-cortex-a53.S",
@@ -3017,6 +3075,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("qu8-gemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/qu8-gemm/gen/qu8-gemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-cortex-a53-prfm.S",
@@ -3054,6 +3114,8 @@ if (current_cpu == "arm64") {
   source_set("qu8-igemm_arch=armv8.2-a+fp16+dotprod") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
 
+    asmflags = cflags
+
     sources = [
       "src/src/qu8-igemm/gen/qu8-igemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-cortex-a53-prfm.S",
       "src/src/qu8-igemm/gen/qu8-igemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-cortex-a53.S",
@@ -3086,6 +3148,8 @@ if (current_cpu == "arm64") {
   # This is a target that cannot depend on //base.
   source_set("qu8-igemm_arch=armv8.2-a+fp16+dotprod_standalone") {
     cflags = [ "-march=armv8.2-a+fp16+dotprod" ]
+
+    asmflags = cflags
 
     sources = [
       "src/src/qu8-igemm/gen/qu8-igemm-4x16-minmax-rndnu-asm-aarch64-neon-mlal-lane-cortex-a53-prfm.S",
