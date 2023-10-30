@@ -482,7 +482,8 @@ class SharedStorageWorkletTest : public PageTestBase {
             SecurityOrigin::Create(KURL(kModuleScriptSource)),
             Vector({mojom::blink::OriginTrialFeature::kSharedStorageAPI}),
             /*devtools_worker_token=*/base::UnguessableToken(),
-            std::move(pending_devtools_host_remote)),
+            std::move(pending_devtools_host_remote),
+            /*wait_for_debugger=*/false),
         worklet_terminated_future_.GetCallback());
 
     mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>

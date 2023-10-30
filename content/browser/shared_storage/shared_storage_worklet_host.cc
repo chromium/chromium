@@ -115,7 +115,7 @@ class SharedStorageWorkletHost::ScopedDevToolsHandle
   explicit ScopedDevToolsHandle(SharedStorageWorkletHost& owner)
       : owner_(owner), devtools_token_(base::UnguessableToken::Create()) {
     SharedStorageWorkletDevToolsManager::GetInstance()->WorkletCreated(
-        owner, devtools_token_);
+        owner, devtools_token_, wait_for_debugger_);
   }
 
   ScopedDevToolsHandle(const ScopedDevToolsHandle&) = delete;
@@ -140,6 +140,8 @@ class SharedStorageWorkletHost::ScopedDevToolsHandle
     return devtools_token_;
   }
 
+  bool wait_for_debugger() const { return wait_for_debugger_; }
+
   mojo::PendingRemote<blink::mojom::WorkletDevToolsHost>
   BindNewPipeAndPassRemote() {
     return host_.BindNewPipeAndPassRemote();
@@ -149,6 +151,8 @@ class SharedStorageWorkletHost::ScopedDevToolsHandle
   raw_ref<SharedStorageWorkletHost> owner_;
 
   mojo::Receiver<blink::mojom::WorkletDevToolsHost> host_{this};
+
+  bool wait_for_debugger_ = false;
 
   const base::UnguessableToken devtools_token_;
 };
@@ -1101,7 +1105,8 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
         blink::mojom::WorkletGlobalScopeCreationParams::New(
             script_source_url_, shared_storage_origin_, origin_trial_features_,
             devtools_handle_->devtools_token(),
-            devtools_handle_->BindNewPipeAndPassRemote());
+            devtools_handle_->BindNewPipeAndPassRemote(),
+            devtools_handle_->wait_for_debugger());
 
     driver_->StartWorkletService(
         shared_storage_worklet_service_.BindNewPipeAndPassReceiver(),

@@ -12,5 +12,16 @@
   const worklet = (await dp.Target.onceAttachedToTarget()).params;
   testRunner.log(worklet);
 
+  const wp = session.createChild(worklet.sessionId).protocol;
+
+  wp.Runtime.enable();
+  wp.Debugger.enable();
+  wp.EventBreakpoints.setInstrumentationBreakpoint({eventName: 'sharedStorageWorkletScriptFirstStatement'});
+  wp.Runtime.runIfWaitingForDebugger();
+
+  const {data, reason} = (await wp.Debugger.oncePaused()).params;
+
+  testRunner.log({data, reason});
+
   testRunner.completeTest();
 });

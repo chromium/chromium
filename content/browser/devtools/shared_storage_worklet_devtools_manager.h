@@ -47,7 +47,8 @@ class SharedStorageWorkletDevToolsManager {
   void AddAllAgentHosts(std::vector<scoped_refptr<DevToolsAgentHost>>* result);
 
   void WorkletCreated(SharedStorageWorkletHost& worklet_host,
-                      const base::UnguessableToken& devtools_worklet_token);
+                      const base::UnguessableToken& devtools_worklet_token,
+                      bool& wait_for_debugger);
   void WorkletReadyForInspection(
       SharedStorageWorkletHost& worklet_host,
       mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,

@@ -103,6 +103,8 @@ void ThreadedWorkletMessagingProxy::Initialize(
     auto devtools_params = std::make_unique<WorkerDevToolsParams>();
     devtools_params->devtools_worker_token =
         client_provided_global_scope_creation_params->devtools_token;
+    devtools_params->wait_for_debugger =
+        client_provided_global_scope_creation_params->wait_for_debugger;
     mojo::PendingRemote<mojom::blink::DevToolsAgent> devtools_agent_remote;
     devtools_params->agent_receiver =
         devtools_agent_remote.InitWithNewPipeAndPassReceiver();

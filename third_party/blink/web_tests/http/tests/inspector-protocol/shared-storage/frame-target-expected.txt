@@ -12,4 +12,10 @@ Tests auto-attach to frame target.
     }
     waitingForDebugger : true
 }
+{
+    data : {
+        eventName : instrumentation:sharedStorageWorkletScriptFirstStatement
+    }
+    reason : EventListener
+}
 

@@ -29,9 +29,11 @@ void SharedStorageWorkletDevToolsManager::AddAllAgentHosts(
 
 void SharedStorageWorkletDevToolsManager::WorkletCreated(
     SharedStorageWorkletHost& worklet_host,
-    const base::UnguessableToken& devtools_worklet_token) {
+    const base::UnguessableToken& devtools_worklet_token,
+    bool& wait_for_debugger) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!base::Contains(hosts_, &worklet_host));
+  CHECK(!wait_for_debugger);
 
   hosts_[&worklet_host] = MakeRefCounted<SharedStorageWorkletDevToolsAgentHost>(
       worklet_host, devtools_worklet_token);
@@ -40,6 +42,7 @@ void SharedStorageWorkletDevToolsManager::WorkletCreated(
     bool should_pause_on_start = false;
     observer.SharedStorageWorkletCreated(hosts_[&worklet_host].get(),
                                          should_pause_on_start);
+    wait_for_debugger |= should_pause_on_start;
   }
 }
 
