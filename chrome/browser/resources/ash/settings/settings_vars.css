@@ -23,6 +23,16 @@ html {
   --iron-icon-width: var(--cr-icon-size);
 
   --cr-radio-group-item-padding: 0;
+
+  --settings-menu-width: 250px;
+  --settings-menu-item-border-width: 2px;
+}
+
+/* TODO(b/302374851) Move these vars into the html block above once the feature
+ * is fully launched and can be cleaned up.
+ */
+body.revamp-wayfinding-enabled {
+  --settings-menu-width: 280px;
 }
 
 @media (prefers-color-scheme: dark) {

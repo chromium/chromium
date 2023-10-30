@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    --settings-menu-width: 250px;
+
     /* Centered cards has a max-width of var(--cr-centered-card-max-width)
       * and a width of a certain percentage. Therefore, to make room for the
       * cards to be at their max width, the flex-basis of #main needs to be
@@ -13,10 +13,6 @@
     --cr-card-border-radius: 4px;
     --cr-card-shadow: var(--cr-elevation-1);
     --cr-toolbar-padding-top: 8px;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled):host {
-    --settings-menu-width: 280px;
   }
 
   os-toolbar {
@@ -64,11 +60,6 @@
     max-height: 100%;
     overflow: auto;
     overscroll-behavior: contain;
-    width: var(--settings-menu-width);
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) #drawer {
-    --cr-drawer-width: var(--settings-menu-width);
   }
 
   :host-context(body.revamp-wayfinding-enabled) #left os-settings-menu {
@@ -80,6 +71,11 @@
     :host-context(body.revamp-wayfinding-enabled) #left os-settings-menu {
       background-color: var(--cros-sys-surface2);
     }
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #drawer {
+    --cr-drawer-header-padding: 28px;
+    --cr-drawer-width: var(--settings-menu-width);
   }
 
   #main {
@@ -108,6 +104,10 @@
     margin-inline-end: 14px;
     margin-inline-start: 0;
     outline: none;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #iconButton {
+    margin-inline-end: 12px;
   }
 </style>
 <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
