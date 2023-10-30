@@ -2213,16 +2213,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "split-user-media-queues",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/mediacapture-streams/parallel-capture-requests.https.html"
-    ],
-    "args": ["--enable-features=SplitUserMediaQueues",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "js-resizable-arraybuffer",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

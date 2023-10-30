@@ -1836,10 +1836,6 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerdown", true};
 
-BASE_FEATURE(kSplitUserMediaQueues,
-             "SplitUserMediaQueues",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kStartMediaStreamCaptureIndicatorInBrowser,
              "StartMediaStreamCaptureIndicatorInBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);

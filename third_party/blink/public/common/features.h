@@ -1197,9 +1197,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kSpeculativeServiceWorkerWarmUpOnPointerdown;
 
-// Process device and display capture requests on different queues.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSplitUserMediaQueues);
-
 // Make the browser decide when to turn on the capture indicator (red button)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kStartMediaStreamCaptureIndicatorInBrowser);
