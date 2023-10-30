@@ -337,8 +337,12 @@ void PasswordGenerationPopupControllerImpl::EditPasswordClicked() {
   Show(kEditGeneratedPassword);
 }
 
-void PasswordGenerationPopupControllerImpl::EditPasswordSelected() {
-  driver_->PreviewGenerationSuggestion(current_generated_password_);
+void PasswordGenerationPopupControllerImpl::EditPasswordHovered(bool hovered) {
+  if (hovered) {
+    driver_->PreviewGenerationSuggestion(current_generated_password_);
+  } else {
+    driver_->ClearPreviewedForm();
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

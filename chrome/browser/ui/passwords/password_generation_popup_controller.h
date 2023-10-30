@@ -31,8 +31,8 @@ class PasswordGenerationPopupController
   // Called by the view when the edit password row was clicked.
   virtual void EditPasswordClicked() = 0;
 
-  // Called by the view when the edit password row was selected.
-  virtual void EditPasswordSelected() = 0;
+  // Called by the view when the edit password hovered state changes.
+  virtual void EditPasswordHovered(bool hovered) = 0;
 
 // Only on Desktop, the password generation promo contains a link to the Google
 // password manager and an indicator to which Google account passwords are

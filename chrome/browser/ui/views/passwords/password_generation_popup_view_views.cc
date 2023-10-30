@@ -172,13 +172,16 @@ class EditPasswordRow : public views::FlexLayoutView {
  private:
   void OnMouseEntered(const ui::MouseEvent& event) override {
     if (controller_) {
-      controller_->EditPasswordSelected();
+      controller_->EditPasswordHovered(true);
     }
     SetBackground(views::CreateThemedSolidBackground(
         ui::kColorDropdownBackgroundSelected));
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
+    if (controller_) {
+      controller_->EditPasswordHovered(false);
+    }
     SetBackground(
         views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
   }
