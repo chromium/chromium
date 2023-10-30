@@ -35,6 +35,16 @@ namespace blink {
 AXMenuListPopup::AXMenuListPopup(AXObjectCacheImpl& ax_object_cache)
     : AXMockObject(ax_object_cache), active_index_(-1) {}
 
+void AXMenuListPopup::Init(AXObject* parent) {
+  owner_ = parent;
+  AXMockObject::Init(parent);
+}
+
+void AXMenuListPopup::Detach() {
+  owner_ = nullptr;
+  AXMockObject::Detach();
+}
+
 ax::mojom::blink::Role AXMenuListPopup::NativeRoleIgnoringAria() const {
   return ax::mojom::blink::Role::kMenuListPopup;
 }
@@ -134,6 +144,7 @@ void AXMenuListPopup::AddChildren() {
         << ax_preexisting->CachedParentObject()->ToString(true, true);
 #endif
     AXMenuListOption* option = MenuListOptionAXObject(option_element);
+    CHECK(!option->IsMissingParent());
     if (option && option->AccessibilityIsIncludedInTree()) {
       DCHECK(!option->IsDetached());
       children_.push_back(option);
@@ -206,6 +217,11 @@ AXObject* AXMenuListPopup::ActiveDescendant() {
   HTMLOptionElement* option = select->item(active_index_);
   DCHECK(option);
   return AXObjectCache().Get(option);
+}
+
+void AXMenuListPopup::Trace(Visitor* visitor) const {
+  visitor->Trace(owner_);
+  AXMockObject::Trace(visitor);
 }
 
 }  // namespace blink

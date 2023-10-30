@@ -40,6 +40,8 @@ class AXMenuList final : public AXLayoutObject {
   AXMenuList(const AXMenuList&) = delete;
   AXMenuList& operator=(const AXMenuList&) = delete;
 
+  void Trace(Visitor*) const override;
+
   AccessibilityExpanded IsExpanded() const final;
   bool OnNativeClickAction() override;
   void ChildrenChangedWithCleanLayout() override;
@@ -72,6 +74,8 @@ class AXMenuList final : public AXLayoutObject {
   bool IsCollapsed() const;
 
   WTF::Vector<gfx::Rect> options_bounds_;
+
+  Member<AXObject> popup_;
 };
 
 template <>
