@@ -275,7 +275,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, NewModalParentCreated) {
   // Launch File Handler dialog.
   ASSERT_TRUE(CloudOpenTask::Execute(
       profile(), files_, CloudProvider::kGoogleDrive, nullptr,
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive)));
+      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
+                                         /*file_count=*/1)));
 
   // Wait for File Handler dialog to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -320,7 +321,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
   // Launch File Handler dialog.
   ASSERT_TRUE(CloudOpenTask::Execute(
       profile(), files_, CloudProvider::kGoogleDrive, nullptr,
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive)));
+      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
+                                         /*file_count=*/1)));
   // Check that a new browser opened.
   Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_NE(new_browser, first_files_app);
@@ -368,7 +370,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, ModalParentProvided) {
   ASSERT_TRUE(CloudOpenTask::Execute(
       profile(), files_, CloudProvider::kGoogleDrive,
       browser->window()->GetNativeWindow(),
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive)));
+      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
+                                         /*file_count=*/1)));
 
   // Wait for File Handler dialog to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -388,8 +391,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, CancelFileHandlerDialog) {
       (GURL(chrome::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  auto cloud_open_metrics =
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive);
+  auto cloud_open_metrics = std::make_unique<CloudOpenMetrics>(
+      CloudProvider::kGoogleDrive, /*file_count=*/1);
   auto cloud_open_metrics_weak_ptr = cloud_open_metrics->GetWeakPtr();
 
   // Check that the Setup flow has never run and so the File Handler dialog will
@@ -439,8 +442,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
       (GURL(chrome::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  auto cloud_open_metrics =
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive);
+  auto cloud_open_metrics = std::make_unique<CloudOpenMetrics>(
+      CloudProvider::kGoogleDrive, /*file_count=*/1);
   auto cloud_open_metrics_weak_ptr = cloud_open_metrics->GetWeakPtr();
 
   // Check that the Setup flow has never run and so the File Handler dialog will
@@ -582,7 +585,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DefaultSetForDocsOnly) {
   // Launch File Handler dialog.
   ASSERT_TRUE(CloudOpenTask::Execute(
       profile(), files_, CloudProvider::kGoogleDrive, nullptr,
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive)));
+      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
+                                         /*file_count=*/1)));
 
   // Wait for File Handler dialog to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -716,8 +720,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
 // Tests that OnDialogComplete() opens the specified fake file task.
 IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
                        OnDialogCompleteOpensFileTasks) {
-  auto cloud_open_metrics =
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive);
+  auto cloud_open_metrics = std::make_unique<CloudOpenMetrics>(
+      CloudProvider::kGoogleDrive, /*file_count=*/1);
   auto cloud_open_metrics_weak_ptr = cloud_open_metrics->GetWeakPtr();
   {
     file_manager::file_tasks::TaskDescriptor default_task;
@@ -753,8 +757,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
 // Tests that OnDialogComplete() doesn't crash when the specified selected task
 // doesn't exist.
 IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OnDialogCompleteNoCrash) {
-  auto cloud_open_metrics =
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive);
+  auto cloud_open_metrics = std::make_unique<CloudOpenMetrics>(
+      CloudProvider::kGoogleDrive, /*file_count=*/1);
   auto cloud_open_metrics_weak_ptr = cloud_open_metrics->GetWeakPtr();
   {
     auto cloud_open_task = base::WrapRefCounted(
@@ -858,9 +862,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest, FixUpFlowWhenODFSNotMounted) {
 
   gfx::NativeWindow modal_parent = LaunchFilesAppAndWait(browser()->profile());
 
-  CloudOpenTask::Execute(
-      profile(), files_, CloudProvider::kOneDrive, modal_parent,
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive));
+  CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive,
+                         modal_parent,
+                         std::make_unique<CloudOpenMetrics>(
+                             CloudProvider::kOneDrive, /*file_count=*/1));
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -904,9 +909,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
 
   gfx::NativeWindow modal_parent = LaunchFilesAppAndWait(browser()->profile());
 
-  CloudOpenTask::Execute(
-      profile(), files_, CloudProvider::kOneDrive, modal_parent,
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive));
+  CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive,
+                         modal_parent,
+                         std::make_unique<CloudOpenMetrics>(
+                             CloudProvider::kOneDrive, /*file_count=*/1));
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -961,9 +967,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   AddFakeODFS();
   AddFakeOfficePWA();
 
-  auto cloud_open_task = base::WrapRefCounted(new CloudOpenTask(
-      profile(), files_, CloudProvider::kOneDrive, nullptr,
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive)));
+  auto cloud_open_task = base::WrapRefCounted(
+      new CloudOpenTask(profile(), files_, CloudProvider::kOneDrive, nullptr,
+                        std::make_unique<CloudOpenMetrics>(
+                            CloudProvider::kOneDrive, /*file_count=*/1)));
   mojom::DialogArgsPtr args =
       cloud_open_task->CreateDialogArgs(mojom::DialogPage::kOneDriveSetup);
   // Self-deleted on close.
@@ -1036,9 +1043,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   AddFakeODFS();
   AddFakeOfficePWA();
 
-  auto cloud_open_task = base::WrapRefCounted(new CloudOpenTask(
-      profile(), files_, CloudProvider::kOneDrive, nullptr,
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive)));
+  auto cloud_open_task = base::WrapRefCounted(
+      new CloudOpenTask(profile(), files_, CloudProvider::kOneDrive, nullptr,
+                        std::make_unique<CloudOpenMetrics>(
+                            CloudProvider::kOneDrive, /*file_count=*/1)));
   mojom::DialogArgsPtr args =
       cloud_open_task->CreateDialogArgs(mojom::DialogPage::kOneDriveSetup);
   // Self-deleted on close.
@@ -1108,7 +1116,8 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
         profile(), source_files_,
         ash::cloud_upload::CloudProvider::kGoogleDrive, nullptr,
-        std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive)));
+        std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
+                                           /*file_count=*/1)));
   }
 
   void SetUpCloudToDriveTask() {
@@ -1122,7 +1131,8 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
         profile(), source_files_,
         ash::cloud_upload::CloudProvider::kGoogleDrive, nullptr,
-        std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive)));
+        std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
+                                           /*file_count=*/1)));
   }
 
   void SetUpReadOnlyToDriveTask() {
@@ -1136,7 +1146,8 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
         profile(), source_files_,
         ash::cloud_upload::CloudProvider::kGoogleDrive, nullptr,
-        std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive)));
+        std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
+                                           /*file_count=*/1)));
   }
 
   void SetUpLocalToOneDriveTask() {
@@ -1149,7 +1160,9 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
 
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
         profile(), source_files_, ash::cloud_upload::CloudProvider::kOneDrive,
-        nullptr, std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive)));
+        nullptr,
+        std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive,
+                                           /*file_count=*/1)));
   }
 
   void SetUpCloudToOneDriveTask() {
@@ -1162,7 +1175,9 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
 
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
         profile(), source_files_, ash::cloud_upload::CloudProvider::kOneDrive,
-        nullptr, std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive)));
+        nullptr,
+        std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive,
+                                           /*file_count=*/1)));
   }
 
   void SetUpReadOnlyToOneDriveTask() {
@@ -1175,7 +1190,9 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
 
     upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
         profile(), source_files_, ash::cloud_upload::CloudProvider::kOneDrive,
-        nullptr, std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive)));
+        nullptr,
+        std::make_unique<CloudOpenMetrics>(CloudProvider::kOneDrive,
+                                           /*file_count=*/1)));
   }
 
   bool ShouldShowConfirmationDialog() {

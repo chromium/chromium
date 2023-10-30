@@ -809,7 +809,7 @@ bool ExecuteFileTask(Profile* profile,
     const bool started = ExecuteWebDriveOfficeTask(
         profile, task, file_urls, modal_parent,
         std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-            ash::cloud_upload::CloudProvider::kGoogleDrive));
+            ash::cloud_upload::CloudProvider::kGoogleDrive, file_urls.size()));
     if (done) {
       if (started) {
         std::move(done).Run(
@@ -829,7 +829,7 @@ bool ExecuteFileTask(Profile* profile,
     const bool started = ExecuteOpenInOfficeTask(
         profile, task, file_urls, modal_parent,
         std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-            ash::cloud_upload::CloudProvider::kOneDrive));
+            ash::cloud_upload::CloudProvider::kOneDrive, file_urls.size()));
     if (done) {
       if (started) {
         std::move(done).Run(

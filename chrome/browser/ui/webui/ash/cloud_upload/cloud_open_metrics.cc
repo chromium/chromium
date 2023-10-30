@@ -56,8 +56,10 @@ std::ostream& operator<<(std::ostream& os, const Metric<MetricType>& metric) {
   return os;
 }
 
-CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
-    : cloud_provider_(cloud_provider),
+CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider,
+                                   size_t file_count)
+    : multiple_files_(file_count > 1),
+      cloud_provider_(cloud_provider),
       copy_error_(cloud_provider_ == CloudProvider::kGoogleDrive
                       ? kGoogleDriveCopyErrorMetricName
                       : kOneDriveCopyErrorMetricName),
@@ -79,8 +81,15 @@ CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
                          ? kGoogleDriveUploadResultMetricName
                          : kOneDriveUploadResultMetricName) {}
 
-// TODO(b/300861997): Dump without crashing if there was an inconsistency.
+// Check metric consistency and update metric states as required. Log the
+// companion metrics with the final metric states. Dump without crashing if an
+// inconsistency was found.
 CloudOpenMetrics::~CloudOpenMetrics() {
+  if (multiple_files_) {
+    // TODO(b/242685536): Define CloudOpenMetrics for multiple files.
+    return;
+  }
+
   bool google_drive = cloud_provider_ == CloudProvider::kGoogleDrive;
   ExpectLogged(task_result_);
   if (task_result_.logged()) {
@@ -538,6 +547,10 @@ base::WeakPtr<CloudOpenMetrics> CloudOpenMetrics::GetWeakPtr() {
 
 template <typename MetricType>
 void CloudOpenMetrics::PrintDebugInformation(Metric<MetricType>& metric) {
+  if (multiple_files_) {
+    // TODO(b/242685536): Define CloudOpenMetrics for multiple files.
+    return;
+  }
   inconsistency_found_ = true;
   LOG(ERROR) << "Inconsistent metric found: " << metric;
   LOG(ERROR) << "Metrics: " << std::endl

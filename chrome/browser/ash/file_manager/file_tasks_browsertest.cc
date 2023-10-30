@@ -663,7 +663,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackSucceedsWithQuickOffice) {
       profile, CreateWebDriveOfficeTask(), {test_url}, nullptr,
       ash::office_fallback::FallbackReason::kOffline,
       std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-          ash::cloud_upload::CloudProvider::kOneDrive)));
+          ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1)));
 }
 
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
       profile, CreateWebDriveOfficeTask(), {test_url}, nullptr,
       ash::office_fallback::FallbackReason::kOffline,
       std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-          ash::cloud_upload::CloudProvider::kOneDrive)));
+          ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1)));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -1113,7 +1113,7 @@ class DriveTest : public TestAccountBrowserTest {
     // Path of test file relative to the DriveFs mount point.
     relative_test_file_path = base::FilePath("/").AppendASCII(test_file_name_);
     cloud_open_metrics_ = std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-        ash::cloud_upload::CloudProvider::kGoogleDrive);
+        ash::cloud_upload::CloudProvider::kGoogleDrive, /*file_count=*/1);
     cloud_open_metrics_weak_ptr_ = cloud_open_metrics_->GetWeakPtr();
   }
 
@@ -1473,7 +1473,7 @@ class OneDriveTest : public TestAccountBrowserTest,
     // The path in ODFS is the relative path with "/" prefixed.
     test_path_within_odfs_ = base::FilePath("/").Append(relative_test_path_);
     cloud_open_metrics_ = std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-        ash::cloud_upload::CloudProvider::kOneDrive);
+        ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1);
     cloud_open_metrics_weak_ptr_ = cloud_open_metrics_->GetWeakPtr();
   }
 

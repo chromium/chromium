@@ -129,7 +129,8 @@ int CloudOpenMetricsTest::number_of_dump_calls_ = 0;
 // is logged.
 TEST_F(CloudOpenMetricsTest, TaskResultLogged) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kOpened);
   }
   histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricStateMetricName,
@@ -139,7 +140,10 @@ TEST_F(CloudOpenMetricsTest, TaskResultLogged) {
 // Tests that the TaskResult companion metric is set correctly when TaskResult
 // is not logged.
 TEST_F(CloudOpenMetricsTest, TaskResultNotLogged) {
-  { CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive); }
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
+  }
   histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricStateMetricName,
                                 MetricState::kIncorrectlyNotLogged, 1);
   ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
@@ -149,7 +153,8 @@ TEST_F(CloudOpenMetricsTest, TaskResultNotLogged) {
 // is logged twice.
 TEST_F(CloudOpenMetricsTest, TaskResultLoggedTwice) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kOpened);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFailedToOpen);
   }
@@ -159,13 +164,23 @@ TEST_F(CloudOpenMetricsTest, TaskResultLoggedTwice) {
   ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
 }
 
+// Tests that no DumpWithoutCrashing calls were made and the TaskResult
+// companion metric is not logged when when TaskResult is not logged but
+// multiple files were selected.
+TEST_F(CloudOpenMetricsTest, MultipleFilesSelected) {
+  { CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive, 2); }
+  histogram_.ExpectTotalCount(kGoogleDriveTaskResultMetricStateMetricName, 0);
+  ASSERT_EQ(0, CloudOpenMetricsTest::number_of_dump_calls());
+}
+
 // Tests that the TransferRequired, UploadResult and OpenErrors companion
 // metrics are set correctly when TaskResult is logged as kFallbackQuickOffice
 // and they are logged consistently.
 TEST_F(CloudOpenMetricsTest,
        MetricsConsistentWhenTaskResultIsFallbackQuickOffice) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFallbackQuickOffice);
     cloud_open_metrics.LogGoogleDriveOpenError(OfficeDriveOpenErrors::kOffline);
   }
@@ -183,7 +198,8 @@ TEST_F(CloudOpenMetricsTest,
 TEST_F(CloudOpenMetricsTest,
        MetricsInconsistentWhenTaskResultIsFallbackQuickOffice) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFallbackQuickOffice);
     cloud_open_metrics.LogTransferRequired(
         OfficeFilesTransferRequired::kNotRequired);
@@ -205,7 +221,8 @@ TEST_F(CloudOpenMetricsTest,
 TEST_F(CloudOpenMetricsTest,
        MetricsConsistentWhenTaskResultIsCancelledAtConfirmation) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(
         OfficeTaskResult::kCancelledAtConfirmation);
     cloud_open_metrics.LogSourceVolume(
@@ -228,7 +245,8 @@ TEST_F(CloudOpenMetricsTest,
 TEST_F(CloudOpenMetricsTest,
        MetricsInconsistentWhenTaskResultIsCancelledAtConfirmation) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(
         OfficeTaskResult::kCancelledAtConfirmation);
     cloud_open_metrics.LogUploadResult(
@@ -251,7 +269,8 @@ TEST_F(CloudOpenMetricsTest,
 // is logged as kFailedToOpen and it is logged consistently.
 TEST_F(CloudOpenMetricsTest, MetricsConsistentWhenTaskResultIsFailedToOpen) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFailedToOpen);
     cloud_open_metrics.LogOneDriveOpenError(
         OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
@@ -264,7 +283,8 @@ TEST_F(CloudOpenMetricsTest, MetricsConsistentWhenTaskResultIsFailedToOpen) {
 // is logged as kFailedToOpen and it is logged inconsistently.
 TEST_F(CloudOpenMetricsTest, MetricsInconsistentWhenTaskResultIsFailedToOpen) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFailedToOpen);
     cloud_open_metrics.LogOneDriveOpenError(OfficeOneDriveOpenErrors::kSuccess);
   }
@@ -278,7 +298,8 @@ TEST_F(CloudOpenMetricsTest, MetricsInconsistentWhenTaskResultIsFailedToOpen) {
 // logged consistently.
 TEST_F(CloudOpenMetricsTest, MetricsConsistentWhenTaskResultIsOpened) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kOpened);
     cloud_open_metrics.LogOneDriveOpenError(OfficeOneDriveOpenErrors::kSuccess);
     cloud_open_metrics.LogTransferRequired(
@@ -297,7 +318,8 @@ TEST_F(CloudOpenMetricsTest, MetricsConsistentWhenTaskResultIsOpened) {
 // logged inconsistently.
 TEST_F(CloudOpenMetricsTest, MetricsInconsistentWhenTaskResultIsOpened) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kOpened);
     cloud_open_metrics.LogUploadResult(OfficeFilesUploadResult::kSuccess);
     cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kCopy);
@@ -316,7 +338,8 @@ TEST_F(CloudOpenMetricsTest, MetricsInconsistentWhenTaskResultIsOpened) {
 // logged consistently.
 TEST_F(CloudOpenMetricsTest, MetricsConsistentWhenTaskResultIsMoved) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kMoved);
     cloud_open_metrics.LogGoogleDriveOpenError(OfficeDriveOpenErrors::kSuccess);
     cloud_open_metrics.LogUploadResult(OfficeFilesUploadResult::kSuccess);
@@ -335,7 +358,8 @@ TEST_F(CloudOpenMetricsTest, MetricsConsistentWhenTaskResultIsMoved) {
 // logged inconsistently.
 TEST_F(CloudOpenMetricsTest, MetricsInconsistentWhenTaskResultIsMoved) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kMoved);
     cloud_open_metrics.LogGoogleDriveOpenError(
         OfficeDriveOpenErrors::kNoMetadata);
@@ -356,7 +380,8 @@ TEST_F(CloudOpenMetricsTest, MetricsInconsistentWhenTaskResultIsMoved) {
 TEST_F(CloudOpenMetricsTest,
        MetricsConsistentWhenTransferRequiredIsNotRequired) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTransferRequired(
         OfficeFilesTransferRequired::kNotRequired);
     cloud_open_metrics.LogGoogleDriveOpenError(
@@ -377,7 +402,8 @@ TEST_F(CloudOpenMetricsTest,
 TEST_F(CloudOpenMetricsTest,
        MetricsInconsistentWhenTransferRequiredIsNotRequired) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTransferRequired(
         OfficeFilesTransferRequired::kNotRequired);
     cloud_open_metrics.LogUploadResult(
@@ -400,7 +426,8 @@ TEST_F(CloudOpenMetricsTest,
 TEST_F(CloudOpenMetricsTest,
        MetricsConsistentWhenTransferRequiredIsCopyAndTaskResultIsFailedToOpen) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kCopy);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFailedToOpen);
     cloud_open_metrics.LogUploadResult(
@@ -421,7 +448,8 @@ TEST_F(
     CloudOpenMetricsTest,
     MetricsInconsistentWhenTransferRequiredIsCopyAndTaskResultIsFailedToOpen) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kCopy);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFailedToOpen);
     cloud_open_metrics.LogSourceVolume(OfficeFilesSourceVolume::kGoogleDrive);
@@ -438,7 +466,8 @@ TEST_F(
 TEST_F(CloudOpenMetricsTest,
        MetricsConsistentWhenUploadResultIsCopyOperationError) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogUploadResult(
         OfficeFilesUploadResult::kCopyOperationError);
     cloud_open_metrics.LogCopyError(
@@ -453,7 +482,8 @@ TEST_F(CloudOpenMetricsTest,
 TEST_F(CloudOpenMetricsTest,
        MetricsInconsistentWhenUploadResultIsCopyOperationError) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogUploadResult(
         OfficeFilesUploadResult::kCopyOperationError);
   }
@@ -466,7 +496,8 @@ TEST_F(CloudOpenMetricsTest,
 // is logged and UploadResult is logged consistently.
 TEST_F(CloudOpenMetricsTest, MetricsConsistentWhenMoveErrorIsLogged) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogMoveError(base::File::Error::FILE_ERROR_NO_SPACE);
     cloud_open_metrics.LogUploadResult(
         OfficeFilesUploadResult::kMoveOperationError);
@@ -479,7 +510,8 @@ TEST_F(CloudOpenMetricsTest, MetricsConsistentWhenMoveErrorIsLogged) {
 // is logged and UploadResult is logged inconsistently.
 TEST_F(CloudOpenMetricsTest, MetricsInconsistentWhenMoveErrorIsLogged) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogMoveError(base::File::Error::FILE_ERROR_NO_SPACE);
   }
   histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
@@ -491,7 +523,8 @@ TEST_F(CloudOpenMetricsTest, MetricsInconsistentWhenMoveErrorIsLogged) {
 // no dump without crashing.
 TEST_F(CloudOpenMetricsTest, NoDumpWhenAllMetricsAreConsistentForOpenFlow) {
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogSourceVolume(
         OfficeFilesSourceVolume::kMicrosoftOneDrive);
     cloud_open_metrics.LogTransferRequired(
@@ -521,7 +554,8 @@ TEST_F(CloudOpenMetricsTest, NoDumpWhenAllMetricsAreConsistentForOpenFlow) {
 TEST_F(CloudOpenMetricsTest, NoDumpWhenAllMetricsAreConsistentForMoveFlow) {
   ASSERT_EQ(0, CloudOpenMetricsTest::number_of_dump_calls());
   {
-    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive);
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
     cloud_open_metrics.LogSourceVolume(
         OfficeFilesSourceVolume::kMicrosoftOneDrive);
     cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kMove);

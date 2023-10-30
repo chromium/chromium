@@ -122,7 +122,7 @@ inline void Metric<MetricType>::LogMetric(MetricType new_value) {
 // a SafeRef.
 class CloudOpenMetrics {
  public:
-  explicit CloudOpenMetrics(CloudProvider cloud_provider);
+  explicit CloudOpenMetrics(CloudProvider cloud_provider, size_t file_count);
   ~CloudOpenMetrics();
 
   // Not copyable. Create a SafeRef instead.
@@ -164,6 +164,7 @@ class CloudOpenMetrics {
 
  private:
   // Print debug information about the detected inconsistency and every metric.
+  // Record that an inconsistency was found.
   template <typename MetricType>
   void PrintDebugInformation(Metric<MetricType>& metric);
 
@@ -183,6 +184,7 @@ class CloudOpenMetrics {
   void SetWrongValueLogged(Metric<MetricType>& metric);
 
   bool inconsistency_found_ = false;
+  bool multiple_files_;
   CloudProvider cloud_provider_;
   Metric<base::File::Error> copy_error_;
   Metric<base::File::Error> move_error_;
