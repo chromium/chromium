@@ -55,7 +55,7 @@ bool LegacyTechReportPolicyHandler::CheckPolicySettings(
 }
 
 size_t LegacyTechReportPolicyHandler::max_items() {
-  return 100;
+  return 1000;
 }
 
 bool LegacyTechReportPolicyHandler::ValidatePolicyEntry(
