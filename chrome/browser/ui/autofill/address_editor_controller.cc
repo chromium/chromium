@@ -106,9 +106,12 @@ void AddressEditorController::UpdateEditorFields(
 void AddressEditorController::SetProfileInfo(ServerFieldType type,
                                              const std::u16string& value) {
   // Since the countries combobox contains the country names, not the country
-  // codes, and hence we should use SetInfo() to make sure they get converted to
-  // country codes.
-  if (type == ADDRESS_HOME_COUNTRY) {
+  // codes, and hence we should use `SetInfo()` to make sure they get converted
+  // to country codes. Also use `SetInfo()` for `NAME_FULL` so that its
+  // dependent nodes (NAME_FIRST, NAME_LAST, etc) are also updated. This does
+  // not need to be done for addresses because it is handled internally inside
+  // `SetRawInfo()`.
+  if (type == ADDRESS_HOME_COUNTRY || type == NAME_FULL) {
     profile_to_edit_.SetInfoWithVerificationStatus(
         type, value, locale_, VerificationStatus::kUserVerified);
     return;
