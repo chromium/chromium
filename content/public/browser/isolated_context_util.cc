@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/isolated_context_util.h"
+#include "content/public/browser/isolated_context_util.h"
 
 #include "content/browser/process_lock.h"
 #include "content/public/browser/content_browser_client.h"

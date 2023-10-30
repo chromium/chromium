@@ -1778,8 +1778,6 @@ source_set("browser") {
     "renderer_host/input/touchpad_pinch_event_queue.h",
     "renderer_host/ipc_utils.cc",
     "renderer_host/ipc_utils.h",
-    "renderer_host/isolated_context_util.cc",
-    "renderer_host/isolated_context_util.h",
     "renderer_host/isolated_web_app_throttle.cc",
     "renderer_host/isolated_web_app_throttle.h",
     "renderer_host/keep_alive_handle_factory.cc",

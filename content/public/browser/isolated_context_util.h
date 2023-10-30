@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_ISOLATED_CONTEXT_UTIL_H_
-#define CONTENT_BROWSER_RENDERER_HOST_ISOLATED_CONTEXT_UTIL_H_
+#ifndef CONTENT_PUBLIC_BROWSER_ISOLATED_CONTEXT_UTIL_H_
+#define CONTENT_PUBLIC_BROWSER_ISOLATED_CONTEXT_UTIL_H_
 
 #include "content/common/content_export.h"
 
@@ -32,4 +32,4 @@ CONTENT_EXPORT bool HasIsolatedContextCapability(RenderFrameHost* frame);
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_ISOLATED_CONTEXT_UTIL_H_
+#endif  // CONTENT_PUBLIC_BROWSER_ISOLATED_CONTEXT_UTIL_H_

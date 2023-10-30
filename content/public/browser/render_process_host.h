@@ -696,6 +696,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // workers. Once Permissions Policy applies to workers, a worker-specific
   // API to access isolation capability may need to be introduced which should
   // be used instead of this.
+  //
+  // Note that this function doesn't account for API availability for certain
+  // documents and URLs that might be force-enabled by the embedder even if they
+  // lack the necessary privilege; in order for this matter to be taken into
+  // consideration, use content::IsIsolatedContext(RenderProcessHost*).
   WebExposedIsolationLevel GetWebExposedIsolationLevel();
 
   // Posts |task|, if this RenderProcessHost is ready or when it becomes ready

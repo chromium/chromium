@@ -222,6 +222,8 @@ source_set("browser_sources") {
     "interest_group_api_operation.h",
     "interest_group_manager.h",
     "invalidate_type.h",
+    "isolated_context_util.cc",
+    "isolated_context_util.h",
     "isolated_web_apps_policy.cc",
     "isolated_web_apps_policy.h",
     "jank_monitor.h",
