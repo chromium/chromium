@@ -13,7 +13,7 @@ steps:
     env:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
       GOMACTL_USE_PROXY: false
-      RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/backend
+      RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/chromium/backend
     agents:
       - "runtimeType=chromiumbuild"
       - "os=linux"
@@ -30,7 +30,7 @@ steps:
     env:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
       GOMACTL_USE_PROXY: false
-      RECORD_REPLAY_BACKEND_DIR: /Users/administrator/backend
+      RECORD_REPLAY_BACKEND_DIR: /Users/administrator/chromium/backend
     agents:
       - "runtimeType=chromiumbuild"
       - "os=macos"
@@ -48,7 +48,7 @@ steps:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
       GOMACTL_USE_PROXY: false
       REPLAY_BUILD_ARM: true
-      RECORD_REPLAY_BACKEND_DIR: /Users/administrator/backend
+      RECORD_REPLAY_BACKEND_DIR: /Users/administrator/chromium/backend
     agents:
       - "runtimeType=chromiumbuild"
       - "os=macos"
@@ -64,7 +64,7 @@ steps:
     env:
       GOMA_SERVER_HOST: simpsonite.goma.engflow.com
       GOMACTL_USE_PROXY: false
-      RECORD_REPLAY_BACKEND_DIR: "C:\\Users\\Administrator\\backend"
+      RECORD_REPLAY_BACKEND_DIR: "C:\\Users\\Administrator\\chromium\\backend"
     agents:
       - "runtimeType=chromiumbuild"
       - "os=windows"
