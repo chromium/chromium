@@ -409,6 +409,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
       kKeyParams.password));
   EXPECT_TRUE(WaitForPasswordForms({password_form}));
+  // TODO(crbug.com/1443466): Clean up after solving dangling ptrs when
+  // PasswordStatusCheckService::MaybeResetInfrastructureAsync is called.
+  base::RunLoop().RunUntilIdle();
 }
 
 // Tests that client can decrypt passwords, encrypted with keystore key in case
@@ -1532,6 +1535,9 @@ IN_PROC_BROWSER_TEST_F(
       kTrustedVaultKeyParams.derivation_params, GetFakeServer());
 
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form1, password_form2}).Wait());
+  // TODO(crbug.com/1443466): Clean up after solving dangling ptrs when
+  // PasswordStatusCheckService::MaybeResetInfrastructureAsync is called.
+  base::RunLoop().RunUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1595,6 +1601,9 @@ IN_PROC_BROWSER_TEST_F(
       kTrustedVaultKeyParams.derivation_params, GetFakeServer());
 
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form1, password_form2}).Wait());
+  // TODO(crbug.com/1443466): Clean up after solving dangling ptrs when
+  // PasswordStatusCheckService::MaybeResetInfrastructureAsync is called.
+  base::RunLoop().RunUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2004,6 +2013,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
       "Sync.TrustedVaultURLFetchResponse.DownloadKeys",
       /*sample=*/200,
       /*expected_bucket_count=*/1);
+  // TODO(crbug.com/1443466): Clean up after solving dangling ptrs when
+  // PasswordStatusCheckService::MaybeResetInfrastructureAsync is called.
+  base::RunLoop().RunUntilIdle();
 }
 
 // Regression test for crbug.com/1267391: after following key rotation the
@@ -2130,6 +2142,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   // forms now.
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form1, password_form2}).Wait());
   EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
+  // TODO(crbug.com/1443466): Clean up after solving dangling ptrs when
+  // PasswordStatusCheckService::MaybeResetInfrastructureAsync is called.
+  base::RunLoop().RunUntilIdle();
 }
 
 // ChromeOS doesn't have unconsented primary accounts.
