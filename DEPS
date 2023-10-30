@@ -46,7 +46,6 @@ gclient_gn_args = [
   'checkout_ios_webkit',
   'checkout_nacl',
   'checkout_openxr',
-  'checkout_rts_model',
   'checkout_src_internal',
   'cros_boards',
   'cros_boards_with_qemu_images',
@@ -265,13 +264,6 @@ vars = {
 
   # Fetch Rust toolchain.
   'checkout_rust': True,
-
-  # See //docs/testing/regression-test-selection.md
-  # for info on RTS
-  'checkout_rts_model': False,
-
-  # Use the experimental version of the RTS model
-  'checkout_rts_experimental_model': False,
 
   # Make Dawn skip its standalone dependencies
   'dawn_standalone': False,
@@ -942,50 +934,6 @@ deps = {
 
   'src/net/third_party/quiche/src':
     Var('quiche_git') + '/quiche.git' + '@' +  Var('quiche_revision'),
-
-  'src/testing/rts/linux-amd64': {
-      'packages': [
-        {
-          'package': 'chromium/rts/model/linux-amd64',
-          'version': '-MNzMfbaq88xANs_FwsnP3W56cD6R38bM3rV4PKoy7gC',
-        },
-      ],
-      'dep_type': 'cipd',
-      'condition': 'checkout_rts_model and checkout_linux',
-  },
-
-  'src/testing/rts/mac-amd64': {
-      'packages': [
-        {
-          'package': 'chromium/rts/model/mac-amd64',
-          'version': 'JZuaq-qPwX9_ihJIiHR5Js5D6yxFPn-lqJhk-BX6BWEC',
-        },
-      ],
-      'dep_type': 'cipd',
-      'condition': 'checkout_rts_model and checkout_mac',
-  },
-
-  'src/testing/rts/windows-amd64': {
-      'packages': [
-        {
-          'package': 'chromium/rts/model/windows-amd64',
-          'version': 'IKBcF0i7FUmPPRq6B2HRp5duZkH7Mqr4P8mLZOz-bcsC',
-        },
-      ],
-      'dep_type': 'cipd',
-      'condition': 'checkout_rts_model and checkout_win',
-  },
-
-  'src/testing/rts/rts-ml-chromium/linux-amd64': {
-      'packages': [
-        {
-          'package': 'experimental/google.com/sshrimp/chromium/rts/model/linux-amd64',
-          'version': '61RZ40XmEInOMhnIJMEqdOjocdCHqodmEJcDxu4x7uIC',
-        },
-      ],
-      'dep_type': 'cipd',
-      'condition': 'checkout_rts_experimental_model and checkout_linux',
-  },
 
   'src/tools/luci-go': {
       'packages': [
