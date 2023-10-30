@@ -17,6 +17,17 @@
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
 #include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/feature_engagement/public/feature_constants.h"
+
+#include "chrome/browser/privacy_sandbox/tracking_protection_notice_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -146,6 +157,19 @@ bool IsBPrime(SentimentSurveyGroup group) {
     default:
       return false;
   }
+}
+
+bool Are3PCookiesBlocked(Profile* profile) {
+  TrackingProtectionSettings* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(profile);
+  if (tracking_protection_settings &&
+      tracking_protection_settings->IsTrackingProtection3pcdEnabled()) {
+    return tracking_protection_settings->AreAllThirdPartyCookiesBlocked();
+  }
+  // Default to the cookieControlsMode if TrackingProtection isn't enabled.
+  return static_cast<content_settings::CookieControlsMode>(
+             profile->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
+         content_settings::CookieControlsMode::kBlockThirdParty;
 }
 
 }  // namespace
@@ -564,9 +588,7 @@ void TrackingProtectionNoticeService::RunHatsLogic() {
                    prefs::kTrackingProtectionOnboardingAckAction)) ==
                tracking_protection::TrackingProtectionOnboardingAckAction::
                    kSettings},
-          {"3P cookies blocked",
-           TrackingProtectionSettingsFactory::GetForProfile(profile_)
-               ->AreAllThirdPartyCookiesBlocked()},
+          {"3P cookies blocked", Are3PCookiesBlocked(profile_)},
           {"Is Mode B'", IsBPrime(group)},
           {"Topics enabled", profile_->GetPrefs()->GetBoolean(
                                  prefs::kPrivacySandboxM1TopicsEnabled)},

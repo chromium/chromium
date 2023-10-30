@@ -15,17 +15,17 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -1016,7 +1016,8 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
 struct TrackingProtectionSurveyTestData {
   // Inputs
   std::vector<base::test::FeatureRefAndParams> features;
-  bool has_3pc_blocked = false;
+  bool has_cookie_controls_3pc_blocked = false;
+  bool has_tracking_protection_3pc_blocked = false;
   bool has_topics_enabled = false;
   bool has_fledge_enabled = false;
   bool has_measurement_enabled = false;
@@ -1087,8 +1088,15 @@ IN_PROC_BROWSER_TEST_P(TrackingProtectionHatsBrowserTest,
                        CallHatsServiceWithProductData) {
   TrackingProtectionSurveyTestData params = GetParam();
   // Setup
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
-                                               params.has_3pc_blocked);
+  if (params.has_cookie_controls_3pc_blocked) {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
+  }
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kBlockAll3pcToggleEnabled,
+      params.has_tracking_protection_3pc_blocked);
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kPrivacySandboxM1TopicsEnabled, params.has_topics_enabled);
   browser()->profile()->GetPrefs()->SetBoolean(
@@ -1127,7 +1135,8 @@ IN_PROC_BROWSER_TEST_P(TrackingProtectionHatsBrowserTest,
     EXPECT_EQ(onboarding_service()->GetEligibleSurveyGroup(), params.group);
 
     SurveyBitsData product_bits{
-        {"3P cookies blocked", params.has_3pc_blocked},
+        {"3P cookies blocked", params.has_cookie_controls_3pc_blocked ||
+                                   params.has_tracking_protection_3pc_blocked},
         {"Fledge enabled", params.has_fledge_enabled},
         {"Is Mode B'", params.is_b_prime},
         {"Measurement enabled", params.has_measurement_enabled},
@@ -1158,7 +1167,7 @@ INSTANTIATE_TEST_SUITE_P(
         // only measuerement enabled.
         TrackingProtectionSurveyTestData{
             .features = HatsImmediateControlFeatures(),
-            .has_3pc_blocked = false,
+            .has_cookie_controls_3pc_blocked = false,
             .has_topics_enabled = false,
             .has_fledge_enabled = false,
             .has_measurement_enabled = true,
@@ -1168,7 +1177,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Only fledge enabled
         TrackingProtectionSurveyTestData{
             .features = HatsImmediateControlFeatures(),
-            .has_3pc_blocked = false,
+            .has_cookie_controls_3pc_blocked = false,
             .has_topics_enabled = false,
             .has_fledge_enabled = true,
             .has_measurement_enabled = false,
@@ -1178,7 +1187,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Only topics Enabled
         TrackingProtectionSurveyTestData{
             .features = HatsImmediateControlFeatures(),
-            .has_3pc_blocked = false,
+            .has_cookie_controls_3pc_blocked = false,
             .has_topics_enabled = true,
             .has_fledge_enabled = false,
             .has_measurement_enabled = false,
@@ -1188,7 +1197,7 @@ INSTANTIATE_TEST_SUITE_P(
         // No Ads API Enabled
         TrackingProtectionSurveyTestData{
             .features = HatsImmediateControlFeatures(),
-            .has_3pc_blocked = true,
+            .has_cookie_controls_3pc_blocked = true,
             .has_topics_enabled = false,
             .has_fledge_enabled = false,
             .has_measurement_enabled = false,
@@ -1197,7 +1206,7 @@ INSTANTIATE_TEST_SUITE_P(
         },  // Mode B acked with "Settings" button
         TrackingProtectionSurveyTestData{
             .features = HatsImmediateModeBFeatures(),
-            .has_3pc_blocked = true,
+            .has_tracking_protection_3pc_blocked = true,
             .has_topics_enabled = false,
             .has_fledge_enabled = false,
             .has_measurement_enabled = false,
@@ -1209,7 +1218,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Mode B Acked with "Got It" button
         TrackingProtectionSurveyTestData{
             .features = HatsImmediateModeBFeatures(),
-            .has_3pc_blocked = true,
+            .has_tracking_protection_3pc_blocked = true,
             .has_topics_enabled = false,
             .has_fledge_enabled = false,
             .has_measurement_enabled = false,
@@ -1221,7 +1230,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Mode B Prime
         TrackingProtectionSurveyTestData{
             .features = HatsImmediateModeBPrimeFeatures(),
-            .has_3pc_blocked = true,
+            .has_tracking_protection_3pc_blocked = true,
             .has_topics_enabled = false,
             .has_fledge_enabled = false,
             .has_measurement_enabled = false,
