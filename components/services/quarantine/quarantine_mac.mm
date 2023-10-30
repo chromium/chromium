@@ -84,7 +84,7 @@ bool AddOriginMetadataToFile(const base::FilePath& file,
   }
 
   if (list.count) {
-    return MDItemSetAttribute(md_item, kMDItemWhereFroms,
+    return MDItemSetAttribute(md_item.get(), kMDItemWhereFroms,
                               base::apple::NSToCFPtrCast(list));
   }
 

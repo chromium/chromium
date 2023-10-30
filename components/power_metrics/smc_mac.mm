@@ -25,7 +25,7 @@ std::unique_ptr<SMCReader> SMCReader::Create() {
       IOServiceGetMatchingService(kIOMasterPortDefault,
                                   IOServiceMatching("AppleSMC")));
   base::mac::ScopedIOObject<io_object_t> connect;
-  if (IOServiceOpen(smc_service, mach_task_self(), 1,
+  if (IOServiceOpen(smc_service.get(), mach_task_self(), 1,
                     connect.InitializeInto()) != kIOReturnSuccess) {
     return nullptr;
   }
@@ -92,8 +92,8 @@ bool SMCReader::SMCKey::CallSMCFunction(uint8_t function, SMCParamStruct* out) {
   // `kSMCUserClientClose` doesn't seem to affect behavior. Consider removing
   // them.
 
-  if (IOConnectCallMethod(connect_, kSMCUserClientOpen, nullptr, 0, nullptr, 0,
-                          nullptr, nullptr, nullptr, nullptr)) {
+  if (IOConnectCallMethod(connect_.get(), kSMCUserClientOpen, nullptr, 0,
+                          nullptr, 0, nullptr, nullptr, nullptr, nullptr)) {
     connect_.reset();
     return false;
   }
@@ -105,11 +105,11 @@ bool SMCReader::SMCKey::CallSMCFunction(uint8_t function, SMCParamStruct* out) {
 
   size_t out_size = sizeof(*out);
   const bool success =
-      IOConnectCallStructMethod(connect_, kSMCHandleYPCEvent, &in, sizeof(in),
-                                out, &out_size) == kIOReturnSuccess;
+      IOConnectCallStructMethod(connect_.get(), kSMCHandleYPCEvent, &in,
+                                sizeof(in), out, &out_size) == kIOReturnSuccess;
 
-  if (IOConnectCallMethod(connect_, kSMCUserClientClose, nullptr, 0, nullptr, 0,
-                          nullptr, nullptr, nullptr, nullptr)) {
+  if (IOConnectCallMethod(connect_.get(), kSMCUserClientClose, nullptr, 0,
+                          nullptr, 0, nullptr, nullptr, nullptr, nullptr)) {
     connect_.reset();
   }
 

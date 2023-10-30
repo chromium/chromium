@@ -184,12 +184,12 @@ absl::optional<std::string> GetBoardIdForThisMachine() {
   // coefficients file for the local computer.
   base::apple::ScopedCFTypeRef<CFDataRef> board_id_data(
       base::apple::CFCast<CFDataRef>(IORegistryEntryCreateCFProperty(
-          platform_expert, CFSTR("board-id"), kCFAllocatorDefault, 0)));
+          platform_expert.get(), CFSTR("board-id"), kCFAllocatorDefault, 0)));
 
   if (!board_id_data)
     return absl::nullopt;
 
-  return reinterpret_cast<const char*>(CFDataGetBytePtr(board_id_data));
+  return reinterpret_cast<const char*>(CFDataGetBytePtr(board_id_data.get()));
 }
 
 }  // namespace internal

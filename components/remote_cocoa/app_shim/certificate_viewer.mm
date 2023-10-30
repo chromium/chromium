@@ -52,7 +52,7 @@ void ShowCertificateViewerForWindow(NSWindow* owning_window,
     NOTREACHED();
     return;
   }
-  CFArrayAppendValue(policies, basic_policy.get());
+  CFArrayAppendValue(policies.get(), basic_policy.get());
 
   SFCertificatePanel* panel = [[SFCertificatePanel alloc] init];
   [panel setPolicies:base::apple::CFToNSPtrCast(policies.get())];
