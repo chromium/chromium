@@ -37,8 +37,8 @@ TEST_F(URLUtilTest, FindAndCompareScheme) {
 
   // Simple case where the scheme is found and matches.
   const char kStr1[] = "http://www.com/";
-  EXPECT_TRUE(FindAndCompareScheme(
-      kStr1, static_cast<int>(strlen(kStr1)), "http", NULL));
+  EXPECT_TRUE(FindAndCompareScheme(kStr1, static_cast<int>(strlen(kStr1)),
+                                   "http", nullptr));
   EXPECT_TRUE(FindAndCompareScheme(
       kStr1, static_cast<int>(strlen(kStr1)), "http", &found_scheme));
   EXPECT_TRUE(found_scheme == Component(0, 4));
@@ -160,18 +160,22 @@ TEST_F(URLUtilTest, ReplaceComponents) {
   // Check that the following calls do not cause crash
   Replacements<char> replacements;
   replacements.SetRef("test", Component(0, 4));
-  ReplaceComponents(NULL, 0, parsed, replacements, NULL, &output, &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, NULL, &output, &new_parsed);
+  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+                    &new_parsed);
+  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
   replacements.ClearRef();
   replacements.SetHost("test", Component(0, 4));
-  ReplaceComponents(NULL, 0, parsed, replacements, NULL, &output, &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, NULL, &output, &new_parsed);
+  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+                    &new_parsed);
+  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
 
   replacements.ClearHost();
-  ReplaceComponents(NULL, 0, parsed, replacements, NULL, &output, &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, NULL, &output, &new_parsed);
-  ReplaceComponents(NULL, 0, parsed, replacements, NULL, &output, &new_parsed);
-  ReplaceComponents("", 0, parsed, replacements, NULL, &output, &new_parsed);
+  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+                    &new_parsed);
+  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
+  ReplaceComponents(nullptr, 0, parsed, replacements, nullptr, &output,
+                    &new_parsed);
+  ReplaceComponents("", 0, parsed, replacements, nullptr, &output, &new_parsed);
 }
 
 static std::string CheckReplaceScheme(const char* base_url,
@@ -179,7 +183,7 @@ static std::string CheckReplaceScheme(const char* base_url,
   // Make sure the input is canonicalized.
   RawCanonOutput<32> original;
   Parsed original_parsed;
-  Canonicalize(base_url, strlen(base_url), true, NULL, &original,
+  Canonicalize(base_url, strlen(base_url), true, nullptr, &original,
                &original_parsed);
 
   Replacements<char> replacements;
@@ -189,7 +193,7 @@ static std::string CheckReplaceScheme(const char* base_url,
   StdStringCanonOutput output(&output_string);
   Parsed output_parsed;
   ReplaceComponents(original.data(), original.length(), original_parsed,
-                    replacements, NULL, &output, &output_parsed);
+                    replacements, nullptr, &output, &output_parsed);
 
   output.Complete();
   return output_string;
@@ -257,16 +261,17 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
       {"%ef%bf%bd", "\xef\xbf\xbd"},
   };
 
-  for (size_t i = 0; i < std::size(decode_cases); i++) {
-    const char* input = decode_cases[i].input;
+  for (const auto& decode_case : decode_cases) {
     RawCanonOutputT<char16_t> output;
-    DecodeURLEscapeSequences(input, DecodeURLMode::kUTF8OrIsomorphic, &output);
-    EXPECT_EQ(decode_cases[i].output, base::UTF16ToUTF8(std::u16string(
-                                          output.data(), output.length())));
+    DecodeURLEscapeSequences(decode_case.input,
+                             DecodeURLMode::kUTF8OrIsomorphic, &output);
+    EXPECT_EQ(decode_case.output, base::UTF16ToUTF8(std::u16string(
+                                      output.data(), output.length())));
 
     RawCanonOutputT<char16_t> output_utf8;
-    DecodeURLEscapeSequences(input, DecodeURLMode::kUTF8, &output_utf8);
-    EXPECT_EQ(decode_cases[i].output,
+    DecodeURLEscapeSequences(decode_case.input, DecodeURLMode::kUTF8,
+                             &output_utf8);
+    EXPECT_EQ(decode_case.output,
               base::UTF16ToUTF8(
                   std::u16string(output_utf8.data(), output_utf8.length())));
   }
@@ -296,17 +301,17 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
        {0xfffd, 0xfffd, 0}},
   };
 
-  for (const auto& test : utf8_decode_cases) {
-    const char* input = test.input;
+  for (const auto& utf8_decode_case : utf8_decode_cases) {
     RawCanonOutputT<char16_t> output_iso;
-    DecodeURLEscapeSequences(input, DecodeURLMode::kUTF8OrIsomorphic,
-                             &output_iso);
-    EXPECT_EQ(std::u16string(test.expected_iso.data()),
+    DecodeURLEscapeSequences(utf8_decode_case.input,
+                             DecodeURLMode::kUTF8OrIsomorphic, &output_iso);
+    EXPECT_EQ(std::u16string(utf8_decode_case.expected_iso.data()),
               std::u16string(output_iso.data(), output_iso.length()));
 
     RawCanonOutputT<char16_t> output_utf8;
-    DecodeURLEscapeSequences(input, DecodeURLMode::kUTF8, &output_utf8);
-    EXPECT_EQ(std::u16string(test.expected_utf8.data()),
+    DecodeURLEscapeSequences(utf8_decode_case.input, DecodeURLMode::kUTF8,
+                             &output_utf8);
+    EXPECT_EQ(std::u16string(utf8_decode_case.expected_utf8.data()),
               std::u16string(output_utf8.data(), output_utf8.length()));
   }
 }
@@ -335,12 +340,11 @@ TEST_F(URLUtilTest, TestEncodeURIComponent) {
      "pqrstuvwxyz%7B%7C%7D~%7F"},
   };
 
-  for (size_t i = 0; i < std::size(encode_cases); i++) {
-    const char* input = encode_cases[i].input;
+  for (const auto& encode_case : encode_cases) {
     RawCanonOutputT<char> buffer;
-    EncodeURIComponent(input, &buffer);
+    EncodeURIComponent(encode_case.input, &buffer);
     std::string output(buffer.data(), buffer.length());
-    EXPECT_EQ(encode_cases[i].output, output);
+    EXPECT_EQ(encode_case.output, output);
   }
 }
 
@@ -413,23 +417,25 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
       // adding the requested dot doesn't seem wrong either.
       {"aaa://a\\", "aaa:.", true, "aaa://a\\."}};
 
-  for (size_t i = 0; i < std::size(resolve_non_standard_cases); i++) {
-    const ResolveRelativeCase& test_data = resolve_non_standard_cases[i];
+  for (const auto& test : resolve_non_standard_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "base: " << test.base << ", rel: " << test.rel);
+
     Parsed base_parsed;
-    ParsePathURL(test_data.base, strlen(test_data.base), false, &base_parsed);
+    ParsePathURL(test.base, strlen(test.base), false, &base_parsed);
 
     std::string resolved;
     StdStringCanonOutput output(&resolved);
     Parsed resolved_parsed;
-    bool valid = ResolveRelative(test_data.base, strlen(test_data.base),
-                                 base_parsed, test_data.rel,
-                                 strlen(test_data.rel), NULL, &output,
-                                 &resolved_parsed);
+    bool valid =
+        ResolveRelative(test.base, strlen(test.base), base_parsed, test.rel,
+                        strlen(test.rel), nullptr, &output, &resolved_parsed);
     output.Complete();
 
-    EXPECT_EQ(test_data.is_valid, valid) << i;
-    if (test_data.is_valid && valid)
-      EXPECT_EQ(test_data.out, resolved) << i;
+    EXPECT_EQ(test.is_valid, valid);
+    if (test.is_valid && valid) {
+      EXPECT_EQ(test.out, resolved);
+    }
   }
 }
 
@@ -446,10 +452,8 @@ TEST_F(URLUtilTest, TestNoRefComponent) {
   StdStringCanonOutput output(&resolved);
   Parsed resolved_parsed;
 
-  bool valid = ResolveRelative(base, strlen(base),
-                               base_parsed, rel,
-                               strlen(rel), NULL, &output,
-                               &resolved_parsed);
+  bool valid = ResolveRelative(base, strlen(base), base_parsed, rel,
+                               strlen(rel), nullptr, &output, &resolved_parsed);
   EXPECT_TRUE(valid);
   EXPECT_FALSE(resolved_parsed.ref.is_valid());
 }
@@ -492,7 +496,7 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkup) {
     Parsed resolved_parsed;
     bool valid =
         ResolveRelative(test.base, strlen(test.base), base_parsed, test.rel,
-                        strlen(test.rel), NULL, &output, &resolved_parsed);
+                        strlen(test.rel), nullptr, &output, &resolved_parsed);
     ASSERT_TRUE(valid);
     output.Complete();
 
