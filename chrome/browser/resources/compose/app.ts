@@ -297,7 +297,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onThumbsDown_() {
+  private onFileBugClick_(e: Event) {
+    e.preventDefault();
     this.apiProxy_.openBugReportingLink();
   }
 

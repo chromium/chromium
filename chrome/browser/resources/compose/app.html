@@ -125,11 +125,15 @@
   .footer-text {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 28px;
     margin-inline-end: auto;
     color: var(--color-compose-dialog-foreground-subtle);
     font-size: 12px;
     line-height: 16px;
+  }
+
+  .footer-text a {
+    font-weight: bold;
   }
 
   .footer-text .icon-buttons-row {
@@ -229,7 +233,12 @@
 
   <div id="submitFooter" class="footer" hidden$="[[submitted_]]">
     <div class="footer-text">
-      <div>$i18nRaw{inputFooter}</div>
+      <div>
+        $i18nRaw{inputFooter}
+        <a href="#" role="button" on-click="onFileBugClick_">
+          $i18nRaw{fileBugText}
+        </a>
+      </div>
     </div>
     <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
         disabled="[[!isSubmitEnabled_]]">
@@ -240,11 +249,15 @@
   <div id="resultFooter" class="footer"
       hidden="[[!hasSuccessfulResponse_(response_)]]">
     <div class="footer-text">
-      <div>$i18nRaw{resultFooter}</div>
-
+      <div>
+        $i18nRaw{resultFooter}
+        <a href="#" role="button" on-click="onFileBugClick_">
+          $i18nRaw{fileBugText}
+        </a>
+      </div>
       <div class="icon-buttons-row">
         <cr-icon-button iron-icon="cr:thumbs-up"></cr-icon-button>
-        <cr-icon-button iron-icon="cr:thumbs-down" on-click="onThumbsDown_">
+        <cr-icon-button iron-icon="cr:thumbs-down" on-click="onFileBugClick_">
         </cr-icon-button>
       </div>
     </div>

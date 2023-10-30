@@ -82,4 +82,12 @@
     Update
   </message>
 
+  <!-- Cross-dialog -->
+  <message name="IDS_COMPOSE_FOOTER_FISHFOOD" desc="The footer text used for Fishfood in the input and result dialogs." translateable="false">
+    This feature is experimental.
+  </message>
+  <message name="IDS_COMPOSE_FILE_BUG" desc="The text used as a clickable link to open the Compose bug-reporting page. Used for Fishfood only." translateable="false">
+    File a bug
+  </message>
+
 </grit-part>

@@ -24,10 +24,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
-namespace {
-inline constexpr char16_t kLearnMoreURL[] = u"https://www.google.com";
-}  // namespace
-
 ComposeUI::ComposeUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -42,8 +38,9 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kStrings[] = {
       {"dialogTitle", IDS_COMPOSE_TITLE},
       {"inputPlaceholder", IDS_COMPOSE_INPUT_PLACEHOLDER},
-      {"inputFooter", IDS_COMPOSE_INPUT_FOOTER},
+      {"inputFooter", IDS_COMPOSE_FOOTER_FISHFOOD},
       {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
+      {"resultFooter", IDS_COMPOSE_FOOTER_FISHFOOD},
       {"insertButton", IDS_COMPOSE_INSERT_BUTTON},
       {"lengthMenuTitle", IDS_COMPOSE_MENU_1_TITLE},
       {"shorterOption", IDS_COMPOSE_MENU_1_OPTION_1},
@@ -60,11 +57,9 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"editButton", IDS_EDIT},
       {"editCancelButton", IDS_CANCEL},
       {"editUpdateButton", IDS_COMPOSE_EDIT_UPDATE_BUTTON},
+      {"fileBugText", IDS_COMPOSE_FILE_BUG},
   };
   source->AddLocalizedStrings(kStrings);
-  source->AddString(
-      "resultFooter",
-      l10n_util::GetStringFUTF16(IDS_COMPOSE_RESULT_FOOTER, kLearnMoreURL));
 }
 
 ComposeUI::~ComposeUI() = default;
