@@ -3418,7 +3418,7 @@ void WebAppIntegrationTestDriver::CheckWindowCreated() {
       GetStateForProfile(before_state_change_action_state_.get(), profile());
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
-  EXPECT_GT(after_action_profile->browsers.size(),
+  ASSERT_GT(after_action_profile->browsers.size(),
             before_action_profile->browsers.size())
       << "Before: \n"
       << *before_state_change_action_state_ << "\nAfter:\n"

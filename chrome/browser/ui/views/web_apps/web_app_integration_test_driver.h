@@ -530,7 +530,12 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   webapps::AppId active_app_id_;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
 
+  // Normally BeforeState*Action returns false if a fatal error has been
+  // reported in a previous action, to avoid actions operating on potentially
+  // invalid state. If we're in tear down though, we always want to execute
+  // all actions.
   bool in_tear_down_ = false;
+
   bool is_performing_manifest_update_ = false;
 
   std::unique_ptr<views::NamedWidgetShownWaiter> app_id_update_dialog_waiter_;
