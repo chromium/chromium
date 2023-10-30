@@ -282,21 +282,23 @@ export class ModulesV2Element extends AppElementBase {
       this.recordModuleLoadedWithModules_(modules);
       this.dispatchEvent(new Event('modules-loaded'));
 
-      this.registerHelpBubble(
-          MODULE_CUSTOMIZE_ELEMENT_ID,
-          [
-            '#container',
-            'ntp-module-wrapper',
-            '#moduleElement',
-          ],
-          {fixed: true});
-      // TODO(crbug.com/1494416): Currently, a period of time must elapse
-      // between the registration of the anchor element and the promo
-      // invocation, else the anchor element will not be ready for use.
-      setTimeout(() => {
-        NewTabPageProxy.getInstance().handler.maybeShowFeaturePromo(
-            IphFeature.kCustomizeModules);
-      }, 1000);
+      if (this.templateInstances_.length > 0) {
+        this.registerHelpBubble(
+            MODULE_CUSTOMIZE_ELEMENT_ID,
+            [
+              '#container',
+              'ntp-module-wrapper',
+              '#moduleElement',
+            ],
+            {fixed: true});
+        // TODO(crbug.com/1494416): Currently, a period of time must elapse
+        // between the registration of the anchor element and the promo
+        // invocation, else the anchor element will not be ready for use.
+        setTimeout(() => {
+          NewTabPageProxy.getInstance().handler.maybeShowFeaturePromo(
+              IphFeature.kCustomizeModules);
+        }, 1000);
+      }
     }
   }
 
