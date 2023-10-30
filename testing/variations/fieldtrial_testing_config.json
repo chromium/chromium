@@ -19842,14 +19842,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
+                    "name": "Control",
+                    "disable_features": [
                         "WebAssemblyTurboshaft"
                     ]
                 },
                 {
-                    "name": "Control",
-                    "disable_features": [
+                    "name": "Enabled",
+                    "enable_features": [
                         "WebAssemblyTurboshaft"
                     ]
                 }
