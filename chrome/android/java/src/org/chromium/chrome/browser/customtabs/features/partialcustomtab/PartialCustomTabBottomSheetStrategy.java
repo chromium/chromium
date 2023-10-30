@@ -174,7 +174,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             mGestureHandler = new ContentGestureListener(mTab, this, this::isFullyExpanded);
             mGestureDetector = new GestureDetector(
                     activity, mGestureHandler, ThreadUtils.getUiThreadHandler());
-            mGestureDetector.setIsLongpressEnabled(false);
         }
     }
 
