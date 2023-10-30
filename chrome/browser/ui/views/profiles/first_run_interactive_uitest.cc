@@ -9,6 +9,8 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
@@ -24,7 +26,11 @@
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -32,6 +38,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -73,6 +80,7 @@ struct TestParam {
   std::string test_suffix;
   bool with_default_browser_step = false;
   bool with_search_engine_choice_step = false;
+  bool with_privacy_sandbox_enabled = false;
 };
 
 std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
@@ -91,6 +99,9 @@ const TestParam kTestParams[] = {
      .with_default_browser_step = true,
      .with_search_engine_choice_step = true},
 #endif
+    {.test_suffix = "WithSearchEngineChoiceAndPrivacySandboxEnabled",
+     .with_search_engine_choice_step = true,
+     .with_privacy_sandbox_enabled = true},
 };
 
 }  // namespace
@@ -308,6 +319,14 @@ class FirstRunParameterizedInteractiveUiTest
     }
 #endif
 
+    if (WithPrivacySandboxEnabled()) {
+      enabled_features_and_params.push_back(
+          {privacy_sandbox::kPrivacySandboxSettings4,
+           {{privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting
+                 .name,
+             "true"}}});
+    }
+
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features_and_params, {});
   }
@@ -324,6 +343,28 @@ class FirstRunParameterizedInteractiveUiTest
 #endif
   }
 
+  void SetUp() override {
+    if (WithPrivacySandboxEnabled()) {
+      ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    }
+    FirstRunInteractiveUiTest::SetUp();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    FirstRunInteractiveUiTest::SetUpInProcessBrowserTestFixture();
+    if (WithPrivacySandboxEnabled()) {
+      PrivacySandboxService::SetPromptDisabledForTests(false);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    FirstRunInteractiveUiTest::SetUpOnMainThread();
+    if (WithPrivacySandboxEnabled()) {
+      host_resolver()->AddRule("*", "127.0.0.1");
+      embedded_test_server()->StartAcceptingConnections();
+    }
+  }
+
   bool WithDefaultBrowserStep() const {
     return GetParam().with_default_browser_step;
   }
@@ -333,6 +374,10 @@ class FirstRunParameterizedInteractiveUiTest
     return GetParam().with_search_engine_choice_step;
   }
 #endif
+
+  bool WithPrivacySandboxEnabled() const {
+    return GetParam().with_privacy_sandbox_enabled;
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -434,6 +479,18 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
 
   WaitForPickerClosed();
 
+  if (WithPrivacySandboxEnabled()) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(chrome::kChromeUINewTabPageURL),
+        WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    // Test that the Privacy Sandbox prompt gets displayed in the browser after
+    // the user makes a Search Engine Choice in the FRE.
+    PrivacySandboxService* privacy_sandbox_service =
+        PrivacySandboxServiceFactory::GetForProfile(profile());
+    EXPECT_TRUE(privacy_sandbox_service->IsPromptOpenForBrowser(browser()));
+  }
+
   histogram_tester.ExpectUniqueSample(
       "Signin.SyncOptIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
@@ -442,6 +499,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
     histogram_tester.ExpectUniqueSample(
         "ProfilePicker.FirstRun.DefaultBrowser",
         DefaultBrowserChoice::kClickSetAsDefault, 1);
+  }
+  if (WithSearchEngineChoiceStep()) {
+    histogram_tester.ExpectBucketCount(
+        search_engines::kSearchEngineChoiceScreenEventsHistogram,
+        search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
   }
 
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
