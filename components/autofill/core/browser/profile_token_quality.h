@@ -98,6 +98,9 @@ class ProfileTokenQuality {
   ProfileTokenQuality(const ProfileTokenQuality& other);
   ~ProfileTokenQuality();
 
+  bool operator==(const ProfileTokenQuality& other) const;
+  bool operator!=(const ProfileTokenQuality& other) const;
+
   // Determines if a `type` is considered stored. Observations are only tracked
   // for stored types.
   static bool IsStoredType(ServerFieldType type);
@@ -209,6 +212,9 @@ class ProfileTokenQuality {
     // Getters expose unknown values as `kUnknown`.
     std::underlying_type_t<ObservationType> type;
     FormSignatureHash form_hash = FormSignatureHash(0);
+
+    bool operator==(const Observation& other) const;
+    bool operator!=(const Observation& other) const;
   };
 
   // Returns a low-entry hash of the `form_signature`.

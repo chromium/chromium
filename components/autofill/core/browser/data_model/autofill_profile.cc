@@ -582,6 +582,7 @@ bool AutofillProfile::EqualsForUpdatePurposes(
   return use_count() == new_profile.use_count() &&
          UseDateEqualsInSeconds(&new_profile) &&
          language_code() == new_profile.language_code() &&
+         token_quality() == new_profile.token_quality() &&
          Compare(new_profile) == 0;
 }
 

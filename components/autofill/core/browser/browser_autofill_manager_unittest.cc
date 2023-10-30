@@ -3690,8 +3690,10 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
             .empty();
       }));
 
-  // Submit the form and expect observations for all of the form's types.
+  // Submit the form and expect observations for all of the form's types. This
+  // updates the `profile` in `personal_data()`, invalidating the pointer.
   FormSubmitted(filled_form);
+  profile = personal_data().GetProfileByGUID(kElvisProfileGuid);
   EXPECT_TRUE(base::ranges::none_of(
       *form_structure, [&](const std::unique_ptr<AutofillField>& field) {
         return profile->token_quality()

@@ -810,6 +810,36 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
   ExpectSameElements(profiles, personal_data_->GetProfiles());
 }
 
+// Tests that `UpdateProfile()` takes changes in the `ProfileTokenQuality`
+// observations into considerations.
+TEST_F(PersonalDataManagerTest, UpdateProfile_NewObservations) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillTrackProfileTokenQuality};
+
+  // Add a profile without observations at `kArbitraryTime`.
+  TestAutofillClock test_clock;
+  test_clock.SetNow(kArbitraryTime);
+  AutofillProfile profile = test::GetFullProfile();
+  AddProfileToPersonalDataManager(profile);
+  test_clock.SetNow(kSomeLaterTime);
+
+  // Add an observation, as might happen during a form submit.
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+  UpdateProfileOnPersonalDataManager(profile);
+
+  // Expect that `UpdateProfile()` didn't reject the update as a no-op.
+  // Since new observations are considered a metadata change, further expected
+  // that the modification date hasn't changed.
+  const AutofillProfile* pdm_profile =
+      personal_data_->GetProfileByGUID(profile.guid());
+  EXPECT_THAT(
+      pdm_profile->token_quality().GetObservationTypesForFieldType(NAME_FIRST),
+      UnorderedElementsAre(ProfileTokenQuality::ObservationType::kAccepted));
+  EXPECT_EQ(profile.modification_date(), kArbitraryTime);
+}
+
 // Tests that when the value for a type changes, `UpdateProfile()` resets the
 // observations for that type.
 TEST_F(PersonalDataManagerTest, UpdateProfile_ResetObservations) {
