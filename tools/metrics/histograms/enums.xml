@@ -72334,6 +72334,12 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="Clicked"/>
 </enum>
 
+<enum name="MediaDrmProvisioningResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="FailedWhileOnline"/>
+  <int value="2" label="FailedWhileOffline"/>
+</enum>
+
 <enum name="MediaElementAutoPlay">
   <obsolete>
     Deprecated 11/2016 in Issue 666370 with the deprecation of Autoplay

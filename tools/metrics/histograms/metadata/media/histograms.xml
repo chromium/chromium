@@ -2782,6 +2782,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.MediaDrm.Provisioning"
+    enum="MediaDrmProvisioningResult" expires_after="2023-12-31">
+  <owner>jrummell@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Result of trying to provision an origin using MediaDrm. Called every time
+    provisioning is attempted, once per origin.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.MediaDrmBridge.KeySystemSupport"
     enum="BooleanSupported" expires_after="2024-04-11">
   <owner>xhwang@chromium.org</owner>

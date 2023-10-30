@@ -7,6 +7,9 @@ package org.chromium.media;
 import android.annotation.SuppressLint;
 import android.media.MediaCrypto;
 import android.media.MediaDrm;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -1215,22 +1218,105 @@ public class MediaDrmBridge {
             sMediaCryptoDeferrer.onProvisionStarted();
         }
 
-        // getProvisionRequest() may fail with android.media.MediaDrm.MediaDrmStateException or
-        // android.media.MediaDrmResetException, both of which extend IllegalStateException. As
-        // these specific exceptions are only available in API 21 and 23 respectively, using the
-        // base exception so that this will work for all API versions.
+        // Due to error handling and API requirements, call a version appropriate function to do the
+        // actual getProvisionRequest() call.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return startProvisioningPreQ();
+        } else {
+            return startProvisioningQorLater(/* retryAllowed= */ true);
+        }
+    }
+
+    /**
+     * Start provisioning on Android P or earlier. Returns true if a provisioning request can be
+     * generated and has been forwarded to C++ code for handling, false otherwise.
+     */
+    private boolean startProvisioningPreQ() {
         MediaDrm.ProvisionRequest request;
         try {
             request = mMediaDrm.getProvisionRequest();
         } catch (java.lang.IllegalStateException e) {
+            // getProvisionRequest() may fail with android.media.MediaDrm.MediaDrmStateException or
+            // android.media.MediaDrmResetException, both of which extend IllegalStateException. As
+            // these specific exceptions are only available in API 21 and 23 respectively, using the
+            // base exception so that this will work for all API versions.
             Log.e(TAG, "Failed to get provisioning request", e);
             return false;
         }
 
         Log.i(TAG, "Provisioning origin ID %s", mOriginSet ? mOrigin : "<none>");
-        MediaDrmBridgeJni.get().onProvisionRequest(mNativeMediaDrmBridge, MediaDrmBridge.this,
-                request.getDefaultUrl(), request.getData());
+        MediaDrmBridgeJni.get()
+                .onProvisionRequest(
+                        mNativeMediaDrmBridge,
+                        MediaDrmBridge.this,
+                        request.getDefaultUrl(),
+                        request.getData());
         return true;
+    }
+
+    /**
+     * Start provisioning on Android Q or later, as it allows for better error diagnostics. Returns
+     * true if a provisioning request can be generated and has been forwarded to C++ code for
+     * handling, false otherwise.
+     *
+     * @param retryAllowed Flag set to true if transient failures should be retried.
+     */
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private boolean startProvisioningQorLater(boolean retryAllowed) {
+        MediaDrm.ProvisionRequest request;
+        try {
+            request = mMediaDrm.getProvisionRequest();
+        } catch (MediaDrm.SessionException e) {
+            // SessionException may be thrown when an operation failed in a way that is likely to
+            // succeed on a subsequent attempt. However, checking for transient errors is only
+            // available on S and later. Try only once to repeat it if possible.
+            if (retryAllowed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e.isTransient()) {
+                return startProvisioningQorLater(false);
+            }
+            Log.e(TAG, "Failed to get provisioning request", e);
+            displayMetrics();
+            return false;
+        } catch (MediaDrm.MediaDrmStateException e) {
+            Log.e(TAG, "Failed to get provisioning request", e);
+            Log.e(TAG, "getDiagnosticInfo:", e.getDiagnosticInfo());
+            displayMetrics();
+            return false;
+        } catch (java.lang.IllegalStateException e) {
+            // This should only be MediaDrmResetException, but catching all IllegalStateExceptions
+            // to be compatible with the pre-Q version.
+            Log.e(TAG, "Failed to get provisioning request", e);
+            displayMetrics();
+            return false;
+        }
+
+        Log.i(TAG, "Provisioning origin ID %s", mOriginSet ? mOrigin : "<none>");
+        MediaDrmBridgeJni.get()
+                .onProvisionRequest(
+                        mNativeMediaDrmBridge,
+                        MediaDrmBridge.this,
+                        request.getDefaultUrl(),
+                        request.getData());
+        return true;
+    }
+
+    /** Display MediaDrm metrics to the error log if available. */
+    @RequiresApi(Build.VERSION_CODES.P)
+    private void displayMetrics() {
+        assert mMediaDrm != null;
+
+        // Property "metrics" specific to Widevine.
+        if (isWidevine()) {
+            try {
+                byte[] metrics = mMediaDrm.getPropertyByteArray("metrics");
+                if (metrics != null) {
+                    // SessionId class converts an arbitrary byte[] to string.
+                    Log.e(TAG, "metrics: ", SessionId.toHexString(metrics));
+                }
+            } catch (Exception e) {
+                // Ignore any errors if this fails as it's just logging additional data
+                // and we don't want the caller to fail if this doesn't work.
+            }
+        }
     }
 
     /**
