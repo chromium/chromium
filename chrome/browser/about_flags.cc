@@ -3069,8 +3069,6 @@ constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
 constexpr char kWallpaperGooglePhotosSharedAlbumsInternalName[] =
     "wallpaper-google-photos-shared-albums";
 constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
-constexpr char kLibAssistantV2MigrationInternalName[] =
-    "cros-libassistant-v2-migration";
 constexpr char kTimeOfDayWallpaperInternalName[] = "time-of-day-wallpaper";
 constexpr char kTimeOfDayScreenSaverInternalName[] = "time-of-day-screen-saver";
 constexpr char kTimeOfDayDlcInternalName[] = "time-of-day-dlc";
@@ -10283,13 +10281,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {kLibAssistantV2MigrationInternalName,
-     flag_descriptions::kLibAssistantV2MigrationName,
-     flag_descriptions::kLibAssistantV2MigrationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::assistant::features::kEnableLibAssistantV2)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-per-desk-z-order", flag_descriptions::kEnablePerDeskZOrderName,
      flag_descriptions::kEnablePerDeskZOrderDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnablePerDeskZOrder)},
@@ -11438,14 +11429,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
            channel != version_info::Channel::UNKNOWN;
-  }
-
-  // Only show LibAssistant V2 migration flag if channel is one of
-  // Dev/Canary/Unknown.
-  if (!strcmp(kLibAssistantV2MigrationInternalName, entry.internal_name)) {
-    return (channel != version_info::Channel::DEV &&
-            channel != version_info::Channel::CANARY &&
-            channel != version_info::Channel::UNKNOWN);
   }
 
   // Disable and prevent users from enabling Floss on boards that were

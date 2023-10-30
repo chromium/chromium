@@ -48,11 +48,7 @@ base::FilePath GetLibassisantPath(const std::string& root_path) {
   DCHECK(root_path == kLibAssistantDlcRootPath);
   base::FilePath libassistant_dlc_root =
       base::FilePath(root_path).AsEndingWithSeparator();
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    return libassistant_dlc_root.Append(base::FilePath(kLibAssistantV2DlcPath));
-  }
-
-  return libassistant_dlc_root.Append(base::FilePath(kLibAssistantV1DlcPath));
+  return libassistant_dlc_root.Append(base::FilePath(kLibAssistantV2DlcPath));
 }
 
 void RecordLibassistantDlcInstallResult(

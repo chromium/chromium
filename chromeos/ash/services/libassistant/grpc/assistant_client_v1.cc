@@ -15,7 +15,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/callback_utils.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/utils/media_status_utils.h"
@@ -137,11 +136,6 @@ class AssistantClientV1::DeviceStateListener
 
     // Now |AssistantManager| is fully started, add media manager listener.
     assistant_client_->AddMediaManagerListener();
-
-    // We will be checking the heartbeat signal sent back for Libassistant for
-    // v2.
-    if (!assistant::features::IsLibAssistantV2Enabled())
-      assistant_client_->NotifyAllServicesReady();
   }
 
  private:
@@ -337,13 +331,6 @@ void AssistantClientV1::StartServices(
     ServicesStatusObserver* services_status_observer) {
   DCHECK(services_status_observer);
   services_status_observer_ = services_status_observer;
-
-  // Instead we will be checking the heartbeat signal sent back from Libassisant
-  // in v2.
-  if (!assistant::features::IsLibAssistantV2Enabled()) {
-    services_status_observer_->OnServicesStatusChanged(
-        ServicesStatus::ONLINE_BOOTING_UP);
-  }
 }
 
 void AssistantClientV1::SetChromeOSApiDelegate(

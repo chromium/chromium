@@ -122,13 +122,6 @@ void ServiceController::Initialize(
       ToLibassistantConfig(*config));
   assistant_client::AssistantManagerInternal* assistant_manager_internal =
       nullptr;
-
-  if (!assistant::features::IsLibAssistantV2Enabled()) {
-    assistant_manager_internal =
-        libassistant_factory_->UnwrapAssistantManagerInternal(
-            assistant_manager.get());
-  }
-
   assistant_client_ = AssistantClient::Create(std::move(assistant_manager),
                                               assistant_manager_internal);
 
@@ -142,10 +135,6 @@ void ServiceController::Initialize(
   settings_controller_->SetDarkModeEnabled(config->dark_mode_enabled);
 
   CreateAndRegisterChromiumApiDelegate(std::move(url_loader_factory));
-  if (!assistant::features::IsLibAssistantV2Enabled()) {
-    SetServerExperiments(assistant_client_.get());
-  }
-
   for (auto& observer : assistant_client_observers_) {
     observer.OnAssistantClientCreated(assistant_client_.get());
   }
@@ -278,9 +267,7 @@ AssistantClient* ServiceController::assistant_client() {
 void ServiceController::OnAllServicesReady() {
   DVLOG(1) << "Libassistant services are ready.";
 
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    SetServerExperiments(assistant_client_.get());
-  }
+  SetServerExperiments(assistant_client_.get());
 
   // Notify observers on Libassistant services ready.
   SetStateAndInformObservers(mojom::ServiceState::kRunning);
@@ -295,10 +282,8 @@ void ServiceController::OnServicesBootingUp() {
   // We set one precondition of BootupState to reach `INITIALIZING_INTERNAL`
   // is to wait for the gRPC HttpConnection be ready. Only after the BootupState
   // meets the state, can AssistantManager start.
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    assistant_client_->StartGrpcHttpConnectionClient(
-        chromium_api_delegate_->GetHttpConnectionFactory());
-  }
+  assistant_client_->StartGrpcHttpConnectionClient(
+      chromium_api_delegate_->GetHttpConnectionFactory());
 
   // The Libassistant BootupState goes to `RUNNING` right after
   // `SETTING_UP_ESSENTIAL_SERVICES` if AssistantManager::Start() is called
@@ -337,9 +322,6 @@ void ServiceController::CreateAndRegisterChromiumApiDelegate(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         url_loader_factory_remote) {
   CreateChromiumApiDelegate(std::move(url_loader_factory_remote));
-  if (!assistant::features::IsLibAssistantV2Enabled()) {
-    assistant_client_->SetChromeOSApiDelegate(chromium_api_delegate_.get());
-  }
 }
 
 void ServiceController::CreateChromiumApiDelegate(

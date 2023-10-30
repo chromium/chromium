@@ -4140,8 +4140,6 @@ extern const char kOobeJellyModalDescription[];
 extern const char kOobeSimonName[];
 extern const char kOobeSimonDescription[];
 
-extern const char kLibAssistantV2MigrationName[];
-extern const char kLibAssistantV2MigrationDescription[];
 // Prefer keeping this section sorted to adding new declarations down here.
 
 extern const char kLacrosSharedComponentsDirName[];

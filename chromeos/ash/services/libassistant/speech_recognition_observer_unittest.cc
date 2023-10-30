@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/task_environment.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/display_connection.h"
 #include "chromeos/ash/services/libassistant/libassistant_service.h"
 #include "chromeos/ash/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
@@ -90,16 +89,12 @@ class AssistantSpeechRecognitionObserverTest : public ::testing::Test {
   }
 
   void SendDisplayConnectionEvent(const std::string& event) {
-    if (assistant::features::IsLibAssistantV2Enabled()) {
-      ::assistant::api::OnAssistantDisplayEventRequest request;
-      auto* assistant_display_event = request.mutable_event();
-      auto* on_assistant_event =
-          assistant_display_event->mutable_on_assistant_event();
-      on_assistant_event->set_assistant_event_bytes(event);
-      service_tester_.GetDisplayConnection().OnGrpcMessage(request);
-    } else {
-      display_connection().OnAssistantEvent(event);
-    }
+    ::assistant::api::OnAssistantDisplayEventRequest request;
+    auto* assistant_display_event = request.mutable_event();
+    auto* on_assistant_event =
+        assistant_display_event->mutable_on_assistant_event();
+    on_assistant_event->set_assistant_event_bytes(event);
+    service_tester_.GetDisplayConnection().OnGrpcMessage(request);
   }
 
  private:

@@ -5,9 +5,7 @@
 #include "chromeos/ash/services/libassistant/speaker_id_enrollment_controller.h"
 
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
@@ -81,14 +79,9 @@ class AssistantSpeakerIdEnrollmentControllerTest : public ::testing::Test {
   }
 
   bool IsSpeakerIdEnrollmentInProgress() {
-    if (assistant::features::IsLibAssistantV2Enabled()) {
-      return service_tester_.service()
-          .speaker_id_enrollment_controller_for_testing()
-          .IsSpeakerIdEnrollmentInProgressForTesting();
-    } else {
-      return assistant_manager_internal()
-          .is_speaker_id_enrollment_in_progress();
-    }
+    return service_tester_.service()
+        .speaker_id_enrollment_controller_for_testing()
+        .IsSpeakerIdEnrollmentInProgressForTesting();
   }
 
   void CallUpdateCallback(
@@ -137,20 +130,13 @@ class AssistantSpeakerIdEnrollmentControllerTest : public ::testing::Test {
   }
 
   void CallGetStatusCallback(bool user_model_exists) {
-    if (assistant::features::IsLibAssistantV2Enabled()) {
-      service_tester_.service()
-          .speaker_id_enrollment_controller_for_testing()
-          .SendGetStatusResponseForTesting(user_model_exists);
-    } else {
-      auto libassistant_callback =
-          assistant_manager_internal().speaker_id_enrollment_status_callback();
-      libassistant_callback(SpeakerIdEnrollmentStatus{user_model_exists});
-    }
+    service_tester_.service()
+        .speaker_id_enrollment_controller_for_testing()
+        .SendGetStatusResponseForTesting(user_model_exists);
   }
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
-  base::test::ScopedFeatureList feature_list_;
   LibassistantServiceTester service_tester_;
 };
 
@@ -214,57 +200,28 @@ TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
   FlushForTesting();
   EXPECT_TRUE(IsSpeakerIdEnrollmentInProgress());
 
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    // These are ignored
-    CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::INIT));
-    CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::CHECK));
-    CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::UPLOAD));
-    CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::FETCH));
-    client.FlushForTesting();
+  // These are ignored
+  CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::INIT));
+  CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::CHECK));
+  CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::UPLOAD));
+  CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::FETCH));
+  client.FlushForTesting();
 
-    EXPECT_CALL(client, OnListeningHotword);
-    CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::LISTEN));
-    client.FlushForTesting();
+  EXPECT_CALL(client, OnListeningHotword);
+  CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::LISTEN));
+  client.FlushForTesting();
 
-    EXPECT_CALL(client, OnProcessingHotword);
-    CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::PROCESS));
-    client.FlushForTesting();
+  EXPECT_CALL(client, OnProcessingHotword);
+  CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::PROCESS));
+  client.FlushForTesting();
 
-    EXPECT_CALL(client, OnSpeakerIdEnrollmentDone);
-    CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::DONE));
-    client.FlushForTesting();
+  EXPECT_CALL(client, OnSpeakerIdEnrollmentDone);
+  CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::DONE));
+  client.FlushForTesting();
 
-    EXPECT_CALL(client, OnSpeakerIdEnrollmentFailure);
-    CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::FAILURE));
-    client.FlushForTesting();
-  } else {
-    auto callback =
-        assistant_manager_internal().speaker_id_enrollment_update_callback();
-    ASSERT_TRUE(callback);
-
-    // These are ignored
-    callback(CreateUpdate(SpeakerIdEnrollmentState::INIT));
-    callback(CreateUpdate(SpeakerIdEnrollmentState::CHECK));
-    callback(CreateUpdate(SpeakerIdEnrollmentState::UPLOAD));
-    callback(CreateUpdate(SpeakerIdEnrollmentState::FETCH));
-    client.FlushForTesting();
-
-    EXPECT_CALL(client, OnListeningHotword);
-    callback(CreateUpdate(SpeakerIdEnrollmentState::LISTEN));
-    client.FlushForTesting();
-
-    EXPECT_CALL(client, OnProcessingHotword);
-    callback(CreateUpdate(SpeakerIdEnrollmentState::PROCESS));
-    client.FlushForTesting();
-
-    EXPECT_CALL(client, OnSpeakerIdEnrollmentDone);
-    callback(CreateUpdate(SpeakerIdEnrollmentState::DONE));
-    client.FlushForTesting();
-
-    EXPECT_CALL(client, OnSpeakerIdEnrollmentFailure);
-    callback(CreateUpdate(SpeakerIdEnrollmentState::FAILURE));
-    client.FlushForTesting();
-  }
+  EXPECT_CALL(client, OnSpeakerIdEnrollmentFailure);
+  CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::FAILURE));
+  client.FlushForTesting();
 }
 
 TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
@@ -285,23 +242,8 @@ TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
 
   FlushForTesting();
 
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    EXPECT_CALL(second_client, OnProcessingHotword);
-    CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::PROCESS));
-  } else {
-    // Note: our FakeAssistantManagerInternal ensures the first enrollment was
-    // stopped (with an EXPECT_FALSE).
-    // To ensure the second enrollment was started, we send an enrollment
-    // update, which should be received by the second client and not the first
-    // one.
-
-    auto callback =
-        assistant_manager_internal().speaker_id_enrollment_update_callback();
-    ASSERT_TRUE(callback);
-
-    EXPECT_CALL(second_client, OnProcessingHotword);
-    callback(CreateUpdate(SpeakerIdEnrollmentState::PROCESS));
-  }
+  EXPECT_CALL(second_client, OnProcessingHotword);
+  CallUpdateCallback(CreateUpdate(SpeakerIdEnrollmentState::PROCESS));
 
   first_client.FlushForTesting();
   second_client.FlushForTesting();

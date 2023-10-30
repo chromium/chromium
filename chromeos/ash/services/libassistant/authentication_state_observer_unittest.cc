@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/libassistant_service.h"
 #include "chromeos/ash/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
@@ -28,8 +26,9 @@ std::vector<int> GetAuthenticationErrorCodes() {
 
   std::vector<int> result;
   for (int code = kMinErrorCode; code <= kMaxErrorCode; ++code) {
-    if (chromeos::assistant::IsAuthError(code))
+    if (chromeos::assistant::IsAuthError(code)) {
       result.push_back(code);
+    }
   }
 
   return result;
@@ -98,29 +97,23 @@ class AuthenticationStateObserverTest : public ::testing::Test {
   void FlushMojomPipes() { service_tester_.FlushForTesting(); }
 
   void OnCommunicationError(int error_code) {
-    if (assistant::features::IsLibAssistantV2Enabled()) {
-      if (!chromeos::assistant::IsAuthError(error_code)) {
-        return;
-      }
-
-      ::assistant::api::OnDeviceStateEventRequest request;
-      auto* communication_error =
-          request.mutable_event()->mutable_on_communication_error();
-      communication_error->set_error_code(
-          ::assistant::api::events::DeviceStateEvent::OnCommunicationError::
-              AUTH_TOKEN_FAIL);
-
-      service_tester_.service()
-          .conversation_controller()
-          .OnGrpcMessageForTesting(request);
-    } else {
-      assistant_manager_delegate().OnCommunicationError(error_code);
+    if (!chromeos::assistant::IsAuthError(error_code)) {
+      return;
     }
+
+    ::assistant::api::OnDeviceStateEventRequest request;
+    auto* communication_error =
+        request.mutable_event()->mutable_on_communication_error();
+    communication_error->set_error_code(
+        ::assistant::api::events::DeviceStateEvent::OnCommunicationError::
+            AUTH_TOKEN_FAIL);
+
+    service_tester_.service().conversation_controller().OnGrpcMessageForTesting(
+        request);
   }
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
-  base::test::ScopedFeatureList feature_list_;
   ::testing::StrictMock<AuthenticationStateObserverMock> observer_mock_;
   LibassistantServiceTester service_tester_;
 };

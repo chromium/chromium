@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ref.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
@@ -111,23 +109,17 @@ class NotificationDelegateTest : public ::testing::Test {
   }
 
   void OnNotificationRemoved(const std::string& grouping_id) {
-    if (assistant::features::IsLibAssistantV2Enabled()) {
-      ::assistant::api::OnDeviceStateEventRequest request;
-      auto* notification_removed =
-          request.mutable_event()->mutable_on_notification_removed();
-      notification_removed->set_grouping_id(grouping_id);
+    ::assistant::api::OnDeviceStateEventRequest request;
+    auto* notification_removed =
+        request.mutable_event()->mutable_on_notification_removed();
+    notification_removed->set_grouping_id(grouping_id);
 
-      service_tester_.service()
-          .conversation_controller()
-          .OnGrpcMessageForTesting(std::move(request));
-    } else {
-      assistant_manager_delegate().OnNotificationRemoved(grouping_id);
-    }
+    service_tester_.service().conversation_controller().OnGrpcMessageForTesting(
+        std::move(request));
   }
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
-  base::test::ScopedFeatureList feature_list_;
   ::testing::StrictMock<NotificationDelegateMock> delegate_mock_;
   LibassistantServiceTester service_tester_;
   std::unique_ptr<CrosActionModuleHelper> action_module_helper_;
