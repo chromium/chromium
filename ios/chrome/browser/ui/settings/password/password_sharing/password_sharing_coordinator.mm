@@ -295,7 +295,8 @@ using password_manager::FetchFamilyMembersRequestStatus;
                          website:base::SysUTF8ToNSString(
                                      password_manager::GetShownOrigin(
                                          credential))
-                             URL:credential.GetURL()];
+                             URL:credential.GetURL()
+               changePasswordURL:credential.GetChangePasswordURL()];
   self.sharingStatusCoordinator.delegate = self;
   [self.sharingStatusCoordinator start];
 }

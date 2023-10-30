@@ -43,6 +43,10 @@ const CGFloat kProfileImageSize = 60.0;
 
   // Url of the site for which the password is being shared.
   GURL _URL;
+
+  // Url which allows to change the password that is being shared. Can be null
+  // for Android app credentials.
+  absl::optional<GURL> _changePasswordURL;
 }
 
 - (instancetype)
@@ -51,7 +55,8 @@ const CGFloat kProfileImageSize = 60.0;
             faviconLoader:(FaviconLoader*)faviconLoader
                recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
                   website:(NSString*)website
-                      URL:(const GURL&)URL {
+                      URL:(const GURL&)URL
+        changePasswordURL:(const absl::optional<GURL>&)changePasswordURL {
   self = [super init];
   if (self) {
     _authService = authService;
@@ -60,6 +65,7 @@ const CGFloat kProfileImageSize = 60.0;
     _recipients = recipients;
     _website = website;
     _URL = URL;
+    _changePasswordURL = changePasswordURL;
   }
   return self;
 }
@@ -194,9 +200,13 @@ const CGFloat kProfileImageSize = 60.0;
 
 // Creates footer string informing the user how to revoke sharing access.
 - (NSString*)footerString {
-  return base::SysUTF16ToNSString(
-      l10n_util::GetStringFUTF16(IDS_IOS_PASSWORD_SHARING_SUCCESS_FOOTNOTE,
-                                 base::SysNSStringToUTF16(_website)));
+  return _changePasswordURL.has_value()
+             ? base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
+                   IDS_IOS_PASSWORD_SHARING_SUCCESS_FOOTNOTE,
+                   base::SysNSStringToUTF16(_website)))
+             : base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
+                   IDS_IOS_PASSWORD_SHARING_SUCCESS_FOOTNOTE_ANDROID_APP,
+                   base::SysNSStringToUTF16(_website)));
 }
 
 @end

@@ -139,7 +139,8 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedInConsumerAboutTheirAvatar) {
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
                     website:kWebsite
-                        URL:kGURL];
+                        URL:kGURL
+          changePasswordURL:absl::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(UIImagePNGRepresentation(CircularImageFromImage(
@@ -157,7 +158,8 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedOutConsumerWithDefaultAvatar) {
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
                     website:kWebsite
-                        URL:kGURL];
+                        URL:kGURL
+          changePasswordURL:absl::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(UIImagePNGRepresentation(DefaultSymbolTemplateWithPointSize(
@@ -173,7 +175,8 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerWithRecipientImage) {
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
                     website:kWebsite
-                        URL:kGURL];
+                        URL:kGURL
+          changePasswordURL:absl::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(UIImagePNGRepresentation(DefaultSymbolTemplateWithPointSize(
@@ -190,7 +193,8 @@ TEST_F(SharingStatusMediatorTest,
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(1)
                     website:kWebsite
-                        URL:kGURL];
+                        URL:kGURL
+          changePasswordURL:absl::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
@@ -208,7 +212,8 @@ TEST_F(SharingStatusMediatorTest,
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(2)
                     website:kWebsite
-                        URL:kGURL];
+                        URL:kGURL
+          changePasswordURL:absl::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
@@ -217,7 +222,7 @@ TEST_F(SharingStatusMediatorTest,
               consumer.subtitleString);
 }
 
-TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutFooter) {
+TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutFooterForWebsite) {
   auto* consumer = [[FakeSharingStatusConsumer alloc] init];
   auto* mediator = [[SharingStatusMediator alloc]
         initWithAuthService:GetAuthenticationService()
@@ -225,11 +230,30 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutFooter) {
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(2)
                     website:kWebsite
-                        URL:kGURL];
+                        URL:kGURL
+          changePasswordURL:kGURL];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
                   IDS_IOS_PASSWORD_SHARING_SUCCESS_FOOTNOTE, u"example.com")),
+              consumer.footerString);
+}
+
+TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutFooterForAndroidApp) {
+  auto* consumer = [[FakeSharingStatusConsumer alloc] init];
+  auto* mediator = [[SharingStatusMediator alloc]
+        initWithAuthService:GetAuthenticationService()
+      accountManagerService:GetAccountManagerService()
+              faviconLoader:GetFaviconLoader()
+                 recipients:CreateRecipients(2)
+                    website:kWebsite
+                        URL:kGURL
+          changePasswordURL:absl::nullopt];
+  mediator.consumer = consumer;
+
+  EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
+                  IDS_IOS_PASSWORD_SHARING_SUCCESS_FOOTNOTE_ANDROID_APP,
+                  u"example.com")),
               consumer.footerString);
 }
 
@@ -241,7 +265,8 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutGURL) {
               faviconLoader:GetFaviconLoader()
                  recipients:CreateRecipients(2)
                     website:kWebsite
-                        URL:kGURL];
+                        URL:kGURL
+          changePasswordURL:absl::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_EQ(kGURL, consumer.URL);

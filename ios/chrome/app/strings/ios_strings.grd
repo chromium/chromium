@@ -3248,6 +3248,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SHARING_SUCCESS_FOOTNOTE" desc="Footnote text on the sharing status view when it succeeds describing how to revoke access to the shared password. [iOS only]">
         To stop others from using your password, <ph name="BEGIN_LINK">BEGIN_LINK</ph>change it on <ph name="WEBSITE">$1<ex>amazon.com</ex></ph><ph name="END_LINK">END_LINK</ph>
       </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_SUCCESS_FOOTNOTE_ANDROID_APP" desc="Footnote text on the sharing status view when it succeeds describing how to revoke access to the shared password when it was shared for an Android app. [iOS only]">
+        To stop others from using your password, open the <ph name="APP">$1<ex>Netflix</ex></ph> app to change your password
+      </message>
       <message name="IDS_IOS_PASSWORD_SHARING_SUCCESS_SUBTITLE" desc="Subtitle text on the sharing status view when it succeeds describing that the recipient can now use the shared password. [iOS only]">
         <ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="USERNAME">$1<ex>johndoe</ex></ph><ph name="END_BOLD">END_BOLD</ph> can now use your username and password when they use Google Password Manager to sign in to <ph name="BEGIN_BOLD">BEGIN_BOLD</ph><ph name="WEBSITE">$2<ex>amazon.com</ex></ph><ph name="END_BOLD">END_BOLD</ph>. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>

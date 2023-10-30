@@ -18,6 +18,13 @@
 // sharing coordinator.
 - (void)startPasswordSharing;
 
+// Handles taps on the link to learn more about the password sharing feature.
+- (void)learnMoreLinkWasTapped;
+
+// Handles taps on the link to the site where the user can change the password
+// that was shared.
+- (void)changePasswordLinkWasTapped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_

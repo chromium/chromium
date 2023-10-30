@@ -62,9 +62,13 @@ const CGFloat kImagesSlidingInDistance = 51;
 NSString* const kBeginBoldTag = @"BEGIN_BOLD[ \t]*";
 NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 
+// Accessibility identifiers of text views with links.
+NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
+NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
+
 }  // namespace
 
-@interface SharingStatusViewController ()
+@interface SharingStatusViewController () <UITextViewDelegate>
 
 // Profile image of the sender.
 @property(nonatomic, strong) UIImageView* senderImageView;
@@ -279,6 +283,20 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 
 - (void)setURL:(const GURL&)URL {
   _URL = URL;
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  if (textView.accessibilityIdentifier == kSharingStatusSubtitleId) {
+    [self.delegate learnMoreLinkWasTapped];
+  } else if (textView.accessibilityIdentifier == kSharingStatusFooterId) {
+    [self.delegate changePasswordLinkWasTapped];
+  }
+  return NO;
 }
 
 #pragma mark - Private
@@ -509,6 +527,7 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
   view.textAlignment = NSTextAlignmentCenter;
   view.translatesAutoresizingMaskIntoConstraints = NO;
   view.adjustsFontForContentSizeCategory = YES;
+  view.delegate = self;
   view.editable = NO;
   view.selectable = YES;
   view.scrollEnabled = NO;
@@ -542,6 +561,7 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
   UITextView* subtitle = [self createTextView];
   subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   subtitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  subtitle.accessibilityIdentifier = kSharingStatusSubtitleId;
 
   StringWithTags stringWithBolds =
       ParseStringWithTags(self.subtitleString, kBeginBoldTag, kEndBoldTag);
@@ -561,10 +581,13 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
   UITextView* footer = [self createTextView];
   footer.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   footer.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  footer.accessibilityIdentifier = kSharingStatusFooterId;
 
   StringWithTags stringWithTags = ParseStringWithLinks(self.footerString);
   footer.text = stringWithTags.string;
-  [self addLinkAttributeToTextView:footer range:stringWithTags.ranges[0]];
+  if (!stringWithTags.ranges.empty()) {
+    [self addLinkAttributeToTextView:footer range:stringWithTags.ranges[0]];
+  }
 
   return footer;
 }
