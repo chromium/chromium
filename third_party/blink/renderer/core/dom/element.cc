@@ -2186,10 +2186,27 @@ const AtomicString& Element::computedRole() {
     return g_null_atom;
   }
   AXContext ax_context(document, ui::kAXModeBasic);
-  if (document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
-    document.View()->UpdateAllLifecyclePhasesExceptPaint(
-        DocumentUpdateReason::kJavaScript);
+  document.View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kJavaScript);
+  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
+  return ax_context.GetAXObjectCache().ComputedRoleForNode(this);
+}
+
+const AtomicString& Element::ComputedRoleNoLifecycleUpdate() {
+  Document& document = GetDocument();
+  if (!document.IsActive() || !document.View()) {
+    return g_null_atom;
   }
+  // TODO(chrishtr) this should never happen. Possibly changes already in
+  // InspectorOverlayAgent already make this unnecessary.
+  if (document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
+    DCHECK(false);
+    return g_null_atom;
+  }
+  AXContext ax_context(document, ui::kAXModeBasic);
+  // Allocating the AXContext needs to not change lifecycle states.
+  DCHECK_GE(document.Lifecycle().GetState(), DocumentLifecycle::kPrePaintClean)
+      << " State was: " << document.Lifecycle().GetState();
   ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedRoleForNode(this);
 }
@@ -2200,10 +2217,27 @@ String Element::computedName() {
     return String();
   }
   AXContext ax_context(document, ui::kAXModeBasic);
-  if (document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
-    document.View()->UpdateAllLifecyclePhasesExceptPaint(
-        DocumentUpdateReason::kJavaScript);
+  document.View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kJavaScript);
+  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
+  return ax_context.GetAXObjectCache().ComputedNameForNode(this);
+}
+
+String Element::ComputedNameNoLifecycleUpdate() {
+  Document& document = GetDocument();
+  if (!document.IsActive() || !document.View()) {
+    return String();
   }
+  // TODO(chrishtr) this should never happen. Possibly changes already in
+  // InspectorOverlayAgent already make this unnecessary.
+  if (document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
+    DCHECK(false);
+    return g_null_atom;
+  }
+  AXContext ax_context(document, ui::kAXModeBasic);
+  // Allocating the AXContext needs to not change lifecycle states.
+  DCHECK_GE(document.Lifecycle().GetState(), DocumentLifecycle::kPrePaintClean)
+      << " State was: " << document.Lifecycle().GetState();
   ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedNameForNode(this);
 }
