@@ -332,13 +332,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'getRecentFiles',
       function(
-          restriction, file_type, invalidate_cache, successCallback,
+          restriction, query, file_type, invalidate_cache, successCallback,
           failureCallback) {
         let resultHandler = function(entryDescriptions) {
           return entryDescriptions.map(getExternalFileEntry);
         };
         fileManagerPrivateInternal.getRecentFiles(
-            restriction, file_type, invalidate_cache,
+            restriction, query, file_type, invalidate_cache,
             callbackAdaptor(successCallback, failureCallback, resultHandler));
       });
 

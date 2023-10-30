@@ -47,23 +47,17 @@ const SHORT_RESCAN_INTERVAL = 100;
  * uses Recent as location, we reuse the Recent scanner. Otherwise, the true
  * search scanner is used.
  * @param {!DirectoryEntry|!FilesAppEntry} entry Directory entry.
- * @param {string=} query Search query string.
  * @param {SearchOptions=} options search options.
  * @private
  */
-function isRecentScan(entry, query, options) {
+function isRecentScan(entry, options) {
   // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
   // 'FileSystemDirectoryEntry | FilesAppEntry'.
   if (isRecentRootType(entry.rootType)) {
-    // The user is in Recent view. If query is empty, this is definitely
-    // a scan. Otherwise, we need to check the options.
-    if (!query) {
-      return true;
-    }
     // Potential search in Recents. However, if options are present and are
     // indicating that the user wishes to scan current entry, still use Recent
     // scanner.
-    if (options && options.location == SearchLocation.THIS_FOLDER) {
+    if (!options || options.location === SearchLocation.THIS_FOLDER) {
       return true;
     }
   }
@@ -1684,7 +1678,7 @@ export class DirectoryModel extends EventTarget {
     const sanitizedQuery = (query || '').trimStart();
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
 
-    if (isRecentScan(entry, sanitizedQuery, options)) {
+    if (isRecentScan(entry, options)) {
       const fakeEntry = /** @type {!FakeEntry} */ (entry);
       return () => {
         return new RecentContentScanner(

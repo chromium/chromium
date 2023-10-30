@@ -145,6 +145,7 @@ namespace fileManagerPrivateInternal {
         GetVolumeRootCallback callback);
     [supportsPromises] static void getRecentFiles(
         fileManagerPrivate.SourceRestriction restriction,
+        DOMString query,
         fileManagerPrivate.FileCategory file_category,
         boolean invalidate_cache,
         GetRecentFilesCallback callback);

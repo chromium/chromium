@@ -60,6 +60,7 @@ class RecentModel : public KeyedService {
   // Results might be internally cached for better performance.
   void GetRecentFiles(storage::FileSystemContext* file_system_context,
                       const GURL& origin,
+                      const std::string& query,
                       FileType file_type,
                       bool invalidate_cache,
                       GetRecentFilesCallback callback);
@@ -92,13 +93,14 @@ class RecentModel : public KeyedService {
   void OnGetRecentFiles(uint32_t run_on_sequence_id,
                         size_t max_files,
                         const base::Time& cutoff_time,
+                        const std::string& query,
                         FileType file_type,
                         std::vector<RecentFile> files);
-  void OnGetRecentFilesCompleted(FileType file_type);
+  void OnGetRecentFilesCompleted(const std::string& query, FileType file_type);
   void ClearCache();
 
   // The callback invoked by the deadline timer.
-  void OnScanTimeout(FileType file_type);
+  void OnScanTimeout(const std::string& query, FileType file_type);
 
   void SetMaxFilesForTest(size_t max_files);
   void SetForcedCutoffTimeForTest(const base::Time& forced_cutoff_time);
@@ -115,6 +117,9 @@ class RecentModel : public KeyedService {
 
   // Cached GetRecentFiles() response.
   absl::optional<std::vector<RecentFile>> cached_files_ = absl::nullopt;
+
+  // The query used in the most recent call.
+  std::string cached_query_;
 
   // File type of the cached GetRecentFiles() response.
   FileType cached_files_type_ = FileType::kAll;

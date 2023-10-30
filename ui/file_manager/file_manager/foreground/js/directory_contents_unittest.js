@@ -20,14 +20,14 @@ const mockChrome = {
     getRecentFiles:
         // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an
         // 'any' type.
-        (sourceRestriction, fileType, invalidateCache, callback) => {
+        (sourceRestriction, query, fileType, invalidateCache, callback) => {
           /** @type {!Array<!FileEntry>} */
           const entries = [
             /** @type {!FileEntry} */ ({name: '1.txt'}),
             /** @type {!FileEntry} */ ({name: '2.txt'}),
             /** @type {!FileEntry} */ ({name: '3.png'}),
           ];
-          callback(entries);
+          callback(entries.filter(e => e.name.indexOf(query) !== -1));
         },
   },
 };

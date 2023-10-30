@@ -1017,7 +1017,7 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
     model->SetScanTimeout(base::Milliseconds(3000));
   }
   model->GetRecentFiles(
-      file_system_context.get(), source_url(), file_type,
+      file_system_context.get(), source_url(), params->query, file_type,
       params->invalidate_cache,
       base::BindOnce(
           &FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles,

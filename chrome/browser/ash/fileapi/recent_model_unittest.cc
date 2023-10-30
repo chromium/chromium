@@ -67,8 +67,8 @@ std::vector<RecentFile> GetRecentFiles(RecentModel* model,
   base::RunLoop run_loop;
 
   model->GetRecentFiles(
-      nullptr /* file_system_context */, GURL() /* origin */, file_type,
-      invalidate_cache,
+      nullptr /* file_system_context */, GURL() /* origin */,
+      "" /* query: unused */, file_type, invalidate_cache,
       base::BindOnce(
           [](base::RunLoop* run_loop, std::vector<RecentFile>* files_out,
              const std::vector<RecentFile>& files) {

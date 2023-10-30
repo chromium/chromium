@@ -112,6 +112,7 @@ RecentModel::~RecentModel() {
 void RecentModel::GetRecentFiles(
     storage::FileSystemContext* file_system_context,
     const GURL& origin,
+    const std::string& query,
     FileType file_type,
     bool invalidate_cache,
     GetRecentFilesCallback callback) {
@@ -125,7 +126,8 @@ void RecentModel::GetRecentFiles(
    * Otherwise clear cache if it has values.
    */
   if (cached_files_.has_value()) {
-    if (!invalidate_cache && cached_files_type_ == file_type) {
+    if (!invalidate_cache && cached_files_type_ == file_type &&
+        cached_query_ == query) {
       std::move(callback).Run(cached_files_.value());
       return;
     }
@@ -149,7 +151,7 @@ void RecentModel::GetRecentFiles(
 
   num_inflight_sources_ = sources_.size();
   if (sources_.empty()) {
-    OnGetRecentFilesCompleted(file_type);
+    OnGetRecentFilesCompleted(query, file_type);
     return;
   }
 
@@ -168,17 +170,17 @@ void RecentModel::GetRecentFiles(
 
   for (const auto& source : sources_) {
     source->GetRecentFiles(RecentSource::Params(
-        file_system_context, origin, max_files_, cutoff_time, end_time,
+        file_system_context, origin, max_files_, query, cutoff_time, end_time,
         file_type,
         base::BindOnce(&RecentModel::OnGetRecentFiles,
                        weak_ptr_factory_.GetWeakPtr(), run_on_sequence_id,
-                       max_files_, cutoff_time, file_type)));
+                       max_files_, cutoff_time, query, file_type)));
   }
   if (scan_timeout_duration_) {
     deadline_timer_.Start(
         FROM_HERE, base::TimeTicks::Now() + *scan_timeout_duration_,
         base::BindOnce(&RecentModel::OnScanTimeout,
-                       weak_ptr_factory_.GetWeakPtr(), file_type));
+                       weak_ptr_factory_.GetWeakPtr(), query, file_type));
   }
 }
 
@@ -190,10 +192,10 @@ void RecentModel::ClearScanTimeout() {
   scan_timeout_duration_.reset();
 }
 
-void RecentModel::OnScanTimeout(FileType file_type) {
+void RecentModel::OnScanTimeout(const std::string& query, FileType file_type) {
   if (num_inflight_sources_ > 0) {
     num_inflight_sources_ = 0;
-    OnGetRecentFilesCompleted(file_type);
+    OnGetRecentFilesCompleted(query, file_type);
   }
 }
 
@@ -208,6 +210,7 @@ void RecentModel::Shutdown() {
 void RecentModel::OnGetRecentFiles(uint32_t run_on_sequence_id,
                                    size_t max_files,
                                    const base::Time& cutoff_time,
+                                   const std::string& query,
                                    FileType file_type,
                                    std::vector<RecentFile> files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -231,11 +234,12 @@ void RecentModel::OnGetRecentFiles(uint32_t run_on_sequence_id,
 
   --num_inflight_sources_;
   if (num_inflight_sources_ == 0) {
-    OnGetRecentFilesCompleted(file_type);
+    OnGetRecentFilesCompleted(query, file_type);
   }
 }
 
-void RecentModel::OnGetRecentFilesCompleted(FileType file_type) {
+void RecentModel::OnGetRecentFilesCompleted(const std::string& query,
+                                            FileType file_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   DCHECK_EQ(0, num_inflight_sources_);
@@ -253,6 +257,7 @@ void RecentModel::OnGetRecentFilesCompleted(FileType file_type) {
   std::reverse(files.begin(), files.end());
   cached_files_ = std::move(files);
   cached_files_type_ = file_type;
+  cached_query_ = query;
 
   DCHECK(cached_files_.has_value());
   DCHECK(intermediate_files_.empty());

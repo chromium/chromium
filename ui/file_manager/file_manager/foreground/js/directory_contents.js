@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
@@ -753,9 +752,6 @@ export class RecentContentScanner extends ContentScanner {
       // 'any' type.
       entriesCallback, successCallback, errorCallback,
       invalidateCache = false) {
-    /** @type {function(!Entry): boolean} */
-    const isMatchQuery = (entry) =>
-        entry.name.toLowerCase().indexOf(this.query_) >= 0;
     /**
      * Files app launched with "volumeFilter" launch parameter will filter out
      * some volumes. Before returning the recent entries, we need to check if
@@ -765,8 +761,8 @@ export class RecentContentScanner extends ContentScanner {
     const isAllowedVolume = (entry) =>
         this.volumeManager_.getVolumeInfo(entry) !== null;
     chrome.fileManagerPrivate.getRecentFiles(
-        this.sourceRestriction_, this.fileCategory_, invalidateCache,
-        entries => {
+        this.sourceRestriction_, this.query_, this.fileCategory_,
+        invalidateCache, entries => {
           if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError.message);
             errorCallback(
@@ -774,9 +770,7 @@ export class RecentContentScanner extends ContentScanner {
             return;
           }
           if (entries.length > 0) {
-            entriesCallback(entries.filter(
-                entry =>
-                    isMatchQuery(assert(entry)) && isAllowedVolume(entry)));
+            entriesCallback(entries.filter(entry => isAllowedVolume(entry)));
           }
           successCallback();
         });

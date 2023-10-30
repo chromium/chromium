@@ -189,6 +189,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
     ash::RecentModel::GetForProfile(profile())->GetRecentFiles(
         file_system_context.get(),
         /*origin=*/GURL(),
+        /*query=*/"",
         /*file_type=*/ash::RecentModel::FileType::kAll,
         /*invalidate_cache=*/false,
         base::BindLambdaForTesting(

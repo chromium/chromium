@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/i18n/string_search.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -49,6 +50,7 @@ class RecentSource {
     Params(storage::FileSystemContext* file_system_context,
            const GURL& origin,
            size_t max_files,
+           const std::string& query,
            const base::Time& cutoff_time,
            const base::TimeTicks& end_time,
            FileType file_type,
@@ -72,6 +74,10 @@ class RecentSource {
     // to return more files than requested here, but excessive items will be
     // filtered out by RecentModel.
     size_t max_files() const { return max_files_; }
+
+    // The query to be applied to recent files to further narrow the returned
+    // matches.
+    const std::string& query() const { return query_; }
 
     // Cut-off last modified time. RecentSource is expected to return files
     // modified at this time or later. It is fine to return older files than
@@ -98,6 +104,7 @@ class RecentSource {
     scoped_refptr<storage::FileSystemContext> file_system_context_;
     GURL origin_;
     size_t max_files_;
+    std::string query_;
     base::Time cutoff_time_;
     FileType file_type_;
     const base::TimeTicks end_time_;
@@ -116,6 +123,15 @@ class RecentSource {
  protected:
   RecentSource();
 };
+
+// A common to all recent sources function for checking a file name against the
+// query. This function returns true if the query is contained in the given file
+// name. This function does case-insensitive, accent-insensitive comparison.
+inline bool FileNameMatches(const std::u16string& file_name,
+                            const std::u16string& query) {
+  return query.empty() || base::i18n::StringSearchIgnoringCaseAndAccents(
+                              query, file_name, nullptr, nullptr);
+}
 
 }  // namespace ash
 

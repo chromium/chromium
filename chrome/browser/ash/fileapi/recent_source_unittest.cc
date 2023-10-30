@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_source.h"
@@ -24,7 +25,7 @@ class RecentSourceTest : public testing::Test {
 };
 
 TEST_F(RecentSourceTest, NeverIsLate) {
-  RecentSource::Params params(nullptr, GURL(u""), 100, base::Time::Max(),
+  RecentSource::Params params(nullptr, GURL(u""), 100, "", base::Time::Max(),
                               base::TimeTicks::Max(),
                               RecentSource::FileType::kAll, base::DoNothing());
   EXPECT_FALSE(params.IsLate());
@@ -33,7 +34,7 @@ TEST_F(RecentSourceTest, NeverIsLate) {
 }
 
 TEST_F(RecentSourceTest, IsLate) {
-  RecentSource::Params params(nullptr, GURL(u""), 100, base::Time::Max(),
+  RecentSource::Params params(nullptr, GURL(u""), 100, "", base::Time::Max(),
                               base::TimeTicks::Now() + base::Milliseconds(1000),
                               RecentSource::FileType::kAll, base::DoNothing());
   EXPECT_FALSE(params.IsLate());
@@ -43,6 +44,24 @@ TEST_F(RecentSourceTest, IsLate) {
   EXPECT_FALSE(params.IsLate());
   task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(params.IsLate());
+}
+
+TEST_F(RecentSourceTest, FileNameMatches) {
+  EXPECT_TRUE(FileNameMatches(u"foobar", u""));
+  EXPECT_TRUE(FileNameMatches(u"foobar", u"foo"));
+  EXPECT_TRUE(FileNameMatches(u"Foobar", u"foo"));
+  EXPECT_TRUE(FileNameMatches(u"Foobar", u"fOO"));
+  EXPECT_TRUE(FileNameMatches(u"Foobar", u"oB"));
+  EXPECT_TRUE(FileNameMatches(u"Foobar", u"oBar"));
+  EXPECT_TRUE(FileNameMatches(u"Foobar", u"r"));
+  EXPECT_TRUE(FileNameMatches(u"Café", u"cafe"));
+  EXPECT_TRUE(FileNameMatches(base::UTF8ToUTF16(std::string("Café")),
+                              base::UTF8ToUTF16(std::string("cafe"))));
+
+  EXPECT_FALSE(FileNameMatches(u"", u"foobar"));
+  EXPECT_FALSE(FileNameMatches(u"foo", u"bar"));
+  EXPECT_FALSE(FileNameMatches(u"foo", u"foob"));
+  EXPECT_FALSE(FileNameMatches(u"foo", u"ffoo"));
 }
 
 }  // namespace

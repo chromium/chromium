@@ -1822,6 +1822,7 @@ interface Functions {
   // |callback|
   [nocompile, supportsPromises]
   static void getRecentFiles(SourceRestriction restriction,
+                             DOMString query,
                              FileCategory fileCategory,
                              boolean invalidateCache,
                              GetRecentFilesCallback callback);

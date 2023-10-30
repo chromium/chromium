@@ -168,6 +168,7 @@ class RecentArcMediaSourceTest : public testing::Test {
   }
 
   std::vector<RecentFile> GetRecentFiles(
+      const std::string query,
       RecentSource::FileType file_type = RecentSource::FileType::kAll) {
     std::vector<RecentFile> files;
 
@@ -175,7 +176,8 @@ class RecentArcMediaSourceTest : public testing::Test {
 
     source_->GetRecentFiles(RecentSource::Params(
         nullptr /* file_system_context */, GURL() /* origin */,
-        1 /* max_files: ignored */, base::Time() /* cutoff_time: ignored */,
+        1 /* max_files: ignored */, query,
+        base::Time() /* cutoff_time: ignored */,
         base::TimeTicks::Max() /* end_time: ignored */,
         file_type /* file_type */,
         base::BindOnce(
@@ -209,7 +211,7 @@ class RecentArcMediaSourceTest : public testing::Test {
 TEST_F(RecentArcMediaSourceTest, Normal) {
   EnableFakeFileSystemInstance();
 
-  std::vector<RecentFile> files = GetRecentFiles();
+  std::vector<RecentFile> files = GetRecentFiles("");
 
   ASSERT_EQ(6u, files.size());
   EXPECT_EQ(
@@ -254,11 +256,21 @@ TEST_F(RecentArcMediaSourceTest, Normal) {
       files[5].url().path());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
             files[5].last_modified());
+
+  files = GetRecentFiles("text");
+  ASSERT_EQ(1u, files.size());
+  EXPECT_EQ(
+      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
+                                         arc::kDocumentsRootDocumentId)
+          .Append("text.txt"),
+      files[0].url().path());
 }
 
 TEST_F(RecentArcMediaSourceTest, ArcNotAvailable) {
-  std::vector<RecentFile> files = GetRecentFiles();
+  std::vector<RecentFile> files = GetRecentFiles("");
+  EXPECT_EQ(0u, files.size());
 
+  files = GetRecentFiles("hot");
   EXPECT_EQ(0u, files.size());
 }
 
@@ -266,8 +278,10 @@ TEST_F(RecentArcMediaSourceTest, Deferred) {
   EnableFakeFileSystemInstance();
   EnableDefer();
 
-  std::vector<RecentFile> files = GetRecentFiles();
+  std::vector<RecentFile> files = GetRecentFiles("");
+  EXPECT_EQ(0u, files.size());
 
+  files = GetRecentFiles("word");
   EXPECT_EQ(0u, files.size());
 }
 
@@ -275,7 +289,7 @@ TEST_F(RecentArcMediaSourceTest, GetAudioFiles) {
   EnableFakeFileSystemInstance();
 
   std::vector<RecentFile> files =
-      GetRecentFiles(RecentSource::FileType::kAudio);
+      GetRecentFiles("", RecentSource::FileType::kAudio);
   // Query for recently-modified audio files should be ignored, since
   // MediaDocumentsProvider doesn't support queryRecentDocuments for audio.
   ASSERT_EQ(0u, files.size());
@@ -285,7 +299,7 @@ TEST_F(RecentArcMediaSourceTest, GetImageFiles) {
   EnableFakeFileSystemInstance();
 
   std::vector<RecentFile> files =
-      GetRecentFiles(RecentSource::FileType::kImage);
+      GetRecentFiles("", RecentSource::FileType::kImage);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ(
@@ -308,7 +322,7 @@ TEST_F(RecentArcMediaSourceTest, GetVideoFiles) {
   EnableFakeFileSystemInstance();
 
   std::vector<RecentFile> files =
-      GetRecentFiles(RecentSource::FileType::kVideo);
+      GetRecentFiles("", RecentSource::FileType::kVideo);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ(
@@ -331,7 +345,7 @@ TEST_F(RecentArcMediaSourceTest, GetDocumentFiles) {
   EnableFakeFileSystemInstance();
 
   std::vector<RecentFile> files =
-      GetRecentFiles(RecentSource::FileType::kDocument);
+      GetRecentFiles("", RecentSource::FileType::kDocument);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ(
@@ -348,6 +362,19 @@ TEST_F(RecentArcMediaSourceTest, GetDocumentFiles) {
       files[1].url().path());
   EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
             files[1].last_modified());
+
+  files = GetRecentFiles("word", RecentSource::FileType::kDocument);
+  ASSERT_EQ(1u, files.size());
+  EXPECT_EQ(
+      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
+                                         arc::kDocumentsRootDocumentId)
+          .Append("word.doc"),
+      files[0].url().path());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
+            files[0].last_modified());
+
+  files = GetRecentFiles("no-match", RecentSource::FileType::kDocument);
+  ASSERT_EQ(0u, files.size());
 }
 
 TEST_F(RecentArcMediaSourceTest, UmaStats) {
@@ -355,7 +382,7 @@ TEST_F(RecentArcMediaSourceTest, UmaStats) {
 
   base::HistogramTester histogram_tester;
 
-  GetRecentFiles();
+  GetRecentFiles("");
 
   histogram_tester.ExpectTotalCount(RecentArcMediaSource::kLoadHistogramName,
                                     1);
@@ -367,7 +394,7 @@ TEST_F(RecentArcMediaSourceTest, UmaStats_Deferred) {
 
   base::HistogramTester histogram_tester;
 
-  GetRecentFiles();
+  GetRecentFiles("");
 
   histogram_tester.ExpectTotalCount(RecentArcMediaSource::kLoadHistogramName,
                                     0);

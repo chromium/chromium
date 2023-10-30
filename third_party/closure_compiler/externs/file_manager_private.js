@@ -1491,12 +1491,14 @@ chrome.fileManagerPrivate.getDirectorySize = function(entry, callback) {};
  * restrict sources of recent files. |fileType| Requested file type to filter
  * recent files. |callback|
  * @param {!chrome.fileManagerPrivate.SourceRestriction} restriction
+ * @param {string} query
  * @param {!chrome.fileManagerPrivate.FileCategory} fileCategory
  * @param {boolean} invalidateCache
  * @param {function(!Array<Entry>): void} callback |entries| Recently modified
  *     entries.
  */
-chrome.fileManagerPrivate.getRecentFiles = function(restriction, fileCategory, invalidateCache, callback) {};
+chrome.fileManagerPrivate.getRecentFiles = function(
+    restriction, query, fileCategory, invalidateCache, callback) {};
 
 /**
  * Requests the root directory of the volume with the ID specified in

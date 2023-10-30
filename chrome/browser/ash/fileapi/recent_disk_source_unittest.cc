@@ -77,13 +77,14 @@ class RecentDiskSourceTest : public testing::Test {
   std::vector<RecentFile> GetRecentFiles(
       size_t max_files,
       const base::Time& cutoff_time,
+      const std::string& query = "",
       RecentSource::FileType file_type = RecentSource::FileType::kAll) {
     std::vector<RecentFile> files;
 
     base::RunLoop run_loop;
 
     source_->GetRecentFiles(RecentSource::Params(
-        file_system_context_.get(), origin_, max_files, cutoff_time,
+        file_system_context_.get(), origin_, max_files, query, cutoff_time,
         base::TimeTicks::Max(), file_type,
         base::BindOnce(
             [](base::RunLoop* run_loop, std::vector<RecentFile>* out_files,
@@ -121,7 +122,7 @@ TEST_F(RecentDiskSourceTest, GetRecentFiles) {
       CreateEmptyFile("4.jpg", base::Time::FromSecondsSinceUnixEpoch(4)));
   // Newest
 
-  std::vector<RecentFile> files = GetRecentFiles(3, base::Time());
+  std::vector<RecentFile> files = GetRecentFiles(3, base::Time(), "");
 
   std::sort(files.begin(), files.end(), RecentFileComparator());
 
@@ -132,6 +133,13 @@ TEST_F(RecentDiskSourceTest, GetRecentFiles) {
   EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(3), files[1].last_modified());
   EXPECT_EQ("2.jpg", files[2].url().path().BaseName().value());
   EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(2), files[2].last_modified());
+
+  files = GetRecentFiles(3, base::Time(), "4");
+  ASSERT_EQ(1u, files.size());
+  EXPECT_EQ("4.jpg", files[0].url().path().BaseName().value());
+
+  files = GetRecentFiles(3, base::Time(), "foo");
+  ASSERT_EQ(0u, files.size());
 }
 
 TEST_F(RecentDiskSourceTest, GetRecentFiles_CutoffTime) {
@@ -254,7 +262,7 @@ TEST_F(RecentDiskSourceTest, GetAudioFiles) {
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(7, base::Time(), RecentSource::FileType::kAudio);
+      GetRecentFiles(7, base::Time(), "", RecentSource::FileType::kAudio);
 
   std::sort(files.begin(), files.end(), RecentFileComparator());
 
@@ -263,6 +271,13 @@ TEST_F(RecentDiskSourceTest, GetAudioFiles) {
   EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(7), files[0].last_modified());
   EXPECT_EQ("4.mp3", files[1].url().path().BaseName().value());
   EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[1].last_modified());
+
+  files = GetRecentFiles(7, base::Time(), "7", RecentSource::FileType::kAudio);
+  ASSERT_EQ(1u, files.size());
+  EXPECT_EQ("7.amr", files[0].url().path().BaseName().value());
+
+  files = GetRecentFiles(7, base::Time(), "6", RecentSource::FileType::kAudio);
+  ASSERT_EQ(0u, files.size());
 }
 
 TEST_F(RecentDiskSourceTest, GetImageFiles) {
@@ -287,7 +302,7 @@ TEST_F(RecentDiskSourceTest, GetImageFiles) {
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(8, base::Time(), RecentSource::FileType::kImage);
+      GetRecentFiles(8, base::Time(), "", RecentSource::FileType::kImage);
 
   std::sort(files.begin(), files.end(), RecentFileComparator());
 
@@ -328,7 +343,7 @@ TEST_F(RecentDiskSourceTest, GetVideoFiles) {
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(9, base::Time(), RecentSource::FileType::kVideo);
+      GetRecentFiles(9, base::Time(), "", RecentSource::FileType::kVideo);
 
   std::sort(files.begin(), files.end(), RecentFileComparator());
 
@@ -364,7 +379,7 @@ TEST_F(RecentDiskSourceTest, GetDocumentFiles) {
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(8, base::Time(), RecentSource::FileType::kDocument);
+      GetRecentFiles(8, base::Time(), "", RecentSource::FileType::kDocument);
 
   std::sort(files.begin(), files.end(), RecentFileComparator());
 
