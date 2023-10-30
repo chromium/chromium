@@ -33,9 +33,189 @@ EventConfig GetEventConfig(const std::string& event_name,
   return EventConfig(event_name, comparator, 7, 8);
 }
 
+void AddPreconditionLauncher(FeatureConfig* config) {
+  config->event_configs.insert(GetEventConfig(
+      scalable_iph::kEventNameAppListShown, Comparator(EQUAL, 0)));
+}
+
+void AddPreconditionPersonalizationApp(FeatureConfig* config) {
+  config->event_configs.insert(GetEventConfig(
+      scalable_iph::kEventNameOpenPersonalizationApp, Comparator(EQUAL, 0)));
+}
+
+void AddPreconditionPlayStore(FeatureConfig* config) {
+  config->event_configs.insert(
+      GetEventConfig(scalable_iph::kEventNameShelfItemActivationGooglePlay,
+                     Comparator(EQUAL, 0)));
+  config->event_configs.insert(GetEventConfig(
+      scalable_iph::kEventNameAppListItemActivationGooglePlayStore,
+      Comparator(EQUAL, 0)));
+}
+
+void AddPreconditionGoogleDocs(FeatureConfig* config) {
+  config->event_configs.insert(
+      GetEventConfig(scalable_iph::kEventNameShelfItemActivationGoogleDocs,
+                     Comparator(EQUAL, 0)));
+  config->event_configs.insert(
+      GetEventConfig(scalable_iph::kEventNameAppListItemActivationGoogleDocs,
+                     Comparator(EQUAL, 0)));
+}
+
+void AddPreconditionGooglePhotos(FeatureConfig* config) {
+  config->event_configs.insert(
+      GetEventConfig(scalable_iph::kEventNameShelfItemActivationGooglePhotosWeb,
+                     Comparator(EQUAL, 0)));
+  config->event_configs.insert(GetEventConfig(
+      scalable_iph::kEventNameShelfItemActivationGooglePhotosAndroid,
+      Comparator(EQUAL, 0)));
+  config->event_configs.insert(GetEventConfig(
+      scalable_iph::kEventNameAppListItemActivationGooglePhotosWeb,
+      Comparator(EQUAL, 0)));
+  config->event_configs.insert(GetEventConfig(
+      scalable_iph::kEventNameAppListItemActivationGooglePhotosAndroid,
+      Comparator(EQUAL, 0)));
+}
+
+void AddPreconditionYouTube(FeatureConfig* config) {
+  config->event_configs.insert(
+      GetEventConfig(scalable_iph::kEventNameShelfItemActivationYouTube,
+                     Comparator(EQUAL, 0)));
+  config->event_configs.insert(
+      GetEventConfig(scalable_iph::kEventNameAppListItemActivationYouTube,
+                     Comparator(EQUAL, 0)));
+}
+
+void AddPreconditionPrintJob(FeatureConfig* config) {
+  config->event_configs.insert(GetEventConfig(
+      scalable_iph::kEventNamePrintJobCreated, Comparator(EQUAL, 0)));
+}
+
 absl::optional<FeatureConfig> GetUnlockedBasedConfig(
     const base::Feature* feature) {
-  // TODO(b/308010596): Move other config.
+  if (kIPHScalableIphUnlockedBasedOneFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = GetBaseConfig();
+    config->used = GetEventConfig("ScalableIphUnlockedBasedOneEventUsed",
+                                  Comparator(ANY, 0));
+    config->trigger = GetEventConfig("ScalableIphUnlockedBasedOneTriggered",
+                                     Comparator(EQUAL, 0));
+    return config;
+  }
+
+  if (kIPHScalableIphUnlockedBasedTwoFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = GetBaseConfig();
+    config->used = GetEventConfig(scalable_iph::kEventNameAppListShown,
+                                  Comparator(ANY, 0));
+    config->trigger = GetEventConfig("ScalableIphUnlockedBasedTwoTriggered",
+                                     Comparator(EQUAL, 0));
+    config->event_configs.insert(
+        GetEventConfig(scalable_iph::kEventNameUnlocked,
+                       Comparator(GREATER_THAN_OR_EQUAL, 1)));
+    AddPreconditionLauncher(&config.value());
+    return config;
+  }
+
+  if (kIPHScalableIphUnlockedBasedThreeFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = GetBaseConfig();
+    config->used = GetEventConfig("ScalableIphUnlockedBasedThreeEventUsed",
+                                  Comparator(ANY, 0));
+    config->trigger = GetEventConfig("ScalableIphUnlockedBasedThreeTriggered",
+                                     Comparator(EQUAL, 0));
+    config->event_configs.insert(
+        GetEventConfig(scalable_iph::kEventNameUnlocked,
+                       Comparator(GREATER_THAN_OR_EQUAL, 2)));
+    AddPreconditionPersonalizationApp(&config.value());
+    return config;
+  }
+
+  if (kIPHScalableIphUnlockedBasedFourFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = GetBaseConfig();
+    config->used = GetEventConfig("ScalableIphUnlockedBasedFourEventUsed",
+                                  Comparator(ANY, 0));
+    config->trigger = GetEventConfig("ScalableIphUnlockedBasedFourTriggered",
+                                     Comparator(EQUAL, 0));
+    config->event_configs.insert(
+        GetEventConfig(scalable_iph::kEventNameUnlocked,
+                       Comparator(GREATER_THAN_OR_EQUAL, 3)));
+    AddPreconditionPlayStore(&config.value());
+    return config;
+  }
+
+  if (kIPHScalableIphUnlockedBasedFiveFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = GetBaseConfig();
+    config->used = GetEventConfig("ScalableIphUnlockedBasedFiveEventUsed",
+                                  Comparator(ANY, 0));
+    config->trigger = GetEventConfig("ScalableIphUnlockedBasedFiveTriggered",
+                                     Comparator(EQUAL, 0));
+    config->event_configs.insert(
+        GetEventConfig(scalable_iph::kEventNameUnlocked,
+                       Comparator(GREATER_THAN_OR_EQUAL, 4)));
+    AddPreconditionGoogleDocs(&config.value());
+    return config;
+  }
+
+  if (kIPHScalableIphUnlockedBasedSixFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = GetBaseConfig();
+    config->used = GetEventConfig("ScalableIphUnlockedBasedSixEventUsed",
+                                  Comparator(ANY, 0));
+    config->trigger = GetEventConfig("ScalableIphUnlockedBasedSixTriggered",
+                                     Comparator(EQUAL, 0));
+    config->event_configs.insert(
+        GetEventConfig(scalable_iph::kEventNameUnlocked,
+                       Comparator(GREATER_THAN_OR_EQUAL, 5)));
+    AddPreconditionGooglePhotos(&config.value());
+    return config;
+  }
+
+  if (kIPHScalableIphUnlockedBasedSevenFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = GetBaseConfig();
+    config->used = GetEventConfig("ScalableIphUnlockedBasedSevenEventUsed",
+                                  Comparator(ANY, 0));
+    config->trigger = GetEventConfig("ScalableIphUnlockedBasedSevenTriggered",
+                                     Comparator(EQUAL, 0));
+    config->event_configs.insert(
+        GetEventConfig(scalable_iph::kEventNameUnlocked,
+                       Comparator(GREATER_THAN_OR_EQUAL, 6)));
+    return config;
+  }
+
+  if (kIPHScalableIphUnlockedBasedEightFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = GetBaseConfig();
+    config->used = GetEventConfig("ScalableIphUnlockedBasedEightEventUsed",
+                                  Comparator(ANY, 0));
+    config->trigger = GetEventConfig("ScalableIphUnlockedBasedEightTriggered",
+                                     Comparator(EQUAL, 0));
+    config->event_configs.insert(
+        GetEventConfig(scalable_iph::kEventNameUnlocked,
+                       Comparator(GREATER_THAN_OR_EQUAL, 7)));
+    return config;
+  }
+
+  if (kIPHScalableIphUnlockedBasedNineFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = GetBaseConfig();
+    config->used = GetEventConfig("ScalableIphUnlockedBasedNineEventUsed",
+                                  Comparator(ANY, 0));
+    config->trigger = GetEventConfig("ScalableIphUnlockedBasedNineTriggered",
+                                     Comparator(EQUAL, 0));
+    config->event_configs.insert(
+        GetEventConfig(scalable_iph::kEventNameUnlocked,
+                       Comparator(GREATER_THAN_OR_EQUAL, 8)));
+    AddPreconditionYouTube(&config.value());
+    return config;
+  }
+
+  if (kIPHScalableIphUnlockedBasedTenFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = GetBaseConfig();
+    config->used = GetEventConfig("ScalableIphUnlockedBasedTenEventUsed",
+                                  Comparator(ANY, 0));
+    config->trigger = GetEventConfig("ScalableIphUnlockedBasedTenTriggered",
+                                     Comparator(EQUAL, 0));
+    config->event_configs.insert(
+        GetEventConfig(scalable_iph::kEventNameUnlocked,
+                       Comparator(GREATER_THAN_OR_EQUAL, 9)));
+    AddPreconditionPrintJob(&config.value());
+    return config;
+  }
+
   return absl::nullopt;
 }
 
