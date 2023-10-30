@@ -38,7 +38,8 @@ class TrackingProtectionSettings
   // Returns whether tracking protection for 3PCD (prefs + UX) is enabled.
   bool IsTrackingProtection3pcdEnabled() const;
 
-  // Returns whether all 3PC are blocked (i.e. without mitigations).
+  // Returns whether tracking protection 3PCD is enabled and all 3PC are blocked
+  // (i.e. without mitigations).
   bool AreAllThirdPartyCookiesBlocked() const;
 
   // From TrackingProtectionOnboarding::Observer

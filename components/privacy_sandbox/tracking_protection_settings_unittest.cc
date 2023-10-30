@@ -84,9 +84,18 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
 }
 
 TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedTrueInIncognito) {
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
   EXPECT_TRUE(
       TrackingProtectionSettings(prefs(), nullptr, /*is_incognito=*/true)
           .AreAllThirdPartyCookiesBlocked());
+  EXPECT_FALSE(
+      TrackingProtectionSettings(prefs(), nullptr, /*is_incognito=*/false)
+          .AreAllThirdPartyCookiesBlocked());
+}
+
+TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedFalseOutside3pcd) {
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
+  prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
   EXPECT_FALSE(
       TrackingProtectionSettings(prefs(), nullptr, /*is_incognito=*/false)
           .AreAllThirdPartyCookiesBlocked());

@@ -23,6 +23,7 @@
 #include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -405,7 +406,8 @@ void CookieSettings::OnTrackingProtection3pcdChanged() {
   // If the user opted to block all 3PC while in the experiment, preserve that
   // preference if they are offboarded.
   if (!tracking_protection_settings_->IsTrackingProtection3pcdEnabled() &&
-      tracking_protection_settings_->AreAllThirdPartyCookiesBlocked()) {
+      pref_change_registrar_.prefs()->GetBoolean(
+          prefs::kBlockAll3pcToggleEnabled)) {
     pref_change_registrar_.prefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(CookieControlsMode::kBlockThirdParty));

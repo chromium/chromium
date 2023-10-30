@@ -53,7 +53,7 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           base::Unretained(this)));
 
   if (onboarding_service_) {
-    // Onboarding status may change based on a flag before this service starts up.
+    // Onboarding status may change based on a flag before this service starts.
     OnTrackingProtectionOnboardingUpdated(
         onboarding_service_->GetOnboardingStatus());
     onboarding_observation_.Observe(onboarding_service_);
@@ -73,8 +73,9 @@ bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
 }
 
 bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
-  return pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled) ||
-         is_incognito_;
+  return IsTrackingProtection3pcdEnabled() &&
+         (pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled) ||
+          is_incognito_);
 }
 
 bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {
