@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import android.content.Context;
 import android.view.KeyEvent;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
@@ -24,7 +25,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  * Content view and stretch to the end of the encompassing BaseSuggestionView.
  */
 public class ActionChipsView extends RecyclerView {
-    private @Nullable ActionChipsAdapter mAdapter;
+    private @NonNull RecyclerViewSelectionController mSelectionController;
 
     /**
      * Constructs a new pedal view.
@@ -36,7 +37,13 @@ public class ActionChipsView extends RecyclerView {
 
         setItemAnimator(null);
         setId(R.id.omnibox_actions_carousel);
-        setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        var layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        setLayoutManager(layoutManager);
+
+        mSelectionController = new RecyclerViewSelectionController(layoutManager);
+        mSelectionController.setCycleThroughNoSelection(true);
+        addOnChildAttachStateChangeListener(mSelectionController);
+
         setMinimumHeight(
                 getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_action_chips_container_height));
@@ -56,17 +63,15 @@ public class ActionChipsView extends RecyclerView {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (mAdapter == null) return false;
-
         if (event.getKeyCode() == KeyEvent.KEYCODE_TAB) {
             if (event.isShiftPressed()) {
-                mAdapter.selectPreviousItem();
+                mSelectionController.selectPreviousItem();
             } else {
-                mAdapter.selectNextItem();
+                mSelectionController.selectNextItem();
             }
             return true;
         } else if (KeyNavigationUtil.isEnter(event)) {
-            var chip = mAdapter.getSelectedView();
+            var chip = mSelectionController.getSelectedView();
             if (chip != null) return chip.performClick();
         }
 
@@ -83,15 +88,13 @@ public class ActionChipsView extends RecyclerView {
         return super.onKeyDown(keyCode, event);
     }
 
-    public void setAdapter(@Nullable ActionChipsAdapter adapter) {
-        super.setAdapter(adapter);
-        mAdapter = adapter;
-    }
-
     @Override
     public void setSelected(boolean isSelected) {
-        if (mAdapter != null) {
-            mAdapter.resetSelection();
-        }
+        mSelectionController.resetSelection();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setSelectionControllerForTesting(RecyclerViewSelectionController controller) {
+        mSelectionController = controller;
     }
 }

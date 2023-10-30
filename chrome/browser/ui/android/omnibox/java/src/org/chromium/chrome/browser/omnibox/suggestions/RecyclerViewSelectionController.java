@@ -17,8 +17,31 @@ public class RecyclerViewSelectionController
     private int mSelectedItem = RecyclerView.NO_POSITION;
     private LayoutManager mLayoutManager;
 
+    /** When true, cycling to next/previous item will go through null selection. */
+    private boolean mCycleThroughNoSelection;
+
     public RecyclerViewSelectionController(LayoutManager layoutManager) {
         mLayoutManager = layoutManager;
+    }
+
+    /**
+     * Specifies whether advancing to previous/next element should go through no selection.
+     *
+     * <p>Note that advancing from no selection always proceeds to the next element:
+     *
+     * <p>- If the flag is set to `false`, once the last possible element is selected, the user
+     * cannot advance any further.
+     *
+     * <pre>[A] -> [B] -> [C] -> [C] -> [C] -> [C] ...</pre>
+     *
+     * <p>- if the flag is set to `true`, once the last possible element is selected and the user
+     * advances to the next item, selection will re-start from no selection, and advance to the
+     * first selectable item afterwards.
+     *
+     * <pre>[A] -> [B] -> [C] -> [∅] -> [A] -> [B] ...</pre>
+     */
+    public void setCycleThroughNoSelection(boolean cycleThroughNoSelection) {
+        mCycleThroughNoSelection = cycleThroughNoSelection;
     }
 
     @Override
@@ -49,8 +72,10 @@ public class RecyclerViewSelectionController
         int newSelectedItem;
         if (mSelectedItem == RecyclerView.NO_POSITION) {
             newSelectedItem = 0;
-        } else if (mSelectedItem < mLayoutManager.getItemCount()) {
+        } else if (mSelectedItem < mLayoutManager.getItemCount() - 1) {
             newSelectedItem = mSelectedItem + 1;
+        } else if (mCycleThroughNoSelection) {
+            newSelectedItem = RecyclerView.NO_POSITION;
         } else {
             newSelectedItem = mLayoutManager.getItemCount() - 1;
         }
@@ -67,6 +92,8 @@ public class RecyclerViewSelectionController
             newSelectedItem = mLayoutManager.getItemCount() - 1;
         } else if (mSelectedItem > 0) {
             newSelectedItem = mSelectedItem - 1;
+        } else if (mCycleThroughNoSelection) {
+            newSelectedItem = RecyclerView.NO_POSITION;
         } else {
             newSelectedItem = 0;
         }
@@ -87,6 +114,7 @@ public class RecyclerViewSelectionController
      * @param force Whether to apply the selection even if the current selected item has not
      *     changed.
      */
+    @VisibleForTesting
     public void setSelectedItem(int index, boolean force) {
         if (mLayoutManager == null) return;
         if (index != RecyclerView.NO_POSITION

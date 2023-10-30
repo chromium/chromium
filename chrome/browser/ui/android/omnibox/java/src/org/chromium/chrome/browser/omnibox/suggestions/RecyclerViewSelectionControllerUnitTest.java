@@ -22,9 +22,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.robolectric.annotation.Config;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -77,6 +77,13 @@ public class RecyclerViewSelectionControllerUnitTest {
         mSelectionController.selectNextItem();
         Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
+
+        // Permit cycling through.
+        mSelectionController.setCycleThroughNoSelection(true);
+        mSelectionController.selectNextItem();
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(null, mSelectionController.getSelectedView());
     }
 
     @Test
@@ -106,6 +113,13 @@ public class RecyclerViewSelectionControllerUnitTest {
         mSelectionController.selectPreviousItem();
         Assert.assertEquals(0, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
+
+        // Permit cycling through.
+        mSelectionController.setCycleThroughNoSelection(true);
+        mSelectionController.selectPreviousItem();
+        Assert.assertEquals(
+                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
+        Assert.assertEquals(null, mSelectionController.getSelectedView());
     }
 
     @Test

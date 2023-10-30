@@ -16,20 +16,21 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.chips.ChipViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Binds ActionChipsView properties. */
-public final class ActionChipsBinder {
+public interface ActionChipsBinder {
     public static void bind(PropertyModel model, ActionChipsView view, PropertyKey propertyKey) {
         if (ActionChipsProperties.ACTION_CHIPS == propertyKey) {
             var isIncognito =
                     model.get(SuggestionCommonProperties.COLOR_SCHEME)
                             == BrandedColorScheme.INCOGNITO;
             var chipList = model.get(ActionChipsProperties.ACTION_CHIPS);
-            ActionChipsAdapter adapter = null;
+            SimpleRecyclerViewAdapter adapter = null;
             int actionChipsVisibility = View.GONE;
 
             if (chipList != null) {
-                adapter = new ActionChipsAdapter(chipList);
+                adapter = new SimpleRecyclerViewAdapter(chipList);
                 adapter.registerType(
                         ActionChipsProperties.ViewType.CHIP,
                         parent -> createChipView(parent, isIncognito),
@@ -45,7 +46,7 @@ public final class ActionChipsBinder {
         }
     }
 
-    public static ChipView createChipView(@NonNull ViewGroup parent, boolean isIncognito) {
+    private static ChipView createChipView(@NonNull ViewGroup parent, boolean isIncognito) {
         return new ChipView(
                 parent.getContext(),
                 isIncognito
