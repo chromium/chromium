@@ -11,6 +11,7 @@
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -236,11 +237,13 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
                                 gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                 gpu::SHARED_IMAGE_USAGE_GLES2;
 
-  swap_chain_info.mailbox_holder.mailbox = sii->CreateSharedImage(
+  auto client_shared_image = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, swap_chain_info.gmb->GetSize(),
       gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       shared_image_usage, "OpenXrGraphicsBinding",
       swap_chain_info.gmb->CloneHandle());
+  CHECK(client_shared_image);
+  swap_chain_info.mailbox_holder.mailbox = client_shared_image->mailbox();
   swap_chain_info.mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
   DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
       swap_chain_info.gmb->GetFormat()));

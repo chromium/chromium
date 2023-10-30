@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -54,10 +55,12 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     if (!sii) {
       return;
     }
-    mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
         alpha_type, usage, "WebGraphicsContext3DVideoFramePool",
         gpu_memory_buffer->CloneHandle());
+    CHECK(client_shared_image);
+    mailbox = client_shared_image->mailbox();
     sync_token = sii->GenVerifiedSyncToken();
   }
 

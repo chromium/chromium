@@ -129,10 +129,12 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
                        gpu::SHARED_IMAGE_USAGE_SCANOUT;
       // Make a mailbox for export of the GpuMemoryBuffer to the display
       // compositor.
-      backing_->mailbox = sii->CreateSharedImage(
+      auto client_shared_image = sii->CreateSharedImage(
           format_, resource_size_, resource_color_space_,
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
           "ZeroCopyRasterTile", gpu_memory_buffer_->CloneHandle());
+      CHECK(client_shared_image);
+      backing_->mailbox = client_shared_image->mailbox();
     } else {
       sii->UpdateSharedImage(backing_->returned_sync_token, backing_->mailbox);
     }

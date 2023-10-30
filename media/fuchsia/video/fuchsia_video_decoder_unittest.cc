@@ -129,7 +129,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox());
   }
 
-  gpu::Mailbox CreateSharedImage(
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
@@ -140,7 +140,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       gfx::GpuMemoryBufferHandle buffer_handle) override {
     auto result = GenerateMailboxForGMBHandle(std::move(buffer_handle));
     mailboxes_.insert(result);
-    return result;
+    return base::MakeRefCounted<gpu::ClientSharedImage>(result);
   }
 
   gpu::Mailbox CreateSharedImage(

@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "cc/layers/video_frame_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
@@ -217,10 +218,12 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
   // still need to provide the video frame creation with a 4 array mailbox
   // holder.
   gpu::MailboxHolder holder[media::VideoFrame::kMaxPlanes];
-  gpu::Mailbox mailbox = sii->CreateSharedImage(
+  auto client_shared_image = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kBGRA_8888, natural_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
       "DCOMPTextureWrapperImpl", gmb->CloneHandle());
+  CHECK(client_shared_image);
+  gpu::Mailbox mailbox = client_shared_image->mailbox();
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
   holder[0] = gpu::MailboxHolder(mailbox, sync_token, GL_TEXTURE_2D);
 

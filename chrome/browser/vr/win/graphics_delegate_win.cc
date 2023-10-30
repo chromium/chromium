@@ -9,6 +9,7 @@
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -154,12 +155,14 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer() {
 
   last_size_ = buffer_size;
 
-  mailbox_ = sii_->CreateSharedImage(
+  auto client_shared_image = sii_->CreateSharedImage(
       format, buffer_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2 |
           gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
       "VRGraphicsDelegate", buffer_handle_.Clone());
+  CHECK(client_shared_image);
+  mailbox_ = client_shared_image->mailbox();
 
   gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   return true;

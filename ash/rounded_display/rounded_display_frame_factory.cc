@@ -178,10 +178,12 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
     }
     resource->mailbox = client_shared_image->mailbox();
   } else {
-    resource->mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, usage, "RoundedDisplayFrameUi",
         resource->gpu_memory_buffer->CloneHandle());
+    CHECK(client_shared_image);
+    resource->mailbox = client_shared_image->mailbox();
   }
 
   resource->sync_token = sii->GenVerifiedSyncToken();

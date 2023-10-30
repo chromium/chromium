@@ -73,7 +73,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       gpu::SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage) override;
 
-  gpu::Mailbox CreateSharedImage(
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,

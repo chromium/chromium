@@ -36,6 +36,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_switches.h"
@@ -1255,10 +1256,12 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       if (base::FeatureList::IsEnabled(kUseMultiPlaneFormatForSoftwareVideo)) {
         viz::SharedImageFormat multi_planar_format =
             OutputFormatToSharedImageFormat(output_format_, plane);
-        plane_resource.mailbox = sii->CreateSharedImage(
+        auto client_shared_image = sii->CreateSharedImage(
             multi_planar_format, gpu_memory_buffer->GetSize(), color_space,
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, kDebugLabel,
             gpu_memory_buffer->CloneHandle());
+        CHECK(client_shared_image);
+        plane_resource.mailbox = client_shared_image->mailbox();
       } else {
         plane_resource.mailbox = sii->CreateSharedImage(
             gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),

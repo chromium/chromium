@@ -138,7 +138,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   return base::MakeRefCounted<ClientSharedImage>(AddMailbox(mailbox));
 }
 
-Mailbox ClientSharedImageInterface::CreateSharedImage(
+scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -153,9 +153,10 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(!format.PrefersExternalSampler()) << format.ToString();
 #endif
-  return AddMailbox(proxy_->CreateSharedImage(
-      format, size, color_space, surface_origin, alpha_type, usage, debug_label,
-      std::move(buffer_handle)));
+  return base::MakeRefCounted<ClientSharedImage>(
+      AddMailbox(proxy_->CreateSharedImage(
+          format, size, color_space, surface_origin, alpha_type, usage,
+          debug_label, std::move(buffer_handle))));
 }
 
 Mailbox ClientSharedImageInterface::CreateSharedImage(

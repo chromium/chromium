@@ -469,10 +469,12 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   // Create staging shared image.
   if (staging_buffer->mailbox.IsZero()) {
     const uint32_t usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE;
-    staging_buffer->mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, usage, "OneCopyRasterStaging",
         staging_buffer->gpu_memory_buffer.get()->CloneHandle());
+    CHECK(client_shared_image);
+    staging_buffer->mailbox = client_shared_image->mailbox();
   } else {
     sii->UpdateSharedImage(staging_buffer->sync_token, staging_buffer->mailbox);
   }

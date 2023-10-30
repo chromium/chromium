@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_interface_in_process.h"
@@ -82,10 +83,12 @@ class GmbVideoFramePoolContext
                          uint32_t usage,
                          gpu::Mailbox& mailbox,
                          gpu::SyncToken& sync_token) override {
-    mailbox = sii_in_process_->CreateSharedImage(
+    auto client_shared_image = sii_in_process_->CreateSharedImage(
         si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
         alpha_type, usage, "VizGmbVideoFramePool",
         gpu_memory_buffer->CloneHandle());
+    CHECK(client_shared_image);
+    mailbox = client_shared_image->mailbox();
     sync_token = sii_in_process_->GenVerifiedSyncToken();
   }
 

@@ -15,6 +15,7 @@
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
@@ -147,11 +148,13 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
                      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
                      gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-    mailbox_ = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         fast_ink_internal::kFastInkSharedImageFormat,
         gpu_memory_buffer_->GetSize(), gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         "FastInkHostUIResource", gpu_memory_buffer_->CloneHandle());
+    CHECK(client_shared_image);
+    mailbox_ = client_shared_image->mailbox();
     sync_token_ = sii->GenVerifiedSyncToken();
   }
 

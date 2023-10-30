@@ -47,6 +47,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -1977,10 +1978,12 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
             buffer_usage, gpu::kNullSurfaceHandle, nullptr);
         if (gpu_memory_buffer) {
           gpu_memory_buffer->SetColorSpace(color_space_);
-          back_buffer_mailbox = sii->CreateSharedImage(
+          auto client_shared_image = sii->CreateSharedImage(
               color_buffer_format_, size, color_space_, origin,
               back_buffer_alpha_type, usage | additional_usage_flags,
               "WebGLDrawingBuffer", gpu_memory_buffer->CloneHandle());
+          CHECK(client_shared_image);
+          back_buffer_mailbox = client_shared_image->mailbox();
 #if BUILDFLAG(IS_MAC)
           // A CHROMIUM_image backed texture requires a specialized set of
           // parameters on OSX.

@@ -12,6 +12,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -151,10 +152,12 @@ std::unique_ptr<UiResource> CreateUiResource(
       usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
 
-    resource->mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         kFastInkSharedImageFormat, gpu_memory_buffer->GetSize(),
         gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         "FastInkHostUIResource", gpu_memory_buffer->CloneHandle());
+    CHECK(client_shared_image);
+    resource->mailbox = client_shared_image->mailbox();
     resource->sync_token = sii->GenVerifiedSyncToken();
   } else {
     // This UiResource is operating on a shared SharedImage.

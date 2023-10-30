@@ -180,7 +180,7 @@ class GPU_EXPORT SharedImageInterface {
   // SharedImageInterface keeps ownership of the image until
   // `DestroySharedImage()` is called or the interface itself is destroyed (e.g.
   // the GPU channel is lost).
-  virtual Mailbox CreateSharedImage(
+  virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,

@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -221,11 +222,13 @@ void ArcScreenCaptureSession::SetOutputBuffer(
       viz::GetSinglePlaneSharedImageFormat(buffer_format);
   CHECK(!si_format.IsLegacyMultiplanar());
 
-  gpu::Mailbox mailbox = sii->CreateSharedImage(
+  auto client_shared_image = sii->CreateSharedImage(
       si_format, size_, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2,
       "ArcScreenCapture", std::move(handle));
+  CHECK(client_shared_image);
+  gpu::Mailbox mailbox = client_shared_image->mailbox();
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
   std::unique_ptr<PendingBuffer> pending_buffer =

@@ -10,6 +10,7 @@ include_rules = [
   "+components/viz/service/performance_hint",
   "+components/viz/service/surfaces",
   "+components/viz/service/transitions",
+  "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/command_buffer/service/shared_context_state.h",
   "+gpu/ipc/common",
   "+gpu/command_buffer/service/scheduler_sequence.h",
