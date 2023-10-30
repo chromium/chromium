@@ -69,35 +69,6 @@ TEST_F(MetricTest, IsNotLoggedWhenLogged) {
   ASSERT_EQ(metric_.state, MetricState::kIncorrectlyLogged);
 }
 
-// Tests that Metric::IsNotLoggedWith() returns the correct bool and doesn't
-// update the `state` when logged with the correct value.
-TEST_F(MetricTest, IsNotLoggedWithWhenLoggedWithWrongValue) {
-  metric_.Log(TestEnum::kTwo);
-  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
-
-  ASSERT_TRUE(metric_.IsNotLoggedWith({TestEnum::kZero, TestEnum::kOne}));
-  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
-}
-
-// Tests that Metric::IsNotLoggedWith() returns the correct bool and updates the
-// `state` when logged with the incorrect value.
-TEST_F(MetricTest, IsNotLoggedWithWhenLoggedWithIncorrectValue) {
-  metric_.Log(TestEnum::kOne);
-  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
-
-  ASSERT_FALSE(metric_.IsNotLoggedWith({TestEnum::kZero, TestEnum::kOne}));
-  ASSERT_EQ(metric_.state, MetricState::kWrongValueLogged);
-}
-
-// Tests Metric::IsNotLoggedWith() returns the correct bool and updates the
-// `state` correctly when not logged.
-TEST_F(MetricTest, IsNotLoggedWithWhenNotLogged) {
-  ASSERT_EQ(metric_.state, MetricState::kCorrectlyNotLogged);
-
-  ASSERT_FALSE(metric_.IsNotLoggedWith({TestEnum::kZero, TestEnum::kOne}));
-  ASSERT_EQ(metric_.state, MetricState::kIncorrectlyNotLogged);
-}
-
 // Tests that Metric::IsLogged() returns the correct bool and doesn't update the
 // `state` when the metric was logged.
 TEST_F(MetricTest, IsLoggedWhenLogged) {
@@ -126,35 +97,6 @@ TEST_F(MetricTest, IsLoggedWhenNotLogged) {
 
   ASSERT_FALSE(metric_.IsLogged());
   ASSERT_EQ(metric_.state, MetricState::kIncorrectlyNotLogged);
-}
-
-// Tests that Metric::IsLoggedWith() returns the correct bool and doesn't update
-// the `state` when logged with the correct value.
-TEST_F(MetricTest, IsLoggedWithWhenLoggedWithCorrectValue) {
-  metric_.Log(TestEnum::kOne);
-  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
-
-  ASSERT_TRUE(metric_.IsLoggedWith({TestEnum::kZero, TestEnum::kOne}));
-  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
-}
-
-// Tests Metric::IsLoggedWith() returns the correct bool and updates the `state`
-// correctly when not logged.
-TEST_F(MetricTest, IsLoggedWithWhenNotLogged) {
-  ASSERT_EQ(metric_.state, MetricState::kCorrectlyNotLogged);
-
-  ASSERT_FALSE(metric_.IsLoggedWith({TestEnum::kZero, TestEnum::kOne}));
-  ASSERT_EQ(metric_.state, MetricState::kIncorrectlyNotLogged);
-}
-
-// Tests that Metric::IsLoggedWith() returns the correct bool and updates the
-// `state` correctly when logged with the wrong value.
-TEST_F(MetricTest, IsLoggedWithWhenLoggedWithWrongValue) {
-  metric_.Log(TestEnum::kTwo);
-  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
-
-  ASSERT_FALSE(metric_.IsLoggedWith({TestEnum::kZero, TestEnum::kOne}));
-  ASSERT_EQ(metric_.state, MetricState::kWrongValueLogged);
 }
 
 class CloudOpenMetricsTest : public testing::Test {

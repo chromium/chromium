@@ -82,20 +82,6 @@ class Metric {
     return true;
   }
 
-  // Check metric is logged but not with a value in `values`, otherwise mark the
-  // metric as inconsistent and return false.
-  bool IsNotLoggedWith(const std::vector<MetricType>& values) {
-    if (!logged()) {
-      state = MetricState::kIncorrectlyNotLogged;
-      return false;
-    }
-    if (base::Contains(values, value)) {
-      state = MetricState::kWrongValueLogged;
-      return false;
-    }
-    return true;
-  }
-
   // Check metric is logged, otherwise mark the metric as inconsistent and
   // return false.
   bool IsLogged() {
@@ -106,18 +92,7 @@ class Metric {
     return true;
   }
 
-  // Check metric is logged with a value in `values`, otherwise mark the metric
-  // as inconsistent and return false.
-  bool IsLoggedWith(const std::vector<MetricType>& values) {
-    if (!logged()) {
-      state = MetricState::kIncorrectlyNotLogged;
-      return false;
-    } else if (!base::Contains(values, value)) {
-      state = MetricState::kWrongValueLogged;
-      return false;
-    }
-    return true;
-  }
+  void set_state(MetricState new_state) { state = new_state; }
 
   const std::string metric_name;
   MetricState state = MetricState::kCorrectlyNotLogged;
@@ -197,22 +172,15 @@ class CloudOpenMetrics {
   template <typename MetricType>
   void ExpectNotLogged(Metric<MetricType>& metric);
 
-  // Expect that the `metric` is logged but not with a value in `values`.
-  // Otherwise update the state and print debug information.
-  template <typename MetricType>
-  void ExpectNotLoggedWith(Metric<MetricType>& metric,
-                           const std::vector<MetricType>& values);
-
   // Expect that the `metric` metric is logged with a value. Otherwise update
   // the state and print debug information.
   template <typename MetricType>
   void ExpectLogged(Metric<MetricType>& metric);
 
-  // Expect that the `metric` metric is logged with a value from `values`.
-  // Otherwise update the state and print debug information.
+  // Update the `metric` state to `kWrongValueLogged` and print debug
+  // information.
   template <typename MetricType>
-  void ExpectLoggedWith(Metric<MetricType>& metric,
-                        const std::vector<MetricType>& values);
+  void SetWrongValueLogged(Metric<MetricType>& metric);
 
   bool inconsistency_found_ = false;
   CloudProvider cloud_provider_;
