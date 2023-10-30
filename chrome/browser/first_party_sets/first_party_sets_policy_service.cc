@@ -52,6 +52,9 @@ const base::Value::Dict* GetOverridesPolicyForProfile(
 }
 
 bool GetEnabledStateForProfile(Profile* profile) {
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
   if (base::FeatureList::IsEnabled(
           net::features::kForceThirdPartyCookieBlocking)) {
     return true;
@@ -103,9 +106,8 @@ void FirstPartySetsPolicyService::Init() {
   PrefService* prefs = profile->GetPrefs();
   pref_enabled_ = GetEnabledStateForProfile(profile);
 
-  // If `profile` is a system profile or a guest profile, use an empty config
-  // and cache filter.
-  if (profile->IsSystemProfile() || profile->IsGuestSession()) {
+  if (profile->IsSystemProfile() || profile->IsGuestSession() ||
+      profile->IsOffTheRecord()) {
     OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig(),
                              net::FirstPartySetsCacheFilter());
     return;
@@ -181,6 +183,11 @@ void FirstPartySetsPolicyService::AddRemoteAccessDelegate(
 
 void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  if (profile && profile->IsOffTheRecord()) {
+    CHECK(!pref_enabled_);
+    return;
+  }
   if (base::FeatureList::IsEnabled(
           net::features::kForceThirdPartyCookieBlocking)) {
     CHECK(pref_enabled_);
@@ -195,7 +202,6 @@ void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
 
   // Clear all the existing permission decisions that were made by FPS, since
   // the enabled/disabled state of FPS has now changed.
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
   ClearContentSettings(profile);
   for (Profile* otr_profile : profile->GetAllOffTheRecordProfiles()) {
     ClearContentSettings(otr_profile);
