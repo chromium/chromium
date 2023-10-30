@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1373,9 +1374,42 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
   const bool can_throttle_if_unresponsive_or_excessive =
       frame_time - last_frame_time_ < base::Seconds(1);
 
-  // If there are pending timing details from the previous frame(s),
-  // then the client needs to receive the begin-frame.
-  if (!frame_timing_details_.empty() && !should_throttle_as_requested) {
+  bool should_throttle_undrawn_frames = false;
+  if (last_activated_surface_id_.is_valid()) {
+    Surface* surface =
+        surface_manager_->GetSurfaceForId(last_activated_surface_id_);
+
+    DCHECK(surface);
+    DCHECK(surface->HasActiveFrame());
+    uint64_t active_frame_index = surface->GetActiveFrameIndex();
+
+    // Since we have an active frame, and frame indexes strictly increase
+    // during the lifetime of the CompositorFrameSinkSupport, our active frame
+    // index must be at least as large as our last drawn frame index.
+    DCHECK_GE(active_frame_index, last_drawn_frame_index_);
+
+    // Throttle clients that have submitted too many undrawn frames, unless the
+    // active frame requests that it doesn't.
+    uint64_t num_undrawn_frames = active_frame_index - last_drawn_frame_index_;
+    should_throttle_undrawn_frames =
+        can_throttle_if_unresponsive_or_excessive &&
+        num_undrawn_frames > kUndrawnFrameLimit &&
+        surface->GetActiveFrameMetadata().may_throttle_if_undrawn_frames;
+  }
+
+  bool frame_timing_details_all_failed = true;
+  for (const auto& entry : frame_timing_details_) {
+    if (!entry.second.presentation_feedback.failed()) {
+      frame_timing_details_all_failed = false;
+      break;
+    }
+  }
+
+  // If there are pending timing details from the previous successfully
+  // presented frame(s), then the non-throttled client needs to receive the
+  // begin-frame.
+  if (!frame_timing_details_.empty() && !should_throttle_as_requested &&
+      (!should_throttle_undrawn_frames || !frame_timing_details_all_failed)) {
     return RecordShouldSendBeginFrame("SendFrameTiming", true);
   }
 
@@ -1415,25 +1449,7 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
     return RecordShouldSendBeginFrame("ThrottleRequested", false);
   }
 
-  Surface* surface =
-      surface_manager_->GetSurfaceForId(last_activated_surface_id_);
-
-  DCHECK(surface);
-  DCHECK(surface->HasActiveFrame());
-
-  uint64_t active_frame_index = surface->GetActiveFrameIndex();
-
-  // Since we have an active frame, and frame indexes strictly increase
-  // during the lifetime of the CompositorFrameSinkSupport, our active frame
-  // index must be at least as large as our last drawn frame index.
-  DCHECK_GE(active_frame_index, last_drawn_frame_index_);
-
-  // Throttle clients that have submitted too many undrawn frames, unless the
-  // active frame requests that it doesn't.
-  uint64_t num_undrawn_frames = active_frame_index - last_drawn_frame_index_;
-  if (can_throttle_if_unresponsive_or_excessive &&
-      num_undrawn_frames > kUndrawnFrameLimit &&
-      surface->GetActiveFrameMetadata().may_throttle_if_undrawn_frames) {
+  if (should_throttle_undrawn_frames) {
     return RecordShouldSendBeginFrame("ThrottleUndrawnFrames", false);
   }
 
