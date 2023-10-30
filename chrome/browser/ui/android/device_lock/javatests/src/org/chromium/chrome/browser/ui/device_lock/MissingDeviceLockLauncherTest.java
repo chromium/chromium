@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -134,11 +135,19 @@ public class MissingDeviceLockLauncherTest {
     @MediumTest
     public void testCheckPrivateDataIsProtectedByDeviceLock_deviceIsSecure() {
         doReturn(true).when(mKeyguardManager).isDeviceSecure();
+        HistogramWatcher deviceLockRestoredHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.Automotive.DeviceLockRemovalDialogEvent",
+                                MissingDeviceLockCoordinator.MissingDeviceLockDialogEvent
+                                        .DEVICE_LOCK_RESTORED)
+                        .build();
 
         mMissingDeviceLockLauncher.setMissingDeviceLockCoordinatorForTesting(
                 mMissingDeviceLockCoordinator);
 
         assertNull(mMissingDeviceLockLauncher.checkPrivateDataIsProtectedByDeviceLock());
+        deviceLockRestoredHistogram.assertExpected();
         verify(mMissingDeviceLockCoordinator, times(1)).hideDialog(anyInt());
         assertTrue(
                 "The preference should be set to show the alert if the device lock is later "

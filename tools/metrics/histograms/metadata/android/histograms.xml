@@ -390,6 +390,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Automotive.DeviceLockRemovalDialogEvent"
+    enum="MissingDeviceLockDialogEvent" expires_after="2024-10-28">
+  <owner>twellington@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <owner>geoffhuang@google.com</owner>
+  <summary>
+    Records an event whenever the missing device lock dialog is shown to the
+    user or the user takes an action on the dialog.
+  </summary>
+</histogram>
+
 <histogram name="Android.BackgroundRestrictions.IsBackgroundRestricted"
     enum="Boolean" expires_after="2023-04-30">
   <owner>shaktisahu@chromium.org</owner>

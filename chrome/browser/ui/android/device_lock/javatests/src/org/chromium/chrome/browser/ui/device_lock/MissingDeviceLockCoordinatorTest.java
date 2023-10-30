@@ -30,6 +30,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -78,6 +79,14 @@ public class MissingDeviceLockCoordinatorTest {
     @Test
     @SmallTest
     public void testMissingDeviceLockCoordinator_showAndHideDialog() throws InterruptedException {
+        HistogramWatcher dialogShownHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.Automotive.DeviceLockRemovalDialogEvent",
+                                MissingDeviceLockCoordinator.MissingDeviceLockDialogEvent
+                                        .DIALOG_SHOWN)
+                        .build();
+
         MissingDeviceLockCoordinator missingDeviceLockCoordinator =
                 new MissingDeviceLockCoordinator(
                         (wipeAllData) -> {}, mActivity, mModalDialogManager);
@@ -86,6 +95,7 @@ public class MissingDeviceLockCoordinatorTest {
                 missingDeviceLockCoordinator);
         missingDeviceLockCoordinator.showDialog();
         assertTrue("The modal dialog should be showing.", mModalDialogManager.isShowing());
+        dialogShownHistogram.assertExpected();
         missingDeviceLockCoordinator.hideDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
 
@@ -94,6 +104,13 @@ public class MissingDeviceLockCoordinatorTest {
     public void testMissingDeviceLockCoordinator_continueWithoutDeviceLock() {
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         prefs.edit().putBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true).apply();
+        HistogramWatcher continueWithoutDeviceLockHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.Automotive.DeviceLockRemovalDialogEvent",
+                                MissingDeviceLockCoordinator.MissingDeviceLockDialogEvent
+                                        .CONTINUE_WITHOUT_DEVICE_LOCK)
+                        .build();
 
         MissingDeviceLockCoordinator missingDeviceLockCoordinator =
                 new MissingDeviceLockCoordinator(
@@ -110,5 +127,6 @@ public class MissingDeviceLockCoordinatorTest {
                 "DEVICE_LOCK_PAGE_HAS_BEEN_PASSED should have been removed from the "
                         + "SharedPreferencesManager keys.",
                 prefs.contains(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED));
+        continueWithoutDeviceLockHistogram.assertExpected();
     }
 }

@@ -73877,6 +73877,12 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Offscreen Tab"/>
 </enum>
 
+<enum name="MissingDeviceLockDialogEvent">
+  <int value="0" label="Dialog shown"/>
+  <int value="1" label="Continue without a device lock"/>
+  <int value="2" label="Device lock restored"/>
+</enum>
+
 <enum name="MissingStartType">
   <int value="0" label="Nothing missing"/>
   <int value="1" label="Start missing"/>
