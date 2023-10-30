@@ -207,6 +207,6 @@ BASE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions,
 // First Flow.
 BASE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting,
              "UsernameFirstFlowWithIntermediateValuesVoting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace password_manager::features
