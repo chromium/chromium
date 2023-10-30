@@ -124,6 +124,7 @@ static_library("devtools") {
     "//components/paint_preview/buildflags:buildflags",
     "//content/public/browser",
     "//net",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/viz/privileged/mojom/compositing",
     "//third_party/blink/public:buildflags",
     "//ui/events:dom_keycode_converter",

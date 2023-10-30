@@ -8419,6 +8419,27 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="DevTools.Opened">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Records that the DevTools were opened by the user.
+  </summary>
+  <metric name="HasOccurred" enum="Boolean">
+    <summary>
+      A boolean signaling that the DevTools menu was opened by the user; only
+      records true values.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="DIPS.Deletion" singular="True">
   <owner>rtarpine@google.com</owner>
   <owner>dc-komics@google.com</owner>

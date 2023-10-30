@@ -145,6 +145,9 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   static void LogDevToolsOpenedByAction(DevToolsOpenedByAction opened_by);
 
+  // Logs UKM event when DevTools is opened.
+  static void LogDevToolsOpenedUKM(content::WebContents* web_contents);
+
   static std::unique_ptr<content::NavigationThrottle>
   MaybeCreateNavigationThrottle(content::NavigationHandle* handle);
 

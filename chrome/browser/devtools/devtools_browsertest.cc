@@ -87,6 +87,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
@@ -3038,6 +3039,27 @@ IN_PROC_BROWSER_TEST_F(DevToolsTabTargetTest, InspectElement) {
 
   DispatchOnTestSuite(window, "testInspectedElementIs", "INSPECTED-DIV");
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsTabTargetTest, UKMTest) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  GURL url(
+      embedded_test_server()->GetURL("a.com", "/devtools/oopif_frame.html"));
+
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  tab->GetController().LoadURL(url, content::Referrer(),
+                               ui::PAGE_TRANSITION_LINK, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  std::vector<RenderFrameHost*> frames =
+      CollectAllRenderFrameHosts(GetInspectedTab());
+  RenderFrameHost* frame_host = frames[0];
+  DevToolsWindow::InspectElement(frame_host, 100, 100);
+
+  // Make sure we are recording the UKM when DevTools are opened.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName("DevTools.Opened");
+  EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntrySourceHasUrl(ukm_entries[0], url);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, ExistsForWebContentsAfterClosing) {
