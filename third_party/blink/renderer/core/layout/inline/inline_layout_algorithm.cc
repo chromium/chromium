@@ -759,6 +759,12 @@ void InlineLayoutAlgorithm::PlaceControlItem(const InlineItem& item,
   if (!NGDisableSideEffectsScope::IsDisabled())
     item.GetLayoutObject()->ClearNeedsLayoutWithFullPaintInvalidation();
 
+  if (UNLIKELY(!item_result->Length())) {
+    // Empty or fully collapsed text isn't needed for layout, but needs
+    // `ClearNeedsLayout`. See `LineBreaker::HandleEmptyText`.
+    return;
+  }
+
   if (UNLIKELY(quirks_mode_ && !box->HasMetrics()))
     box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
 
