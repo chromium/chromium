@@ -108,8 +108,10 @@ WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
     return nullptr;
   auto& config = origin_and_config->second;
 
-  if (!config->IsWebUIEnabled(browser_context))
+  if (!config->IsWebUIEnabled(browser_context) ||
+      !config->ShouldHandleURL(url)) {
     return nullptr;
+  }
 
   return config.get();
 }

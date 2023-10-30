@@ -46,6 +46,10 @@ class CONTENT_EXPORT WebUIConfig {
   // on/off, the WebUI is enabled in incognito, etc. Defaults to true.
   virtual bool IsWebUIEnabled(BrowserContext* browser_context);
 
+  // Returns whether the WebUI should be used for the given |url|. Not all
+  // WebUIs should be created for all requests to their host. Defaults to true.
+  virtual bool ShouldHandleURL(const GURL& url);
+
   // Returns a WebUIController for WebUI and GURL.
   //
   // URLDataSource is usually created in the constructor of WebUIController. The

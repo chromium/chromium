@@ -110,7 +110,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -121,10 +120,6 @@
 
 #if BUILDFLAG(ENABLE_NACL)
 #include "chrome/browser/ui/webui/nacl_ui.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -752,18 +747,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #if !BUILDFLAG(IS_ANDROID)
   if (url.host_piece() == chrome::kChromeUIManagementHost)
     return &NewWebUI<ManagementUI>;
-#endif
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  if (url.host_piece() == chrome::kChromeUIPrintHost) {
-    if (profile->GetPrefs()->GetBoolean(prefs::kPrintPreviewDisabled))
-      return nullptr;
-    // Filter out everything except chrome://print/ and test_loader.html.
-    if (url.path() != "/" && url.path() != "/test_loader.html") {
-      return nullptr;
-    }
-    return &NewWebUI<printing::PrintPreviewUI>;
-  }
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
