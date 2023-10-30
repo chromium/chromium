@@ -268,6 +268,43 @@ ci.builder(
 )
 
 ci.builder(
+    name = "chromeos-amd64-generic-rel",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is a compile only builder for Ash chrome." +
+                       " This builder also build Lacros with alternative toolchain.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos", "checkout_lacros_sdk"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "amd64-generic",
+            ],
+            cros_boards_with_qemu_images = "amd64-generic-vm",
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
+    # TODO(crbug.com/1471166): enable gardener rotation.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "simple|release|x64",
+        short_name = "compile",
+    ),
+    main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chromeos-sw-engprod@google.com",
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.builder(
     name = "chromeos-arm-generic-dbg",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

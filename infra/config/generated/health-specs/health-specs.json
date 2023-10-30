@@ -914,6 +914,20 @@
           "p50_mins": 20
         }
       },
+      "chromeos-amd64-generic-rel": {
+        "build_time": {
+          "p50_mins": 60
+        },
+        "fail_rate": {
+          "average": 0.2
+        },
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
+      },
       "chromeos-amd64-generic-rel-renamed": {
         "build_time": {
           "p50_mins": 60
