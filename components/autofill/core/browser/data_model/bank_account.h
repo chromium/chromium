@@ -45,6 +45,9 @@ class BankAccount : public PaymentInstrument {
 
   // PaymentInstrument
   PaymentInstrument::InstrumentType GetInstrumentType() const override;
+  bool AddToDatabase(AutofillTable* database) override;
+  bool UpdateInDatabase(AutofillTable* database) override;
+  bool DeleteFromDatabase(AutofillTable* database) override;
 
   BankName bank_name() const { return bank_name_; }
   void set_bank_name(BankName bank_name) { bank_name_ = bank_name; }

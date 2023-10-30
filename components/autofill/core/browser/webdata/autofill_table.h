@@ -38,6 +38,7 @@ struct AutofillMetadata;
 class AutofillOfferData;
 class AutofillTableEncryptor;
 class AutofillTableTest;
+class BankAccount;
 class CreditCard;
 struct CreditCardCloudTokenData;
 struct FormFieldData;
@@ -763,6 +764,14 @@ class AutofillTable : public WebDatabaseTable,
   // Sets the server profiles. All old profiles are deleted and replaced with
   // the given ones.
   void SetServerProfiles(const std::vector<AutofillProfile>& profiles);
+
+  // Records a single BankAccount in the bank accounts table. Returns true if
+  // the BankAccount was successfully added to the database.
+  bool AddBankAccount(const BankAccount& bank_account);
+  // Returns true if the BankAccount was successfully updated in the database.
+  bool UpdateBankAccount(const BankAccount& bank_account);
+  // Delete the bank account from the database.
+  bool RemoveBankAccount(int64_t instrument_id);
 
   // Records a single IBAN in the local_ibans table.
   bool AddLocalIban(const Iban& iban);

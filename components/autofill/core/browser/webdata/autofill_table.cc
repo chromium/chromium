@@ -2010,6 +2010,21 @@ void AutofillTable::SetServerProfiles(
   SetServerProfilesAndMetadata(profiles, /*update_metadata=*/true);
 }
 
+bool AutofillTable::AddBankAccount(const BankAccount& bank_account) {
+  // TODO(crbug.com/1475426): Add implementation.
+  return false;
+}
+
+bool AutofillTable::UpdateBankAccount(const BankAccount& bank_account) {
+  // TODO(crbug.com/1475426): Add implementation.
+  return false;
+}
+
+bool AutofillTable::RemoveBankAccount(int64_t instrument_id) {
+  // TODO(crbug.com/1475426): Add implementation.
+  return false;
+}
+
 bool AutofillTable::AddLocalIban(const Iban& iban) {
   sql::Statement s;
   InsertBuilder(db_, s, kLocalIbansTable,

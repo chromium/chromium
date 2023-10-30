@@ -13,6 +13,8 @@
 
 namespace autofill {
 
+class AutofillTable;
+
 // Base class for all payment instruments. A payment instrument is considered to
 // be any form of payment stored in the GPay backend that can be used to
 // facilitate a payment on a webpage. Examples of derived class: BankAccount,
@@ -40,6 +42,14 @@ class PaymentInstrument {
 
   // Return the type of PaymentInstrument.
   virtual InstrumentType GetInstrumentType() const = 0;
+
+  // Database operations to be implemented by derived class. The derived class
+  // is expected to call the corresponding database method on the AutofillTable
+  // object. This is required for callers to call these methods on the base
+  // class without knowing the type of the derived class.
+  virtual bool AddToDatabase(AutofillTable* database) = 0;
+  virtual bool UpdateInDatabase(AutofillTable* database) = 0;
+  virtual bool DeleteFromDatabase(AutofillTable* database) = 0;
 
   int64_t instrument_id() const { return instrument_id_; }
   void set_instrument_id(int64_t instrument_id) {

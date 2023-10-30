@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/webdata/autofill_table.h"
 
 namespace autofill {
 
@@ -23,6 +24,18 @@ BankAccount::~BankAccount() = default;
 
 PaymentInstrument::InstrumentType BankAccount::GetInstrumentType() const {
   return PaymentInstrument::InstrumentType::kBankAccount;
+}
+
+bool BankAccount::AddToDatabase(AutofillTable* database) {
+  return database->AddBankAccount(*this);
+}
+
+bool BankAccount::UpdateInDatabase(AutofillTable* database) {
+  return database->UpdateBankAccount(*this);
+}
+
+bool BankAccount::DeleteFromDatabase(AutofillTable* database) {
+  return database->RemoveBankAccount(instrument_id());
 }
 
 }  // namespace autofill

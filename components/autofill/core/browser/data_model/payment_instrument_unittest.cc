@@ -19,6 +19,10 @@ class TestPaymentInstrument : public PaymentInstrument {
   InstrumentType GetInstrumentType() const override {
     return PaymentInstrument::InstrumentType::kBankAccount;
   }
+
+  bool AddToDatabase(AutofillTable* database) override { return false; }
+  bool UpdateInDatabase(AutofillTable* database) override { return false; }
+  bool DeleteFromDatabase(AutofillTable* database) override { return false; }
 };
 
 TEST(PaymentInstrumentTest, VerifyFieldValues) {
