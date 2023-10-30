@@ -1299,6 +1299,22 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mActivity.recreate();
     }
 
+    /**
+     * Recreates ChromeTabbedActivity if Start surface is switched between enabled and disabled due
+     * to settings change.
+     * TODO(https://crbug.com/1263495): Recreate Start Surface and its toolbar without recreating
+     * ChromeTabbedActivity.
+     * @return whether the activity will be recreated.
+     */
+    private boolean recreateActivityIfStartSurfaceEnableStateChanges() {
+        if (mIsStartSurfaceEnabled != ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)
+            && !sSkipRecreateForTesting && !mIsCustomTab) {
+            recreateActivityWithTabReparenting();
+            return true;
+        }
+        return false;
+    }
+
     // Base abstract implementation of NewTabPageDelegate for phone/table toolbar layout.
     private abstract class ToolbarNtpDelegate implements NewTabPageDelegate {
         protected NewTabPage mVisibleNtp;
@@ -1780,11 +1796,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     @Override
     public void onAccessibilityModeChanged(boolean enabled) {
-        if (mIsStartSurfaceEnabled != ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)
-                && !sSkipRecreateForTesting && !mIsCustomTab) {
+        if (recreateActivityIfStartSurfaceEnableStateChanges()) {
             // If Start surface is disabled or re-enabled due to the accessibility change, restarts
             // the activity to create the correct Toolbar from scratch.
-            recreateActivityWithTabReparenting();
             return;
         }
         mToolbar.onAccessibilityStatusChanged(enabled);
@@ -1811,6 +1825,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 TemplateUrl searchEngine = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
                 if ((mSearchEngine == null && searchEngine == null)
                         || (mSearchEngine != null && mSearchEngine.equals(searchEngine))) {
+                    return;
+                }
+
+                if (recreateActivityIfStartSurfaceEnableStateChanges()) {
+                    // If Start surface is disabled or re-enabled due to the default search engine
+                    // being switched between Google and 3p search engine, restarts the activity to
+                    // create the correct Toolbar from scratch.
                     return;
                 }
 
