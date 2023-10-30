@@ -144,3 +144,11 @@ Description of the patches:
 
   Fixes for component build when building with MediaPipe. AnyMetadata::PackFrom
   is called which require string constants to be exported.
+
+- 0036-fix-undefined-memcpy-call.patch
+
+  Fixes an undefined call to memcpy which may be passed NULL, 0. NULL, 0 is
+  forbidden in C, due to a mistake in the C language specification. This
+  partially integrates
+  https://github.com/protocolbuffers/protobuf/commit/b2e1d7d8a1b1959c782595cd815c22fb690ac8e2
+  from upstream and may be removed when protobuf is updated past that commit.
