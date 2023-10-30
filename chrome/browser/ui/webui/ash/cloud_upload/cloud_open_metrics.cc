@@ -536,6 +536,25 @@ void CloudOpenMetrics::LogUploadResult(OfficeFilesUploadResult value) {
   }
 }
 
+void CloudOpenMetrics::UpdateCloudProvider(CloudProvider cloud_provider) {
+  cloud_provider_ = cloud_provider;
+  if (cloud_provider == CloudProvider::kGoogleDrive) {
+    copy_error_.set_metric_name(kGoogleDriveCopyErrorMetricName);
+    move_error_.set_metric_name(kGoogleDriveMoveErrorMetricName);
+    source_volume_.set_metric_name(kDriveOpenSourceVolumeMetric);
+    task_result_.set_metric_name(kGoogleDriveTaskResultMetricName);
+    transfer_required_.set_metric_name(kDriveTransferRequiredMetric);
+    upload_result_.set_metric_name(kGoogleDriveUploadResultMetricName);
+  } else if (cloud_provider == CloudProvider::kOneDrive) {
+    copy_error_.set_metric_name(kOneDriveCopyErrorMetricName);
+    move_error_.set_metric_name(kOneDriveMoveErrorMetricName);
+    source_volume_.set_metric_name(kOneDriveOpenSourceVolumeMetric);
+    task_result_.set_metric_name(kOneDriveTaskResultMetricName);
+    transfer_required_.set_metric_name(kOneDriveTransferRequiredMetric);
+    upload_result_.set_metric_name(kOneDriveUploadResultMetricName);
+  }
+}
+
 base::SafeRef<CloudOpenMetrics> CloudOpenMetrics::GetSafeRef() const {
   return weak_ptr_factory_.GetSafeRef();
 }

@@ -94,7 +94,11 @@ class Metric {
 
   void set_state(MetricState new_state) { state = new_state; }
 
-  const std::string metric_name;
+  void set_metric_name(std::string new_metric_name) {
+    metric_name = new_metric_name;
+  }
+
+  std::string metric_name;
   MetricState state = MetricState::kCorrectlyNotLogged;
   MetricType value;
   MetricType old_value;
@@ -156,6 +160,10 @@ class CloudOpenMetrics {
 
   // Log the `value` for the UploadResult metric.
   void LogUploadResult(OfficeFilesUploadResult value);
+
+  // Updates the cloud provider for the cloud upload flow. Updates the metric
+  // names to log with.
+  void UpdateCloudProvider(CloudProvider cloud_provider);
 
   base::SafeRef<CloudOpenMetrics> GetSafeRef() const;
 

@@ -6,6 +6,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::cloud_upload {
@@ -578,6 +579,20 @@ TEST_F(CloudOpenMetricsTest, NoDumpWhenAllMetricsAreConsistentForMoveFlow) {
   histogram_.ExpectUniqueSample(kGoogleDriveUploadResultMetricStateMetricName,
                                 MetricState::kCorrectlyLogged, 1);
   ASSERT_EQ(0, CloudOpenMetricsTest::number_of_dump_calls());
+}
+
+// Tests that the right metrics are logged after updating the cloud provider.
+TEST_F(CloudOpenMetricsTest, UpdateCloudProvider) {
+  CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                      /*file_count=*/1);
+  cloud_open_metrics.LogTaskResult(OfficeTaskResult::kMoved);
+  histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricName,
+                                OfficeTaskResult::kMoved, 1);
+
+  cloud_open_metrics.UpdateCloudProvider(CloudProvider::kOneDrive);
+  cloud_open_metrics.LogTaskResult(OfficeTaskResult::kMoved);
+  histogram_.ExpectUniqueSample(kOneDriveTaskResultMetricName,
+                                OfficeTaskResult::kMoved, 1);
 }
 
 }  // namespace ash::cloud_upload
