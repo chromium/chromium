@@ -27,6 +27,8 @@ class PrerenderWebContentsDelegateImpl
                       bool* was_blocked) override;
   void ActivateContents(content::WebContents* contents) override;
   bool ShouldSuppressDialogs(content::WebContents* source) override;
+  bool ShouldFocusPageAfterCrash() override;
+  bool TakeFocus(content::WebContents* source, bool reverse) override;
   void WebContentsCreated(content::WebContents* source_contents,
                           int opener_render_process_id,
                           int opener_render_frame_id,
