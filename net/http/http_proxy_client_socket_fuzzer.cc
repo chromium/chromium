@@ -18,6 +18,8 @@
 #include "net/base/auth.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_auth_cache.h"
 #include "net/http/http_auth_handler_basic.h"
@@ -66,10 +68,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // is HTTPS.
   net::HttpProxyClientSocket socket(
       std::move(fuzzed_socket), "Bond/007", net::HostPortPair("foo", 80),
-      net::ProxyServer(net::ProxyServer::SCHEME_HTTP,
-                       net::HostPortPair("proxy", 42)),
-      auth_controller.get(), nullptr /* proxy_delegate */,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      net::ProxyChain(net::ProxyServer::SCHEME_HTTP,
+                      net::HostPortPair("proxy", 42)),
+      /*proxy_chain_index=*/0, auth_controller.get(),
+      /*proxy_delegate=*/nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
   int result = socket.Connect(callback.callback());
   result = callback.GetResult(result);
 

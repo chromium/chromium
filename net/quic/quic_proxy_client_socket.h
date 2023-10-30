@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "net/base/completion_once_callback.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/http/proxy_client_socket.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_client_stream.h"
@@ -34,7 +34,8 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   QuicProxyClientSocket(
       std::unique_ptr<QuicChromiumClientStream::Handle> stream,
       std::unique_ptr<QuicChromiumClientSession::Handle> session,
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
+      size_t proxy_chain_index,
       const std::string& user_agent,
       const HostPortPair& endpoint,
       const NetLogWithSource& net_log,
@@ -137,7 +138,8 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   const HostPortPair endpoint_;
   scoped_refptr<HttpAuthController> auth_;
 
-  const ProxyServer proxy_server_;
+  const ProxyChain proxy_chain_;
+  const size_t proxy_chain_index_;
 
   // This delegate must outlive this proxy client socket.
   const raw_ptr<ProxyDelegate> proxy_delegate_;

@@ -17,7 +17,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/http/http_auth_controller.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
@@ -47,7 +47,8 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
   // data read/written to the socket will be transferred in data frames. This
   // object will set itself as |spdy_stream|'s delegate.
   SpdyProxyClientSocket(const base::WeakPtr<SpdyStream>& spdy_stream,
-                        const ProxyServer& proxy_server,
+                        const ProxyChain& proxy_chain,
+                        size_t proxy_chain_index,
                         const std::string& user_agent,
                         const HostPortPair& endpoint,
                         const NetLogWithSource& source_net_log,
@@ -160,7 +161,8 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
   const HostPortPair endpoint_;
   scoped_refptr<HttpAuthController> auth_;
 
-  const ProxyServer proxy_server_;
+  const ProxyChain proxy_chain_;
+  const size_t proxy_chain_index_;
 
   // This delegate must outlive this proxy client socket.
   const raw_ptr<ProxyDelegate> proxy_delegate_;

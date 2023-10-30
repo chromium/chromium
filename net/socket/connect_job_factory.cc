@@ -176,44 +176,52 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     // TODO(crbug.com/1206799): For an http-like proxy, should this pass a
     // `SchemeHostPort`, so proxies can participate in ECH? Note doing so with
     // `SCHEME_HTTP` requires handling the HTTPS record upgrade.
+    const ProxyServer& first_proxy_server =
+        proxy_chain.GetProxyServer(/*chain_index=*/0);
     auto proxy_tcp_params = base::MakeRefCounted<TransportSocketParams>(
-        proxy_chain.proxy_server().host_port_pair(),
+        first_proxy_server.host_port_pair(),
         proxy_dns_network_anonymization_key_, secure_dns_policy,
         resolution_callback,
-        proxy_chain.proxy_server().is_secure_http_like()
+        first_proxy_server.is_secure_http_like()
             ? SupportedProtocolsFromSSLConfig(*ssl_config_for_proxy)
             : no_alpn_protocols);
 
-    if (proxy_chain.proxy_server().is_http_like()) {
+    if (first_proxy_server.is_http_like()) {
       scoped_refptr<SSLSocketParams> ssl_params;
-      if (proxy_chain.proxy_server().is_secure_http_like()) {
+      if (first_proxy_server.is_secure_http_like()) {
         DCHECK(ssl_config_for_proxy);
-        // Set ssl_params, and unset proxy_tcp_params
+        // Set `ssl_params`, and unset `proxy_tcp_params`.
         ssl_params = base::MakeRefCounted<SSLSocketParams>(
             std::move(proxy_tcp_params), nullptr, nullptr,
-            proxy_chain.proxy_server().host_port_pair(), *ssl_config_for_proxy,
+            first_proxy_server.host_port_pair(), *ssl_config_for_proxy,
             PRIVACY_MODE_DISABLED, network_anonymization_key);
         proxy_tcp_params = nullptr;
       }
 
       // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving scheme
       // when available)?
+      // TODO(https://crbug.com/1491092): The endpoint parameter here should
+      // correspond to either `endpoint` (for one-hop proxies) or the proxy
+      // server at index 1 (for n-hop proxies).
       http_proxy_params = base::MakeRefCounted<HttpProxySocketParams>(
           std::move(proxy_tcp_params), std::move(ssl_params),
-          proxy_chain.proxy_server().is_quic(), ToHostPortPair(endpoint),
+          ToHostPortPair(endpoint), proxy_chain, /*proxy_chain_index=*/0,
           force_tunnel || UsingSsl(endpoint), *proxy_annotation_tag,
-          network_anonymization_key);
+          network_anonymization_key, secure_dns_policy);
     } else {
-      DCHECK(proxy_chain.proxy_server().is_socks());
+      DCHECK(first_proxy_server.is_socks());
       // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving scheme
       // when available)?
       socks_params = base::MakeRefCounted<SOCKSSocketParams>(
           std::move(proxy_tcp_params),
-          proxy_chain.proxy_server().scheme() == ProxyServer::SCHEME_SOCKS5,
+          first_proxy_server.scheme() == ProxyServer::SCHEME_SOCKS5,
           ToHostPortPair(endpoint), network_anonymization_key,
           *proxy_annotation_tag);
     }
   }
+
+  // TODO(https://crbug.com/1491092): For nested proxies, create additional
+  // SSLSocketParam and HttpProxySocketParam objects for the remaining hops.
 
   // Deal with SSL - which layers on top of any given proxy.
   if (UsingSsl(endpoint)) {
@@ -236,26 +244,28 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
         std::move(ssl_params), delegate, /*net_log=*/nullptr);
   }
 
-  if (proxy_chain.proxy_server().is_http_like()) {
+  // Only SSL/TLS-based endpoints have ALPN protocols.
+  if (proxy_chain.is_direct()) {
+    auto tcp_params = base::MakeRefCounted<TransportSocketParams>(
+        ToTransportEndpoint(endpoint), network_anonymization_key,
+        secure_dns_policy, resolution_callback, no_alpn_protocols);
+    return transport_connect_job_factory_->Create(
+        request_priority, socket_tag, common_connect_job_params, tcp_params,
+        delegate, /*net_log=*/nullptr);
+  }
+
+  const ProxyServer& first_proxy_server =
+      proxy_chain.GetProxyServer(/*chain_index=*/0);
+  if (first_proxy_server.is_http_like()) {
     return http_proxy_connect_job_factory_->Create(
         request_priority, socket_tag, common_connect_job_params,
         std::move(http_proxy_params), delegate, /*net_log=*/nullptr);
   }
 
-  if (proxy_chain.proxy_server().is_socks()) {
-    return socks_connect_job_factory_->Create(
-        request_priority, socket_tag, common_connect_job_params,
-        std::move(socks_params), delegate, /*net_log=*/nullptr);
-  }
-
-  // Only SSL/TLS-based endpoints have ALPN protocols.
-  DCHECK(proxy_chain.is_direct());
-  auto tcp_params = base::MakeRefCounted<TransportSocketParams>(
-      ToTransportEndpoint(endpoint), network_anonymization_key,
-      secure_dns_policy, resolution_callback, no_alpn_protocols);
-  return transport_connect_job_factory_->Create(
-      request_priority, socket_tag, common_connect_job_params, tcp_params,
-      delegate, /*net_log=*/nullptr);
+  DCHECK(first_proxy_server.is_socks());
+  return socks_connect_job_factory_->Create(
+      request_priority, socket_tag, common_connect_job_params,
+      std::move(socks_params), delegate, /*net_log=*/nullptr);
 }
 
 }  // namespace net

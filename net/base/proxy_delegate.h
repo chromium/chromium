@@ -72,18 +72,19 @@ class NET_EXPORT ProxyDelegate {
     OnFallback(ProxyChain(bad_server), net_error);
   }
 
-  void OnBeforeTunnelRequestServerOnly(const ProxyServer& proxy_server,
+  void OnBeforeTunnelRequestServerOnly(const ProxyChain& proxy_chain,
+                                       size_t proxy_chain_index,
                                        HttpRequestHeaders* extra_headers) {
-    DCHECK(!proxy_server.is_direct());
-    OnBeforeTunnelRequest(ProxyChain(proxy_server), /*chain_index=*/0,
-                          extra_headers);
+    DCHECK(!proxy_chain.is_direct());
+    OnBeforeTunnelRequest(proxy_chain, proxy_chain_index, extra_headers);
   }
 
   Error OnTunnelHeadersReceivedServerOnly(
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
+      size_t proxy_chain_index,
       const HttpResponseHeaders& response_headers) {
-    return OnTunnelHeadersReceived(ProxyChain(proxy_server),
-                                   /*chain_index=*/0, response_headers);
+    return OnTunnelHeadersReceived(proxy_chain, proxy_chain_index,
+                                   response_headers);
   }
 };
 

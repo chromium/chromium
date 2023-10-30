@@ -309,7 +309,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJob) {
   ASSERT_THAT(http_proxy_job_factory_->params(), testing::SizeIs(1));
   const HttpProxySocketParams& params =
       *http_proxy_job_factory_->params().front();
-  EXPECT_FALSE(params.is_quic());
+  EXPECT_FALSE(params.proxy_server().is_quic());
   EXPECT_EQ(params.endpoint(), HostPortPair::FromSchemeHostPort(kEndpoint));
 
   ASSERT_TRUE(params.transport_params());
@@ -337,7 +337,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobWithoutScheme) {
   ASSERT_THAT(http_proxy_job_factory_->params(), testing::SizeIs(1));
   const HttpProxySocketParams& params =
       *http_proxy_job_factory_->params().front();
-  EXPECT_FALSE(params.is_quic());
+  EXPECT_FALSE(params.proxy_server().is_quic());
   EXPECT_EQ(params.endpoint(), kEndpoint);
 
   ASSERT_TRUE(params.transport_params());
@@ -371,7 +371,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttps) {
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::HTTP_PROXY);
   const HttpProxySocketParams& proxy_params =
       *params.GetHttpProxyConnectionParams();
-  EXPECT_FALSE(proxy_params.is_quic());
+  EXPECT_FALSE(proxy_params.proxy_server().is_quic());
   EXPECT_EQ(proxy_params.endpoint(),
             HostPortPair::FromSchemeHostPort(kEndpoint));
 
@@ -406,7 +406,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttpsWithoutScheme) {
   ASSERT_EQ(params.GetConnectionType(), SSLSocketParams::HTTP_PROXY);
   const HttpProxySocketParams& proxy_params =
       *params.GetHttpProxyConnectionParams();
-  EXPECT_FALSE(proxy_params.is_quic());
+  EXPECT_FALSE(proxy_params.proxy_server().is_quic());
   EXPECT_EQ(proxy_params.endpoint(), kEndpoint);
 
   ASSERT_TRUE(proxy_params.transport_params());
@@ -436,7 +436,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJob) {
   ASSERT_THAT(http_proxy_job_factory_->params(), testing::SizeIs(1));
   const HttpProxySocketParams& params =
       *http_proxy_job_factory_->params().front();
-  EXPECT_FALSE(params.is_quic());
+  EXPECT_FALSE(params.proxy_server().is_quic());
   EXPECT_EQ(params.endpoint(), HostPortPair::FromSchemeHostPort(kEndpoint));
 
   ASSERT_TRUE(params.ssl_params());
@@ -470,7 +470,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJobWithoutScheme) {
   ASSERT_THAT(http_proxy_job_factory_->params(), testing::SizeIs(1));
   const HttpProxySocketParams& params =
       *http_proxy_job_factory_->params().front();
-  EXPECT_FALSE(params.is_quic());
+  EXPECT_FALSE(params.proxy_server().is_quic());
   EXPECT_EQ(params.endpoint(), kEndpoint);
 
   ASSERT_TRUE(params.ssl_params());
