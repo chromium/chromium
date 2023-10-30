@@ -144,6 +144,13 @@ public class ImprovedBookmarkRowTest {
                 mModel, mImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
     }
 
+    private void toggleSelection() {
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
+    }
+
     @Test
     public void testTitleAndDescription() {
         Assert.assertEquals(
@@ -186,13 +193,29 @@ public class ImprovedBookmarkRowTest {
     }
 
     @Test
-    public void testUnselectedShowsMore() {
-        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
-        mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
-        Assert.assertEquals(
-                View.GONE, mImprovedBookmarkRow.findViewById(R.id.check_image).getVisibility());
-        Assert.assertEquals(
-                View.VISIBLE, mImprovedBookmarkRow.findViewById(R.id.more).getVisibility());
+    public void testUnselectedShowsLastActive() {
+        View check = mImprovedBookmarkRow.findViewById(R.id.check_image);
+        View more = mImprovedBookmarkRow.findViewById(R.id.more);
+        View image = mImprovedBookmarkRow.findViewById(R.id.end_image);
+
+        // More button is set as visible, so it should be visible after the selection transition.
+        mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.MENU);
+        toggleSelection();
+        Assert.assertEquals(View.GONE, check.getVisibility());
+        Assert.assertEquals(View.GONE, image.getVisibility());
+        Assert.assertEquals(View.VISIBLE, more.getVisibility());
+
+        mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
+        toggleSelection();
+        Assert.assertEquals(View.GONE, check.getVisibility());
+        Assert.assertEquals(View.GONE, more.getVisibility());
+        Assert.assertEquals(View.VISIBLE, image.getVisibility());
+
+        mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.NONE);
+        toggleSelection();
+        Assert.assertEquals(View.GONE, check.getVisibility());
+        Assert.assertEquals(View.GONE, more.getVisibility());
+        Assert.assertEquals(View.GONE, image.getVisibility());
     }
 
     @Test

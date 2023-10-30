@@ -57,6 +57,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
     private boolean mDragEnabled;
     private boolean mBookmarkIdEditable;
+    private boolean mEndImageViewVisible;
     private boolean mMoreButtonVisible;
     private boolean mSelectionEnabled;
     private boolean mIsSelected;
@@ -233,12 +234,13 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     }
 
     void setEndImageVisible(boolean visible) {
-        mEndImageView.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mEndImageViewVisible = visible;
+        updateView();
     }
 
     void setEndMenuVisible(boolean visible) {
         mMoreButtonVisible = visible;
-        mMoreButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+        updateView();
     }
 
     void setEndImageRes(int res) {
@@ -255,6 +257,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         boolean moreVisible = mMoreButtonVisible && !mIsSelected && mBookmarkIdEditable;
         mCheckImageView.setVisibility(checkVisible ? View.VISIBLE : View.GONE);
         mMoreButton.setVisibility(moreVisible ? View.VISIBLE : View.GONE);
+        mEndImageView.setVisibility(
+                !moreVisible && mEndImageViewVisible ? View.VISIBLE : View.GONE);
     }
 
     ImprovedBookmarkFolderView getFolderView() {
