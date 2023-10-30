@@ -608,8 +608,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .NewDirectoryTree(),
         TestCase("checkDeleteEnabledInRecents").NewDirectoryTree(),
         TestCase("checkGoToFileLocationEnabledInRecents").NewDirectoryTree(),
+// TODO(https://crbug.com/1425820): Fix flakes and re-enable.
+#if !BUILDFLAG(IS_CHROMEOS)
         TestCase("checkGoToFileLocationDisabledInMultipleSelection")
             .NewDirectoryTree(),
+#endif
         TestCase("checkEncryptedCrossVolumeMoveDisabled").NewDirectoryTree(),
         TestCase("checkEncryptedMoveEnabled").NewDirectoryTree(),
         // Section end - browser tests for new directory tree
@@ -1531,8 +1534,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 #endif
         TestCase("saveFileDialogGuestOs").WithBrowser().NewDirectoryTree(),
 // TODO(crbug.com/1425820): Re-enable this test.
-#if !defined(LEAK_SANITIZER) || !BUILDFLAG(IS_CHROMEOS) || \
-    !defined(ADDRESS_SANITIZER)
+#if !BUILDFLAG(IS_CHROMEOS)
         TestCase("saveFileDialogGuestOs")
             .WithBrowser()
             .InIncognito()
