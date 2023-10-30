@@ -427,6 +427,9 @@ Things to consider:
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_HEADER" desc="The header for the Import Data settings screen. [400em]">
         <ph name="USER_EMAIL1">$1<ex>johndoe@gmail.com</ex></ph> was using Chrome and left bookmarks, passwords, and other settings on this device.
       </message>
+      <message name="IDS_IOS_OPTIONS_TAB_PICKUP_BUBBLE_SIGN_IN_TURNED_OFF" desc="Text in the popover bubble that appears after the user presses the information button, explaining why this setting is turned off.">
+        You turned off Chrome sign-in.
+      </message>
       <message name="IDS_IOS_OPTIONS_TAB_PICKUP_SCREEN_FOOTER" desc="Footer for the screen setting displaying tab suggestion settings.">
         Suggestions are based on your browsing activity on your other devices. To get suggestions, sign in to Chrome on all your devices.
       </message>

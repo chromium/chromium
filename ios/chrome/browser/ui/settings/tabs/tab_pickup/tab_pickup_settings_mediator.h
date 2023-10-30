@@ -9,8 +9,9 @@
 
 #import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_table_view_controller_delegate.h"
 
-@protocol TabPickupSettingsConsumer;
+class AuthenticationService;
 class PrefService;
+@protocol TabPickupSettingsConsumer;
 
 namespace syncer {
 class SyncService;
@@ -22,12 +23,16 @@ class SyncService;
 
 // Designated initializer. All the parameters should not be null.
 // `localPrefService`: preference service from the application context.
+// `browserPrefService`: preference service from the browser state.
+// `authenticationService` authentication service.
 // `syncService` sync service.
 // `consumer`: consumer that will be notified when the data change.
-- (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService
-                                 syncService:(syncer::SyncService*)syncService
-                                    consumer:
-                                        (id<TabPickupSettingsConsumer>)consumer
+- (instancetype)
+    initWithUserLocalPrefService:(PrefService*)localPrefService
+              browserPrefService:(PrefService*)browserPrefService
+           authenticationService:(AuthenticationService*)authenticationService
+                     syncService:(syncer::SyncService*)syncService
+                        consumer:(id<TabPickupSettingsConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

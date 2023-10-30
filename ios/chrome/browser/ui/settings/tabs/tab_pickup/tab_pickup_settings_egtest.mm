@@ -5,7 +5,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "build/branding_buildflags.h"
+#import "components/policy/policy_constants.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -237,6 +240,31 @@ id<GREYMatcher> TabPickupSettingsSwitchItem(bool is_toggled_on, bool enabled) {
   [[EarlGrey
       selectElementWithMatcher:TabPickupSettingsSwitchItem(
                                    /*is_toggled_on=*/true, /*enabled=*/true)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Ensures that the tab pickup settings are correctly working when sign-in is
+// disbled by an enterprise policy.
+- (void)testTabPickupSettingsSignInDisabledByPolicy {
+  // Disable sync by policy.
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
+                            grey_userInteractionEnabled(), nil)]
+      performAction:grey_tap()];
+
+  OpenTabsSettings();
+  [[EarlGrey selectElementWithMatcher:TabsSettingsTabPickupDetailText(false)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  OpenTabPickupFromTabsSettings();
+  [[EarlGrey selectElementWithMatcher:SettingsTabPickupTableView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the managed item is visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabPickupSettingsManagedItemId)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

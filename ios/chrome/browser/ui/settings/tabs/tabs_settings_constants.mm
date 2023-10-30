@@ -15,5 +15,8 @@ NSString* const kTabPickupSettingsTableViewId =
 NSString* const kTabPickupSettingsSwitchItemId =
     @"kTabPickupSettingsSwitchItemId";
 
+NSString* const kTabPickupSettingsManagedItemId =
+    @"kTabPickupSettingsManagedItemId";
+
 NSString* const kTabPickupSettingsPrivacyFooterId =
     @"kTabPickupSettingsPrivacyFooterId";

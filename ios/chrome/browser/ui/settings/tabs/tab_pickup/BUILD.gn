@@ -46,6 +46,7 @@ source_set("tab_pickup_ui") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/tabs/model/tab_pickup:features",
     "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/ui/settings/tabs:tabs_constants",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
@@ -57,12 +58,14 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "tab_pickup_settings_egtest.mm" ]
   deps = [
-    "//base:i18n",
+    "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//components/policy:policy_code_generate",
+    "//components/signin/public/base",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/tabs/model/tab_pickup:features",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",

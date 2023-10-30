@@ -51,11 +51,16 @@
 }
 
 - (void)start {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+
   _viewController = [[TabPickupSettingsTableViewController alloc] init];
   _mediator = [[TabPickupSettingsMediator alloc]
       initWithUserLocalPrefService:GetApplicationContext()->GetLocalState()
+                browserPrefService:browserState->GetPrefs()
+             authenticationService:AuthenticationServiceFactory::
+                                       GetForBrowserState(browserState)
                        syncService:SyncServiceFactory::GetForBrowserState(
-                                       self.browser->GetBrowserState())
+                                       browserState)
                           consumer:_viewController];
   _viewController.delegate = _mediator;
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
