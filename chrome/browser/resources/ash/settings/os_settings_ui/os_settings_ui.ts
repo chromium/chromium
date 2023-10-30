@@ -29,7 +29,7 @@ import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawe
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {listenOnce} from 'chrome://resources/js/util_ts.js';
+import {listenOnce} from 'chrome://resources/js/util.js';
 import {Debouncer, DomIf, microTask, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';

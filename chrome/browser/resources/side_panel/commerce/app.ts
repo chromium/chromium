@@ -15,7 +15,7 @@ import '//shopping-insights-side-panel.top-chrome/shared/sp_shared_style.css.js'
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {listenOnce} from '//resources/js/util_ts.js';
+import {listenOnce} from '//resources/js/util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {PriceInsightsInfo, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';

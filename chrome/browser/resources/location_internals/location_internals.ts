@@ -4,7 +4,7 @@
 
 import './diagnose_info_view.js';
 
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {DiagnoseInfoViewElement} from './diagnose_info_view.js';
 import {AccessPointData, GeolocationDiagnostics, GeolocationInternalsObserverInterface, GeolocationInternalsObserverReceiver, GeolocationInternalsRemote, NetworkLocationResponse} from './geolocation_internals.mojom-webui.js';

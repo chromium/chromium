@@ -7,7 +7,7 @@
  * help users migrate to using net-export and the catapult netlog_viewer.
  */
 
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {DivView} from './view.js';
 

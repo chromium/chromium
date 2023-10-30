@@ -11,7 +11,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
-import {isRTL} from 'chrome://resources/js/util_ts.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 
 import {DragManager, DragManagerDelegate} from './drag_manager.js';
 import {isTabElement, TabElement} from './tab.js';

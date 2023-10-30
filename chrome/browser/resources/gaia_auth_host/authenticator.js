@@ -6,7 +6,7 @@
 // <if expr="not chromeos_ash">
 import {assert} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$, appendParam} from 'chrome://resources/js/util_ts.js';
+import {$, appendParam} from 'chrome://resources/js/util.js';
 // </if>
 // <if expr="chromeos_ash">
 import {assert} from 'chrome://resources/ash/common/assert.js';

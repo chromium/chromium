@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-
 // <if expr="chromeos_ash">
 import 'chrome://chrome-signin/arc_account_picker/arc_account_picker_app.js';
 import './gaia_action_buttons/gaia_action_buttons.js';
@@ -20,7 +19,7 @@ import './strings.m.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {isRTL} from 'chrome://resources/js/util_ts.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert.js';

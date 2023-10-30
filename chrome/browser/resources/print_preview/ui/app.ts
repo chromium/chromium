@@ -13,7 +13,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {isMac, isWindows} from 'chrome://resources/js/platform.js';
-import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin, PrinterType} from '../data/destination.js';

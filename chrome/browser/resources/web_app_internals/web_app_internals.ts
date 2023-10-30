@@ -5,7 +5,7 @@
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 

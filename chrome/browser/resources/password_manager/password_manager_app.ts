@@ -25,7 +25,7 @@ import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_containe
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {getDeepActiveElement, listenOnce} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement, listenOnce} from 'chrome://resources/js/util.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
