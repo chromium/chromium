@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_FEEDBACK_SYSTEM_LOGS_LOG_SOURCES_RELATED_WEBSITE_SETS_SOURCE_H_
 #define CHROME_BROWSER_FEEDBACK_SYSTEM_LOGS_LOG_SOURCES_RELATED_WEBSITE_SETS_SOURCE_H_
 
-#include <string>
-
 #include "components/feedback/system_logs/system_logs_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace system_logs {
 
@@ -25,14 +22,10 @@ class RelatedWebsiteSetsSource : public system_logs::SystemLogsSource {
 
   ~RelatedWebsiteSetsSource() override;
 
-  // SystemLogsSource override.
+  // SystemLogsSource:
   void Fetch(system_logs::SysLogsSourceCallback callback) override;
 
  private:
-  void PopulateRelatedWebsiteSetsInfo(SystemLogsResponse* response);
-
-  // Stores populated RWS info to prevent unnecessary iterations.
-  absl::optional<std::string> rws_info_;
 };
 
 }  // namespace system_logs
