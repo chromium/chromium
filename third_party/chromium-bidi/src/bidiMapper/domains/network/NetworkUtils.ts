@@ -23,12 +23,12 @@ import type Protocol from 'devtools-protocol';
 
 import type {Network} from '../../../protocol/protocol.js';
 
-export function computeResponseHeadersSize(headers: Network.Header[]): number {
-  return headers.reduce((total, header) => {
-    return (
-      total + header.name.length + header.value.value.length + 4 // 4 = ': ' + '\r\n'
-    );
-  }, 0);
+export function computeHeadersSize(headers: Network.Header[]): number {
+  const requestHeaders = headers.reduce((acc, header) => {
+    return `${acc}${header.name}: ${header.value.value}\r\n`;
+  }, '');
+
+  return new TextEncoder().encode(requestHeaders).length;
 }
 
 /** Converts from CDP Network domain headers to Bidi network headers. */

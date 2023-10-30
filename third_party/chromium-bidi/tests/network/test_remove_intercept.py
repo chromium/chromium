@@ -13,7 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import pytest
-from anys import ANY_DICT, ANY_LIST, ANY_STR
+from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
                           execute_command, send_JSON_command, subscribe,
                           wait_for_event)
@@ -160,7 +160,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },
@@ -206,7 +206,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },
@@ -277,7 +277,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },
@@ -313,7 +313,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },

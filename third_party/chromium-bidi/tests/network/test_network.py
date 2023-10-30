@@ -51,7 +51,7 @@ async def test_network_before_request_sent_event_emitted(
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },
@@ -148,7 +148,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
                         "value": "bar"
                     },
                 }], []),
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },
@@ -192,7 +192,7 @@ async def test_network_response_completed_event_emitted(websocket, context_id):
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },
@@ -245,7 +245,7 @@ async def test_network_bad_ssl(websocket, context_id, bad_ssl_url):
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },
@@ -284,7 +284,7 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": ANY_LIST,
-                "headersSize": -1,
+                "headersSize": 0,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },
@@ -378,7 +378,7 @@ async def test_network_sends_only_included_cookies(websocket, context_id):
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },
@@ -426,7 +426,7 @@ async def test_network_should_not_block_queue_shared_workers_with_data_url(
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },

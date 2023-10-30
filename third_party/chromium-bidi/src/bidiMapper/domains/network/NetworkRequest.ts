@@ -35,7 +35,7 @@ import {assert} from '../../../utils/assert.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 
 import {
-  computeResponseHeadersSize,
+  computeHeadersSize,
   bidiNetworkHeadersFromCdpFetchHeaders,
   bidiNetworkHeadersFromCdpNetworkHeaders,
 } from './NetworkUtils.js';
@@ -267,7 +267,7 @@ export class NetworkRequest {
         mimeType: '',
         // TODO: populate.
         bytesReceived: 0,
-        headersSize: computeResponseHeadersSize(headers), // TODO: Should this be computeRequestHeadersSize?
+        headersSize: computeHeadersSize(headers),
         // TODO: consider removing from spec.
         bodySize: 0,
         // TODO: consider removing from spec.
@@ -434,8 +434,7 @@ export class NetworkRequest {
       method: this.#request.info?.request.method ?? NetworkRequest.#unknown,
       headers,
       cookies,
-      // TODO: implement.
-      headersSize: -1,
+      headersSize: computeHeadersSize(headers),
       // TODO: implement.
       bodySize: 0,
       timings: this.#getTimings(),
@@ -564,7 +563,7 @@ export class NetworkRequest {
           headers,
           mimeType: this.#response.info.mimeType,
           bytesReceived: this.#response.info.encodedDataLength,
-          headersSize: computeResponseHeadersSize(headers),
+          headersSize: computeHeadersSize(headers),
           // TODO: consider removing from spec.
           bodySize: 0,
           content: {
@@ -635,7 +634,7 @@ export class NetworkRequest {
           headers,
           mimeType: this.#response.info.mimeType,
           bytesReceived: this.#response.info.encodedDataLength,
-          headersSize: computeResponseHeadersSize(headers),
+          headersSize: computeHeadersSize(headers),
           // TODO: consider removing from spec.
           bodySize: 0,
           content: {

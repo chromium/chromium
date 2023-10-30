@@ -15,7 +15,7 @@
 import re
 
 import pytest
-from anys import ANY_DICT, ANY_LIST, ANY_STR
+from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
                           execute_command, send_JSON_command, subscribe,
                           wait_for_event)
@@ -292,7 +292,7 @@ async def test_continue_response_completes(websocket, context_id, example_url):
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT,
             },
@@ -393,7 +393,7 @@ async def test_continue_response_twice(websocket, context_id, example_url):
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT,
             },
@@ -481,7 +481,7 @@ async def test_continue_response_remove_intercept_inflight_request(
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT,
             },

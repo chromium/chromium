@@ -26,8 +26,7 @@ describe('NetworkUtils', () => {
   describe('should compute response headers size', () => {
     it('empty', () => {
       const headers: Network.Header[] = [];
-      const responseHeadersSize =
-        networkUtils.computeResponseHeadersSize(headers);
+      const responseHeadersSize = networkUtils.computeHeadersSize(headers);
 
       expect(responseHeadersSize).to.equal(0);
     });
@@ -49,8 +48,7 @@ describe('NetworkUtils', () => {
           },
         },
       ];
-      const responseHeadersSize =
-        networkUtils.computeResponseHeadersSize(headers);
+      const responseHeadersSize = networkUtils.computeHeadersSize(headers);
 
       expect(responseHeadersSize).to.equal(46);
     });

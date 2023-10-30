@@ -13,7 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import pytest
-from anys import ANY_DICT, ANY_LIST, ANY_STR
+from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
 from test_helpers import (ANY_TIMESTAMP, ANY_UUID, execute_command,
                           send_JSON_command, subscribe, wait_for_event)
 
@@ -335,7 +335,7 @@ async def test_add_intercept_blocks(websocket, context_id, url_patterns):
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
-                "headersSize": -1,
+                "headersSize": ANY_NUMBER,
                 "bodySize": 0,
                 "timings": ANY_DICT
             },
