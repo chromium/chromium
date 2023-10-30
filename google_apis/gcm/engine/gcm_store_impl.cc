@@ -306,6 +306,13 @@ LoadStatus GCMStoreImpl::Backend::OpenStoreAndLoadData(StoreOpenMode open_mode,
   leveldb_env::Options options;
   options.create_if_missing = open_mode == CREATE_IF_MISSING;
   options.paranoid_checks = true;
+
+  // GCMStore does not typically handle large amounts of data, nor a
+  // high rate of store operations, so limit the write log size to something
+  // more appropriate (impact both in-memory and on-disk size before
+  // LevelDB compaction will be triggered).
+  options.write_buffer_size = 128 * 1024;
+
   leveldb::Status status =
       leveldb_env::OpenDB(options, path_.AsUTF8Unsafe(), &db_);
   UMA_HISTOGRAM_ENUMERATION("GCM.Database.Open",
