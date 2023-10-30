@@ -173,6 +173,8 @@
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
+#include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
@@ -539,6 +541,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   AcceptLanguagesServiceFactory::GetInstance();
   AccessContextAuditServiceFactory::GetInstance();
   AccessibilityLabelsServiceFactory::GetInstance();
+  AccountBookmarkSyncServiceFactory::GetInstance();
   AccountConsistencyModeManagerFactory::GetInstance();
   AccountInvestigatorFactory::GetInstance();
   AccountPasswordStoreFactory::GetInstance();
@@ -808,6 +811,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_ANDROID)
   LevelDBPersistedTabDataStorageAndroidFactory::GetInstance();
 #endif
+  LocalOrSyncableBookmarkSyncServiceFactory::GetInstance();
   login_detection::LoginDetectionKeyedServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   LoginUIServiceFactory::GetInstance();

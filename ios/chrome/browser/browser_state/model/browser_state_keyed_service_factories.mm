@@ -10,8 +10,10 @@
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
@@ -118,6 +120,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   dom_distiller::DomDistillerServiceFactory::GetInstance();
   feature_engagement::TrackerFactory::GetInstance();
   ios::AboutSigninInternalsFactory::GetInstance();
+  ios::AccountBookmarkSyncServiceFactory::GetInstance();
   ios::AccountConsistencyServiceFactory::GetInstance();
   ios::AccountReconcilorFactory::GetInstance();
   ios::AutocompleteClassifierFactory::GetInstance();
@@ -127,6 +130,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ios::CookieSettingsFactory::GetInstance();
   ios::FaviconServiceFactory::GetInstance();
   ios::HistoryServiceFactory::GetInstance();
+  ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance();
   ios::InMemoryURLIndexFactory::GetInstance();
   ios::ShortcutsBackendFactory::GetInstance();
   ios::SigninErrorControllerFactory::GetInstance();
