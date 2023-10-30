@@ -67,7 +67,6 @@ class TestBookmarkClient : public BookmarkClient {
   void SetStorageStateForUma(metrics::StorageStateForUma storage_state);
 
   // BookmarkClient:
-  bool IsPermanentNodeVisibleWhenEmpty(BookmarkNode::Type type) override;
   LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
   metrics::StorageStateForUma GetStorageStateForUma() override;
   bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) override;

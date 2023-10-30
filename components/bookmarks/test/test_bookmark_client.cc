@@ -97,24 +97,6 @@ void TestBookmarkClient::SetStorageStateForUma(
   storage_state_for_uma_ = storage_state;
 }
 
-bool TestBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
-    BookmarkNode::Type type) {
-  switch (type) {
-    case bookmarks::BookmarkNode::URL:
-      NOTREACHED();
-      return false;
-    case bookmarks::BookmarkNode::BOOKMARK_BAR:
-    case bookmarks::BookmarkNode::OTHER_NODE:
-      return true;
-    case bookmarks::BookmarkNode::FOLDER:
-    case bookmarks::BookmarkNode::MOBILE:
-      return false;
-  }
-
-  NOTREACHED();
-  return false;
-}
-
 LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
   return base::BindOnce(&TestBookmarkClient::LoadManagedNode,
                         std::move(managed_node_));

@@ -79,11 +79,6 @@ void BookmarkClientImpl::GetTypedCountForUrls(
   }
 }
 
-bool BookmarkClientImpl::IsPermanentNodeVisibleWhenEmpty(
-    bookmarks::BookmarkNode::Type type) {
-  return type == bookmarks::BookmarkNode::MOBILE;
-}
-
 bookmarks::LoadManagedNodeCallback
 BookmarkClientImpl::GetLoadManagedNodeCallback() {
   if (managed_bookmark_service_) {

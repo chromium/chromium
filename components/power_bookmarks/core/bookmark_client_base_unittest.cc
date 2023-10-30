@@ -31,11 +31,6 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
   TestBookmarkClientImpl& operator=(const TestBookmarkClientImpl&) = delete;
   ~TestBookmarkClientImpl() override = default;
 
-  bool IsPermanentNodeVisibleWhenEmpty(
-      bookmarks::BookmarkNode::Type type) override {
-    return true;
-  }
-
   bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override {
     return bookmarks::LoadManagedNodeCallback();
   }

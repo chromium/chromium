@@ -11,6 +11,7 @@
 namespace bookmarks {
 
 BASE_DECLARE_FEATURE(kRollbackBookmarksAccountStorage);
+BASE_DECLARE_FEATURE(kAllBookmarksBaselineFolderVisibility);
 
 }  // namespace bookmarks
 

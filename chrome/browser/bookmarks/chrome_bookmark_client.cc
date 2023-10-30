@@ -145,31 +145,6 @@ void ChromeBookmarkClient::GetTypedCountForUrls(
   }
 }
 
-bool ChromeBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
-    bookmarks::BookmarkNode::Type type) {
-#if BUILDFLAG(IS_ANDROID)
-  const bool is_mobile = true;
-#else
-  const bool is_mobile = false;
-#endif
-
-  switch (type) {
-    case bookmarks::BookmarkNode::URL:
-      NOTREACHED();
-      return false;
-    case bookmarks::BookmarkNode::FOLDER:
-      // Managed node.
-      return false;
-    case bookmarks::BookmarkNode::BOOKMARK_BAR:
-    case bookmarks::BookmarkNode::OTHER_NODE:
-      return !is_mobile;
-    case bookmarks::BookmarkNode::MOBILE:
-      return is_mobile;
-  }
-
-  return false;
-}
-
 bookmarks::LoadManagedNodeCallback
 ChromeBookmarkClient::GetLoadManagedNodeCallback() {
   if (!managed_bookmark_service_)
