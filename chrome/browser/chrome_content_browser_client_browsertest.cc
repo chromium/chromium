@@ -150,8 +150,17 @@ class TopChromeChromeContentBrowserClientTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TopChromeChromeContentBrowserClientTest,
-                       ShouldUseSpareRendererWhenNoTopChromePagesPresent) {
+#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1497344) Flaky on Mac.
+#define MAYBE_ShouldUseSpareRendererWhenNoTopChromePagesPresent \
+  DISABLED_ShouldUseSpareRendererWhenNoTopChromePagesPresent
+#else
+#define MAYBE_ShouldUseSpareRendererWhenNoTopChromePagesPresent \
+  ShouldUseSpareRendererWhenNoTopChromePagesPresent
+#endif
+IN_PROC_BROWSER_TEST_F(
+    TopChromeChromeContentBrowserClientTest,
+    MAYBE_ShouldUseSpareRendererWhenNoTopChromePagesPresent) {
   const GURL top_chrome_url(chrome::kChromeUITabSearchURL);
   const GURL non_top_chrome_url(chrome::kChromeUINewTabPageURL);
 
