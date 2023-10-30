@@ -86,16 +86,21 @@ CloudOpenMetrics::~CloudOpenMetrics() {
   ExpectLogged(task_result_);
   if (task_result_.logged()) {
     if (task_result_.value == OfficeTaskResult::kFallbackQuickOffice ||
-        task_result_.value == OfficeTaskResult::kCancelledAtFallback) {
+        task_result_.value == OfficeTaskResult::kCancelledAtFallback ||
+        task_result_.value == OfficeTaskResult::kCancelledAtSetup ||
+        task_result_.value == OfficeTaskResult::kLocalFileTask) {
       ExpectNotLogged(transfer_required_);
       ExpectNotLogged(upload_result_);
-      if (google_drive) {
-        ExpectLoggedWith(drive_open_error_,
-                         {OfficeDriveOpenErrors::kOffline,
-                          OfficeDriveOpenErrors::kDriveFsInterface});
-      } else {
-        ExpectLoggedWith(one_drive_open_error_,
-                         {OfficeOneDriveOpenErrors::kOffline});
+      if (task_result_.value == OfficeTaskResult::kFallbackQuickOffice ||
+          task_result_.value == OfficeTaskResult::kCancelledAtFallback) {
+        if (google_drive) {
+          ExpectLoggedWith(drive_open_error_,
+                           {OfficeDriveOpenErrors::kOffline,
+                            OfficeDriveOpenErrors::kDriveFsInterface});
+        } else {
+          ExpectLoggedWith(one_drive_open_error_,
+                           {OfficeOneDriveOpenErrors::kOffline});
+        }
       }
     } else {
       ExpectLogged(source_volume_);

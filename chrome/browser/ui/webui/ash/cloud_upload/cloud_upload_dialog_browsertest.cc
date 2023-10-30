@@ -252,6 +252,7 @@ class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
   std::vector<std::string> urls_;
   std::vector<file_manager::file_tasks::TaskDescriptor> tasks_;
   std::vector<storage::FileSystemURL> files_;
+  base::HistogramTester histogram_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -379,9 +380,56 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, ModalParentProvided) {
 }
 
 // Test which launches a `CloudUploadDialog` which in turn creates a
+// `FileHandlerPageElement`. Tests that the cancel button works and the correct
+// TaskResult is logged.
+IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, CancelFileHandlerDialog) {
+  // Watch for File Handler dialog URL chrome://cloud-upload.
+  content::TestNavigationObserver navigation_observer_dialog(
+      (GURL(chrome::kChromeUICloudUploadURL)));
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  auto cloud_open_metrics =
+      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive);
+  auto cloud_open_metrics_weak_ptr = cloud_open_metrics->GetWeakPtr();
+
+  // Check that the Setup flow has never run and so the File Handler dialog will
+  // be launched when CloudOpenTask::Execute() is called.
+  ASSERT_FALSE(file_manager::file_tasks::HasExplicitDefaultFileHandler(
+      profile(), ".docx"));
+
+  // Launch File Handler dialog.
+  ASSERT_TRUE(CloudOpenTask::Execute(profile(), files_,
+                                     CloudProvider::kGoogleDrive, nullptr,
+                                     std::move(cloud_open_metrics)));
+
+  // Wait for File Handler dialog to open at chrome://cloud-upload.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  // Get the web contents of the dialog to be able to query
+  // `FileHandlerPageElement`.
+  content::WebContents* web_contents = GetWebContentsFromCloudUploadDialog();
+
+  // Click the close button and wait for the dialog to close.
+  content::WebContentsDestroyedWatcher watcher(web_contents);
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.querySelector('file-handler-page')"
+                              ".$('.cancel-button').click()"));
+  watcher.Wait();
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCancelledAtSetup, 1);
+
+  // cloud_open_metrics should have been destroyed by the end of the test.
+  ASSERT_TRUE(cloud_open_metrics_weak_ptr.WasInvalidated());
+}
+
+// Test which launches a `CloudUploadDialog` which in turn creates a
 // `FileHandlerPageElement`. Tests that the `FileHandlerPageElement` observes
 // all of the fake file tasks and that a file task can be launched by clicking
-// on its button before clicking the open button.
+// on its button before clicking the open button. Tests that the correct
+// TaskResult is logged
 IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
   // Install QuickOffice.
   file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
@@ -510,6 +558,10 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
   // task supports xlsx files.
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
       *profile()->GetPrefs(), kXlsxMimeType, kXlsxFileExtension));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kLocalFileTask, 1);
 
   // cloud_open_metrics should have been destroyed by the end of the test.
   ASSERT_TRUE(cloud_open_metrics_weak_ptr.WasInvalidated());

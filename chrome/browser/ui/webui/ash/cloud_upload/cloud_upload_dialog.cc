@@ -1109,6 +1109,7 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     cloud_provider_ = CloudProvider::kOneDrive;
     InitAndShowDialog(mojom::DialogPage::kOneDriveSetup);
   } else if (user_response == kUserActionCancel) {
+    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kCancelledAtSetup);
     // Do nothing.
   } else if (user_response == kUserActionCancelGoogleDrive) {
     cloud_open_metrics_->LogTaskResult(
@@ -1117,6 +1118,7 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     cloud_open_metrics_->LogTaskResult(
         OfficeTaskResult::kCancelledAtConfirmation);
   } else {
+    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kLocalFileTask);
     LaunchLocalFileTask(user_response);
   }
 }
