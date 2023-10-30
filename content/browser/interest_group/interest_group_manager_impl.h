@@ -272,6 +272,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   virtual void EnqueueReports(
       ReportType report_type,
       std::vector<GURL> report_urls,
+      int frame_tree_node_id,
       const url::Origin& frame_origin,
       const network::mojom::ClientSecurityState& client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -407,14 +408,17 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     ReportRequest();
     ~ReportRequest();
 
-    // Used to fetch the report URL.
-    std::unique_ptr<network::SimpleURLLoader> simple_url_loader;
+    GURL report_url;
+    url::Origin frame_origin;
+    network::mojom::ClientSecurityState client_security_state;
+
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
 
     // Used for Uma histograms. These are build-time constants contained within
     // the binary, so no need for anything to own them.
     const char* name;
     int request_url_size_bytes;
+    int frame_tree_node_id;
   };
 
   struct AdAuctionDataLoaderState {
@@ -503,6 +507,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Invoked when a report request completed.
   void OnOneReportSent(
       std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
+      int frame_tree_node_id,
+      const std::string& devtools_request_id,
       scoped_refptr<net::HttpResponseHeaders> response_headers);
 
   // Clears `report_requests_`.  Does not abort currently pending requests.

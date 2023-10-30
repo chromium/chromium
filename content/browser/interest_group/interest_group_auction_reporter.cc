@@ -255,10 +255,11 @@ void InterestGroupAuctionReporter::InitializeFromServerResponse(
 }
 
 base::RepeatingClosure
-InterestGroupAuctionReporter::OnNavigateToWinningAdCallback() {
+InterestGroupAuctionReporter::OnNavigateToWinningAdCallback(
+    int frame_tree_node_id) {
   return base::BindRepeating(
       &InterestGroupAuctionReporter::OnNavigateToWinningAd,
-      weak_ptr_factory_.GetWeakPtr());
+      weak_ptr_factory_.GetWeakPtr(), frame_tree_node_id);
 }
 
 void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
@@ -905,7 +906,8 @@ void InterestGroupAuctionReporter::OnReportingComplete(
   MaybeInvokeCallback();
 }
 
-void InterestGroupAuctionReporter::OnNavigateToWinningAd() {
+void InterestGroupAuctionReporter::OnNavigateToWinningAd(
+    int frame_tree_node_id) {
   if (navigated_to_winning_ad_) {
     return;
   }
@@ -919,12 +921,12 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd() {
   // reports are sent over the network in FIFO order.
   interest_group_manager_->EnqueueReports(
       InterestGroupManagerImpl::ReportType::kDebugWin,
-      std::move(debug_win_report_urls_), frame_origin_, *client_security_state_,
-      url_loader_factory_);
+      std::move(debug_win_report_urls_), frame_tree_node_id, frame_origin_,
+      *client_security_state_, url_loader_factory_);
   debug_win_report_urls_.clear();
   interest_group_manager_->EnqueueReports(
       InterestGroupManagerImpl::ReportType::kDebugLoss,
-      std::move(debug_loss_report_urls_), frame_origin_,
+      std::move(debug_loss_report_urls_), frame_tree_node_id, frame_origin_,
       *client_security_state_, url_loader_factory_);
   debug_loss_report_urls_.clear();
 
@@ -981,10 +983,11 @@ void InterestGroupAuctionReporter::SendPendingReportsIfNavigated() {
   if (!navigated_to_winning_ad_) {
     return;
   }
+  int frame_tree_node_id = auction_worklet_manager_->GetFrameTreeNodeID();
   interest_group_manager_->EnqueueReports(
       InterestGroupManagerImpl::ReportType::kSendReportTo,
-      std::move(pending_report_urls_), frame_origin_, *client_security_state_,
-      url_loader_factory_);
+      std::move(pending_report_urls_), frame_tree_node_id, frame_origin_,
+      *client_security_state_, url_loader_factory_);
   pending_report_urls_.clear();
 }
 

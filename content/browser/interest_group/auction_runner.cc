@@ -19,6 +19,7 @@
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -432,7 +433,8 @@ void AuctionRunner::FailAuction(
         auction_.GetKAnonKeysToJoin());
     interest_group_manager_->EnqueueReports(
         InterestGroupManagerImpl::ReportType::kDebugLoss,
-        std::move(debug_loss_report_urls), frame_origin_,
+        std::move(debug_loss_report_urls),
+        FrameTreeNode::kFrameTreeNodeInvalidId, frame_origin_,
         *client_security_state_, url_loader_factory_);
 
     InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
@@ -511,9 +513,8 @@ void AuctionRunner::StartAuction() {
     // Wait for promise with server response to resolve.
     return;
   }
-  auction_.StartLoadInterestGroupsPhase(
-      base::BindOnce(&AuctionRunner::OnLoadInterestGroupsComplete,
-                     base::Unretained(this)));
+  auction_.StartLoadInterestGroupsPhase(base::BindOnce(
+      &AuctionRunner::OnLoadInterestGroupsComplete, base::Unretained(this)));
 }
 
 void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {

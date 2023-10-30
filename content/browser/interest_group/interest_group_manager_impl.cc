@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -17,14 +18,23 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
 #include "url/gurl.h"
@@ -66,15 +76,31 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "These requests are triggered by a website."
         })");
 
-// Makes an uncredentialed request and creates a SimpleURLLoader for it. Returns
-// the SimpleURLLoader which will be used to report the result of an in-browser
-// interest group based ad auction to an auction participant.
-std::unique_ptr<network::SimpleURLLoader> BuildSimpleUrlLoader(
+mojo::PendingRemote<network::mojom::DevToolsObserver> CreateDevtoolsObserver(
+    int frame_tree_node_id) {
+  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    FrameTreeNode* initiator_frame_tree_node =
+        FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+
+    if (initiator_frame_tree_node) {
+      return NetworkServiceDevToolsObserver::MakeSelfOwned(
+          initiator_frame_tree_node);
+    }
+  }
+  return mojo::PendingRemote<network::mojom::DevToolsObserver>();
+}
+
+// Creates an uncredentialed request to use for the SimpleURLLoader and
+// reporting to devtools.
+std::unique_ptr<network::ResourceRequest> BuildUncredentialedRequest(
     GURL url,
     const url::Origin& frame_origin,
+    int frame_tree_node_id,
     const network::mojom::ClientSecurityState& client_security_state) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = std::move(url);
+  resource_request->devtools_request_id =
+      base::UnguessableToken::Create().ToString();
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->request_initiator = frame_origin;
@@ -83,9 +109,38 @@ std::unique_ptr<network::SimpleURLLoader> BuildSimpleUrlLoader(
       net::IsolationInfo::CreateTransient();
   resource_request->trusted_params->client_security_state =
       client_security_state.Clone();
+
+  bool network_instrumentation_enabled = false;
+  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    FrameTreeNode* frame_tree_node =
+        FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+
+    if (frame_tree_node != nullptr) {
+      devtools_instrumentation::ApplyAuctionNetworkRequestOverrides(
+          frame_tree_node, resource_request.get(),
+          &network_instrumentation_enabled);
+    }
+  }
+  if (network_instrumentation_enabled) {
+    resource_request->enable_load_timing = true;
+    resource_request->trusted_params->devtools_observer =
+        CreateDevtoolsObserver(frame_tree_node_id);
+  }
+
+  return resource_request;
+}
+
+// Makes a SimpleURLLoader for a given request. Returns the SimpleURLLoader
+// which will be used to report the result of an in-browser interest group based
+// ad auction to an auction participant.
+std::unique_ptr<network::SimpleURLLoader> BuildSimpleUrlLoader(
+    std::unique_ptr<network::ResourceRequest> resource_request) {
   auto simple_url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
   simple_url_loader->SetTimeoutDuration(base::Seconds(30));
+
+  simple_url_loader->SetAllowHttpErrorResults(true);
+
   return simple_url_loader;
 }
 
@@ -335,6 +390,7 @@ void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
 void InterestGroupManagerImpl::EnqueueReports(
     ReportType report_type,
     std::vector<GURL> report_urls,
+    int frame_tree_node_id,
     const url::Origin& frame_origin,
     const network::mojom::ClientSecurityState& client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
@@ -366,10 +422,12 @@ void InterestGroupManagerImpl::EnqueueReports(
   for (GURL& report_url : report_urls) {
     auto report_request = std::make_unique<ReportRequest>();
     report_request->request_url_size_bytes = report_url.spec().size();
-    report_request->simple_url_loader = BuildSimpleUrlLoader(
-        std::move(report_url), frame_origin, client_security_state);
+    report_request->report_url = std::move(report_url);
+    report_request->frame_origin = frame_origin;
+    report_request->client_security_state = client_security_state;
     report_request->name = report_type_name;
     report_request->url_loader_factory = url_loader_factory;
+    report_request->frame_tree_node_id = frame_tree_node_id;
     report_requests_.emplace_back(std::move(report_request));
   }
 
@@ -646,6 +704,8 @@ void InterestGroupManagerImpl::TrySendingOneReport() {
       std::move(report_requests_.front());
   report_requests_.pop_front();
 
+  int frame_tree_node_id = report_request->frame_tree_node_id;
+
   base::UmaHistogramCounts100000(
       base::StrCat(
           {"Ads.InterestGroup.Net.RequestUrlSizeBytes.", report_request->name}),
@@ -655,21 +715,54 @@ void InterestGroupManagerImpl::TrySendingOneReport() {
           {"Ads.InterestGroup.Net.ResponseSizeBytes.", report_request->name}),
       0);
 
-  network::SimpleURLLoader* simple_url_loader_ptr =
-      report_request->simple_url_loader.get();
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      BuildUncredentialedRequest(report_request->report_url,
+                                 report_request->frame_origin,
+                                 report_request->frame_tree_node_id,
+                                 report_request->client_security_state);
+
+  std::string devtools_request_id =
+      resource_request->devtools_request_id.value();
+
+  devtools_instrumentation::OnAuctionWorkletNetworkRequestWillBeSent(
+      report_request->frame_tree_node_id, *resource_request,
+      base::TimeTicks::Now());
+
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
+      BuildSimpleUrlLoader(std::move(resource_request));
+
   // Pass simple_url_loader to keep it alive until the request fails or succeeds
   // to prevent cancelling the request.
+  network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
   simple_url_loader_ptr->DownloadHeadersOnly(
       report_request->url_loader_factory.get(),
       base::BindOnce(&InterestGroupManagerImpl::OnOneReportSent,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(report_request->simple_url_loader)));
+                     weak_factory_.GetWeakPtr(), std::move(simple_url_loader),
+                     frame_tree_node_id, std::move(devtools_request_id)));
 }
 
 void InterestGroupManagerImpl::OnOneReportSent(
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
+    int frame_tree_node_id,
+    const std::string& devtools_request_id,
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
   DCHECK_GT(num_active_, 0);
+
+  network::URLLoaderCompletionStatus completion_status =
+      network::URLLoaderCompletionStatus(simple_url_loader->NetError());
+
+  if (simple_url_loader->CompletionStatus()) {
+    completion_status = simple_url_loader->CompletionStatus().value();
+  }
+
+  if (simple_url_loader->ResponseInfo() != nullptr) {
+    devtools_instrumentation::OnAuctionWorkletNetworkResponseReceived(
+        frame_tree_node_id, devtools_request_id, devtools_request_id,
+        simple_url_loader->GetFinalURL(), *simple_url_loader->ResponseInfo());
+  }
+
+  devtools_instrumentation::OnAuctionWorkletNetworkRequestComplete(
+      frame_tree_node_id, devtools_request_id, completion_status);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,

@@ -61,6 +61,7 @@ class TestInterestGroupManagerImpl
   void EnqueueReports(
       ReportType report_type,
       std::vector<GURL> report_urls,
+      int frame_tree_node_id,
       const url::Origin& frame_origin,
       const network::mojom::ClientSecurityState& client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)

@@ -782,7 +782,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   blink::FencedFrame::RedactedFencedFrameConfig config =
       current_fenced_frame_urls_map.AssignFencedFrameURLAndInterestGroupInfo(
           urn_uuid, requested_ad_size, *ad_descriptor,
-          std::move(ad_auction_data), reporter->OnNavigateToWinningAdCallback(),
+          std::move(ad_auction_data),
+          reporter->OnNavigateToWinningAdCallback(
+              GetFrame()->GetFrameTreeNodeId()),
           ad_component_descriptors, reporter->fenced_frame_reporter());
   std::move(callback).Run(/*aborted_by_script=*/false, std::move(config));
 
