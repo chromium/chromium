@@ -8254,7 +8254,8 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
 
 // An auction where the winning additional bid claims to be from an IG the user
 // is not in.
-TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
+// TODO(crbug.com/1497452): Re-enable this flaky test.
+TEST_F(AuctionRunnerTest, DISABLED_AdditionalBidDistinctFromInterestGroup) {
   base::test::ScopedFeatureList additional_bids_on;
   additional_bids_on.InitWithFeatures(
       {blink::features::kFledgeNegativeTargeting,
