@@ -603,7 +603,7 @@ namespace fileSystemProvider {
 
     // Notifies about changes in the watched directory at
     // <code>observedPath</code> in <code>recursive</code> mode. If the file
-    // system is mounted with <code>supportsNofityTag</code>, then
+    // system is mounted with <code>supportsNotifyTag</code>, then
     // <code>tag</code> must be provided, and all changes since the last
     // notification always reported, even if the system was shutdown. The last
     // tag can be obtained with $(ref:getAll).
