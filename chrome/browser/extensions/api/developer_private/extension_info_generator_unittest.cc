@@ -1082,15 +1082,10 @@ TEST_F(ExtensionInfoGeneratorUnitTest, IsPinnedToToolbar) {
 // Tests for supervised users (child accounts). Supervised users are not allowed
 // to install apps or extensions unless their parent approves.
 class ExtensionInfoGeneratorUnitTestSupervised
-    : public ExtensionInfoGeneratorUnitTest,
-      public testing::WithParamInterface<bool> {
+    : public ExtensionInfoGeneratorUnitTest {
  public:
   ExtensionInfoGeneratorUnitTestSupervised() = default;
   ~ExtensionInfoGeneratorUnitTestSupervised() override = default;
-
-  SupervisedUserExtensionsDelegate* GetSupervisedUserExtensionsDelegate() {
-    return supervised_user_extensions_delegate_.get();
-  }
 
   // ExtensionInfoGeneratorUnitTest:
   ExtensionServiceInitParams GetExtensionServiceInitParams() override {
@@ -1110,39 +1105,29 @@ class ExtensionInfoGeneratorUnitTestSupervised
     supervised_user_test_util::
         SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
 
-    supervised_user_extensions_delegate_ =
-        std::make_unique<SupervisedUserExtensionsDelegateImpl>(profile());
   }
 
   void TearDown() override {
-    supervised_user_extensions_delegate_.reset();
     ExtensionInfoGeneratorUnitTest::TearDown();
   }
-
- private:
-  std::unique_ptr<SupervisedUserExtensionsDelegate>
-      supervised_user_extensions_delegate_;
 };
 
 // Tests that when an extension is disabled pending permission updates, and the
 // parent has turned off the "Permissions for sites, apps and extensions"
 // toggle, then supervised users will see a kite error icon with a tooltip.
-TEST_P(ExtensionInfoGeneratorUnitTestSupervised,
+TEST_F(ExtensionInfoGeneratorUnitTestSupervised,
        ParentDisabledPermissionsForSupervisedUsers) {
-  // Preconditions.
+  // Extension permissions for supervised users is already enabled on ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list;
-  bool extensions_permissions_for_supervised_users_on_desktop = GetParam();
-  if (extensions_permissions_for_supervised_users_on_desktop) {
-    feature_list.InitAndEnableFeature(
-        supervised_user::
-            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-  } else {
-    feature_list.InitAndDisableFeature(
-        supervised_user::
-            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-  }
+  feature_list.InitAndEnableFeature(
+      supervised_user::kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif
   ASSERT_TRUE(profile()->IsChild());
 
+  std::unique_ptr<SupervisedUserExtensionsDelegate>
+      supervised_user_extensions_delegate =
+          std::make_unique<SupervisedUserExtensionsDelegateImpl>(profile());
   base::FilePath base_path = data_dir().AppendASCII("permissions_increase");
   base::FilePath pem_path = base_path.AppendASCII("permissions.pem");
   base::FilePath path = base_path.AppendASCII("v1");
@@ -1160,7 +1145,7 @@ TEST_P(ExtensionInfoGeneratorUnitTestSupervised,
       extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED));
 
   // Simulate parent approval for the extension installation.
-  GetSupervisedUserExtensionsDelegate()->AddExtensionApproval(*extension);
+  supervised_user_extensions_delegate->AddExtensionApproval(*extension);
   // The extension should be enabled now.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
 
@@ -1184,22 +1169,7 @@ TEST_P(ExtensionInfoGeneratorUnitTestSupervised,
 
   // Verify that the kite icon error tooltip appears for supervised users on
   // platforms where extensions are enabled for supervised users.
-
-  if (extensions_permissions_for_supervised_users_on_desktop) {
-    EXPECT_TRUE(info->disable_reasons.parent_disabled_permissions);
-  } else {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-    EXPECT_TRUE(info->disable_reasons.parent_disabled_permissions);
-#else
-    EXPECT_FALSE(info->disable_reasons.parent_disabled_permissions);
-#endif
-  }
+  EXPECT_TRUE(info->disable_reasons.parent_disabled_permissions);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ExtensionsPermissionsForSupervisedUsersOnDesktopFeature,
-    ExtensionInfoGeneratorUnitTestSupervised,
-    testing::Bool());
-
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 }  // namespace extensions

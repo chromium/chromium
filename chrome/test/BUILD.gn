@@ -4037,7 +4037,7 @@ if (!is_android) {
       ]
       if (enable_extensions) {
         sources += [
-          "../browser/supervised_user/supervised_user_extension_browsertest.cc",
+          "../browser/supervised_user/linux_mac_windows/supervised_user_extension_browsertest.cc",
           "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc",
           "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
           "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc",
