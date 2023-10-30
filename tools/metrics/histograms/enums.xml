@@ -109277,6 +109277,22 @@ Full version information for the fingerprint enum values:
   <int value="32" label="kMediaCdmOriginData"/>
 </enum>
 
+<enum name="TrackingProtectionMetricsNoticeEvent">
+  <int value="0" label="kNoticeObjectCreated"/>
+  <int value="1" label="kActiveTabChanged"/>
+  <int value="2" label="kNavigationFinished"/>
+  <int value="3" label="kUpdateNoticeVisibility"/>
+  <int value="4" label="kBrowserTypeNonNormal"/>
+  <int value="5" label="kNoticeShowingButShouldnt"/>
+  <int value="6" label="kInactiveWebcontentUpdated"/>
+  <int value="7" label="kLocationIconNonSecure"/>
+  <int value="8" label="kLocationIconNonVisible"/>
+  <int value="9" label="kNoticeAlreadyShowing"/>
+  <int value="10" label="kNoticeRequestedAndShown"/>
+  <int value="11" label="kNoticeRequestedButNotShown"/>
+  <int value="12" label="kPromoPreviouslyDismissed"/>
+</enum>
+
 <enum name="TrackingProtectionNoticeControllerEvent">
   <int value="0" label="Notice controller created"/>
   <int value="1" label="Active tab changed"/>

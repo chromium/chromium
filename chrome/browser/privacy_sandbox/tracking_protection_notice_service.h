@@ -56,6 +56,23 @@ class TrackingProtectionNoticeService
       TrackingProtectionOnboarding* onboarding_service);
   ~TrackingProtectionNoticeService() override;
 
+  enum class TrackingProtectionMetricsNoticeEvent {
+    kNoticeObjectCreated = 0,
+    kActiveTabChanged = 1,
+    kNavigationFinished = 2,
+    kUpdateNoticeVisibility = 3,
+    kBrowserTypeNonNormal = 4,
+    kNoticeShowingButShouldnt = 5,
+    kInactiveWebcontentUpdated = 6,
+    kLocationIconNonSecure = 7,
+    kLocationIconNonVisible = 8,
+    kNoticeAlreadyShowing = 9,
+    kNoticeRequestedAndShown = 10,
+    kNoticeRequestedButNotShown = 11,
+    kPromoPreviouslyDismissed = 12,
+    kMaxValue = kPromoPreviouslyDismissed,
+  };
+
   class TabHelper : public content::WebContentsObserver,
                     public content::WebContentsUserData<TabHelper> {
    public:
@@ -103,6 +120,7 @@ class TrackingProtectionNoticeService
     bool IsPromoShowing(Browser* browser);
     bool MaybeShowPromo(Browser* browser);
     void HidePromo(Browser* browser);
+    bool IsLocationBarEligible(Browser* browser);
 
     virtual TrackingProtectionOnboarding::NoticeType GetNoticeType() = 0;
     virtual const base::Feature& GetIPHFeature() = 0;

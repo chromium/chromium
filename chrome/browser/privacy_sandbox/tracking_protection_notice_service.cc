@@ -5,28 +5,28 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_notice_service.h"
 #include <memory>
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_notice_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
 #include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/webui_url_constants.h"
-#include "components/feature_engagement/public/feature_constants.h"
-
-#include "chrome/browser/privacy_sandbox/tracking_protection_notice_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
@@ -47,15 +47,24 @@ using NoticeType = ::privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
 using NoticeAction =
     ::privacy_sandbox::TrackingProtectionOnboarding::NoticeAction;
 
-bool IsLocationBarEligible(Browser* browser) {
-  bool is_secure = browser->location_bar_model()->GetSecurityLevel() ==
-                   security_state::SECURE;
-
-  bool is_element_visible =
-      ui::ElementTracker::GetElementTracker()->IsElementVisible(
-          kLocationIconElementId, browser->window()->GetElementContext());
-
-  return is_secure && is_element_visible;
+void CreateHistogramNoticeServiceEvent(
+    TrackingProtectionOnboarding::NoticeType type,
+    TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent
+        event) {
+  switch (type) {
+    case TrackingProtectionOnboarding::NoticeType::kNone:
+      break;
+    case TrackingProtectionOnboarding::NoticeType::kOnboarding:
+      base::UmaHistogramEnumeration(
+          "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+          event);
+      break;
+    case TrackingProtectionOnboarding::NoticeType::kOffboarding:
+      base::UmaHistogramEnumeration(
+          "PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent",
+          event);
+      break;
+  }
 }
 
 NoticeAction ToNoticeAction(
@@ -161,10 +170,21 @@ void TrackingProtectionNoticeService::InitializeTabStripTracker() {
   }
   tab_strip_tracker_ = std::make_unique<BrowserTabStripTracker>(this, this);
   tab_strip_tracker_->Init();
+  base::UmaHistogramBoolean(
+      "PrivacySandbox.TrackingProtection.NoticeService."
+      "IsObservingTabStripModel",
+      true);
 }
 
 void TrackingProtectionNoticeService::ResetTabStripTracker() {
+  if (!tab_strip_tracker_) {
+    return;
+  }
   tab_strip_tracker_ = nullptr;
+  base::UmaHistogramBoolean(
+      "PrivacySandbox.TrackingProtection.NoticeService."
+      "IsObservingTabStripModel",
+      false);
 }
 
 TrackingProtectionNoticeService::BaseIPHNotice::BaseIPHNotice(
@@ -176,6 +196,9 @@ TrackingProtectionNoticeService::BaseIPHNotice::~BaseIPHNotice() = default;
 
 void TrackingProtectionNoticeService::BaseIPHNotice::
     MaybeUpdateNoticeVisibility(content::WebContents* web_content) {
+  CreateHistogramNoticeServiceEvent(
+      GetNoticeType(),
+      TrackingProtectionMetricsNoticeEvent::kUpdateNoticeVisibility);
   if (!web_content) {
     return;
   }
@@ -186,17 +209,22 @@ void TrackingProtectionNoticeService::BaseIPHNotice::
       !browser->tab_strip_model()) {
     return;
   }
-
   // Exclude Popups, PWAs and other non normal browsers.
   if (browser->type() != Browser::TYPE_NORMAL) {
+    CreateHistogramNoticeServiceEvent(
+        GetNoticeType(),
+        TrackingProtectionMetricsNoticeEvent::kBrowserTypeNonNormal);
+
     return;
   }
 
   // If the notice should no longer be shown, then hide it and add metrics.
   if (onboarding_service_->GetRequiredNotice() != GetNoticeType()) {
     if (IsPromoShowing(browser)) {
+      CreateHistogramNoticeServiceEvent(
+          GetNoticeType(),
+          TrackingProtectionMetricsNoticeEvent::kNoticeShowingButShouldnt);
       HidePromo(browser);
-      // TODO(b/302008359) Add Metrics. We shouldn't be in this state.
     }
     return;
   }
@@ -206,6 +234,9 @@ void TrackingProtectionNoticeService::BaseIPHNotice::
   // No additional checks on the window Active/Minimized, as the Promos can only
   // be shown on active windows.
   if (browser->tab_strip_model()->GetActiveWebContents() != web_content) {
+    CreateHistogramNoticeServiceEvent(
+        GetNoticeType(),
+        TrackingProtectionMetricsNoticeEvent::kInactiveWebcontentUpdated);
     return;
   }
 
@@ -213,6 +244,10 @@ void TrackingProtectionNoticeService::BaseIPHNotice::
   // the onboarding service that the promo was shown.
   if (WasPromoPreviouslyDismissed(browser)) {
     onboarding_service_->NoticeShown(GetNoticeType());
+    CreateHistogramNoticeServiceEvent(
+        GetNoticeType(),
+        TrackingProtectionMetricsNoticeEvent::kPromoPreviouslyDismissed);
+    return;
   }
 
   // We should hide the notice at this point if the browser isn't eligible.
@@ -225,14 +260,21 @@ void TrackingProtectionNoticeService::BaseIPHNotice::
   // with a visible LocationIcon. We should attempt to show the notice if it's
   // not already shown.
   if (IsPromoShowing(browser)) {
+    CreateHistogramNoticeServiceEvent(
+        GetNoticeType(),
+        TrackingProtectionMetricsNoticeEvent::kNoticeAlreadyShowing);
     return;
   }
 
   if (MaybeShowPromo(browser)) {
     onboarding_service_->NoticeShown(GetNoticeType());
-    // TODO(b/302008359) Emit metrics
+    CreateHistogramNoticeServiceEvent(
+        GetNoticeType(),
+        TrackingProtectionMetricsNoticeEvent::kNoticeRequestedAndShown);
   } else {
-    // TODO(b/302008359) Emit metrics
+    CreateHistogramNoticeServiceEvent(
+        GetNoticeType(),
+        TrackingProtectionMetricsNoticeEvent::kNoticeRequestedButNotShown);
   }
 }
 
@@ -269,7 +311,11 @@ bool TrackingProtectionNoticeService::BaseIPHNotice::IsPromoShowing(
 TrackingProtectionNoticeService::OnboardingNotice::OnboardingNotice(
     Profile* profile,
     TrackingProtectionOnboarding* onboarding_service)
-    : BaseIPHNotice(profile, onboarding_service) {}
+    : BaseIPHNotice(profile, onboarding_service) {
+  CreateHistogramNoticeServiceEvent(
+      GetNoticeType(),
+      TrackingProtectionMetricsNoticeEvent::kNoticeObjectCreated);
+}
 
 NoticeType TrackingProtectionNoticeService::OnboardingNotice::GetNoticeType() {
   return NoticeType::kOnboarding;
@@ -283,7 +329,11 @@ TrackingProtectionNoticeService::OnboardingNotice::GetIPHFeature() {
 TrackingProtectionNoticeService::OffboardingNotice::OffboardingNotice(
     Profile* profile,
     TrackingProtectionOnboarding* onboarding_service)
-    : BaseIPHNotice(profile, onboarding_service) {}
+    : BaseIPHNotice(profile, onboarding_service) {
+  CreateHistogramNoticeServiceEvent(
+      GetNoticeType(),
+      TrackingProtectionMetricsNoticeEvent::kNoticeObjectCreated);
+}
 
 const base::Feature&
 TrackingProtectionNoticeService::OffboardingNotice::GetIPHFeature() {
@@ -380,8 +430,16 @@ void TrackingProtectionNoticeService::OnTabStripModelChanged(
   }
   if (offboarding_notice_) {
     offboarding_notice_->MaybeUpdateNoticeVisibility(selection.new_contents);
+    CreateHistogramNoticeServiceEvent(
+        TrackingProtectionOnboarding::NoticeType::kOffboarding,
+        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
+            kActiveTabChanged);
   } else if (onboarding_notice_) {
     onboarding_notice_->MaybeUpdateNoticeVisibility(selection.new_contents);
+    CreateHistogramNoticeServiceEvent(
+        TrackingProtectionOnboarding::NoticeType::kOnboarding,
+        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
+            kActiveTabChanged);
   }
 }
 
@@ -419,10 +477,41 @@ void TrackingProtectionNoticeService::TabHelper::DidFinishNavigation(
   if (notice_service->offboarding_notice_) {
     notice_service->offboarding_notice_->MaybeUpdateNoticeVisibility(
         web_contents());
+    CreateHistogramNoticeServiceEvent(
+        TrackingProtectionOnboarding::NoticeType::kOffboarding,
+        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
+            kNavigationFinished);
   } else if (notice_service->onboarding_notice_) {
     notice_service->onboarding_notice_->MaybeUpdateNoticeVisibility(
         web_contents());
+    CreateHistogramNoticeServiceEvent(
+        TrackingProtectionOnboarding::NoticeType::kOnboarding,
+        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
+            kNavigationFinished);
   }
+}
+
+bool TrackingProtectionNoticeService::BaseIPHNotice::IsLocationBarEligible(
+    Browser* browser) {
+  bool is_secure = browser->location_bar_model()->GetSecurityLevel() ==
+                   security_state::SECURE;
+  if (!is_secure) {
+    CreateHistogramNoticeServiceEvent(
+        GetNoticeType(),
+        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
+            kLocationIconNonSecure);
+  }
+
+  bool is_element_visible =
+      ui::ElementTracker::GetElementTracker()->IsElementVisible(
+          kLocationIconElementId, browser->window()->GetElementContext());
+  if (!is_element_visible) {
+    CreateHistogramNoticeServiceEvent(
+        GetNoticeType(),
+        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
+            kLocationIconNonVisible);
+  }
+  return is_secure && is_element_visible;
 }
 
 void TrackingProtectionNoticeService::RunHatsLogic() {

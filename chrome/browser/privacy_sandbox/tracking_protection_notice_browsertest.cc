@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_notice_factory.h"
@@ -148,6 +149,7 @@ class TrackingProtectionBaseNoticeBrowserTest : public InProcessBrowserTest {
   virtual std::vector<base::test::FeatureRef> EnabledFeatures() = 0;
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  base::HistogramTester histogram_tester_;
 
  private:
   feature_engagement::test::ScopedIphFeatureList feature_list_;
@@ -286,6 +288,11 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                 kEligible);
   // Notice is showing.
   EXPECT_FALSE(IsOnboardingPromoActive(browser()));
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kInactiveWebcontentUpdated,
+      1);
 }
 
 // Profile Marked eligible, added navigation to a new Ineligible Foreground tab
@@ -385,6 +392,11 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
                 kEligible);
   // Notice is Not showing.
   EXPECT_FALSE(IsOnboardingPromoActive(browser()));
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kBrowserTypeNonNormal,
+      1);
 }
 
 // New Browser Window picks up the promo if it navigates to an eligible page.
@@ -396,6 +408,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
   onboarding_service()->MaybeMarkEligible();
 
   browser()->window()->Activate();
+
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
       browser(), https_server_.GetURL("a.test", "/empty.html"), 1,
       WindowOpenDisposition::NEW_WINDOW,
@@ -403,6 +416,20 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 
   // Notice is showing on the new active window.
   EXPECT_TRUE(IsOnboardingPromoActive(BrowserList::GetInstance()->get(1)));
+
+  // These histograms are emitted due to the location icon is not secure/visible
+  // due to the first page load being a non secure page.
+  // Once the navigation to empty.html goes through, the promo is then active
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kLocationIconNonVisible,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kLocationIconNonSecure,
+      1);
 }
 
 // The promo will only show on a single window.
@@ -433,6 +460,11 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 
   // Doesn't create a second notice on the second window.
   EXPECT_FALSE(IsOnboardingPromoActive(BrowserList::GetInstance()->get(1)));
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kNoticeRequestedButNotShown,
+      1);
 }
 
 // Notice Acknowledgement
@@ -527,6 +559,11 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
   EXPECT_EQ(onboarding_service()->GetOnboardingStatus(),
             privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
                 kOnboarded);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kPromoPreviouslyDismissed,
+      1);
 }
 
 // Observation
@@ -567,11 +604,22 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   PressPromoButton(browser());
-
   // Verification - Observation stops
   EXPECT_FALSE(TabStripModelObserver::IsObservingAny(notice_service()));
   EXPECT_FALSE(privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
                    IsHelperNeeded(browser()->profile()));
+
+  // Once the notice object is created, the tab strip tracker is initialized but
+  // in this test we press the promo button, which also causes the
+  // tracker to be reset again.
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.NoticeService."
+      "IsObservingTabStripModel",
+      true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.NoticeService."
+      "IsObservingTabStripModel",
+      false, 1);
 }
 
 class TrackingProtectionOffboardingNoticeBrowserTest
@@ -758,6 +806,211 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
   // Goes back to eligible tab. Promo will not show.
   browser()->tab_strip_model()->SelectPreviousTab();
   EXPECT_FALSE(IsOffboardingPromoActive(browser()));
+}
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
+                       NoticeServiceEventHistogramCheck) {
+  // Setup
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+  WaitForFeatureEngagement(browser());
+
+  onboarding_service()->MaybeMarkEligible();
+
+  browser()->window()->Activate();
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kNoticeObjectCreated,
+      1);
+
+  // Action: Navigate to an HTTPS eligible page in current tab.
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(), https_server_.GetURL("a.test", "/empty.html"), 1,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // On the first load the OnTabStripModelChanged is invoked causing the
+  // MaybeUpdateNoticeVisibility function to be called. Then once the navigation
+  // goes through which also calls the MaybeUpdateNoticeVisibility which is why
+  // there are two histograms emitted for kUpdateNoticeVisibility.
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kUpdateNoticeVisibility,
+      2);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kActiveTabChanged,
+      1);
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kNoticeRequestedAndShown,
+      1);
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kNavigationFinished,
+      1);
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(), https_server_.GetURL("b.test", "/empty.html"), 1,
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kNoticeAlreadyShowing,
+      1);
+
+  // Acknowledging the notice with the "Got It" button. Then navigating to a
+  // different page with the same tab to see that the promo is still showing due
+  // to the status of the notice not being updated yet.
+  onboarding_service()->OnboardingNoticeActionTaken(
+      privacy_sandbox::TrackingProtectionOnboarding::NoticeAction::kGotIt);
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(), https_server_.GetURL("c.test", "/empty.html"), 1,
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kNoticeShowingButShouldnt,
+      1);
+}
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
+                       PRE_NoticeServiceEventHistogramCheck) {
+  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->NoticeShown(NoticeType::kOnboarding);
+}
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
+                       NoticeServiceEventHistogramCheck) {
+  // Setup
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+
+  WaitForFeatureEngagement(browser());
+  browser()->window()->Activate();
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kNoticeObjectCreated,
+      1);
+
+  // On the first load the OnTabStripModelChanged is invoked causing the
+  // MaybeUpdateNoticeVisibility function to be called. Then once the navigation
+  // goes through which also calls the MaybeUpdateNoticeVisibility which is why
+  // there are two histograms emitted for kUpdateNoticeVisibility.
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kUpdateNoticeVisibility,
+      2);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kActiveTabChanged,
+      1);
+
+  // Action: Navigate to an HTTPS eligible page in current tab.
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(), https_server_.GetURL("a.test", "/empty.html"), 1,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Verification
+  // Profile is offboarded
+  EXPECT_EQ(onboarding_service()->GetOnboardingStatus(),
+            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+                kOffboarded);
+  // Notice is showing.
+  EXPECT_TRUE(IsOffboardingPromoActive(browser()));
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kNoticeRequestedAndShown,
+      1);
+
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(), https_server_.GetURL("b.test", "/empty.html"), 1,
+      WindowOpenDisposition::NEW_POPUP,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // This selects the second tab (ineligible). Promo shouldn't show.
+  browser()->tab_strip_model()->SelectNextTab();
+
+  EXPECT_FALSE(IsOffboardingPromoActive(browser()));
+  EXPECT_EQ(onboarding_service()->GetOnboardingStatus(),
+            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+                kOffboarded);
+
+  // Goes back to eligible tab. Promo will not show.
+  browser()->tab_strip_model()->SelectPreviousTab();
+
+  EXPECT_FALSE(IsOffboardingPromoActive(browser()));
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kNavigationFinished,
+      2);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kNoticeShowingButShouldnt,
+      1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
+                       PRE_NoticeServiceEventHistogramCheckNonNormal) {
+  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->NoticeShown(NoticeType::kOnboarding);
+}
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
+                       NoticeServiceEventHistogramCheckNonNormal) {
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+  WaitForFeatureEngagement(browser());
+
+  browser()->window()->Activate();
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(), https_server_.GetURL("a.test", "/empty.html"), 1,
+      WindowOpenDisposition::NEW_POPUP,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent",
+      privacy_sandbox::TrackingProtectionNoticeService::
+          TrackingProtectionMetricsNoticeEvent::kBrowserTypeNonNormal,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
+                       PRE_IsObserving) {
+  onboarding_service()->MaybeMarkEligible();
+  onboarding_service()->NoticeShown(NoticeType::kOnboarding);
+}
+
+IN_PROC_BROWSER_TEST_F(TrackingProtectionOffboardingNoticeBrowserTest,
+                       IsObserving) {
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+  WaitForFeatureEngagement(browser());
+
+  browser()->window()->Activate();
+
+  // Once the notice object is created, the tab strip tracker is initialized
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.NoticeService."
+      "IsObservingTabStripModel",
+      true, 1);
 }
 
 struct TrackingProtectionSurveyTestData {
