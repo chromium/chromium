@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_LACROS_LACROS_PATHS_H_
 #define CHROMEOS_LACROS_LACROS_PATHS_H_
 
+#include "base/dcheck_is_on.h"
+
 namespace base {
 class FilePath;
 }
@@ -29,6 +31,15 @@ enum {
 
   PATH_END
 };
+
+#if DCHECK_IS_ON()
+// Returns true if the user data directory has been initialized,
+// false otherwise.
+bool IsInitializedUserDataDir();
+
+// Signals that the user data directory has been initialized.
+void SetInitializedUserDataDir();
+#endif
 
 // Call once to register the provide for the path keys defined above.
 void RegisterPathProvider();

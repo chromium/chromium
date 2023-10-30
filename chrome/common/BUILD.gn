@@ -669,6 +669,7 @@ static_library("constants") {
     deps += [
       "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/lacros:lacros_paths",
+      "//chromeos/startup",
     ]
     public_deps += [ "//chromeos/crosapi/mojom" ]
   } else if (is_linux || is_chromeos) {
