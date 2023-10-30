@@ -751,11 +751,14 @@ def main():
         # TODO(crbug.com/1493085): remove once
         # https://github.com/rust-lang/rust/pull/116672 has been merged.
         RunCommand([
-            'git', '-C', RUST_SRC_DIR, 'remote', 'add', 'maurer',
-            'https://github.com/maurer/rust.git'
+            'git', '-C', RUST_SRC_DIR, 'remote', 'add', 'github',
+            'https://github.com/rust-lang/rust.git'
         ],
                    fail_hard=False)
-        RunCommand(['git', '-C', RUST_SRC_DIR, 'fetch', '--all'])
+        RunCommand([
+            'git', '-C', RUST_SRC_DIR, 'fetch', 'github',
+            '046503e6f4318aaba649e51becc38b1db9c87ee7'
+        ])
         GitCherryPick(RUST_SRC_DIR, '046503e6f4318aaba649e51becc38b1db9c87ee7')
 
         path = FetchBetaPackage('cargo', checkout_revision)
