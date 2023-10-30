@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.33](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.32...chromium-bidi-v0.4.33) (2023-10-30)
+
+
+### Features
+
+* add network intercept continue with auth ([#1470](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1470)) ([ad3a95e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ad3a95edddeeb451a71cf4a1b545800b255f672a)), closes [#644](https://github.com/GoogleChromeLabs/chromium-bidi/issues/644)
+* addPreloadScript respects new contexts ([#1478](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1478)) ([b0e55fa](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b0e55fa613dd4b6f9e3670bcff6da82ce44f4622))
+* addPreloadScripts respects contexts param for old contexts ([#1475](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1475)) ([0cdde07](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0cdde074938f6cbdca8bb808891e4528a3714998))
+* implement headersSize for network requests ([#1498](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1498)) ([e904ee0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/e904ee0c446ca39491b29a60b9fa428541149310)), closes [#644](https://github.com/GoogleChromeLabs/chromium-bidi/issues/644)
+* implement network interception continue response ([#1443](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1443)) ([4515d1d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/4515d1d5c96c2b310928c28ca31260c8cd5433d7)), closes [#644](https://github.com/GoogleChromeLabs/chromium-bidi/issues/644)
+* implement network interception provide response ([#1457](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1457)) ([1eca26e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/1eca26e0c6d48e266384cdfe1f3bc7c93ebf2710)), closes [#644](https://github.com/GoogleChromeLabs/chromium-bidi/issues/644)
+* **logging:** pretty print received and sent bidi server messages ([#1490](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1490)) ([45fd24e](https://github.com/GoogleChromeLabs/chromium-bidi/commit/45fd24e483deaa2e85819e2bf824127010c9b421))
+* **network intercept:** implement continue with auth (cont.) ([#1484](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1484)) ([7cc9358](https://github.com/GoogleChromeLabs/chromium-bidi/commit/7cc935885d1b44cbf34d52f5d86b459d11befcd8)), closes [#644](https://github.com/GoogleChromeLabs/chromium-bidi/issues/644)
+* **network intercept:** specify BeforeRequestSent whenever AuthRequi… ([#1494](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1494)) ([22eafee](https://github.com/GoogleChromeLabs/chromium-bidi/commit/22eafee8d0f4e55d74a451732b5d217c187db438)), closes [#644](https://github.com/GoogleChromeLabs/chromium-bidi/issues/644)
+* network request: prioritize response status code over extraInfo ([#1466](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1466)) ([d1f3302](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d1f33024cda1bceecf307c2a19edcddcd5f7bec9)), closes [#644](https://github.com/GoogleChromeLabs/chromium-bidi/issues/644)
+* **network:** emit `responseStarted` event ("AND") ([#1497](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1497)) ([46220b7](https://github.com/GoogleChromeLabs/chromium-bidi/commit/46220b7596803ea5a5c1925f343b072a0e9f0e4d)), closes [#765](https://github.com/GoogleChromeLabs/chromium-bidi/issues/765)
+
+
+### Bug Fixes
+
+* Add `window.setSelfTargetId` for backward compatibility with chrome driver ([#1461](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1461)) ([fe98f94](https://github.com/GoogleChromeLabs/chromium-bidi/commit/fe98f94a8e9bed5253fb69485d62a47842bf5992))
+
 ## [0.4.32](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.31...chromium-bidi-v0.4.32) (2023-10-16)
 
 
