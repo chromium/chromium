@@ -12,10 +12,22 @@ interface TabletModeObserver {
   OnTabletModeChanged(bool is_tablet_mode);
 };
 
+// Implemented by clients that wish to be notified when display configuration
+// changes.
+interface DisplayConfigurationObserver {
+  // OnDisplayConfigurationChanged calls are triggered when display
+  // configuration has changed.
+  OnDisplayConfigurationChanged();
+};
+
 // Interface display related OS settings.
 interface DisplaySettingsProvider {
   // Registers an observer for tablet mode changes and returns tablet mode
   // initial state.
   ObserveTabletMode(pending_remote<TabletModeObserver> observer) =>
     (bool is_tablet_mode);
+
+  // Registers an observer for display configuration changes.
+  ObserveDisplayConfiguration(
+    pending_remote<DisplayConfigurationObserver> observer);
 };

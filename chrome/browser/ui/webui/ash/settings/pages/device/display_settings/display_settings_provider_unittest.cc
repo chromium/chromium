@@ -49,6 +49,38 @@ class FakeTabletModeObserver : public mojom::TabletModeObserver {
   base::OnceClosure quit_callback_;
 };
 
+// A mock observer that counts when ObserveDisplayConfiguration function is
+// called.
+class FakeDisplayConfigurationObserver
+    : public mojom::DisplayConfigurationObserver {
+ public:
+  uint32_t num_display_configuration_changed_calls() const {
+    return num_display_configuration_changed_calls_;
+  }
+
+  // mojom::DisplayConfigurationObserver:
+  void OnDisplayConfigurationChanged() override {
+    ++num_display_configuration_changed_calls_;
+
+    if (quit_callback_) {
+      std::move(quit_callback_).Run();
+    }
+  }
+
+  void WaitForDisplayConfigurationChanged() {
+    DCHECK(quit_callback_.is_null());
+    base::RunLoop loop;
+    quit_callback_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+  mojo::Receiver<mojom::DisplayConfigurationObserver> receiver{this};
+
+ private:
+  uint32_t num_display_configuration_changed_calls_ = 0;
+  base::OnceClosure quit_callback_;
+};
+
 }  // namespace
 
 class DisplaySettingsProviderTest : public ChromeAshTestBase {
@@ -88,6 +120,21 @@ TEST_F(DisplaySettingsProviderTest, TabletModeObservation) {
   fake_observer.WaitForTabletModeChanged();
 
   EXPECT_EQ(1u, fake_observer.num_tablet_mode_change_calls());
+}
+
+// Test the behavior when the display configuration has changed.
+TEST_F(DisplaySettingsProviderTest, DisplayConfigurationObservation) {
+  FakeDisplayConfigurationObserver fake_observer;
+
+  // Attach a display configuration observer.
+  provider_->ObserveDisplayConfiguration(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  provider_->OnDidProcessDisplayChanges();
+  fake_observer.WaitForDisplayConfigurationChanged();
+
+  EXPECT_EQ(1u, fake_observer.num_display_configuration_changed_calls());
 }
 
 }  // namespace ash::settings
