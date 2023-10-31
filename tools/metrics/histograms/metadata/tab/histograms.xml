@@ -2361,6 +2361,57 @@ chromium-metrics-reviews@google.com.
   <token key="TabActiveState" variants="TabActiveState"/>
 </histogram>
 
+<histogram name="TabStrip.Dragging.Count30Min" units="times"
+    expires_after="2024-11-01">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>temao@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    For every 30 minutes, records the number of times the user drags a tab
+    within the time period.
+  </summary>
+</histogram>
+
+<histogram name="TabStrip.Dragging.Count5Min" units="times"
+    expires_after="2024-11-01">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>temao@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    For every 5 minutes, records the number of times the user drags a tab within
+    the time period.
+  </summary>
+</histogram>
+
+<histogram name="TabStrip.Dragging.TimeFromLastDrag" units="ms"
+    expires_after="2024-11-01">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>temao@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    When the user drags tab, records the time since the last tab dragging.
+  </summary>
+</histogram>
+
+<histogram name="TabStrip.Dragging.TimeFromMouseEntered" units="ms"
+    expires_after="2024-11-01">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>temao@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    When the user switches tab, records the time since the mouse entered the
+    tabstrip.
+  </summary>
+</histogram>
+
 <histogram name="TabStrip.Failures.Action" enum="TabStripFailureContext"
     expires_after="2024-01-01">
   <owner>dayeung@chromium.org</owner>
