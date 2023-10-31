@@ -105,6 +105,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
+  // The current default search engine.
+  const TemplateURL* _defaultSearchEngine;
 }
 
 // Synthesized from NewTabPageMutator.
@@ -126,6 +128,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   if (self) {
     CHECK(accountManagerService);
     _templateURLService = templateURLService;
+    _defaultSearchEngine = templateURLService->GetDefaultSearchProvider();
     _URLLoader = URLLoader;
     _authService = authService;
     _accountManagerService = accountManagerService;
@@ -228,6 +231,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
+  const TemplateURL* updatedDefaultSearchEngine =
+      self.templateURLService->GetDefaultSearchProvider();
+  if (_defaultSearchEngine == updatedDefaultSearchEngine) {
+    return;
+  }
+  _defaultSearchEngine = updatedDefaultSearchEngine;
   [self.headerConsumer setLogoIsShowing:[self isGoogleDefaultSearchEngine]];
   [self setFeedHeaderVisible:[self updatedFeedHeaderVisible]];
   [self.feedControlDelegate updateFeedForDefaultSearchEngineChanged];
