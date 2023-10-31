@@ -73,7 +73,9 @@ class CONTENT_EXPORT BackgroundTracingRule {
   double trigger_chance_ = 1.0;
   base::TimeDelta trigger_delay_;
   absl::optional<base::TimeDelta> delay_;
-  base::OneShotTimer timer_;
+  absl::optional<base::TimeDelta> activation_delay_;
+  base::OneShotTimer trigger_timer_;
+  base::OneShotTimer activation_timer_;
   std::string rule_id_;
   bool is_crash_ = false;
 };

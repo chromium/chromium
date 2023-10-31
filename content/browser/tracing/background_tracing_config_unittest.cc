@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
+#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -667,6 +668,35 @@ TEST_F(BackgroundTracingConfigTest, TimerRuleTriggersAfterDelay) {
   }));
   run_loop.Run();
   DCHECK_GE(base::TimeTicks::Now(), start + base::Milliseconds(10000));
+  rule->Uninstall();
+}
+
+TEST_F(BackgroundTracingConfigTest, RuleActivatesAfterDelay) {
+  perfetto::protos::gen::TriggerRule config;
+  CreateRuleConfig(R"pb(
+                     name: "test_rule"
+                     manual_trigger_name: "test_rule"
+                     activation_delay_ms: 10000
+                   )pb",
+                   config);
+
+  std::unique_ptr<content::BackgroundTracingManager>
+      background_tracing_manager =
+          content::BackgroundTracingManager::CreateInstance();
+
+  auto rule = BackgroundTracingRule::Create(config);
+
+  base::RunLoop run_loop;
+  rule->Install(base::BindLambdaForTesting([&](const BackgroundTracingRule*) {
+    run_loop.Quit();
+    return true;
+  }));
+
+  // Rule is not activated yet.
+  EXPECT_FALSE(BackgroundTracingManager::EmitNamedTrigger("test_rule"));
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_TRUE(BackgroundTracingManager::EmitNamedTrigger("test_rule"));
+  run_loop.Run();
   rule->Uninstall();
 }
 
