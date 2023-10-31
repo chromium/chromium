@@ -153,7 +153,7 @@ bool IsBPrime(SentimentSurveyGroup group) {
   switch (group) {
     case TrackingProtectionOnboarding::SentimentSurveyGroup::
         kTreatmentImmediate:
-    case TrackingProtectionOnboarding::SentimentSurveyGroup::kControlDelayed:
+    case TrackingProtectionOnboarding::SentimentSurveyGroup::kTreatmentDelayed:
       return features::kCookieDeprecationTestingDisableAdsAPIs.Get();
     default:
       return false;
