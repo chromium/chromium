@@ -6237,9 +6237,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRealboxSecondaryZeroSuggest,
                                     kRealboxSecondaryZeroSuggestVariations,
                                     "RealboxSecondaryZeroSuggest")},
-    {"omnibox-calc-provider", flag_descriptions::kOmniboxCalcProviderName,
-     flag_descriptions::kOmniboxCalcProviderDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox_feature_configs::CalcProvider::kCalcProvider)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
@@ -6442,6 +6439,10 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox::kCompanyEntityIconAdjustment,
          kOmniboxCompanyEntityIconAdjustmentVariations,
          "OmniboxCompanyEntityIconAdjustment")},
+
+    {"omnibox-calc-provider", flag_descriptions::kOmniboxCalcProviderName,
+     flag_descriptions::kOmniboxCalcProviderDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::CalcProvider::kCalcProvider)},
 
     {"optimization-guide-debug-logs",
      flag_descriptions::kOptimizationGuideDebugLogsName,

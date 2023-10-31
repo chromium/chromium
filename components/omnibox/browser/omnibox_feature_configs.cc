@@ -11,10 +11,12 @@
 
 namespace omnibox_feature_configs {
 
+// TODO(manukh): Enabled by default in m120. Clean up 12/5 when after m121
+//   branch cut.
 // static
 BASE_FEATURE(CalcProvider::kCalcProvider,
              "OmniboxCalcProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 CalcProvider::CalcProvider() {
   enabled = base::FeatureList::IsEnabled(kCalcProvider);
   score =
