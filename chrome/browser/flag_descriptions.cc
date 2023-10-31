@@ -3938,11 +3938,11 @@ const char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kChimeAndroidSdkName[] = "Use Chime SDK";
 
-const char kCloseTabSuggestionsName[] = "Suggest to close Tabs";
+const char kCloseTabSuggestionsName[] = "Enable close tab suggestions";
 const char kCloseTabSuggestionsDescription[] =
-    "Suggests to the user to close Tabs that haven't been used beyond a "
-    "configurable threshold or where duplicates of Tabs exist. "
-    "The threshold is configurable.";
+    "Suggests to the user to close tabs that haven't been used beyond a "
+    "certain time threshold, if tab duplicates exist or based on tab launch "
+    "type, among other criteria.";
 
 const char kCriticalPersistedTabDataName[] = "Enable CriticalPersistedTabData";
 const char kCriticalPersistedTabDataDescription[] =

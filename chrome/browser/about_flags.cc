@@ -932,43 +932,6 @@ const FeatureEntry::FeatureVariation kRoundedWindowsRadiusVariation[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kCloseTabSuggestionsStale_Immediate[] = {
-    {"baseline_tab_suggestions", "true"},
-    {"baseline_close_tab_suggestions", "true"}};
-const FeatureEntry::FeatureParam kCloseTabSuggestionsStale_4Hours[] = {
-    {"close_tab_suggestions_stale_time_ms", "14400000"}};
-const FeatureEntry::FeatureParam kCloseTabSuggestionsStale_8Hours[] = {
-    {"close_tab_suggestions_stale_time_ms", "28800000"}};
-const FeatureEntry::FeatureParam kCloseTabSuggestionsStale_7Days[] = {
-    {"close_tab_suggestions_stale_time_ms", "604800000"}};
-const FeatureEntry::FeatureParam kCloseTabSuggestionsTimeSiteEngagement[] = {
-    {"close_tab_min_num_tabs", "5"},
-    {"close_tab_features_time_last_used_enabled", "true"},
-    {"close_tab_features_time_last_used_transform", "MEAN_VARIANCE"},
-    {"close_tab_features_time_last_used_threshold", "0.5"},
-    {"close_tab_features_site_engagement_enabled", "true"},
-    {"close_tab_features_site_engagement_threshold", "90.0"},
-};
-const FeatureEntry::FeatureParam kGroupAndCloseTabSuggestions_Immediate[] = {
-    {"baseline_tab_suggestions", "true"},
-    {"baseline_group_tab_suggestions", "true"},
-    {"baseline_close_tab_suggestions", "true"}};
-
-const FeatureEntry::FeatureVariation kCloseTabSuggestionsStaleVariations[] = {
-    {"Close Immediate", kCloseTabSuggestionsStale_Immediate,
-     std::size(kCloseTabSuggestionsStale_Immediate), nullptr},
-    {"Group+Close Immediate", kGroupAndCloseTabSuggestions_Immediate,
-     std::size(kGroupAndCloseTabSuggestions_Immediate), nullptr},
-    {"4 hours", kCloseTabSuggestionsStale_4Hours,
-     std::size(kCloseTabSuggestionsStale_4Hours), nullptr},
-    {"8 hours", kCloseTabSuggestionsStale_8Hours,
-     std::size(kCloseTabSuggestionsStale_8Hours), nullptr},
-    {"7 days", kCloseTabSuggestionsStale_7Days,
-     std::size(kCloseTabSuggestionsStale_7Days), nullptr},
-    {"Time & Site Engagement", kCloseTabSuggestionsTimeSiteEngagement,
-     std::size(kCloseTabSuggestionsTimeSiteEngagement), nullptr},
-};
-
 const FeatureEntry::FeatureParam kCriticalPersistedTabDataSaveAndRestore[] = {
     {"critical_persisted_tab_data_save_only", "false"},
     {"delay_saves_until_deferred_startup", "false"}};
@@ -7245,9 +7208,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-close-tab-suggestions",
      flag_descriptions::kCloseTabSuggestionsName,
      flag_descriptions::kCloseTabSuggestionsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCloseTabSuggestions,
-                                    kCloseTabSuggestionsStaleVariations,
-                                    "CloseSuggestionsTab")},
+     FEATURE_VALUE_TYPE(chrome::android::kCloseTabSuggestions)},
 
     {"enable-critical-persisted-tab-data",
      flag_descriptions::kCriticalPersistedTabDataName,

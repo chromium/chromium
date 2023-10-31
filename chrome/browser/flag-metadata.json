@@ -2151,8 +2151,8 @@
   },
   {
     "name": "enable-close-tab-suggestions",
-    "owners": [ "memex-team@google.com" ],
-    "expiry_milestone": 90
+    "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
+    "expiry_milestone": 122
   },
   {
     "name": "enable-cloud-identifiers",
@@ -6860,12 +6860,12 @@
   },
   {
     "name": "restore-synced-placeholder-tabs",
-    "owners": [ "bjfong@chromium.org", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
+    "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
     "expiry_milestone": 121
   },
   {
     "name": "restore-tabs-on-fre",
-    "owners": [ "bjfong@chromium.org", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
+    "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
     "expiry_milestone": 121
   },
   {
