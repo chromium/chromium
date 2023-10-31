@@ -188,6 +188,7 @@ static_js_files = [
 # END: static_js_files.
 
 ts_files = [
+  "file_manager/foreground/elements/xf_circular_progress.ts",
   "file_manager/foreground/js/ui/table/table_list.ts",
 
   # Common.
@@ -336,6 +337,7 @@ ts_polymer = [
 
 # HTML template files that are used to generate the ".html.ts"
 ts_templates = [
+  "file_manager/foreground/elements/xf_circular_progress.html",
   "file_manager/widgets/xf_conflict_dialog.html",
   "file_manager/widgets/xf_dlp_restriction_details_dialog.html",
   "file_manager/widgets/xf_nudge.html",
@@ -483,7 +485,6 @@ generated_js_files = [
   "file_manager/foreground/elements/files_spinner.js",
   "file_manager/foreground/elements/icons.js",
   "file_manager/foreground/elements/xf_button.js",
-  "file_manager/foreground/elements/xf_circular_progress.js",
   "file_manager/foreground/elements/xf_display_panel.js",
   "file_manager/foreground/elements/xf_panel_item.js",
 ]

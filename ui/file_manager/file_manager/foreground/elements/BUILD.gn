@@ -22,7 +22,6 @@ html_to_js("web_components") {
     "files_spinner.js",
     "icons.js",
     "xf_button.js",
-    "xf_circular_progress.js",
     "xf_display_panel.js",
     "xf_panel_item.js",
   ]
@@ -81,10 +80,6 @@ js_library("xf_button") {
       [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
 }
 
-js_library("xf_circular_progress") {
-  deps = [ "//ash/webui/common/resources:assert" ]
-}
-
 js_library("xf_display_panel") {
   deps = [ ":xf_panel_item" ]
 }
@@ -92,7 +87,6 @@ js_library("xf_display_panel") {
 js_library("xf_panel_item") {
   deps = [
     ":xf_button",
-    ":xf_circular_progress",
     "//ash/webui/common/resources:assert",
   ]
 }

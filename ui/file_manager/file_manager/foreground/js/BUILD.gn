@@ -330,7 +330,6 @@ js_library("deferred_elements") {
   deps = [
     "//ui/file_manager/file_manager/foreground/elements:files_spinner",
     "//ui/file_manager/file_manager/foreground/elements:xf_button",
-    "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress",
     "//ui/file_manager/file_manager/foreground/elements:xf_display_panel",
     "//ui/file_manager/file_manager/foreground/elements:xf_panel_item",
   ]
