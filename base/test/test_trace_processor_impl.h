@@ -51,13 +51,17 @@ class TEST_TRACE_PROCESSOR_EXPORT QueryResultOrError {
 
 class TEST_TRACE_PROCESSOR_EXPORT TestTraceProcessorImpl {
  public:
+  // Note: All arguments must be received as refs/ptrs as receiving them
+  // as moved copies, on Windows, causes them to be destroyed in
+  // TEST_TRACE_PROCESSOR_IMPL's DLL after having been allocated in the
+  // caller's DLL which is not allowed.
+
   TestTraceProcessorImpl();
   ~TestTraceProcessorImpl();
 
   TestTraceProcessorImpl(TestTraceProcessorImpl&& other);
   TestTraceProcessorImpl& operator=(TestTraceProcessorImpl&& other);
 
-  absl::Status ParseTrace(std::unique_ptr<uint8_t[]> buf, size_t size);
   absl::Status ParseTrace(const std::vector<char>& raw_trace);
 
   // Runs the sql query on the parsed trace and returns the result as a
@@ -67,9 +71,12 @@ class TEST_TRACE_PROCESSOR_EXPORT TestTraceProcessorImpl {
   using PerfettoSQLModule = std::vector<std::pair<std::string, std::string>>;
   // Overrides PerfettoSQL module with |name| and |files| containing pairs of
   // strings {include_key, sql_file_contents}.
-  absl::Status OverrideSqlModule(std::string name, PerfettoSQLModule module);
+  absl::Status OverrideSqlModule(const std::string& name,
+                                 const PerfettoSQLModule& module);
 
  private:
+  absl::Status ParseTrace(std::unique_ptr<uint8_t[]> buf, size_t size);
+
   std::unique_ptr<perfetto::trace_processor::Config> config_;
   std::unique_ptr<perfetto::trace_processor::TraceProcessor> trace_processor_;
 };
