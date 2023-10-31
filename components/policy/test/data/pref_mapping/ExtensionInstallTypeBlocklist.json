@@ -1,0 +1,26 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ExtensionInstallTypeBlocklist": [
+            "command_line"
+          ]
+        },
+        "prefs": {
+          "extensions.extension_install_type_blocklist": {
+            "value": [
+              "command_line"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

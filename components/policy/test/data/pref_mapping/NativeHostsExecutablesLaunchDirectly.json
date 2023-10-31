@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "policies": {},
+        "prefs": {
+          "native_hosts_executables_launch_directly": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Check policy value (false)",
+        "policies": {
+          "NativeHostsExecutablesLaunchDirectly": false
+        },
+        "prefs": {
+          "native_hosts_executables_launch_directly": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Check policy value (true)",
+        "policies": {
+          "NativeHostsExecutablesLaunchDirectly": true
+        },
+        "prefs": {
+          "native_hosts_executables_launch_directly": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

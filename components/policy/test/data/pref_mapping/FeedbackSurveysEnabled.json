@@ -1,0 +1,27 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "android",
+      "win",
+      "mac",
+      "linux",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "FeedbackSurveysEnabled": false
+        },
+        "prefs": {
+          "policy.feedback_surveys_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

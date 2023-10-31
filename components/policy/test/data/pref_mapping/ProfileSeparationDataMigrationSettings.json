@@ -20,7 +20,7 @@
         },
         "prefs": {
           "profile_separation.data_migration_settings": {
-            "default_value": 1
+            "value": 1
           }
         }
       },
