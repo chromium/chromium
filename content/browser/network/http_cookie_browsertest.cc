@@ -40,6 +40,13 @@ using ::testing::UnorderedElementsAre;
 // See also (tests for cookie access via JavaScript):
 // //content/browser/renderer_host/cookie_browsertest.cc
 
+constexpr char kHostA[] = "a.test";
+constexpr char kHostB[] = "b.test";
+constexpr char kSameSiteNoneCookieName[] = "samesite_none_cookie";
+constexpr char kSameSiteStrictCookieName[] = "samesite_strict_cookie";
+constexpr char kSameSiteLaxCookieName[] = "samesite_lax_cookie";
+constexpr char kSameSiteUnspecifiedCookieName[] = "samesite_unspecified_cookie";
+
 class HttpCookieBrowserTest : public ContentBrowserTest,
                               public ::testing::WithParamInterface<bool> {
  public:
@@ -61,14 +68,6 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
 
   bool DoesSameSiteConsiderRedirectChain() { return GetParam(); }
 
-  const char* kHostA = "a.test";
-  const char* kHostB = "b.test";
-  const char* kHostC = "c.test";
-  const char* kHostD = "d.test";
-  const char* kSameSiteStrictCookieName = "samesite_strict_cookie";
-  const char* kSameSiteLaxCookieName = "samesite_lax_cookie";
-  const char* kSameSiteNoneCookieName = "samesite_none_cookie";
-  const char* kSameSiteUnspecifiedCookieName = "samesite_unspecified_cookie";
   const std::string kSetSameSiteCookiesURL = base::StrCat({
       "/set-cookie?",
       kSameSiteStrictCookieName,
@@ -530,6 +529,71 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
       net::CookieStringIs(UnorderedElementsAre(
           Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
           Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
+}
+
+class ThirdPartyCookiesBlockedHttpCookieBrowserTest
+    : public ContentBrowserTest {
+ public:
+  ThirdPartyCookiesBlockedHttpCookieBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitAndEnableFeature(
+        net::features::kForceThirdPartyCookieBlocking);
+  }
+
+  ~ThirdPartyCookiesBlockedHttpCookieBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  WebContents* web_contents() const { return shell()->web_contents(); }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  GURL EchoCookiesUrl(const std::string& host) {
+    return https_server()->GetURL(host, "/echoheader?Cookie");
+  }
+
+  std::string ExtractFrameContent(RenderFrameHost* frame) const {
+    return EvalJs(frame, "document.body.textContent").ExtractString();
+  }
+
+ private:
+  net::test_server::EmbeddedTestServer https_server_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
+                       SameSiteCookieNoneNavigateCrossSiteEmbedToSameSiteUrl) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      net::features::kForceThirdPartyCookieBlocking));
+
+  // Set SameSite=None cookie on kHostA.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+
+  // Confirm cross-site iframe (kHostB embedded in kHostA) does not
+  // send SameSite=None cookie to iframe.
+  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
+                  web_contents(), https_server(), "a.test(%s)", {0},
+                  EchoCookiesUrl(kHostB)),
+              net::CookieStringIs(UnorderedElementsAre()));
+
+  // Navigate embedded iframe from kHostB to kHostA and confirm that
+  // SameSite=None cookie is sent.
+  ASSERT_TRUE(NavigateToURLFromRenderer(
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+      EchoCookiesUrl(kHostA)));
+
+  EXPECT_THAT(
+      ExtractFrameContent(
+          ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no label */,
