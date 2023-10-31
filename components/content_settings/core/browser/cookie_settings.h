@@ -58,6 +58,7 @@ class CookieSettings
     virtual void OnThirdPartyCookieBlockingChanged(
         bool block_third_party_cookies) {}
     virtual void OnMitigationsEnabledFor3pcdChanged(bool enable) {}
+    virtual void OnTrackingProtectionEnabledFor3pcdChanged(bool enable) {}
     virtual void OnCookieSettingChanged() {}
   };
 
@@ -194,6 +195,9 @@ class CookieSettings
   // This method may be called on any thread. Virtual for testing.
   bool MitigationsEnabledFor3pcd() const override;
 
+  // Returns true iff tracking protection for 3PCD (prefs + UX) is enabled.
+  bool TrackingProtectionEnabledFor3pcd() const;
+
   // Returns true if there is an active storage access exception with
   // |first_party_url| as the secondary pattern.
   bool HasAnyFrameRequestedStorageAccess(const GURL& first_party_url) const;
@@ -279,6 +283,7 @@ class CookieSettings
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);
   bool mitigations_enabled_for_3pcd_ GUARDED_BY(lock_) = false;
+  bool tracking_protection_enabled_for_3pcd_ GUARDED_BY(lock_) = false;
 };
 
 }  // namespace content_settings

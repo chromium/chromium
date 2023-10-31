@@ -63,6 +63,7 @@ class TestCookieManager : public network::mojom::CookieManager {
   void BlockThirdPartyCookies(bool block) override {}
   void BlockTruncatedCookies(bool block) override {}
   void SetMitigationsEnabledFor3pcd(bool enable) override {}
+  void SetTrackingProtectionEnabledFor3pcd(bool enable) override {}
 
   virtual void DispatchCookieChange(const net::CookieChangeInfo& change);
 

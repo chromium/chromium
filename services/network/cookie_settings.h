@@ -91,6 +91,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     mitigations_enabled_for_3pcd_ = enable;
   }
 
+  void set_tracking_protection_enabled_for_3pcd(bool enable) {
+    tracking_protection_enabled_for_3pcd_ = enable;
+  }
+
   bool are_truncated_cookies_blocked() const {
     return block_truncated_cookies_;
   }
@@ -193,6 +197,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
   bool block_truncated_cookies_ = true;
   bool mitigations_enabled_for_3pcd_ = false;
+  // This bool makes sure the correct cookie exclusion reasons are used.
+  bool tracking_protection_enabled_for_3pcd_ = false;
   std::set<std::string> secure_origin_cookies_allowed_schemes_;
   std::set<std::string> matching_scheme_cookies_allowed_schemes_;
   std::set<std::string> third_party_cookies_allowed_schemes_;

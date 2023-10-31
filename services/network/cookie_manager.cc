@@ -333,6 +333,11 @@ void CookieManager::SetMitigationsEnabledFor3pcd(bool enable) {
   cookie_settings_.set_mitigations_enabled_for_3pcd(enable);
 }
 
+void CookieManager::SetTrackingProtectionEnabledFor3pcd(bool enable) {
+  OnSettingsWillChange();
+  cookie_settings_.set_tracking_protection_enabled_for_3pcd(enable);
+}
+
 void CookieManager::OnSettingsWillChange() {
   if (settings_will_change_callback_) {
     settings_will_change_callback_.Run();
@@ -346,6 +351,8 @@ void CookieManager::ConfigureCookieSettings(
   out->set_block_third_party_cookies(params.block_third_party_cookies);
   out->set_block_truncated_cookies(params.block_truncated_cookies);
   out->set_mitigations_enabled_for_3pcd(params.mitigations_enabled_for_3pcd);
+  out->set_tracking_protection_enabled_for_3pcd(
+      params.tracking_protection_enabled_for_3pcd);
   out->set_secure_origin_cookies_allowed_schemes(
       params.secure_origin_cookies_allowed_schemes);
   out->set_matching_scheme_cookies_allowed_schemes(
