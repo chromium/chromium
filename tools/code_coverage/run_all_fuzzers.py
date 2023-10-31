@@ -130,7 +130,12 @@ for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
     incomplete_targets.append(fuzzer_target)
   else:
     subprocess_cmd = [
-        fuzzer_target_binpath, '-runs=0', fuzzer_target_corporadir
+        # RSS limit 8GB. Some of our fuzzers which involve running significant
+        # chunks of Chromium code require more than the 2GB default.
+        fuzzer_target_binpath,
+        '-runs=0',
+        '-rss_limit_mb=8192',
+        fuzzer_target_corporadir
     ]
     profraw_file = fuzzer_target + ".profraw"
     profraw_path = os.path.join(reportdir, profraw_file)
