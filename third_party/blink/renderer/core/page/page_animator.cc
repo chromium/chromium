@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "third_party/blink/renderer/core/timing/time_clamper.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -67,6 +68,19 @@ void PageAnimator::ServiceScriptedAnimations(
   Clock().UpdateTime(monotonic_animation_start_time);
 
   DocumentsVector documents = GetAllDocuments(page_->MainFrame());
+  for (const auto& [document, can_throttle] : documents) {
+    static TimeClamper time_clamper;
+    base::TimeTicks animation_time = document->Timeline().CalculateZeroTime();
+    if (monotonic_animation_start_time > animation_time) {
+      animation_time += time_clamper.ClampTimeResolution(
+          monotonic_animation_start_time - animation_time,
+          document->domWindow()->CrossOriginIsolatedCapability());
+    }
+    document->GetAnimationClock().SetAllowedToDynamicallyUpdateTime(false);
+    // TODO(crbug.com/1497922) timestamps outside rendering updates should also
+    // be coarsened.
+    document->GetAnimationClock().UpdateTime(animation_time);
+  }
 
   TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
   for (const auto& [document, can_throttle] : documents) {
@@ -262,8 +276,13 @@ void PageAnimator::PostAnimate() {
   // events such as setInterval (see https://crbug.com/995806). This isn't a
   // perfect heuristic, but at the very least we know that if there is a pending
   // RAF we will be getting a new frame and thus don't need to unlock the clock.
-  if (!next_frame_has_pending_raf_)
+  if (!next_frame_has_pending_raf_) {
     Clock().SetAllowedToDynamicallyUpdateTime(true);
+    DocumentsVector documents = GetAllDocuments(page_->MainFrame());
+    for (const auto& [document, can_throttle] : documents) {
+      document->GetAnimationClock().SetAllowedToDynamicallyUpdateTime(true);
+    }
+  }
   next_frame_has_pending_raf_ = false;
 }
 

@@ -56,6 +56,7 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
+#include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_value_change.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -2538,6 +2539,7 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<DocumentTimeline> timeline_;
   Member<PendingAnimations> pending_animations_;
   Member<WorkletAnimationController> worklet_animation_controller_;
+  AnimationClock animation_clock_;
 
   NodeMoveScopeItemSet node_move_scope_items_;
 

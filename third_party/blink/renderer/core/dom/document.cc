@@ -8337,13 +8337,11 @@ Locale& Document::GetCachedLocale(const AtomicString& locale) {
 }
 
 AnimationClock& Document::GetAnimationClock() {
-  DCHECK(GetPage());
-  return GetPage()->Animator().Clock();
+  return animation_clock_;
 }
 
 const AnimationClock& Document::GetAnimationClock() const {
-  DCHECK(GetPage());
-  return GetPage()->Animator().Clock();
+  return animation_clock_;
 }
 
 Document& Document::EnsureTemplateDocument() {
