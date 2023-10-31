@@ -750,7 +750,7 @@ TEST_F(ConfigParserTest, NoConnectivity) {
       url, network::mojom::URLResponseHead::New(), "",
       network::URLLoaderCompletionStatus(net::HTTP_INTERNAL_SERVER_ERROR));
 
-  std::unique_ptr<BrandcodeConfigFetcher> fetcher = WaitForRequest(GURL(url));
+  std::unique_ptr<BrandcodeConfigFetcher> fetcher = WaitForRequest(url);
   EXPECT_FALSE(fetcher->GetSettings());
 }
 
@@ -772,7 +772,7 @@ TEST_F(ConfigParserTest, ParseConfig) {
   test_url_loader_factory().AddResponse(url, std::move(head), xml_config,
                                         status);
 
-  std::unique_ptr<BrandcodeConfigFetcher> fetcher = WaitForRequest(GURL(url));
+  std::unique_ptr<BrandcodeConfigFetcher> fetcher = WaitForRequest(url);
   std::unique_ptr<BrandcodedDefaultSettings> settings = fetcher->GetSettings();
   ASSERT_TRUE(settings);
 
@@ -796,6 +796,32 @@ TEST_F(ConfigParserTest, ParseConfig) {
   ASSERT_EQ(2u, startup_pages.size());
   EXPECT_EQ("http://goo.gl", startup_pages[0]);
   EXPECT_EQ("http://foo.de", startup_pages[1]);
+}
+
+// Return an invalid response from the fetch request and delete the
+// Fetcher object in the callback, which mimics how ResetSettingsHandler uses
+// the class. See https://crbug.com/1491296.
+TEST_F(ConfigParserTest, InvalidResponseDeleteFromCallback) {
+  const GURL url("http://test");
+  auto head = network::mojom::URLResponseHead::New();
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 200 OK\nContent-type: application/custom\n\n"));
+  head->mime_type = "application/custom";
+  test_url_loader_factory().AddResponse(url, std::move(head),
+                                        "Custom app data, not XML",
+                                        network::URLLoaderCompletionStatus());
+
+  base::RunLoop run_loop;
+  std::unique_ptr<BrandcodeConfigFetcher> fetcher;
+  auto callback = base::BindLambdaForTesting([&fetcher, &run_loop] {
+    EXPECT_FALSE(fetcher->GetSettings());
+    fetcher.reset();
+    run_loop.Quit();
+  });
+  fetcher = std::make_unique<BrandcodeConfigFetcher>(&test_url_loader_factory(),
+                                           std::move(callback), url, "ABCD");
+  run_loop.Run();
 }
 
 TEST_F(ProfileResetterTest, CheckSnapshots) {
