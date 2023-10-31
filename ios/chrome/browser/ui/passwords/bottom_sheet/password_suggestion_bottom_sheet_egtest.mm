@@ -11,6 +11,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -77,16 +78,19 @@ id<GREYMatcher> SubtitleString(const GURL& url) {
 
 // Verifies the number of Password Details visits recorded.
 void CheckPasswordDetailsVisitMetricCount(int count) {
-  NSString* histogram = @"PasswordManager.iOS.PasswordDetailsVisit";
-
   // Check password details visit metric.
-  NSError* error = [MetricsAppInterface expectTotalCount:count
-                                            forHistogram:histogram];
+  NSError* error = [MetricsAppInterface
+      expectTotalCount:count
+          forHistogram:
+              @(password_manager::kPasswordManagerSurfaceVisitHistogramName)];
   GREYAssertNil(error, @"Unexpected Password Details Visit histogram count");
 
-  error = [MetricsAppInterface expectCount:count
-                                 forBucket:YES
-                              forHistogram:histogram];
+  error = [MetricsAppInterface
+       expectCount:count
+         forBucket:static_cast<int>(password_manager::PasswordManagerSurface::
+                                        kPasswordDetails)
+      forHistogram:
+          @(password_manager::kPasswordManagerSurfaceVisitHistogramName)];
   GREYAssertNil(error, @"Unexpected Password Details Visit histogram count");
 }
 

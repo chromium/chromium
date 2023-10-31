@@ -9,7 +9,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/scoped_refptr.h"
-#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
@@ -18,6 +17,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -578,8 +578,8 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     return;
   }
   _visitRecorded = YES;
-  base::UmaHistogramBoolean(/*name=*/"PasswordManager.iOS.PasswordDetailsVisit",
-                            /*sample=*/true);
+  password_manager::LogPasswordManagerSurfaceVisit(
+      password_manager::PasswordManagerSurface::kPasswordDetails);
 }
 
 @end

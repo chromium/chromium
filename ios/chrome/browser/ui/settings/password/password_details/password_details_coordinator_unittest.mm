@@ -15,6 +15,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -61,7 +62,8 @@ void CheckPasswordDetailsVisitMetricsCount(
     int count,
     const HistogramTester& histogram_tester) {
   histogram_tester.ExpectUniqueSample(
-      /*name=*/"PasswordManager.iOS.PasswordDetailsVisit", /*sample=*/true,
+      /*name=*/password_manager::kPasswordManagerSurfaceVisitHistogramName,
+      /*sample=*/password_manager::PasswordManagerSurface::kPasswordDetails,
       /*count=*/count);
 }
 
