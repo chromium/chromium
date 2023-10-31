@@ -6434,7 +6434,6 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
   if (IsFullscreen()) {
     ExitFullscreen(false);
   }
-  DCHECK(!IsFullscreen());
 
   if (base::FeatureList::IsEnabled(
           features::kInvalidateLocalSurfaceIdPreCommit)) {

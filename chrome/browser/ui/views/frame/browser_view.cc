@@ -4742,19 +4742,16 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     immersive_mode_controller_->SetEnabled(fullscreen);
   }
 
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Mac platforms, FullscreenStateChanged() is invoked from
   // BrowserFrameMac::OnWindowFullscreenTransitionComplete when the asynchronous
-  // fullscreen transition is complete. On other platforms (except for Lacros,
-  // see TODO comment below for Lacros platform), there is no asynchronous
-  // transition so we synchronously invoke the function.
-  // TODO(crbug.com/1495223): On Lacros, FullscreenStateChanged() is invoked
-  // from BrowserDesktopWindowTreeHostLacros::OnFullscreenModeChanged when the
+  // fullscreen transition is complete.
+  // On Lacros, FullscreenStateChanged() is invoked from
+  // BrowserDesktopWindowTreeHostLacros::OnFullscreenModeChanged when the
   // fullscreen state is updated on Ash side and Lacros is notified of the
-  // updates through wayland message, so this FullscreenStateChanged() call
-  // should be skipped on Lacros as well, but there are multiple tests and
-  // features which assume the fullscreen state to be updated synchronously. We
-  // need to resolve them before removing this line on Lacros.
+  // updates through wayland messages.
+  // On other platforms, there is no asynchronous transition so we synchronously
+  // invoke the function.
   FullscreenStateChanged();
 #endif
 
