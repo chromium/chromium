@@ -234,9 +234,8 @@ TEST_P(BufferTest, IsLost) {
             ->context_factory()
             ->SharedMainThreadRasterContextProvider();
     if (context_provider) {
-      gpu::raster::RasterInterface* ri = context_provider->RasterInterface();
-      ri->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_ARB,
-                              GL_INNOCENT_CONTEXT_RESET_ARB);
+      static_cast<viz::TestInProcessContextProvider*>(context_provider.get())
+          ->SendOnContextLost();
     }
 
     // Release buffer.

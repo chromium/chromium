@@ -60,6 +60,7 @@
 #include "base/timer/timer.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "chromeos/ui/frame/frame_header.h"
+#include "components/viz/test/test_in_process_context_provider.h"
 #include "media/base/video_facing.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -4551,13 +4552,21 @@ namespace {
 // Waits for several rendered frames and verifies that the content of the
 // received video frames are the same as that of the produced video frames.
 void WaitForAndVerifyRenderedVideoFrame() {
+  // PaintCanvasVideoRenderer needs a context provider that is capable of GPU
+  // raster to copy the video frame to a bitmap.
+  auto context_provider =
+      base::MakeRefCounted<viz::TestInProcessContextProvider>(
+          viz::TestContextType::kGpuRaster, /*support_locking=*/false);
+  auto result = context_provider->BindToCurrentSequence();
+  CHECK_EQ(result, gpu::ContextResult::kSuccess);
+
   // Render a number of frames that are 3 times the size of the buffer pool.
   // This allows us to exercise calls to `OnNewBuffer()` and potentially
   // `OnFrameDropped()`.
   for (size_t i = 0; i < 3 * FakeCameraDevice::kMaxBufferCount; ++i) {
     base::RunLoop loop;
     CaptureModeTestApi().SetOnCameraVideoFrameRendered(
-        base::BindLambdaForTesting([&loop](
+        base::BindLambdaForTesting([&loop, &context_provider](
                                        scoped_refptr<media::VideoFrame> frame) {
           ASSERT_TRUE(frame);
           const gfx::Size frame_size = frame->visible_rect().size();
@@ -4566,15 +4575,10 @@ void WaitForAndVerifyRenderedVideoFrame() {
 
           media::PaintCanvasVideoRenderer renderer;
           SkBitmap received_frame_bitmap;
-
-          scoped_refptr<viz::RasterContextProvider> raster_context_provider =
-              aura::Env::GetInstance()
-                  ->context_factory()
-                  ->SharedMainThreadRasterContextProvider();
           received_frame_bitmap.allocN32Pixels(frame_size.width(),
                                                frame_size.height());
           cc::SkiaPaintCanvas canvas(received_frame_bitmap);
-          renderer.Copy(frame, &canvas, raster_context_provider.get());
+          renderer.Copy(frame, &canvas, context_provider.get());
 
           EXPECT_TRUE(gfx::test::AreBitmapsEqual(produced_frame_bitmap,
                                                  received_frame_bitmap));

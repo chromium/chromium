@@ -16,3 +16,9 @@ include_rules = [
   "+services/video_capture/public",
   "+services/viz/privileged/mojom/compositing",
 ]
+
+specific_include_rules = {
+  "capture_mode_camera_unittests\.cc": [
+    "+components/viz/test/test_in_process_context_provider.h",
+  ],
+}
