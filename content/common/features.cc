@@ -235,9 +235,6 @@ BASE_FEATURE(kGpuInfoCollectionSeparatePrefetch,
 // Group network isolation key(NIK) by storage interest group joining origin to
 // improve privacy and performance -- IGs of the same joining origin can reuse
 // sockets, so we don't need to renegotiate those connections.
-//
-// TODO(crbug.com/1479754): Keep this feature DISABLED until all the cross site
-// leaks are fixed. Check comments for more information.
 BASE_FEATURE(kGroupNIKByJoiningOrigin,
              "GroupNIKByJoiningOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);

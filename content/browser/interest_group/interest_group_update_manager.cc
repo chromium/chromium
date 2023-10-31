@@ -696,6 +696,11 @@ InterestGroupUpdateManager::OwnersToUpdate::GetIsolationInfoByJoiningOrigin(
   }
 }
 
+void InterestGroupUpdateManager::OwnersToUpdate::
+    ClearJoiningOriginIsolationInfoMap() {
+  joining_origin_isolation_info_map_.clear();
+}
+
 void InterestGroupUpdateManager::OwnersToUpdate::Clear() {
   owners_to_update_.clear();
   security_state_map_.clear();
@@ -795,6 +800,18 @@ void InterestGroupUpdateManager::UpdateInterestGroupByBatch(
                            weak_factory_.GetWeakPtr(), simple_url_loader_it,
                            interest_group_key),
             kMaxUpdateSize);
+  }
+
+  // To avoid the possibility of groups that join during the current update
+  // process being updated in the next batch with the same isolation
+  // information, clear the `joining_origin_isolation_info_map_` when mixed
+  // joining origins are detected in a single update batch.
+  if (base::FeatureList::IsEnabled(features::kGroupNIKByJoiningOrigin)) {
+    if (update_parameters.size() > 1 &&
+        !update_parameters.at(0).joining_origin.IsSameOriginWith(
+            update_parameters.back().joining_origin)) {
+      owners_to_update_.ClearJoiningOriginIsolationInfoMap();
+    }
   }
 }
 

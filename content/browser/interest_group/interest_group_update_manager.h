@@ -140,6 +140,9 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
     // be re-allocated to a new address.
     net::IsolationInfo* GetIsolationInfoByJoiningOrigin(const url::Origin&);
 
+    // Clear `joining_origin_isolation_info_map_`.
+    void ClearJoiningOriginIsolationInfoMap();
+
     // Removes all queued interest group owners.
     void Clear();
 
