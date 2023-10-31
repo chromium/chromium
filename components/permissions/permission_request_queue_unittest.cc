@@ -49,22 +49,22 @@ class PermissionRequestQueueTest : public ::testing::Test {
 };
 
 TEST_F(PermissionRequestQueueTest, CountNumberOfRequestsInQueue) {
-  EXPECT_EQ(0ul, permission_request_queue_.Count());
+  EXPECT_EQ(0ul, permission_request_queue_.size());
 
   permission_request_queue_.Push(&request_normal1_);
   permission_request_queue_.Push(&request_normal2_);
-  EXPECT_EQ(2ul, permission_request_queue_.Count());
+  EXPECT_EQ(2ul, permission_request_queue_.size());
 
   permission_request_queue_.Pop();
-  EXPECT_EQ(1ul, permission_request_queue_.Count());
+  EXPECT_EQ(1ul, permission_request_queue_.size());
 }
 
 TEST_F(PermissionRequestQueueTest, CountDuplicateRequests) {
-  EXPECT_EQ(0ul, permission_request_queue_.Count());
+  EXPECT_EQ(0ul, permission_request_queue_.size());
 
   permission_request_queue_.Push(&request_normal1_);
   permission_request_queue_.Push(&request_normal1_);
-  EXPECT_EQ(2ul, permission_request_queue_.Count());
+  EXPECT_EQ(2ul, permission_request_queue_.size());
 }
 
 TEST_F(PermissionRequestQueueTest, CountNumberOfRequestOccurencesInQueue) {

@@ -16,15 +16,7 @@ PermissionRequestQueue::PermissionRequestQueue()
 PermissionRequestQueue::~PermissionRequestQueue() = default;
 
 bool PermissionRequestQueue::IsEmpty() const {
-  return !Count();
-}
-
-size_t PermissionRequestQueue::Count() const {
-  size_t count = 0;
-  for (const auto& request_list : queued_requests_) {
-    count += request_list.size();
-  }
-  return count;
+  return !size_;
 }
 
 size_t PermissionRequestQueue::Count(PermissionRequest* request) const {
@@ -68,22 +60,27 @@ void PermissionRequestQueue::PushBack(permissions::PermissionRequest* request) {
 
 PermissionRequest* PermissionRequestQueue::Pop() {
   std::vector<base::circular_deque<PermissionRequest*>>::reverse_iterator it;
+  CHECK(!IsEmpty());
   // Skip entries that contain empty queues.
   for (it = queued_requests_.rbegin();
        it != queued_requests_.rend() && it->empty(); ++it) {
   }
+  CHECK(it != queued_requests_.rend());
   PermissionRequest* front = it->front();
   it->pop_front();
+  --size_;
   return front;
 }
 
 PermissionRequest* PermissionRequestQueue::Peek() const {
+  CHECK(!IsEmpty());
   std::vector<base::circular_deque<PermissionRequest*>>::const_reverse_iterator
       it;
   // Skip entries that contain empty queues.
   for (it = queued_requests_.rbegin();
        it != queued_requests_.rend() && it->empty(); ++it) {
   }
+  CHECK(it != queued_requests_.rend());
   return it->front();
 }
 
@@ -128,12 +125,14 @@ void PermissionRequestQueue::PushFrontInternal(
     permissions::PermissionRequest* request,
     Priority priority) {
   queued_requests_[static_cast<size_t>(priority)].push_front(request);
+  ++size_;
 }
 
 void PermissionRequestQueue::PushBackInternal(
     permissions::PermissionRequest* request,
     Priority priority) {
   queued_requests_[static_cast<size_t>(priority)].push_back(request);
+  ++size_;
 }
 
 }  // namespace permissions
