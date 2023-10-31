@@ -637,6 +637,10 @@ public final class ProductionSupportedFlagList {
                 "When enabled, cookies containing '\\0', '\\r', and '\\n' characters will be "
                         + "deemed invalid and the cookie won't be set."),
         Flag.baseFeature(
+                NetFeatures.SPDY_HEADERS_TO_HTTP_RESPONSE_USE_BUILDER,
+                "Enables new optimized implementation of SpdyHeadersToHttpResponse. No behavior"
+                        + " change."),
+        Flag.baseFeature(
                 BaseFeatures.CRASH_BROWSER_ON_CHILD_MISMATCH_IF_BROWSER_CHANGED,
                 "Causes the browser process to crash if child processes are failing to launch"
                         + " due to a browser version change."),
