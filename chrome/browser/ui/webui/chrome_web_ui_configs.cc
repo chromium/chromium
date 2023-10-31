@@ -9,6 +9,11 @@
 #include "content/public/browser/webui_config_map.h"
 #include "printing/buildflags/buildflags.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
+#include "chrome/browser/ui/webui/downloads/downloads_ui.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -23,8 +28,17 @@ void RegisterChromeWebUIConfigs() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::RegisterAshChromeWebUIConfigs();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_PRINT_PREVIEW)
   auto& map = content::WebUIConfigMap::GetInstance();
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+#if !BUILDFLAG(IS_ANDROID)
+  map.AddWebUIConfig(std::make_unique<BookmarksUIConfig>());
+  map.AddWebUIConfig(std::make_unique<DownloadsUIConfig>());
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   map.AddWebUIConfig(std::make_unique<printing::PrintPreviewUIConfig>());
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 }

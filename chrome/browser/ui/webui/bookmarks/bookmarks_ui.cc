@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -133,6 +134,22 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
 }
 
 }  // namespace
+
+BookmarksUIConfig::BookmarksUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIBookmarksHost) {}
+
+BookmarksUIConfig::~BookmarksUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+BookmarksUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                         const GURL& url) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  if (profile->IsGuestSession()) {
+    return std::make_unique<PageNotAvailableForGuestUI>(
+        web_ui, chrome::kChromeUIBookmarksHost);
+  }
+  return std::make_unique<BookmarksUI>(web_ui);
+}
 
 BookmarksUI::BookmarksUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   // Set up the chrome://bookmarks/ source.

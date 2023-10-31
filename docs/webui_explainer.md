@@ -100,15 +100,27 @@ When a URL is requested, a new renderer is created to load the URL, and a
 corresponding class in the browser is set up to handle messages from the
 renderer to the browser (a `RenderFrameHost`).
 
-The URL of the request is inspected:
+One factory that serves WebUI URLs is `WebUIConfigMapWebUIControllerFactory`.
+This factory looks at a global map from hosts to `WebUIConfig`s to see if any
+of the configs handle the requested URL, and calls a method to create the
+corresponding controller if so.
 
 ```c++
-if (url.SchemeIs("chrome") && url.host_piece() == "donuts")  // chrome://donuts
-  return &NewWebUI<DonutsUI>;
-return nullptr;  // Not a known host; no special access.
+auto* config = config_map_->GetConfig(browser_context, url);
+if (!config)
+  return nullptr;  // Not a known host; no special access.
+
+return config->CreateWebUIController(web_ui, url);
 ```
 
-and if a factory knows how to handle a host (returns a `WebUIFactoryFunction`),
+Configs can be registered with the map by calling `map.AddWebUIConfig()` in
+`chrome_web_ui_configs.cc`:
+```c++
+map.AddWebUIConfig(std::make_unique<donuts::DonutsUIConfig>());
+
+```
+
+If a factory knows how to handle a host (returns a `WebUIFactoryFunction`),
 the navigation machinery [grants the renderer process WebUI
 bindings](#bindings) via the child security policy.
 
@@ -120,10 +132,24 @@ if (bindings_flags & BINDINGS_POLICY_WEB_UI) {
 }
 ```
 
-The factory creates a [`WebUIController`](#WebUIController) for a tab.
+The factory creates a [`WebUIController`](#WebUIController) for a tab using
+the WebUIConfig.
+
 Here's an example:
 
 ```c++
+// Config for chrome://donuts
+DonutsUIConfig::DonutsUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIDonutsHost) {}
+
+DonutsUIConfig::~DonutsUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+DonutsUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                      const GURL& url) {
+  return std::make_unique<DonutsUI>(web_ui);
+}
+
 // Controller for chrome://donuts.
 class DonutsUI : public content::WebUIController {
  public:
@@ -190,6 +216,24 @@ Because they run in a separate process and can exist before a corresponding
 renderer process has been created, special care is required to communicate with
 the renderer if reliable message passing is required.
 
+### WebUIConfig
+A `WebUIConfig` contains minimal possible logic and information for determining
+whether a certain subclass of `WebUIController` should be created for a given
+URL.
+
+A `WebUIConfig` holds information about the host and scheme (`chrome://` or
+`chrome-untrusted://`) that the controller serves.
+
+A `WebUIConfig` may contain logic to check if the WebUI is enabled for a given
+`BrowserContext` and url (e.g., if relevant feature flags are enabled/disabled,
+if the url path is valid, etc).
+
+A `WebUIConfig` can invoke the `WebUIController`'s constructor in its
+`CreateWebUIControllerForURL` method.
+
+`WebUIConfig`s are created at startup when factories are registered, so should
+be lightweight.
+
 ### WebUIController
 
 A `WebUIController` is the brains of the operation, and is responsible for
@@ -200,9 +244,10 @@ pages, logic is often split across multiple
 controller for organizational benefits.
 
 A `WebUIController` is owned by a [`WebUI`](#WebUI), and is created and set on
-an existing [`WebUI`](#WebUI) when the correct one is determined via URL
-inspection (i.e. chrome://settings creates a generic [`WebUI`](#WebUI) with a
-settings-specific `WebUIController`).
+an existing [`WebUI`](#WebUI) when the corresponding `WebUIConfig` is found in
+the map matching the URL, or when the correct controller is determined via URL
+inspection in `ChromeWebUIControllerFactory`. (i.e. chrome://settings creates
+a generic [`WebUI`](#WebUI) with a settings-specific `WebUIController`).
 
 ### WebUIDataSource
 
@@ -428,6 +473,9 @@ alongside the C++ code in chrome/browser/ui/webui. For example:
 ```
 module donuts.mojom;
 
+// Factory ensures that the Page and PageHandler interfaces are always created
+// together without requiring an initialization call from the WebUI to the
+// handler.
 interface PageHandlerFactory {
   CreatePageHandler(pending_remote<Page> page,
                     pending_receiver<PageHandler> handler);

@@ -201,6 +201,23 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// DownloadsUIConfig
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DownloadsUIConfig::DownloadsUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIDownloadsHost) {}
+
+DownloadsUIConfig::~DownloadsUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+DownloadsUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                         const GURL& url) {
+  return std::make_unique<DownloadsUI>(web_ui);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // DownloadsUI
 //
 ///////////////////////////////////////////////////////////////////////////////
