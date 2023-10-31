@@ -247,6 +247,10 @@ AppShimRegistry::GetHandlersForApp(const std::string& app_id) {
   return result;
 }
 
+bool AppShimRegistry::HasSavedAnyCdHashes() const {
+  return GetPrefService()->HasPrefPath(kAppShimsCdHashHmacKey);
+}
+
 absl::optional<AppShimRegistry::HmacKey>
 AppShimRegistry::GetExistingCdHashHmacKey() {
   std::string key_base64 = GetPrefService()->GetString(kAppShimsCdHashHmacKey);

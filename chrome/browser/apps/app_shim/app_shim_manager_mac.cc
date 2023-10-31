@@ -250,7 +250,15 @@ bool IsAcceptablyCodeSignedLegacy(pid_t app_shim_pid) {
   status = SecCodeCheckValidity(app_shim_code.get(), kSecCSDefaultFlags,
                                 app_shim_requirement->value().get());
   if (status != errSecSuccess) {
-    DumpOSStatusError(status, "SecCodeCheckValidity");
+    if (status == errSecCSReqFailed &&
+        AppShimRegistry::Get()->HasSavedAnyCdHashes()) {
+      // errSecCSReqFailed is most likely a result of opening an ad-hoc signed
+      // app shim after leaving the ad-hoc signing experiment group.
+      // Log the error but skip `DumpWithoutCrashing`.
+      OSSTATUS_LOG(ERROR, status) << "SecCodeCheckValidity";
+    } else {
+      DumpOSStatusError(status, "SecCodeCheckValidity");
+    }
     return false;
   }
   return true;

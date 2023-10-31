@@ -106,6 +106,9 @@ class AppShimRegistry {
   std::map<base::FilePath, HandlerInfo> GetHandlersForApp(
       const std::string& app_id);
 
+  // Return whether a code directory hash has ever been associated with any app.
+  bool HasSavedAnyCdHashes() const;
+
   // Associate the given code directory hash with a given app.
   void SaveCdHashForApp(const std::string& app_id,
                         base::span<const uint8_t> cd_hash);
