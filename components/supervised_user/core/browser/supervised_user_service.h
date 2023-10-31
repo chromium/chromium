@@ -133,12 +133,6 @@ class SupervisedUserService : public KeyedService,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // TODO(https://crbug.com/1288986): Enable web filter metrics reporting in
-  // LaCrOS.
-  // Reports FamilyUser.WebFilterType and FamilyUser.ManagedSiteList
-  // metrics. Ignores reporting when AreWebFilterPrefsDefault() is true.
-  void ReportNonDefaultWebFilterValue() const;
-
   // Returns true if both: the user is a type of Family Link supervised account
   // and the platform supports Family Link supervision features.
   // This method should be prefered on gating child-specific features if there

@@ -199,15 +199,6 @@ SupervisedUserService::SupervisedUserService(
   url_filter_->AddObserver(this);
 }
 
-void SupervisedUserService::ReportNonDefaultWebFilterValue() const {
-  if (AreWebFilterPrefsDefault(*user_prefs_)) {
-    return;
-  }
-
-  url_filter_->ReportManagedSiteListMetrics();
-  url_filter_->ReportWebFilterTypeMetrics();
-}
-
 FirstTimeInterstitialBannerState SupervisedUserService::GetUpdatedBannerState(
     const FirstTimeInterstitialBannerState original_state) {
   FirstTimeInterstitialBannerState target_state = original_state;
