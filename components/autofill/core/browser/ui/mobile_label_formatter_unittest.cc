@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/ui/mobile_label_formatter.h"
+#include "components/autofill/core/browser/data_model/address.h"
 
 #include <memory>
 #include <string>
@@ -67,7 +68,7 @@ ServerFieldTypeSet GetAddressPlusContactFieldTypes() {
 }
 
 AutofillProfile GetProfileA() {
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   test::SetProfileInfo(&profile, "firstA", "middleA", "lastA",
                        "emailA@gmail.com", "", "address1A", "address2A",
                        "cityA", "MA", "02113", "US", "16176660000");
@@ -75,7 +76,7 @@ AutofillProfile GetProfileA() {
 }
 
 AutofillProfile GetProfileB() {
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("US"));
   test::SetProfileInfo(&profile, "firstB", "middleB", "lastB",
                        "emailB@gmail.com", "", "address1B", "address2B",
                        "cityB", "NY", "12224", "US", "15185550000");
@@ -100,7 +101,7 @@ TEST(MobileLabelFormatterTest, GetLabelsForUnfocusedAddress_ShowOne) {
 
   AutofillProfile profileA = GetProfileA();
   AutofillProfile profileB = GetProfileB();
-  AutofillProfile profileC;
+  AutofillProfile profileC(AddressCountryCode("US"));
   test::SetProfileInfo(&profileC, "firstC", "middleC", "lastC", "", "", "", "",
                        "", "", "", "US", "");
   const std::vector<const AutofillProfile*> profiles{&profileA, &profileB,
@@ -287,7 +288,7 @@ TEST(MobileLabelFormatterTest, GetLabels_DistinctProfiles_ShowAll) {
 
   AutofillProfile profileA = GetProfileA();
   AutofillProfile profileB = GetProfileB();
-  AutofillProfile profileC;
+  AutofillProfile profileC(AddressCountryCode("US"));
   test::SetProfileInfo(&profileC, "firstC", "middleC", "lastC", "", "", "", "",
                        "", "", "", "US", "");
   const std::vector<const AutofillProfile*> profiles{&profileA, &profileB,
