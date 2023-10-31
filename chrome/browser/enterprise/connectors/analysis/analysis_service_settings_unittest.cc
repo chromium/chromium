@@ -58,6 +58,7 @@ constexpr char kNormalSettings[] = R"({
     {"url_list": ["scan2.com"], "tags": ["dlp", "malware"]},
   ],
   "block_until_verdict": 1,
+  "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
   "block_unsupported_file_types": true,
@@ -125,6 +126,7 @@ constexpr char kNoProviderSettings[] = R"({
     {"url_list": ["scan2.com"], "tags": ["dlp", "malware"]},
   ],
   "block_until_verdict": 1,
+  "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
   "block_unsupported_file_types": true,
@@ -141,6 +143,7 @@ constexpr char kNoEnabledPatternsSettings[] = R"({
     {"url_list": ["scan2.com"], "tags": ["dlp", "malware"]},
   ],
   "block_until_verdict": 1,
+  "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
   "block_unsupported_file_types": true,
@@ -159,6 +162,7 @@ constexpr char kNormalSettingsWithCustomMessage[] = R"({
     {"url_list": ["scan2.com"], "tags": ["dlp", "malware"]},
   ],
   "block_until_verdict": 1,
+  "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
   "block_unsupported_file_types": true,
@@ -190,6 +194,7 @@ constexpr char kNormalSettingsDlpRequiresBypassJustification[] = R"({
     {"url_list": ["scan2.com"], "tags": ["dlp", "malware"]},
   ],
   "block_until_verdict": 1,
+  "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
   "block_unsupported_file_types": true,
@@ -282,6 +287,7 @@ constexpr char kNormalSourceDestinationSettings[] = R"({
     },
   ],
   "block_until_verdict": 1,
+  "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
   "block_unsupported_file_types": true,
@@ -432,6 +438,7 @@ constexpr char kNoProviderSourceDestinationSettings[] = R"({
     },
   ],
   "block_until_verdict": 1,
+  "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
   "block_unsupported_file_types": true,
@@ -485,6 +492,7 @@ constexpr char kNothingEnabledSourceDestinationSettings[] = R"({
     },
   ],
   "block_until_verdict": 1,
+  "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
   "block_unsupported_file_types": true,
@@ -508,6 +516,7 @@ constexpr char kNormalSourceDestinationSettingsWithCustomMessage[] = R"({
     },
   ],
   "block_until_verdict": 1,
+  "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
   "block_unsupported_file_types": true,
@@ -545,6 +554,7 @@ constexpr char
     },
   ],
   "block_until_verdict": 1,
+  "default_action": "block",
   "block_password_protected": true,
   "block_large_files": true,
   "block_unsupported_file_types": true,
@@ -627,6 +637,7 @@ AnalysisSettings NormalSettingsWithTags(
   AnalysisSettings settings;
   settings.tags = std::move(tags);
   settings.block_until_verdict = BlockUntilVerdict::kBlock;
+  settings.default_action = DefaultAction::kBlock;
   settings.block_password_protected_files = true;
   settings.block_large_files = true;
   settings.block_unsupported_file_types = true;
@@ -770,6 +781,8 @@ TEST_P(AnalysisServiceSettingsTest, CloudTest) {
   if (analysis_settings.has_value()) {
     ASSERT_EQ(analysis_settings.value().block_until_verdict,
               expected_settings()->block_until_verdict);
+    ASSERT_EQ(analysis_settings.value().default_action,
+              expected_settings()->default_action);
     ASSERT_EQ(analysis_settings.value().block_password_protected_files,
               expected_settings()->block_password_protected_files);
     ASSERT_EQ(analysis_settings.value().block_large_files,
@@ -818,6 +831,8 @@ TEST_P(AnalysisServiceSettingsTest, LocalTest) {
   if (analysis_settings.has_value()) {
     ASSERT_EQ(analysis_settings.value().block_until_verdict,
               expected_settings()->block_until_verdict);
+    ASSERT_EQ(analysis_settings.value().default_action,
+              expected_settings()->default_action);
     ASSERT_EQ(analysis_settings.value().block_password_protected_files,
               expected_settings()->block_password_protected_files);
     ASSERT_EQ(analysis_settings.value().block_large_files,
@@ -1010,6 +1025,8 @@ TEST_P(AnalysisServiceSourceDestinationSettingsTest, CloudTest) {
   if (analysis_settings.has_value()) {
     ASSERT_EQ(analysis_settings.value().block_until_verdict,
               expected_settings()->block_until_verdict);
+    ASSERT_EQ(analysis_settings.value().default_action,
+              expected_settings()->default_action);
     ASSERT_EQ(analysis_settings.value().block_password_protected_files,
               expected_settings()->block_password_protected_files);
     ASSERT_EQ(analysis_settings.value().block_large_files,
@@ -1058,6 +1075,8 @@ TEST_P(AnalysisServiceSourceDestinationSettingsTest, LocalTest) {
   if (analysis_settings.has_value()) {
     ASSERT_EQ(analysis_settings.value().block_until_verdict,
               expected_settings()->block_until_verdict);
+    ASSERT_EQ(analysis_settings.value().default_action,
+              expected_settings()->default_action);
     ASSERT_EQ(analysis_settings.value().block_password_protected_files,
               expected_settings()->block_password_protected_files);
     ASSERT_EQ(analysis_settings.value().block_large_files,

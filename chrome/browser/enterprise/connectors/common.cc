@@ -62,23 +62,33 @@ ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
 bool ResultShouldAllowDataUse(
     const AnalysisSettings& settings,
     safe_browsing::BinaryUploadService::Result upload_result) {
+  bool default_action_allow_data_use =
+      settings.default_action == DefaultAction::kAllow;
   using safe_browsing::BinaryUploadService;
   // Keep this implemented as a switch instead of a simpler if statement so that
   // new values added to BinaryUploadService::Result cause a compiler error.
   switch (upload_result) {
     case BinaryUploadService::Result::SUCCESS:
-    case BinaryUploadService::Result::UPLOAD_FAILURE:
-    case BinaryUploadService::Result::TIMEOUT:
-    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
     // UNAUTHORIZED allows data usage since it's a result only obtained if the
     // browser is not authorized to perform deep scanning. It does not make
     // sense to block data in this situation since no actual scanning of the
     // data was performed, so it's allowed.
     case BinaryUploadService::Result::UNAUTHORIZED:
-    case BinaryUploadService::Result::UNKNOWN:
       return true;
 
+    case BinaryUploadService::Result::UPLOAD_FAILURE:
+    case BinaryUploadService::Result::TIMEOUT:
+    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
+    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
+    case BinaryUploadService::Result::UNKNOWN:
+      DVLOG(1) << __func__
+               << ": handled by fail-closed settings, "
+                  "default_action_allow_data_use="
+               << default_action_allow_data_use;
+      return default_action_allow_data_use;
+
+    // TODO(b/301996227): Decide if fail-closed should precede over file
+    // handling.
     case BinaryUploadService::Result::FILE_TOO_LARGE:
       return !settings.block_large_files;
 

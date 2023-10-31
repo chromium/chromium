@@ -274,6 +274,13 @@ void ContentAnalysisDelegate::CreateForWebContents(
   Factory* testing_factory = GetFactoryStorage();
   bool wait_for_verdict =
       data.settings.block_until_verdict == BlockUntilVerdict::kBlock;
+
+  bool should_allow_by_default = true;
+#if BUILDFLAG(IS_WIN)
+  should_allow_by_default =
+      data.settings.default_action == DefaultAction::kAllow;
+#endif
+
   // Using new instead of std::make_unique<> to access non public constructor.
   auto delegate = testing_factory->is_null()
                       ? base::WrapUnique(new ContentAnalysisDelegate(
@@ -282,11 +289,13 @@ void ContentAnalysisDelegate::CreateForWebContents(
                       : testing_factory->Run(web_contents, std::move(data),
                                              std::move(callback));
 
-  bool work_being_done = delegate->UploadData();
+  UploadDataStatus upload_data_status = delegate->UploadData();
 
-  // Only show UI if work is being done in the background, the user must
+  // Only show UI if work is in progress in the background, the user must
   // wait for a verdict.
-  bool show_ui = work_being_done && wait_for_verdict && (*UIEnabledStorage());
+  // TODO(b/301996782): Add UI for kNoLocalClientFound case.
+  bool show_ui = upload_data_status == UploadDataStatus::kInProgress &&
+                 wait_for_verdict && (*UIEnabledStorage());
 
   // If the UI is enabled, create the modal dialog.
   if (show_ui) {
@@ -302,13 +311,24 @@ void ContentAnalysisDelegate::CreateForWebContents(
     return;
   }
 
-  if (!wait_for_verdict || !work_being_done) {
+  // If local client cannot be found, fail open on all the OS except on Windows
+  // (available integration should be installed).
+  if (upload_data_status == UploadDataStatus::kNoLocalClientFound) {
+    DVLOG(1) << __func__
+             << ": handled by fail-closed settings, "
+                "should_allow_by_default="
+             << should_allow_by_default;
+    delegate->FillAllResultsWith(should_allow_by_default);
+    delegate->RunCallback();
+  }
+
+  if (!wait_for_verdict || upload_data_status == UploadDataStatus::kComplete) {
     // The UI will not be shown but the policy is set to not wait for the
-    // verdict, or no scans need to be performed.  Inform the caller that they
-    // may proceed.
+    // verdict, or no scans need to be performed.  Inform the caller that
+    // they may proceed.
     //
-    // Supporting "wait for verdict" while not showing a UI makes writing tests
-    // for callers of this code easier.
+    // Supporting "wait for verdict" while not showing a UI makes writing
+    // tests for callers of this code easier.
     delegate->FillAllResultsWith(true);
     delegate->RunCallback();
   }
@@ -320,7 +340,7 @@ void ContentAnalysisDelegate::CreateForWebContents(
 
   // ... otherwise, let the last response from the upload service callback
   // delete the delegate when there is no more work.
-  if (work_being_done) {
+  if (upload_data_status == UploadDataStatus::kInProgress) {
     delegate.release();
   }
 }
@@ -406,6 +426,8 @@ void ContentAnalysisDelegate::StringRequestCallback(
   string_request_result_ =
       CalculateRequestHandlerResult(data_.settings, result, response);
 
+  DVLOG(1) << __func__ << ": string result=" << string_request_result_.complies;
+
   bool text_complies = string_request_result_.complies;
   bool should_warn = string_request_result_.final_result ==
                      FinalContentAnalysisResult::WARNING;
@@ -448,6 +470,8 @@ void ContentAnalysisDelegate::ImageRequestCallback(
   image_request_result_ =
       CalculateRequestHandlerResult(data_.settings, result, response);
 
+  DVLOG(1) << __func__ << ": image result=" << image_request_result_.complies;
+
   bool image_complies = image_request_result_.complies;
   bool should_warn =
       image_request_result_.final_result == FinalContentAnalysisResult::WARNING;
@@ -482,6 +506,8 @@ void ContentAnalysisDelegate::FilesRequestCallback(
   for (size_t index = 0; index < results.size(); ++index) {
     FinalContentAnalysisResult result = results[index].final_result;
     result_.paths_results[index] = results[index].complies;
+    DVLOG(1) << __func__ << ": file index=" << index
+             << " result=" << results[index].complies;
     if (result == FinalContentAnalysisResult::WARNING) {
       warned_file_indices_.push_back(index);
     }
@@ -531,6 +557,8 @@ void ContentAnalysisDelegate::PageRequestCallback(
   RequestHandlerResult request_handler_result =
       CalculateRequestHandlerResult(data_.settings, result, response);
 
+  DVLOG(1) << __func__ << ": print result=" << request_handler_result.complies;
+
   result_.page_result = request_handler_result.complies;
   bool should_warn = request_handler_result.final_result ==
                      FinalContentAnalysisResult::WARNING;
@@ -554,7 +582,8 @@ void ContentAnalysisDelegate::PageRequestCallback(
   MaybeCompleteScanRequest();
 }
 
-bool ContentAnalysisDelegate::UploadData() {
+ContentAnalysisDelegate::UploadDataStatus
+ContentAnalysisDelegate::UploadData() {
   upload_start_time_ = base::TimeTicks::Now();
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -568,10 +597,12 @@ bool ContentAnalysisDelegate::UploadData() {
     auto client = ContentAnalysisSdkManager::Get()->GetClient(
         {cloud_or_local.local_path(), cloud_or_local.user_specific()});
     if (!client) {
-      return false;
+      return UploadDataStatus::kNoLocalClientFound;
     }
   }
 #endif
+
+  DVLOG(1) << __func__ << ": prepare requests for analysis";
 
   // Create a text request, an image request, a page request and a file request
   // for each file.
@@ -596,8 +627,10 @@ bool ContentAnalysisDelegate::UploadData() {
   // Do not add code under this comment. The above line should be the last thing
   // this function does before the return statement.
 
-  return !text_request_complete_ || !image_request_complete_ ||
-         !files_request_complete_ || !page_request_complete_;
+  return text_request_complete_ && image_request_complete_ &&
+                 files_request_complete_ && page_request_complete_
+             ? UploadDataStatus::kComplete
+             : UploadDataStatus::kInProgress;
 }
 
 void ContentAnalysisDelegate::PrepareTextRequest() {

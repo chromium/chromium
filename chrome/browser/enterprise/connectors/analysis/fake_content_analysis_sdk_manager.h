@@ -35,6 +35,8 @@ class FakeContentAnalysisSdkManager final : public ContentAnalysisSdkManager {
 
   void SetClientCancelStatus(int status);
 
+  void SetCreateClientAbility(bool can_create_client);
+
   bool NoConnectionEstablished();
 
   FakeContentAnalysisSdkClient* GetFakeClient(
@@ -44,6 +46,7 @@ class FakeContentAnalysisSdkManager final : public ContentAnalysisSdkManager {
   int send_status_ = 0;
   int ack_status_ = 0;
   int cancel_status_ = 0;
+  bool can_create_client_ = true;
   content_analysis::sdk::ContentAnalysisResponse response_;
 
   constexpr static auto CompareConfig =

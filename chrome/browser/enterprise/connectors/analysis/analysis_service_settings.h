@@ -48,6 +48,9 @@ class AnalysisServiceSettings {
   // Get the block_until_verdict setting if the settings are valid.
   bool ShouldBlockUntilVerdict() const;
 
+  // Get the default_action setting if the settings are valid.
+  bool ShouldBlockByDefault() const;
+
   // Get the custom message/learn more URL. Returns absl::nullopt if the
   // settings are invalid or if the message/URL are empty.
   absl::optional<std::u16string> GetCustomMessage(const std::string& tag);
@@ -144,6 +147,7 @@ class AnalysisServiceSettings {
   PatternSettings disabled_patterns_settings_;
 
   BlockUntilVerdict block_until_verdict_ = BlockUntilVerdict::kNoBlock;
+  DefaultAction default_action_ = DefaultAction::kAllow;
   bool block_password_protected_files_ = false;
   bool block_large_files_ = false;
   bool block_unsupported_file_types_ = false;
