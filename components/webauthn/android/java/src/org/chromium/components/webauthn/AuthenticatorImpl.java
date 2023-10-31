@@ -24,7 +24,6 @@ import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
@@ -52,7 +51,7 @@ public final class AuthenticatorImpl implements Authenticator {
     public static final int GMSCORE_MIN_VERSION = 16890000;
     public static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 223300000;
     private final Context mContext;
-    private final WebAuthenticationDelegate.IntentSender mIntentSender;
+    private final FidoIntentSender mIntentSender;
     private final RenderFrameHost mRenderFrameHost;
     private final CreateConfirmationUiDelegate mCreateConfirmationUiDelegate;
 
@@ -96,15 +95,18 @@ public final class AuthenticatorImpl implements Authenticator {
      *
      * @param context The context of the AndroidWindow that triggered this operation.
      * @param intentSender The interface that will be used to start {@link Intent}s from Play
-     *         Services.
+     *     Services.
      * @param createConfirmationUiDelegate If not null, is an object that will be called before
-     *         creating a credential to show a confirmation UI.
+     *     creating a credential to show a confirmation UI.
      * @param renderFrameHost The host of the frame that has invoked the API.
      * @param topOrigin The origin of the main frame.
      */
-    public AuthenticatorImpl(Context context, WebAuthenticationDelegate.IntentSender intentSender,
+    public AuthenticatorImpl(
+            Context context,
+            FidoIntentSender intentSender,
             @Nullable CreateConfirmationUiDelegate createConfirmationUiDelegate,
-            RenderFrameHost renderFrameHost, Origin topOrigin) {
+            RenderFrameHost renderFrameHost,
+            Origin topOrigin) {
         assert renderFrameHost != null;
 
         mContext = context;
@@ -350,10 +352,8 @@ public final class AuthenticatorImpl implements Authenticator {
         close();
     }
 
-    /**
-     * Implements {@link IntentSender} using a {@link WindowAndroid}.
-     */
-    public static class WindowIntentSender implements WebAuthenticationDelegate.IntentSender {
+    /** Implements {@link IntentSender} using a {@link WindowAndroid}. */
+    public static class WindowIntentSender implements FidoIntentSender {
         private final WindowAndroid mWindow;
 
         WindowIntentSender(WindowAndroid window) {

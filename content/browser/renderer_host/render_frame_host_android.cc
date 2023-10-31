@@ -242,7 +242,7 @@ RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
   std::pair<blink::mojom::AuthenticatorStatus, bool> results =
       render_frame_host_->PerformGetAssertionWebAuthSecurityChecks(
           ConvertJavaStringToUTF8(env, relying_party_id), origin,
-          is_payment_credential_get_assertion, nullptr);
+          is_payment_credential_get_assertion);
   return Java_RenderFrameHostImpl_createWebAuthSecurityChecksResults(
       env, static_cast<jint>(results.first), results.second);
 }
@@ -257,7 +257,7 @@ jint RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
   return static_cast<int32_t>(
       render_frame_host_->PerformMakeCredentialWebAuthSecurityChecks(
           ConvertJavaStringToUTF8(env, relying_party_id), origin,
-          is_payment_credential_creation, nullptr));
+          is_payment_credential_creation));
 }
 
 jint RenderFrameHostAndroid::GetLifecycleState(

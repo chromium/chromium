@@ -28,7 +28,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -50,7 +49,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/security_state/core/security_state.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/user_prefs/user_prefs.h"
@@ -223,8 +221,6 @@ class CableLinkingEventHandler : public ProfileObserver {
 
 ChromeWebAuthenticationDelegate::~ChromeWebAuthenticationDelegate() = default;
 
-#if !BUILDFLAG(IS_ANDROID)
-
 bool ChromeWebAuthenticationDelegate::
     OverrideCallerOriginAndRelyingPartyIdValidation(
         content::BrowserContext* browser_context,
@@ -283,34 +279,6 @@ bool ChromeWebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
       GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin)));
   return caller_origin == cmdline_allowed_origin;
-}
-
-bool ChromeWebAuthenticationDelegate::IsSecurityLevelAcceptableForWebAuthn(
-    content::RenderFrameHost* rfh,
-    const url::Origin& caller_origin) {
-  const Profile* profile =
-      Profile::FromBrowserContext(rfh->GetBrowserContext());
-  if (profile->GetPrefs()->GetBoolean(
-          webauthn::pref_names::kAllowWithBrokenCerts)) {
-    return true;
-  }
-  if (caller_origin.scheme() == extensions::kExtensionScheme) {
-    return true;
-  }
-  if (net::IsLocalhost(caller_origin.GetURL())) {
-    return true;
-  }
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-  SecurityStateTabHelper::CreateForWebContents(web_contents);
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  security_state::SecurityLevel security_level = helper->GetSecurityLevel();
-  return security_level == security_state::SecurityLevel::SECURE ||
-         security_level ==
-             security_state::SecurityLevel::SECURE_WITH_POLICY_INSTALLED_CERT ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kIgnoreCertificateErrors);
 }
 
 absl::optional<std::string>
@@ -385,8 +353,6 @@ ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
       Profile::FromBrowserContext(browser_context));
   return service && service->IsActive(caller_origin) ? service : nullptr;
 }
-
-#endif  // !IS_ANDROID
 
 #if BUILDFLAG(IS_MAC)
 // static

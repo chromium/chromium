@@ -40,7 +40,6 @@ import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 import org.chromium.net.GURLUtils;
@@ -71,7 +70,7 @@ public class Fido2CredentialRequest
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
     public static final int GMSCORE_MIN_VERSION_HYBRID_API = 231206000;
 
-    private final WebAuthenticationDelegate.IntentSender mIntentSender;
+    private final FidoIntentSender mIntentSender;
     // mPlayServicesAvailable caches whether the Play Services FIDO API is
     // available.
     private final boolean mPlayServicesAvailable;
@@ -115,9 +114,9 @@ public class Fido2CredentialRequest
      *
      * @param intentSender Interface for starting {@link Intent}s from Play Services.
      * @param supportLevel Whether this code should use the privileged or non-privileged Play
-     *         Services API. (Note that a value of `NONE` is not allowed.)
+     *     Services API. (Note that a value of `NONE` is not allowed.)
      */
-    public Fido2CredentialRequest(WebAuthenticationDelegate.IntentSender intentSender) {
+    public Fido2CredentialRequest(FidoIntentSender intentSender) {
         mIntentSender = intentSender;
         mPlayServicesAvailable = Fido2ApiCallHelper.getInstance().arePlayServicesAvailable();
         mCredManHelper = new CredManHelper(this, mPlayServicesAvailable);

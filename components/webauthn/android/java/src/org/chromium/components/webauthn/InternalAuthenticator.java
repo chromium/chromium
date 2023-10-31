@@ -17,7 +17,6 @@ import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.ui.base.WindowAndroid;
@@ -37,16 +36,21 @@ public class InternalAuthenticator {
     private long mNativeInternalAuthenticatorAndroid;
     private final AuthenticatorImpl mAuthenticator;
 
-    private InternalAuthenticator(long nativeInternalAuthenticatorAndroid, Context context,
-            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost,
+    private InternalAuthenticator(
+            long nativeInternalAuthenticatorAndroid,
+            Context context,
+            FidoIntentSender intentSender,
+            RenderFrameHost renderFrameHost,
             Origin topOrigin) {
         mNativeInternalAuthenticatorAndroid = nativeInternalAuthenticatorAndroid;
         mAuthenticator = new AuthenticatorImpl(context, intentSender,
                 /*createConfirmationUiDelegate=*/null, renderFrameHost, topOrigin);
     }
 
-    public static InternalAuthenticator createForTesting(Context context,
-            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost,
+    public static InternalAuthenticator createForTesting(
+            Context context,
+            FidoIntentSender intentSender,
+            RenderFrameHost renderFrameHost,
             Origin topOrigin) {
         return new InternalAuthenticator(-1, context, intentSender, renderFrameHost, topOrigin);
     }

@@ -763,7 +763,7 @@ void AuthenticatorCommonImpl::MakeCredential(
 
   if (!req_state_->request_delegate->IsVirtualEnvironmentEnabled() &&
       !disable_tls_check_ &&
-      !GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
+      !GetContentClient()->browser()->IsSecurityLevelAcceptableForWebAuthn(
           GetRenderFrameHost(), caller_origin)) {
     CompleteMakeCredentialRequest(
         blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
@@ -1129,7 +1129,7 @@ void AuthenticatorCommonImpl::GetAssertion(
   }
   if (!req_state_->request_delegate->IsVirtualEnvironmentEnabled() &&
       !disable_tls_check_ &&
-      !GetWebAuthenticationDelegate()->IsSecurityLevelAcceptableForWebAuthn(
+      !GetContentClient()->browser()->IsSecurityLevelAcceptableForWebAuthn(
           GetRenderFrameHost(), caller_origin)) {
     CompleteGetAssertionRequest(
         blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);

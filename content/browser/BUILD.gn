@@ -3244,7 +3244,6 @@ source_set("browser") {
       "web_contents/web_contents_android.h",
       "web_contents/web_contents_view_android.cc",
       "web_contents/web_contents_view_android.h",
-      "webauth/web_authentication_delegate_android.cc",
       "webid/digital_credentials/digital_credential_provider_android.cc",
       "webid/digital_credentials/digital_credential_provider_android.h",
     ]

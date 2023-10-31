@@ -2851,15 +2851,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   PerformGetAssertionWebAuthSecurityChecks(
       const std::string& relying_party_id,
       const url::Origin& effective_origin,
-      bool is_payment_credential_get_assertion,
-      const blink::mojom::RemoteDesktopClientOverridePtr&
-          remote_desktop_client_override);
+      bool is_payment_credential_get_assertion);
   blink::mojom::AuthenticatorStatus PerformMakeCredentialWebAuthSecurityChecks(
       const std::string& relying_party_id,
       const url::Origin& effective_origin,
-      bool is_payment_credential_creation,
-      const blink::mojom::RemoteDesktopClientOverridePtr&
-          remote_desktop_client_override);
+      bool is_payment_credential_creation);
 #endif
 
   using JavaScriptResultAndTypeCallback =

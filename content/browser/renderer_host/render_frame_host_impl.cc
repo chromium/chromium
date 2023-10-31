@@ -15184,9 +15184,7 @@ std::pair<blink::mojom::AuthenticatorStatus, bool>
 RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
     const std::string& relying_party_id,
     const url::Origin& effective_origin,
-    bool is_payment_credential_get_assertion,
-    const blink::mojom::RemoteDesktopClientOverridePtr&
-        remote_desktop_client_override) {
+    bool is_payment_credential_get_assertion) {
   bool is_cross_origin = true;  // Will be reset in ValidateAncestorOrigins().
 
   WebAuthRequestSecurityChecker::RequestType request_type =
@@ -15203,7 +15201,6 @@ RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
 
   if (!GetContentClient()
            ->browser()
-           ->GetWebAuthenticationDelegate()
            ->IsSecurityLevelAcceptableForWebAuthn(this, effective_origin)) {
     return std::make_pair(blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR,
                           is_cross_origin);
@@ -15211,7 +15208,7 @@ RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
 
   status = GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
       effective_origin, relying_party_id, request_type,
-      remote_desktop_client_override);
+      /*remote_desktop_client_override=*/nullptr);
   return std::make_pair(status, is_cross_origin);
 }
 
@@ -15219,9 +15216,7 @@ blink::mojom::AuthenticatorStatus
 RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
     const std::string& relying_party_id,
     const url::Origin& effective_origin,
-    bool is_payment_credential_creation,
-    const blink::mojom::RemoteDesktopClientOverridePtr&
-        remote_desktop_client_override) {
+    bool is_payment_credential_creation) {
   bool is_cross_origin;
 
   WebAuthRequestSecurityChecker::RequestType request_type =
@@ -15237,14 +15232,13 @@ RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
 
   if (!GetContentClient()
            ->browser()
-           ->GetWebAuthenticationDelegate()
            ->IsSecurityLevelAcceptableForWebAuthn(this, effective_origin)) {
     return blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR;
   }
 
   status = GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
       effective_origin, relying_party_id, request_type,
-      remote_desktop_client_override);
+      /*remote_desktop_client_override=*/nullptr);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     return status;
   }

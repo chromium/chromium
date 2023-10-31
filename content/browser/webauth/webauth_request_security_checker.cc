@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/bad_message.h"
-#include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/webauthn_security_utils.h"
@@ -23,6 +22,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/public/browser/authenticator_request_client_delegate.h"
+#endif
 
 namespace content {
 
@@ -86,6 +89,8 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     RequestType request_type,
     const blink::mojom::RemoteDesktopClientOverridePtr&
         remote_desktop_client_override) {
+#if !BUILDFLAG(IS_ANDROID)
+  // Extensions are not supported on Android.
   if (GetContentClient()
           ->browser()
           ->GetWebAuthenticationDelegate()
@@ -94,6 +99,7 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
               relying_party_id)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   blink::mojom::AuthenticatorStatus domain_validation =
       OriginAllowedToMakeWebAuthnRequests(caller_origin);
@@ -109,6 +115,7 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     return blink::mojom::AuthenticatorStatus::SUCCESS;
 
   url::Origin relying_party_origin = caller_origin;
+#if !BUILDFLAG(IS_ANDROID)
   if (remote_desktop_client_override) {
     if (!GetContentClient()
              ->browser()
@@ -120,6 +127,7 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     }
     relying_party_origin = remote_desktop_client_override->origin;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (!OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
                                             relying_party_origin)) {
@@ -135,6 +143,7 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
     const blink::mojom::RemoteDesktopClientOverridePtr&
         remote_desktop_client_override,
     std::string* out_appid) {
+#if !BUILDFLAG(IS_ANDROID)
   if (remote_desktop_client_override) {
     if (!GetContentClient()
              ->browser()
@@ -146,6 +155,7 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
     }
     caller_origin = remote_desktop_client_override->origin;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Step 1: "If the AppID is not an HTTPS URL, and matches the FacetID of the
   // caller, no additional processing is necessary and the operation may

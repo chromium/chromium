@@ -71,6 +71,7 @@ import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
+import org.chromium.components.webauthn.FidoIntentSender;
 import org.chromium.components.webauthn.InternalAuthenticator;
 import org.chromium.components.webauthn.InternalAuthenticatorJni;
 import org.chromium.components.webauthn.WebAuthnBrowserBridge;
@@ -79,7 +80,6 @@ import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -204,7 +204,7 @@ public class Fido2CredentialRequestTest {
         }
     }
 
-    private static class MockIntentSender implements WebAuthenticationDelegate.IntentSender {
+    private static class MockIntentSender implements FidoIntentSender {
         private Pair<Integer, Intent> mNextResult;
         private boolean mInvokeCallbackImmediately = true;
         private Callback<Pair<Integer, Intent>> mCallback;
