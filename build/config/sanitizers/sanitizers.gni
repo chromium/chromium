@@ -113,7 +113,7 @@ declare_args() {
   # TODO(crbug.com/1494445): remove this when all build permutations
   # work
   fuzztest_supported =
-      is_linux || is_chromeos || (is_win && !is_component_build)
+      is_linux || is_chromeos || is_android || (is_win && !is_component_build)
 }
 
 declare_args() {
