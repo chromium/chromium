@@ -1104,7 +1104,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPasspointSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPcieBillboardNotificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPciguardUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPerDeskShelfEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool isPeripheralNotificationEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPeripheralNotificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubCameraRollEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsPhoneHubFeatureSetupErrorHandlingEnabled();
