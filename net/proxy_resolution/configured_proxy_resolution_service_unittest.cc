@@ -449,7 +449,9 @@ TEST_F(ConfiguredProxyResolutionServiceTest, OnResolveProxyCallbackAddProxy) {
   rv = service.ResolveProxy(url, "GET", NetworkAnonymizationKey(), &info,
                             callback.callback(), &request, net_log_with_source);
   EXPECT_EQ(1, delegate.num_resolve_proxy_called());
-  EXPECT_THAT(delegate.proxy_retry_info(), ElementsAre(Key("badproxy:8080")));
+  EXPECT_THAT(delegate.proxy_retry_info(),
+              ElementsAre(Key(ProxyChain(ProxyUriToProxyChain(
+                  "badproxy:8080", ProxyServer::SCHEME_HTTP)))));
   EXPECT_EQ(delegate.method(), "GET");
 
   // Verify that the ProxyDelegate's behavior is stateless across
@@ -2050,14 +2052,14 @@ TEST_F(ConfiguredProxyResolutionServiceTest, MarkProxiesAsBadTests) {
   config.set_auto_detect(false);
 
   ProxyList proxy_list;
-  std::vector<ProxyServer> additional_bad_proxies;
+  std::vector<ProxyChain> additional_bad_proxies;
   for (const ProxyServer& proxy_server :
        config.proxy_rules().proxies_for_http.GetAll()) {
     proxy_list.AddProxyServer(proxy_server);
     if (proxy_server == config.proxy_rules().proxies_for_http.Get())
       continue;
 
-    additional_bad_proxies.push_back(proxy_server);
+    additional_bad_proxies.emplace_back(ProxyChain(proxy_server));
   }
 
   EXPECT_EQ(3u, additional_bad_proxies.size());
@@ -2073,7 +2075,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, MarkProxiesAsBadTests) {
   ASSERT_EQ(4u, retry_info.size());
   for (const ProxyServer& proxy_server :
        config.proxy_rules().proxies_for_http.GetAll()) {
-    auto i = retry_info.find(proxy_server.host_port_pair().ToString());
+    auto i = retry_info.find(ProxyChain(proxy_server));
     ASSERT_TRUE(i != retry_info.end());
   }
 }

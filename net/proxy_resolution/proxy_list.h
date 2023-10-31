@@ -135,7 +135,7 @@ class NET_EXPORT_PRIVATE ProxyList {
       ProxyRetryInfoMap* proxy_retry_info,
       base::TimeDelta retry_delay,
       bool reconsider,
-      const std::vector<ProxyServer>& additional_proxies_to_bypass,
+      const std::vector<ProxyChain>& additional_proxies_to_bypass,
       int net_error,
       const NetLogWithSource& net_log) const;
 

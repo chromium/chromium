@@ -66,12 +66,6 @@ class NET_EXPORT ProxyDelegate {
       size_t chain_index,
       const HttpResponseHeaders& response_headers) = 0;
 
-  // Compatibility methods for the transition to using ProxyChain instead of
-  // ProxyServer. TODO(crbug.com/1491092): Remove these methods.
-  void OnFallbackServerOnly(const ProxyServer& bad_server, int net_error) {
-    OnFallback(ProxyChain(bad_server), net_error);
-  }
-
   void OnBeforeTunnelRequestServerOnly(const ProxyChain& proxy_chain,
                                        size_t proxy_chain_index,
                                        HttpRequestHeaders* extra_headers) {

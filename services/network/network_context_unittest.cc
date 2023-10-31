@@ -5435,9 +5435,9 @@ TEST_F(NetworkContextTest, ClearBadProxiesCache) {
   net::ProxyInfo proxy_info;
   proxy_info.UseNamedProxy("http://foo1.com");
   proxy_resolution_service->ReportSuccess(proxy_info);
-  std::vector<net::ProxyServer> proxies;
-  proxies.push_back(net::ProxyUriToProxyServer("http://foo1.com",
-                                               net::ProxyServer::SCHEME_HTTP));
+  std::vector<net::ProxyChain> proxies;
+  proxies.push_back(net::ProxyUriToProxyChain("http://foo1.com",
+                                              net::ProxyServer::SCHEME_HTTP));
   proxy_resolution_service->MarkProxiesAsBadUntil(
       proxy_info, base::Days(1), proxies, net::NetLogWithSource());
   base::RunLoop().RunUntilIdle();

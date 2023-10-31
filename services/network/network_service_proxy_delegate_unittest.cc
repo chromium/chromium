@@ -582,7 +582,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
   net::ProxyInfo result;
   result.UseDirect();
   net::ProxyRetryInfoMap retry_map;
-  net::ProxyRetryInfo& info = retry_map["foo:80"];
+  net::ProxyRetryInfo& info =
+      retry_map[ProxyUriToProxyChain("foo:80", net::ProxyServer::SCHEME_HTTP)];
   info.try_while_bad = false;
   info.bad_until = base::TimeTicks::Now() + base::Days(2);
   delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
@@ -603,7 +604,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyAllProxiesBad) {
   net::ProxyInfo result;
   result.UseDirect();
   net::ProxyRetryInfoMap retry_map;
-  net::ProxyRetryInfo& info = retry_map["foo:80"];
+  net::ProxyRetryInfo& info =
+      retry_map[ProxyUriToProxyChain("foo:80", net::ProxyServer::SCHEME_HTTP)];
   info.try_while_bad = false;
   info.bad_until = base::TimeTicks::Now() + base::Days(2);
   delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),

@@ -306,7 +306,7 @@ base::Value::Dict NetLogBadProxyListParams(
   base::Value::List list;
 
   for (const auto& retry_info_pair : *retry_info)
-    list.Append(retry_info_pair.first);
+    list.Append(retry_info_pair.first.ToDebugString());
   dict.Set("bad_proxy_list", std::move(list));
   return dict;
 }
@@ -1112,7 +1112,7 @@ void ConfiguredProxyResolutionService::OnInitProxyResolverComplete(int result) {
 bool ConfiguredProxyResolutionService::MarkProxiesAsBadUntil(
     const ProxyInfo& result,
     base::TimeDelta retry_delay,
-    const std::vector<ProxyServer>& additional_bad_proxies,
+    const std::vector<ProxyChain>& additional_bad_proxies,
     const NetLogWithSource& net_log) {
   result.proxy_list().UpdateRetryInfoOnFallback(&proxy_retry_info_, retry_delay,
                                                 false, additional_bad_proxies,
@@ -1132,13 +1132,10 @@ void ConfiguredProxyResolutionService::ReportSuccess(const ProxyInfo& result) {
     if (existing == proxy_retry_info_.end()) {
       proxy_retry_info_[iter.first] = iter.second;
       if (proxy_delegate_) {
-        // TODO(crbug.com/1491092): Provide the full chain when that is
-        // available from retry info, and never provide a direct chain.
-        const ProxyServer& bad_proxy =
-            ProxyUriToProxyServer(iter.first, ProxyServer::SCHEME_HTTP);
+        const ProxyChain& bad_proxy = iter.first;
+        DCHECK(!bad_proxy.is_direct());
         const ProxyRetryInfo& proxy_retry_info = iter.second;
-        proxy_delegate_->OnFallbackServerOnly(bad_proxy,
-                                              proxy_retry_info.net_error);
+        proxy_delegate_->OnFallback(bad_proxy, proxy_retry_info.net_error);
       }
     } else if (existing->second.bad_until < iter.second.bad_until) {
       existing->second.bad_until = iter.second.bad_until;
@@ -1331,11 +1328,11 @@ base::Value::Dict ConfiguredProxyResolutionService::GetProxyNetLogValues() {
     base::Value::List list;
 
     for (const auto& it : proxy_retry_info_) {
-      const std::string& proxy_uri = it.first;
+      const std::string& proxy_chain_uri = it.first.ToDebugString();
       const ProxyRetryInfo& retry_info = it.second;
 
       base::Value::Dict dict;
-      dict.Set("proxy_uri", proxy_uri);
+      dict.Set("proxy_chain_uri", proxy_chain_uri);
       dict.Set("bad_until", NetLog::TickCountToString(retry_info.bad_until));
 
       list.Append(base::Value(std::move(dict)));

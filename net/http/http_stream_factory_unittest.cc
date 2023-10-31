@@ -31,6 +31,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_proxy_delegate.h"
@@ -775,7 +776,8 @@ TEST_F(HttpStreamFactoryTest, JobNotifiesProxy) {
   const ProxyRetryInfoMap& retry_info =
       session->proxy_resolution_service()->proxy_retry_info();
   EXPECT_EQ(1u, retry_info.size());
-  auto iter = retry_info.find("bad:99");
+  auto iter = retry_info.find(
+      ProxyChain(ProxyUriToProxyServer("bad:99", ProxyServer::SCHEME_HTTP)));
   EXPECT_TRUE(iter != retry_info.end());
 }
 
@@ -924,7 +926,8 @@ TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
     EXPECT_EQ(1u, retry_info.size()) << quic_proxy_test_mock_error;
     EXPECT_TRUE(waiter.used_proxy_info().is_direct());
 
-    auto iter = retry_info.find("quic://bad:99");
+    auto iter = retry_info.find(ProxyChain(
+        ProxyUriToProxyServer("quic://bad:99", ProxyServer::SCHEME_QUIC)));
     EXPECT_TRUE(iter != retry_info.end()) << quic_proxy_test_mock_error;
   }
 }

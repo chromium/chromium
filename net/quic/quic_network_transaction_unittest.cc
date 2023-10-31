@@ -24,6 +24,8 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_proxy_delegate.h"
@@ -5303,7 +5305,8 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnectProxy) {
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
   SendRequestAndExpectHttpResponseFromProxy("hello world", true, 443);
   EXPECT_THAT(session_->proxy_resolution_service()->proxy_retry_info(),
-              ElementsAre(Key("quic://myproxy.org:443")));
+              ElementsAre(Key(ProxyUriToProxyChain("quic://myproxy.org:443",
+                                                   ProxyServer::SCHEME_QUIC))));
 }
 
 TEST_P(QuicNetworkTransactionTest, SecureResourceOverSecureQuic) {

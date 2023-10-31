@@ -27,6 +27,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
@@ -769,8 +770,11 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
         const ProxyRetryInfoMap& retry_info =
             session_->proxy_resolution_service()->proxy_retry_info();
         ASSERT_THAT(retry_info, SizeIs(2));
-        EXPECT_THAT(retry_info, Contains(Key("badproxy:99")));
-        EXPECT_THAT(retry_info, Contains(Key("badfallbackproxy:98")));
+        EXPECT_THAT(retry_info, Contains(Key(ProxyUriToProxyChain(
+                                    "badproxy:99", ProxyServer::SCHEME_HTTP))));
+        EXPECT_THAT(retry_info,
+                    Contains(Key(ProxyUriToProxyChain(
+                        "badfallbackproxy:98", ProxyServer::SCHEME_HTTP))));
 
         // The idle socket should have been added back to the socket pool. Close
         // it, so the next loop iteration creates a new socket instead of
@@ -983,11 +987,18 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
             session_->proxy_resolution_service()->proxy_retry_info();
         if (!mock_error.triggers_ssl_connect_job_retry_logic) {
           ASSERT_THAT(retry_info, SizeIs(2));
-          EXPECT_THAT(retry_info, Contains(Key("https://badproxy:99")));
-          EXPECT_THAT(retry_info, Contains(Key("https://badfallbackproxy:98")));
+          EXPECT_THAT(retry_info,
+                      Contains(Key(ProxyUriToProxyChain(
+                          "https://badproxy:99", ProxyServer::SCHEME_HTTP))));
+          EXPECT_THAT(
+              retry_info,
+              Contains(Key(ProxyUriToProxyChain("https://badfallbackproxy:98",
+                                                ProxyServer::SCHEME_HTTP))));
         } else {
           ASSERT_THAT(retry_info, SizeIs(1));
-          EXPECT_THAT(retry_info, Contains(Key("https://badproxy:99")));
+          EXPECT_THAT(retry_info,
+                      Contains(Key(ProxyUriToProxyChain(
+                          "https://badproxy:99", ProxyServer::SCHEME_HTTP))));
         }
 
         // The idle socket should have been added back to the socket pool. Close
@@ -1202,8 +1213,13 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       const ProxyRetryInfoMap& retry_info =
           session_->proxy_resolution_service()->proxy_retry_info();
       ASSERT_THAT(retry_info, SizeIs(2));
-      EXPECT_THAT(retry_info, Contains(Key("socks5://badproxy:99")));
-      EXPECT_THAT(retry_info, Contains(Key("socks5://badfallbackproxy:98")));
+      EXPECT_THAT(retry_info,
+                  Contains(Key(ProxyUriToProxyChain(
+                      "socks5://badproxy:99", ProxyServer::SCHEME_SOCKS5))));
+      EXPECT_THAT(
+          retry_info,
+          Contains(Key(ProxyUriToProxyChain("socks5://badfallbackproxy:98",
+                                            ProxyServer::SCHEME_SOCKS5))));
 
       // The idle socket should have been added back to the socket pool. Close
       // it, so the next loop iteration creates a new socket instead of reusing
@@ -1256,7 +1272,9 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
   const ProxyRetryInfoMap& retry_info =
       session_->proxy_resolution_service()->proxy_retry_info();
   EXPECT_THAT(retry_info, SizeIs(1));
-  EXPECT_THAT(retry_info, Contains(Key("quic://badproxy:99")));
+  EXPECT_THAT(retry_info,
+              Contains(Key(ProxyUriToProxyChain("quic://badproxy:99",
+                                                ProxyServer::SCHEME_QUIC))));
 
   request.reset();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));

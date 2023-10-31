@@ -17,6 +17,8 @@
 #include "base/test/task_environment.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_proxy_connect_job.h"
@@ -573,7 +575,8 @@ TEST_P(ProxyResolvingClientSocketTest, ReportsBadProxies) {
       context->proxy_resolution_service()->proxy_retry_info();
 
   EXPECT_EQ(1u, retry_info.size());
-  net::ProxyRetryInfoMap::const_iterator iter = retry_info.find("bad:99");
+  net::ProxyRetryInfoMap::const_iterator iter = retry_info.find(
+      ProxyUriToProxyChain("bad:99", net::ProxyServer::SCHEME_HTTP));
   EXPECT_TRUE(iter != retry_info.end());
   EXPECT_EQ(use_tls_, ssl_socket.ConnectDataConsumed());
 }
@@ -1078,8 +1081,12 @@ TEST_P(ReconsiderProxyAfterErrorTest, ReconsiderProxyAfterError) {
   const net::ProxyRetryInfoMap& retry_info =
       context->proxy_resolution_service()->proxy_retry_info();
   EXPECT_EQ(2u, retry_info.size()) << mock_error;
-  EXPECT_NE(retry_info.end(), retry_info.find("https://badproxy:99"));
-  EXPECT_NE(retry_info.end(), retry_info.find("https://badfallbackproxy:98"));
+  EXPECT_NE(retry_info.end(),
+            retry_info.find(ProxyUriToProxyChain(
+                "https://badproxy:99", net::ProxyServer::SCHEME_HTTPS)));
+  EXPECT_NE(retry_info.end(), retry_info.find(ProxyUriToProxyChain(
+                                  "https://badfallbackproxy:98",
+                                  net::ProxyServer::SCHEME_HTTPS)));
   // Should always use HTTPS to talk to HTTPS proxy.
   EXPECT_TRUE(ssl_data1.ConnectDataConsumed());
   EXPECT_TRUE(ssl_data2.ConnectDataConsumed());
