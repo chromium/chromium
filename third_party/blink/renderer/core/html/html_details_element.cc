@@ -362,4 +362,33 @@ bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
   return details_to_open.size();
 }
 
+bool HTMLDetailsElement::HandleInvokeInternal(HTMLElement& invoker,
+                                              AtomicString& action) {
+  if (HTMLElement::HandleInvokeInternal(invoker, action)) {
+    return true;
+  }
+
+  if (!(EqualIgnoringASCIICase(action, keywords::kAuto) ||
+        EqualIgnoringASCIICase(action, keywords::kToggle) ||
+        EqualIgnoringASCIICase(action, keywords::kClose) ||
+        EqualIgnoringASCIICase(action, keywords::kOpen))) {
+    return false;
+  }
+
+  if (EqualIgnoringASCIICase(action, keywords::kAuto) ||
+      EqualIgnoringASCIICase(action, keywords::kToggle)) {
+    ToggleOpen();
+  } else if (EqualIgnoringASCIICase(action, keywords::kClose)) {
+    if (is_open_) {
+      setAttribute(html_names::kOpenAttr, g_null_atom);
+    }
+  } else {
+    if (!is_open_) {
+      setAttribute(html_names::kOpenAttr, g_empty_atom);
+    }
+  }
+
+  return true;
+}
+
 }  // namespace blink

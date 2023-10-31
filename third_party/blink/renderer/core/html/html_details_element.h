@@ -48,6 +48,9 @@ class HTMLDetailsElement final : public HTMLElement {
   // setting the open attribute.
   static bool ExpandDetailsAncestors(const Node&);
 
+  bool HandleInvokeInternal(HTMLElement& invoker,
+                            AtomicString& action) override;
+
  private:
   void DispatchPendingEvent(const AttributeModificationReason);
 

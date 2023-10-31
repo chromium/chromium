@@ -74,6 +74,10 @@
     "togglePopover",
     "hidePopover",
     "showPopover",
+    // invokeaction for details
+    "toggle",
+    "close",
+    "open",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used
