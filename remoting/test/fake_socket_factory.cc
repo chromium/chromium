@@ -122,8 +122,7 @@ int FakeUdpSocket::SendTo(const void* data,
                           size_t data_size,
                           const rtc::SocketAddress& address,
                           const rtc::PacketOptions& options) {
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(data_size);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(data_size);
   memcpy(buffer->data(), data, data_size);
   base::TimeTicks now = base::TimeTicks::Now();
   cricket::ApplyPacketOptions(buffer->bytes(), data_size,

@@ -81,15 +81,13 @@ void CompoundBuffer::Prepend(const CompoundBuffer& buffer) {
   }
 }
 void CompoundBuffer::AppendCopyOf(const char* data, int size) {
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(size);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(size);
   memcpy(buffer->data(), data, size);
   Append(std::move(buffer), size);
 }
 
 void CompoundBuffer::PrependCopyOf(const char* data, int size) {
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(size);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(size);
   memcpy(buffer->data(), data, size);
   Prepend(std::move(buffer), size);
 }

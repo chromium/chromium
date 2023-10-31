@@ -346,8 +346,7 @@ cricket::IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
     return IPseudoTcpNotify::WR_SUCCESS;
   }
 
-  scoped_refptr<net::IOBuffer> write_buffer =
-      base::MakeRefCounted<net::IOBuffer>(len);
+  auto write_buffer = base::MakeRefCounted<net::IOBufferWithSize>(len);
   memcpy(write_buffer->data(), buffer, len);
 
   // Our underlying socket is datagram-oriented, which means it should either
@@ -375,7 +374,8 @@ cricket::IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
 
 void PseudoTcpAdapter::Core::DoReadFromSocket() {
   if (!socket_read_buffer_.get()) {
-    socket_read_buffer_ = base::MakeRefCounted<net::IOBuffer>(kReadBufferSize);
+    socket_read_buffer_ =
+        base::MakeRefCounted<net::IOBufferWithSize>(kReadBufferSize);
   }
 
   int result = 1;

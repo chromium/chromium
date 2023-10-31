@@ -39,8 +39,7 @@ void FakeChannelAuthenticator::SecureAndAuthenticate(
       // ordering deterministic.
       did_write_bytes_ = true;
     } else {
-      scoped_refptr<net::IOBuffer> write_buf =
-          base::MakeRefCounted<net::IOBuffer>(1);
+      auto write_buf = base::MakeRefCounted<net::IOBufferWithSize>(1);
       write_buf->data()[0] = 0;
       int result = socket_->Write(
           write_buf.get(), 1,
@@ -54,8 +53,7 @@ void FakeChannelAuthenticator::SecureAndAuthenticate(
       }
     }
 
-    scoped_refptr<net::IOBuffer> read_buf =
-        base::MakeRefCounted<net::IOBuffer>(1);
+    auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(1);
     int result =
         socket_->Read(read_buf.get(), 1,
                       base::BindOnce(&FakeChannelAuthenticator::OnAuthBytesRead,

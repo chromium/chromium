@@ -367,7 +367,8 @@ void UdpPacketSocket::OnSendCompleted(int result) {
 void UdpPacketSocket::DoRead() {
   int result = 0;
   while (result >= 0) {
-    receive_buffer_ = base::MakeRefCounted<net::IOBuffer>(kReceiveBufferSize);
+    receive_buffer_ =
+        base::MakeRefCounted<net::IOBufferWithSize>(kReceiveBufferSize);
     result = socket_->RecvFrom(receive_buffer_.get(), kReceiveBufferSize,
                                &receive_address_,
                                base::BindOnce(&UdpPacketSocket::OnReadCompleted,
