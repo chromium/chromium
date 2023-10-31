@@ -123,10 +123,6 @@ ClientConnectionManager::~ClientConnectionManager() {
 
 void ClientConnectionManager::Start() {
   Add(this);
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
 
   StartProfilingExistingProcessesIfNecessary();
 }
@@ -224,7 +220,7 @@ void ClientConnectionManager::BrowserChildProcessLaunchedAndConnected(
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   // Ensure this is only called for all non-renderer browser child processes
-  // so as not to collide with logic in ClientConnectionManager::Observe().
+  // so as not to collide with logic in OnRenderProcessHostCreated().
   DCHECK_NE(data.process_type, content::ProcessType::PROCESS_TYPE_RENDERER);
 
   if (!ShouldProfileNonRendererProcessType(mode_, data.process_type))
@@ -263,26 +259,25 @@ void ClientConnectionManager::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
   if (ShouldProfileNewRenderer(host)) {
     StartProfilingRenderer(host);
+    if (!host_observation_.IsObservingSource(host)) {
+      host_observation_.AddObservation(host);
+    }
   }
 }
 
-void ClientConnectionManager::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  content::RenderProcessHost* host =
-      content::Source<content::RenderProcessHost>(source).ptr();
+void ClientConnectionManager::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  profiled_renderers_.erase(host);
+  host_observation_.RemoveObservation(host);
+}
 
-  // NOTIFICATION_RENDERER_PROCESS_CLOSED corresponds to death of an underlying
-  // RenderProcess. NOTIFICATION_RENDERER_PROCESS_TERMINATED corresponds to when
-  // the RenderProcessHost's lifetime is ending. Ideally, we'd only listen to
-  // the former, but if the RenderProcessHost is destroyed before the
-  // RenderProcess, then the former is never sent.
-  if ((type == content::NOTIFICATION_RENDERER_PROCESS_TERMINATED ||
-       type == content::NOTIFICATION_RENDERER_PROCESS_CLOSED)) {
-    profiled_renderers_.erase(host);
-  }
+// RenderProcessHostDestroyed() will be invoked only if RenderProcessExited()
+// was not, since we remove the observation of `host` in that function.
+void ClientConnectionManager::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  profiled_renderers_.erase(host);
+  host_observation_.RemoveObservation(host);
 }
 
 bool ClientConnectionManager::ShouldProfileNewRenderer(
