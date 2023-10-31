@@ -6,6 +6,7 @@
 
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -13,6 +14,7 @@
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -125,6 +127,14 @@ class PasswordCheckupCoordinatorTest
         isKindOfClass:[PasswordCheckupViewController class]]);
   }
 
+  // Verifies that a given number of password checkup visits have been recorded.
+  void CheckPasswordCheckupVisitMetricsCount(int count) {
+    histogram_tester_.ExpectUniqueSample(
+        /*name=*/password_manager::kPasswordManagerSurfaceVisitHistogramName,
+        /*sample=*/password_manager::PasswordManagerSurface::kPasswordCheckup,
+        /*count=*/count);
+  }
+
   web::WebTaskEnvironment task_environment_;
   SceneState* scene_state_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
@@ -134,6 +144,7 @@ class PasswordCheckupCoordinatorTest
   MockReauthenticationModule* mock_reauth_module_ = nil;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mocked_application_commands_handler_;
+  base::HistogramTester histogram_tester_;
   PasswordCheckupCoordinator* coordinator_ = nil;
 };
 
@@ -150,6 +161,9 @@ class PasswordCheckupCoordinatorWithReauthenticationTest
 TEST_P(PasswordCheckupCoordinatorWithoutReauthenticationTest,
        PasswordCheckupPresentedWithoutAuth) {
   CheckPasswordCheckupIsPresented();
+
+  // One visit should have been recorded.
+  CheckPasswordCheckupVisitMetricsCount(1);
 }
 
 // Tests that Password Check is presented only after passing authentication
@@ -158,10 +172,41 @@ TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
   // Checkup should be covered until auth is passed.
   CheckPasswordCheckupIsNotPresented();
 
+  // No visits recorded until successful auth.
+  CheckPasswordCheckupVisitMetricsCount(0);
+
   [mock_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Checkup visible.
   CheckPasswordCheckupIsPresented();
+
+  // One visit should have been recorded.
+  CheckPasswordCheckupVisitMetricsCount(1);
+}
+
+// Verifies that Password Checkup visits are logged only once after the first
+// successful authentication.
+TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
+       PasswordCheckupVisitRecordedOnlyOnce) {
+  CheckPasswordCheckupVisitMetricsCount(0);
+
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+
+  // Successful auth should record a visit
+  CheckPasswordCheckupVisitMetricsCount(1);
+
+  // Simulate scene transitioning to the background and back to foreground. This
+  // should trigger an auth request.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  // Simulate successful auth.
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+
+  // Validate no new visits were logged.
+  CheckPasswordCheckupVisitMetricsCount(1);
 }
 
 // Test Password Checkup entry points that do not require authentication.

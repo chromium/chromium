@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -51,6 +52,11 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 
   // Location in the app from which Password Checkup was opened.
   PasswordCheckReferrer _referrer;
+
+  // Whether the metric counting visits to the page was already recorded.
+  // Used to avoid over-recording the metric after each successful
+  // authentication.
+  BOOL _visitRecorded;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -88,15 +94,21 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   _viewController.delegate = _mediator;
   _mediator.consumer = _viewController;
 
+  BOOL requireAuthOnStart = [self shouldRequireAuthOnStart];
+
   // Disable animation when content will be blocked for reauth to prevent
   // flickering in navigation bar.
-  [self.baseNavigationController
-      pushViewController:_viewController
-                animated:![self shouldRequireAuthOnStart]];
+  [self.baseNavigationController pushViewController:_viewController
+                                           animated:!requireAuthOnStart];
+
+  // Only record visit if no auth is required, otherwise wait for successful
+  // auth.
+  if (!requireAuthOnStart) {
+    [self maybeRecordPasswordCheckupVisit];
+  }
 
   if (IsAuthOnEntryV2Enabled()) {
-    [self
-        startReauthCoordinatorWithAuthOnStart:[self shouldRequireAuthOnStart]];
+    [self startReauthCoordinatorWithAuthOnStart:requireAuthOnStart];
   }
 }
 
@@ -183,7 +195,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
-  // No-op.
+  [self maybeRecordPasswordCheckupVisit];
 }
 
 - (void)willPushReauthenticationViewController {
@@ -271,6 +283,18 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     case PasswordCheckReferrer::kPasswordSettings:
       return NO;
   }
+}
+
+// Logs a Password Checkup visit. Only logs the first time it is invoked, no-op
+// after that.
+- (void)maybeRecordPasswordCheckupVisit {
+  if (_visitRecorded) {
+    return;
+  }
+
+  _visitRecorded = YES;
+  password_manager::LogPasswordManagerSurfaceVisit(
+      password_manager::PasswordManagerSurface::kPasswordCheckup);
 }
 
 @end
