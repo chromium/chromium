@@ -6,36 +6,8 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "WebKit Win10",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-win-archive",
-              "builder_group": "chromium.win",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 32
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Win Builder",
-                "project": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
               "builder": "Win Builder",
-              "project": "chromium"
+              "project": "chromium-m120"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-win-archive",
@@ -60,14 +32,7 @@
         {
           "bucket": "ci",
           "builder": "Win Builder",
-          "project": "chromium"
-        }
-      ],
-      "builder_ids_in_scope_for_testing": [
-        {
-          "bucket": "ci",
-          "builder": "WebKit Win10",
-          "project": "chromium"
+          "project": "chromium-m120"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -94,6 +59,6 @@
   "builder_group": "chromium.win",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

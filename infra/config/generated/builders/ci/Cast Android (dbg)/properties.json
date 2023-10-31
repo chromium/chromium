@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Cast Android (dbg)",
-              "project": "chromium"
+              "project": "chromium-m120"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -39,7 +39,7 @@
         {
           "bucket": "ci",
           "builder": "Cast Android (dbg)",
-          "project": "chromium"
+          "project": "chromium-m120"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -66,6 +66,6 @@
   "builder_group": "chromium.android",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "android"
+    "chrome_browser_release"
   ]
 }

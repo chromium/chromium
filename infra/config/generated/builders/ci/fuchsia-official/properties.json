@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "fuchsia-official",
-              "project": "chromium"
+              "project": "chromium-m120"
             },
             "builder_spec": {
               "builder_group": "chromium",
@@ -35,7 +35,7 @@
         {
           "bucket": "ci",
           "builder": "fuchsia-official",
-          "project": "chromium"
+          "project": "chromium-m120"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -60,5 +60,8 @@
     ]
   },
   "builder_group": "chromium",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }

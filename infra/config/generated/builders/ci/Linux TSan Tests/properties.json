@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux TSan Builder",
-              "project": "chromium"
+              "project": "chromium-m120"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-memory-archive",
@@ -30,7 +30,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux TSan Tests",
-              "project": "chromium"
+              "project": "chromium-m120"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-memory-archive",
@@ -50,7 +50,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Linux TSan Builder",
-                "project": "chromium"
+                "project": "chromium-m120"
               }
             }
           }
@@ -60,16 +60,12 @@
         {
           "bucket": "ci",
           "builder": "Linux TSan Tests",
-          "project": "chromium"
+          "project": "chromium-m120"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "linux_chromium_tsan_rel_ng",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux_chromium_tsan_siso_rel_ng",
           "group": "tryserver.chromium.linux"
         }
       ]
@@ -91,6 +87,6 @@
   "builder_group": "chromium.memory",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

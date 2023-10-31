@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "ios-simulator",
-              "project": "chromium"
+              "project": "chromium-m120"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -37,20 +37,12 @@
         {
           "bucket": "ci",
           "builder": "ios-simulator",
-          "project": "chromium"
+          "project": "chromium-m120"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "ios-simulator",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "ios-simulator-inverse-fieldtrials-fyi",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "ios-simulator-siso",
           "group": "tryserver.chromium.mac"
         }
       ]
@@ -72,8 +64,7 @@
   "builder_group": "chromium.mac",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium",
-    "ios"
+    "chrome_browser_release"
   ],
   "xcode_build_version": "15a507"
 }

@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win x64 Builder",
-              "project": "chromium"
+              "project": "chromium-m120"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-win-archive",
@@ -34,7 +34,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win10 Tests x64",
-              "project": "chromium"
+              "project": "chromium-m120"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-win-archive",
@@ -58,66 +58,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Win x64 Builder",
-                "project": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Win11 Tests x64",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-win-archive",
-              "builder_group": "chromium.win",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "win"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "use_clang_coverage"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Win x64 Builder",
-                "project": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "win-network-sandbox-tester",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Win x64 Builder",
-                "project": "chromium"
+                "project": "chromium-m120"
               }
             }
           }
@@ -127,45 +68,19 @@
         {
           "bucket": "ci",
           "builder": "Win x64 Builder",
-          "project": "chromium"
+          "project": "chromium-m120"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Win10 Tests x64",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Win11 Tests x64",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "win-network-sandbox-tester",
-          "project": "chromium"
+          "project": "chromium-m120"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "win-rel",
-          "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win-siso-rel",
-          "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng",
-          "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win11-x64-fyi-rel",
-          "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win_chromium_x64_rel_ng",
           "group": "tryserver.chromium.win"
         }
       ]
@@ -187,6 +102,6 @@
   "builder_group": "chromium.win",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

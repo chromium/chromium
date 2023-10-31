@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android arm64 Builder (dbg)",
-              "project": "chromium"
+              "project": "chromium-m120"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -37,7 +37,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-pie-arm64-dbg",
-              "project": "chromium"
+              "project": "chromium-m120"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -64,7 +64,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Android arm64 Builder (dbg)",
-                "project": "chromium"
+                "project": "chromium-m120"
               }
             }
           }
@@ -74,16 +74,12 @@
         {
           "bucket": "ci",
           "builder": "android-pie-arm64-dbg",
-          "project": "chromium"
+          "project": "chromium-m120"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "android-pie-arm64-dbg",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android_arm64_dbg_recipe",
           "group": "tryserver.chromium.android"
         }
       ]
@@ -99,6 +95,6 @@
   "builder_group": "chromium.android",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "android"
+    "chrome_browser_release"
   ]
 }
