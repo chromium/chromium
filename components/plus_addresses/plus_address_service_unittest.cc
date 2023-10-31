@@ -84,6 +84,16 @@ TEST_F(PlusAddressServiceTest, DefaultSupportsPlusAddressesState) {
       url::Origin::Create(GURL("https://test.example"))));
 }
 
+// Ensure `SupportsPlusAddresses` is false without a server URL.
+TEST_F(PlusAddressServiceTest, SupportsPlusAddressNoServer) {
+  // Enable the feature, but do not provide a server URL, which indicates no
+  // suggestion should be shown.
+  base::test::ScopedFeatureList scoped_feature_list{plus_addresses::kFeature};
+  PlusAddressService service;
+  EXPECT_FALSE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://test.example"))));
+}
+
 // Tests for the label overrides. These tests are not in the enabled/disabled
 // fixtures as they vary parameters.
 TEST_F(PlusAddressServiceTest, LabelOverrides) {
@@ -655,8 +665,16 @@ TEST_F(PlusAddressServiceDisabledTest, DisabledFeatureLabel) {
 }
 
 class PlusAddressServiceEnabledTest : public PlusAddressServiceTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        plus_addresses::kFeature,
+        {{plus_addresses::kEnterprisePlusAddressServerUrl.name,
+          "mattwashere"}});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{plus_addresses::kFeature};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PlusAddressServiceEnabledTest, NullIdentityManager) {
@@ -728,6 +746,13 @@ class PlusAddressServiceSignoutTest : public ::testing::Test {
         "alpha@plus.plus", signin::ConsentLevel::kSignin);
   }
 
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        plus_addresses::kFeature,
+        {{plus_addresses::kEnterprisePlusAddressServerUrl.name,
+          "mattwashere"}});
+  }
+
   CoreAccountInfo primary_account;
   AccountInfo secondary_account;
 
@@ -738,7 +763,7 @@ class PlusAddressServiceSignoutTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
-  base::test::ScopedFeatureList scoped_feature_list_{plus_addresses::kFeature};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.

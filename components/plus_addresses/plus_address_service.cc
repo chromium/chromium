@@ -207,6 +207,7 @@ absl::optional<std::string> PlusAddressService::GetPrimaryEmail() {
 
 bool PlusAddressService::is_enabled() const {
   return base::FeatureList::IsEnabled(plus_addresses::kFeature) &&
+         (kEnterprisePlusAddressServerUrl.Get() != "") &&
          identity_manager_ != nullptr &&
          // Note that having a primary account implies that account's email will
          // be populated.

@@ -22,7 +22,10 @@
 class PlusAddressServiceBrowserTest : public PlatformBrowserTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(plus_addresses::kFeature);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        plus_addresses::kFeature,
+        {{plus_addresses::kEnterprisePlusAddressServerUrl.name,
+          "mattwashere"}});
     PlatformBrowserTest::SetUp();
   }
 
