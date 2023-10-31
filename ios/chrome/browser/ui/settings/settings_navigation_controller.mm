@@ -675,6 +675,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopPrivacySafeBrowsingCoordinator];
   [self stopPrivacySettingsCoordinator];
   [self stopInactiveTabSettingsCoordinator];
+  [self stopPasswordDetailsCoordinator];
 
   // Reset the delegate to prevent any queued transitions from attempting to
   // close the settings.
@@ -916,6 +917,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.privacySafeBrowsingCoordinator = nil;
 }
 
+// Stops the underlying PasswordDetailsCoordinator.
+- (void)stopPasswordDetailsCoordinator {
+  [self.passwordDetailsCoordinator stop];
+  self.passwordDetailsCoordinator.delegate = nil;
+  self.passwordDetailsCoordinator = nil;
+}
+
 #pragma mark - GoogleServicesSettingsCoordinatorDelegate
 
 - (void)googleServicesSettingsCoordinatorDidRemove:
@@ -956,9 +964,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)passwordDetailsCoordinatorDidRemove:
     (PasswordDetailsCoordinator*)coordinator {
   DCHECK_EQ(self.passwordDetailsCoordinator, coordinator);
-  [self.passwordDetailsCoordinator stop];
-  self.passwordDetailsCoordinator.delegate = nil;
-  self.passwordDetailsCoordinator = nil;
+  [self stopPasswordDetailsCoordinator];
 }
 
 - (void)passwordDetailsCancelButtonWasTapped {
