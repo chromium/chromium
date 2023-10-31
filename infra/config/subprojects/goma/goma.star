@@ -231,6 +231,7 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
+    builderless = False,
     os = os.WINDOWS_DEFAULT,
     goma_enable_ats = False,
 )
@@ -251,6 +252,7 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
+    builderless = False,
     os = os.WINDOWS_DEFAULT,
     goma_enable_ats = False,
 )

@@ -1704,6 +1704,7 @@ ci.builder(
     executable = "recipe:celab",
     schedule = "0 0,6,12,18 * * *",
     triggered_by = [],
+    builderless = False,
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "celab",
@@ -2074,6 +2075,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    builderless = False,
     os = os.WINDOWS_10,
     console_view_entry = consoles.console_view_entry(
         category = "win10",
@@ -2144,6 +2146,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    builderless = False,
     cores = "8|16",
     os = os.WINDOWS_DEFAULT,
     cpu = cpu.X86,
@@ -2170,6 +2173,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    builderless = False,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "win",

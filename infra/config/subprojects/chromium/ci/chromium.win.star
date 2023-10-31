@@ -58,6 +58,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "misc",
         short_name = "wbk",
@@ -81,6 +82,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    builderless = False,
     cores = 32,
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
@@ -132,7 +134,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
-    builderless = True,
     # Too flaky. See crbug.com/876224 for more details.
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
@@ -159,6 +160,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    builderless = False,
     cores = 32,
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
@@ -193,6 +195,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    builderless = False,
     cores = 32,
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
@@ -225,6 +228,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",
         short_name = "w10",
@@ -266,6 +270,7 @@ ci.thin_tester(
 ci.builder(
     name = "Windows deterministic",
     executable = "recipe:swarming/deterministic_build",
+    builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "misc",
         short_name = "det",

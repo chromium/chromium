@@ -196,7 +196,7 @@ free_space = struct(
 # Implementation details                                                       #
 ################################################################################
 
-_DEFAULT_BUILDERLESS_OS_CATEGORIES = [os_category.LINUX]
+_DEFAULT_BUILDERLESS_OS_CATEGORIES = [os_category.LINUX, os_category.WINDOWS]
 
 # Macs all have SSDs, so it doesn't make sense to use the default behavior of
 # setting ssd:0 dimension
