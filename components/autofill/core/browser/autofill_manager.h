@@ -30,6 +30,7 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/language_code.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -205,6 +206,14 @@ class AutofillManager
 
   // Returns true only if the previewed form should be cleared.
   virtual bool ShouldClearPreviewedForm() = 0;
+
+  // Records filling information and routes the filling back to the driver.
+  virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
+                                  mojom::TextReplacement text_replacement,
+                                  const FormData& form,
+                                  const FormFieldData& field,
+                                  const std::u16string& value,
+                                  PopupItemId popup_item_id) = 0;
 
   // Invoked when the value of textfield is changed.
   // |bounding_box| are viewport coordinates.

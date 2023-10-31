@@ -164,7 +164,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // Returns the last Autofill triggering field. Derived from the `form` and
   // `field` parameters of `OnQuery(). Returns nullptr if called before
   // `OnQuery()` or if the `form` becomes outdated, see crbug.com/1117028.
-  AutofillField* GetQueriedAutofillField() const;
+  const AutofillField* GetQueriedAutofillField() const;
 
   // Fills the form with the Autofill data corresponding to `backend_id`.
   // If `is_preview` is true then this is just a preview to show the user what

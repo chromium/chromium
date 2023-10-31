@@ -141,6 +141,14 @@ class BrowserAutofillManager : public AutofillManager,
       const std::u16string& cvc,
       const AutofillTriggerDetails& trigger_details);
 
+  // Records filling information and routes the filling back to the driver.
+  void FillOrPreviewField(mojom::ActionPersistence action_persistence,
+                          mojom::TextReplacement text_replacement,
+                          const FormData& form,
+                          const FormFieldData& field,
+                          const std::u16string& value,
+                          PopupItemId popup_item_id) override;
+
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`, virtual for testing. `renderer_action` denotes whether
   // this is an actual filling or a preview operation on the renderer side.

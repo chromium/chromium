@@ -21,6 +21,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -101,6 +102,15 @@ class MockAutofillManager : public AutofillManager {
   }
 
   MOCK_METHOD(bool, ShouldClearPreviewedForm, (), (override));
+  MOCK_METHOD(void,
+              FillOrPreviewField,
+              (mojom::ActionPersistence action_persistence,
+               mojom::TextReplacement text_replacement,
+               const FormData& form,
+               const FormFieldData& field,
+               const std::u16string& value,
+               PopupItemId popup_item_id),
+              (override));
   MOCK_METHOD(CreditCardAccessManager*,
               GetCreditCardAccessManager,
               (),

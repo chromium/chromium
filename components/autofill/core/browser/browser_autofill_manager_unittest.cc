@@ -81,6 +81,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/plus_address_metrics.h"
@@ -555,6 +556,13 @@ class MockAutofillDriver : public TestAutofillDriver {
                const FormData& data,
                const url::Origin& triggered_origin,
                (const base::flat_map<FieldGlobalId, ServerFieldType>&)),
+              (override));
+  MOCK_METHOD(void,
+              ApplyFieldAction,
+              (mojom::ActionPersistence action_persistence,
+               mojom::TextReplacement text_replacement,
+               const FieldGlobalId& field_id,
+               const std::u16string& value),
               (override));
   MOCK_METHOD(void,
               SendAutofillTypePredictionsToRenderer,
@@ -2983,23 +2991,50 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormChanged) {
                                   form_structure, autofill_field);
 }
 
-TEST_F(BrowserAutofillManagerTest, UndoAutofillCallsDriver) {
+TEST_F(BrowserAutofillManagerTest, UndoSavesFormFillingData) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
   FormStructure* form_structure;
   AutofillField* autofill_field;
-  std::vector<FieldGlobalId> safe_fields{form.fields.front().global_id()};
   ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
       form, form.fields.front(), &form_structure, &autofill_field));
+
+  std::vector<FieldGlobalId> safe_fields{form.fields.front().global_id()};
   EXPECT_CALL(*autofill_driver_, ApplyFormAction)
       .Times(2)
       .WillRepeatedly(Return(safe_fields));
+
   test_api(*browser_autofill_manager_)
       .FillOrPreviewDataModelForm(
           mojom::ActionPersistence::kFill, form, form.fields.front(),
           personal_data().GetProfiles().front(), /*optional_cvc=*/nullptr,
           form_structure, autofill_field);
 
+  // Undo early returns if it has no filling history for the trigger field,
+  // which is initially empty, therefore calling the driver is proof that data
+  // was successfully stored.
+  browser_autofill_manager_->UndoAutofill(mojom::ActionPersistence::kFill, form,
+                                          form.fields.front());
+}
+
+TEST_F(BrowserAutofillManagerTest, UndoSavesFieldByFieldFillingData) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+  FormStructure* form_structure;
+  AutofillField* autofill_field;
+  ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
+      form, form.fields.front(), &form_structure, &autofill_field));
+
+  EXPECT_CALL(*autofill_driver_, ApplyFieldAction);
+  browser_autofill_manager_->FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+      form, form.fields.front(), u"Test Value",
+      PopupItemId::kFieldByFieldFilling);
+
+  // Undo early returns if it has no filling history for the trigger field,
+  // which is initially empty, therefore calling the driver is proof that data
+  // was successfully stored.
+  EXPECT_CALL(*autofill_driver_, ApplyFormAction);
   browser_autofill_manager_->UndoAutofill(mojom::ActionPersistence::kFill, form,
                                           form.fields.front());
 }
