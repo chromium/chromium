@@ -124,7 +124,6 @@
 
 #if BUILDFLAG(USE_CUPS)
 #include "chrome/browser/ash/printing/cups_proxy_service_manager_factory.h"
-#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #endif
 
 namespace ash {
@@ -177,9 +176,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   EventBasedStatusReportingServiceFactory::GetInstance();
   extensions::InputMethodAPI::GetFactoryInstance();
   extensions::MediaPlayerAPI::GetFactoryInstance();
-#if BUILDFLAG(USE_CUPS)
-  extensions::PrintingAPIHandler::GetFactoryInstance();
-#endif
   FamilyUserMetricsServiceFactory::GetInstance();
   file_manager::EventRouterFactory::GetInstance();
   file_manager::VolumeManagerFactory::GetInstance();
