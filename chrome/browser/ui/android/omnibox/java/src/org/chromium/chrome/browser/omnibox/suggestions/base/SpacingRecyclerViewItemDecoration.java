@@ -7,30 +7,69 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 
 public class SpacingRecyclerViewItemDecoration extends ItemDecoration {
-    public final @Px int leadInSpace;
-    public final @Px int elementSpace;
+    private final @NonNull RecyclerView mRecyclerView;
+    private @Px int mLeadInSpace;
+    private @Px int mElementSpace;
 
-    public SpacingRecyclerViewItemDecoration(@Px int leadInSpace, @Px int elementSpace) {
-        this.leadInSpace = leadInSpace;
-        this.elementSpace = elementSpace;
+    public SpacingRecyclerViewItemDecoration(
+            @NonNull RecyclerView parent, @Px int leadInSpace, @Px int elementSpace) {
+        mRecyclerView = parent;
+        mLeadInSpace = leadInSpace;
+        mElementSpace = elementSpace;
     }
 
     @Override
     public void getItemOffsets(
             Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        outRect.left = outRect.right = elementSpace;
+        outRect.left = outRect.right = mElementSpace;
 
         if (parent.getChildAdapterPosition(view) != 0) return;
 
         if (parent.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
-            outRect.right = leadInSpace;
+            outRect.right = mLeadInSpace;
         } else {
-            outRect.left = leadInSpace;
+            outRect.left = mLeadInSpace;
         }
+    }
+
+    /**
+     * Specify new lead in space to be used as an item decoration.
+     *
+     * <p>Triggers RecyclerView update if the new spacing is different from the old one.
+     */
+    public void setLeadInSpace(int leadInSpace) {
+        if (leadInSpace != mLeadInSpace) {
+            mRecyclerView.invalidateItemDecorations();
+        }
+        mLeadInSpace = leadInSpace;
+    }
+
+    /**
+     * Specify new element space to be used as an item decoration.
+     *
+     * <p>Triggers RecyclerView update if the new spacing is different from the old one.
+     */
+    public void setElementSpace(int elementSpace) {
+        if (elementSpace != mElementSpace) {
+            mRecyclerView.invalidateItemDecorations();
+        }
+        mElementSpace = elementSpace;
+    }
+
+    @VisibleForTesting
+    public int getElementSpaceForTest() {
+        return mElementSpace;
+    }
+
+    @VisibleForTesting
+    public int getLeadInSpaceForTest() {
+        return mLeadInSpace;
     }
 }

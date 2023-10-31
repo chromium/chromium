@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -36,12 +35,6 @@ public interface BaseCarouselSuggestionViewBinder {
             }
         } else if (key == SuggestionCommonProperties.DEVICE_FORM_FACTOR
                 || key == BaseCarouselSuggestionViewProperties.ITEM_WIDTH) {
-            int itemDecoration = view.getItemDecorationCount();
-            while (itemDecoration > 0) {
-                itemDecoration--;
-                view.removeItemDecorationAt(itemDecoration);
-            }
-
             var context = view.getContext();
             // Adjust the initial offset of the MV Carousel to match the offset of the
             // suggestion header.
@@ -58,8 +51,8 @@ public interface BaseCarouselSuggestionViewBinder {
                             model.get(BaseCarouselSuggestionViewProperties.ITEM_WIDTH),
                             initialSpacing,
                             view);
-            view.addItemDecoration(
-                    new SpacingRecyclerViewItemDecoration(initialSpacing, itemSpacing / 2));
+            view.getItemDecoration().setLeadInSpace(initialSpacing);
+            view.getItemDecoration().setElementSpace(itemSpacing / 2);
         } else if (key == BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE) {
             view.setHorizontalFadingEdgeEnabled(
                     model.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));

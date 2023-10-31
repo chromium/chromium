@@ -6,12 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -22,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -32,7 +27,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -206,29 +200,22 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                         FormFactor.TABLET, Integer.MAX_VALUE, Integer.MAX_VALUE, mView));
 
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        ArgumentCaptor<SpacingRecyclerViewItemDecoration> captor =
-                ArgumentCaptor.forClass(SpacingRecyclerViewItemDecoration.class);
-        verify(mView, times(1)).addItemDecoration(captor.capture());
-        var decoration = captor.getValue();
+        var decoration = mView.getItemDecoration();
         Assert.assertEquals(
-                OmniboxResourceProvider.getSideSpacing(mContext), decoration.leadInSpace);
-        Assert.assertEquals(spacingPx / 2, decoration.elementSpace);
+                OmniboxResourceProvider.getSideSpacing(mContext),
+                decoration.getLeadInSpaceForTest());
+        Assert.assertEquals(spacingPx / 2, decoration.getElementSpaceForTest());
     }
 
     @Test
     public void formFactor_itemDecorationsDoNotAggregate() {
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        verify(mView, times(1)).addItemDecoration(any());
         Assert.assertEquals(1, mView.getItemDecorationCount());
-        clearInvocations(mView);
 
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.PHONE);
-        verify(mView, times(1)).addItemDecoration(any());
         Assert.assertEquals(1, mView.getItemDecorationCount());
-        clearInvocations(mView);
 
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        verify(mView, times(1)).addItemDecoration(any());
         Assert.assertEquals(1, mView.getItemDecorationCount());
     }
 
@@ -263,12 +250,10 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     @Config(qualifiers = "sw600dp-land")
     public void customVisualAlignment_classicUi() {
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        ArgumentCaptor<SpacingRecyclerViewItemDecoration> captor =
-                ArgumentCaptor.forClass(SpacingRecyclerViewItemDecoration.class);
-        verify(mView, times(1)).addItemDecoration(captor.capture());
-        var decoration = captor.getValue();
+        var decoration = mView.getItemDecoration();
         Assert.assertEquals(
-                OmniboxResourceProvider.getSideSpacing(mContext), decoration.leadInSpace);
+                OmniboxResourceProvider.getSideSpacing(mContext),
+                decoration.getLeadInSpaceForTest());
     }
 
     @Test
@@ -293,13 +278,10 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
     void runCustomVisualAlignmentTest() {
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        ArgumentCaptor<SpacingRecyclerViewItemDecoration> captor =
-                ArgumentCaptor.forClass(SpacingRecyclerViewItemDecoration.class);
-        verify(mView, times(1)).addItemDecoration(captor.capture());
-        var decoration = captor.getValue();
+        var decoration = mView.getItemDecoration();
         Assert.assertEquals(
                 OmniboxResourceProvider.getHeaderStartPadding(mContext)
                         - mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_padding),
-                decoration.leadInSpace);
+                decoration.getLeadInSpaceForTest());
     }
 }

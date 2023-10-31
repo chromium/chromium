@@ -16,6 +16,7 @@ import org.chromium.build.annotations.MockedInTests;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -23,6 +24,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 @MockedInTests
 public class BaseCarouselSuggestionView extends RecyclerView {
     private RecyclerViewSelectionController mSelectionController;
+    private SpacingRecyclerViewItemDecoration mDecoration;
 
     /**
      * Constructs a new carousel suggestion view.
@@ -45,6 +47,9 @@ public class BaseCarouselSuggestionView extends RecyclerView {
 
         mSelectionController = new RecyclerViewSelectionController(getLayoutManager());
         addOnChildAttachStateChangeListener(mSelectionController);
+
+        mDecoration = new SpacingRecyclerViewItemDecoration(this, 0, 0);
+        addItemDecoration(mDecoration);
 
         setAdapter(adapter);
     }
@@ -92,5 +97,9 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         removeOnChildAttachStateChangeListener(mSelectionController);
         mSelectionController = controller;
         addOnChildAttachStateChangeListener(mSelectionController);
+    }
+
+    /* package */ SpacingRecyclerViewItemDecoration getItemDecoration() {
+        return mDecoration;
     }
 }
