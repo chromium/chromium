@@ -905,23 +905,18 @@
             ]
         }
     ],
-    "ArcVmMemoryTrimOnGuestV2": [
+    "ArcVmMemorySize": [
         {
             "platforms": [
                 "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "EnabledVmMemSize-1900_20230915",
+                    "name": "EnabledVmMemSize-500_20231031",
                     "params": {
-                        "guest_reclaim_enabled": "true",
-                        "guest_reclaim_only_anonymous": "false",
-                        "percentage_size": "100",
-                        "shift_mib": "-1900"
+                        "shift_mib": "-200"
                     },
                     "enable_features": [
-                        "ArcGuestZram",
-                        "ArcLockGuestMemory",
                         "ArcVmMemorySize"
                     ]
                 }
