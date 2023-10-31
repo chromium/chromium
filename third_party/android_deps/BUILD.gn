@@ -4,28 +4,26 @@
 
 import("//build/config/android/rules.gni")
 
-# Library groups
+java_group("dagger_java") {
+  preferred_dep = true
+  if (defined(dagger_java_target)) {
+    deps = [ dagger_java_target ]
+  } else {
+    deps = [ "//third_party/android_deps:com_google_dagger_dagger_java" ]
+  }
+}
+
+java_annotation_processor("dagger_processor") {
+  main_class = "dagger.internal.codegen.ComponentProcessor"
+  if (defined(dagger_annotation_processor_target)) {
+    deps = [ dagger_annotation_processor_target ]
+  } else {
+    deps =
+        [ "//third_party/android_deps:com_google_dagger_dagger_compiler_java" ]
+  }
+}
+
 if (!limit_android_deps) {
-  java_group("dagger_java") {
-    preferred_dep = true
-    if (defined(dagger_java_target)) {
-      deps = [ dagger_java_target ]
-    } else {
-      deps = [ "//third_party/android_deps:com_google_dagger_dagger_java" ]
-    }
-  }
-
-  java_annotation_processor("dagger_processor") {
-    main_class = "dagger.internal.codegen.ComponentProcessor"
-    if (defined(dagger_annotation_processor_target)) {
-      deps = [ dagger_annotation_processor_target ]
-    } else {
-      deps = [
-        "//third_party/android_deps:com_google_dagger_dagger_compiler_java",
-      ]
-    }
-  }
-
   java_group("espresso_java") {
     preferred_dep = true
     testonly = true
