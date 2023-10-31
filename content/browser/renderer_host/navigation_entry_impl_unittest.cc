@@ -274,9 +274,8 @@ TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
   // (referrer, initiator, etc.).  This is why it is important to test
   // SetPageState/GetPageState last.
   blink::PageState test_page_state = CreateTestPageState();
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  entry2_->SetPageState(test_page_state, context.get());
+  NavigationEntryRestoreContextImpl context;
+  entry2_->SetPageState(test_page_state, &context);
   EXPECT_EQ(test_page_state.ToEncodedData(),
             entry2_->GetPageState().ToEncodedData());
 }
@@ -326,9 +325,8 @@ TEST_F(NavigationEntryTest, SetPageStateWithCorruptedSequenceNumbers) {
   blink::PageState page_state =
       blink::PageState::CreateFromEncodedData(encoded_data);
 
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  entry1_->SetPageState(page_state, context.get());
+  NavigationEntryRestoreContextImpl context;
+  entry1_->SetPageState(page_state, &context);
 
   ASSERT_EQ(1u, entry1_->root_node()->children.size());
   EXPECT_NE(entry1_->root_node()->frame_entry.get(),
@@ -341,10 +339,9 @@ TEST_F(NavigationEntryTest, SetPageStateWithDefaultSequenceNumbers) {
   blink::PageState page_state2 =
       blink::PageState::CreateFromURL(GURL("http://bar.com"));
 
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  entry1_->SetPageState(page_state1, context.get());
-  entry2_->SetPageState(page_state2, context.get());
+  NavigationEntryRestoreContextImpl context;
+  entry1_->SetPageState(page_state1, &context);
+  entry2_->SetPageState(page_state2, &context);
 
   // Because no sequence numbers were set on the PageState objects, they will
   // default to 0.

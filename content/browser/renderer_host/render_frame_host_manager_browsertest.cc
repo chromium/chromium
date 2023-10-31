@@ -2776,9 +2776,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
               nullptr /* blob_url_loader_factory */));
   prev_entry = shell()->web_contents()->GetController().GetEntryAtIndex(0);
 
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  cloned_entry->SetPageState(prev_entry->GetPageState(), context.get());
+  NavigationEntryRestoreContextImpl context;
+  cloned_entry->SetPageState(prev_entry->GetPageState(), &context);
   const std::vector<base::FilePath>& cloned_files =
       cloned_entry->GetPageState().GetReferencedFiles();
   ASSERT_EQ(1U, cloned_files.size());

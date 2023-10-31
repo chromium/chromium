@@ -23,15 +23,16 @@ void NavigationEntryRestoreContextImpl::AddFrameNavigationEntry(
     FrameNavigationEntry* entry) {
   // Do not track FrameNavigationEntries for the default ISN of 0, since this
   // value can be used for any arbitrary document.
-  if (entry->item_sequence_number() == 0)
+  if (entry->item_sequence_number() == 0) {
     return;
+  }
   Key key(entry->item_sequence_number(), entry->frame_unique_name(),
           entry->url());
+  auto [it, inserted] = entries_.insert({key, entry});
   // The checks here should be consistent with GetFrameNavigationEntry and this
   // is only expected to be called after that function fails to find an entry,
   // so we don't expect there to be an entry for this key already.
-  DCHECK(entries_.find(key) == entries_.end());
-  entries_.emplace(key, entry);
+  DCHECK(inserted);
 }
 
 FrameNavigationEntry*
@@ -47,6 +48,18 @@ NavigationEntryRestoreContextImpl::GetFrameNavigationEntry(
   if (it == entries_.end())
     return nullptr;
   return it->second;
+}
+
+bool NavigationEntryRestoreContextImpl::Key::Compare::operator()(
+    const Key& x,
+    const Key& y) const {
+  if (x.item_sequence_number != y.item_sequence_number) {
+    return x.item_sequence_number > y.item_sequence_number;
+  }
+  if (x.unique_name != y.unique_name) {
+    return x.unique_name > y.unique_name;
+  }
+  return x.url > y.url;
 }
 
 }  // namespace content

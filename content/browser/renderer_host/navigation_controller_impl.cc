@@ -4317,15 +4317,14 @@ void NavigationControllerImpl::InsertEntriesFrom(
     NavigationControllerImpl* source,
     int max_index) {
   DCHECK_LE(max_index, source->GetEntryCount());
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
+  NavigationEntryRestoreContextImpl context;
   for (int i = 0; i < max_index; i++) {
     // Normally, cloning a NavigationEntryImpl results in sharing
     // FrameNavigationEntries between the original and the clone. However, when
     // cloning from a different NavigationControllerImpl, we want to fork the
     // FrameNavigationEntries.
     entries_.insert(entries_.begin() + i,
-                    source->entries_[i]->CloneWithoutSharing(context.get()));
+                    source->entries_[i]->CloneWithoutSharing(&context));
   }
   DCHECK_GE(entries_.size(), 1u);
   DCHECK(pending_entry_index_ == -1 ||

@@ -496,12 +496,11 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   std::unique_ptr<StoredPage> page =
       frame_tree_->root()->render_manager()->TakePrerenderedPage();
 
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
+  NavigationEntryRestoreContextImpl context;
   std::unique_ptr<NavigationEntryImpl> nav_entry =
       GetNavigationController()
           .GetEntryWithUniqueID(page->render_frame_host()->nav_entry_id())
-          ->CloneWithoutSharing(context.get());
+          ->CloneWithoutSharing(&context);
 
   navigation_request.SetPrerenderActivationNavigationState(
       std::move(nav_entry), prior_replication_state);
