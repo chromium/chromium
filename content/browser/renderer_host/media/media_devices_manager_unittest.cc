@@ -53,6 +53,8 @@ namespace {
 
 const int kRenderProcessId = 1;
 const int kRenderFrameId = 3;
+const GlobalRenderFrameHostId kRenderFrameHostId{kRenderProcessId,
+                                                 kRenderFrameId};
 
 // Number of client enumerations to simulate on each test run.
 // This allows testing that a single call to low-level enumeration functions
@@ -876,7 +878,7 @@ TEST_F(MediaDevicesManagerTest, SubscribeDeviceChanges) {
       MediaDeviceType::kMediaAudioInput)] = true;
   uint32_t audio_input_subscription_id =
       media_devices_manager_->SubscribeDeviceChangeNotifications(
-          kRenderProcessId, kRenderFrameId, audio_input_devices_to_subscribe,
+          kRenderFrameHostId, audio_input_devices_to_subscribe,
           listener_audio_input.CreateInterfacePtrAndBind());
 
   MockMediaDevicesListener listener_video_input;
@@ -885,7 +887,7 @@ TEST_F(MediaDevicesManagerTest, SubscribeDeviceChanges) {
       MediaDeviceType::kMediaVideoInput)] = true;
   uint32_t video_input_subscription_id =
       media_devices_manager_->SubscribeDeviceChangeNotifications(
-          kRenderProcessId, kRenderFrameId, video_input_devices_to_subscribe,
+          kRenderFrameHostId, video_input_devices_to_subscribe,
           listener_video_input.CreateInterfacePtrAndBind());
 
   MockMediaDevicesListener listener_audio_output;
@@ -894,7 +896,7 @@ TEST_F(MediaDevicesManagerTest, SubscribeDeviceChanges) {
       MediaDeviceType::kMediaAudioOuput)] = true;
   uint32_t audio_output_subscription_id =
       media_devices_manager_->SubscribeDeviceChangeNotifications(
-          kRenderProcessId, kRenderFrameId, audio_output_devices_to_subscribe,
+          kRenderFrameHostId, audio_output_devices_to_subscribe,
           listener_audio_output.CreateInterfacePtrAndBind());
 
   MockMediaDevicesListener listener_all;
@@ -906,7 +908,7 @@ TEST_F(MediaDevicesManagerTest, SubscribeDeviceChanges) {
   all_devices_to_subscribe[static_cast<size_t>(
       MediaDeviceType::kMediaAudioOuput)] = true;
   media_devices_manager_->SubscribeDeviceChangeNotifications(
-      kRenderProcessId, kRenderFrameId, all_devices_to_subscribe,
+      kRenderFrameHostId, all_devices_to_subscribe,
       listener_all.CreateInterfacePtrAndBind());
 
   blink::WebMediaDeviceInfoArray notification_audio_input;
@@ -1052,7 +1054,7 @@ TEST_F(MediaDevicesManagerTest, EnumerateDevicesWithCapabilities) {
       true;
   base::RunLoop run_loop;
   media_devices_manager_->EnumerateDevices(
-      -1, -1, devices_to_enumerate, true, true,
+      {-1, -1}, devices_to_enumerate, true, true,
       base::BindOnce(
           &MediaDevicesManagerTest::EnumerateWithCapabilitiesCallback,
           base::Unretained(this), fake_capture_device_settings, &run_loop));
@@ -1298,7 +1300,7 @@ TEST_F(MediaDevicesManagerTest, DeviceIdSaltReset) {
   video_input_devices_to_subscribe[static_cast<size_t>(
       MediaDeviceType::kMediaVideoInput)] = true;
   media_devices_manager_->SubscribeDeviceChangeNotifications(
-      kRenderProcessId, kRenderFrameId, video_input_devices_to_subscribe,
+      kRenderFrameHostId, video_input_devices_to_subscribe,
       listener_video_input.CreateInterfacePtrAndBind());
 
   // Expect an OnDevicesChanged event.

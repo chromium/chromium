@@ -153,7 +153,7 @@ void MediaDevicesDispatcherHost::EnumerateDevices(
       request_audio_output;
 
   media_stream_manager_->media_devices_manager()->EnumerateDevices(
-      render_process_id_, render_frame_id_, devices_to_enumerate,
+      {render_process_id_, render_frame_id_}, devices_to_enumerate,
       request_video_input_capabilities, request_audio_input_capabilities,
       std::move(client_callback));
 }
@@ -247,7 +247,7 @@ void MediaDevicesDispatcherHost::AddMediaDevicesListener(
 
   uint32_t subscription_id = media_stream_manager_->media_devices_manager()
                                  ->SubscribeDeviceChangeNotifications(
-                                     render_process_id_, render_frame_id_,
+                                     {render_process_id_, render_frame_id_},
                                      devices_to_subscribe, std::move(listener));
   subscription_ids_.push_back(subscription_id);
 }
