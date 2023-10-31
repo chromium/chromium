@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/user_education/holding_space_tour/holding_space_tour_prefs.h"
+#include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_prefs.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_prefs.h"
@@ -12,7 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash::holding_space_tour_prefs {
+namespace ash::holding_space_wallpaper_nudge_prefs {
 namespace {
 
 // Aliases ---------------------------------------------------------------------
@@ -24,13 +24,14 @@ using testing::Ne;
 
 }  // namespace
 
-// HoldingSpaceTourPrefsTest ---------------------------------------------------
+// HoldingSpaceWallpaperNudgePrefsTest -----------------------------------------
 
-// Base class for tests that verify the behavior of Holding Space tour prefs.
-class HoldingSpaceTourPrefsTest : public testing::Test {
+// Base class for tests that verify the behavior of Holding Space wallpaper
+// nudge prefs.
+class HoldingSpaceWallpaperNudgePrefsTest : public testing::Test {
  public:
-  HoldingSpaceTourPrefsTest() {
-    feature_list_.InitAndEnableFeature(features::kHoldingSpaceTour);
+  HoldingSpaceWallpaperNudgePrefsTest() {
+    feature_list_.InitAndEnableFeature(features::kHoldingSpaceWallpaperNudge);
     RegisterUserProfilePrefs(pref_service_.registry(), /*country=*/"",
                              /*for_test=*/true);
   }
@@ -45,30 +46,30 @@ class HoldingSpaceTourPrefsTest : public testing::Test {
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies that the tour shown count and last shown time are updated when
-// `MarkTourShown()` is called.
-TEST_F(HoldingSpaceTourPrefsTest, MarkTourShown) {
+// Verifies that the nudge shown count and last shown time are updated when
+// `MarkNudgeShown()` is called.
+TEST_F(HoldingSpaceWallpaperNudgePrefsTest, MarkNudgeShown) {
   // Case: Initialized to default values
-  EXPECT_EQ(GetLastTimeTourWasShown(pref_service()), absl::nullopt);
-  EXPECT_EQ(GetTourShownCount(pref_service()), 0u);
+  EXPECT_EQ(GetLastTimeNudgeWasShown(pref_service()), absl::nullopt);
+  EXPECT_EQ(GetNudgeShownCount(pref_service()), 0u);
 
   // Case: Called the first time.
   auto before = base::Time::Now();
-  MarkTourShown(pref_service());
+  MarkNudgeShown(pref_service());
   auto after = base::Time::Now();
 
-  EXPECT_THAT(GetLastTimeTourWasShown(pref_service()),
+  EXPECT_THAT(GetLastTimeNudgeWasShown(pref_service()),
               AllOf(Ne(absl::nullopt), Ge(before), Le(after)));
-  EXPECT_EQ(GetTourShownCount(pref_service()), 1u);
+  EXPECT_EQ(GetNudgeShownCount(pref_service()), 1u);
 
   // Case: Called again.
   before = base::Time::Now();
-  MarkTourShown(pref_service());
+  MarkNudgeShown(pref_service());
   after = base::Time::Now();
 
-  EXPECT_THAT(GetLastTimeTourWasShown(pref_service()),
+  EXPECT_THAT(GetLastTimeNudgeWasShown(pref_service()),
               AllOf(Ne(absl::nullopt), Ge(before), Le(after)));
-  EXPECT_EQ(GetTourShownCount(pref_service()), 2u);
+  EXPECT_EQ(GetNudgeShownCount(pref_service()), 2u);
 }
 
-}  // namespace ash::holding_space_tour_prefs
+}  // namespace ash::holding_space_wallpaper_nudge_prefs

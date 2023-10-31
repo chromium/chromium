@@ -18,7 +18,7 @@ namespace ash {
 // help bubbles to avoid spamming the user.
 enum class HelpBubbleId {
   kMinValue,
-  kHoldingSpaceTour = kMinValue,
+  kHoldingSpaceWallpaperNudge = kMinValue,
   kTest,
   kWelcomeTourExploreApp,
   kWelcomeTourHomeButton,
@@ -68,7 +68,7 @@ enum class HelpBubbleStyle {
 // avoid spamming the user.
 enum class PingId {
   kMinValue,
-  kHoldingSpaceTour = kMinValue,
+  kHoldingSpaceWallpaperNudge = kMinValue,
   kTest1,
   kTest2,
   kMaxValue = kTest2,

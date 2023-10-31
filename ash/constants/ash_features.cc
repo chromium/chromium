@@ -1427,22 +1427,24 @@ BASE_FEATURE(kHoldingSpaceSuggestions,
              "HoldingSpaceSuggestions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the tour that walks new users through the Holding Space feature.
-BASE_FEATURE(kHoldingSpaceTour,
-             "HoldingSpaceTour",
+// Enables the nudge that introduces new users to the Holding Space feature when
+// a user drags a file over the wallpaper.
+BASE_FEATURE(kHoldingSpaceWallpaperNudge,
+             "HoldingSpaceWallpaperNudge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kHoldingSpaceTourDropToPinEnabled{
-    &kHoldingSpaceTour, "drop-to-pin", false};
+const base::FeatureParam<bool> kHoldingSpaceWallpaperNudgeDropToPinEnabled{
+    &kHoldingSpaceWallpaperNudge, "drop-to-pin", false};
 
-const base::FeatureParam<bool> kHoldingSpaceTourEnabledCounterfactually{
-    &kHoldingSpaceTour, "is-counterfactual", false};
+const base::FeatureParam<bool>
+    kHoldingSpaceWallpaperNudgeEnabledCounterfactually{
+        &kHoldingSpaceWallpaperNudge, "is-counterfactual", false};
 
-// Ignores the rate limiting of holding space tour so that it will show every
-// time a user drags a file over the wallpaper. Enabling this flag does nothing
-// unless `kHoldingSpaceTour` is also enabled.
-BASE_FEATURE(kHoldingSpaceTourIgnoreRateLimiting,
-             "HoldingSpaceTourIgnoreRateLimiting",
+// Ignores the rate limiting of holding space wallpaper nudge so that it will
+// show every time a user drags a file over the wallpaper. Enabling this flag
+// does nothing unless `kHoldingSpaceWallpaperNudge` is also enabled.
+BASE_FEATURE(kHoldingSpaceWallpaperNudgeIgnoreRateLimiting,
+             "HoldingSpaceWallpaperNudgeIgnoreRateLimiting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHomeButtonQuickAppAccess,
@@ -3479,22 +3481,24 @@ bool IsHoldingSpaceSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpaceSuggestions);
 }
 
-bool IsHoldingSpaceTourDropToPinEnabled() {
-  return IsHoldingSpaceTourEnabled() && kHoldingSpaceTourDropToPinEnabled.Get();
+bool IsHoldingSpaceWallpaperNudgeDropToPinEnabled() {
+  return IsHoldingSpaceWallpaperNudgeEnabled() &&
+         kHoldingSpaceWallpaperNudgeDropToPinEnabled.Get();
 }
 
-bool IsHoldingSpaceTourEnabled() {
-  return base::FeatureList::IsEnabled(kHoldingSpaceTour);
+bool IsHoldingSpaceWallpaperNudgeEnabled() {
+  return base::FeatureList::IsEnabled(kHoldingSpaceWallpaperNudge);
 }
 
-bool IsHoldingSpaceTourEnabledCounterfactually() {
-  return IsHoldingSpaceTourEnabled() &&
-         kHoldingSpaceTourEnabledCounterfactually.Get();
+bool IsHoldingSpaceWallpaperNudgeEnabledCounterfactually() {
+  return IsHoldingSpaceWallpaperNudgeEnabled() &&
+         kHoldingSpaceWallpaperNudgeEnabledCounterfactually.Get();
 }
 
-bool IsHoldingSpaceTourRateLimitingEnabled() {
-  return IsHoldingSpaceTourEnabled() &&
-         !base::FeatureList::IsEnabled(kHoldingSpaceTourIgnoreRateLimiting);
+bool IsHoldingSpaceWallpaperNudgeRateLimitingEnabled() {
+  return IsHoldingSpaceWallpaperNudgeEnabled() &&
+         !base::FeatureList::IsEnabled(
+             kHoldingSpaceWallpaperNudgeIgnoreRateLimiting);
 }
 
 bool IsHomeButtonQuickAppAccessEnabled() {
@@ -4236,7 +4240,7 @@ bool ShouldUseAuthSessionStorage() {
 }
 
 bool IsUserEducationEnabled() {
-  return IsCaptureModeTourEnabled() || IsHoldingSpaceTourEnabled() ||
+  return IsCaptureModeTourEnabled() || IsHoldingSpaceWallpaperNudgeEnabled() ||
          IsWelcomeTourEnabled();
 }
 

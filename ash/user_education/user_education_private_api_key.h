@@ -8,7 +8,7 @@
 namespace ash {
 
 class CaptureModeController;
-class HoldingSpaceTourController;
+class HoldingSpaceWallpaperNudgeController;
 class WelcomeTourController;
 
 // A `base::PassKey`-like construct used to restrict access to private user
@@ -18,7 +18,7 @@ class UserEducationPrivateApiKey {
   UserEducationPrivateApiKey() = default;
 
   friend CaptureModeController;
-  friend HoldingSpaceTourController;
+  friend HoldingSpaceWallpaperNudgeController;
   friend WelcomeTourController;
 };
 

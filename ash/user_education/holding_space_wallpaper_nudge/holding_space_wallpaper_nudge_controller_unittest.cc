@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/user_education/holding_space_tour/holding_space_tour_controller.h"
+#include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_controller.h"
 
 #include <map>
 #include <memory>
@@ -139,8 +139,8 @@ bool HasHelpBubble(HoldingSpaceTray* tray) {
           views::ElementTrackerViews::GetContextForView(tray));
 
   // Add failures if the help bubble is not the one that's expected.
-  EXPECT_EQ(help_bubble_id.value_or(HelpBubbleId::kHoldingSpaceTour),
-            HelpBubbleId::kHoldingSpaceTour);
+  EXPECT_EQ(help_bubble_id.value_or(HelpBubbleId::kHoldingSpaceWallpaperNudge),
+            HelpBubbleId::kHoldingSpaceWallpaperNudge);
 
   return help_bubble_id.has_value();
 }
@@ -150,8 +150,8 @@ bool HasPing(HoldingSpaceTray* tray) {
       UserEducationPingController::Get()->GetPingId(tray);
 
   // Add failures if the ping is not the one that's expected.
-  EXPECT_EQ(ping_id.value_or(PingId::kHoldingSpaceTour),
-            PingId::kHoldingSpaceTour);
+  EXPECT_EQ(ping_id.value_or(PingId::kHoldingSpaceWallpaperNudge),
+            PingId::kHoldingSpaceWallpaperNudge);
 
   return ping_id.has_value();
 }
@@ -169,7 +169,7 @@ bool HasWallpaperHighlight(int64_t display_id) {
     }
 
     if (wallpaper_layer->name() !=
-        HoldingSpaceTourController::kHighlightLayerName) {
+        HoldingSpaceWallpaperNudgeController::kHighlightLayerName) {
       continue;
     }
 
@@ -233,36 +233,39 @@ class DraggableView : public views::View {
 
 }  // namespace
 
-// HoldingSpaceTourControllerTest ----------------------------------------------
+// HoldingSpaceWallpaperNudgeControllerTest ------------------------------------
 
-// Base class for tests of the `HoldingSpaceTourController`.
-class HoldingSpaceTourControllerTestBase : public UserEducationAshTestBase {
+// Base class for tests of the `HoldingSpaceWallpaperNudgeController`.
+class HoldingSpaceWallpaperNudgeControllerTestBase
+    : public UserEducationAshTestBase {
  public:
-  HoldingSpaceTourControllerTestBase(
+  HoldingSpaceWallpaperNudgeControllerTestBase(
       absl::optional<bool> drop_to_pin_enabled,
       bool rate_limiting_enabled,
       base::test::TaskEnvironment::TimeSource time_source)
       : UserEducationAshTestBase(time_source) {
-    // NOTE: The `HoldingSpaceTourController` exists only when the Holding Space
-    // Tour feature is enabled. Controller existence is verified in test
-    // coverage for the controller's owner.
+    // NOTE: The `HoldingSpaceWallpaperNudgeController` exists only when the
+    // Holding Space wallpaper nudge feature is enabled. Controller existence is
+    // verified in test coverage for the controller's owner.
     std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
 
     if (drop_to_pin_enabled.has_value()) {
       enabled.push_back(base::test::FeatureRefAndParams(
-          features::kHoldingSpaceTour,
+          features::kHoldingSpaceWallpaperNudge,
           {{"drop-to-pin", drop_to_pin_enabled.value() ? "true" : "false"}}));
     } else {
-      enabled.emplace_back(features::kHoldingSpaceTour,
+      enabled.emplace_back(features::kHoldingSpaceWallpaperNudge,
                            base::FieldTrialParams());
     }
 
     if (rate_limiting_enabled) {
-      disabled.emplace_back(features::kHoldingSpaceTourIgnoreRateLimiting);
+      disabled.emplace_back(
+          features::kHoldingSpaceWallpaperNudgeIgnoreRateLimiting);
     } else {
-      enabled.emplace_back(features::kHoldingSpaceTourIgnoreRateLimiting,
-                           base::FieldTrialParams());
+      enabled.emplace_back(
+          features::kHoldingSpaceWallpaperNudgeIgnoreRateLimiting,
+          base::FieldTrialParams());
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
@@ -375,21 +378,21 @@ class HoldingSpaceTourControllerTestBase : public UserEducationAshTestBase {
       scoped_animation_duration_scale_mode_;
 };
 
-// HoldingSpaceTourControllerDragAndDropTest -----------------------------------
+// HoldingSpaceWallpaperNudgeControllerDragAndDropTest -------------------------
 
-// Base class for drag-and-drop tests of the `HoldingSpaceTourController`,
-// parameterized by (a) whether the drop-to-pin param is available and enabled,
-// (b) whether to drag Files app data, and (c) whether to complete the drop (as
-// opposed to cancelling it).
-class HoldingSpaceTourControllerDragAndDropTest
-    : public HoldingSpaceTourControllerTestBase,
+// Base class for drag-and-drop tests of the
+// `HoldingSpaceWallpaperNudgeController`, parameterized by (a) whether the
+// drop-to-pin param is available and enabled, (b) whether to drag Files app
+// data, and (c) whether to complete the drop (as opposed to cancelling it).
+class HoldingSpaceWallpaperNudgeControllerDragAndDropTest
+    : public HoldingSpaceWallpaperNudgeControllerTestBase,
       public testing::WithParamInterface<
           std::tuple</*drop_to_pin_enabled=*/absl::optional<bool>,
                      /*drag_files_app_data=*/bool,
                      /*complete_drop=*/bool>> {
  public:
-  HoldingSpaceTourControllerDragAndDropTest()
-      : HoldingSpaceTourControllerTestBase(
+  HoldingSpaceWallpaperNudgeControllerDragAndDropTest()
+      : HoldingSpaceWallpaperNudgeControllerTestBase(
             drop_to_pin_enabled(),
             /*rate_limiting_enabled=*/false,
             base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
@@ -409,7 +412,7 @@ class HoldingSpaceTourControllerDragAndDropTest
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    HoldingSpaceTourControllerDragAndDropTest,
+    HoldingSpaceWallpaperNudgeControllerDragAndDropTest,
     testing::Combine(
         /*drop_to_pin_enabled=*/testing::Values(absl::nullopt, false, true),
         /*drag_files_app_data=*/testing::Bool(),
@@ -417,12 +420,13 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies that the `HoldingSpaceTourController` handles drag-and-drop events
-// as expected.
-TEST_P(HoldingSpaceTourControllerDragAndDropTest, DragAndDrop) {
+// Verifies that the `HoldingSpaceWallpaperNudgeController` handles
+// drag-and-drop events as expected.
+TEST_P(HoldingSpaceWallpaperNudgeControllerDragAndDropTest, DragAndDrop) {
   // The holding space tray is always visible in the shelf when the
   // predictability feature is enabled. Force disable it so that we verify that
-  // holding space visibility is updated by the `HoldingSpaceTourController`.
+  // holding space visibility is updated by the
+  // `HoldingSpaceWallpaperNudgeController`.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kHoldingSpacePredictability);
@@ -651,17 +655,17 @@ TEST_P(HoldingSpaceTourControllerDragAndDropTest, DragAndDrop) {
       account_id, /*client=*/nullptr, /*model=*/nullptr);
 }
 
-// HoldingSpaceTourControllerRateLimitingTest ----------------------------------
+// HoldingSpaceWallpaperNudgeControllerRateLimitingTest ------------------------
 
-// Base class for tests that verify the Holding Space Tour is properly rate
-// limited to avoid spamming the user.
-class HoldingSpaceTourControllerRateLimitingTest
-    : public HoldingSpaceTourControllerTestBase,
+// Base class for tests that verify the Holding Space wallpaper nudge is
+// properly rate limited to avoid spamming the user.
+class HoldingSpaceWallpaperNudgeControllerRateLimitingTest
+    : public HoldingSpaceWallpaperNudgeControllerTestBase,
       public testing::WithParamInterface<
           /*drop_to_pin_enabled=*/absl::optional<bool>> {
  public:
-  HoldingSpaceTourControllerRateLimitingTest()
-      : HoldingSpaceTourControllerTestBase(
+  HoldingSpaceWallpaperNudgeControllerRateLimitingTest()
+      : HoldingSpaceWallpaperNudgeControllerTestBase(
             drop_to_pin_enabled(),
             /*rate_limiting_enabled=*/true,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -671,14 +675,14 @@ class HoldingSpaceTourControllerRateLimitingTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceTourControllerRateLimitingTest,
+                         HoldingSpaceWallpaperNudgeControllerRateLimitingTest,
                          testing::Values(absl::nullopt, false, true));
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies that the Holding Space Tour is only shown once per day, and a
-// maximum total of three times.
-TEST_P(HoldingSpaceTourControllerRateLimitingTest, RateLimiting) {
+// Verifies that the Holding Space wallpaper nudge is only shown once per day,
+// and a maximum total of three times.
+TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
   const int64_t display_id = GetPrimaryDisplay().id();
 
   // Log in a regular user.
@@ -732,7 +736,7 @@ TEST_P(HoldingSpaceTourControllerRateLimitingTest, RateLimiting) {
     EXPECT_TRUE(HasHelpBubble(tray));
     EXPECT_TRUE(HasPing(tray));
 
-    // The shelf and holding space tray should show if the tour is showing.
+    // The shelf and holding space tray should show if the nudge is showing.
     EXPECT_TRUE(shelf->IsVisible());
     EXPECT_TRUE(tray->GetVisible());
 
@@ -748,24 +752,24 @@ TEST_P(HoldingSpaceTourControllerRateLimitingTest, RateLimiting) {
     WaitForHelpBubbleClose();
     FlushMessageLoop();
 
-    // Drag data again, now that the tour has already been shown recently.
+    // Drag data again, now that the nudge has already been shown recently.
     SetAnimationDurationMultiplier(
         ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     MoveMouseTo(widget.get());
     PressLeftButton();
     MoveMouseBy(/*x=*/widget->GetWindowBoundsInScreen().width(), /*y=*/0);
 
-    // Now the tour should not be shown, as it was shown in the last 24 hours.
+    // Now the nudge should not be shown, as it was shown in the last 24 hours.
     EXPECT_FALSE(HasHelpBubble(tray));
     EXPECT_FALSE(HasPing(tray));
 
-    // The shelf should be hidden if the tour is not showing, but the tray
+    // The shelf should be hidden if the nudge is not showing, but the tray
     // should always be visible so users can use the holding space after
     // learning about it.
     EXPECT_FALSE(shelf->IsVisible());
     EXPECT_TRUE(tray->GetVisible());
 
-    // Even if not showing the tour, the wallpaper highlight should be shown if
+    // Even if not showing the nudge, the wallpaper highlight should be shown if
     // drop-to-pin is enabled.
     EXPECT_EQ(HasWallpaperHighlight(display_id),
               drop_to_pin_enabled().value_or(false));
@@ -777,11 +781,11 @@ TEST_P(HoldingSpaceTourControllerRateLimitingTest, RateLimiting) {
     ReleaseLeftButton();
     FlushMessageLoop();
 
-    // Every 24 hours, it should be possible for the tour to show again once.
+    // Every 24 hours, it should be possible for the nudge to show again once.
     task_environment()->AdvanceClock(base::Hours(24));
   }
 
-  // After the 3rd time, the tour should not show again even after 24 hours.
+  // After the 3rd time, the nudge should not show again even after 24 hours.
   SetAnimationDurationMultiplier(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   MoveMouseTo(widget.get());

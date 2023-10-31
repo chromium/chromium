@@ -447,9 +447,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHoldingSpacePredictability);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHoldingSpaceRefresh);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHoldingSpaceSuggestions);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHoldingSpaceTour);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kHoldingSpaceTourIgnoreRateLimiting);
+BASE_DECLARE_FEATURE(kHoldingSpaceWallpaperNudge);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kHoldingSpaceWallpaperNudgeIgnoreRateLimiting);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHomeButtonQuickAppAccess);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHotspot);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kVirtualKeyboardNewHeader);
@@ -1008,11 +1009,13 @@ bool IsHoldingSpaceCameraAppIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpacePredictabilityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceSuggestionsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceTourDropToPinEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceTourEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsHoldingSpaceTourEnabledCounterfactually();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceTourRateLimitingEnabled();
+bool IsHoldingSpaceWallpaperNudgeDropToPinEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceWallpaperNudgeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsHoldingSpaceWallpaperNudgeEnabledCounterfactually();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsHoldingSpaceWallpaperNudgeRateLimitingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonQuickAppAccessEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonWithTextEnabled();
