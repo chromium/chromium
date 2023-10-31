@@ -118,10 +118,6 @@ namespace blink {
 
 PaintLayerScrollableAreaRareData::PaintLayerScrollableAreaRareData() = default;
 
-void PaintLayerScrollableAreaRareData::Trace(Visitor* visitor) const {
-  visitor->Trace(sticky_layers_);
-}
-
 const int kResizerControlExpandRatioForTouch = 2;
 
 PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
@@ -983,7 +979,7 @@ void PaintLayerScrollableArea::SetScrollOffsetUnconditionally(
 }
 
 void PaintLayerScrollableArea::UpdateAfterLayout() {
-  InvalidateAllStickyConstraints();
+  EnqueueForStickyUpdateIfNeeded();
 
   bool is_horizontal_scrollbar_frozen = IsHorizontalScrollbarFrozen();
   bool is_vertical_scrollbar_frozen = IsVerticalScrollbarFrozen();
@@ -2197,11 +2193,6 @@ void PaintLayerScrollableArea::EnqueueForSnapUpdateIfNeeded() {
   }
 }
 
-void PaintLayerScrollableArea::AddStickyLayer(PaintLayer* layer) {
-  UseCounter::Count(GetLayoutBox()->GetDocument(), WebFeature::kPositionSticky);
-  EnsureRareData().sticky_layers_.insert(layer);
-}
-
 void PaintLayerScrollableArea::UpdateAllStickyConstraints() {
   // TODO(ikilpatrick): Change `UpdateStickyPositionConstraints` return the
   // sticky constraints object instead of performing a mutation.
@@ -2214,15 +2205,7 @@ void PaintLayerScrollableArea::UpdateAllStickyConstraints() {
   }
 }
 
-void PaintLayerScrollableArea::InvalidateAllStickyConstraints() {
-  // Don't clear StickyConstraints for each LayoutObject of each layer in
-  // sticky_layers_ because sticky_layers_ may contain stale pointers.
-  // LayoutBoxModelObject::UpdateStickyPositionConstraints() will check both
-  // HasStickyLayer() of its containing scrollable area and its
-  // StickyConstraints() to see if its sticky constraints need update.
-  if (rare_data_)
-    rare_data_->sticky_layers_.clear();
-
+void PaintLayerScrollableArea::EnqueueForStickyUpdateIfNeeded() {
   // Enqueue ourselves for a sticky update if we have any sticky descendants.
   const auto* box = GetLayoutBox();
   for (const auto& fragment : box->PhysicalFragments()) {
@@ -2234,18 +2217,18 @@ void PaintLayerScrollableArea::InvalidateAllStickyConstraints() {
 }
 
 void PaintLayerScrollableArea::InvalidatePaintForStickyDescendants() {
-  // If this is called during layout, sticky_layers_ may contain stale pointers.
-  // Return because we'll InvalidateAllStickyConstraints(), and we'll
-  // SetNeedsPaintPropertyUpdate() when updating sticky constraints.
+  // Only allow access to the fragments if we are layout-clean.
   if (GetLayoutBox()->NeedsLayout())
     return;
 
-  if (PaintLayerScrollableAreaRareData* d = RareData()) {
-    for (PaintLayer* sticky_layer : d->sticky_layers_) {
-      auto& object = sticky_layer->GetLayoutObject();
-      object.SetNeedsPaintPropertyUpdate();
-      DCHECK(object.StickyConstraints());
-      object.StickyConstraints()->ComputeStickyOffset(ScrollPosition());
+  for (const auto& fragment : GetLayoutBox()->PhysicalFragments()) {
+    if (auto* sticky_descendants = fragment.StickyDescendants()) {
+      for (auto& sticky_descendant : *sticky_descendants) {
+        sticky_descendant->SetNeedsPaintPropertyUpdate();
+        DCHECK(sticky_descendant->StickyConstraints());
+        sticky_descendant->StickyConstraints()->ComputeStickyOffset(
+            ScrollPosition());
+      }
     }
   }
 }

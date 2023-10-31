@@ -5053,6 +5053,8 @@ void LocalFrameView::AddPendingStickyUpdate(PaintLayerScrollableArea* object) {
 
 void LocalFrameView::ExecutePendingStickyUpdates() {
   if (pending_sticky_updates_) {
+    UseCounter::Count(frame_->GetDocument(), WebFeature::kPositionSticky);
+
     // Iteration order of the scrollable-areas doesn't matter as
     // sticky-positioned objects are contained within each scrollable-area.
     for (PaintLayerScrollableArea* scrollable_area : *pending_sticky_updates_) {

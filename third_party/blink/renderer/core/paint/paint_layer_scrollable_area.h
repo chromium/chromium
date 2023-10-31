@@ -79,9 +79,8 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   PaintLayerScrollableAreaRareData& operator=(
       const PaintLayerScrollableAreaRareData&) = delete;
 
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const {}
 
-  HeapLinkedHashSet<Member<PaintLayer>> sticky_layers_;
   absl::optional<cc::SnapContainerData> snap_container_data_;
   bool snap_container_data_needs_update_ = true;
   Vector<gfx::Rect> tickmarks_override_;
@@ -490,12 +489,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void EnqueueForSnapUpdateIfNeeded();
 
-  void AddStickyLayer(PaintLayer*);
-  bool HasStickyLayer(PaintLayer* layer) const {
-    return rare_data_ && rare_data_->sticky_layers_.Contains(layer);
-  }
   void UpdateAllStickyConstraints();
-  void InvalidateAllStickyConstraints();
+  void EnqueueForStickyUpdateIfNeeded();
   void InvalidatePaintForStickyDescendants();
 
   // This function doesn't check background-attachment:fixed backgrounds

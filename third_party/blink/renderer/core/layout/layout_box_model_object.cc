@@ -485,15 +485,6 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   bool is_fixed_to_view = false;
   const auto* scroll_container_layer =
       Layer()->ContainingScrollContainerLayer(&is_fixed_to_view);
-  auto* scrollable_area = scroll_container_layer->GetScrollableArea();
-  DCHECK(scrollable_area);
-  // Check if sticky constraints are invalidated.
-  if (scrollable_area->HasStickyLayer(Layer()) && StickyConstraints()) {
-    DCHECK_EQ(scroll_container_layer,
-              StickyConstraints()->containing_scroll_container_layer);
-    DCHECK_EQ(is_fixed_to_view, StickyConstraints()->is_fixed_to_view);
-    return false;
-  }
 
   StickyPositionScrollingConstraints* constraints =
       MakeGarbageCollected<StickyPositionScrollingConstraints>();
@@ -649,7 +640,8 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
     constraints->bottom_inset = bottom;
   }
 
-  scrollable_area->AddStickyLayer(Layer());
+  auto* scrollable_area = scroll_container_layer->GetScrollableArea();
+  DCHECK(scrollable_area);
   constraints->ComputeStickyOffset(scrollable_area->ScrollPosition());
   SetStickyConstraints(constraints);
   return true;
