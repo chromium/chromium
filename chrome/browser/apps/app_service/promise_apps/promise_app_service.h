@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_icon_cache.h"
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -78,6 +79,8 @@ class PromiseAppService : public AppRegistryCache::Observer {
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
+
+  void OnApkWebAppInstallationFinished(const std::string& package_name);
 
   // Allows us to skip Almanac implementation when running unit tests that don't
   // care about Almanac responses.

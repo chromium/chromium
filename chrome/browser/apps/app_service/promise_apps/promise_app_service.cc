@@ -318,4 +318,22 @@ void PromiseAppService::SetPromiseAppReadyToShow(const PackageId& package_id) {
   promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
 }
 
+void PromiseAppService::OnApkWebAppInstallationFinished(
+    const std::string& package_name) {
+  PackageId package_id(AppType::kArc, package_name);
+
+  // Successful APK web app installations are already handled during a call to
+  // observers via AppRegistryCache::OnAppUpdate which happens before this
+  // method is called.
+  if (!promise_app_registry_cache_->HasPromiseApp(package_id)) {
+    return;
+  }
+
+  // We get to this point if the APK web installation failed. In this case, we
+  // should remove the promise app and consider it a cancellation.
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->status = PromiseStatus::kCancelled;
+  OnPromiseApp(std::move(promise_app));
+}
+
 }  // namespace apps
