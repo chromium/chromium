@@ -91585,47 +91585,6 @@ Called by update_scheduler_enums.py.-->
   <int value="5" label="User clicked the 'Sign in' button"/>
 </enum>
 
-<enum name="WelcomeTourAbortedReason">
-  <int value="0" label="kUnknown"/>
-  <int value="1" label="kAccelerator"/>
-  <int value="2" label="kChromeVoxEnabled"/>
-  <int value="3" label="kTabletModeEnabled"/>
-  <int value="4" label="kUserDeclinedTour"/>
-  <int value="5" label="kShutdown"/>
-</enum>
-
-<enum name="WelcomeTourInteraction">
-  <int value="0" label="kFilesApp"/>
-  <int value="1" label="kLauncher"/>
-  <int value="2" label="kQuickSettings"/>
-  <int value="3" label="kSearch"/>
-  <int value="4" label="kSettingsApp"/>
-  <int value="5" label="kExploreApp"/>
-</enum>
-
-<enum name="WelcomeTourPreventedReason">
-  <int value="0" label="kUnknown"/>
-  <int value="1" label="kChromeVoxEnabled"/>
-  <int value="2" label="kCounterfactualExperimentArm"/>
-  <int value="3" label="kManagedAccount"/>
-  <int value="4" label="kTabletModeEnabled"/>
-  <int value="5" label="kUserNewnessNotAvailable"/>
-  <int value="6" label="kUserNotNewCrossDevice"/>
-  <int value="7" label="kUserTypeNotRegular"/>
-  <int value="8" label="kUserNotNewLocally"/>
-</enum>
-
-<enum name="WelcomeTourStep">
-  <int value="0" label="kDialog"/>
-  <int value="1" label="kExploreApp"/>
-  <int value="2" label="kExploreAppWindow"/>
-  <int value="3" label="kHomeButton"/>
-  <int value="4" label="kSearch"/>
-  <int value="5" label="kSettingsApp"/>
-  <int value="6" label="kShelf"/>
-  <int value="7" label="kStatusArea"/>
-</enum>
-
 <enum name="WellKnownChangePasswordResult">
   <int value="0" label="Fallback to Origin"/>
   <int value="1" label="Fallback to Url Override"/>
