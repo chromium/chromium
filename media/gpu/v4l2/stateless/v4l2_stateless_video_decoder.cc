@@ -157,10 +157,12 @@ size_t V4L2StatelessVideoDecoder::GetMaxOutputFramePoolSize() const {
   return 0;
 }
 
-scoped_refptr<V4L2DecodeSurface> V4L2StatelessVideoDecoder::CreateSurface() {
+scoped_refptr<StatelessDecodeSurface>
+V4L2StatelessVideoDecoder::CreateSurface() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  NOTIMPLEMENTED();
-  return nullptr;
+  DVLOGF(4);
+
+  return base::MakeRefCounted<StatelessDecodeSurface>();
 }
 
 bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
@@ -173,12 +175,11 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
 }
 
 void V4L2StatelessVideoDecoder::SurfaceReady(
-    scoped_refptr<V4L2DecodeSurface> dec_surface,
+    scoped_refptr<StatelessDecodeSurface> dec_surface,
     int32_t bitstream_id,
     const gfx::Rect& visible_rect,
     const VideoColorSpace& color_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  NOTREACHED();
   NOTIMPLEMENTED();
 }
 

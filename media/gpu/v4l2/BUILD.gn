@@ -22,6 +22,8 @@ source_set("v4l2") {
     "stateless/device.h",
     "stateless/queue.cc",
     "stateless/queue.h",
+    "stateless/stateless_decode_surface.cc",
+    "stateless/stateless_decode_surface.h",
     "stateless/stateless_decode_surface_handler.h",
     "stateless/stateless_device.cc",
     "stateless/stateless_device.h",

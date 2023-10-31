@@ -14,6 +14,24 @@
 
 namespace media {
 
+class V4L2VP9Picture : public VP9Picture {
+ public:
+  explicit V4L2VP9Picture(scoped_refptr<StatelessDecodeSurface> dec_surface)
+      : dec_surface_(std::move(dec_surface)) {}
+
+  V4L2VP9Picture(const V4L2VP9Picture&) = delete;
+  V4L2VP9Picture& operator=(const V4L2VP9Picture&) = delete;
+
+ private:
+  ~V4L2VP9Picture() override = default;
+
+  scoped_refptr<VP9Picture> CreateDuplicate() override {
+    return base::MakeRefCounted<V4L2VP9Picture>(dec_surface_);
+  }
+
+  scoped_refptr<StatelessDecodeSurface> dec_surface_;
+};
+
 using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
 namespace {
 
@@ -121,8 +139,13 @@ VP9Delegate::~VP9Delegate() = default;
 
 scoped_refptr<VP9Picture> VP9Delegate::CreateVP9Picture() {
   DVLOGF(4);
+  scoped_refptr<StatelessDecodeSurface> dec_surface =
+      surface_handler_->CreateSurface();
+  if (!dec_surface) {
+    return nullptr;
+  }
 
-  return new VP9Picture();
+  return base::MakeRefCounted<V4L2VP9Picture>(std::move(dec_surface));
 }
 
 DecodeStatus VP9Delegate::SubmitDecode(
@@ -272,7 +295,8 @@ DecodeStatus VP9Delegate::SubmitDecode(
 
 bool VP9Delegate::OutputPicture(scoped_refptr<VP9Picture> pic) {
   DVLOGF(4);
-  NOTIMPLEMENTED();
+  surface_handler_->SurfaceReady(nullptr, pic->bitstream_id(),
+                                 pic->visible_rect(), pic->get_colorspace());
   return true;
 }
 

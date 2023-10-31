@@ -6,12 +6,12 @@
 #define MEDIA_GPU_V4L2_STATELESS_STATELESS_DECODE_SURFACE_HANDLER_H_
 
 #include "media/gpu/decode_surface_handler.h"
-#include "media/gpu/v4l2/v4l2_decode_surface.h"
+#include "media/gpu/v4l2/stateless/stateless_decode_surface.h"
 
 namespace media {
 
 class StatelessDecodeSurfaceHandler
-    : public DecodeSurfaceHandler<V4L2DecodeSurface> {
+    : public DecodeSurfaceHandler<StatelessDecodeSurface> {
  public:
   StatelessDecodeSurfaceHandler() = default;
 
