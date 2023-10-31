@@ -444,6 +444,12 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
       }
     }
 
+    // TODO(b/308486017): "Modifier key + regular key" support is TBD. Currently
+    // it is not supported.
+    if (ContainShortcutEventFlags(key_event)) {
+      return false;
+    }
+
     // Generate touch move.
     CalculateMoveVector(touch_down_positions_[current_position_idx_], index,
                         /*key_press=*/true, content_bounds, rotation_transform);

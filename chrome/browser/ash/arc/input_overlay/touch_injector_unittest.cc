@@ -928,6 +928,66 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveMouse) {
   event_capturer_.Clear();
 }
 
+TEST_P(VersionTouchInjectorTest, TestEventRewriterWithModifierKey) {
+  auto json_value =
+      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->ParseActions(json_value->GetDict());
+  auto* actionA = injector_->actions()[0].get();
+  injector_->RegisterEventRewriter();
+
+  // Press key `A`, then key `Ctrl` and then release key `A` and then key
+  // `Ctrl`. The keyboard-binded `Action` injects simulated touch events.
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
+  EXPECT_TRUE(actionA->touch_id());
+  event_generator_->PressKey(ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN);
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN, kTolerance);
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
+  EXPECT_FALSE(actionA->touch_id());
+  event_generator_->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
+  event_capturer_.Clear();
+
+  // Press key `A`, then key `Ctrl` and then release key `Ctrl` and then key
+  // `A`. The keyboard-binded `Action` injects simulated touch events.
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
+  EXPECT_TRUE(actionA->touch_id());
+  event_generator_->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
+  event_generator_->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, kTolerance);
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
+  EXPECT_FALSE(actionA->touch_id());
+  event_capturer_.Clear();
+
+  // Press key `Ctrl`, then key `A` and then release key `A` and then key
+  // `Ctrl`. The keyboard-binded `Action` doesn't inject simulated touch events.
+  event_generator_->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN, kTolerance);
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
+  event_generator_->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
+
+  // Press key `Ctrl`, then key `A` and then release key `Ctrl` and then key
+  // `A`. The keyboard-binded `Action` doesn't inject simulated touch events.
+  event_generator_->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
+  event_generator_->ReleaseKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, kTolerance);
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
+}
+
 TEST_P(VersionTouchInjectorTest, TestEventRewriterTouchToTouch) {
   // Setup.
   auto json_value =
