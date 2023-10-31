@@ -123,6 +123,7 @@ const char* GetSnapshotFileName(const V8SnapshotFileType file_type) {
 extern "C" bool V8RecordReplayIsARM();
 
 void GetV8FilePath(const char* file_name, base::FilePath* path_out) {
+  fprintf(stderr, "GetV8FilePath: %s\n", file_name);
   // The snapshot file is arch specific, record/replay its contents when we recorded
   // on ARM because we will replay on x64.
   if (V8RecordReplayIsARM()) {
@@ -402,6 +403,7 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   if (g_mapped_snapshot) {
+    fprintf(stderr, "V8Initializer::Initialize: g_mapped_snapshot is not null\n");
     v8::StartupData snapshot;
     GetMappedFileData(g_mapped_snapshot, &snapshot);
     v8::V8::SetSnapshotDataBlob(&snapshot);
@@ -527,6 +529,8 @@ void V8Initializer::LoadV8SnapshotFromFile(
     V8SnapshotFileType snapshot_file_type) {
   if (g_mapped_snapshot)
     return;
+
+  fprintf(stderr, "V8Initializer::LoadV8SnapshotFromFile\n");
 
   if (!snapshot_file.IsValid()) {
     LOG(FATAL) << "Error loading V8 startup snapshot file";
