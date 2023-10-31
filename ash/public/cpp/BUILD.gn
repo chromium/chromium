@@ -120,6 +120,8 @@ component("cpp") {
     "connectivity_services.h",
     "default_user_image.cc",
     "default_user_image.h",
+    "desk_profiles_delegate.cc",
+    "desk_profiles_delegate.h",
     "desk_template.cc",
     "desk_template.h",
     "esim_manager.cc",

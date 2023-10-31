@@ -1,0 +1,38 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+import "ui/gfx/image/mojom/image.mojom";
+
+[Stable]
+struct LacrosProfileSummary {
+  // A stable identifier of the profile. It is computed by hashing the path of
+  // the profile's storage directory.
+  uint64 profile_id@0;
+
+  // The profile name.
+  string name@1;
+
+  // The profile's associated email address. May be empty.
+  string email@2;
+
+  // The profile's avatar icon.
+  gfx.mojom.ImageSkia? icon@3;
+};
+
+// This interface is implemented by Ash-Chrome and receives profile updates from
+// lacros. This allows Ash-Chrome to show up-to-date profile information.
+[Stable, Uuid="c1c93d9a-3291-40b1-91f0-c121b777eb0e"]
+interface DeskProfileObserver {
+  // Called by Lacros to notify Ash about profile changes. At startup, it is
+  // invoked with a list of profiles that exist in Lacros. It is later called
+  // when an existing profile is updated, or a new one is added.
+  OnProfileUpsert@0(array<LacrosProfileSummary> profiles);
+
+  // Called by Lacros to notify Ash that the profile identified by `profile_id`
+  // has been removed.
+  OnProfileRemoved@1(uint64 profile_id);
+};

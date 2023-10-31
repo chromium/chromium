@@ -46,6 +46,7 @@ class ReadWriteCardsManager;
 
 namespace crosapi {
 class ClipboardHistoryLacros;
+class DeskProfilesLacros;
 class SearchControllerLacros;
 class TaskManagerLacros;
 class WebAppProviderBridgeLacros;
@@ -210,6 +211,10 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Forwards messages between VMs and the gnubbyd extension.
   std::unique_ptr<guest_os::VmSkForwardingService> vm_sk_forwarding_service_;
+
+  // Observes profile information updates and sends summary info to ash. Used
+  // only when the desk profiles feature is enabled.
+  std::unique_ptr<crosapi::DeskProfilesLacros> desk_profiles_lacros_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

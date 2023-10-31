@@ -24,6 +24,7 @@
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/clipboard_history_lacros.h"
+#include "chrome/browser/lacros/desk_profiles_lacros.h"
 #include "chrome/browser/lacros/desk_template_client_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/drivefs_cache.h"
@@ -90,6 +91,20 @@ CreateClipboardHistoryLacros() {
                   kRegisterClientMinVersion}) {
     return std::make_unique<crosapi::ClipboardHistoryLacros>(
         service->GetRemote<crosapi::mojom::ClipboardHistory>().get());
+  }
+
+  return nullptr;
+}
+
+std::unique_ptr<crosapi::DeskProfilesLacros> CreateDeskProfilesLacros() {
+  CHECK(chromeos::features::IsDeskProfilesEnabled());
+
+  if (chromeos::LacrosService* const service = chromeos::LacrosService::Get();
+      service->IsAvailable<crosapi::mojom::DeskProfileObserver>() &&
+      g_browser_process) {
+    return std::make_unique<crosapi::DeskProfilesLacros>(
+        g_browser_process->profile_manager(),
+        service->GetRemote<crosapi::mojom::DeskProfileObserver>().get());
   }
 
   return nullptr;
@@ -165,6 +180,9 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   automation_manager_ = std::make_unique<AutomationManagerLacros>();
   browser_service_ = std::make_unique<BrowserServiceLacros>();
   desk_template_client_ = std::make_unique<DeskTemplateClientLacros>();
+  if (chromeos::features::IsDeskProfilesEnabled()) {
+    desk_profiles_lacros_ = CreateDeskProfilesLacros();
+  }
   drivefs_native_message_host_bridge_ =
       std::make_unique<drive::DriveFsNativeMessageHostBridge>();
   download_controller_client_ =

@@ -27,6 +27,7 @@ mojom("mojom") {
     "cros_display_config.mojom",
     "crosapi.mojom",
     "desk.mojom",
+    "desk_profiles.mojom",
     "desk_template.mojom",
     "device_attributes.mojom",
     "device_local_account_extension_service.mojom",

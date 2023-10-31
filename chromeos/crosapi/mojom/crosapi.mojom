@@ -25,6 +25,7 @@ import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/content_protection.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
 import "chromeos/crosapi/mojom/desk.mojom";
+import "chromeos/crosapi/mojom/desk_profiles.mojom";
 import "chromeos/crosapi/mojom/desk_template.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
 import "chromeos/crosapi/mojom/device_local_account_extension_service.mojom";
@@ -149,8 +150,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 122
-// Next method id: 124
+// Next version: 123
+// Next method id: 125
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -264,6 +265,11 @@ interface Crosapi {
   // Binds the desk factory interface.
   // Added in M109.
   [MinVersion=99] BindDesk@103(pending_receiver<Desk> receiver);
+
+  // Binds the desk profiles interface.
+  // Added in M119.
+  [MinVersion=122] BindDeskProfileObserver@124(
+      pending_receiver<DeskProfileObserver> receiver);
 
   // Binds the desk template factory interface.
   // Added in M101.
