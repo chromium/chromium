@@ -133,9 +133,6 @@ class MEDIA_EXPORT AUAudioInputStream
   // Gets the current capture time.
   base::TimeTicks GetCaptureTime(const AudioTimeStamp* input_time_stamp);
 
-  // Gets the number of channels for a stream of audio data.
-  int GetNumberOfChannelsForDevice();
-
   // Issues the OnError() callback to the |sink_|.
   void HandleError(OSStatus err);
 

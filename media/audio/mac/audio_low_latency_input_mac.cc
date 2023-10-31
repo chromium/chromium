@@ -1053,23 +1053,6 @@ base::TimeTicks AUAudioInputStream::GetCaptureTime(
          hardware_latency_;
 }
 
-int AUAudioInputStream::GetNumberOfChannelsForDevice() {
-  // Get the stream format, to be able to read the number of channels.
-  AudioObjectPropertyAddress property_address = {
-      kAudioDevicePropertyStreamFormat, kAudioDevicePropertyScopeInput,
-      kAudioObjectPropertyElementMain};
-  AudioStreamBasicDescription stream_format;
-  UInt32 size = sizeof(stream_format);
-  OSStatus result = AudioObjectGetPropertyData(
-      input_device_id_, &property_address, 0, nullptr, &size, &stream_format);
-  if (result != noErr) {
-    DLOG(WARNING) << "Could not get stream format";
-    return 0;
-  }
-
-  return static_cast<int>(stream_format.mChannelsPerFrame);
-}
-
 bool AUAudioInputStream::IsRunning() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!audio_unit_)
