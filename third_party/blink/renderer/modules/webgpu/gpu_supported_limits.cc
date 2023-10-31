@@ -88,35 +88,37 @@ void GPUSupportedLimits::MakeUndefined(WGPURequiredLimits* out) {
 }
 
 // static
-DOMException* GPUSupportedLimits::Populate(
-    WGPURequiredLimits* out,
-    const Vector<std::pair<String, uint64_t>>& in) {
+bool GPUSupportedLimits::Populate(WGPURequiredLimits* out,
+                                  const Vector<std::pair<String, uint64_t>>& in,
+                                  ScriptPromiseResolver* resolver) {
   // TODO(crbug.com/dawn/685): This loop is O(n^2) if the developer
   // passes all of the limits. It could be O(n) with a mapping of
   // String -> WGPULimits::*member.
   for (const auto& key_value_pair : in) {
-#define X(name)                                                  \
-  if (key_value_pair.first == #name) {                           \
-    using T = decltype(WGPULimits::name);                        \
-    constexpr T maxValue = std::numeric_limits<T>::max();        \
-    constexpr T undefinedValue = UndefinedLimitValue<T>();       \
-    static_assert(undefinedValue == maxValue, "");               \
-    if (key_value_pair.second == maxValue) {                     \
-      return MakeGarbageCollected<DOMException>(                 \
-          DOMExceptionCode::kOperationError,                     \
-          "The limit \"" #name "\" exceeds the maximum value " + \
-              String::Number(maxValue - 1));                     \
-    }                                                            \
-    out->limits.name = static_cast<T>(key_value_pair.second);    \
-    continue;                                                    \
+#define X(name)                                                           \
+  if (key_value_pair.first == #name) {                                    \
+    using T = decltype(WGPULimits::name);                                 \
+    constexpr T maxValue = std::numeric_limits<T>::max();                 \
+    constexpr T undefinedValue = UndefinedLimitValue<T>();                \
+    static_assert(undefinedValue == maxValue, "");                        \
+    if (key_value_pair.second == maxValue) {                              \
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError, \
+                                       "The limit \"" #name               \
+                                       "\" exceeds the maximum value " +  \
+                                           String::Number(maxValue - 1)); \
+      return false;                                                       \
+    }                                                                     \
+    out->limits.name = static_cast<T>(key_value_pair.second);             \
+    continue;                                                             \
   }
     SUPPORTED_LIMITS(X)
 #undef X
-    return MakeGarbageCollected<DOMException>(
+    resolver->RejectWithDOMException(
         DOMExceptionCode::kOperationError,
         "The limit \"" + key_value_pair.first + "\" is not recognized.");
+    return false;
   }
-  return nullptr;
+  return true;
 }
 
 #define X(name)                                                 \

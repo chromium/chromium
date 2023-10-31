@@ -187,14 +187,14 @@ class GPUDevice final : public EventTarget,
                                WGPUErrorType type,
                                const char* message);
 
-  void OnCreateRenderPipelineAsyncCallback(ScriptPromiseResolver* resolver,
-                                           absl::optional<String> label,
+  void OnCreateRenderPipelineAsyncCallback(absl::optional<String> label,
+                                           ScriptPromiseResolver* resolver,
                                            WGPUCreatePipelineAsyncStatus status,
                                            WGPURenderPipeline render_pipeline,
                                            const char* message);
   void OnCreateComputePipelineAsyncCallback(
-      ScriptPromiseResolver* resolver,
       absl::optional<String> label,
+      ScriptPromiseResolver* resolver,
       WGPUCreatePipelineAsyncStatus status,
       WGPUComputePipeline compute_pipeline,
       const char* message);

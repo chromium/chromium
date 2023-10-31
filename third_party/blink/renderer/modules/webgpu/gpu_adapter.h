@@ -56,8 +56,8 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
 
  private:
   void OnRequestDeviceCallback(ScriptState* script_state,
-                               ScriptPromiseResolver* resolver,
                                const GPUDeviceDescriptor* descriptor,
+                               ScriptPromiseResolver* resolver,
                                WGPURequestDeviceStatus status,
                                WGPUDevice dawn_device,
                                const char* error_message);

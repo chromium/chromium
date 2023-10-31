@@ -267,9 +267,8 @@ ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
 
   // And send the command, leaving remaining validation to Dawn.
-  auto* callback =
-      BindWGPUOnceCallback(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this),
-                           WrapPersistent(resolver));
+  auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
+      WTF::BindOnce(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this))));
 
   GetProcs().bufferMapAsync(GetHandle(), mode, map_offset, map_size,
                             callback->UnboundCallback(),
@@ -374,38 +373,38 @@ void GPUBuffer::OnMapAsyncCallback(ScriptPromiseResolver* resolver,
       resolver->Resolve();
       break;
     case WGPUBufferMapAsyncStatus_ValidationError:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "Buffer is invalid"));
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       "Buffer is invalid");
       break;
     case WGPUBufferMapAsyncStatus_Unknown:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "Unknown error in mapAsync"));
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       "Unknown error in mapAsync");
       break;
     case WGPUBufferMapAsyncStatus_DeviceLost:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError, "Device is lost"));
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                       "Device is lost");
       break;
     case WGPUBufferMapAsyncStatus_DestroyedBeforeCallback:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      resolver->RejectWithDOMException(
           DOMExceptionCode::kAbortError,
-          "Buffer is destroyed before the mapping is resolved"));
+          "Buffer is destroyed before the mapping is resolved");
       break;
     case WGPUBufferMapAsyncStatus_UnmappedBeforeCallback:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      resolver->RejectWithDOMException(
           DOMExceptionCode::kAbortError,
-          "Buffer is unmapped before the mapping is resolved"));
+          "Buffer is unmapped before the mapping is resolved");
       break;
     case WGPUBufferMapAsyncStatus_MappingAlreadyPending:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "A mapping is already pending"));
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       "A mapping is already pending");
       break;
     case WGPUBufferMapAsyncStatus_OffsetOutOfRange:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "The offset is out of range"));
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       "The offset is out of range");
       break;
     case WGPUBufferMapAsyncStatus_SizeOutOfRange:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "The size is out of range"));
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       "The size is out of range");
       break;
     default:
       NOTREACHED();

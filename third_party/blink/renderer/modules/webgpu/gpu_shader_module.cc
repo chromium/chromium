@@ -107,8 +107,23 @@ void GPUShaderModule::OnCompilationInfoCallback(
     WGPUCompilationInfoRequestStatus status,
     const WGPUCompilationInfo* info) {
   if (status != WGPUCompilationInfoRequestStatus_Success || !info) {
-    resolver->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kOperationError));
+    const char* message = nullptr;
+    switch (status) {
+      case WGPUCompilationInfoRequestStatus_Error:
+        message = "Unexpected error in getCompilationInfo";
+        break;
+      case WGPUCompilationInfoRequestStatus_DeviceLost:
+        message =
+            "Device lost during getCompilationInfo (do not use this error for "
+            "recovery - it is NOT guaranteed to happen on device loss)";
+        break;
+      case WGPUCompilationInfoRequestStatus_Unknown:
+      default:
+        message = "Unknown failure in getCompilationInfo";
+        break;
+    }
+    resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                     message);
     return;
   }
 
@@ -131,8 +146,8 @@ ScriptPromise GPUShaderModule::getCompilationInfo(ScriptState* script_state) {
   ScriptPromise promise = resolver->Promise();
 
   auto* callback =
-      BindWGPUOnceCallback(&GPUShaderModule::OnCompilationInfoCallback,
-                           WrapPersistent(this), WrapPersistent(resolver));
+      MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+          &GPUShaderModule::OnCompilationInfoCallback, WrapPersistent(this))));
 
   GetProcs().shaderModuleGetCompilationInfo(
       GetHandle(), callback->UnboundCallback(), callback->AsUserdata());
