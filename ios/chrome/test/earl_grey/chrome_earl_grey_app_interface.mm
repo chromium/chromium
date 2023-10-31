@@ -669,19 +669,22 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (BOOL)webStateContainsElement:(ElementSelector*)selector {
-  return web::test::IsWebViewContainingElement(
-      chrome_test_util::GetCurrentWebState(), selector);
+  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+  return web_state &&
+         web::test::IsWebViewContainingElement(web_state, selector);
 }
 
 + (BOOL)webStateContainsText:(NSString*)text {
-  return web::test::IsWebViewContainingText(
-      chrome_test_util::GetCurrentWebState(), base::SysNSStringToUTF8(text));
+  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+  return web_state && web::test::IsWebViewContainingText(
+                          web_state, base::SysNSStringToUTF8(text));
 }
 
 + (NSError*)waitForWebStateContainingLoadedImage:(NSString*)imageID {
-  bool success = web::test::WaitForWebViewContainingImage(
-      base::SysNSStringToUTF8(imageID), chrome_test_util::GetCurrentWebState(),
-      web::test::IMAGE_STATE_LOADED);
+  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+  bool success = web_state && web::test::WaitForWebViewContainingImage(
+                                  base::SysNSStringToUTF8(imageID), web_state,
+                                  web::test::IMAGE_STATE_LOADED);
 
   if (!success) {
     NSString* errorString = [NSString
@@ -694,8 +697,9 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (NSError*)waitForWebStateContainingBlockedImage:(NSString*)imageID {
+  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
   bool success = web::test::WaitForWebViewContainingImage(
-      base::SysNSStringToUTF8(imageID), chrome_test_util::GetCurrentWebState(),
+      base::SysNSStringToUTF8(imageID), web_state,
       web::test::IMAGE_STATE_BLOCKED);
 
   if (!success) {
@@ -768,17 +772,18 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (BOOL)isRestoreSessionInProgress {
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  return web_state->GetNavigationManager()->IsRestoreSessionInProgress();
+  return web_state &&
+         web_state->GetNavigationManager()->IsRestoreSessionInProgress();
 }
 
 + (BOOL)webStateWebViewUsesContentInset {
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  return web_state->GetWebViewProxy().shouldUseViewContentInset;
+  return web_state && web_state->GetWebViewProxy().shouldUseViewContentInset;
 }
 
 + (CGSize)webStateWebViewSize {
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  return [web_state->GetWebViewProxy() bounds].size;
+  return web_state ? [web_state->GetWebViewProxy() bounds].size : CGSizeZero;
 }
 
 + (void)stopAllWebStatesLoading {
