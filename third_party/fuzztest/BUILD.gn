@@ -31,7 +31,7 @@ config("fuzztest_internal_config") {
   include_dirs = [ "src" ]
   if (use_centipede) {
     defines = [ "FUZZTEST_USE_CENTIPEDE" ]
-  } else if (use_fuzzing_engine) {
+  } else if (use_fuzzing_engine && fuzzing_engine_supports_custom_main) {
     defines = [ "FUZZTEST_COMPATIBILITY_MODE" ]
   }
 }
@@ -294,7 +294,8 @@ source_set("fuzztest") {
     # which can be used as centipede fuzzers.
     sources = [ "src/fuzztest/internal/centipede_adaptor.cc" ]
     deps = [ ":centipede_runner_no_main" ]
-  } else if (use_fuzzing_engine) {
+  } else if (use_fuzzing_engine && fuzzing_engine_supports_custom_main) {
+    # Typically, libfuzzer.
     deps = [ "//testing/libfuzzer:fuzzing_engine_no_main" ]
   }
   public_deps = [ ":fuzztest_internal" ]
