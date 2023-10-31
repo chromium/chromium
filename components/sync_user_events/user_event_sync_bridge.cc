@@ -153,7 +153,6 @@ void UserEventSyncBridge::ApplyDisableSyncChanges(
 
 void UserEventSyncBridge::RecordUserEvent(
     std::unique_ptr<UserEventSpecifics> specifics) {
-  DCHECK(!specifics->has_user_consent());
   if (store_) {
     RecordUserEventImpl(std::move(specifics));
     return;
