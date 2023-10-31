@@ -420,6 +420,7 @@
   E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkForeground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeSnapshotBackground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeWallpaperSearchTileBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeWebStoreBorder) \
   E_CPONLY(kColorSidePanelDialogBackground) \
   E_CPONLY(kColorSidePanelDialogDivider) \
