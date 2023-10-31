@@ -21,6 +21,8 @@ const char kSafetyHubMenuNotificationLastImpressionKey[] = "lastImpressionTime";
 const char kSafetyHubMenuNotificationShowAfterTimeKey[] = "onlyShowAfterTime";
 const char kSafetyHubMenuNotificationResultKey[] = "result";
 
+const char kSafetyHubTriggeringExtensionIdsKey[] = "triggeringExtensions";
+
 const base::TimeDelta kMinTimeBetweenPasswordChecks = base::Hours(1);
 const base::TimeDelta kPasswordCheckOverdueTimeWindow = base::Hours(1);
 
