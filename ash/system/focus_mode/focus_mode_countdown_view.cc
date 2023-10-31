@@ -21,21 +21,23 @@ namespace ash {
 
 namespace {
 
-constexpr int kCountdownViewHeight = 74;
-constexpr int kButtonWidth = 79;
-constexpr int kSpaceBetweenButtons = 10;
+constexpr int kCountdownViewHeight = 72;
+constexpr int kSpaceBetweenButtons = 8;
 constexpr int kBarWidth = 200;
 constexpr int kBarHeight = 8;
-constexpr int kAboveBarSpace = 14;
-constexpr int kBelowBarSpace = 8;
+constexpr int kAboveBarSpace = 8;
+constexpr int kBelowBarSpace = 6;
+constexpr int kSpaceBetweenContainers = 16;
 
 std::unique_ptr<views::Label> CreateTimerLabel(
     gfx::HorizontalAlignment alignment,
-    TypographyToken token) {
+    TypographyToken token,
+    ui::ColorId color_id) {
   auto label = std::make_unique<views::Label>();
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(alignment);
   TypographyProvider::Get()->StyleLabel(token, *label);
+  label->SetEnabledColorId(color_id);
   return label;
 }
 
@@ -62,12 +64,22 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
   // Add a vertical container on the left for the countdown timer, the progress
   // bar, and the bar label container.
   auto* timer_container =
-      AddChildView(std::make_unique<views::FlexLayoutView>());
-  timer_container->SetOrientation(views::LayoutOrientation::kVertical);
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  timer_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  timer_container->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
   timer_container->SetPreferredSize(gfx::Size(kBarWidth, kCountdownViewHeight));
+  timer_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred,
+                               /*adjust_height_for_width =*/false));
+  timer_container->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, 0, 0, kSpaceBetweenContainers)));
 
   time_remaining_label_ = timer_container->AddChildView(
-      CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosDisplay6Regular));
+      CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosDisplay6Regular,
+                       cros_tokens::kCrosSysOnSurface));
 
   // TODO(b/286931547): Timer Progress Bar.
   progress_bar_ =
@@ -85,12 +97,14 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
   bar_label_container->SetOrientation(views::LayoutOrientation::kHorizontal);
 
   time_elapsed_label_ = bar_label_container->AddChildView(
-      CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosLabel1));
+      CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosLabel1,
+                       cros_tokens::kCrosSysSecondary));
 
   bar_label_container->AddChildView(CreateSpacerView());
 
   time_total_label_ = bar_label_container->AddChildView(
-      CreateTimerLabel(gfx::ALIGN_RIGHT, TypographyToken::kCrosLabel2));
+      CreateTimerLabel(gfx::ALIGN_RIGHT, TypographyToken::kCrosLabel2,
+                       cros_tokens::kCrosSysSecondary));
 
   // Add a top level spacer in first layout manager, between the timer container
   // and button container.
@@ -106,7 +120,6 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
   button_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   button_container->SetBetweenChildSpacing(kSpaceBetweenButtons);
-  button_container->SetMinimumCrossAxisSize(kButtonWidth);
 
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   if (include_end_button_) {

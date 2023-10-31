@@ -258,7 +258,8 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
                     focus_mode_controller->end_time()),
                 GetToggleRowSubLabel()->GetText());
     }
-    EXPECT_EQ(active ? u"End" : u"Start", GetToggleRowButton()->GetText());
+    EXPECT_EQ(active ? u"End Focus" : u"Start",
+              GetToggleRowButton()->GetText());
   };
 
   validate_labels(/*active=*/false);
