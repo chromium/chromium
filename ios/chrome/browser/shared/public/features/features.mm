@@ -6,21 +6,6 @@
 
 #import "ui/base/device_form_factor.h"
 
-BASE_FEATURE(kDefaultBrowserBlueDotPromo,
-             "DefaultBrowserBlueDotPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<BlueDotPromoUserGroup>::Option
-    kBlueDotPromoUserGroupOptions[] = {
-        {BlueDotPromoUserGroup::kAllDBPromosDisabled, "all-db-promos-disabled"},
-        {BlueDotPromoUserGroup::kAllDBPromosEnabled, "all-db-promos-enabled"},
-        {BlueDotPromoUserGroup::kOnlyBlueDotPromoEnabled,
-         "only-blue-dot-promo-enabled"}};
-
-constexpr base::FeatureParam<BlueDotPromoUserGroup> kBlueDotPromoUserGroupParam{
-    &kDefaultBrowserBlueDotPromo, "user-group",
-    BlueDotPromoUserGroup::kAllDBPromosEnabled, &kBlueDotPromoUserGroupOptions};
-
 BASE_FEATURE(kIOSPaymentsBottomSheet,
              "IOSPaymentsBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);

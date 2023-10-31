@@ -40,10 +40,6 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 @implementation NonModalDefaultBrowserPromoSchedulerSceneAgent
 
 - (bool)promoCanBeDisplayed {
-  if (!AreDefaultBrowserPromosEnabled()) {
-    return false;
-  }
-
   if (IsChromeLikelyDefaultBrowser()) {
     return false;
   }

@@ -9,22 +9,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-// Feature flag to enable default browser blue dot promo.
-BASE_DECLARE_FEATURE(kDefaultBrowserBlueDotPromo);
-
 // Feature flag to enable the Payments Bottom Sheet.
 BASE_DECLARE_FEATURE(kIOSPaymentsBottomSheet);
-
-// Enum for blue dot promo user groups (control/experiment) and its param. The
-// reason why we need a custom control group is to disable other independent
-// default browser promos, which are already shipped.
-enum class BlueDotPromoUserGroup {
-  kAllDBPromosDisabled,
-  kAllDBPromosEnabled,
-  kOnlyBlueDotPromoEnabled,
-};
-extern const base::FeatureParam<BlueDotPromoUserGroup>
-    kBlueDotPromoUserGroupParam;
 
 // Test-only: Feature flag used to verify that EG2 can trigger flags. Must be
 // always disabled by default, because it is used to verify that enabling

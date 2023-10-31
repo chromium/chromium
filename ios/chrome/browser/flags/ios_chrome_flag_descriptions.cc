@@ -269,11 +269,6 @@ const char kDefaultBrowserVideoInSettingsDescription[] =
     "When enabled, default browser video will be displayed to user in "
     "settings.";
 
-const char kDefaultBrowserBlueDotPromoName[] = "Default Browser Blue Dot Promo";
-const char kDefaultBrowserBlueDotPromoDescription[] =
-    "When enabled, a blue dot default browser promo will be shown to eligible "
-    "users.";
-
 const char kDefaultBrowserFullscreenPromoExperimentName[] =
     "Default Browser Fullscreen modal experiment";
 const char kDefaultBrowserFullscreenPromoExperimentDescription[] =

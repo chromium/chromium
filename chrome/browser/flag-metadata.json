@@ -1535,11 +1535,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "default-browser-blue-dot-promo",
-    "owners": ["nicolasmacbeth@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 116
-  },
-  {
     "name": "default-browser-intents-show-settings",
     "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 120
