@@ -34,6 +34,7 @@ export interface CupsPrinterInfo {
   printerProtocol: string;
   printerQueue: string;
   printServerUri: string;
+  printerStatus?: PrinterStatus;
 }
 
 export interface CupsPrintersList {

@@ -184,6 +184,7 @@ base::Value::Dict GetCupsPrinterInfo(const Printer& printer) {
   printer_info.Set("printerPPDPath",
                    printer.ppd_reference().user_supplied_ppd_url);
   printer_info.Set("printServerUri", printer.print_server_uri());
+  printer_info.Set("printerStatus", printer.printer_status().ConvertToValue());
 
   if (!printer.HasUri()) {
     // Uri is invalid so we set default values.
@@ -206,27 +207,6 @@ base::Value::Dict GetCupsPrinterInfo(const Printer& printer) {
   printer_info.Set("printerQueue", printer_queue);
 
   return printer_info;
-}
-
-base::Value::Dict CreateCupsPrinterStatusDictionary(
-    const CupsPrinterStatus& cups_printer_status) {
-  base::Value::Dict printer_status;
-
-  printer_status.Set("printerId", cups_printer_status.GetPrinterId());
-  printer_status.Set("timestamp",
-                     cups_printer_status.GetTimestamp()
-                         .InMillisecondsFSinceUnixEpochIgnoringNull());
-
-  base::Value::List status_reasons;
-  for (const auto& reason : cups_printer_status.GetStatusReasons()) {
-    base::Value::Dict status_reason;
-    status_reason.Set("reason", static_cast<int>(reason.GetReason()));
-    status_reason.Set("severity", static_cast<int>(reason.GetSeverity()));
-    status_reasons.Append(std::move(status_reason));
-  }
-  printer_status.Set("statusReasons", std::move(status_reasons));
-
-  return printer_status;
 }
 
 }  // namespace chromeos
