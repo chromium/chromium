@@ -8,8 +8,6 @@ source_set("model") {
     "image_search_param_generator.mm",
     "scene_url_loading_service.h",
     "scene_url_loading_service.mm",
-    "test_scene_url_loading_service.h",
-    "test_scene_url_loading_service.mm",
     "url_loading_browser_agent.h",
     "url_loading_browser_agent.mm",
     "url_loading_notifier_browser_agent.h",
@@ -78,6 +76,8 @@ source_set("test_support") {
   sources = [
     "fake_url_loading_browser_agent.h",
     "fake_url_loading_browser_agent.mm",
+    "test_scene_url_loading_service.h",
+    "test_scene_url_loading_service.mm",
   ]
   deps = [ ":model" ]
 }
@@ -90,6 +90,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":model",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/ntp",
