@@ -1109,6 +1109,11 @@ targets.legacy_matrix_compound_suite(
                 "CROS_VOLTEER_PUBLIC_LKGM",
             ],
         ),
+        "chromeos_integration_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_VOLTEER_PUBLIC_LKGM",
+            ],
+        ),
     },
 )
 
