@@ -19,8 +19,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_helper.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -73,7 +75,7 @@ class FakeThemeService : public ThemeService {
  public:
   FakeThemeService() : ThemeService(nullptr, GetThemeHelper()) {}
 
-  // ThemeService implementation
+  // ThemeService:
   void DoSetTheme(const extensions::Extension* extension,
                   bool suppress_infobar) override {
     is_dirty_ = true;
@@ -200,6 +202,8 @@ scoped_refptr<extensions::Extension> MakeThemeExtension(
 
 }  // namespace
 
+// ThemeSyncableServiceTest ----------------------------------------------------
+
 class ThemeSyncableServiceTest : public testing::Test,
                                  public ThemeSyncableService::Observer {
  protected:
@@ -302,12 +306,6 @@ class ThemeSyncableServiceTest : public testing::Test,
   std::unique_ptr<ThemeSyncableService> theme_sync_service_;
   std::unique_ptr<syncer::FakeSyncChangeProcessor> fake_change_processor_;
   absl::optional<ThemeSyncableService::ThemeSyncState> state_;
-};
-
-class PolicyInstalledThemeTest : public ThemeSyncableServiceTest {
-  extensions::mojom::ManifestLocation GetThemeLocation() override {
-    return extensions::mojom::ManifestLocation::kExternalPolicyDownload;
-  }
 };
 
 TEST_F(ThemeSyncableServiceTest, AreThemeSpecificsEqual) {
@@ -874,6 +872,14 @@ TEST_F(ThemeSyncableServiceTest, SystemThemeSameAsDefaultTheme) {
   EXPECT_TRUE(change_specifics.use_system_theme_by_default());
 }
 
+// PolicyInstalledThemeTest ----------------------------------------------------
+
+class PolicyInstalledThemeTest : public ThemeSyncableServiceTest {
+  extensions::mojom::ManifestLocation GetThemeLocation() override {
+    return extensions::mojom::ManifestLocation::kExternalPolicyDownload;
+  }
+};
+
 TEST_F(PolicyInstalledThemeTest, InstallThemeByPolicy) {
   // Set up theme service to use custom theme that was installed by policy.
   fake_theme_service_->SetTheme(theme_extension_.get());
@@ -882,4 +888,126 @@ TEST_F(PolicyInstalledThemeTest, InstallThemeByPolicy) {
       theme_sync_service_->GetAllSyncDataForTesting(syncer::THEMES);
 
   ASSERT_EQ(0u, data_list.size());
+}
+
+// RealThemeSyncableServiceTest ------------------------------------------------
+
+// Uses the real `ThemeService` impl instead of the fake used by
+// `ThemeSyncableServiceTest`, in order to more closely test production behavior
+// and asserts.
+class RealThemeSyncableServiceTest
+    : public extensions::ExtensionServiceTestBase {
+ protected:
+  void SetUp() override {
+    // Setting a matching update URL is necessary to make the test theme
+    // considered syncable.
+    extension_test_util::SetGalleryUpdateURL(GURL(kCustomThemeUrl));
+
+    // Trying to write the theme pak just produces error messages.
+    ThemeService::DisableThemePackForTesting();
+
+    extensions::ExtensionServiceTestBase::SetUp();
+    InitializeExtensionService(ExtensionServiceInitParams());
+    service_->Init();
+
+    theme_sync_service_ = std::make_unique<ThemeSyncableService>(
+        profile(), ThemeServiceFactory::GetForProfile(profile()));
+    fake_change_processor_ =
+        std::make_unique<syncer::FakeSyncChangeProcessor>();
+
+    // Create and add custom theme extension so the ThemeSyncableService can
+    // find it.
+    theme_extension_ = MakeThemeExtension(
+        base::FilePath(kExtensionFilePath), kCustomThemeName,
+        extensions::mojom::ManifestLocation::kInternal, kCustomThemeUrl);
+    extensions::ExtensionPrefs::Get(profile())->AddGrantedPermissions(
+        theme_extension_->id(), extensions::PermissionSet());
+    service_->AddExtension(theme_extension_.get());
+    ASSERT_EQ(1u, extensions::ExtensionRegistry::Get(profile())
+                      ->enabled_extensions()
+                      .size());
+  }
+
+  void TearDown() override {
+    theme_sync_service_.reset();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  ThemeSyncableService* theme_sync_service() {
+    return theme_sync_service_.get();
+  }
+
+  syncer::FakeSyncChangeProcessor* fake_change_processor() {
+    return fake_change_processor_.get();
+  }
+
+  const extensions::Extension* theme_extension() const {
+    return theme_extension_.get();
+  }
+
+ private:
+  std::unique_ptr<ThemeSyncableService> theme_sync_service_;
+  std::unique_ptr<syncer::FakeSyncChangeProcessor> fake_change_processor_;
+  scoped_refptr<extensions::Extension> theme_extension_;
+};
+
+// Regression test for crbug.com/1409996.
+TEST_F(RealThemeSyncableServiceTest, ProcessSyncThemeChange_DisabledExtension) {
+  // Set up theme service to use custom theme.
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  {
+    test::ThemeServiceChangedWaiter waiter(theme_service);
+    theme_service->SetTheme(theme_extension());
+    waiter.WaitForThemeChanged();
+  }
+
+  // The custom theme should be set and enabled.
+  EXPECT_TRUE(theme_service->UsingExtensionTheme());
+  EXPECT_EQ(theme_extension()->id(), theme_service->GetThemeID());
+  EXPECT_TRUE(service()->IsExtensionEnabled(theme_extension()->id()));
+
+  // Now disable that theme by changing to an autogenerated theme.
+  {
+    test::ThemeServiceChangedWaiter waiter(theme_service);
+    theme_service->BuildAutogeneratedThemeFromColor(SkColorSetRGB(0, 0, 100));
+    waiter.WaitForThemeChanged();
+  }
+
+  // The custom theme should no longer be set or enabled.
+  EXPECT_FALSE(theme_service->UsingExtensionTheme());
+  EXPECT_FALSE(service()->IsExtensionEnabled(theme_extension()->id()));
+
+  // Start syncing.
+  absl::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, syncer::SyncDataList(),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  EXPECT_FALSE(error.has_value()) << error.value().message();
+
+  // Process a sync update that updates back to the custom theme.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(true);
+  theme_specifics.set_custom_theme_id(theme_extension()->id());
+  theme_specifics.set_custom_theme_name(kCustomThemeName);
+  theme_specifics.set_custom_theme_update_url(kCustomThemeUrl);
+  sync_pb::EntitySpecifics entity_specifics;
+  entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
+  syncer::SyncChangeList change_list;
+  change_list.emplace_back(
+      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+      syncer::SyncData::CreateRemoteData(
+          entity_specifics, syncer::ClientTagHash::FromHashed("unused")));
+  {
+    test::ThemeServiceChangedWaiter waiter(theme_service);
+    absl::optional<syncer::ModelError> process_error =
+        theme_sync_service()->ProcessSyncChanges(FROM_HERE, change_list);
+    EXPECT_FALSE(process_error.has_value()) << process_error.value().message();
+    waiter.WaitForThemeChanged();
+  }
+
+  // Ensure the custom theme has been re-set and re-enabled.
+  EXPECT_TRUE(theme_service->UsingExtensionTheme());
+  EXPECT_EQ(theme_extension()->id(), theme_service->GetThemeID());
+  EXPECT_TRUE(service()->IsExtensionEnabled(theme_extension()->id()));
 }

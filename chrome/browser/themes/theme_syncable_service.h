@@ -96,14 +96,10 @@ class ThemeSyncableService : public syncer::SyncableService,
   static bool HasNonDefaultTheme(
       const sync_pb::ThemeSpecifics& theme_specifics);
 
-  // Set theme from theme specifics in |sync_data| using
-  // SetCurrentThemeFromThemeSpecifics() if it's different from |current_specs|.
-  // Returns the state of themes after the operation.
+  // Set theme from theme specifics in |sync_data| if it's different from
+  // |current_specs|. Returns the state of themes after the operation.
   ThemeSyncState MaybeSetTheme(const sync_pb::ThemeSpecifics& current_specs,
                                const syncer::SyncData& sync_data);
-  // Returns the state of themes after the operation.
-  ThemeSyncState SetCurrentThemeFromThemeSpecifics(
-      const sync_pb::ThemeSpecifics& theme_specifics);
 
   // If the current theme is syncable, fills in the passed |theme_specifics|
   // structure based on the currently applied theme and returns |true|.
