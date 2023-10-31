@@ -193,6 +193,14 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
+    name = "chromeos_vm_tast",
+    basic_suites = [
+        "chromeos_browser_all_tast_tests",
+        "chromeos_browser_integration_tests",
+    ],
+)
+
+targets.legacy_compound_suite(
     name = "chromium_android_gtests",
     basic_suites = [
         "android_smoke_tests",

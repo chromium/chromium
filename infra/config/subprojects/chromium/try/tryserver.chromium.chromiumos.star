@@ -85,6 +85,20 @@ try_.builder(
     main_list_view = "try",
 )
 
+try_.builder(
+    name = "chromeos-amd64-generic-rel-gtest-and-tast",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is a Ash chrome builder which run gtest" +
+                       " and Tast tests.",
+    mirrors = [
+        "ci/chromeos-amd64-generic-rel",
+        "ci/chromeos-amd64-generic-rel-gtest",
+        "ci/chromeos-amd64-generic-rel-tast",
+    ],
+    contact_team_email = "chromeos-sw-engprod@google.com",
+    main_list_view = "try",
+)
+
 try_.orchestrator_builder(
     name = "chromeos-amd64-generic-rel-renamed",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,

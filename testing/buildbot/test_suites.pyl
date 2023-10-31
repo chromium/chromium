@@ -5818,6 +5818,11 @@
       'chromeos_integration_tests',
     ],
 
+    'chromeos_vm_tast': [
+      'chromeos_browser_all_tast_tests',
+      'chromeos_browser_integration_tests',
+    ],
+
     'chromium_android_gtests': [
       'android_smoke_tests',
       'android_specific_chromium_gtests',
