@@ -109,7 +109,10 @@ static_library("autofill") {
       "ui/autofill_image_fetcher_impl.cc",
       "ui/autofill_image_fetcher_impl.h",
     ]
-    deps += [ "//components/sync/base" ]
+    deps += [
+      "//chrome/browser/image_fetcher",
+      "//components/sync/base",
+    ]
   }
 
   if (build_with_tflite_lib) {

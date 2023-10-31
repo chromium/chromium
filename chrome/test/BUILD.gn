@@ -1640,6 +1640,7 @@ if (!is_android) {
       "//chrome/browser/first_party_sets",
       "//chrome/browser/headless:browser_tests",
       "//chrome/browser/image_decoder:browser_tests",
+      "//chrome/browser/image_fetcher",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
@@ -7258,6 +7259,7 @@ test("unit_tests") {
       ]
     }
     deps += [
+      "//chrome/browser/image_fetcher",
       "//components/image_fetcher/core:test_support",
       "//components/offline_pages/content/background_loader:test_support",
       "//components/offline_pages/core:test_support",
@@ -8075,6 +8077,7 @@ test("unit_tests") {
       "//chrome/browser/companion/visual_search:visual_search",
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/image_editor:image_editor_component_util",
+      "//chrome/browser/image_fetcher",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
@@ -10861,6 +10864,7 @@ if (!is_android && !is_chromeos_device) {
         "interaction/webcontents_interaction_test_util_interactive_uitest.cc",
       ]
       deps += [
+        "//chrome/browser/image_fetcher",
         "//components/commerce/core:feature_list",
         "//components/commerce/core:shopping_service_test_support",
         "//components/image_fetcher/core:test_support",

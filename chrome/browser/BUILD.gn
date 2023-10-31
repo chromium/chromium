@@ -620,10 +620,6 @@ static_library("browser") {
     "icon_manager.h",
     "idle/idle_detection_permission_context.cc",
     "idle/idle_detection_permission_context.h",
-    "image_fetcher/image_decoder_impl.cc",
-    "image_fetcher/image_decoder_impl.h",
-    "image_fetcher/image_fetcher_service_factory.cc",
-    "image_fetcher/image_fetcher_service_factory.h",
     "image_service/image_service_factory.cc",
     "image_service/image_service_factory.h",
     "infobars/confirm_infobar_creator.cc",
@@ -1996,6 +1992,9 @@ static_library("browser") {
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/google",
+
+    # Circular dependency due to SystemNetworkContextManager.
+    "//chrome/browser/image_fetcher",
     "//chrome/browser/profiling_host",
 
     # TODO(crbug.com/1335199): break this dep when favicon is in its own target
@@ -2095,6 +2094,7 @@ static_library("browser") {
     "//chrome/browser/feature_guide/notifications/internal",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/image_decoder",
+    "//chrome/browser/image_fetcher",
     "//chrome/browser/media:media_engagement_preload_proto",
     "//chrome/browser/media:mojo_bindings",
     "//chrome/browser/media/router",
@@ -5280,7 +5280,6 @@ static_library("browser") {
       "//ash/webui/system_extensions_internals_ui/mojom",
       "//build:chromeos_buildflags",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
-      "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_deduplication_service",
       "//chrome/browser/apps/app_discovery_service",
       "//chrome/browser/apps/app_preload_service",
@@ -5452,9 +5451,6 @@ static_library("browser") {
       # TODO(crbug.com/1253318): Refactor window_management into ash/ and expose
       # the InstanceRegistry via an InstanceRegistryWrapper, then remove this.
       "//chrome/browser/ash/system_extensions/api/window_management",
-
-      # Dependent on ProfileKey and ImageFetcherServiceFactory.
-      "//chrome/browser/apps/almanac_api_client",
     ]
 
     if (is_chrome_branded) {

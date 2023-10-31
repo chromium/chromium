@@ -24,6 +24,7 @@ source_set("almanac_api_client") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:channel_info",
