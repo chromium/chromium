@@ -69,7 +69,8 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   template <typename T>
   void AddClassroomBubbleViewIfNeeded(raw_ptr<T, ExperimentalAsh>* view,
                                       bool is_role_active);
-  void AddTaskBubbleViewIfNeeded(ui::ListModel<api::TaskList>* task_lists);
+  void AddTaskBubbleViewIfNeeded(
+      const ui::ListModel<api::TaskList>* task_lists);
 
   void OnGlanceablesContainerPreferredSizeChanged();
   void OnGlanceablesContainerHeightChanged(int height_delta);

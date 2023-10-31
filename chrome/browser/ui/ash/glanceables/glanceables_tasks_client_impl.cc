@@ -394,9 +394,10 @@ void TasksClientImpl::RunGetTaskListsCallbacks(FetchStatus final_fetch_status) {
   }
 }
 
-void TasksClientImpl::RunGetTasksCallbacks(const std::string& task_list_id,
-                                           FetchStatus final_fetch_status,
-                                           ui::ListModel<api::Task>* tasks) {
+void TasksClientImpl::RunGetTasksCallbacks(
+    const std::string& task_list_id,
+    FetchStatus final_fetch_status,
+    const ui::ListModel<api::Task>* tasks) {
   auto fetch_state_it = tasks_fetch_state_.find(task_list_id);
   if (fetch_state_it == tasks_fetch_state_.end()) {
     return;

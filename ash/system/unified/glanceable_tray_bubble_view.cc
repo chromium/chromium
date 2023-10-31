@@ -311,7 +311,7 @@ void GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded(
 }
 
 void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
-    ui::ListModel<api::TaskList>* task_lists) {
+    const ui::ListModel<api::TaskList>* task_lists) {
   if (task_lists->item_count() == 0) {
     return;
   }

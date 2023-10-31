@@ -199,7 +199,7 @@ class TasksClientImpl : public api::TasksClient {
   // (kept in `tasks_fetch_state_` map). The callbacks are run with `tasks`.
   void RunGetTasksCallbacks(const std::string& task_list_id,
                             FetchStatus final_fetch_status,
-                            ui::ListModel<api::Task>* tasks);
+                            const ui::ListModel<api::Task>* tasks);
 
   // A map of `task_list_id` to a set of `task_id` that are pending to be
   // completed.

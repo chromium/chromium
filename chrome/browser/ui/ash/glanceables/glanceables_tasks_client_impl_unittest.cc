@@ -189,7 +189,7 @@ TEST_F(TasksClientImplTest, GetTaskLists) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTaskListsResponseContent))));
 
-  TestFuture<ui::ListModel<api::TaskList>*> future;
+  TestFuture<const ui::ListModel<api::TaskList>*> future;
   client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -227,7 +227,7 @@ TEST_F(TasksClientImplTest, GetTaskListsOnSubsequentCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTaskListsResponseContent))));
 
-  TestFuture<ui::ListModel<api::TaskList>*> future;
+  TestFuture<const ui::ListModel<api::TaskList>*> future;
   client()->GetTaskLists(future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -245,10 +245,10 @@ TEST_F(TasksClientImplTest, ConcurrentGetTaskListsCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTaskListsResponseContent))));
 
-  TestFuture<ui::ListModel<api::TaskList>*> first_future;
+  TestFuture<const ui::ListModel<api::TaskList>*> first_future;
   client()->GetTaskLists(first_future.GetCallback());
 
-  TestFuture<ui::ListModel<api::TaskList>*> second_future;
+  TestFuture<const ui::ListModel<api::TaskList>*> second_future;
   client()->GetTaskLists(second_future.GetCallback());
 
   ASSERT_TRUE(first_future.Wait());
@@ -299,7 +299,7 @@ TEST_F(TasksClientImplTest,
             }]
           })"))));
 
-  TestFuture<ui::ListModel<api::TaskList>*> future;
+  TestFuture<const ui::ListModel<api::TaskList>*> future;
   client()->GetTaskLists(future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -312,7 +312,7 @@ TEST_F(TasksClientImplTest,
 
   // Request to get tasks after glanceables bubble was closed should trigger
   // another fetch.
-  TestFuture<ui::ListModel<api::TaskList>*> refresh_future;
+  TestFuture<const ui::ListModel<api::TaskList>*> refresh_future;
   client()->GetTaskLists(refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
@@ -321,7 +321,7 @@ TEST_F(TasksClientImplTest,
   EXPECT_EQ(refreshed_task_lists->GetItemAt(0)->id, "qwerty");
   EXPECT_EQ(refreshed_task_lists->GetItemAt(1)->id, "zxcvbn");
 
-  TestFuture<ui::ListModel<api::TaskList>*> repeated_refresh_future;
+  TestFuture<const ui::ListModel<api::TaskList>*> repeated_refresh_future;
   client()->GetTaskLists(repeated_refresh_future.GetCallback());
 
   const auto* const repeated_refreshed_task_lists =
@@ -365,7 +365,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
             }]
           })"))));
 
-  TestFuture<ui::ListModel<api::TaskList>*> future;
+  TestFuture<const ui::ListModel<api::TaskList>*> future;
   client()->GetTaskLists(future.GetRepeatingCallback());
 
   // Simulate bubble closure before first request response arives.
@@ -383,7 +383,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
 
   // Request to get tasks after glanceables bubble was closed should trigger
   // another fetch.
-  TestFuture<ui::ListModel<api::TaskList>*> refresh_future;
+  TestFuture<const ui::ListModel<api::TaskList>*> refresh_future;
   client()->GetTaskLists(refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
@@ -392,7 +392,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
   EXPECT_EQ(refreshed_task_lists->GetItemAt(0)->id, "qwerty");
   EXPECT_EQ(refreshed_task_lists->GetItemAt(1)->id, "zxcvbn");
 
-  TestFuture<ui::ListModel<api::TaskList>*> repeated_refresh_future;
+  TestFuture<const ui::ListModel<api::TaskList>*> repeated_refresh_future;
   client()->GetTaskLists(repeated_refresh_future.GetCallback());
 
   const auto* const repeated_refreshed_task_lists =
@@ -406,7 +406,7 @@ TEST_F(TasksClientImplTest, GetTaskListsReturnsEmptyVectorOnHttpError) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  TestFuture<ui::ListModel<api::TaskList>*> future;
+  TestFuture<const ui::ListModel<api::TaskList>*> future;
   client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -452,7 +452,7 @@ TEST_F(TasksClientImplTest, GetTaskListsFetchesAllPages) {
           }
         )"))));
 
-  TestFuture<ui::ListModel<api::TaskList>*> future;
+  TestFuture<const ui::ListModel<api::TaskList>*> future;
   client()->GetTaskLists(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -523,7 +523,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskListsPage) {
           client()->OnGlanceablesBubbleClosed();
         }
       }));
-  TestFuture<ui::ListModel<api::TaskList>*> future;
+  TestFuture<const ui::ListModel<api::TaskList>*> future;
   client()->GetTaskLists(future.GetRepeatingCallback());
 
   // Note that injected tasks lists request test callback simulates bubble
@@ -540,7 +540,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskListsPage) {
 
   // Request to get tasks after glanceables bubble was closed should trigger
   // another fetch.
-  TestFuture<ui::ListModel<api::TaskList>*> refresh_future;
+  TestFuture<const ui::ListModel<api::TaskList>*> refresh_future;
   client()->GetTaskLists(refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
@@ -550,7 +550,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskListsPage) {
   EXPECT_EQ(refreshed_task_lists->GetItemAt(1)->id, "task-list-from-page-2-2");
   EXPECT_EQ(refreshed_task_lists->GetItemAt(2)->id, "task-list-from-page-3-2");
 
-  TestFuture<ui::ListModel<api::TaskList>*> repeated_refresh_future;
+  TestFuture<const ui::ListModel<api::TaskList>*> repeated_refresh_future;
   client()->GetTaskLists(repeated_refresh_future.GetCallback());
 
   const auto* const repeated_refreshed_task_lists =
@@ -572,7 +572,7 @@ TEST_F(TasksClientImplTest, GetTasks) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTasksResponseContent))));
 
-  TestFuture<ui::ListModel<api::Task>*> future;
+  TestFuture<const ui::ListModel<api::Task>*> future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -620,10 +620,10 @@ TEST_F(TasksClientImplTest, ConcurrentGetTasksCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTasksResponseContent))));
 
-  TestFuture<ui::ListModel<api::Task>*> first_future;
+  TestFuture<const ui::ListModel<api::Task>*> first_future;
   client()->GetTasks("test-task-list-id", first_future.GetCallback());
 
-  TestFuture<ui::ListModel<api::Task>*> second_future;
+  TestFuture<const ui::ListModel<api::Task>*> second_future;
   client()->GetTasks("test-task-list-id", second_future.GetCallback());
 
   ASSERT_TRUE(first_future.Wait());
@@ -690,10 +690,10 @@ TEST_F(TasksClientImplTest, ConcurrentGetTasksCallsForDifferentLists) {
           }]
       })"))));
 
-  TestFuture<ui::ListModel<api::Task>*> first_future;
+  TestFuture<const ui::ListModel<api::Task>*> first_future;
   client()->GetTasks("test-task-list-1", first_future.GetCallback());
 
-  TestFuture<ui::ListModel<api::Task>*> second_future;
+  TestFuture<const ui::ListModel<api::Task>*> second_future;
   client()->GetTasks("test-task-list-2", second_future.GetCallback());
 
   ASSERT_TRUE(first_future.Wait());
@@ -723,7 +723,7 @@ TEST_F(TasksClientImplTest, GetTasksOnSubsequentCalls) {
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(
           kDefaultTasksResponseContent))));
 
-  TestFuture<ui::ListModel<api::Task>*> future;
+  TestFuture<const ui::ListModel<api::Task>*> future;
   client()->GetTasks("test-task-list-id", future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -767,7 +767,7 @@ TEST_F(TasksClientImplTest,
           }]
       })"))));
 
-  TestFuture<ui::ListModel<api::Task>*> future;
+  TestFuture<const ui::ListModel<api::Task>*> future;
   client()->GetTasks("test-task-list-id", future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -781,7 +781,7 @@ TEST_F(TasksClientImplTest,
   // to fetch fresh list of tasks.
   client()->OnGlanceablesBubbleClosed();
 
-  TestFuture<ui::ListModel<api::Task>*> refresh_future;
+  TestFuture<const ui::ListModel<api::Task>*> refresh_future;
   client()->GetTasks("test-task-list-id", refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
@@ -790,7 +790,7 @@ TEST_F(TasksClientImplTest,
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(0)->id, "asd");
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(1)->id, "zxc");
 
-  TestFuture<ui::ListModel<api::Task>*> repeated_refresh_future;
+  TestFuture<const ui::ListModel<api::Task>*> repeated_refresh_future;
   client()->GetTasks("test-task-list-id",
                      repeated_refresh_future.GetCallback());
   ASSERT_TRUE(repeated_refresh_future.Wait());
@@ -836,7 +836,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
           }]
       })"))));
 
-  TestFuture<ui::ListModel<api::Task>*> future;
+  TestFuture<const ui::ListModel<api::Task>*> future;
   client()->GetTasks("test-task-list-id", future.GetRepeatingCallback());
 
   // Simulate glanceables bubble closure, which should cause the next tasks call
@@ -854,7 +854,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
   // by the test server before the first one.
   first_request_waiter.Run();
 
-  TestFuture<ui::ListModel<api::Task>*> refresh_future;
+  TestFuture<const ui::ListModel<api::Task>*> refresh_future;
   client()->GetTasks("test-task-list-id", refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
@@ -863,7 +863,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(0)->id, "asd");
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(1)->id, "zxc");
 
-  TestFuture<ui::ListModel<api::Task>*> repeated_refresh_future;
+  TestFuture<const ui::ListModel<api::Task>*> repeated_refresh_future;
   client()->GetTasks("test-task-list-id",
                      repeated_refresh_future.GetCallback());
   ASSERT_TRUE(repeated_refresh_future.Wait());
@@ -879,7 +879,7 @@ TEST_F(TasksClientImplTest, GetTasksReturnsEmptyVectorOnHttpError) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  TestFuture<ui::ListModel<api::Task>*> future;
+  TestFuture<const ui::ListModel<api::Task>*> future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -930,7 +930,7 @@ TEST_F(TasksClientImplTest, GetTasksFetchesAllPages) {
           }
         )"))));
 
-  TestFuture<ui::ListModel<api::Task>*> future;
+  TestFuture<const ui::ListModel<api::Task>*> future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -1013,7 +1013,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasksPage) {
         }
       }));
 
-  TestFuture<ui::ListModel<api::Task>*> future;
+  TestFuture<const ui::ListModel<api::Task>*> future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -1025,7 +1025,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasksPage) {
   client()->set_tasks_request_callback_for_testing(
       TasksClientImpl::TasksRequestCallback());
 
-  TestFuture<ui::ListModel<api::Task>*> refresh_future;
+  TestFuture<const ui::ListModel<api::Task>*> refresh_future;
   client()->GetTasks("test-task-list-id", refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
@@ -1035,7 +1035,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasksPage) {
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(1)->id, "task-from-page-2-2");
   EXPECT_EQ(refreshed_root_tasks->GetItemAt(2)->id, "task-from-page-3-2");
 
-  TestFuture<ui::ListModel<api::Task>*> repeated_refresh_future;
+  TestFuture<const ui::ListModel<api::Task>*> repeated_refresh_future;
   client()->GetTasks("test-task-list-id",
                      repeated_refresh_future.GetCallback());
   ASSERT_TRUE(repeated_refresh_future.Wait());
@@ -1064,7 +1064,7 @@ TEST_F(TasksClientImplTest, GetTasksSortsByPosition) {
           }
         )"))));
 
-  TestFuture<ui::ListModel<api::Task>*> future;
+  TestFuture<const ui::ListModel<api::Task>*> future;
   client()->GetTasks("test-task-list-id", future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
@@ -1106,7 +1106,7 @@ TEST_F(TasksClientImplTest, MarkAsCompleted) {
         return TestRequestHandler::CreateSuccessfulResponse("");
       }));
 
-  TestFuture<ui::ListModel<api::Task>*> get_tasks_future;
+  TestFuture<const ui::ListModel<api::Task>*> get_tasks_future;
   client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
   ASSERT_TRUE(get_tasks_future.Wait());
 
@@ -1157,7 +1157,7 @@ TEST_F(TasksClientImplTest, MarkAsCompletedOnHttpError) {
       HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  TestFuture<ui::ListModel<api::Task>*> get_tasks_future;
+  TestFuture<const ui::ListModel<api::Task>*> get_tasks_future;
   client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
   ASSERT_TRUE(get_tasks_future.Wait());
 
@@ -1209,7 +1209,7 @@ TEST_F(TasksClientImplTest, AddsNewTask) {
           }
         )"))));
 
-  TestFuture<ui::ListModel<api::Task>*> get_tasks_future;
+  TestFuture<const ui::ListModel<api::Task>*> get_tasks_future;
   client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
   ASSERT_TRUE(get_tasks_future.Wait());
 

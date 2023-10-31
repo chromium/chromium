@@ -21,8 +21,9 @@ struct TaskList;
 class ASH_EXPORT TasksClient {
  public:
   using GetTaskListsCallback =
-      base::OnceCallback<void(ui::ListModel<TaskList>* task_lists)>;
-  using GetTasksCallback = base::OnceCallback<void(ui::ListModel<Task>* tasks)>;
+      base::OnceCallback<void(const ui::ListModel<TaskList>* task_lists)>;
+  using GetTasksCallback =
+      base::OnceCallback<void(const ui::ListModel<Task>* tasks)>;
   using UpdateTaskCallback = base::OnceCallback<void(bool success)>;
   using OnAllPendingCompletedTasksSavedCallback = base::OnceClosure;
 

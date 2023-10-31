@@ -76,7 +76,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceablesTasksViewBase,
   METADATA_HEADER(TasksBubbleView);
 
   TasksBubbleView(DetailedViewDelegate* delegate,
-                  ui::ListModel<api::TaskList>* task_list);
+                  const ui::ListModel<api::TaskList>* task_lists);
   TasksBubbleView(const TasksBubbleView&) = delete;
   TasksBubbleView& operator=(const TasksBubbleView&) = delete;
   ~TasksBubbleView() override;
@@ -98,7 +98,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceablesTasksViewBase,
   void UpdateTasksList(const std::string& task_list_id,
                        const std::string& task_list_title,
                        bool initial_update,
-                       ui::ListModel<api::Task>* tasks);
+                       const ui::ListModel<api::Task>* tasks);
 
   // Announces text describing the task list state through a screen
   // reader, using `task_list_combo_box_view_` view accessibility helper.
