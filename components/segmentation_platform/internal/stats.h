@@ -309,6 +309,9 @@ enum class TrainingDataCollectionEvent {
   kMaxValue = kDelayTriggerSampled,
 };
 
+std::string TrainingDataCollectionEventToErrorMsg(
+    TrainingDataCollectionEvent event);
+
 // Records analytics for training data collection.
 void RecordTrainingDataCollectionEvent(SegmentId segment_id,
                                        TrainingDataCollectionEvent event);

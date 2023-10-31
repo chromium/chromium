@@ -313,8 +313,6 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kModelInfoMissing);
-    VLOG(1) << "Upload skipped due to model version "
-            << proto::SegmentId_Name(segment_info.segment_id());
     return false;
   }
 
@@ -336,8 +334,6 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kPartialDataNotAllowed);
-    VLOG(1) << "Upload skipped due to consent "
-            << proto::SegmentId_Name(segment_info.segment_id());
     return false;
   }
 
@@ -358,8 +354,6 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
       RecordTrainingDataCollectionEvent(
           segment_info.segment_id(),
           stats::TrainingDataCollectionEvent::kNotEnoughCollectionTime);
-      VLOG(1) << "Upload skipped due to new model "
-              << proto::SegmentId_Name(segment_info.segment_id());
       return false;
     }
   }
@@ -370,8 +364,6 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kNotEnoughCollectionTime);
-    VLOG(1) << "Upload skipped due to missing signals "
-            << proto::SegmentId_Name(segment_info.segment_id());
     return false;
   }
 
@@ -433,8 +425,6 @@ void TrainingDataCollectorImpl::OnGetTrainingTensors(
       segment_info.segment_id(), segment_info.model_version(), input_tensors,
       output_values, output_indexes, prediction_result, selected_segment);
   if (ukm_source_id == ukm::kInvalidSourceId) {
-    VLOG(1) << "Failed to collect training data for segment:"
-            << segment_info.segment_id();
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kUkmReportingFailed);
@@ -531,14 +521,10 @@ void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
     scoped_refptr<InputContext> input_context,
     const proto::SegmentInfo& segment_info,
     absl::optional<ModelProvider::Request> inputs) {
+  TrainingTimings training_request = ComputeDecisionTiming(segment_info);
   if (!CanReportTrainingData(segment_info, /*include_outputs*/ false)) {
-    RecordTrainingDataCollectionEvent(
-        segment_id,
-        stats::TrainingDataCollectionEvent::kDisallowedForRecording);
     return;
   }
-
-  TrainingTimings training_request = ComputeDecisionTiming(segment_info);
 
   if (type != segment_info.model_metadata()
                   .training_outputs()
@@ -636,6 +622,7 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
             request_id, segment_info,
             *training_request.observation_delayed_task,
             stats::TrainingDataCollectionEvent::kDelayedTaskPosted);
+        VLOG(1) << "Delayed task posted for " << segment_info.segment_id();
       } else {
         RecordTrainingDataCollectionEvent(
             segment_info.segment_id(),
@@ -643,8 +630,6 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
       }
     }
   } else {
-    VLOG(1) << "Observation without timeout "
-            << proto::SegmentId_Name(segment_info.segment_id());
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kWaitingForNonDelayedTrigger);

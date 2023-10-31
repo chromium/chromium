@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/stats.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -642,12 +643,67 @@ void RecordTooManyInputTensors(int tensor_size) {
       tensor_size);
 }
 
+std::string TrainingDataCollectionEventToErrorMsg(
+    TrainingDataCollectionEvent event) {
+  switch (event) {
+    case TrainingDataCollectionEvent::kImmediateCollectionStart:
+      return "Immediate Collection Start";
+    case TrainingDataCollectionEvent::kImmediateCollectionSuccess:
+      return "Immediate Collection Success";
+    case TrainingDataCollectionEvent::kModelInfoMissing:
+      return "Model Info Missing";
+    case TrainingDataCollectionEvent::kMetadataValidationFailed:
+      return "Metadata Validation Failed";
+    case TrainingDataCollectionEvent::kGetInputTensorsFailed:
+      return "Get Input Tensors Failed";
+    case TrainingDataCollectionEvent::kNotEnoughCollectionTime:
+      return "Not Enough Collection Time";
+    case TrainingDataCollectionEvent::kUkmReportingFailed:
+      return "UKM Reporting Failed";
+    case TrainingDataCollectionEvent::kPartialDataNotAllowed:
+      return "Partial Data Not Allowed";
+    case TrainingDataCollectionEvent::kContinousCollectionStart:
+      return "Continuous Collection Start";
+    case TrainingDataCollectionEvent::kContinousCollectionSuccess:
+      return "Continuous Collection Success";
+    case TrainingDataCollectionEvent::kCollectAndStoreInputsSuccess:
+      return "Collect and Store Inputs Success";
+    case TrainingDataCollectionEvent::kObservationTimeReached:
+      return "Observation Time Reached";
+    case TrainingDataCollectionEvent::kDelayedTaskPosted:
+      return "Delayed Task Posted";
+    case TrainingDataCollectionEvent::kImmediateObservationPosted:
+      return "Immediate Observation Posted";
+    case TrainingDataCollectionEvent::kWaitingForNonDelayedTrigger:
+      return "Waiting for Non Delayed Trigger";
+    case TrainingDataCollectionEvent::kHistogramTriggerHit:
+      return "Histogram Trigger Hit";
+    case TrainingDataCollectionEvent::kNoSegmentInfo:
+      return "No Segment Info";
+    case TrainingDataCollectionEvent::kDisallowedForRecording:
+      return "Disallowed for Recording";
+    case TrainingDataCollectionEvent::kObservationDisallowed:
+      return "Observation Disallowed";
+    case TrainingDataCollectionEvent::kTrainingDataMissing:
+      return "Training Data Missing";
+    case TrainingDataCollectionEvent::kOnDecisionTimeTypeMistmatch:
+      return "On Decision Time Type Mismatch";
+    case TrainingDataCollectionEvent::kDelayTriggerSampled:
+      return "Delay Trigger Sampled";
+    default:
+      return "";
+  }
+}
+
 void RecordTrainingDataCollectionEvent(SegmentId segment_id,
                                        TrainingDataCollectionEvent event) {
   base::UmaHistogramEnumeration(
       "SegmentationPlatform.TrainingDataCollectionEvents." +
           SegmentIdToHistogramVariant(segment_id),
       event);
+  VLOG(1) << "Training Data event for "
+          << SegmentIdToHistogramVariant(segment_id) << ": "
+          << TrainingDataCollectionEventToErrorMsg(event);
 }
 
 // This conversion exists because segment selector uses the result state
