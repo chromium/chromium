@@ -76,7 +76,7 @@ std::string SecurityInterstitialPage::GetHTMLContents() {
           GetHTMLTemplateId());
 
   webui::AppendWebUiCssTextDefaults(&html);
-  return common_string_util::GetLocalizedHtml(html, load_time_data);
+  return webui::GetLocalizedHtml(html, load_time_data);
 }
 
 SecurityInterstitialControllerClient* SecurityInterstitialPage::controller()

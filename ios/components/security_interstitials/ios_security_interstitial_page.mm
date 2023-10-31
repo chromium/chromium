@@ -63,7 +63,7 @@ std::string IOSSecurityInterstitialPage::GetHtmlContents() const {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_SECURITY_INTERSTITIAL_HTML);
   webui::AppendWebUiCssTextDefaults(&html);
-  return common_string_util::GetLocalizedHtml(html, load_time_data);
+  return webui::GetLocalizedHtml(html, load_time_data);
 }
 
 bool IOSSecurityInterstitialPage::ShouldDisplayURL() const {

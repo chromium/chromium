@@ -7,7 +7,6 @@
 #include <ostream>
 
 #include "components/grit/components_resources.h"
-#include "components/security_interstitials/core/common_string_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -41,8 +40,7 @@ std::string PrepareHeavyAdPage(const std::string& application_locale) {
   webui::SetLoadTimeDataDefaults(application_locale, &load_time_data);
 
   webui::AppendWebUiCssTextDefaults(&html);
-  return security_interstitials::common_string_util::GetLocalizedHtml(
-      html, load_time_data);
+  return webui::GetLocalizedHtml(html, load_time_data);
 }
 
 }  // namespace heavy_ad_intervention

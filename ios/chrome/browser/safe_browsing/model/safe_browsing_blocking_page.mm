@@ -14,7 +14,6 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/base_safe_browsing_error_ui.h"
-#import "components/security_interstitials/core/common_string_util.h"
 #import "components/security_interstitials/core/metrics_helper.h"
 #import "components/security_interstitials/core/safe_browsing_loud_error_ui.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
@@ -117,8 +116,7 @@ std::string SafeBrowsingBlockingPage::GetHtmlContents() const {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           error_ui_->GetHTMLTemplateId());
   webui::AppendWebUiCssTextDefaults(&html);
-  return security_interstitials::common_string_util::GetLocalizedHtml(
-      html, load_time_data);
+  return webui::GetLocalizedHtml(html, load_time_data);
 }
 
 void SafeBrowsingBlockingPage::HandleCommand(

@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/i18n/rtl.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -234,6 +235,28 @@ std::string GetFontSize() {
 
 std::string GetTextDirection() {
   return base::i18n::IsRTL() ? "rtl" : "ltr";
+}
+
+std::string GetLocalizedHtml(base::StringPiece html_template,
+                             const base::Value::Dict& strings) {
+  // Populate $i18n{...} placeholders.
+  ui::TemplateReplacements replacements;
+  ui::TemplateReplacementsFromDictionaryValue(strings, &replacements);
+  std::string output =
+      ui::ReplaceTemplateExpressions(html_template, replacements);
+
+  // Inject data to the UI that will be used to populate loadTimeData upon
+  // initialization.
+  std::string json;
+  JSONStringValueSerializer serializer(&json);
+  serializer.Serialize(strings);
+  output.append("<script>");
+  output.append("var loadTimeDataRaw = ");
+  output.append(json);
+  output.append(";");
+  output.append("</script>");
+
+  return output;
 }
 
 }  // namespace webui

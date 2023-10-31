@@ -26,11 +26,6 @@ void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
                                  const base::Time time_triggered,
                                  base::Value::Dict& load_time_data);
 
-// Populates $i18n{...} placeholders in the HTML file, and injects code that
-// passes `loadTimeData`.
-std::string GetLocalizedHtml(const std::string html,
-                             const base::Value::Dict& load_time_data);
-
 }  // namespace security_interstitials::common_string_util
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_COMMON_STRING_UTIL_H_

@@ -6,7 +6,6 @@
 
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/strings/strcat.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
@@ -14,7 +13,6 @@
 #include "net/cert/ct_sct_to_string.h"
 #include "net/cert/x509_certificate.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/template_expressions.h"
 
 namespace security_interstitials::common_string_util {
 
@@ -63,27 +61,6 @@ void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
   std::vector<std::string> encoded_chain;
   ssl_info.cert->GetPEMEncodedChain(&encoded_chain);
   load_time_data.Set("pem", base::StrCat(encoded_chain));
-}
-
-std::string GetLocalizedHtml(const std::string html,
-                             const base::Value::Dict& load_time_data) {
-  // Populate $i18n{...} placeholders.
-  ui::TemplateReplacements replacements;
-  ui::TemplateReplacementsFromDictionaryValue(load_time_data, &replacements);
-  std::string output = ui::ReplaceTemplateExpressions(html, replacements);
-
-  // Inject data to the UI that will be used to populate loadTimeData upon
-  // initialization.
-  std::string jstext;
-  JSONStringValueSerializer serializer(&jstext);
-  serializer.Serialize(load_time_data);
-  output.append("<script>");
-  output.append("var loadTimeDataRaw = ");
-  output.append(jstext);
-  output.append(";");
-  output.append("</script>");
-
-  return output;
 }
 
 }  // namespace security_interstitials::common_string_util
