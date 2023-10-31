@@ -93,22 +93,12 @@
           "builder": "chromeos-amd64-generic-rel-gtest",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "chromeos-amd64-generic-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "chromeos-amd64-generic-rel-gtest",
-          "group": "tryserver.chromium.chromiumos"
-        }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -119,6 +109,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.chromiumos",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.chromiumos",
+  "recipe": "chromium_trybot"
 }

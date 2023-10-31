@@ -69,7 +69,7 @@
           'chromeos-betty',
         ],
         'test_suites': {
-          'gtest_tests': 'chromeos_vm_gtests',
+          'gtest_tests': 'chromeos_vm_gtests_and_tast',
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
       },
@@ -1537,6 +1537,18 @@
           'chromiumos_preflight',
         ],
       },
+      'chromeos-amd64-generic-rel-gtest': {
+        'browser_config': 'cros-chrome',
+        'mixins': [
+          'chromeos-amd64-generic',
+        ],
+        'os_type': 'chromeos',
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_chromeos_telemetry_tests',
+          'gtest_tests': 'chromeos_vm_gtests',
+          'isolated_scripts': 'chromeos_isolated_scripts',
+        },
+      },
       'chromeos-amd64-generic-rel-renamed': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -1548,7 +1560,7 @@
         'os_type': 'chromeos',
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_chromeos_telemetry_tests',
-          'gtest_tests': 'chromeos_vm_gtests',
+          'gtest_tests': 'chromeos_vm_gtests_and_tast',
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
       },
@@ -3406,7 +3418,7 @@
         'os_type': 'chromeos',
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_chromeos_telemetry_tests',
-          'gtest_tests': 'chromeos_vm_gtests',
+          'gtest_tests': 'chromeos_vm_gtests_and_tast',
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
       },
@@ -6707,7 +6719,7 @@
           'chromeos-betty',
         ],
         'test_suites': {
-          'gtest_tests': 'chromeos_vm_gtests',
+          'gtest_tests': 'chromeos_vm_gtests_and_tast',
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
       },

@@ -1150,6 +1150,7 @@
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg_reclient_use_dummy_lastchange',
       'chromeos-amd64-generic-lacros-dbg': 'chromeos_amd64-generic_lacros_dbg_reclient',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
+      'chromeos-amd64-generic-rel-gtest': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
       'chromeos-amd64-generic-rel-renamed': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
       'chromeos-amd64-generic-siso-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg_reclient',
