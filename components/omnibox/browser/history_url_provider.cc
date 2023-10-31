@@ -595,12 +595,7 @@ void HistoryURLProvider::ExecuteWithDB(HistoryURLProviderParams* params,
   if (!db) {
     params->failed = true;
   } else if (!params->cancel_flag.IsSet()) {
-    base::TimeTicks beginning_time = base::TimeTicks::Now();
-
     DoAutocomplete(backend, db, params);
-
-    UMA_HISTOGRAM_TIMES("Autocomplete.HistoryAsyncQueryTime",
-                        base::TimeTicks::Now() - beginning_time);
   }
 
   // Return the results (if any) to the originating sequence.
