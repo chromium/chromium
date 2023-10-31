@@ -3821,6 +3821,19 @@
         "disable_accelerated_vp9_profile2_decode",
         "disable_accelerated_hevc_decode"
       ]
+    },
+    {
+      "id": 422,
+      "description": "Disable video acceleration on some Intel 8LP GPUs on ChromeOS [b/293173688]",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x8086",
+      "device_id": ["0x22b1"],
+      "features": [
+        "disable_accelerated_vp8_encode",
+        "disable_accelerated_h264_encode"
+      ]
     }
   ]
 }
