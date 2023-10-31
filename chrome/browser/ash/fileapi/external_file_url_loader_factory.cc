@@ -47,8 +47,8 @@ constexpr size_t kDefaultPipeSize = 65536;
 // An IOBuffer that doesn't own its data.
 class MojoPipeIOBuffer : public net::IOBuffer {
  public:
-  explicit MojoPipeIOBuffer(void* data)
-      : net::IOBuffer(static_cast<char*>(data)) {}
+  MojoPipeIOBuffer(void* data, size_t size)
+      : net::IOBuffer(static_cast<char*>(data), size) {}
 
   MojoPipeIOBuffer(const MojoPipeIOBuffer&) = delete;
   MojoPipeIOBuffer& operator=(const MojoPipeIOBuffer&) = delete;
@@ -111,7 +111,7 @@ class FileSystemReaderDataPipeProducer {
 
       DCHECK(base::IsValueInRangeForNumericType<int>(buffer_size));
       scoped_refptr<MojoPipeIOBuffer> io_buffer =
-          base::MakeRefCounted<MojoPipeIOBuffer>(pipe_buffer);
+          base::MakeRefCounted<MojoPipeIOBuffer>(pipe_buffer, buffer_size);
       const int read_size = stream_reader_->Read(
           io_buffer.get(), std::min<int64_t>(buffer_size, remaining_bytes_),
           base::BindOnce(

@@ -88,7 +88,7 @@ class IOBufferPool::Internal {
 
 class IOBufferPool::Internal::Buffer : public net::IOBuffer {
  public:
-  explicit Buffer(char* data) : net::IOBuffer(data) {}
+  Buffer(char* data, size_t size) : net::IOBuffer(data, size) {}
 
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;
@@ -102,8 +102,8 @@ class IOBufferPool::Internal::Buffer : public net::IOBuffer {
 
 class IOBufferPool::Internal::Wrapper {
  public:
-  Wrapper(char* data, IOBufferPool::Internal* pool)
-      : buffer_(data), pool_(pool) {}
+  Wrapper(char* data, size_t size, IOBufferPool::Internal* pool)
+      : buffer_(data, size), pool_(pool) {}
 
   Wrapper(const Wrapper&) = delete;
   Wrapper& operator=(const Wrapper&) = delete;
@@ -216,7 +216,7 @@ scoped_refptr<net::IOBuffer> IOBufferPool::Internal::GetBuffer() {
 
   size_t kAlignedStorageSize = base::bits::AlignUp(sizeof(Storage), kAlignment);
   char* data = ptr + kAlignedStorageSize;
-  Wrapper* wrapper = new (ptr) Wrapper(data, this);
+  Wrapper* wrapper = new (ptr) Wrapper(data, buffer_size_, this);
   return scoped_refptr<net::IOBuffer>(wrapper->buffer());
 }
 
