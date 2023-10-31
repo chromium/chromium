@@ -31,6 +31,8 @@ class CORE_EXPORT CSSRepeatStyleValue : public CSSValue {
 
   bool Equals(const CSSRepeatStyleValue& other) const;
 
+  bool IsRepeat() const;
+
   const CSSIdentifierValue* x() const { return x_; }
   const CSSIdentifierValue* y() const { return y_; }
 

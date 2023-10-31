@@ -1207,4 +1207,75 @@ TEST(CSSPropertyParserTest, MaskModeMultipleValues) {
                       "alpha, luminance, match-source");
 }
 
+void TestMaskParsing(const String& specifiedCssText,
+                     const CSSPropertyID property_id,
+                     const String& expectedPropValue) {
+  auto* style =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+  ASSERT_NE(style, nullptr);
+
+  auto result = style->ParseAndSetProperty(
+      CSSPropertyID::kAlternativeMask, specifiedCssText, false /* important */,
+      SecureContextMode::kSecureContext, nullptr /* context_style_sheet */);
+  ASSERT_NE(result, MutableCSSPropertyValueSet::kParseError);
+
+  EXPECT_EQ(style->PropertyCount(), 9U);
+
+  EXPECT_EQ(style->GetPropertyValue(property_id), expectedPropValue);
+}
+
+TEST(CSSPropertyParserTest, MaskRepeatFromMaskNone) {
+  TestMaskParsing("none", CSSPropertyID::kMaskRepeat, "repeat");
+}
+
+TEST(CSSPropertyParserTest, MaskRepeatFromMaskNone2) {
+  TestMaskParsing("none, none", CSSPropertyID::kMaskRepeat, "repeat, repeat");
+}
+
+TEST(CSSPropertyParserTest, MaskRepeatFromMaskRepeatX) {
+  TestMaskParsing("repeat-x", CSSPropertyID::kMaskRepeat, "repeat-x");
+}
+
+TEST(CSSPropertyParserTest, MaskRepeatFromMaskRoundSpace) {
+  TestMaskParsing("round space", CSSPropertyID::kMaskRepeat, "round space");
+}
+
+TEST(CSSPropertyParserTest, MaskClipFromMaskNone) {
+  TestMaskParsing("none", CSSPropertyID::kMaskClip, "border-box");
+}
+
+TEST(CSSPropertyParserTest, MaskCompositeFromMaskNone) {
+  TestMaskParsing("none", CSSPropertyID::kMaskComposite, "add");
+}
+
+TEST(CSSPropertyParserTest, MaskModeFromMaskNone) {
+  TestMaskParsing("none", CSSPropertyID::kMaskMode, "match-source");
+}
+
+TEST(CSSPropertyParserTest, MaskOriginFromMaskNone) {
+  TestMaskParsing("none", CSSPropertyID::kMaskOrigin, "border-box");
+}
+
+TEST(CSSPropertyParserTest, MaskPositionFromMaskNone) {
+  TestMaskParsing("none", CSSPropertyID::kMaskPosition, "0% 0%");
+}
+
+TEST(CSSPropertyParserTest, MaskPositionFromMaskNone2) {
+  TestMaskParsing("none, none", CSSPropertyID::kMaskPosition, "0% 0%, 0% 0%");
+}
+
+TEST(CSSPropertyParserTest, MaskPositionLayered) {
+  TestMaskParsing("top right, bottom left", CSSPropertyID::kMaskPosition,
+                  "right top, left bottom");
+}
+
+TEST(CSSPropertyParserTest, MaskPositionLayered2) {
+  TestMaskParsing("top right, none, bottom left", CSSPropertyID::kMaskPosition,
+                  "right top, 0% 0%, left bottom");
+}
+
+TEST(CSSPropertyParserTest, MaskSizeFromMaskNone) {
+  TestMaskParsing("none", CSSPropertyID::kMaskSize, "auto");
+}
+
 }  // namespace blink

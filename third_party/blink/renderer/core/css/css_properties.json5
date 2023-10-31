@@ -5751,20 +5751,20 @@
       },
     },
     {
-      name: "mask-clip",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      name: "mask-mode",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "mask_layer",
       style_builder_template_args: {
-        fill_type: "Clip",
+        fill_type: "MaskMode",
       },
       runtime_flag: "CSSMaskingInterop",
     },
     {
-      name: "mask-mode",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      name: "mask-clip",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "mask_layer",
       style_builder_template_args: {
-        fill_type: "MaskMode",
+        fill_type: "Clip",
       },
       runtime_flag: "CSSMaskingInterop",
     },
@@ -5784,7 +5784,7 @@
     },
     {
       name: "mask-composite",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "mask_layer",
       style_builder_template_args: {
         fill_type: "CompositingOperator",
@@ -5833,7 +5833,7 @@
     },
     {
       name: "mask-origin",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "mask_layer",
       style_builder_template_args: {
         fill_type: "Origin",
@@ -5856,7 +5856,7 @@
     },
     {
       name: "-webkit-mask-position-x",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       interpolable: true,
       style_builder_template: "mask_layer",
       style_builder_template_args: {
@@ -5866,7 +5866,7 @@
     },
     {
       name: "-webkit-mask-position-y",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       interpolable: true,
       style_builder_template: "mask_layer",
       style_builder_template_args: {
@@ -5876,7 +5876,7 @@
     },
     {
       name: "mask-repeat",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "mask_layer",
       style_builder_template_args: {
         fill_type: "Repeat",
@@ -5899,7 +5899,7 @@
     },
     {
       name: "mask-size",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       interpolable: true,
       style_builder_template: "mask_layer",
       style_builder_template_args: {

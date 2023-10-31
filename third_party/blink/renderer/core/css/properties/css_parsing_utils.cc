@@ -4084,7 +4084,7 @@ CSSValue* ConsumeSingleTimelineInset(CSSParserTokenRange& range,
                                             CSSValuePair::kDropIdenticalValues);
 }
 
-void AddBackgroundValue(CSSValue*& list, CSSValue* value) {
+void AddBackgroundValue(CSSValue*& list, const CSSValue* value) {
   if (list) {
     if (!list->IsBaseValueList()) {
       CSSValue* first_value = list;
@@ -4094,7 +4094,7 @@ void AddBackgroundValue(CSSValue*& list, CSSValue* value) {
     To<CSSValueList>(list)->Append(*value);
   } else {
     // To conserve memory we don't actually wrap a single value in a list.
-    list = value;
+    list = const_cast<CSSValue*>(value);
   }
 }
 
@@ -4452,7 +4452,12 @@ bool ParseBackgroundOrMask(bool important,
           continue;
         }
 
-        AddBackgroundValue(longhands[i], CSSInitialValue::Create());
+        if (shorthand_id == CSSPropertyID::kAlternativeMask) {
+          AddBackgroundValue(longhands[i],
+                             To<Longhand>(property).InitialValue());
+        } else {
+          AddBackgroundValue(longhands[i], CSSInitialValue::Create());
+        }
       }
     }
   } while (ConsumeCommaIncludingWhitespace(range));

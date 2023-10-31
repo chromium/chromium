@@ -59,6 +59,11 @@ bool CSSRepeatStyleValue::Equals(const CSSRepeatStyleValue& other) const {
          base::ValuesEquivalent(y_, other.y_);
 }
 
+bool CSSRepeatStyleValue::IsRepeat() const {
+  return x_->GetValueID() == CSSValueID::kRepeat &&
+         y_->GetValueID() == CSSValueID::kRepeat;
+}
+
 void CSSRepeatStyleValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(x_);
   visitor->Trace(y_);

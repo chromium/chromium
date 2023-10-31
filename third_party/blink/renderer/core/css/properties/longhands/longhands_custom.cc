@@ -9257,6 +9257,10 @@ const CSSValue* MaskClip::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+const CSSValue* MaskClip::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kBorderBox);
+}
+
 const CSSValue* WebkitMaskClip::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,
@@ -9303,6 +9307,10 @@ const CSSValue* MaskComposite::CSSValueFromComputedStyleInternal(
         *CSSIdentifierValue::Create(curr_layer->CompositingOperator()));
   }
   return list;
+}
+
+const CSSValue* MaskComposite::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kAdd);
 }
 
 const CSSValue* WebkitMaskComposite::ParseSingleValue(
@@ -9362,6 +9370,24 @@ const CSSValue* MaskImage::CSSValueFromComputedStyleInternal(
       style, allow_visited_style, fill_layer);
 }
 
+const CSSValue* MaskMode::ParseSingleValue(CSSParserTokenRange& range,
+                                           const CSSParserContext&,
+                                           const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeMaskMode, range);
+}
+
+const CSSValue* MaskMode::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool) const {
+  return ComputedStyleUtils::MaskMode(&style.MaskLayers());
+}
+
+const CSSValue* MaskMode::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kMatchSource);
+}
+
 const CSSValue* MaskOrigin::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,
@@ -9388,18 +9414,8 @@ const CSSValue* MaskOrigin::CSSValueFromComputedStyleInternal(
   return list;
 }
 
-const CSSValue* MaskMode::ParseSingleValue(CSSParserTokenRange& range,
-                                           const CSSParserContext&,
-                                           const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeMaskMode, range);
-}
-
-const CSSValue* MaskMode::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool) const {
-  return ComputedStyleUtils::MaskMode(&style.MaskLayers());
+const CSSValue* MaskOrigin::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kBorderBox);
 }
 
 const CSSValue* WebkitMaskOrigin::ParseSingleValue(
@@ -9443,6 +9459,11 @@ const CSSValue* WebkitMaskPositionX::CSSValueFromComputedStyleInternal(
       style, curr_layer);
 }
 
+const CSSValue* WebkitMaskPositionX::InitialValue() const {
+  return CSSNumericLiteralValue::Create(
+      0, CSSPrimitiveValue::UnitType::kPercentage);
+}
+
 const CSSValue* WebkitMaskPositionY::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -9460,6 +9481,11 @@ const CSSValue* WebkitMaskPositionY::CSSValueFromComputedStyleInternal(
   const FillLayer* curr_layer = &style.MaskLayers();
   return ComputedStyleUtils::BackgroundPositionYOrWebkitMaskPositionY(
       style, curr_layer);
+}
+
+const CSSValue* WebkitMaskPositionY::InitialValue() const {
+  return CSSNumericLiteralValue::Create(
+      0, CSSPrimitiveValue::UnitType::kPercentage);
 }
 
 const CSSValue* WebkitMaskSize::ParseSingleValue(
@@ -9493,6 +9519,11 @@ const CSSValue* MaskRepeat::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::RepeatStyle(&style.MaskLayers());
 }
 
+const CSSValue* MaskRepeat::InitialValue() const {
+  return MakeGarbageCollected<CSSRepeatStyleValue>(
+      CSSIdentifierValue::Create(CSSValueID::kRepeat));
+}
+
 const CSSValue* WebkitMaskRepeat::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -9522,6 +9553,10 @@ const CSSValue* MaskSize::CSSValueFromComputedStyleInternal(
   CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
   const FillLayer& fill_layer = style.MaskLayers();
   return ComputedStyleUtils::BackgroundImageOrWebkitMaskSize(style, fill_layer);
+}
+
+const CSSValue* MaskSize::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kAuto);
 }
 
 const CSSValue* WebkitPerspectiveOriginX::ParseSingleValue(

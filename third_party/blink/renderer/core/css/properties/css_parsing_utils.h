@@ -348,7 +348,7 @@ CSSValue* ConsumeSingleTimelineName(CSSParserTokenRange&,
 CSSValue* ConsumeSingleTimelineInset(CSSParserTokenRange&,
                                      const CSSParserContext&);
 
-void AddBackgroundValue(CSSValue*& list, CSSValue*);
+void AddBackgroundValue(CSSValue*& list, const CSSValue*);
 CSSValue* ConsumeBackgroundAttachment(CSSParserTokenRange&);
 CSSValue* ConsumeBackgroundBlendMode(CSSParserTokenRange&);
 CSSValue* ConsumeBackgroundBox(CSSParserTokenRange&);

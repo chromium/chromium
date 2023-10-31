@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/core/css/cssom_utils.h"
@@ -71,6 +72,14 @@ inline WhiteSpaceCollapse ToWhiteSpaceCollapse(const CSSValue* value) {
 inline TextWrap ToTextWrap(const CSSValue* value) {
   return ConvertIdentifierTo<TextWrap>(
       value, ComputedStyleInitialValues::InitialTextWrap());
+}
+
+bool IsZeroPercent(const CSSValue* value) {
+  if (const auto* num = DynamicTo<CSSNumericLiteralValue>(value)) {
+    return num->IsZero() && num->IsPercentage();
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -1618,8 +1627,9 @@ String StylePropertySerializer::GetLayeredShorthandValue(
   // Now stitch the properties together.
   for (wtf_size_t layer = 0; layer < num_layers; layer++) {
     StringBuilder layer_result;
-    bool found_position_x_css_property = false;
-    bool found_position_y_css_property = false;
+    bool is_position_x_serialized = false;
+    bool is_position_y_serialized = false;
+    const CSSValue* mask_position_x = nullptr;
     CSSValueID mask_origin_value = CSSValueID::kBorderBox;
 
     for (unsigned property_index = 0; property_index < size; property_index++) {
@@ -1706,6 +1716,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
           omit_value = true;
         }
       }
+
       if (shorthand.id() == CSSPropertyID::kAlternativeMask) {
         if (property->IDEquals(CSSPropertyID::kMaskOrigin)) {
           if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
@@ -1716,34 +1727,60 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         } else if (property->IDEquals(CSSPropertyID::kMaskClip)) {
           CSSValueID mask_clip_id = CSSValueID::kBorderBox;
           if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
-            mask_clip_id = To<CSSIdentifierValue>(ident)->GetValueID();
+            mask_clip_id = ident->GetValueID();
           }
           SerializeMaskOriginAndClip(layer_result, mask_origin_value,
                                      mask_clip_id);
           omit_value = true;
         } else if (property->IDEquals(CSSPropertyID::kMaskComposite)) {
           if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
-            if (To<CSSIdentifierValue>(ident)->GetValueID() ==
-                CSSValueID::kAdd) {
+            if (ident->GetValueID() == CSSValueID::kAdd) {
               omit_value = true;
             }
           }
         } else if (property->IDEquals(CSSPropertyID::kMaskMode)) {
           if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
-            if (To<CSSIdentifierValue>(ident)->GetValueID() ==
-                CSSValueID::kMatchSource) {
+            if (ident->GetValueID() == CSSValueID::kMatchSource) {
               omit_value = true;
             }
           }
+        } else if (property->IDEquals(CSSPropertyID::kMaskRepeat)) {
+          if (auto* repeat = DynamicTo<CSSRepeatStyleValue>(value)) {
+            if (repeat->IsRepeat()) {
+              omit_value = true;
+            }
+          }
+        } else if (property->IDEquals(CSSPropertyID::kMaskSize)) {
+          if (auto* size_value = DynamicTo<CSSIdentifierValue>(value)) {
+            if (size_value->GetValueID() == CSSValueID::kAuto) {
+              omit_value = true;
+            }
+          }
+        } else if (property->IDEquals(CSSPropertyID::kWebkitMaskPositionX)) {
+          omit_value = true;
+          mask_position_x = value;
+        } else if (property->IDEquals(CSSPropertyID::kWebkitMaskPositionY)) {
+          omit_value = true;
+
+          if (!IsZeroPercent(mask_position_x) || !IsZeroPercent(value)) {
+            is_position_x_serialized = true;
+            is_position_y_serialized = true;
+
+            if (!layer_result.empty()) {
+              layer_result.Append(' ');
+            }
+            layer_result.Append(mask_position_x->CssText());
+            layer_result.Append(' ');
+            layer_result.Append(value->CssText());
+          }
         }
-        // TODO(pdr): Omit default values for mask properties.
       }
 
       if (!omit_value) {
         if (property->IDEquals(CSSPropertyID::kBackgroundSize) ||
             property->IDEquals(CSSPropertyID::kWebkitMaskSize) ||
             property->IDEquals(CSSPropertyID::kMaskSize)) {
-          if (found_position_y_css_property || found_position_x_css_property) {
+          if (is_position_y_serialized || is_position_x_serialized) {
             layer_result.Append(" / ");
           } else {
             layer_result.Append(" 0% 0% / ");
@@ -1756,13 +1793,11 @@ String StylePropertySerializer::GetLayeredShorthandValue(
 
         layer_result.Append(value->CssText());
 
-        if (property->IDEquals(CSSPropertyID::kBackgroundPositionX) ||
-            property->IDEquals(CSSPropertyID::kWebkitMaskPositionX)) {
-          found_position_x_css_property = true;
+        if (property->IDEquals(CSSPropertyID::kBackgroundPositionX)) {
+          is_position_x_serialized = true;
         }
-        if (property->IDEquals(CSSPropertyID::kBackgroundPositionY) ||
-            property->IDEquals(CSSPropertyID::kWebkitMaskPositionY)) {
-          found_position_y_css_property = true;
+        if (property->IDEquals(CSSPropertyID::kBackgroundPositionY)) {
+          is_position_y_serialized = true;
           // background-position is a special case. If only the first offset is
           // specified, the second one defaults to "center", not the same value.
         }

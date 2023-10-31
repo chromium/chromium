@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 55 tests; 30 PASS, 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 55 tests; 44 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [PASS] e.style['mask'] = "none" should set the property value
 [PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue)" should set the property value
 [PASS] e.style['mask'] = "linear-gradient(to left bottom, red, blue) luminance" should set the property value
@@ -38,21 +38,14 @@ Found 55 tests; 30 PASS, 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: mask-border-source should be canonical expected (string) "none" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none" should set mask-border-width
   assert_equals: mask-border-width should be canonical expected (string) "auto" but got (undefined) undefined
-[FAIL] e.style['mask'] = "none" should set mask-clip
-  assert_equals: mask-clip should be canonical expected "border-box" but got "initial"
-[FAIL] e.style['mask'] = "none" should set mask-composite
-  assert_equals: mask-composite should be canonical expected "add" but got "initial"
+[PASS] e.style['mask'] = "none" should set mask-clip
+[PASS] e.style['mask'] = "none" should set mask-composite
 [PASS] e.style['mask'] = "none" should set mask-image
-[FAIL] e.style['mask'] = "none" should set mask-mode
-  assert_equals: mask-mode should be canonical expected "match-source" but got "initial"
-[FAIL] e.style['mask'] = "none" should set mask-origin
-  assert_equals: mask-origin should be canonical expected "border-box" but got "initial"
-[FAIL] e.style['mask'] = "none" should set mask-position
-  assert_equals: mask-position should be canonical expected "0% 0%" but got "initial"
-[FAIL] e.style['mask'] = "none" should set mask-repeat
-  assert_equals: mask-repeat should be canonical expected "repeat" but got "initial"
-[FAIL] e.style['mask'] = "none" should set mask-size
-  assert_equals: mask-size should be canonical expected "auto" but got "initial"
+[PASS] e.style['mask'] = "none" should set mask-mode
+[PASS] e.style['mask'] = "none" should set mask-origin
+[PASS] e.style['mask'] = "none" should set mask-position
+[PASS] e.style['mask'] = "none" should set mask-repeat
+[PASS] e.style['mask'] = "none" should set mask-size
 [PASS] e.style['mask'] = "none" should not set unrelated longhands
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-border-outset
   assert_equals: mask-border-outset should be canonical expected (string) "0" but got (undefined) undefined
@@ -64,21 +57,14 @@ Found 55 tests; 30 PASS, 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: mask-border-source should be canonical expected (string) "none" but got (undefined) undefined
 [FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-border-width
   assert_equals: mask-border-width should be canonical expected (string) "auto" but got (undefined) undefined
-[FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-clip
-  assert_equals: mask-clip should be canonical expected "border-box, padding-box" but got "initial, padding-box"
-[FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-composite
-  assert_equals: mask-composite should be canonical expected "add, add" but got "initial, initial"
+[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-clip
+[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-composite
 [PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-image
-[FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-mode
-  assert_equals: mask-mode should be canonical expected "match-source, match-source" but got "initial, initial"
-[FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-origin
-  assert_equals: mask-origin should be canonical expected "border-box, padding-box" but got "initial, padding-box"
-[FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-position
-  assert_equals: mask-position should be canonical expected "0% 0%, 0% 0%" but got ""
-[FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-repeat
-  assert_equals: mask-repeat should be canonical expected "repeat, repeat" but got "initial, initial"
-[FAIL] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-size
-  assert_equals: mask-size should be canonical expected "auto, auto" but got "initial, initial"
+[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-mode
+[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-origin
+[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-position
+[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-repeat
+[PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should set mask-size
 [PASS] e.style['mask'] = "none, linear-gradient(to left bottom, red, blue) padding-box" should not set unrelated longhands
 Harness: the test ran to completion.
 

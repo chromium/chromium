@@ -85,15 +85,15 @@ testInner("-webkit-mask-position", "left 20% top", "left 20% top");
 // test mask-repeat
 testInner("-webkit-mask", "repeat-x", "repeat-x");
 testInner("-webkit-mask", "repeat-y", "repeat-y");
-testInner("-webkit-mask", "repeat", "repeat");
+testInner("-webkit-mask", "repeat", "none");
 testInner("-webkit-mask", "space", "space");
 testInner("-webkit-mask", "no-repeat", "no-repeat");
 testInner("-webkit-mask", "repeat space", "repeat space");
 testInner("-webkit-mask", "repeat round", "repeat round");
 testInner("-webkit-mask", "repeat no-repeat", "repeat-x");
 testInner("-webkit-mask", "repeat space, repeat-x", "repeat space, repeat-x");
-testInner("-webkit-mask", "repeat none", "none repeat");
-testInner("-webkit-mask", "none repeat", "none repeat");
+testInner("-webkit-mask", "repeat none", "none");
+testInner("-webkit-mask", "none repeat", "none");
 
 // test mask-origin / mask-clip
 testInner("-webkit-mask", "padding-box", "padding-box");
@@ -108,8 +108,8 @@ testInner("-webkit-mask", "padding-box border-box none", "none padding-box borde
 testInner("-webkit-mask", "none padding-box border-box", "none padding-box border-box");
 
 // test mask-size
-testInner("-webkit-mask", "none left top / auto", "none left top / auto");
-testInner("-webkit-mask", "none left top / auto auto", "none left top / auto");
+testInner("-webkit-mask", "none left top / auto", "none left top");
+testInner("-webkit-mask", "none left top / auto auto", "none left top");
 testInner("-webkit-mask", "none left top / 100%", "none left top / 100%");
 testInner("-webkit-mask", "none left top / 100% 100%", "none left top / 100% 100%");
 testInner("-webkit-mask", "none left top / 0%", "none left top / 0%");
@@ -125,8 +125,8 @@ testInner("-webkit-mask", "none center right 20px", "none right 20px center");
 testInner("-webkit-mask", "none border-box left top", "none left top");
 testInner("-webkit-mask", "none border-box left top 20px", "none left top 20px");
 testInner("-webkit-mask", "none border-box content-box left top repeat-x", "none left top repeat-x border-box content-box");
-testInner("-webkit-mask", "none border-box content-box left top / auto repeat-x", "none left top / auto repeat-x border-box content-box");
-testInner("-webkit-mask", "none border-box content-box right 0px center / auto repeat-x", "none right 0px center / auto repeat-x border-box content-box");
+testInner("-webkit-mask", "none border-box content-box left top / auto repeat-x", "none left top repeat-x border-box content-box");
+testInner("-webkit-mask", "none border-box content-box right 0px center / auto repeat-x", "none right 0px center repeat-x border-box content-box");
 
 // FIXME: Computed style not yet implemented.
 // testComputed("-webkit-mask", "", "");
