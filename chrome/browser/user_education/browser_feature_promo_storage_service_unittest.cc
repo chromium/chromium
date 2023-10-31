@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,11 +38,10 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     service_.Reset(kTestIPHFeature2);
   }
 
-  static BrowserFeaturePromoStorageService::PromoData CreateTestData() {
-    BrowserFeaturePromoStorageService::PromoData data;
+  static user_education::FeaturePromoData CreateTestData() {
+    user_education::FeaturePromoData data;
     data.is_dismissed = true;
-    data.last_dismissed_by =
-        BrowserFeaturePromoStorageService::CloseReason::kSnooze;
+    data.last_dismissed_by = user_education::FeaturePromoClosedReason::kSnooze;
     data.last_show_time = base::Time::FromMillisecondsSinceUnixEpoch(1);
     data.last_snooze_time = base::Time::FromMillisecondsSinceUnixEpoch(2);
     data.snooze_count = 3;
@@ -52,68 +52,76 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     return data;
   }
 
-  static void CompareData(
-      const BrowserFeaturePromoStorageService::PromoData& expected,
-      const BrowserFeaturePromoStorageService::PromoData& actual) {
-    EXPECT_EQ(expected.is_dismissed, actual.is_dismissed);
-    EXPECT_EQ(expected.last_show_time, actual.last_show_time);
-    EXPECT_EQ(expected.last_snooze_time, actual.last_snooze_time);
-    EXPECT_EQ(expected.snooze_count, actual.snooze_count);
-    EXPECT_EQ(expected.show_count, actual.show_count);
-    EXPECT_EQ(expected.last_snooze_duration, actual.last_snooze_duration);
-    EXPECT_THAT(actual.shown_for_apps,
+  void ResetData(const base::Feature& to_reset_data_for) {
+    service_.Reset(to_reset_data_for);
+  }
+
+  void CompareData(const user_education::FeaturePromoData& expected,
+                   const base::Feature& to_read_data_for) {
+    const auto actual = service_.ReadPromoData(to_read_data_for);
+    ASSERT_TRUE(actual.has_value());
+    EXPECT_EQ(expected.is_dismissed, actual->is_dismissed);
+    EXPECT_EQ(expected.last_show_time, actual->last_show_time);
+    EXPECT_EQ(expected.last_snooze_time, actual->last_snooze_time);
+    EXPECT_EQ(expected.snooze_count, actual->snooze_count);
+    EXPECT_EQ(expected.show_count, actual->show_count);
+    EXPECT_EQ(expected.last_snooze_duration, actual->last_snooze_duration);
+    EXPECT_THAT(actual->shown_for_apps,
                 testing::ContainerEq(expected.shown_for_apps));
   }
 
- protected:
+  void SaveData(const base::Feature& to_save_data_for,
+                const user_education::FeaturePromoData& data) {
+    service_.SavePromoData(to_save_data_for, data);
+  }
+
+  auto ReadData(const base::Feature& to_read_data_for) {
+    return service_.ReadPromoData(to_read_data_for);
+  }
+
+ private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   BrowserFeaturePromoStorageService service_;
 };
 
 TEST_F(BrowserFeaturePromoStorageServiceTest, NoDataByDefault) {
-  EXPECT_FALSE(service_.ReadPromoData(kTestIPHFeature).has_value());
+  EXPECT_FALSE(ReadData(kTestIPHFeature).has_value());
 }
 
 TEST_F(BrowserFeaturePromoStorageServiceTest, SavesAndReadsData) {
   const auto data = CreateTestData();
-  service_.SavePromoData(kTestIPHFeature, data);
-  const auto result = service_.ReadPromoData(kTestIPHFeature);
-  ASSERT_TRUE(result.has_value());
-  CompareData(data, *result);
+  SaveData(kTestIPHFeature, data);
+  CompareData(data, kTestIPHFeature);
 }
 
 TEST_F(BrowserFeaturePromoStorageServiceTest, SaveAgain) {
   auto data = CreateTestData();
-  service_.SavePromoData(kTestIPHFeature, data);
+  SaveData(kTestIPHFeature, data);
   data.shown_for_apps.clear();
   data.is_dismissed = false;
   data.show_count++;
-  service_.SavePromoData(kTestIPHFeature, data);
-  const auto result = service_.ReadPromoData(kTestIPHFeature);
-  ASSERT_TRUE(result.has_value());
-  CompareData(data, *result);
+  SaveData(kTestIPHFeature, data);
+  CompareData(data, kTestIPHFeature);
 }
 
 TEST_F(BrowserFeaturePromoStorageServiceTest, ResetClearsData) {
   const auto data = CreateTestData();
-  service_.SavePromoData(kTestIPHFeature, data);
-  service_.Reset(kTestIPHFeature);
-  const auto result = service_.ReadPromoData(kTestIPHFeature);
-  ASSERT_FALSE(result.has_value());
+  SaveData(kTestIPHFeature, data);
+  ResetData(kTestIPHFeature);
+  ASSERT_FALSE(ReadData(kTestIPHFeature).has_value());
 }
 
 TEST_F(BrowserFeaturePromoStorageServiceTest, SavesAndReadsMultipleFeatures) {
   const auto data = CreateTestData();
-  service_.SavePromoData(kTestIPHFeature, data);
-  EXPECT_FALSE(service_.ReadPromoData(kTestIPHFeature2).has_value());
+  SaveData(kTestIPHFeature, data);
+  EXPECT_FALSE(ReadData(kTestIPHFeature2).has_value());
   auto data2 = CreateTestData();
   data2.is_dismissed = false;
-  data2.last_dismissed_by =
-      BrowserFeaturePromoStorageService::CloseReason::kCancel;
+  data2.last_dismissed_by = user_education::FeaturePromoClosedReason::kCancel;
   data2.shown_for_apps.clear();
   data2.show_count = 6;
-  service_.SavePromoData(kTestIPHFeature2, data2);
-  CompareData(data, *service_.ReadPromoData(kTestIPHFeature));
-  CompareData(data2, *service_.ReadPromoData(kTestIPHFeature2));
+  SaveData(kTestIPHFeature2, data2);
+  CompareData(data, kTestIPHFeature);
+  CompareData(data2, kTestIPHFeature2);
 }

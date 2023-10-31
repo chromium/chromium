@@ -341,7 +341,7 @@ void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
       browser->tab_strip_model()->GetActiveWebContents() == web_contents()) {
     browser->window()->CloseFeaturePromo(
         customize_chrome_feature,
-        user_education::FeaturePromoCloseReason::kAbortPromo);
+        user_education::EndFeaturePromoReason::kAbortPromo);
   }
 }
 

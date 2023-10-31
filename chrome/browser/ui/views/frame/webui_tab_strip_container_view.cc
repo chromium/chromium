@@ -720,7 +720,7 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
 
     browser_view_->CloseFeaturePromo(
         feature_engagement::kIPHWebUITabStripFeature,
-        user_education::FeaturePromoCloseReason::kFeatureEngaged);
+        user_education::EndFeaturePromoReason::kFeatureEngaged);
   } else {
     if (time_at_open_) {
       RecordTabStripUIOpenDurationHistogram(base::TimeTicks::Now() -

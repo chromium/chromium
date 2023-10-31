@@ -384,7 +384,7 @@ bool TestBrowserWindow::MaybeShowStartupFeaturePromo(
 
 bool TestBrowserWindow::CloseFeaturePromo(
     const base::Feature& iph_feature,
-    user_education::FeaturePromoCloseReason close_reason) {
+    user_education::EndFeaturePromoReason close_reason) {
   return feature_promo_controller_ &&
          feature_promo_controller_->EndPromo(iph_feature, close_reason);
 }

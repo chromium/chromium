@@ -32,6 +32,7 @@
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_specification.h"
@@ -93,6 +94,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOneOffIPHElementId);
 }  // namespace
 
 using user_education::FeaturePromoController;
+using user_education::FeaturePromoData;
 using user_education::FeaturePromoHandle;
 using user_education::FeaturePromoRegistry;
 using user_education::FeaturePromoResult;
@@ -351,8 +353,7 @@ TEST_F(BrowserFeaturePromoControllerTest, BubbleBlocksCanShowPromo) {
             controller_->CanShowPromo(kTutorialIPHFeature));
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
   EXPECT_TRUE(controller_->EndPromo(
-      kTestIPHFeature,
-      user_education::FeaturePromoCloseReason::kFeatureEngaged));
+      kTestIPHFeature, user_education::EndFeaturePromoReason::kFeatureEngaged));
   EXPECT_TRUE(controller_->CanShowPromo(kTutorialIPHFeature));
 }
 
@@ -476,7 +477,7 @@ TEST_F(BrowserFeaturePromoControllerTest, CancelPromoBeforeStartup) {
   EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
             controller_->GetPromoStatus(kTestIPHFeature));
   controller_->EndPromo(kTestIPHFeature,
-                        user_education::FeaturePromoCloseReason::kAbortPromo);
+                        user_education::EndFeaturePromoReason::kAbortPromo);
   EXPECT_EQ(FeaturePromoStatus::kNotRunning,
             controller_->GetPromoStatus(kTestIPHFeature));
 
@@ -661,7 +662,7 @@ TEST_F(BrowserFeaturePromoControllerTest, SnoozeServiceBlocksPromo) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
       .Times(0);
   // Simulate a snooze by writing data directly.
-  user_education::FeaturePromoStorageService::PromoData data;
+  FeaturePromoData data;
   data.show_count = 1;
   data.snooze_count = 1;
   data.last_show_time = base::Time::Now();
@@ -697,7 +698,7 @@ TEST_F(BrowserFeaturePromoControllerTest, PromoEndsWhenRequested) {
       close_callback, Run(),
       EXPECT_TRUE(controller_->EndPromo(
           kTestIPHFeature,
-          user_education::FeaturePromoCloseReason::kAbortPromo)));
+          user_education::EndFeaturePromoReason::kAbortPromo)));
   EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
 
@@ -708,7 +709,7 @@ TEST_F(BrowserFeaturePromoControllerTest, PromoEndsWhenRequested) {
 TEST_F(BrowserFeaturePromoControllerTest,
        CloseBubbleDoesNothingIfPromoNotShowing) {
   EXPECT_FALSE(controller_->EndPromo(
-      kTestIPHFeature, user_education::FeaturePromoCloseReason::kAbortPromo));
+      kTestIPHFeature, user_education::EndFeaturePromoReason::kAbortPromo));
 }
 
 TEST_F(BrowserFeaturePromoControllerTest,
@@ -718,8 +719,7 @@ TEST_F(BrowserFeaturePromoControllerTest,
   ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
 
   EXPECT_FALSE(controller_->EndPromo(
-      kTutorialIPHFeature,
-      user_education::FeaturePromoCloseReason::kAbortPromo));
+      kTutorialIPHFeature, user_education::EndFeaturePromoReason::kAbortPromo));
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
 }
@@ -799,7 +799,7 @@ TEST_F(BrowserFeaturePromoControllerTest, ContinuedPromoDismissesOnForceEnd) {
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
   controller_->EndPromo(kTestIPHFeature,
-                        user_education::FeaturePromoCloseReason::kAbortPromo);
+                        user_education::EndFeaturePromoReason::kAbortPromo);
   EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature,
                                           FeaturePromoStatus::kContinued));
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
@@ -923,7 +923,7 @@ TEST_F(BrowserFeaturePromoControllerTest,
       GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
 
   controller_->EndPromo(kTestIPHFeature,
-                        user_education::FeaturePromoCloseReason::kAbortPromo);
+                        user_education::EndFeaturePromoReason::kAbortPromo);
   EXPECT_FALSE(
       GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
 }

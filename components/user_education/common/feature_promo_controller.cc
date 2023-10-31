@@ -127,7 +127,8 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
 
   // For demo and high-priority promos, cancel the current promo.
   if ((is_high_priority || for_demo) && current_promo_) {
-    EndPromo(*GetCurrentPromoFeature(), CloseReason::kOverrideForDemo);
+    EndPromo(*GetCurrentPromoFeature(),
+             FeaturePromoClosedReason::kOverrideForDemo);
   }
 
   // For high priority promos, close any other promos or help bubbles in this
@@ -191,7 +192,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
   // If a normal bubble is showing, close it. Won't affect a promo continued
   // after its bubble has closed.
   if (const auto* current = GetCurrentPromoFeature()) {
-    EndPromo(*current, CloseReason::kOverrideForPrecedence);
+    EndPromo(*current, FeaturePromoClosedReason::kOverrideForPrecedence);
   }
 
   // Snooze and tutorial are not supported for critical promos.
@@ -234,7 +235,7 @@ FeaturePromoControllerCommon::GetCurrentPromoSpecificationForAnchor(
 
 bool FeaturePromoControllerCommon::HasPromoBeenDismissed(
     const base::Feature& iph_feature,
-    CloseReason* last_close_reason) const {
+    FeaturePromoClosedReason* last_close_reason) const {
   const FeaturePromoSpecification* spec =
       registry()->GetParamsForFeature(iph_feature);
   if (!spec) {
@@ -261,18 +262,19 @@ bool FeaturePromoControllerCommon::HasPromoBeenDismissed(
 
 bool FeaturePromoControllerCommon::EndPromo(
     const base::Feature& iph_feature,
-    FeaturePromoCloseReason close_reason) {
-  // Translate public enum FeaturePromoCloseReason to private
-  // FeaturePromoCloseReasonInternal and call private method.
+    EndFeaturePromoReason end_promo_reason) {
+  // Translate public enum UserCloseReason to private
+  // UserCloseReasonInternal and call private method.
   auto close_reason_internal =
-      close_reason == FeaturePromoCloseReason::kFeatureEngaged
-          ? CloseReason::kFeatureEngaged
-          : CloseReason::kAbortPromo;
+      end_promo_reason == EndFeaturePromoReason::kFeatureEngaged
+          ? FeaturePromoClosedReason::kFeatureEngaged
+          : FeaturePromoClosedReason::kAbortPromo;
   return EndPromo(iph_feature, close_reason_internal);
 }
 
-bool FeaturePromoControllerCommon::EndPromo(const base::Feature& iph_feature,
-                                            CloseReason close_reason) {
+bool FeaturePromoControllerCommon::EndPromo(
+    const base::Feature& iph_feature,
+    FeaturePromoClosedReason close_reason) {
   const auto it = startup_promos_.find(&iph_feature);
   if (it != startup_promos_.end()) {
     if (it->second) {
@@ -299,22 +301,23 @@ bool FeaturePromoControllerCommon::DismissNonCriticalBubbleInRegion(
       !bubble->GetBoundsInScreen().Intersects(screen_bounds)) {
     return false;
   }
-  const bool result = EndPromo(*current_promo_->iph_feature(),
-                               CloseReason::kOverrideForUIRegionConflict);
+  const bool result =
+      EndPromo(*current_promo_->iph_feature(),
+               FeaturePromoClosedReason::kOverrideForUIRegionConflict);
   DCHECK(result);
   return result;
 }
 
 FeaturePromoHandle FeaturePromoControllerCommon::CloseBubbleAndContinuePromo(
     const base::Feature& iph_feature) {
-  return CloseBubbleAndContinuePromoWithReason(iph_feature,
-                                               CloseReason::kFeatureEngaged);
+  return CloseBubbleAndContinuePromoWithReason(
+      iph_feature, FeaturePromoClosedReason::kFeatureEngaged);
 }
 
 FeaturePromoHandle
 FeaturePromoControllerCommon::CloseBubbleAndContinuePromoWithReason(
     const base::Feature& iph_feature,
-    CloseReason close_reason) {
+    FeaturePromoClosedReason close_reason) {
   DCHECK_EQ(GetCurrentPromoFeature(), &iph_feature);
   current_promo_->OnPromoEnded(close_reason, /*continue_promo=*/true);
   return FeaturePromoHandle(GetAsWeakPtr(), &iph_feature);
@@ -616,7 +619,7 @@ void FeaturePromoControllerCommon::OnHelpBubbleClosed(HelpBubble* bubble) {
 void FeaturePromoControllerCommon::OnHelpBubbleTimedOut(
     const base::Feature* feature) {
   if (feature == GetCurrentPromoFeature()) {
-    current_promo_->OnPromoEnded(CloseReason::kTimeout);
+    current_promo_->OnPromoEnded(FeaturePromoClosedReason::kTimeout);
     current_promo_.reset();
   }
 }
@@ -624,7 +627,7 @@ void FeaturePromoControllerCommon::OnHelpBubbleTimedOut(
 void FeaturePromoControllerCommon::OnHelpBubbleSnoozed(
     const base::Feature* feature) {
   if (feature == GetCurrentPromoFeature()) {
-    current_promo_->OnPromoEnded(CloseReason::kSnooze);
+    current_promo_->OnPromoEnded(FeaturePromoClosedReason::kSnooze);
     current_promo_.reset();
   }
 }
@@ -633,8 +636,9 @@ void FeaturePromoControllerCommon::OnHelpBubbleDismissed(
     const base::Feature* feature,
     bool via_action_button) {
   if (feature == GetCurrentPromoFeature()) {
-    current_promo_->OnPromoEnded(via_action_button ? CloseReason::kDismiss
-                                                   : CloseReason::kCancel);
+    current_promo_->OnPromoEnded(via_action_button
+                                     ? FeaturePromoClosedReason::kDismiss
+                                     : FeaturePromoClosedReason::kCancel);
     current_promo_.reset();
   }
 }
@@ -642,7 +646,7 @@ void FeaturePromoControllerCommon::OnHelpBubbleDismissed(
 void FeaturePromoControllerCommon::OnHelpBubbleTimeout(
     const base::Feature* feature) {
   if (feature == GetCurrentPromoFeature()) {
-    current_promo_->OnPromoEnded(CloseReason::kTimeout);
+    current_promo_->OnPromoEnded(FeaturePromoClosedReason::kTimeout);
     current_promo_.reset();
   }
 }
@@ -650,8 +654,9 @@ void FeaturePromoControllerCommon::OnHelpBubbleTimeout(
 void FeaturePromoControllerCommon::OnCustomAction(
     const base::Feature* feature,
     FeaturePromoSpecification::CustomActionCallback callback) {
-  callback.Run(GetAnchorContext(), CloseBubbleAndContinuePromoWithReason(
-                                       *feature, CloseReason::kAction));
+  callback.Run(GetAnchorContext(),
+               CloseBubbleAndContinuePromoWithReason(
+                   *feature, FeaturePromoClosedReason::kAction));
 }
 
 void FeaturePromoControllerCommon::OnTutorialHelpBubbleSnoozed(
@@ -673,8 +678,8 @@ void FeaturePromoControllerCommon::OnTutorialStarted(
     const base::Feature* iph_feature,
     TutorialIdentifier tutorial_id) {
   DCHECK_EQ(GetCurrentPromoFeature(), iph_feature);
-  tutorial_promo_handle_ =
-      CloseBubbleAndContinuePromoWithReason(*iph_feature, CloseReason::kAction);
+  tutorial_promo_handle_ = CloseBubbleAndContinuePromoWithReason(
+      *iph_feature, FeaturePromoClosedReason::kAction);
   DCHECK(tutorial_promo_handle_.is_valid());
   tutorial_service_->StartTutorial(
       tutorial_id, GetAnchorContext(),

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 
-#include <ostream>
-
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
@@ -13,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/user_education/common/feature_promo_storage_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -67,7 +64,7 @@ void BrowserFeaturePromoStorageService::Reset(
   update->RemoveByDottedPath(iph_feature.name);
 }
 
-absl::optional<user_education::FeaturePromoStorageService::PromoData>
+absl::optional<user_education::FeaturePromoData>
 BrowserFeaturePromoStorageService::ReadPromoData(
     const base::Feature& iph_feature) const {
   const std::string path_prefix = std::string(iph_feature.name) + ".";
@@ -90,7 +87,7 @@ BrowserFeaturePromoStorageService::ReadPromoData(
   const base::Value::List* app_list =
       pref_data.FindListByDottedPath(path_prefix + kIPHShownForAppsPath);
 
-  absl::optional<PromoData> promo_data;
+  absl::optional<user_education::FeaturePromoData> promo_data;
 
   if (!is_dismissed || !snooze_time || !snooze_count || !snooze_duration) {
     // IPH data is corrupt. Ignore the previous data.
@@ -104,7 +101,7 @@ BrowserFeaturePromoStorageService::ReadPromoData(
     show_count = *snooze_count;
   }
 
-  promo_data = PromoData();
+  promo_data = user_education::FeaturePromoData();
   promo_data->is_dismissed = *is_dismissed;
   promo_data->last_show_time = *show_time;
   promo_data->last_snooze_time = *snooze_time;
@@ -115,11 +112,15 @@ BrowserFeaturePromoStorageService::ReadPromoData(
   // Since `last_dismissed_by` was not previously recorded, default to
   // "canceled" if the data isn't present or is invalid.
   if (!last_dismissed_by || *last_dismissed_by < 0 ||
-      *last_dismissed_by > CloseReason::kMaxValue) {
-    promo_data->last_dismissed_by = CloseReason::kCancel;
+      *last_dismissed_by >
+          static_cast<int>(
+              user_education::FeaturePromoClosedReason::kMaxValue)) {
+    promo_data->last_dismissed_by =
+        user_education::FeaturePromoClosedReason::kCancel;
   } else if (last_dismissed_by) {
     promo_data->last_dismissed_by =
-        static_cast<CloseReason>(*last_dismissed_by);
+        static_cast<user_education::FeaturePromoClosedReason>(
+            *last_dismissed_by);
   }
 
   if (app_list) {
@@ -135,7 +136,7 @@ BrowserFeaturePromoStorageService::ReadPromoData(
 
 void BrowserFeaturePromoStorageService::SavePromoData(
     const base::Feature& iph_feature,
-    const user_education::FeaturePromoStorageService::PromoData& promo_data) {
+    const user_education::FeaturePromoData& promo_data) {
   std::string path_prefix = std::string(iph_feature.name) + ".";
 
   ScopedDictPrefUpdate update(profile_->GetPrefs(), kIPHPromoDataPath);

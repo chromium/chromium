@@ -44,6 +44,7 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_result.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
@@ -79,13 +80,13 @@ void CreateHistogramNoticeServiceEvent(
 }
 
 NoticeAction ToNoticeAction(
-    user_education::FeaturePromoStorageService::CloseReason close_reason) {
+    user_education::FeaturePromoClosedReason close_reason) {
   switch (close_reason) {
-    case user_education::FeaturePromoStorageService::kDismiss:
+    case user_education::FeaturePromoClosedReason::kDismiss:
       return NoticeAction::kGotIt;
-    case user_education::FeaturePromoStorageService::kAction:
+    case user_education::FeaturePromoClosedReason::kAction:
       return NoticeAction::kSettings;
-    case user_education::FeaturePromoStorageService::kCancel:
+    case user_education::FeaturePromoClosedReason::kCancel:
       return NoticeAction::kClosed;
     default:
       return NoticeAction::kOther;
@@ -324,7 +325,7 @@ bool TrackingProtectionNoticeService::BaseIPHNotice::MaybeShowPromo(
 void TrackingProtectionNoticeService::BaseIPHNotice::HidePromo(
     Browser* browser) {
   browser->window()->CloseFeaturePromo(
-      GetIPHFeature(), user_education::FeaturePromoCloseReason::kAbortPromo);
+      GetIPHFeature(), user_education::EndFeaturePromoReason::kAbortPromo);
 }
 
 bool TrackingProtectionNoticeService::BaseIPHNotice::IsPromoShowing(
@@ -375,7 +376,7 @@ void TrackingProtectionNoticeService::BaseIPHNotice::OnNoticeClosed(
     return;
   }
 
-  user_education::FeaturePromoStorageService::CloseReason close_reason;
+  user_education::FeaturePromoClosedReason close_reason;
   bool has_been_dismissed =
       promo_controller->HasPromoBeenDismissed(GetIPHFeature(), &close_reason);
 

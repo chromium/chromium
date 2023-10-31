@@ -19,6 +19,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo_registry.h"
@@ -51,11 +52,8 @@ enum class FeaturePromoStatus {
   kContinued          // The bubble was closed but the promo is still active.
 };
 
-// Public enum to indicate the reason a FeaturePromo was ended. This
-// is a subset of the FeaturePromoCloseReasonInternal enum. There are no
-// values in this enum because this value only maps to the internal enum
-// which is then used to record metrics.
-enum class FeaturePromoCloseReason {
+// Enum for client code to specify why a promo should be programmatically ended.
+enum class EndFeaturePromoReason {
   // Used to indicate that the user left the flow of the FeaturePromo.
   // For example, this may mean the user ignored a page-specific FeaturePromo
   // by navigating to another page.
@@ -142,9 +140,9 @@ class FeaturePromoController {
   // expensive. If `last_close_reason` is set, and the promo has been
   // dismissed, it wil be populated with the most recent close reason.
   // (The value is undefined if this method returns false.)
-  virtual bool HasPromoBeenDismissed(const base::Feature& iph_feature,
-                                     FeaturePromoStorageService::CloseReason*
-                                         last_close_reason = nullptr) const = 0;
+  virtual bool HasPromoBeenDismissed(
+      const base::Feature& iph_feature,
+      FeaturePromoClosedReason* last_close_reason = nullptr) const = 0;
 
   // Returns whether the promo for `iph_feature` matches kBubbleShowing or any
   // of `additional_status`.
@@ -169,7 +167,7 @@ class FeaturePromoController {
   // Has no effect for promos closed with CloseBubbleAndContinuePromo(); discard
   // or release the FeaturePromoHandle to end those promos.
   virtual bool EndPromo(const base::Feature& iph_feature,
-                        FeaturePromoCloseReason close_reason) = 0;
+                        EndFeaturePromoReason end_promo_reason) = 0;
 
   // Closes the promo for `iph_feature` - which must be showing - but continues
   // the promo via the return value. Dispose or release the resulting handle to
@@ -238,13 +236,13 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       const base::Feature& iph_feature) const override;
   const FeaturePromoSpecification* GetCurrentPromoSpecificationForAnchor(
       ui::ElementIdentifier menu_element_id) const override;
-  bool HasPromoBeenDismissed(const base::Feature& iph_feature,
-                             FeaturePromoStorageService::CloseReason*
-                                 close_reason = nullptr) const override;
+  bool HasPromoBeenDismissed(
+      const base::Feature& iph_feature,
+      FeaturePromoClosedReason* close_reason = nullptr) const override;
   FeaturePromoResult MaybeShowPromoForDemoPage(
       FeaturePromoParams params) override;
   bool EndPromo(const base::Feature& iph_feature,
-                FeaturePromoCloseReason close_reason) override;
+                EndFeaturePromoReason end_promo_reason) override;
   FeaturePromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) final;
   base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;
@@ -341,13 +339,12 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
 
  private:
-  using CloseReason = FeaturePromoStorageService::CloseReason;
-
-  bool EndPromo(const base::Feature& iph_feature, CloseReason close_reason);
+  bool EndPromo(const base::Feature& iph_feature,
+                FeaturePromoClosedReason close_reason);
 
   FeaturePromoHandle CloseBubbleAndContinuePromoWithReason(
       const base::Feature& iph_action,
-      CloseReason close_reason);
+      FeaturePromoClosedReason close_reason);
 
   // FeaturePromoController:
   void FinishContinuedPromo(const base::Feature& iph_feature) override;

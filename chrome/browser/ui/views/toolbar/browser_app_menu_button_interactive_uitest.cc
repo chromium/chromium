@@ -26,6 +26,7 @@
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,10 +40,9 @@ using ::testing::NiceMock;
 using ::testing::Ref;
 using ::testing::Return;
 
-using user_education::FeaturePromoCloseReason;
+using user_education::EndFeaturePromoReason;
 using user_education::FeaturePromoRegistry;
 using user_education::FeaturePromoSpecification;
-using CloseReason = user_education::FeaturePromoStorageService::CloseReason;
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabPageElementId);
@@ -127,7 +127,7 @@ class BrowserAppMenuButtonInteractiveTest : public InteractiveBrowserTest {
     return Steps(Do(base::BindLambdaForTesting([this, &iph_feature]() {
       EXPECT_TRUE(promo_controller_->IsPromoActive(iph_feature));
       promo_controller_->EndPromo(iph_feature,
-                                  FeaturePromoCloseReason::kAbortPromo);
+                                  EndFeaturePromoReason::kAbortPromo);
 
       EXPECT_FALSE(promo_controller_->IsPromoActive(iph_feature));
     })));

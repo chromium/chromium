@@ -137,7 +137,7 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
   if (controller)
     controller->EndPromo(
         feature_engagement::kIPHTabSearchFeature,
-        user_education::FeaturePromoCloseReason::kFeatureEngaged);
+        user_education::EndFeaturePromoReason::kFeatureEngaged);
 
   absl::optional<gfx::Rect> anchor;
   if (button_->GetWidget()->IsFullscreen() && !button_->IsDrawn()) {

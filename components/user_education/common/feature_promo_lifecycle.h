@@ -28,7 +28,6 @@ class HelpBubble;
 // question through `FeaturePromoStorageService`.
 class FeaturePromoLifecycle {
  public:
-  using CloseReason = FeaturePromoStorageService::CloseReason;
   using PromoSubtype = FeaturePromoSpecification::PromoSubtype;
   using PromoType = FeaturePromoSpecification::PromoType;
 
@@ -68,7 +67,8 @@ class FeaturePromoLifecycle {
   // May result in pref data and/or histogram logging. If `continue_promo` is
   // true, the bubble should be closed but the promo is not ended -
   // `OnContinuedPromoEnded()` should be called when the continuation finishes.
-  void OnPromoEnded(CloseReason close_reason, bool continue_promo = false);
+  void OnPromoEnded(FeaturePromoClosedReason close_reason,
+                    bool continue_promo = false);
 
   // For custom action, Tutorial, etc. indicates that the
   void OnContinuedPromoEnded(bool completed_successfully);
@@ -89,14 +89,14 @@ class FeaturePromoLifecycle {
   enum class State { kNotStarted, kRunning, kContinued, kClosed };
 
   // Records `PromoData` about the promo closing, unless in demo mode.
-  void MaybeWriteClosePromoData(CloseReason close_reason);
+  void MaybeWriteClosedPromoData(FeaturePromoClosedReason close_reason);
 
   // Records that an IPH was shown, including type and identity.
   void RecordShown();
 
   // Records user actions and histograms that discern what action was taken to
   // close a promotion. Does not record in demo mode.
-  void MaybeRecordCloseReason(CloseReason close_reason);
+  void MaybeRecordClosedReason(FeaturePromoClosedReason close_reason);
 
   // If the promo is running, ends it, possibly dismissing the Tracker.
   bool MaybeEndPromo();

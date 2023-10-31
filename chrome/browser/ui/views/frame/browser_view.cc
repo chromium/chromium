@@ -5059,9 +5059,9 @@ bool BrowserView::MaybeShowStartupFeaturePromo(
 
 bool BrowserView::CloseFeaturePromo(
     const base::Feature& iph_feature,
-    user_education::FeaturePromoCloseReason close_reason) {
+    user_education::EndFeaturePromoReason end_promo_reason) {
   return feature_promo_controller_ &&
-         feature_promo_controller_->EndPromo(iph_feature, close_reason);
+         feature_promo_controller_->EndPromo(iph_feature, end_promo_reason);
 }
 
 user_education::FeaturePromoHandle BrowserView::CloseFeaturePromoAndContinue(

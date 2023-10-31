@@ -4,13 +4,14 @@
 
 #include "components/user_education/test/test_feature_promo_storage_service.h"
 
+#include "components/user_education/common/feature_promo_data.h"
+
 namespace user_education::test {
 
 TestFeaturePromoStorageService::TestFeaturePromoStorageService() = default;
 TestFeaturePromoStorageService::~TestFeaturePromoStorageService() = default;
 
-absl::optional<TestFeaturePromoStorageService::PromoData>
-TestFeaturePromoStorageService::ReadPromoData(
+absl::optional<FeaturePromoData> TestFeaturePromoStorageService::ReadPromoData(
     const base::Feature& iph_feature) const {
   const auto it = promo_data_.find(&iph_feature);
   return it == promo_data_.end() ? absl::nullopt
@@ -19,7 +20,7 @@ TestFeaturePromoStorageService::ReadPromoData(
 
 void TestFeaturePromoStorageService::SavePromoData(
     const base::Feature& iph_feature,
-    const PromoData& promo_data) {
+    const FeaturePromoData& promo_data) {
   promo_data_[&iph_feature] = promo_data;
 }
 
