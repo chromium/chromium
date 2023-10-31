@@ -158,6 +158,10 @@ bool TestBrowserWindow::GetCanResize() {
   return false;
 }
 
+ui::WindowShowState TestBrowserWindow::GetWindowShowState() const {
+  return ui::SHOW_STATE_DEFAULT;
+}
+
 bool TestBrowserWindow::IsFullscreen() const {
   return false;
 }

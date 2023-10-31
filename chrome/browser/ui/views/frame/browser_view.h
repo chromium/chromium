@@ -504,6 +504,7 @@ class BrowserView : public BrowserWindow,
   void Restore() override;
   void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) override;
   bool GetCanResize() override;
+  ui::WindowShowState GetWindowShowState() const override;
   void EnterFullscreen(const GURL& url,
                        ExclusiveAccessBubbleType bubble_type,
                        int64_t display_id) override;

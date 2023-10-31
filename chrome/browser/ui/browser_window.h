@@ -667,6 +667,7 @@ class BrowserWindow : public ui::BaseWindow {
   // default.
   virtual void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) = 0;
   virtual bool GetCanResize() = 0;
+  virtual ui::WindowShowState GetWindowShowState() const = 0;
 
   // Shows the Chrome Labs bubble if enabled.
   virtual void ShowChromeLabs() = 0;

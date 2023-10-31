@@ -3981,15 +3981,11 @@ void WebContentsImpl::Restore() {
   GetDelegate()->RestoreFromWebAPI();
 }
 
+// TODO(laurila, crbug.com/1466855): Map into new `ui::DisplayState` enum
+// instead of `ui::WindowShowState`.
 ui::WindowShowState WebContentsImpl::GetWindowShowState() {
-#if defined(USE_AURA)
-  aura::Window* window = GetTopLevelNativeWindow();
-  return wm::GetWindowState(window);
-#else
-  // TODO(laurila, crbug.com/1466855): This API function currently works only on
-  // Aura platforms (Win/Lin/CrOS/Fuchsia), make it also work on Mac.
-  return ui::SHOW_STATE_DEFAULT;
-#endif
+  return GetDelegate() ? GetDelegate()->GetWindowShowState()
+                       : ui::SHOW_STATE_DEFAULT;
 }
 
 bool WebContentsImpl::GetResizable() {

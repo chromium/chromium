@@ -2571,6 +2571,20 @@ bool BrowserView::GetCanResize() {
   return CanResize();
 }
 
+// TODO(laurila, crbug.com/1466855): Map into new `ui::DisplayState` enum
+// instead of `ui::WindowShowState`.
+ui::WindowShowState BrowserView::GetWindowShowState() const {
+  if (IsMaximized()) {
+    return ui::SHOW_STATE_MAXIMIZED;
+  } else if (IsMinimized()) {
+    return ui::SHOW_STATE_MINIMIZED;
+  } else if (IsFullscreen()) {
+    return ui::SHOW_STATE_FULLSCREEN;
+  } else {
+    return ui::SHOW_STATE_DEFAULT;
+  }
+}
+
 void BrowserView::SetCanResizeFromWebAPI(absl::optional<bool> can_resize) {
   // TODO(laurila, crbug.com/1493617): Support multi-tab apps.
   // The value can only be set in web apps, where there currently can only be 1

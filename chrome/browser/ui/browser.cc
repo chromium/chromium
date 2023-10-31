@@ -2063,6 +2063,10 @@ void Browser::RestoreFromWebAPI() {
   window_->Restore();
 }
 
+ui::WindowShowState Browser::GetWindowShowState() const {
+  return window_->GetWindowShowState();
+}
+
 bool Browser::CanEnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
