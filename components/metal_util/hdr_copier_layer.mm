@@ -227,7 +227,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
     self.pixelFormat = MTLPixelFormatRGBA16Float;
     base::apple::ScopedCFTypeRef<CGColorSpaceRef> colorSpace(
         CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearSRGB));
-    self.colorspace = colorSpace.get();
+    self.colorspace = colorSpace;
   }
   return self;
 }
@@ -257,9 +257,9 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
               gfx::GenerateContentLightLevelInfo(hdrMetadata);
           edrMetadata = [CAEDRMetadata
               HDR10MetadataWithDisplayInfo:base::apple::CFToNSPtrCast(
-                                               display_info.get())
+                                               display_info)
                                contentInfo:base::apple::CFToNSPtrCast(
-                                               content_info.get())
+                                               content_info)
                         opticalOutputScale:100];
           break;
         }

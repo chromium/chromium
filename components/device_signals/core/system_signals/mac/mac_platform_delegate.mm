@@ -95,21 +95,21 @@ MacPlatformDelegate::GetSigningCertificatesPublicKeys(
   base::apple::ScopedCFTypeRef<CFURLRef> file_url =
       base::apple::FilePathToCFURL(file_path);
   base::apple::ScopedCFTypeRef<SecStaticCodeRef> file_code;
-  if (SecStaticCodeCreateWithPath(file_url.get(), kSecCSDefaultFlags,
+  if (SecStaticCodeCreateWithPath(file_url, kSecCSDefaultFlags,
                                   file_code.InitializeInto()) !=
       errSecSuccess) {
     return public_keys;
   }
 
   base::apple::ScopedCFTypeRef<CFDictionaryRef> signing_information;
-  if (SecCodeCopySigningInformation(file_code.get(), kSecCSSigningInformation,
+  if (SecCodeCopySigningInformation(file_code, kSecCSSigningInformation,
                                     signing_information.InitializeInto()) !=
       errSecSuccess) {
     return public_keys;
   }
 
   CFArrayRef cert_chain = base::apple::GetValueFromDictionary<CFArrayRef>(
-      signing_information.get(), kSecCodeInfoCertificates);
+      signing_information, kSecCodeInfoCertificates);
   if (!cert_chain) {
     return public_keys;
   }
@@ -132,8 +132,8 @@ MacPlatformDelegate::GetSigningCertificatesPublicKeys(
   base::StringPiece spki_bytes;
   if (!net::asn1::ExtractSPKIFromDERCert(
           base::StringPiece(
-              reinterpret_cast<const char*>(CFDataGetBytePtr(der_data.get())),
-              CFDataGetLength(der_data.get())),
+              reinterpret_cast<const char*>(CFDataGetBytePtr(der_data)),
+              CFDataGetLength(der_data)),
           &spki_bytes)) {
     return public_keys;
   }

@@ -448,7 +448,7 @@ std::string WiFiServiceMac::GetNetworkConnectionState(
           kCFAllocatorDefault,
           reinterpret_cast<const struct sockaddr*>(&local_wifi_address)));
   SCNetworkReachabilityFlags flags = 0u;
-  if (SCNetworkReachabilityGetFlags(reachability.get(), &flags) &&
+  if (SCNetworkReachabilityGetFlags(reachability, &flags) &&
       (flags & kSCNetworkReachabilityFlagsReachable) &&
       (flags & kSCNetworkReachabilityFlagsIsDirect)) {
     // Network is reachable, report is as |kConnected|.

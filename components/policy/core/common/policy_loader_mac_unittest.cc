@@ -90,8 +90,7 @@ void TestHarness::InstallStringPolicy(const std::string& policy_name,
                                       const std::string& policy_value) {
   ScopedCFTypeRef<CFStringRef> name(base::SysUTF8ToCFStringRef(policy_name));
   ScopedCFTypeRef<CFStringRef> value(base::SysUTF8ToCFStringRef(policy_value));
-  prefs_->AddTestItem(name.get(), value.get(), /*is_forced=*/true,
-                      /*is_machine=*/true);
+  prefs_->AddTestItem(name, value, /*is_forced=*/true, /*is_machine=*/true);
 }
 
 void TestHarness::InstallIntegerPolicy(const std::string& policy_name,
@@ -99,15 +98,13 @@ void TestHarness::InstallIntegerPolicy(const std::string& policy_name,
   ScopedCFTypeRef<CFStringRef> name(base::SysUTF8ToCFStringRef(policy_name));
   ScopedCFTypeRef<CFNumberRef> value(
       CFNumberCreate(nullptr, kCFNumberIntType, &policy_value));
-  prefs_->AddTestItem(name.get(), value.get(), /*is_forced=*/true,
-                      /*is_machine=*/true);
+  prefs_->AddTestItem(name, value, /*is_forced=*/true, /*is_machine=*/true);
 }
 
 void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
                                        bool policy_value) {
   ScopedCFTypeRef<CFStringRef> name(base::SysUTF8ToCFStringRef(policy_name));
-  prefs_->AddTestItem(name.get(),
-                      policy_value ? kCFBooleanTrue : kCFBooleanFalse,
+  prefs_->AddTestItem(name, policy_value ? kCFBooleanTrue : kCFBooleanFalse,
                       /*is_forced=*/true, /*is_machine=*/true);
 }
 
@@ -118,8 +115,7 @@ void TestHarness::InstallStringListPolicy(
   ScopedCFTypeRef<CFPropertyListRef> array(
       ValueToProperty(base::Value(policy_value.Clone())));
   ASSERT_TRUE(array);
-  prefs_->AddTestItem(name.get(), array.get(), /*is_forced=*/true,
-                      /*is_machine=*/true);
+  prefs_->AddTestItem(name, array, /*is_forced=*/true, /*is_machine=*/true);
 }
 
 void TestHarness::InstallDictionaryPolicy(
@@ -129,8 +125,7 @@ void TestHarness::InstallDictionaryPolicy(
   ScopedCFTypeRef<CFPropertyListRef> dict(
       ValueToProperty(base::Value(policy_value.Clone())));
   ASSERT_TRUE(dict);
-  prefs_->AddTestItem(name.get(), dict.get(), /*is_forced=*/true,
-                      /*is_machine=*/true);
+  prefs_->AddTestItem(name, dict, /*is_forced=*/true, /*is_machine=*/true);
 }
 
 // static
@@ -182,9 +177,9 @@ TEST_F(PolicyLoaderMacTest, Invalid) {
       CFDataCreate(kCFAllocatorDefault, reinterpret_cast<const UInt8*>(buffer),
                    std::size(buffer)));
   ASSERT_TRUE(invalid_data);
-  prefs_->AddTestItem(name.get(), invalid_data.get(), /*is_forced=*/true,
+  prefs_->AddTestItem(name, invalid_data.get(), /*is_forced=*/true,
                       /*is_machine=*/true);
-  prefs_->AddTestItem(name.get(), invalid_data.get(), /*is_forced=*/false,
+  prefs_->AddTestItem(name, invalid_data.get(), /*is_forced=*/false,
                       /*is_machine=*/true);
 
   // Make the provider read the updated |prefs_|.
@@ -199,7 +194,7 @@ TEST_F(PolicyLoaderMacTest, TestNonForcedValue) {
       base::SysUTF8ToCFStringRef(test_keys::kKeyString));
   CFPropertyListRef test_value = CFSTR("string value");
   ASSERT_TRUE(test_value);
-  prefs_->AddTestItem(name.get(), test_value, /*is_forced=*/false,
+  prefs_->AddTestItem(name, test_value, /*is_forced=*/false,
                       /*is_machine=*/true);
 
   // Make the provider read the updated |prefs_|.
@@ -217,7 +212,7 @@ TEST_F(PolicyLoaderMacTest, TestUserScopeValue) {
       base::SysUTF8ToCFStringRef(test_keys::kKeyString));
   CFPropertyListRef test_value = CFSTR("string value");
   ASSERT_TRUE(test_value);
-  prefs_->AddTestItem(name.get(), test_value, /*is_forced=*/true,
+  prefs_->AddTestItem(name, test_value, /*is_forced=*/true,
                       /*is_machine=*/false);
 
   // Make the provider read the updated |prefs_|.
@@ -235,15 +230,13 @@ TEST_F(PolicyLoaderMacTest, LoadPrecedencePolicies) {
   const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
   RegisterChromeSchema(chrome_ns);
 
-  prefs_->AddTestItem(
-      base::SysUTF8ToCFStringRef(key::kCloudPolicyOverridesPlatformPolicy)
-          .get(),
-      kCFBooleanTrue,
-      /*is_forced=*/true,
-      /*is_machine=*/true);
-  prefs_->AddTestItem(base::SysUTF8ToCFStringRef(
-                          key::kCloudUserPolicyOverridesCloudMachinePolicy)
-                          .get(),
+  prefs_->AddTestItem(ScopedCFTypeRef<CFStringRef>(base::SysUTF8ToCFStringRef(
+                          key::kCloudPolicyOverridesPlatformPolicy)),
+                      kCFBooleanTrue,
+                      /*is_forced=*/true,
+                      /*is_machine=*/true);
+  prefs_->AddTestItem(ScopedCFTypeRef<CFStringRef>(base::SysUTF8ToCFStringRef(
+                          key::kCloudUserPolicyOverridesCloudMachinePolicy)),
                       kCFBooleanTrue,
                       /*is_forced=*/true,
                       /*is_machine=*/true);

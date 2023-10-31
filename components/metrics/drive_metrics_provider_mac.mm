@@ -40,23 +40,22 @@ bool DriveMetricsProvider::HasSeekPenalty(const base::FilePath& path,
   if (!session)
     return false;
 
-  base::apple::ScopedCFTypeRef<DADiskRef> disk(DADiskCreateFromBSDName(
-      kCFAllocatorDefault, session.get(), bsd_name.c_str()));
+  base::apple::ScopedCFTypeRef<DADiskRef> disk(
+      DADiskCreateFromBSDName(kCFAllocatorDefault, session, bsd_name.c_str()));
   if (!disk)
     return false;
 
-  base::mac::ScopedIOObject<io_object_t> io_media(
-      DADiskCopyIOMedia(disk.get()));
+  base::mac::ScopedIOObject<io_object_t> io_media(DADiskCopyIOMedia(disk));
   base::apple::ScopedCFTypeRef<CFDictionaryRef> characteristics(
       static_cast<CFDictionaryRef>(IORegistryEntrySearchCFProperty(
-          io_media.get(), kIOServicePlane,
-          CFSTR(kIOPropertyDeviceCharacteristicsKey), kCFAllocatorDefault,
+          io_media, kIOServicePlane, CFSTR(kIOPropertyDeviceCharacteristicsKey),
+          kCFAllocatorDefault,
           kIORegistryIterateRecursively | kIORegistryIterateParents)));
   if (!characteristics)
     return false;
 
   CFStringRef type_ref = base::apple::GetValueFromDictionary<CFStringRef>(
-      characteristics.get(), CFSTR(kIOPropertyMediumTypeKey));
+      characteristics, CFSTR(kIOPropertyMediumTypeKey));
   if (!type_ref)
     return false;
 

@@ -96,7 +96,7 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
         base::apple::ScopedCFTypeRef<CFPropertyListRef> cf_value(
             ValueToProperty(key_value_pair.second));
         if (cf_value)
-          CFDictionaryAddValue(dict, key.get(), cf_value.get());
+          CFDictionaryAddValue(dict, key, cf_value);
       }
       return dict;
     }
@@ -111,7 +111,7 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
         base::apple::ScopedCFTypeRef<CFPropertyListRef> cf_value(
             ValueToProperty(entry));
         if (cf_value)
-          CFArrayAppendValue(array, cf_value.get());
+          CFArrayAppendValue(array, cf_value);
       }
       return array;
     }
