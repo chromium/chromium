@@ -159,10 +159,10 @@ class ToolbarButton : public views::LabelButton,
   // Returns the icon size of the toolbar button
   virtual int GetIconSize() const;
 
-  // Retuns true if a non-empty border should be painted.
+  // Returns true if a non-empty border should be painted.
   virtual bool ShouldPaintBorder() const;
 
-  // Retuns true if the background highlight color should be blended
+  // Returns true if the background highlight color should be blended
   // with the toolbar color.
   virtual bool ShouldBlendHighlightColor() const;
 

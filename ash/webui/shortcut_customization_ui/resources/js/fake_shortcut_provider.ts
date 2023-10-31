@@ -132,7 +132,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     return this.policyUpdatedPromise;
   }
 
-  // Set the value that will be retuned when `onAcceleratorsUpdated()` is
+  // Set the value that will be returned when `onAcceleratorsUpdated()` is
   // called.
   setFakeAcceleratorsUpdated(config: MojoAcceleratorConfig[]): void {
     this.observables.setObservableData(

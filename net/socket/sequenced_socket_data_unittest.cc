@@ -99,7 +99,7 @@ class ReentrantHelper {
                           base::Unretained(this));
   }
 
-  // Retuns the buffer where data is expected to have been written,
+  // Returns the buffer where data is expected to have been written,
   // when checked by SetExpectRead()
   scoped_refptr<IOBuffer> read_buf() { return first_read_buf_; }
 

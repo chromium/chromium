@@ -65,7 +65,7 @@ TEST_F(SupervisedUserServiceFactoryTest, CreateService) {
   ASSERT_TRUE(service);
 }
 
-// Tests that SupervisedUserServiceFactory retuns null
+// Tests that SupervisedUserServiceFactory returns null
 // with an off-the-record ChromeBrowserState.
 TEST_F(SupervisedUserServiceFactoryTest,
        ReturnsNullOnOffTheRecordBrowserState) {

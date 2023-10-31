@@ -321,7 +321,7 @@ NSString* const kAuthenticationSnackbarCategory =
          !gaia::AreEmailsSame(currentSignedInEmail, lastSignedInEmail);
 }
 
-// Retuns the ManagedConfirmationDialogContent that corresponds to the
+// Returns the ManagedConfirmationDialogContent that corresponds to the
 // provided `hostedDomain`, `syncConsent`, and the activation state of User
 // Policy.
 - (ManagedConfirmationDialogContent*)

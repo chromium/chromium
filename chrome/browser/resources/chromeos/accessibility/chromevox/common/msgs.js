@@ -87,7 +87,7 @@ export class Msgs {
   }
 
   /**
-   * Retuns a number formatted correctly.
+   * Returns a number formatted correctly.
    *
    * @param {number} num The number.
    * @return {string} The number in the correct locale.

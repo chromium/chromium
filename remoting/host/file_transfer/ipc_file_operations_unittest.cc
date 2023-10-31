@@ -596,7 +596,7 @@ TEST_F(IpcFileOperationsTest, ReaderHandlesZeroSize) {
   ASSERT_EQ(session_file_reader_count(), size_t{0});
 }
 
-// Concurrent Read operations are handled and valid data is retuned.
+// Concurrent Read operations are handled and valid data is returned.
 TEST_F(IpcFileOperationsTest, ConcurrentReadOperationsSupported) {
   base::FilePath base_path = TestDir().Append(kTestFilename);
   std::vector<base::FilePath> paths{

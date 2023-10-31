@@ -355,7 +355,7 @@ void ReceivedBadMessage(BrowserMessageFilter* filter, BadMessageReason reason);
 
 // Site isolation. These keys help debug renderer kills such as
 // https://crbug.com/773140.
-// Retuns a key for logging a requested SiteInfo.
+// Returns a key for logging a requested SiteInfo.
 base::debug::CrashKeyString* GetRequestedSiteInfoKey();
 
 }  // namespace bad_message

@@ -408,7 +408,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // if not found.
   const Display GetMirroringDisplayById(int64_t id) const;
 
-  // Retuns the display info associated with |display_id|.
+  // Returns the display info associated with |display_id|.
   const ManagedDisplayInfo& GetDisplayInfo(int64_t display_id) const;
 
   // Returns the human-readable name for the display |id|.

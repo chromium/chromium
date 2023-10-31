@@ -74,7 +74,7 @@ class RecentModel : public KeyedService {
   void SetScanTimeout(const base::TimeDelta& delta);
 
   // Clears the timeout by which recent sources must deliver results to have
-  // them retunred to the caller of GetRecentFiles.
+  // them returned to the caller of GetRecentFiles.
   void ClearScanTimeout();
 
  private:

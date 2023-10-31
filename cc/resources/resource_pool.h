@@ -218,7 +218,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       const std::string& debug_name = std::string());
 
   // Tries to acquire the resource with |previous_content_id| for us in partial
-  // raster. If successful, this function will retun the invalidated rect which
+  // raster. If successful, this function will return the invalidated rect which
   // must be re-rastered in |total_invalidated_rect|.
   InUsePoolResource TryAcquireResourceForPartialRaster(
       uint64_t new_content_id,

@@ -1497,7 +1497,7 @@ testSuite({
     assertTrue(
         'Multiword fonts should be reported with quotes stripped.',
         'Comic Sans MS' == tmpFont || 'Century Schoolbook L' == tmpFont);
-    // Firefox fails this test & retuns a generic 'monospace' instead of the
+    // Firefox fails this test & returns a generic 'monospace' instead of the
     // actually displayed font (e.g., "Times New").
     // tmpFont = goog.style.getFontFamily($('pre-font'));
     // assertEquals('<pre> tags should use a fixed-width font',

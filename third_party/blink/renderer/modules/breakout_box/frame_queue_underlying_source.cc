@@ -230,7 +230,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
         frame_queue->PushLocked(std::move(media_frame));
         break;
       case NewFrameAction::kDrop:
-        // Drop |media_frame| by retuning without doing anything with it.
+        // Drop |media_frame| by returning without doing anything with it.
         return;
     }
   } else {

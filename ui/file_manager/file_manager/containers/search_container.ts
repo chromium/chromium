@@ -446,7 +446,7 @@ export class SearchContainer extends EventTarget {
   }
 
   /**
-   * Returns the breadcrumb element by either retuning the cached instance,
+   * Returns the breadcrumb element by either returning the cached instance,
    * or fetching it by its tag. May return null.
    */
   private getBreadcrumbElement_(): XfBreadcrumb|null {
@@ -485,7 +485,7 @@ export class SearchContainer extends EventTarget {
   }
 
   /**
-   * Returns the search options element by either retuning the cached instance,
+   * Returns the search options element by either returning the cached instance,
    * or fetching it by its tag. May return null.
    */
   private getSearchOptionsElement_(): XfSearchOptionsElement|null {

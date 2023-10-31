@@ -96,7 +96,7 @@ class BASE_EXPORT CategoryRegistry {
   // Used to get/create a category in the slow-path. If the category exists
   // already, this has the same effect of GetCategoryByName and returns false.
   // If not, a new category is created and the CategoryInitializerFn is invoked
-  // before retuning true. The caller must guarantee serialization: either call
+  // before returning true. The caller must guarantee serialization: either call
   // this method from a single thread or hold a lock when calling this.
   static bool GetOrCreateCategoryLocked(const char* category_name,
                                         CategoryInitializerFn,

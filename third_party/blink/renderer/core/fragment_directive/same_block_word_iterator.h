@@ -117,7 +117,7 @@ class CORE_EXPORT BackwardDirection {
 
 // Word iterator that doesn't cross block boundaries.
 // Note that if the start position given to this class is in a middle of a word
-// then the first word retuned by this class will be a partial word.
+// then the first word returned by this class will be a partial word.
 template <typename Direction>
 class SameBlockWordIterator
     : public GarbageCollected<SameBlockWordIterator<Direction>> {

@@ -26,7 +26,7 @@ TEST_F(ListFamilyMembersServiceFactoryTest, CreateService) {
   ASSERT_TRUE(service);
 }
 
-// Tests that ListFamilyMembersServiceFactory retuns null
+// Tests that ListFamilyMembersServiceFactory returns null
 // with an off-the-record ChromeBrowserState.
 TEST_F(ListFamilyMembersServiceFactoryTest,
        ReturnsNullOnOffTheRecordBrowserState) {

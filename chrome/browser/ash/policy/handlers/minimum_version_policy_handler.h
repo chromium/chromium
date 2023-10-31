@@ -194,7 +194,7 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
       const MinimumVersionRequirement& requirement) const;
 
   // Whether the current user should receive update required notifications and
-  // force signed out on reaching the deadline. Retuns true if the user is
+  // force signed out on reaching the deadline. Returns true if the user is
   // enterprise managed or |unmanaged_user_restricted_| is true.
   bool IsPolicyRestrictionAppliedForUser() const;
 

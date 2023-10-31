@@ -40,7 +40,7 @@ namespace net {
 
 namespace {
 
-// Retuns the port field of the |sockaddr|.
+// Returns the port field of the |sockaddr|.
 const uint16_t* GetPortFieldFromSockaddr(const struct sockaddr* address,
                                          socklen_t address_len) {
   if (address->sa_family == AF_INET) {

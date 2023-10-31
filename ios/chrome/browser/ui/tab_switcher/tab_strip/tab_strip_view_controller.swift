@@ -169,7 +169,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate, TabStripCo
     }
   }
 
-  /// Retuns the cell to be used in the collection view.
+  /// Returns the cell to be used in the collection view.
   func getCell(
     collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: TabSwitcherItem
   ) -> UICollectionViewCell? {
