@@ -21,8 +21,10 @@ items:
     QR code.
   value: false
 owners:
-- bmalcolm@chromium.org
 - bzielinski@google.com
+- dorianbrandon@google.com
+- leelee@google.com
+- cros-edu-eng@google.com
 schema:
   type: boolean
 supported_on:

@@ -17,8 +17,10 @@ features:
 future_on:
 - fuchsia
 owners:
-- bmalcolm@chromium.org
-- gbj@google.com
+- bzielinski@google.com
+- dorianbrandon@google.com
+- leelee@google.com
+- cros-edu-eng@google.com
 schema:
   minimum: 0
   type: integer
