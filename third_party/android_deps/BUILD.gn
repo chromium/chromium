@@ -333,6 +333,15 @@ java_prebuilt("com_google_guava_guava_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
+  jar_path =
+      "libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-2.8.jar"
+  output_name = "com_google_j2objc_j2objc_annotations"
+  supports_android = true
+  enable_bytecode_checks = false
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_squareup_javapoet_java") {
   jar_path = "libs/com_squareup_javapoet/javapoet-1.13.0.jar"
   output_name = "com_squareup_javapoet"
@@ -1163,15 +1172,6 @@ if (!limit_android_deps) {
       # Always bundle this part of guava in with the main target.
       public_deps = [ ":com_google_guava_failureaccess_java" ]
     }
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
-    jar_path =
-        "libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-2.8.jar"
-    output_name = "com_google_j2objc_j2objc_annotations"
-    supports_android = true
-    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
