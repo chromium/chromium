@@ -257,13 +257,13 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public boolean shouldAnimateOnFinish() {
-        return mAnimationBundle != null && getClientPackageName() != null;
+        return mAnimationBundle != null && mAnimationBundle.getString(BUNDLE_PACKAGE_NAME) != null;
     }
 
     @Override
     public String getClientPackageName() {
-        if (mAnimationBundle == null) return null;
-        return mAnimationBundle.getString(BUNDLE_PACKAGE_NAME);
+        return CustomTabIntentDataProvider.getClientPackageNameFromSessionOrCallingActivity(
+                mIntent, mSession);
     }
 
     @Override

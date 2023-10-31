@@ -422,7 +422,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return CustomTabsConnection.getInstance().isFirstParty(packageName);
     }
 
-    private static @Nullable String getClientPackageNameFromSessionOrCallingActivity(
+    static @Nullable String getClientPackageNameFromSessionOrCallingActivity(
             Intent intent, CustomTabsSessionToken session) {
         String packageNameFromSession =
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(session);

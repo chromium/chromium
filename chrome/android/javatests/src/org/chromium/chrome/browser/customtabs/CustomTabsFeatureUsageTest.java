@@ -141,6 +141,6 @@ public class CustomTabsFeatureUsageTest {
 
         assertHistogramEnumRecorded(CustomTabsFeature.CTF_SESSIONS, true);
         assertHistogramEnumRecorded(CustomTabsFeature.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-        assertHistogramEnumRecorded(CustomTabsFeature.CTF_PACKAGE_NAME, false);
+        assertHistogramEnumRecorded(CustomTabsFeature.CTF_PACKAGE_NAME, true);
     }
 }
