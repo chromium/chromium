@@ -3135,7 +3135,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Display.{DisplayType}.ActiveEffectiveDPI" units="count"
+<histogram name="Ash.Display.{DisplayType}.ActiveEffectiveDPI" units="dpi"
     expires_after="2024-06-30">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
