@@ -220,7 +220,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
      *
      * @param before The current Bitmap of the web app.
      * @param after The new (proposed) Bitmap for the web app.
-     * @return the percentage difference of the two Bitmaps.
+     * @return the percentage difference of the two Bitmaps. Note that a floor function is used when
+     *     rounding, so a return value of 1 means there was a change between 1% and 2%, inclusive
+     *     and exclusive (respectively).
      */
     static int logIconDiffs(Bitmap before, Bitmap after) {
         // The icons may be null during unit testing.
@@ -407,10 +409,19 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 >= shellVersion;
     }
 
+    /**
+     * @return whether a percentage change is below the threshold allowed for icon updates. Note
+     *     that percentage values are rounded using a floor function, so a `percentage` change of 1
+     *     means it is somewhere between 1% and 2%, inclusive and exclusive (respectively). This
+     *     means that the threshold updates need to be set to -1 to disable them (0 would allow
+     *     changes up to 1%).
+     */
     private static boolean belowAppIdIconUpdateThreshold(int percentage) {
         return percentage
-                <= ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.WEB_APK_ICON_UPDATE_THRESHOLD, PARAM_CHANGE_THRESHOLD, 0);
+                < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.WEB_APK_ICON_UPDATE_THRESHOLD,
+                        PARAM_CHANGE_THRESHOLD,
+                        -1);
     }
 
     protected void showIconOrNameUpdateDialog(
@@ -470,9 +481,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                     mFetchedInfo,
                     mFetchedPrimaryIconUrl,
                     mFetchedSplashIconUrl,
-                    false /* isManifestStale */,
-                    nameUpdateDialogEnabled()
-                            || iconUpdateDialogEnabled() /* appIdentityUpdateSupported */,
+                    /* isManifestStale= */ false,
+                    /* appIdentityUpdateSupported= */ nameUpdateDialogEnabled()
+                            || iconUpdateDialogEnabled(),
                     mUpdateReasons);
             return;
         }
@@ -482,11 +493,11 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         // occur if the Web Manifest is temporarily unreachable.
         buildUpdateRequestAndSchedule(
                 mInfo,
-                "" /* primaryIconUrl */,
-                "" /* splashIconUrl */,
-                true /* isManifestStale */,
-                nameUpdateDialogEnabled()
-                        || iconUpdateDialogEnabled() /* appIdentityUpdateSupported */,
+                /* primaryIconUrl= */ "",
+                /* splashIconUrl= */ "",
+                /* isManifestStale= */ true,
+                /* appIdentityUpdateSupported= */ nameUpdateDialogEnabled()
+                        || iconUpdateDialogEnabled(),
                 mUpdateReasons);
     }
 
