@@ -1081,8 +1081,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         if (!strongSelf)
           return;
         if (success) {
-          strongSelf->_fieldDataManager->UpdateFieldDataMap(
-              uniqueFieldID, value, kAutofilledOnUserTrigger);
+          [strongSelf updateFieldManagerForSpecificField:uniqueFieldID
+                                               withValue:value];
         }
         suggestionHandledCompletionCopy();
       }));
