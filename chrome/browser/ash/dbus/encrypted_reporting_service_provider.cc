@@ -267,7 +267,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   // Move events from |request| into a separate vector |records|, using more
   // or less the same amount of memory that has been reserved above.
   auto records{::reporting::EventUploadSizeController::BuildEncryptedRecords(
-      request.encrypted_record(),
+      std::move(*request.mutable_encrypted_record()),
       ::reporting::EventUploadSizeController(
           network_condition_service_, new_events_rate,
           remaining_storage_capacity,
