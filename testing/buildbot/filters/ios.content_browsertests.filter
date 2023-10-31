@@ -65,7 +65,6 @@
 -DohHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
 -DohHttpsProtocolUpgradeBrowserTest.NoProtocolUpgrade
 -FakeSystemTracingDevToolsProtocolTest.TracingWithFakeSystemBackend
--FontPreferencesBrowserTest.GenericFamilies
 -FontUniqueNameBrowserTest.ContentLocalFontsMatching
 -InputEventBrowserTest.MouseDownEventTimeStamp
 -KeyboardLockBrowserTest.CancelInFullscreen
