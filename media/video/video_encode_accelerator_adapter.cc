@@ -893,9 +893,9 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
 void VideoEncodeAcceleratorAdapter::NotifyErrorStatus(
     const EncoderStatus& status) {
   CHECK(!status.is_ok());
-  LOG(ERROR) << "NotifyErrorStatus() is called, code="
-             << static_cast<int32_t>(status.code())
-             << ", message=" << status.message();
+  MEDIA_LOG(ERROR, media_log_)
+      << "VEA adapter error. Code: " << static_cast<int32_t>(status.code())
+      << ". Message: " << status.message();
   if (state_ == State::kInitializing) {
     InitCompleted(
         EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
