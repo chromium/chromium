@@ -452,6 +452,7 @@ void TableView::SetVisibleColumnWidth(size_t index, int width) {
   }
   PreferredSizeChanged();
   SchedulePaint();
+  UpdateFocusRings();
   UpdateVirtualAccessibilityChildrenBounds();
 }
 
