@@ -385,6 +385,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncPosition) {
   ChromeAppListItem* app_item = GetChromeAppListItem(app_id);
   ASSERT_TRUE(app_item);
   EXPECT_EQ(app_item->position(), ordinal_after_sync);
+  EXPECT_FALSE(app_item->is_new_install());
 }
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
@@ -432,6 +433,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   ChromeAppListItem* app_item = GetChromeAppListItem(app_id);
   ASSERT_TRUE(app_item);
   EXPECT_EQ(app_item->position(), app_ordinal);
+  EXPECT_TRUE(app_item->is_new_install());
 }
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncParent) {
@@ -496,6 +498,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest, SetToSyncParent) {
   ChromeAppListItem* app_item = GetChromeAppListItem(app_id);
   ASSERT_TRUE(app_item);
   EXPECT_EQ(app_item->folder_id(), "");
+  EXPECT_FALSE(app_item->is_new_install());
 }
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
@@ -554,6 +557,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   ChromeAppListItem* app_item = GetChromeAppListItem(app_id);
   ASSERT_TRUE(app_item);
   EXPECT_EQ(app_item->folder_id(), kFolderItemId);
+  EXPECT_TRUE(app_item->is_new_install());
 }
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
@@ -606,8 +610,8 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
 
   // Register (i.e. "install") an app with a matching package ID. This should
   // trigger removal of the promise app.
-  std::string app_id = "test.com.example.activity";
-  AddArcPackageWithApps(identifier, {app_id});
+  std::string app_activity = "test.com.example.activity";
+  AddArcPackageWithApps(identifier, {app_activity});
 
   // Promise app item should no longer exist in the model.
   item = GetAppListItem(package_id.ToString());
@@ -615,7 +619,13 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   EXPECT_FALSE(IsItemPinned(package_id.ToString()));
 
   // Verify that the app installed in place of the promise app is pinned.
-  EXPECT_TRUE(IsItemPinned(ArcAppListPrefs::GetAppId(identifier, app_id)));
+  const std::string installed_app_id =
+      ArcAppListPrefs::GetAppId(identifier, app_activity);
+  EXPECT_TRUE(IsItemPinned(installed_app_id));
+
+  ash::AppListItem* app_item = GetAppListItem(installed_app_id);
+  ASSERT_TRUE(app_item);
+  EXPECT_TRUE(app_item->is_new_install());
 }
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
@@ -662,8 +672,14 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   ASSERT_FALSE(item);
   EXPECT_FALSE(IsItemPinned(promise_app_id));
 
+  const std::string installed_app_id =
+      ArcAppListPrefs::GetAppId(kTestPackageId.identifier(), app_activity);
   // Verify that the app installed in place of the promise app is pinned.
-  EXPECT_TRUE(IsItemPinned(app_id));
+  EXPECT_TRUE(IsItemPinned(installed_app_id));
+
+  ash::AppListItem* app_item = GetAppListItem(installed_app_id);
+  ASSERT_TRUE(app_item);
+  EXPECT_FALSE(app_item->is_new_install());
 }
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
@@ -729,11 +745,13 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       GetAppListItem(app_id_in_sync);
   ASSERT_TRUE(old_installed_item);
   EXPECT_EQ(promise_app_ordinal, old_installed_item->position());
+  EXPECT_FALSE(old_installed_item->is_new_install());
 
   const ash::AppListItem* const new_installed_item =
       GetAppListItem(extra_app_id);
   ASSERT_TRUE(new_installed_item);
   EXPECT_NE(promise_app_ordinal, new_installed_item->position());
+  EXPECT_TRUE(new_installed_item->is_new_install());
 }
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
@@ -792,6 +810,7 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   const ash::AppListItem* const installed_item = GetAppListItem(app_id);
   ASSERT_TRUE(installed_item);
   EXPECT_EQ(promise_app_ordinal, installed_item->position());
+  EXPECT_FALSE(installed_item->is_new_install());
 }
 
 IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,

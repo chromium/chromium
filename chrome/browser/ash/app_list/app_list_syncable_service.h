@@ -61,7 +61,8 @@ class AppListSyncableService : public syncer::SyncableService,
  public:
   struct SyncItem {
     SyncItem(const std::string& id,
-             sync_pb::AppListSpecifics::AppListItemType type);
+             sync_pb::AppListSpecifics::AppListItemType type,
+             bool is_new);
     SyncItem(const SyncItem&) = delete;
     SyncItem& operator=(const SyncItem&) = delete;
     ~SyncItem();
@@ -116,6 +117,11 @@ class AppListSyncableService : public syncer::SyncableService,
     //    user and then additionally specified in PinnedLauncherApps, this value
     //    will be set to true.
     absl::optional<bool> is_user_pinned;
+
+    // Whether the item is considered new - i.e. first added during the current
+    // user session. This will be false if the sync item was created when
+    // loading items from local storage, or in response to sync changes.
+    const bool is_new;
 
     std::string ToString() const;
   };
@@ -385,9 +391,9 @@ class AppListSyncableService : public syncer::SyncableService,
   SyncItem* FindSyncItem(const std::string& item_id);
 
   // Creates a new sync item for |item_id|.
-  SyncItem* CreateSyncItem(
-      const std::string& item_id,
-      sync_pb::AppListSpecifics::AppListItemType item_type);
+  SyncItem* CreateSyncItem(const std::string& item_id,
+                           sync_pb::AppListSpecifics::AppListItemType item_type,
+                           bool is_new);
 
   // Deletes a SyncItem matching |specifics|.
   void DeleteSyncItemSpecifics(const sync_pb::AppListSpecifics& specifics);

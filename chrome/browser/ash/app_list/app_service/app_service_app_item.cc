@@ -130,7 +130,8 @@ AppServiceAppItem::AppServiceAppItem(
     SetPromisePackageId(package_id.value().ToString());
   }
 
-  const bool is_new_install = !sync_item && IsNewInstall(app_update);
+  const bool is_new_install =
+      (!sync_item || sync_item->is_new) && IsNewInstall(app_update);
   DVLOG(1) << "New AppServiceAppItem is_new_install " << is_new_install
            << " from update " << app_update;
   SetIsNewInstall(is_new_install);
