@@ -238,6 +238,11 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   // legacy flow thread to encompass those extra columns.
   void MakeRoomForExtraColumns(LayoutUnit block_size) const;
 
+  bool operator==(const NGBlockNode& other) const { return box_ == other.box_; }
+  bool operator==(const NGLayoutInputNode& other) const {
+    return other.Type() == kBlock && GetLayoutBox() == other.GetLayoutBox();
+  }
+
   String ToString() const;
 
  private:

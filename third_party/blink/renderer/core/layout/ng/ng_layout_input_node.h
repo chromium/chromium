@@ -302,7 +302,7 @@ class CORE_EXPORT NGLayoutInputNode {
   explicit operator bool() const { return box_ != nullptr; }
 
   bool operator==(const NGLayoutInputNode& other) const {
-    return box_ == other.box_;
+    return box_ == other.box_ && type_ == other.type_;
   }
 
   bool operator!=(const NGLayoutInputNode& other) const {
