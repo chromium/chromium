@@ -537,6 +537,10 @@ class WizardController : public OobeUI::Observer {
   // the TPM being un-owned until enrollment. b/187429309
   void MaybeTakeTPMOwnership();
 
+  // Hides the current screen if it's not set to `nullptr` and sets it to
+  // `nullptr`.
+  void ResetCurrentScreen();
+
   std::unique_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;
   std::unique_ptr<quick_start::QuickStartController> quickstart_controller_;

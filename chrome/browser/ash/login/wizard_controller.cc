@@ -480,10 +480,7 @@ void WizardController::OnDestroyingOobeUI() {
   previous_screens_.clear();
 
   // Reset `current_screen_` to prevent its usage after OobeUI is gone.
-  if (current_screen_) {
-    current_screen_->Hide();
-    current_screen_ = nullptr;
-  }
+  ResetCurrentScreen();
 
   // Reset screens, they should not access handlers anymore.
   // TODO(https://crbug.com/1309022): This should probably be removed when all
@@ -2304,8 +2301,7 @@ void WizardController::OnDeviceModificationCanceled() {
     previous_screen = previous_screens_[current_screen_];
   }
 
-  current_screen_->Hide();
-  current_screen_ = nullptr;
+  ResetCurrentScreen();
 
   if (previous_screen) {
     if (IsSigninScreen(previous_screen->screen_id())) {
@@ -2338,8 +2334,7 @@ void WizardController::OnManagementTransitionScreenExit() {
 }
 
 void WizardController::OnUpdateRequiredScreenExit() {
-  current_screen_->Hide();
-  current_screen_ = nullptr;
+  ResetCurrentScreen();
   ShowLoginScreen();
 }
 
@@ -2535,9 +2530,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
     previous_screens_[new_current] = current_screen_;
   }
 
-  if (current_screen_) {
-    current_screen_->Hide();
-  }
+  ResetCurrentScreen();
 
   current_screen_ = new_current;
 
@@ -3111,6 +3104,13 @@ void WizardController::MaybeTakeTPMOwnership() {
 
   chromeos::TpmManagerClient::Get()->TakeOwnership(
       ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
+}
+
+void WizardController::ResetCurrentScreen() {
+  if (current_screen_) {
+    current_screen_->Hide();
+    current_screen_ = nullptr;
+  }
 }
 
 }  // namespace ash
