@@ -7,12 +7,14 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
@@ -137,6 +139,14 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
         isKindOfClass:[PasswordIssuesTableViewController class]]);
   }
 
+  // Verifies that a given number of password issues visits have been recorded.
+  void CheckPasswordIssuesVisitMetricsCount(int count) {
+    histogram_tester_.ExpectUniqueSample(
+        /*name=*/password_manager::kPasswordManagerSurfaceVisitHistogramName,
+        /*sample=*/password_manager::PasswordManagerSurface::kPasswordIssues,
+        /*count=*/count);
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
@@ -149,14 +159,19 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
   MockReauthenticationModule* mock_reauth_module_ = nil;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mocked_application_commands_handler_;
+  base::HistogramTester histogram_tester_;
   PasswordIssuesCoordinator* coordinator_ = nil;
 };
 
 // Tests that Password Issues is presented without authentication required.
 TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithoutAuth) {
+  CheckPasswordIssuesVisitMetricsCount(0);
+
   StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/YES);
 
   CheckPasswordIssuesIsPresented();
+
+  CheckPasswordIssuesVisitMetricsCount(1);
 }
 
 // Tests that Password Issues is presented only after passing authentication
@@ -166,10 +181,43 @@ TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithAuth) {
   // Password Issues should be covered until auth is passed.
   CheckPasswordIssuesIsNotPresented();
 
+  // No visits logged until successful auth.
+  CheckPasswordIssuesVisitMetricsCount(0);
+
   [mock_reauth_module_ returnMockedReauthenticationResult];
 
-  // Successful auth should leave Password Issues visible.
+  // Successful auth should leave Password Issues visible and record visit.
   CheckPasswordIssuesIsPresented();
+
+  CheckPasswordIssuesVisitMetricsCount(1);
+}
+
+// Tests that Password Issues visits are only logged once after the first
+// successful authentication.
+TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesVisitRecordedOnlyOnce) {
+  StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/NO);
+
+  // Password Issues should be covered until auth is passed.
+  CheckPasswordIssuesIsNotPresented();
+
+  // No visits logged until successful auth.
+  CheckPasswordIssuesVisitMetricsCount(0);
+
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+  // Visit should be recorded after passing auth.
+  CheckPasswordIssuesVisitMetricsCount(1);
+
+  // Simulate scene transitioning to the background and back to foreground. This
+  // should trigger an auth request.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+
+  // Validate no new visits were recorded.
+  CheckPasswordIssuesVisitMetricsCount(1);
 }
 
 }  // namespace password_manager

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -94,6 +95,11 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   // from outside the Password Manager and when the app is
   // backgrounded/foregrounded with Password Issues opened.
   ReauthenticationCoordinator* _reauthCoordinator;
+
+  // Whether the metric counting visits to the page was already recorded.
+  // Used to avoid over-recording the metric after each successful
+  // authentication.
+  BOOL _visitRecorded;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -142,6 +148,12 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 
   _mediator.consumer = _viewController;
   _viewController.presenter = self;
+
+  // Only record visit if no auth is required, otherwise wait for successful
+  // auth.
+  if (_skipAuthenticationOnStart) {
+    [self maybeRecordVisitMetric];
+  }
 
   // Disable animation when content will be blocked for reauth to prevent
   // flickering in navigation bar.
@@ -246,7 +258,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
-  // No-op.
+  [self maybeRecordVisitMetric];
 }
 
 - (void)willPushReauthenticationViewController {
@@ -334,6 +346,18 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   if (IsAuthOnEntryV2Enabled()) {
     [self startReauthCoordinatorWithAuthOnStart:NO];
   }
+}
+
+// Logs a Password Issues visit. Only logs the first time it is invoked, no-op
+// after that.
+- (void)maybeRecordVisitMetric {
+  if (_visitRecorded) {
+    return;
+  }
+
+  _visitRecorded = YES;
+  password_manager::LogPasswordManagerSurfaceVisit(
+      password_manager::PasswordManagerSurface::kPasswordIssues);
 }
 
 @end
