@@ -74,7 +74,6 @@ extern v8::Local<v8::Object> RecordReplayGetBytecode(
 } // namespace v8
 
 namespace blink {
-
 // using RemoteObjectIdTypeRaw = v8_inspector::String16;
 // The actual type for RemoteObjectId
 using RemoteObjectIdTypeRaw = std::u16string;
@@ -82,23 +81,68 @@ using RemoteObjectIdTypeRaw = std::u16string;
 // The more convenient type that we use
 using RemoteObjectIdType = WTF::String;
 
+extern "C" void V8RecordReplaySetDefaultContext(v8::Isolate* isolate, v8::Local<v8::Context> cx);
+extern "C" void V8RecordReplayFinishRecording();
+extern "C" void V8RecordReplaySetCrashReason(const char* reason);
+
 static const char REPLAY_CDT_PAUSE_OBJECT_GROUP[] =
     "REPLAY_CDT_PAUSE_OBJECT_GROUP";
 
 
-LocalFrame* gInitialLocalFrame = nullptr;
+LocalFrame* gCurrentRootFrame = nullptr;
 
 static LocalFrame* GetLocalFrameRoot(v8::Isolate* isolate) {
   LocalFrame* frame;
-  if (!CurrentDOMWindow(isolate)) {
-    frame = gInitialLocalFrame;
+  LocalDOMWindow* currentWindow = CurrentDOMWindow(isolate);
+  if (!currentWindow) {
+    // This should not happen if we call RecordReplaySetDefaultContext correctly.
+    std::string stack;
+    recordreplay::GetCurrentJSStack(&stack);
+    recordreplay::Warning("[RUN-2739] GetLocalFrameRoot A missing CurrentDOMWindow %d %s",
+                          isolate->GetCurrentContext().IsEmpty(),
+                          stack.c_str());
+    frame = gCurrentRootFrame;
   } else { 
-    frame = CurrentDOMWindow(isolate)->GetFrame();
-    if (!frame) {
-      frame = gInitialLocalFrame;
+    frame = currentWindow->GetFrame();
+    if (!frame || frame->IsDetached() || frame->IsProvisional()) {
+      // This should not happen if we call RecordReplaySetDefaultContext
+      // correctly.
+      // NOTE: The JS stack here is generally showing our internal command handler 
+      // code.
+      recordreplay::Warning(
+        "[RUN-2739] GetLocalFrameRoot B CurrentDOMWindow has no valid frame %d win=%d \"%s\" \"%s\" frame=%d %d %d %d \"%s\" ",
+          isolate->GetCurrentContext().IsEmpty(),
+          currentWindow->RecordReplayId(),
+          currentWindow->origin().Utf8().c_str(),
+          currentWindow->document() ? 
+            currentWindow->document()->Url().GetString().Utf8().c_str() : 
+            "",
+          frame ? frame->RecordReplayId() : 0,
+          frame ? frame->IsDetached() : -1,
+          (frame && !frame->IsDetached()) ? frame->IsProvisional() : -1,
+          frame ? frame->IsCrossOriginToParentOrOuterDocument() : -1,
+          frame ? frame->GetDocument()->Url().GetString().Utf8().c_str() : ""
+      );
+      frame = gCurrentRootFrame;
     }
   }
-  return &frame->LocalFrameRoot();
+  frame = frame ? &frame->LocalFrameRoot() : nullptr;
+  if (!frame || frame->IsDetached() || frame->IsProvisional()) {
+    recordreplay::Crash(
+      "[RUN-2739] GetLocalFrameRoot: Invalid frame %d win=%d \"%s\" \"%s\" frame=%d %d %d %d \"%s\" ",
+        isolate->GetCurrentContext().IsEmpty(),
+        currentWindow ? currentWindow->RecordReplayId() : 0,
+        currentWindow ? currentWindow->origin().Utf8().c_str() : "",
+        (currentWindow && currentWindow->document()) ? 
+          currentWindow->document()->Url().GetString().Utf8().c_str() : 
+          "",
+        frame ? frame->RecordReplayId() : 0,
+        frame ? frame->IsDetached() : -1,
+        (frame && !frame->IsDetached()) ? frame->IsProvisional() : -1,
+        frame ? frame->IsCrossOriginToParentOrOuterDocument() : -1,
+        frame ? frame->GetDocument()->Url().GetString().Utf8().c_str() : "");
+  }
+  return frame;
 }
 
 class InspectorData {
@@ -3901,8 +3945,6 @@ static void CheckPersistentId(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
 static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-extern "C" void V8RecordReplayFinishRecording();
-
 
 
 // When JS assertions are enabled, this callback is used to get any pointer ID
@@ -5201,16 +5243,22 @@ void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame) {
   SetFunctionProperty(isolate, args, "checkPersistentId", CheckPersistentId);
 }
 
-void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
+static void RecordReplaySetDefaultContext(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
+  V8RecordReplaySetDefaultContext(isolate, context);
+
+  // TODO: gCurrentRootFrame should not be necessary anymore. Verify and get rid of it.
+  gCurrentRootFrame = &localFrame->LocalFrameRoot();
+}
+
+void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
+  // Register context and callbacks.
+  RecordReplaySetDefaultContext(isolate, localFrame, context);
   V8RecordReplaySetAPIObjectIdCallback(GetAPIObjectIdCallback);
   V8RecordReplayRegisterBrowserEventCallback(HandleBrowserEvent);
 
-  gInitialLocalFrame = localFrame;
   gActiveNetworkRequests =
       new std::unordered_map<std::string, NetworkRequestStatus>();
   gCurrentNetworkStreamData = new std::vector<uint8_t>();
-
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
   // This URL will prevent the script from being reported to the recorder.
   const char* InternalScriptURL = "record-replay-internal";
@@ -5234,9 +5282,23 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
   }
 }
 
-void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame) {
+void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
   recordreplay::AutoMarkReplayCode amrc;
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  
+  // 0. Register context, s.t. when handling a command and we are not on a 
+  // JS stack, we can always use the current root frame's context.
+  // Note: We are assuming that each tab has its own process, for now.
+  //   (That might not hold true for tabs of the same domain - not sure)
+  RecordReplaySetDefaultContext(isolate, localFrame, context);
+  
+  LocalFrame* parentFrame = DynamicTo<LocalFrame>(localFrame->Parent());
+  recordreplay::CommandDiagnostic(
+    "[RUN-2739] OnNewRootFrame win=%d frame=%d %d \"%s\" parentFrame=%d",
+      localFrame->DomWindow()->RecordReplayId(),
+      localFrame->RecordReplayId(),
+      localFrame->IsCrossOriginToParentOrOuterDocument(),
+      localFrame->GetDocument()->Url().GetString().Utf8().c_str(),
+      parentFrame ? parentFrame->RecordReplayId() : 0);
 
   // 1. Register navigation event.
   if (localFrame->GetDocument()->Url().ProtocolIsInHTTPFamily()) {
@@ -5259,11 +5321,21 @@ void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame) {
   }
 }
 
-void OnNewWindow2(v8::Isolate* isolate, LocalFrame* localFrame) {
+void OnNewWindow2(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> newContext) {
   recordreplay::AutoMarkReplayCode amrc;
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  RunScript(isolate, context, gOnNewWindowScript,
+  RunScript(isolate, newContext, gOnNewWindowScript,
             "record-replay-devtools-OnNewWindow");
+
+  LocalFrame* parentFrame = DynamicTo<LocalFrame>(localFrame->Parent());
+  recordreplay::CommandDiagnostic(
+    "[RUN-2739] OnNewWindow2 %d win=%d frame=%d %d \"%s\" parent=%d",
+    newContext == isolate->GetCurrentContext(),
+    localFrame->DomWindow()->RecordReplayId(),
+    localFrame->RecordReplayId(),
+    localFrame->IsCrossOriginToParentOrOuterDocument(),
+    localFrame->GetDocument()->Url().GetString().Utf8().c_str(),
+    parentFrame ? parentFrame->RecordReplayId() : 0
+  );
 }
 
 extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);

@@ -114,8 +114,12 @@ void OnNavigationEvent(const char* kind, const char* url);
 int NewIdMainThread(const char* name);
 int NewIdAnyThread(const char* name);
 
+// Crash instantly with given reason.
+void Crash(const char* format, ...);
+
 // Return whether record/replay specific scripts are executing.
 bool IsInReplayCode(const char* why = nullptr);
+
 
 // Mark a region where record/replay specific scripts are executing.
 struct AutoMarkReplayCode {

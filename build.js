@@ -116,12 +116,16 @@ const useGoma = !process.env.NO_GOMA;
 const goma_ctl = currentPlatform() == "windows" ? "goma_ctl.bat" : "goma_ctl";
 if (useGoma) {
   // ensure goma is started for cloud builds with engflow
-  spawnChecked(goma_ctl, ["ensure_start"]);
+  spawnChecked(goma_ctl, ["ensure_start"], {
+    stdio: "inherit",
+  });
 }
 
 // ensure that build configuration is written with correct paths
 const gn = currentPlatform() == "windows" ? "gn.bat" : "gn";
-spawnChecked(gn, ["gen", outdir]);
+spawnChecked(gn, ["gen", outdir], {
+  stdio: "inherit",
+});
 
 console.log(`Building...`);
 const autoninja =
@@ -134,14 +138,14 @@ console.log(`Build finished.`);
 
 function spawnChecked(cmd, args, options) {
   const prettyCmd = [cmd].concat(args).join(" ");
-  console.error(prettyCmd);
+  console.error("$" + prettyCmd);
 
   const rv = spawnSync(cmd, args, options);
 
   if (rv.status != 0 || rv.error) {
-    console.error("Process failed:", rv.error || "");
-    console.log(rv.stdout.toString() || "");
-    console.error(rv.stderr.toString() || "");
+    console.error(`Process failed: err=${rv.error || ""}, signal=${rv.signal || ""}`);
+    console.log(rv.stdout && rv.stdout.toString() || "");
+    console.error(rv.stderr && rv.stderr.toString() || "");
     throw new Error(`Spawned process failed with exit code ${rv.status}`);
   }
 

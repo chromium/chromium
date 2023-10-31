@@ -18,15 +18,15 @@ void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame);
 
 // Initialize command state after the first context is created, but before the
 // first checkpoint in the recording is created.
-void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame);
+void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context);
 
 // Initialize everything that needs to be initialized with every root frame.
-void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame);
+void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context);
 
 // Initialize everything that depends on other initialization steps but
 // for all windows.
 // This is the last replay code that we run for a new Window object.
-void OnNewWindow2(v8::Isolate* isolate, LocalFrame* localFrame);
+void OnNewWindow2(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context);
 
 // Notify the driver that we're adding an error to the console.
 void RecordReplayOnErrorEvent(ErrorEvent* error_event);
