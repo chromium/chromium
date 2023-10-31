@@ -2673,11 +2673,6 @@ const char kPageContentAnnotationsRemotePageMetadataName[] =
 const char kPageContentAnnotationsRemotePageMetadataDescription[] =
     "Enables fetching of page load metadata to be persisted on-device.";
 
-const char kPageEntitiesPageContentAnnotationsName[] =
-    "Page entities content annotations";
-const char kPageEntitiesPageContentAnnotationsDescription[] =
-    "Enables annotating the page entities model for each page load on-device.";
-
 const char kPageImageServiceOptimizationGuideSalientImagesName[] =
     "Page Image Service - Optimization Guide Salient Images";
 const char kPageImageServiceOptimizationGuideSalientImagesDescription[] =
