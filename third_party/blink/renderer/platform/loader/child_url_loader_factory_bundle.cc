@@ -254,27 +254,17 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
     return;
   }
 
-  // A FetchLater request must also be a keepalive request.
-  const bool request_is_fetch_later = request.is_fetch_later_api;
-  CHECK(!request_is_fetch_later ||
-        (request.keepalive &&
-         base::FeatureList::IsEnabled(features::kFetchLaterAPI)));
   // Use |keep_alive_loader_factory_| to send the keepalive requests to the
   // KeepAliveURLLoaderService in the browser process and trigger the special
   // keepalive request handling.
-  // |keep_alive_loader_factory_| only presents when either
-  // features::kKeepAliveInBrowserMigration or features::kFetchLaterAPI is true.
-  // But they are different features, and we don't want to pass every keepalive
-  // request to the factory (the new path) when only one of them is enabled.
+  // |keep_alive_loader_factory_| only presents when
+  // features::kKeepAliveInBrowserMigration is true.
   if (request.keepalive && keep_alive_loader_factory_ &&
-      ((!request_is_fetch_later &&
-        base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration) &&
-        (request.attribution_reporting_eligibility ==
-             network::mojom::AttributionReportingEligibility::kUnset ||
-         base::FeatureList::IsEnabled(
-             features::kAttributionReportingInBrowserMigration))) ||
-       (request_is_fetch_later &&
-        base::FeatureList::IsEnabled(features::kFetchLaterAPI)))) {
+      base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration) &&
+      (request.attribution_reporting_eligibility ==
+           network::mojom::AttributionReportingEligibility::kUnset ||
+       base::FeatureList::IsEnabled(
+           features::kAttributionReportingInBrowserMigration))) {
     keep_alive_loader_factory_->CreateLoaderAndStart(
         std::move(loader), request_id, options, request, std::move(client),
         traffic_annotation);

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FETCH_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FETCH_MANAGER_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -17,6 +19,17 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+
+namespace network {
+
+struct ResourceRequest;
+
+}  // namespace network
 
 namespace blink {
 
@@ -73,6 +86,8 @@ class CORE_EXPORT FetchLaterManager final
   size_t NumLoadersForTesting() const;
   void RecreateTimerForTesting(scoped_refptr<base::SingleThreadTaskRunner>,
                                const base::TickClock*);
+  static ResourceLoadPriority ComputeLoadPriorityForTesting(
+      const FetchParameters& params);
 
  private:
   class DeferredLoader;
@@ -84,6 +99,13 @@ class CORE_EXPORT FetchLaterManager final
   // Returns a pointer to the wrapper that provides FetchLaterLoaderFactory.
   // Returns nullptr if the context is detached.
   blink::ChildURLLoaderFactoryBundle* GetFactory();
+
+  // Creates a network version of ResourceRequest using `request` and `options`.
+  // Returns nullptr if any of the checks fail during the call.
+  // Note that this method must only be used to generate FetchLater requests.
+  std::unique_ptr<network::ResourceRequest> PrepareNetworkRequest(
+      ResourceRequest request,
+      const ResourceLoaderOptions& options) const;
 
   // Removes a loader from `deferred_loaders_`.
   void OnDeferredLoaderFinished(DeferredLoader*);
