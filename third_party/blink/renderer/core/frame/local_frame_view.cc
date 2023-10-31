@@ -1248,8 +1248,7 @@ void LocalFrameView::InvalidateLayoutForViewportConstrainedObjects() {
   auto* layout_view = GetLayoutView();
   if (layout_view && !layout_view->NeedsLayout()) {
     for (const auto& fragment : layout_view->PhysicalFragments()) {
-      if (RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled() &&
-          fragment.StickyDescendants()) {
+      if (fragment.StickyDescendants()) {
         layout_view->SetNeedsSimplifiedLayout();
         return;
       }
@@ -1701,12 +1700,8 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   }
 
   UpdateDocumentAnnotatedRegions();
+  ExecutePendingStickyUpdates();
 
-  if (RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
-    ExecutePendingStickyUpdates();
-  } else {
-    GetLayoutView()->Layer()->UpdateLayerPositionsAfterLayout();
-  }
   frame_->Selection().DidLayout();
 
   FontFaceSetDocument::DidLayout(*document);

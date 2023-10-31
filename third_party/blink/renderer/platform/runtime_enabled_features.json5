@@ -2294,10 +2294,6 @@
       status: "stable",
     },
     {
-      name: "LayoutNewStickyLogic",
-      status: "stable",
-    },
-    {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
       status: "stable",

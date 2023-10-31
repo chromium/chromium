@@ -283,34 +283,6 @@ const PaintLayer* PaintLayer::ContainingScrollContainerLayer(
   return nullptr;
 }
 
-void PaintLayer::UpdateLayerPositionsAfterLayout() {
-  DCHECK(IsRootLayer());
-
-  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES(
-      "Blink.Layout.UpdateLayerPositionsAfterLayout");
-  TRACE_EVENT0("blink,benchmark",
-               "PaintLayer::updateLayerPositionsAfterLayout");
-  RUNTIME_CALL_TIMER_SCOPE(
-      GetLayoutObject().GetDocument().GetAgent().isolate(),
-      RuntimeCallStats::CounterId::kUpdateLayerPositionsAfterLayout);
-
-  UpdateLayerPositionRecursive();
-}
-
-void PaintLayer::UpdateLayerPositionRecursive() {
-  GetLayoutObject().UpdateStickyPositionConstraints();
-
-  // Display-locked elements always have a PaintLayer, meaning that the
-  // PaintLayer traversal won't skip locked elements. Thus, we don't have to do
-  // an ancestor check, and simply skip iterating children when this element is
-  // locked for child layout.
-  if (GetLayoutObject().ChildLayoutBlockedByDisplayLock())
-    return;
-
-  for (PaintLayer* child = FirstChild(); child; child = child->NextSibling())
-    child->UpdateLayerPositionRecursive();
-}
-
 void PaintLayer::UpdateTransform() {
   if (gfx::Transform* transform = Transform()) {
     const LayoutBox* box = GetLayoutBox();
@@ -638,24 +610,6 @@ void PaintLayer::SetNeedsCompositingInputsUpdate() {
 
 void PaintLayer::ScrollContainerStatusChanged() {
   SetNeedsCompositingInputsUpdate();
-
-  if (!RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
-    // Invalidate sticky layers and anchor positioned layers in ancestor
-    // scrollable areas. We could invalidate only the affected scrollable
-    // areas, but it's complicated considering the change of containing block
-    // relationship for out-of-flow descendants. This function is called rarely.
-    for (auto* layer = this; layer; layer = layer->Parent()) {
-      if (auto* scrollable_area = layer->GetScrollableArea()) {
-        scrollable_area->InvalidateAllStickyConstraints();
-      }
-    }
-
-    // Make sure UpdateLayerPositionsAfterLayout() will be called to update
-    // sticky and anchor positioned layers.
-    if (auto* frame_view = GetLayoutObject().GetFrameView()) {
-      frame_view->SetNeedsLayout();
-    }
-  }
 }
 
 void PaintLayer::SetNeedsVisualOverflowRecalc() {
@@ -757,16 +711,6 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
     // Dirty the z-order list in which we are contained.
     old_child->DirtyStackingContextZOrderLists();
     MarkAncestorChainForFlagsUpdate();
-
-    if (!RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled() &&
-        old_child->GetLayoutObject()
-            .StyleRef()
-            .HasStickyConstrainedPosition()) {
-      if (const auto* scroll_container =
-              old_child->ContainingScrollContainerLayer()) {
-        scroll_container->GetScrollableArea()->InvalidateAllStickyConstraints();
-      }
-    }
   }
 
   if (GetLayoutObject().StyleRef().Visibility() != EVisibility::kVisible)

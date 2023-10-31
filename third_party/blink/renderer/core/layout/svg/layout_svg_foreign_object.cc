@@ -148,14 +148,12 @@ void LayoutSVGForeignObject::UpdateLayout() {
   builder.SetIsFixedBlockSize(true);
   const auto* result = NGBlockNode(this).Layout(builder.ToConstraintSpace());
 
-  if (RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
-    // Any propagated sticky-descendants may have invalid sticky-constraints.
-    // Clear them now.
-    if (const auto* sticky_descendants =
-            result->PhysicalFragment().PropagatedStickyDescendants()) {
-      for (const auto& sticky_descendant : *sticky_descendants) {
-        sticky_descendant->SetStickyConstraints(nullptr);
-      }
+  // Any propagated sticky-descendants may have invalid sticky-constraints.
+  // Clear them now.
+  if (const auto* sticky_descendants =
+          result->PhysicalFragment().PropagatedStickyDescendants()) {
+    for (const auto& sticky_descendant : *sticky_descendants) {
+      sticky_descendant->SetStickyConstraints(nullptr);
     }
   }
 

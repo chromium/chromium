@@ -2223,12 +2223,8 @@ void PaintLayerScrollableArea::InvalidateAllStickyConstraints() {
   if (rare_data_)
     rare_data_->sticky_layers_.clear();
 
-  if (!RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
-    return;
-  }
-
   // Enqueue ourselves for a sticky update if we have any sticky descendants.
-  auto* box = GetLayoutBox();
+  const auto* box = GetLayoutBox();
   for (const auto& fragment : box->PhysicalFragments()) {
     if (fragment.StickyDescendants()) {
       box->GetFrameView()->AddPendingStickyUpdate(this);

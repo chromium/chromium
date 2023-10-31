@@ -224,8 +224,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void UpdateScrollingAfterLayout();
 
-  void UpdateLayerPositionsAfterLayout();
-
   void UpdateTransform();
 
   bool HasVisibleContent() const {
@@ -533,8 +531,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // Bounding box in the coordinates of this layer.
   PhysicalRect LocalBoundingBox() const;
-
-  void UpdateLayerPositionRecursive();
 
   void SetNextSibling(PaintLayer* next) { next_ = next; }
   void SetPreviousSibling(PaintLayer* prev) { previous_ = prev; }

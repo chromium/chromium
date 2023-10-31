@@ -164,16 +164,10 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     Parent()->SetNeedsLayout(layout_invalidation_reason::kChildChanged,
                              kMarkContainerChain);
 
+  // Clear our sticky constraints if we are no longer sticky.
   if (Layer() && old_style->HasStickyConstrainedPosition() &&
       !StyleRef().HasStickyConstrainedPosition()) {
-    if (RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
-      SetStickyConstraints(nullptr);
-    } else {
-      if (const auto* scroll_container =
-              Layer()->ContainingScrollContainerLayer()) {
-        scroll_container->GetScrollableArea()->InvalidateAllStickyConstraints();
-      }
-    }
+    SetStickyConstraints(nullptr);
   }
 
   PaintLayerType type = LayerTypeRequired();
