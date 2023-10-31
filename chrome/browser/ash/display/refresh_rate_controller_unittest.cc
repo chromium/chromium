@@ -59,6 +59,19 @@ std::unique_ptr<DisplaySnapshot> BuildDualRefreshPanelSnapshot(
       .Build();
 }
 
+std::unique_ptr<DisplaySnapshot> BuildVrrPanelSnapshot(
+    int64_t id,
+    display::DisplayConnectionType type) {
+  return FakeDisplaySnapshot::Builder()
+      .SetId(id)
+      .SetType(type)
+      .SetNativeMode(MakeDisplayMode(1920, 1200, false, 120.f))
+      .SetCurrentMode(MakeDisplayMode(1920, 1200, false, 120.f))
+      .SetVariableRefreshRateState(display::kVrrDisabled)
+      .SetVsyncRateMin(48)
+      .Build();
+}
+
 PowerSupplyProperties BuildFakePowerSupplyProperties(
     PowerSupplyProperties::ExternalPower charger_state,
     double battery_percent) {
@@ -70,8 +83,13 @@ PowerSupplyProperties BuildFakePowerSupplyProperties(
 
 class RefreshRateControllerTest : public AshTestBase {
  public:
-  RefreshRateControllerTest()
-      : scoped_features_(ash::features::kSeamlessRefreshRateSwitching) {}
+  RefreshRateControllerTest() {
+    scoped_features_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kSeamlessRefreshRateSwitching,
+                              ::features::kVariableRefreshRateAvailable,
+                              ::features::kEnableVariableRefreshRate},
+        /*disabled_features=*/{});
+  }
   RefreshRateControllerTest(const RefreshRateControllerTest&) =
       delete;
   RefreshRateControllerTest& operator=(
@@ -333,6 +351,77 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleOnUSBCharger) {
     ASSERT_NE(snapshot, nullptr);
     ASSERT_NE(snapshot->current_mode(), nullptr);
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
+  }
+}
+
+TEST_F(RefreshRateControllerTest, ShouldEnableVrrForBorealis) {
+  constexpr int64_t kDisplayId = 12345;
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildVrrPanelSnapshot(
+      kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+  SetUpDisplays(snapshots);
+  ScopedSetInternalDisplayIds set_internal(kDisplayId);
+
+  // Expect VRR to be initially disabled.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_TRUE(snapshot->IsVrrCapable());
+    EXPECT_FALSE(snapshot->IsVrrEnabled());
+  }
+
+  // Set the game mode to indicate the user is gaming.
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS);
+
+  // Expect the new state to have VRR enabled.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    ASSERT_NE(snapshot, nullptr);
+    EXPECT_TRUE(snapshot->IsVrrEnabled());
+  }
+
+  // Reset the game mode.
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF);
+
+  // Expect the new state to have VRR disabled.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    ASSERT_NE(snapshot, nullptr);
+    EXPECT_FALSE(snapshot->IsVrrEnabled());
+  }
+}
+
+TEST_F(RefreshRateControllerTest, ShouldDisableVrrWithBatterySaverMode) {
+  constexpr int64_t kDisplayId = 12345;
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildVrrPanelSnapshot(
+      kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+  SetUpDisplays(snapshots);
+  ScopedSetInternalDisplayIds set_internal(kDisplayId);
+
+  // Set the game mode to indicate the user is gaming.
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS);
+
+  // Expect the initial state to have VRR enabled.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_TRUE(snapshot->IsVrrCapable());
+    EXPECT_TRUE(snapshot->IsVrrEnabled());
+  }
+
+  // Set power state to indicate the device is on AC, and
+  // Battery Saver Mode is enabled.
+  PowerStatus::Get()->SetProtoForTesting(
+      BuildFakePowerSupplyProperties(PowerSupplyProperties::AC, 100.f));
+  PowerStatus::Get()->SetBatterySaverStateForTesting(true);
+  controller_->OnPowerStatusChanged();
+
+  // Expect the new state to have VRR disabled.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    ASSERT_NE(snapshot, nullptr);
+    EXPECT_FALSE(snapshot->IsVrrEnabled());
   }
 }
 
