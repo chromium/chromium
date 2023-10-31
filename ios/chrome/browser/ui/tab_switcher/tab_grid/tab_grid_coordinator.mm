@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -827,14 +828,19 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       SyncServiceFactory::GetForBrowserState(regularBrowserState);
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(regularBrowserState);
+  SceneState* currentSceneState =
+      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
   // TODO(crbug.com/1457146): Rename in recentTabsMediator.
-  self.remoteTabsMediator =
-      [[RecentTabsMediator alloc] initWithSessionSyncService:syncService
-                                             identityManager:identityManager
-                                              restoreService:restoreService
-                                               faviconLoader:faviconLoader
-                                                 syncService:service
-                                                 browserList:browserList];
+  self.remoteTabsMediator = [[RecentTabsMediator alloc]
+      initWithSessionSyncService:syncService
+                 identityManager:identityManager
+                  restoreService:restoreService
+                   faviconLoader:faviconLoader
+                     syncService:service
+                     browserList:browserList
+                      sceneState:currentSceneState
+                disabledByPolicy:_pageConfiguration ==
+                                 TabGridPageConfiguration::kIncognitoPageOnly];
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
   self.remoteTabsMediator.toolbarActionWrangler = self.baseViewController;
   baseViewController.remoteTabsViewController.imageDataSource =
@@ -846,6 +852,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.remoteTabsViewController.loadStrategy =
       UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
   baseViewController.remoteTabsViewController.presentationDelegate = self;
+  baseViewController.activityObserver = self.remoteTabsMediator;
 
   _remoteGridContainerViewController =
       [[GridContainerViewController alloc] init];

@@ -90,6 +90,14 @@ source_set("tab_grid") {
   frameworks = [ "UniformTypeIdentifiers.framework" ]
 }
 
+source_set("tab_grid_activity_observer") {
+  sources = [ "tab_grid_activity_observer.h" ]
+  deps = [
+    ":tab_grid_paging",
+    "//base",
+  ]
+}
+
 source_set("tab_grid_metrics") {
   sources = [
     "tab_grid_metrics.h",
@@ -136,6 +144,7 @@ source_set("tab_grid_ui") {
 
   deps = [
     ":tab_collection_commands",
+    ":tab_grid_activity_observer",
     ":tab_grid_metrics",
     ":tab_grid_paging",
     ":tab_grid_ui_constants",

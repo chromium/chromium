@@ -11,20 +11,26 @@
 @interface TabGridToolbarsConfiguration : NSObject
 
 // YES if the button should be displayed.
-// NOTE: This is different from being enabled. These button can be displayed but
-// not enabled (grayed out).
-@property(nonatomic) BOOL addToButton;
-@property(nonatomic) BOOL cancelSearchButton;
+// NOTE: This is different from being enabled. These buttons can be displayed
+// but not enabled (grayed out).
 @property(nonatomic) BOOL closeAllButton;
-@property(nonatomic) BOOL closeSelectedTabsButton;
-@property(nonatomic) BOOL deselectAllButton;
+@property(nonatomic) BOOL selectTabsButton;
+@property(nonatomic) BOOL undoButton;
+
+// YES if the button should be enabled. If NO, the button is grayed out.
 @property(nonatomic) BOOL doneButton;
 @property(nonatomic) BOOL newTabButton;
+
+// The value of this buttons, do not have any impact yet.
+// TODO(crbug.com/1457146): Move the following button when their configuration
+// is taken into account.
+@property(nonatomic) BOOL addToButton;
+@property(nonatomic) BOOL cancelSearchButton;
+@property(nonatomic) BOOL closeSelectedTabsButton;
+@property(nonatomic) BOOL deselectAllButton;
 @property(nonatomic) BOOL searchButton;
 @property(nonatomic) BOOL selectAllButton;
-@property(nonatomic) BOOL selectTabsButton;
 @property(nonatomic) BOOL shareButton;
-@property(nonatomic) BOOL undoButton;
 
 // Returns a configuration disabling all buttons.
 + (TabGridToolbarsConfiguration*)disabledConfiguration;

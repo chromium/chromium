@@ -143,7 +143,7 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];
   toolbarsConfiguration.closeAllButton = !self.webStateList->empty();
-  toolbarsConfiguration.doneButton = YES;
+  toolbarsConfiguration.doneButton = !self.webStateList->empty();
   toolbarsConfiguration.newTabButton = YES;
   toolbarsConfiguration.searchButton = YES;
   toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();

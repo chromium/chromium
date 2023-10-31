@@ -199,7 +199,7 @@
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];
   toolbarsConfiguration.closeAllButton = [self canCloseAll];
-  toolbarsConfiguration.doneButton = YES;
+  toolbarsConfiguration.doneButton = !self.webStateList->empty();
   toolbarsConfiguration.newTabButton = YES;
   toolbarsConfiguration.searchButton = YES;
   toolbarsConfiguration.selectTabsButton = [self isTabsInGrid];

@@ -33,6 +33,7 @@ class GURL;
 @protocol TabCollectionCommands;
 @protocol TabCollectionConsumer;
 @protocol TabCollectionDragDropHandler;
+@protocol TabGridActivityObserver;
 @protocol TabGridConsumer;
 @protocol TabContextMenuProvider;
 @protocol TabGridMutator;
@@ -95,6 +96,9 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
 
 @property(nonatomic, weak) id<TabGridViewControllerDelegate> delegate;
+
+// Delegate to notify when activity has to be updated.
+@property(nonatomic, weak) id<TabGridActivityObserver> activityObserver;
 
 // Mutator to apply all user change in the model.
 @property(nonatomic, weak) id<TabGridMutator> mutator;

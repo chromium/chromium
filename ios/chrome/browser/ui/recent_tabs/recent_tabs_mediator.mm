@@ -23,7 +23,11 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -104,6 +108,12 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   // The list of web state list currently processing batch operations (e.g.
   // Closing All, or Undoing a Close All).
   std::set<WebStateList*> _webStateListsWithBatchOperations;
+  // Current scene state.
+  SceneState* _sceneState;
+  // YES if remote grid is disabled by policy.
+  BOOL _isDisabled;
+  // Last active page.
+  TabGridPage _lastActivePage;
 }
 
 // Return the user's current sign-in and chrome-sync state.
@@ -129,7 +139,9 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
                 restoreService:(sessions::TabRestoreService*)restoreService
                  faviconLoader:(FaviconLoader*)faviconLoader
                    syncService:(syncer::SyncService*)syncService
-                   browserList:(BrowserList*)browserList {
+                   browserList:(BrowserList*)browserList
+                    sceneState:(SceneState*)sceneState
+              disabledByPolicy:(BOOL)disabled {
   self = [super init];
   if (self) {
     _sessionSyncService = sessionSyncService;
@@ -138,6 +150,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     _faviconLoader = faviconLoader;
     _syncService = syncService;
     _browserList = browserList;
+    _sceneState = sceneState;
+    _isDisabled = disabled;
   }
   return self;
 }
@@ -186,6 +200,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     _faviconLoader = nullptr;
     _syncService = nullptr;
   }
+
+  _sceneState = nil;
 }
 
 - (void)configureConsumer {
@@ -319,10 +335,31 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   // Start to configure the delegate, so configured buttons will depend on the
   // correct delegate.
   [self.toolbarsMutator setToolbarsButtonsDelegate:self];
+  if (_isDisabled) {
+    [self.toolbarsMutator setToolbarConfiguration:[TabGridToolbarsConfiguration
+                                                      disabledConfiguration]];
+    return;
+  }
+
+  // Done button is enabled if there is at least one tab in the last active
+  // page.
+  BOOL tabsInOtherGrid = NO;
+  if (_lastActivePage == TabGridPageRegularTabs) {
+    Browser* regularBrowser =
+        _sceneState.browserProviderInterface.mainBrowserProvider.browser;
+    tabsInOtherGrid =
+        regularBrowser && !regularBrowser->GetWebStateList()->empty();
+  } else if (_lastActivePage == TabGridPageIncognitoTabs &&
+             _sceneState.browserProviderInterface.hasIncognitoBrowserProvider) {
+    Browser* incognitoBrowser =
+        _sceneState.browserProviderInterface.incognitoBrowserProvider.browser;
+    tabsInOtherGrid =
+        incognitoBrowser && !incognitoBrowser->GetWebStateList()->empty();
+  }
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];
-  toolbarsConfiguration.doneButton = YES;
+  toolbarsConfiguration.doneButton = tabsInOtherGrid;
   toolbarsConfiguration.searchButton = YES;
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
@@ -388,6 +425,12 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 - (void)selectTabsButtonTapped:(id)sender {
   NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+}
+
+#pragma mark - TabGridActivityObserver
+
+- (void)updateLastActiveTabPage:(TabGridPage)page {
+  _lastActivePage = page;
 }
 
 @end
