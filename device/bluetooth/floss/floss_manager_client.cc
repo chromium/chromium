@@ -530,11 +530,8 @@ dbus::PropertySet* FlossManagerClient::CreateProperties(
 // Manager interface is available.
 void FlossManagerClient::ObjectAdded(const dbus::ObjectPath& object_path,
                                      const std::string& interface_name) {
-  // TODO(b/193839304) - When manager exits, we're not getting the
-  //                     ObjectRemoved notification. So remove the manager
-  //                     before re-adding it here.
   if (manager_available_) {
-    RemoveManager();
+    return;
   }
 
   DVLOG(0) << __func__ << ": " << object_path.value() << ", " << interface_name;

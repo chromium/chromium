@@ -486,11 +486,8 @@ TEST_F(FlossManagerClientTest, HandleManagerPresence) {
   EXPECT_TRUE(method_called_[manager::kRegisterCallback] > 0);
   EXPECT_TRUE(observer.manager_present_);
 
-  // Clear present count to confirm a RemoveManager + RegisterManager occurred
+  // Triggering ObjectAdded on an already added object should do nothing
   observer.manager_present_count_ = 0;
-
-  // TODO(b/193839304) - Triggering ObjectAdded on an already added object
-  //                     should trigger a remove and then re-add
   method_called_.clear();
   SendHciDeviceCallback(
       1, true,
@@ -498,11 +495,10 @@ TEST_F(FlossManagerClientTest, HandleManagerPresence) {
                      weak_ptr_factory_.GetWeakPtr()));
   EXPECT_TRUE(client_->GetAdapterPresent(1));
   TriggerObjectAdded(opath, kManagerInterface);
-  // ManagerPresent should be called once for remove and once for register.
-  EXPECT_EQ(observer.manager_present_count_, 2);
-  EXPECT_FALSE(client_->GetAdapterPresent(1));  // Cleared previous adapter list
-  EXPECT_TRUE(method_called_[manager::kGetAvailableAdapters] > 0);
-  EXPECT_TRUE(method_called_[manager::kRegisterCallback] > 0);
+  EXPECT_EQ(observer.manager_present_count_, 0);
+  EXPECT_TRUE(client_->GetAdapterPresent(1));
+  EXPECT_TRUE(method_called_[manager::kGetAvailableAdapters] == 0);
+  EXPECT_TRUE(method_called_[manager::kRegisterCallback] == 0);
 }
 
 TEST_F(FlossManagerClientTest, SetFlossEnabledRetries) {
