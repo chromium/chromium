@@ -22,6 +22,16 @@ ASSERT_SIZE(NGBreakToken, SameSizeAsNGBreakToken);
 
 }  // namespace
 
+bool NGBreakToken::IsInParallelFlow() const {
+  if (const auto* block_break_token = DynamicTo<NGBlockBreakToken>(this)) {
+    return block_break_token->IsAtBlockEnd();
+  }
+  if (const auto* inline_break_token = DynamicTo<InlineBreakToken>(this)) {
+    return inline_break_token->IsInParallelBlockFlow();
+  }
+  return false;
+}
+
 #if DCHECK_IS_ON()
 
 namespace {

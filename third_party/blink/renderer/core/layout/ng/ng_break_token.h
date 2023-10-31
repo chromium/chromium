@@ -48,6 +48,10 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
         static_cast<NGLayoutInputNode::NGLayoutInputNodeType>(type_));
   }
 
+  // Return true if this break token is for a node that's being resumed in a
+  // parallel flow.
+  bool IsInParallelFlow() const;
+
 #if DCHECK_IS_ON()
   String ToString() const;
   void ShowBreakTokenTree() const;

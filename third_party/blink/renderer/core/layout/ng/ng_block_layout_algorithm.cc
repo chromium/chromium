@@ -1609,10 +1609,12 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
   container_builder_.AddResult(*layout_result, logical_offset,
                                resolved_margins);
 
-  *previous_inflow_position = ComputeInflowPosition(
-      *previous_inflow_position, child, child_data,
-      child_bfc_offset.block_offset, logical_offset, *layout_result, fragment,
-      /* self_collapsing_child_had_clearance */ false);
+  if (!child_break_token || !child_break_token->IsInParallelFlow()) {
+    *previous_inflow_position = ComputeInflowPosition(
+        *previous_inflow_position, child, child_data,
+        child_bfc_offset.block_offset, logical_offset, *layout_result, fragment,
+        /* self_collapsing_child_had_clearance */ false);
+  }
 
   if (ConstraintSpace().HasBlockFragmentation() &&
       !has_break_opportunity_before_next_child_) {
@@ -2236,10 +2238,12 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     container_builder_.AddResult(*layout_result, logical_offset);
   }
 
-  *previous_inflow_position = ComputeInflowPosition(
-      *previous_inflow_position, child, *child_data, child_bfc_block_offset,
-      logical_offset, *layout_result, fragment,
-      self_collapsing_child_had_clearance);
+  if (!child_break_token || !child_break_token->IsInParallelFlow()) {
+    *previous_inflow_position = ComputeInflowPosition(
+        *previous_inflow_position, child, *child_data, child_bfc_block_offset,
+        logical_offset, *layout_result, fragment,
+        self_collapsing_child_had_clearance);
+  }
 
   if (child.IsInline()) {
     *previous_inline_break_token =
