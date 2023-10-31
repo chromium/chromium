@@ -162,7 +162,9 @@
   <customize-chrome-chrome-colors on-back-click="onBackClick_"
       page-name="chrome-colors" id="chromeColorsPage">
   </customize-chrome-chrome-colors>
-  <customize-chrome-wallpaper-search on-back-click="onBackClick_"
-      page-name="wallpaper-search" id="wallpaperSearchPage">
-  </customize-chrome-wallpaper-search>
+  <template is="dom-if" if="[[wallpaperSearchEnabled_]]">
+    <customize-chrome-wallpaper-search on-back-click="onBackClick_"
+        page-name="wallpaper-search" id="wallpaperSearchPage">
+    </customize-chrome-wallpaper-search>
+  </template>
 </iron-pages>
