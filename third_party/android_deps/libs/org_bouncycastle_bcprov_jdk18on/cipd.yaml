@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.72.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@1.76.cr1
 package: chromium/third_party/android_deps/libs/org_bouncycastle_bcprov_jdk18on
 description: "Bouncy Castle Provider"
 data:
-- file: bcprov-jdk18on-1.72.jar
+- file: bcprov-jdk18on-1.76.jar

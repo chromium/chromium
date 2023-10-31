@@ -12,9 +12,11 @@ import android.media.AudioFormat;
 import android.media.AudioTrack;
 import android.os.Build;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowAudioTrack;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.media.AudioTrackOutputStream.AudioBufferInfo;
@@ -161,7 +163,11 @@ public class AudioTrackOutputStreamTest {
             return MIN_BUFFER_SIZE;
         }
     }
-    ;
+
+    @Before
+    public void setUp() {
+        ShadowAudioTrack.addAllowedNonPcmEncoding(AudioFormat.ENCODING_E_AC3);
+    }
 
     @Test
     public void playSimpleBitstream() throws InterruptedException {

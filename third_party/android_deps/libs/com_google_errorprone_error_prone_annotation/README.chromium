@@ -1,7 +1,7 @@
 Name: @BugPattern annotation
 Short Name: error_prone_annotation
 URL: https://errorprone.info/
-Version: 2.11.0
+Version: 2.19.1
 License: Apache 2.0
 License File: LICENSE
 CPEPrefix: unknown

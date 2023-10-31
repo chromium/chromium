@@ -239,8 +239,7 @@ public class BackgroundTaskJobServiceTest {
 
     @Test
     @Feature({"BackgroundTaskScheduler"})
-    // @Config(sdk = 34)
-    // TODO(crbug/1483735): Turn this back on when API 34 is available.
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testSetNotification() {
         FakeBackgroundTask fakeBackgroundTask = new FakeBackgroundTask();
         BackgroundTaskSchedulerFactoryInternal.setBackgroundTaskFactory(
@@ -256,9 +255,8 @@ public class BackgroundTaskJobServiceTest {
         fakeBackgroundTask.mTaskFinishedCallback.taskFinished(true);
 
         verify(mBackgroundTaskSchedulerUma, times(1)).reportTaskStarted(eq(TaskIds.TEST));
-        // TODO(crbug/1483735): Turn this back on when API 34 is available.
-        // verify(mBackgroundTaskSchedulerUma, times(1))
-        //         .reportNotificationWasSet(eq(TaskIds.TEST), anyLong());
+        verify(mBackgroundTaskSchedulerUma, times(1))
+                .reportNotificationWasSet(eq(TaskIds.TEST), anyLong());
         verify(mBackgroundTaskSchedulerUma, times(1))
                 .reportTaskFinished(eq(TaskIds.TEST), anyLong());
     }
