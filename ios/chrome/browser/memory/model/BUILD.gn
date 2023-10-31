@@ -13,7 +13,6 @@ source_set("model") {
   ]
   deps = [
     "//base",
-    "//build:branding_buildflags",
     "//components/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/ui/util",

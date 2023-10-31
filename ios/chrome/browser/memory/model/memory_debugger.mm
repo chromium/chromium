@@ -8,7 +8,6 @@
 
 #import <memory>
 
-#import "build/branding_buildflags.h"
 #import "ios/chrome/browser/memory/model/memory_metrics.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
@@ -113,7 +112,7 @@ const CGFloat kPadding = 10;
 // official builds.
 // TODO(lliabraa): Figure out how to support memory warnings (or something
 // like them) in official builds.
-#if BUILDFLAG(CHROMIUM_BRANDING)
+#if !defined(OFFICIAL_BUILD)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
   [self addButtonWithTitle:@"Trigger Memory Warning"
@@ -121,7 +120,7 @@ const CGFloat kPadding = 10;
                     action:@selector(_performMemoryWarning)
                 withOrigin:[self originForSubviewAtIndex:index++]];
 #pragma clang diagnostic pop
-#endif  // BUILDFLAG(CHROMIUM_BRANDING)
+#endif  // !defined(OFFICIAL_BUILD)
 
   // Display a text input to set the amount of artificial memory bloat and a
   // button to reset the bloat to zero.
@@ -141,7 +140,7 @@ const CGFloat kPadding = 10;
 // official builds.
 // TODO(lliabraa): Figure out how to support memory warnings (or something
 // like them) in official builds.
-#if BUILDFLAG(CHROMIUM_BRANDING)
+#if !defined(OFFICIAL_BUILD)
   // Display a text input to control the rate of continuous memory warnings.
   _continuousMemoryWarningField =
       [[UITextField alloc] initWithFrame:CGRectZero];
@@ -151,7 +150,7 @@ const CGFloat kPadding = 10;
              inputAction:@selector(updateMemoryWarningInterval)
                  atIndex:index++];
   [_continuousMemoryWarningField setText:@"0.0"];
-#endif  // BUILDFLAG(CHROMIUM_BRANDING)
+#endif  // !defined(OFFICIAL_BUILD)
 
   // Display a text input to control the refresh rate of the memory debugger.
   _refreshField = [[UITextField alloc] initWithFrame:CGRectZero];
@@ -474,7 +473,7 @@ const CGFloat kPadding = 10;
 // official builds.
 // TODO(lliabraa): Figure out how to support memory warnings (or something
 // like them) in official builds.
-#if BUILDFLAG(CHROMIUM_BRANDING)
+#if !defined(OFFICIAL_BUILD)
 - (void)updateMemoryWarningInterval {
   [_memoryWarningTimer invalidate];
   double timerValue;
@@ -510,7 +509,7 @@ const CGFloat kPadding = 10;
                                       repeats:YES];
 #pragma clang diagnostic push
 }
-#endif  // BUILDFLAG(CHROMIUM_BRANDING)
+#endif  // !defined(OFFICIAL_BUILD)
 
 #pragma mark UITextViewDelegate methods
 
