@@ -18,6 +18,7 @@ script_test("chrome_ios_wpt") {
     "--target",
     "Release",
     "--zero-tests-executed-ok",
+    "--no-retry-failures",
 
     # TODO(crbug.com/1351820): Enable more tests to run, update the dependency to third_party/blink/tools build file.
     "external/wpt/css/css-transforms/",
