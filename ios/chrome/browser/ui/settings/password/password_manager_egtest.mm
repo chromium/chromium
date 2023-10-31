@@ -23,6 +23,7 @@
 #import "components/sync/service/sync_prefs.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -66,6 +67,7 @@ using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TextFieldForCellWithLabelId;
 using chrome_test_util::TurnTableViewSwitchOn;
+using password_manager::kPasswordManagerSurfaceVisitHistogramName;
 using password_manager_test_utils::DeleteButtonForUsernameAndSites;
 using password_manager_test_utils::DeleteCredential;
 using password_manager_test_utils::EditDoneButton;
@@ -453,16 +455,17 @@ void CheckReauthenticationUIEventMetricTotalCount(int count) {
 
 // Verifies the total count of password manager visit histogram recorded.
 void CheckPasswordManagerVisitMetricCount(int count) {
-  NSString* histogram = @"PasswordManager.iOS.PasswordManagerVisit";
-
   // Check password manager visit metric.
-  NSError* error = [MetricsAppInterface expectTotalCount:count
-                                            forHistogram:histogram];
+  NSError* error = [MetricsAppInterface
+      expectTotalCount:count
+          forHistogram:@(kPasswordManagerSurfaceVisitHistogramName)];
   GREYAssertNil(error, @"Unexpected Password Manager Visit histogram count");
 
-  error = [MetricsAppInterface expectCount:count
-                                 forBucket:YES
-                              forHistogram:histogram];
+  error = [MetricsAppInterface
+       expectCount:count
+         forBucket:static_cast<int>(
+                       password_manager::PasswordManagerSurface::kPasswordList)
+      forHistogram:@(kPasswordManagerSurfaceVisitHistogramName)];
   GREYAssertNil(error, @"Unexpected Password Manager Visit histogram count");
 }
 

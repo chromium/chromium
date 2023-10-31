@@ -84469,6 +84469,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Account store"/>
 </enum>
 
+<enum name="PasswordManager.SurfaceVisit">
+  <int value="0" label="Opened Password Manager Main Page"/>
+  <int value="1" label="Opened Password Details Page"/>
+  <int value="2" label="Opened Password Checkup Home Page"/>
+  <int value="3" label="Opened Password Issues Page"/>
+  <int value="4" label="Opened Password Settings Page"/>
+  <int value="5" label="Opened Add Password Page"/>
+</enum>
+
 <enum name="PasswordManagerActionsTaken">
   <obsolete>
     Deprecated as of Chrome 32. See PasswordManagerActionsTakenWithPsl
