@@ -82,11 +82,11 @@ class EditAddressProfileDialogControllerImpl
 
   // Contains the details of the address profile that the user requested to edit
   // before saving.
-  AutofillProfile address_profile_to_edit_;
+  absl::optional<AutofillProfile> address_profile_to_edit_;
 
   // If not nullptr, this dialog was opened from an update prompt. Contains the
   // details of the address profile that will be updated if the user accepts
-  // that update prompt from which this edit dialog was opened..
+  // that update prompt from which this edit dialog was opened.
   absl::optional<AutofillProfile> original_profile_;
 
   // Whether the editor is used in the profile migration case. It is required
