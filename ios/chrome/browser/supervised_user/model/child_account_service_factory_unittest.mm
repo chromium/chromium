@@ -28,7 +28,7 @@ TEST_F(ChildAccountServiceFactoryTest, CreateService) {
   ASSERT_TRUE(service);
 }
 
-// Tests that ChildAccountServiceFactory retuns null
+// Tests that ChildAccountServiceFactory returns null
 // with an off-the-record ChromeBrowserState.
 TEST_F(ChildAccountServiceFactoryTest, ReturnsNullOnOffTheRecordBrowserState) {
   ChromeBrowserState* otr_browser_state =
