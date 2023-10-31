@@ -128,6 +128,8 @@ struct URLRequestContextConfig {
   const std::string accept_language;
   // User-Agent request header field.
   const std::string user_agent;
+  // Proxy server adress. 
+  const std::string proxy_server;
 
   // Certificate verifier for testing.
   std::unique_ptr<net::CertVerifier> mock_cert_verifier;
@@ -219,7 +221,9 @@ struct URLRequestContextConfig {
       // On Android, corresponds to android.os.Process.setThreadPriority()
       // values. On iOS, corresponds to NSThread::setThreadPriority values. Do
       // not specify for other targets.
-      absl::optional<double> network_thread_priority);
+      absl::optional<double> network_thread_priority,
+      // Proxy server adress
+      const std::string& proxy_server);
 
  private:
   URLRequestContextConfig(
@@ -256,7 +260,9 @@ struct URLRequestContextConfig {
       // On Android, corresponds to android.os.Process.setThreadPriority()
       // values. On iOS, corresponds to NSThread::setThreadPriority values. Do
       // not specify for other targets.
-      absl::optional<double> network_thread_priority);
+      absl::optional<double> network_thread_priority,
+      // Proxy server address.
+      const std::string& proxy_server);
 
   // Parses experimental options from their JSON format to the format used
   // internally.
@@ -315,6 +321,8 @@ struct URLRequestContextConfigBuilder {
   std::string accept_language = "";
   // User-Agent request header field.
   std::string user_agent = "";
+    // User-Agent request header field.
+  std::string proxy_server = "";
   // Experimental options encoded as a string in a JSON format containing
   // experiments and their corresponding configuration options. The format
   // is a JSON object with the name of the experiment as the key, and the

@@ -519,6 +519,13 @@ struct EngineParams {
   string accept_language;
 
   /**
+   * Sets a default value for the Proxy Server to be used for UrlRequests
+   * created by this engine. Cronet will forward this requests to destination
+   * using this proxy. 
+   */
+  string proxy_server;
+
+  /**
    * Directory for HTTP Cache and Prefs Storage. The directory must exist.
    */
   string storage_path;

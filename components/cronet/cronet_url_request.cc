@@ -4,6 +4,7 @@
 
 #include "components/cronet/cronet_url_request.h"
 
+#include <iostream>
 #include <limits>
 #include <utility>
 
@@ -11,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "base/threading/platform_thread.h"
 #include "components/cronet/cronet_context.h"
 #include "net/base/idempotency.h"
 #include "net/base/io_buffer.h"
@@ -290,6 +292,8 @@ void CronetURLRequest::NetworkTasks::Start(
   VLOG(1) << "Starting chromium request: "
           << initial_url_.possibly_invalid_spec().c_str()
           << " priority: " << RequestPriorityToString(initial_priority_);
+  std::cout << "[Cronet_Chromium] CronetURLRequest::NetworkTasks::Start........" << std::endl;    
+
   url_request_ = context->GetURLRequestContext(network_)->CreateRequest(
       initial_url_, net::DEFAULT_PRIORITY, this, MISSING_TRAFFIC_ANNOTATION);
   url_request_->SetLoadFlags(initial_load_flags_);
@@ -313,7 +317,9 @@ void CronetURLRequest::NetworkTasks::Start(
     CHECK(false);
 #endif
   }
+  std::cout << "[Cronet_Chromium] CronetURLRequest::NetworkTasks::Start is calling internal start........" << std::endl;    
   url_request_->Start();
+  std::cout << "[Cronet_Chromium] CronetURLRequest::NetworkTasks::Start is finished........" << std::endl;    
 }
 
 void CronetURLRequest::NetworkTasks::GetStatus(

@@ -32,6 +32,8 @@
 #include "net/dns/mapped_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/log/net_log.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/quic/set_quic_flag.h"
@@ -289,7 +291,8 @@ URLRequestContextConfig::URLRequestContextConfig(
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
-    absl::optional<double> network_thread_priority)
+    absl::optional<double> network_thread_priority,
+    const std::string& proxy_server)
     : enable_quic(enable_quic),
       quic_user_agent_id(quic_user_agent_id),
       enable_spdy(enable_spdy),
@@ -300,6 +303,7 @@ URLRequestContextConfig::URLRequestContextConfig(
       storage_path(storage_path),
       accept_language(accept_language),
       user_agent(user_agent),
+      proxy_server(proxy_server),
       mock_cert_verifier(std::move(mock_cert_verifier)),
       enable_network_quality_estimator(enable_network_quality_estimator),
       bypass_public_key_pinning_for_local_trust_anchors(
@@ -332,7 +336,8 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
-    absl::optional<double> network_thread_priority) {
+    absl::optional<double> network_thread_priority,
+    const std::string& proxy_server) {
   absl::optional<base::Value::Dict> experimental_options =
       ParseExperimentalOptions(unparsed_experimental_options);
   if (!experimental_options) {
@@ -349,7 +354,7 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
       user_agent, std::move(experimental_options).value(),
       std::move(mock_cert_verifier), enable_network_quality_estimator,
       bypass_public_key_pinning_for_local_trust_anchors,
-      network_thread_priority));
+      network_thread_priority, proxy_server));
 }
 
 // static
@@ -840,6 +845,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
 void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
     net::URLRequestContextBuilder* context_builder,
     net::handles::NetworkHandle bound_network) {
+  std::cout << "[Cronet_Chromium] Configuring URLRequestContextBuilder." << std::endl;
   std::string config_cache;
   if (http_cache != DISABLED) {
     net::URLRequestContextBuilder::HttpCacheParams cache_params;
@@ -858,6 +864,14 @@ void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
   }
   context_builder->set_accept_language(accept_language);
   context_builder->set_user_agent(user_agent);
+
+  if(!proxy_server.empty()){
+    std::cout << "[Cronet_Chromium] Creating new ProxyResolutionService for proxy address : " << proxy_server << std::endl;
+    context_builder->set_proxy_resolution_service(
+    net::ConfiguredProxyResolutionService::CreateFixedForTest(
+        proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS));
+  }
+
   net::HttpNetworkSessionParams session_params;
   session_params.enable_http2 = enable_spdy;
   session_params.enable_quic = enable_quic;
@@ -899,7 +913,7 @@ URLRequestContextConfigBuilder::Build() {
       user_agent, experimental_options, std::move(mock_cert_verifier),
       enable_network_quality_estimator,
       bypass_public_key_pinning_for_local_trust_anchors,
-      network_thread_priority);
+      network_thread_priority, proxy_server);
 }
 
 }  // namespace cronet

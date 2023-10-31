@@ -274,6 +274,12 @@ void Cronet_EngineParams_enable_http2_set(Cronet_EngineParamsPtr self,
   self->enable_http2 = enable_http2;
 }
 
+void Cronet_EngineParams_proxy_server_set(Cronet_EngineParamsPtr self,
+                                          const Cronet_String proxy_server) {
+  DCHECK(self);
+  self->proxy_server = proxy_server;
+}
+
 void Cronet_EngineParams_enable_brotli_set(Cronet_EngineParamsPtr self,
                                            const bool enable_brotli) {
   DCHECK(self);
@@ -340,6 +346,12 @@ Cronet_String Cronet_EngineParams_user_agent_get(
     const Cronet_EngineParamsPtr self) {
   DCHECK(self);
   return self->user_agent.c_str();
+}
+
+Cronet_String Cronet_EngineParams_proxy_server_get(
+    const Cronet_EngineParamsPtr self) {
+  DCHECK(self);
+  return self->proxy_server.c_str();
 }
 
 Cronet_String Cronet_EngineParams_accept_language_get(

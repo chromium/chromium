@@ -344,15 +344,17 @@ bool CronetContext::NetworkTasks::URLRequestContextExistsForTesting(
 std::unique_ptr<net::URLRequestContext>
 CronetContext::NetworkTasks::BuildDefaultURLRequestContext(
     std::unique_ptr<net::ProxyConfigService> proxy_config_service) {
+  std::cout << "[Cronet_Chromium] BuildDefaultURLRequestContext........" << std::endl;    
+
   DCHECK(!network_quality_estimator_);
   DCHECK(!cronet_prefs_manager_);
   net::URLRequestContextBuilder context_builder;
   context_config_->ConfigureURLRequestContextBuilder(&context_builder);
   SetSharedURLRequestContextBuilderConfig(&context_builder);
 
-  context_builder.set_proxy_resolution_service(
-      cronet::CreateProxyResolutionService(std::move(proxy_config_service),
-                                           g_net_log.Get().net_log()));
+  // context_builder.set_proxy_resolution_service(
+  //     cronet::CreateProxyResolutionService(std::move(proxy_config_service),
+  //                                          g_net_log.Get().net_log()));
 
   if (context_config_->enable_network_quality_estimator) {
     std::unique_ptr<net::NetworkQualityEstimatorParams> nqe_params =
