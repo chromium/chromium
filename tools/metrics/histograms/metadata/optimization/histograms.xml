@@ -147,6 +147,9 @@ chromium-metrics-reviews@google.com.
                a page."/>
   <variant name="PerformanceHints"
       summary="Provides aggregated performance information about the page"/>
+  <variant name="PixPaymentMerchantAllowlist"
+      summary="This optimization provides information about whether a
+               merchant can trigger PIX bottom sheet."/>
   <variant name="PriceInsights"
       summary="Returns price insights data for shopping websites"/>
   <variant name="PriceTracking"

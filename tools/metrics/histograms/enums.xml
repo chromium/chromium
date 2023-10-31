@@ -81409,6 +81409,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="33" label="SHOPPING_PAGE_TYPES"/>
   <int value="34" label="SHOPPING_DISCOUNTS"/>
   <int value="35" label="COMPOSE"/>
+  <int value="36" label="PIX_PAYMENT_MERCHANT_ALLOWLIST"/>
 </enum>
 
 <enum name="OptOutBlacklistReason">
