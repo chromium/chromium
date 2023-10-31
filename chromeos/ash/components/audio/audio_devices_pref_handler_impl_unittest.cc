@@ -317,7 +317,6 @@ TEST_P(AudioDevicesPrefHandlerTest, PrefsRegistered) {
   EXPECT_TRUE(pref_service_->FindPreference(prefs::kAudioDevicesVolumePercent));
   EXPECT_TRUE(pref_service_->FindPreference(prefs::kAudioDevicesMute));
   EXPECT_TRUE(pref_service_->FindPreference(prefs::kAudioOutputAllowed));
-  EXPECT_TRUE(pref_service_->FindPreference(prefs::kAudioVolumePercent));
   EXPECT_TRUE(pref_service_->FindPreference(prefs::kAudioMute));
   EXPECT_TRUE(pref_service_->FindPreference(prefs::kAudioDevicesState));
   EXPECT_TRUE(

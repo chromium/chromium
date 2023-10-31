@@ -562,9 +562,6 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   // media system.
   registry->RegisterBooleanPref(prefs::kAudioOutputAllowed, true);
 
-  // Register the legacy audio prefs for migration.
-  registry->RegisterDoublePref(prefs::kAudioVolumePercent,
-                               kDefaultOutputVolumePercent);
   registry->RegisterIntegerPref(prefs::kAudioMute, kPrefMuteOff);
 
   registry->RegisterDictionaryPref(prefs::kAudioInputDevicesUserPriority);

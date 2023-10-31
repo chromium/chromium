@@ -115,11 +115,6 @@ inline constexpr char kAudioMute[] = "settings.audio.mute";
 // it, therefore when the policy is lifted the original mute state is restored.
 inline constexpr char kAudioOutputAllowed[] = "hardware.audio_output_enabled";
 
-// A double pref storing the user-requested volume. This setting is here only
-// for migration purposes now. It is being replaced by the
-// |kAudioDevicesVolumePercent| setting.
-inline constexpr char kAudioVolumePercent[] = "settings.audio.volume_percent";
-
 // A dictionary pref that maps stable device id string to |AudioDeviceState|.
 // Different state values indicate whether or not a device has been selected
 // as the active one for audio I/O, or it's a new plugged device.

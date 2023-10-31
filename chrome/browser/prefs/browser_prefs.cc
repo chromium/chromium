@@ -936,6 +936,7 @@ const char kDownloadLastCompleteTime[] = "download.last_complete_time";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kLastSuccessfulDomainPref[] = "android_sms.last_successful_domain";
 const char kShouldAttemptReenable[] = "android_sms.should_attempt_reenable";
+const char kAudioVolumePercent[] = "settings.audio.volume_percent";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 10/2023.
@@ -1327,6 +1328,7 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterStringPref(kLastSuccessfulDomainPref, std::string());
   registry->RegisterBooleanPref(kShouldAttemptReenable, true);
+  registry->RegisterDoublePref(kAudioVolumePercent, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterTimePref(kDownloadLastCompleteTime, base::Time());
 
@@ -2508,6 +2510,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kLastSuccessfulDomainPref);
   profile_prefs->ClearPref(kShouldAttemptReenable);
+  profile_prefs->ClearPref(kAudioVolumePercent);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 10/2023.
