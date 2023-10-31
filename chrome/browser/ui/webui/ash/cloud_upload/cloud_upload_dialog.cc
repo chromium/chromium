@@ -1042,7 +1042,7 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
   // (and for StartUpload?).
   if (user_response == kUserActionConfirmOrUploadToGoogleDrive) {
     cloud_provider_ = CloudProvider::kGoogleDrive;
-    cloud_open_metrics_->UpdateCloudProvider(cloud_provider_);
+    cloud_open_metrics_->set_cloud_provider(cloud_provider_);
 
     // Because we treat Docs/Sheets/Slides as three separate apps, only set
     // the default handler for the types that we are dealing with.
@@ -1073,7 +1073,7 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     OpenOrMoveFiles();
   } else if (user_response == kUserActionUploadToGoogleDrive) {
     cloud_provider_ = CloudProvider::kGoogleDrive;
-    cloud_open_metrics_->UpdateCloudProvider(cloud_provider_);
+    cloud_open_metrics_->set_cloud_provider(cloud_provider_);
     fm_tasks::SetOfficeMoveConfirmationShownForDrive(profile_, true);
     SourceType source_type = GetSourceType(profile_, file_urls_[0]);
     switch (source_type) {
@@ -1109,7 +1109,7 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
                               OfficeSetupFileHandler::kMicrosoft365);
     cloud_provider_ = CloudProvider::kOneDrive;
-    cloud_open_metrics_->UpdateCloudProvider(cloud_provider_);
+    cloud_open_metrics_->set_cloud_provider(cloud_provider_);
     InitAndShowDialog(mojom::DialogPage::kOneDriveSetup);
   } else if (user_response == kUserActionCancel) {
     cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kCancelledAtSetup);

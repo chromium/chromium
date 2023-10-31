@@ -156,7 +156,7 @@ class CloudOpenMetrics {
   void LogUploadResult(OfficeFilesUploadResult value);
 
   // Updates the cloud provider for the cloud upload flow.
-  void UpdateCloudProvider(CloudProvider cloud_provider);
+  void set_cloud_provider(CloudProvider cloud_provider);
 
   base::SafeRef<CloudOpenMetrics> GetSafeRef() const;
 

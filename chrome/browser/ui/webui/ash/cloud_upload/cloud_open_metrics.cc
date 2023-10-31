@@ -460,13 +460,25 @@ CloudOpenMetrics::~CloudOpenMetrics() {
                             drive_open_error_, one_drive_open_error_,
                             drive_source_volume_, drive_task_result_,
                             drive_transfer_required_, drive_upload_result_);
-    // TODO(b/300861997): ExpectNotLogged for OneDrive metrics.
+    ExpectNotLogged(one_drive_copy_error_);
+    ExpectNotLogged(one_drive_move_error_);
+    ExpectNotLogged(one_drive_open_error_);
+    ExpectNotLogged(one_drive_source_volume_);
+    ExpectNotLogged(one_drive_task_result_);
+    ExpectNotLogged(one_drive_transfer_required_);
+    ExpectNotLogged(one_drive_upload_result_);
   } else {
     CheckForInconsistencies(
         one_drive_copy_error_, one_drive_move_error_, drive_open_error_,
         one_drive_open_error_, one_drive_source_volume_, one_drive_task_result_,
         one_drive_transfer_required_, one_drive_upload_result_);
-    // TODO(b/300861997): ExpectNotLogged for Drive metrics.
+    ExpectNotLogged(drive_copy_error_);
+    ExpectNotLogged(drive_move_error_);
+    ExpectNotLogged(drive_open_error_);
+    ExpectNotLogged(drive_source_volume_);
+    ExpectNotLogged(drive_task_result_);
+    ExpectNotLogged(drive_transfer_required_);
+    ExpectNotLogged(drive_upload_result_);
   }
 
   // TODO(b/300861997): Make companion metric logging a Metric method.
@@ -544,7 +556,7 @@ void CloudOpenMetrics::LogUploadResult(OfficeFilesUploadResult value) {
                               value);
 }
 
-void CloudOpenMetrics::UpdateCloudProvider(CloudProvider cloud_provider) {
+void CloudOpenMetrics::set_cloud_provider(CloudProvider cloud_provider) {
   cloud_provider_ = cloud_provider;
 }
 
@@ -565,6 +577,7 @@ void CloudOpenMetrics::OnInconsistencyFound(Metric<MetricType>& metric,
     return;
   }
   LOG(ERROR) << "Inconsistent metric found: " << metric;
+  LOG(ERROR) << "Cloud provider: " << cloud_provider_;
   LOG(ERROR) << "Drive metrics: " << std::endl
              << drive_copy_error_ << std::endl
              << drive_move_error_ << std::endl
