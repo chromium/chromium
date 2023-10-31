@@ -189,8 +189,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state) override;
 #endif  // BUILDFLAG(IS_ANDROID)
-  void SetEnvironment(
-      std::vector<mojom::EnvironmentVariablePtr> environment) override;
   void SetTrustTokenKeyCommitments(const std::string& raw_commitments,
                                    base::OnceClosure done) override;
   void ParseHeaders(const GURL& url,
@@ -371,6 +369,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   void SetSystemDnsResolver(
       mojo::PendingRemote<mojom::SystemDnsResolver> override_remote);
+
+  void SetEnvironment(std::vector<mojom::EnvironmentVariablePtr> environment);
 
   bool initialized_ = false;
 
