@@ -47,8 +47,8 @@ Need tests for (likely not a complete list):
     sellers / buyers / update URLs on local networks.
 * Calling FLEDGE APIs (or at least leaveAdInterestGroup() with no args)
     in a non-ad FencedFrame.
+* Promise AuctionConfig parameters
 * Test network requests in terms of fetch behavior
-  * Redirects not followed.
   * Network partition (not yet specced).
 * Test that await is not needed for same-origin interest groups
   * Verify that's still in the spec/explainer first.
@@ -59,6 +59,7 @@ Need tests for (likely not a complete list):
   * In "group-by-origin" execution mode across IGs joined from different
       origins, and between generateBid() and reportWin().
 * Test Content-Type headers allowed in responess for script/wasm/JSON fetches.
+* Test WASM support, updating createBiddingWasmHelperURL().
 
 If possible:
 * Aggregate reporting.

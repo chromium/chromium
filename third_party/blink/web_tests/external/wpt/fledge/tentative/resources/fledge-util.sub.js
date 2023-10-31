@@ -165,6 +165,12 @@ function createBiddingScriptURL(params = {}) {
   return url.toString();
 }
 
+// TODO: Make this return a valid WASM URL.
+function createBiddingWasmHelperURL(params = {}) {
+  let origin = params.origin ? params.origin : new URL(BASE_URL).origin;
+  return `${origin}${RESOURCE_PATH}bidding-wasmlogic.wasm`;
+}
+
 // Creates a decision script with the provided code in the method bodies. The
 // decision script's scoreAd() method will reject ads with renderURLs that
 // don't ends with "uuid", and will return a score equal to the bid, after the
