@@ -217,7 +217,12 @@ export const removeVolume = slice.addReducer('remove', removeVolumeReducer);
 function removeVolumeReducer(currentState: State, payload: {
   volumeId: VolumeId,
 }): State {
-  const volumeToRemove: Volume = currentState.volumes[payload.volumeId];
+  const volumeToRemove: Volume|undefined =
+      currentState.volumes[payload.volumeId];
+  if (!volumeToRemove) {
+    // Somehow the volume is already removed from the store, do nothing.
+    return currentState;
+  }
   const volumeEntry = getEntry(currentState, volumeToRemove.rootKey!)!;
   delete currentState.volumes[payload.volumeId];
   currentState.volumes = {
