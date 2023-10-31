@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -22,6 +23,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -614,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       {optimization_guide::proto::OptimizationType::NOSCRIPT});
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
 
-  // Beforw the hints or navigation are initiated, we should get a negative
+  // Before the hints or navigation are initiated, we should get a negative
   // response.
   ogks->CanApplyOptimization(
       url_with_hints(), optimization_guide::proto::OptimizationType::NOSCRIPT,
@@ -668,6 +671,149 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   run_loop->Run();
 }
 
+// Verifies that Model Execution Features Controller is available for incognito
+// profiles and the visibility of settings is correct.
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       SettingsVisibilityUpdatedCorrectly) {
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+
+  EXPECT_FALSE(
+      ogks->IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(
+      ogks->IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(
+      ogks->IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+
+  EXPECT_TRUE(
+      ogks->IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(
+      ogks->IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(
+      ogks->IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(
+          optimization_guide::prefs::FeatureOptInState::kDisabled));
+
+  EXPECT_FALSE(
+      ogks->IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(
+      ogks->IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(
+      ogks->IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_COMPOSE));
+}
+
+// Verifies that Model Execution Features Controller is available for incognito
+// profiles and the setting opt-in toggle and pref is updated correctly.
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       SettingsOptInUpdatedCorrectly) {
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+
+  EXPECT_FALSE(
+      ogks->IsSettingEnabled(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(
+      ogks->IsSettingEnabled(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(
+      ogks->IsSettingEnabled(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+
+  EXPECT_TRUE(
+      ogks->IsSettingEnabled(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(
+      ogks->IsSettingEnabled(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(
+      ogks->IsSettingEnabled(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_COMPOSE));
+
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(
+          optimization_guide::prefs::FeatureOptInState::kDisabled));
+
+  EXPECT_FALSE(
+      ogks->IsSettingEnabled(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_FALSE(
+      ogks->IsSettingEnabled(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+
+  EXPECT_FALSE(
+      ogks->IsSettingEnabled(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_COMPOSE));
+}
+
+// Verifies that Model Execution Features Controller returns null for incognito
+// profiles.
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       SettingsVisibilityIncognito) {
+  // Set up incognito browser and incognito OptimizationGuideKeyedService
+  // consumer.
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  EXPECT_TRUE(otr_browser);
+
+  // Instantiate off the record Optimization Guide Service.
+  OptimizationGuideKeyedService* otr_ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          browser()->profile()->GetPrimaryOTRProfile(
+              /*create_if_needed=*/true));
+
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+
+  EXPECT_FALSE(otr_ogks->IsSettingEnabled(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -682,6 +828,27 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(guest_ogks);
   EXPECT_TRUE(ogks);
   EXPECT_NE(guest_ogks, ogks);
+
+  auto* prefs = browser()->profile()->GetPrefs();
+  auto* guest_prefs = guest_browser->profile()->GetPrefs();
+
+  prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+  guest_prefs->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+
+  EXPECT_FALSE(guest_ogks->IsSettingEnabled(
+      optimization_guide::proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_TRUE(
+      ogks->IsSettingEnabled(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
 }
 #endif
 

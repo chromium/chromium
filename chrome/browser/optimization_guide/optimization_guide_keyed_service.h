@@ -17,6 +17,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -35,6 +36,9 @@ namespace optimization_guide {
 namespace android {
 class OptimizationGuideBridge;
 }  // namespace android
+namespace internal {
+class OptimizationGuideModelExecutionFeaturesController;
+}  // namespace internal
 class ChromeHintsManager;
 class ModelExecutionManager;
 class ModelInfo;
@@ -106,6 +110,16 @@ class OptimizationGuideKeyedService
       optimization_guide::OptimizationGuideModelExecutionResultCallback
           callback) override;
 
+  // Returns true if the opt-in setting should be shown for this profile for
+  // given `feature`.
+  bool IsSettingVisible(
+      optimization_guide::proto::ModelExecutionFeature feature) const;
+
+  // Returns true if the opt-in setting has been enabled by the user for this
+  // profile for given `feature`.
+  bool IsSettingEnabled(
+      optimization_guide::proto::ModelExecutionFeature feature) const;
+
   // Adds hints for a URL with provided metadata to the optimization guide.
   // For testing purposes only. This will flush any callbacks for |url| that
   // were registered via |CanApplyOptimization|. If no applicable callbacks
@@ -130,7 +144,6 @@ class OptimizationGuideKeyedService
   OptimizationGuideLogger* GetOptimizationGuideLogger() {
     return optimization_guide_logger_.get();
   }
-
 
  private:
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
@@ -225,6 +238,10 @@ class OptimizationGuideKeyedService
   // Manages the model execution. Not created for off the record profiles.
   std::unique_ptr<optimization_guide::ModelExecutionManager>
       model_execution_manager_;
+
+  std::unique_ptr<optimization_guide::internal::
+                      OptimizationGuideModelExecutionFeaturesController>
+      model_execution_features_controller_;
 
   // Used to observe profile initialization event.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

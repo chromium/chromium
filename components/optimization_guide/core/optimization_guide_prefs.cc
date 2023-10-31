@@ -54,6 +54,37 @@ const char kPreviouslyRegisteredOptimizationTypes[] =
 const char kStoreFilePathsToDelete[] =
     "optimization_guide.store_file_paths_to_delete";
 
+// Pref that contains user opt-in state for different features.
+std::string GetSettingEnabledPrefName(proto::ModelExecutionFeature feature) {
+  switch (feature) {
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
+      return "optimization_guide.compose_setting_state";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
+      return "optimization_guide.tab_organization_setting_state";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
+      return "optimization_guide.wallpaper_search_setting_state";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
+      NOTREACHED();
+      return "Invalid";
+  }
+}
+
+void RegisterSettingsEnabledPrefs(PrefRegistrySimple* registry) {
+  for (int i = proto::ModelExecutionFeature_MIN;
+       i <= proto::ModelExecutionFeature_MAX; ++i) {
+    proto::ModelExecutionFeature feature =
+        static_cast<proto::ModelExecutionFeature>(i);
+    switch (feature) {
+      case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
+        continue;
+      default:
+        registry->RegisterIntegerPref(
+            GetSettingEnabledPrefName(feature),
+            static_cast<int>(FeatureOptInState::kNotInitialized));
+    }
+  }
+}
+
 namespace localstate {
 
 // A dictionary pref that stores the lightweight metadata of all the models in
@@ -93,6 +124,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kStoreFilePathsToDelete,
                                    PrefRegistry::LOSSY_PREF);
+
+  RegisterSettingsEnabledPrefs(registry);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
