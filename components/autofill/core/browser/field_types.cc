@@ -50,7 +50,9 @@ static constexpr auto kTypeNameToFieldType =
          {"PHONE_HOME_WHOLE_NUMBER", PHONE_HOME_WHOLE_NUMBER},
          {"ADDRESS_HOME_LINE1", ADDRESS_HOME_LINE1},
          {"ADDRESS_HOME_LINE2", ADDRESS_HOME_LINE2},
+         {"ADDRESS_HOME_APT", ADDRESS_HOME_APT},
          {"ADDRESS_HOME_APT_NUM", ADDRESS_HOME_APT_NUM},
+         {"ADDRESS_HOME_APT_TYPE", ADDRESS_HOME_APT_TYPE},
          {"ADDRESS_HOME_CITY", ADDRESS_HOME_CITY},
          {"ADDRESS_HOME_STATE", ADDRESS_HOME_STATE},
          {"ADDRESS_HOME_ZIP", ADDRESS_HOME_ZIP},
@@ -160,7 +162,9 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
     case ADDRESS_HOME_LINE3:
+    case ADDRESS_HOME_APT:
     case ADDRESS_HOME_APT_NUM:
+    case ADDRESS_HOME_APT_TYPE:
     case ADDRESS_HOME_CITY:
     case ADDRESS_HOME_STATE:
     case ADDRESS_HOME_ZIP:
@@ -388,8 +392,12 @@ std::string_view FieldTypeToDeveloperRepresentationString(
       return "Sorting code";
     case ADDRESS_HOME_DEPENDENT_LOCALITY:
       return "Dependent locality";
+    case ADDRESS_HOME_APT:
+      return "Apt";
     case ADDRESS_HOME_APT_NUM:
       return "Apt num";
+    case ADDRESS_HOME_APT_TYPE:
+      return "Apt type";
     case ADDRESS_HOME_CITY:
       return "City";
     case ADDRESS_HOME_STATE:
@@ -488,7 +496,9 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
     case ADDRESS_HOME_LINE3:
+    case ADDRESS_HOME_APT:
     case ADDRESS_HOME_APT_NUM:
+    case ADDRESS_HOME_APT_TYPE:
     case ADDRESS_HOME_CITY:
     case ADDRESS_HOME_STATE:
     case ADDRESS_HOME_ZIP:

@@ -5532,6 +5532,10 @@ Called by update_autofill_enums.py.-->
   <int value="2433" label="ADDRESS_HOME_BETWEEN_STREETS_2: accepted"/>
   <int value="2464" label="SINGLE_USERNAME_FORGOT_PASSWORD: edited"/>
   <int value="2465" label="SINGLE_USERNAME_FORGOT_PASSWORD: accepted"/>
+  <int value="2496" label="ADDRESS_HOME_APT: edited"/>
+  <int value="2497" label="ADDRESS_HOME_APT: accepted"/>
+  <int value="2512" label="ADDRESS_HOME_APT_TYPE: edited"/>
+  <int value="2513" label="ADDRESS_HOME_APT_TYPE: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -7772,6 +7776,37 @@ Called by update_autofill_enums.py.-->
   <int value="930"
       label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions different - Value
              agrees with both predictions"/>
+  <int value="937" label="ADDRESS_HOME_APT - Predictions equal - Value agrees"/>
+  <int value="938"
+      label="ADDRESS_HOME_APT - Predictions equal - Value disagrees"/>
+  <int value="939"
+      label="ADDRESS_HOME_APT - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="940"
+      label="ADDRESS_HOME_APT - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="941"
+      label="ADDRESS_HOME_APT - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="942"
+      label="ADDRESS_HOME_APT - Predictions different - Value agrees with
+             both predictions"/>
+  <int value="943"
+      label="ADDRESS_HOME_APT_TYPE - Predictions equal - Value agrees"/>
+  <int value="944"
+      label="ADDRESS_HOME_APT_TYPE - Predictions equal - Value disagrees"/>
+  <int value="945"
+      label="ADDRESS_HOME_APT_TYPE - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="946"
+      label="ADDRESS_HOME_APT_TYPE - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="947"
+      label="ADDRESS_HOME_APT_TYPE - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="948"
+      label="ADDRESS_HOME_APT_TYPE - Predictions different - Value agrees
+             with both predictions"/>
 </enum>
 
 <enum name="AutofillPredictionSource">
@@ -8001,6 +8036,8 @@ Called by update_autofill_enums.py.-->
   <int value="151" label="ADDRESS_HOME_BETWEEN_STREETS_1"/>
   <int value="152" label="ADDRESS_HOME_BETWEEN_STREETS_2"/>
   <int value="154" label="SINGLE_USERNAME_FORGOT_PASSWORD"/>
+  <int value="156" label="ADDRESS_HOME_APT"/>
+  <int value="157" label="ADDRESS_HOME_APT_TYPE"/>
 </enum>
 
 <enum name="AutofillServerPredictionAvailability">

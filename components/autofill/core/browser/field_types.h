@@ -159,6 +159,8 @@ enum ServerFieldType {
 
   ADDRESS_HOME_LINE1 = 30,
   ADDRESS_HOME_LINE2 = 31,
+  // The raw number (or identifier) of an apartment (e.g. "5") but without a
+  // prefix. The value "apt 5" would correspond to an ADDRESS_HOME_APT.
   ADDRESS_HOME_APT_NUM = 32,
   ADDRESS_HOME_CITY = 33,
   ADDRESS_HOME_STATE = 34,
@@ -418,11 +420,11 @@ enum ServerFieldType {
   // example. There is a risk that "Apt 5" votes might turn ADDRESS_HOME_LINE2
   // into ADDRESS_HOME_APT entries. We'd need to be very intentional with such a
   // change as it affects the US for example.
-  // ADDRESS_HOME_APT = 156 is server-side only.
+  ADDRESS_HOME_APT = 156,
 
   // Information describing the type of apartment (e.g. Apt, Apartamento, Sala,
   // Departamento).
-  // ADDRESS_HOME_APT_TYPE = 157 is server-side only.
+  ADDRESS_HOME_APT_TYPE = 157,
 
   // Reserved for a server-side-only use: 158
 
@@ -525,7 +527,7 @@ constexpr ServerFieldType ToSafeServerFieldType(
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 127 && !(130 <= t && t <= 132) &&
            t != 134 && !(137 <= t && t <= 139) && !(145 <= t && t <= 150) &&
-           t != 153 && !(155 <= t && t <= 158);
+           t != 153 && t != 155 && t != 158;
   };
   return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
                             : fallback_value;
