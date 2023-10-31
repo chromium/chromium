@@ -54,7 +54,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, CheckMarkWrapper) {
           "mocha.run()");
 }
 IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, Combobox) {
-  RunTest("side_panel/customize_chrome/combobox_test.js", "mocha.run()");
+  RunTest("side_panel/customize_chrome/wallpaper_search/combobox_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, HoverButton) {
@@ -74,6 +75,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, ChromeColors) {
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, WallpaperSearch) {
-  RunTest("side_panel/customize_chrome/wallpaper_search_test.js",
-          "mocha.run()");
+  RunTest(
+      "side_panel/customize_chrome/wallpaper_search/wallpaper_search_test.js",
+      "mocha.run()");
 }

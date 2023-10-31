@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './check_mark_wrapper.js';
+import '../check_mark_wrapper.js';
 import './combobox/customize_chrome_combobox.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
@@ -23,11 +23,11 @@ import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
-import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
+import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from '../customize_chrome.mojom-webui.js';
+import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
 import {getTemplate} from './wallpaper_search.html.js';
-import {DescriptorA, DescriptorDValue, Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchResult} from './wallpaper_search.mojom-webui.js';
-import {WallpaperSearchProxy} from './wallpaper_search/wallpaper_search_proxy.js';
+import {DescriptorA, DescriptorDValue, Descriptors, WallpaperSearchHandlerInterface, WallpaperSearchResult} from '../wallpaper_search.mojom-webui.js';
+import {WallpaperSearchProxy} from './wallpaper_search_proxy.js';
 
 export const DESCRIPTOR_D_VALUE =
     ['#ef4837', '#0984e3', '#f9cc18', '#23cc6a', '#474747'];

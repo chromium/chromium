@@ -13,7 +13,7 @@ import './categories.js';
 import './chrome_colors.js';
 import './shortcuts.js';
 import './themes.js';
-import './wallpaper_search.js';
+import './wallpaper_search/wallpaper_search.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -28,7 +28,7 @@ import {ChromeColorsElement} from './chrome_colors.js';
 import {BackgroundCollection, CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {ThemesElement} from './themes.js';
-import {WallpaperSearchElement} from './wallpaper_search.js';
+import {WallpaperSearchElement} from './wallpaper_search/wallpaper_search.js';
 
 const SECTION_TO_SELECTOR = {
   [CustomizeChromeSection.kAppearance]: '#appearance',
