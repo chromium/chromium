@@ -226,9 +226,8 @@ struct IntHashTraits
 
 // Default traits for an enum type.  0 is very popular, and -1 is also popular.
 // So we use -128 and -127.
-template <typename T, auto empty_value = -128, auto deleted_value = -127>
-struct EnumHashTraits
-    : internal::IntOrEnumHashTraits<T, empty_value, deleted_value> {
+template <typename T>
+struct EnumHashTraits : internal::IntOrEnumHashTraits<T, -128, -127> {
   static_assert(std::is_enum_v<T>);
 };
 

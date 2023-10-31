@@ -146,16 +146,4 @@ mojom::blink::CSSSampleId CORE_EXPORT GetCSSSampleId(CSSPropertyID id);
 
 }  // namespace blink
 
-// Even though these hash traits are not affected by code generation,
-// it's important to define them in the same file as CSSPropertyID to avoid
-// hard-to-diagnose problems from neglecting to include said traits.
-// See https://crbug.com/1246970.
-namespace WTF {
-template <>
-struct HashTraits<blink::CSSPropertyID>
-    : EnumHashTraits<blink::CSSPropertyID,
-                     blink::CSSPropertyID::kInvalid,
-                     blink::kNumCSSPropertyIDs> {};
-}  // namespace WTF
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_NAMES_H_

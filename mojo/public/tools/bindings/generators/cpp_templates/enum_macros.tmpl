@@ -133,26 +133,6 @@ struct hash<{{enum_name}}>
     : public mojo::internal::EnumHashImpl<{{enum_name}}> {};
 {%- endmacro %}
 
-{%- macro enum_hash_blink(enum) %}
-{%-   set enum_name = enum|get_qualified_name_for_kind(
-          flatten_nested_kind=True, include_variant=False) %}
-{#    We need two unused enum values: #}
-{%-   set empty_value = -1000000 %}
-{%-   set deleted_value = -1000001 %}
-{%-   set empty_value_unused = "false" if empty_value in enum|all_enum_values else "true" %}
-{%-   set deleted_value_unused = "false" if empty_value in enum|all_enum_values else "true" %}
-namespace WTF {
-template <>
-struct HashTraits<{{enum_name}}>
-    : EnumHashTraits<{{enum_name}}, {{empty_value}}, {{deleted_value}}> {
-  static_assert({{empty_value_unused}},
-                "{{empty_value}} is a reserved enum value");
-  static_assert({{deleted_value_unused}},
-                "{{deleted_value}} is a reserved enum value");
-};
-}  // namespace WTF
-{%- endmacro %}
-
 {%- macro enum_trace_format_traits_decl(enum, export_attributes) -%}
 {%-   set enum_name = enum|get_qualified_name_for_kind(
           flatten_nested_kind=True) %}
