@@ -29,7 +29,7 @@ class DisplayOverlayController;
 //
 // View looks like this:
 // +----------------------------------+
-// ||icon|  |"Button options"|  |icon||
+// ||"Button options"|          |icon||
 // |----------------------------------|
 // ||"Key assignment"|                |
 // |----------------------------------|
@@ -39,8 +39,8 @@ class DisplayOverlayController;
 // ||"Selected key"       |key labels||
 // ||"key"                            |
 // |----------------------------------|
-// ||"Button label"                 > |
-// ||"Unassigned"                     |
+// -----------------------------------|
+// ||         Delete button          ||
 // +----------------------------------+
 class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
  public:
@@ -64,9 +64,10 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   void AddEditTitle();
   void AddActionEdit();
   void AddActionSelection();
+  void AddDeleteButton();
 
   // Functions related to buttons.
-  void OnTrashButtonPressed();
+  void OnDeleteButtonPressed();
   void OnDoneButtonPressed();
   void OnButtonLabelAssignmentPressed();
 

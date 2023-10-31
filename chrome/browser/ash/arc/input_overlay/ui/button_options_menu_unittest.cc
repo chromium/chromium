@@ -69,9 +69,9 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
 
   bool IsEditingListInZeroState() { return editing_list_->is_zero_state_; }
 
-  void PressTrashButton(ButtonOptionsMenu* menu) {
+  void PressDeleteButton(ButtonOptionsMenu* menu) {
     DCHECK(menu);
-    menu->OnTrashButtonPressed();
+    menu->OnDeleteButtonPressed();
   }
 
   ActionType GetActionType(ButtonOptionsMenu* menu) {
@@ -159,7 +159,7 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
 
   // Remove Action Tap.
   auto* menu = ShowButtonOptionsMenu(tap_action_);
-  PressTrashButton(menu);
+  PressDeleteButton(menu);
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
@@ -173,7 +173,7 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
 
   // Remove Action Move.
   menu = ShowButtonOptionsMenu(move_action_);
-  PressTrashButton(menu);
+  PressDeleteButton(menu);
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
@@ -187,7 +187,7 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
 
   // Remove Action Move.
   menu = ShowButtonOptionsMenu(tap_action_two_);
-  PressTrashButton(menu);
+  PressDeleteButton(menu);
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
