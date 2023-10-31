@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
@@ -34,7 +35,7 @@ class MEDIA_EXPORT AAC {
   // The function will parse the data and get the ElementaryStreamDescriptor,
   // then it will parse the ElementaryStreamDescriptor to get audio stream
   // configurations.
-  bool Parse(const std::vector<uint8_t>& data, MediaLog* media_log);
+  bool Parse(base::span<const uint8_t> data, MediaLog* media_log);
 
   // Gets the output sample rate for the AAC stream.
   // |sbr_in_mimetype| should be set to true if the SBR mode is
@@ -58,6 +59,14 @@ class MEDIA_EXPORT AAC {
   bool ConvertEsdsToADTS(std::vector<uint8_t>* buffer,
                          int* adts_header_size) const;
 
+  // Converts a raw AAC frame into an AAC frame with an ADTS header. Allocates
+  // new memory and copies the data from `buffer`, with the appropriate ADTS
+  // header. The size of the returned array is `buffer.size` +
+  // `adts_header_size`. Returns nullptr on failure.
+  std::unique_ptr<uint8_t[]> CreateAdtsFromEsds(
+      base::span<const uint8_t> buffer,
+      int* adts_header_size);
+
   // If known, returns the AudioCodecProfile.
   AudioCodecProfile GetProfile() const;
 
@@ -70,6 +79,9 @@ class MEDIA_EXPORT AAC {
   bool SkipDecoderGASpecificConfig(BitReader* bit_reader) const;
   bool SkipErrorSpecificConfig() const;
   bool SkipGASpecificConfig(BitReader* bit_reader) const;
+
+  // Sets the ADTS header into the given span.
+  void SetAdtsHeader(base::span<uint8_t> adts, size_t total_size) const;
 
   // The following variables store the AAC specific configuration information
   // that are used to generate the ADTS header.
