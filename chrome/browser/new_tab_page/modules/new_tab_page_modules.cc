@@ -34,11 +34,8 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
 
   if (IsHistoryClustersModuleEnabled() &&
       base::FeatureList::IsEnabled(page_image_service::kImageService)) {
-    details.emplace_back(
-        "history_clusters",
-        base::FeatureList::IsEnabled(history_clusters::kRenameJourneys)
-            ? IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT
-            : IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL);
+    details.emplace_back("history_clusters",
+                         IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT);
   }
 
   if (IsRecipeTasksModuleEnabled()) {

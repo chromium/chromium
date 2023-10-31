@@ -239,7 +239,7 @@ class NewTabPageModulesHistoryClustersModuleTest
   NewTabPageModulesHistoryClustersModuleTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ntp_features::kNtpHistoryClustersModule},
-        /*disabled_features=*/{history_clusters::kRenameJourneys});
+        /*disabled_features=*/{});
   }
 
  private:
