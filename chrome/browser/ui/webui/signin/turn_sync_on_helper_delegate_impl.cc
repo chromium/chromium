@@ -230,9 +230,8 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
                                OnProfileSigninRestrictionsFetched,
                            weak_ptr_factory_.GetWeakPtr(), account_info,
                            std::move(callback)),
-            std::make_unique<std::string>(
-                browser_->profile()->GetPrefs()->GetString(
-                    prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage)));
+            browser_->profile()->GetPrefs()->GetString(
+                prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage));
     return;
   }
 #endif

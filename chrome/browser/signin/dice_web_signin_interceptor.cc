@@ -1047,8 +1047,8 @@ void DiceWebSigninInterceptor::
   account_level_signin_restriction_policy_fetcher_
       ->GetManagedAccountsSigninRestriction(
           identity_manager_, account_info.account_id, std::move(callback),
-          std::make_unique<std::string>(profile_->GetPrefs()->GetString(
-              prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage)));
+          profile_->GetPrefs()->GetString(
+              prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage));
 }
 
 void DiceWebSigninInterceptor::

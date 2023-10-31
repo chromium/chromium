@@ -255,10 +255,10 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsValueForTesting) {
           [&policies](const policy::ProfileSeparationPolicies& res) {
             policies = res;
           }),
-      std::make_unique<std::string>(R"(
+      R"(
         {"policyValue": "none",
          "profileSeparationSettings": 2,
-         "profileSeparationDataMigrationSettings": 3})"));
+         "profileSeparationDataMigrationSettings": 3})");
 
   base::RunLoop().RunUntilIdle();
 
@@ -294,7 +294,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
           [&policies](const policy::ProfileSeparationPolicies& res) {
             policies = res;
           }),
-      std::make_unique<std::string>(std::string()));
+      std::string());
 
   base::RunLoop().RunUntilIdle();
 
