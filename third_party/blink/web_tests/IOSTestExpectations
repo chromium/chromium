@@ -33,15 +33,11 @@ crbug.com/1421239 [ iOS16-simulator ] accessibility/select-option-click.html [ S
 crbug.com/1421239 [ iOS16-simulator ] compositing/overflow/update-widget-positions-on-nested-frames-and-scrollers.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS16-simulator ] compositing/transitions/transform-on-large-layer.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS16-simulator ] css3/viewport-percentage-lengths/viewport-percentage-lengths-resize.html [ Skip Timeout ]
-crbug.com/1421239 [ iOS16-simulator ] editing/input/edit-context-dom-mutation.html [ Skip Timeout ]
-crbug.com/1421239 [ iOS16-simulator ] editing/input/edit-context.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS16-simulator ] external/wpt/clipboard-apis/detached-iframe/write-read-on-detached-iframe.https.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS16-simulator ] external/wpt/clipboard-apis/detached-iframe/writeText-readText-on-detached-iframe.https.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS16-simulator ] external/wpt/css/CSS2/floats/float-nowrap-3-ref.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS16-simulator ] external/wpt/css/css-contain/content-visibility/content-visibility-033.sub.https.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS16-simulator ] external/wpt/dom/events/scrolling/scrollend-event-fires-to-iframe-window.html [ Skip Timeout ]
-crbug.com/1421239 [ iOS16-simulator ] external/wpt/editing/edit-context/edit-context-inheritability.tentative.html [ Skip Timeout ]
-crbug.com/1421239 [ iOS16-simulator ] external/wpt/editing/edit-context/edit-context-input.tentative.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS16-simulator ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS16-simulator ] external/wpt/html/browsers/browsing-the-web/read-media/pageload-video.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS16-simulator ] external/wpt/html/semantics/embedded-content/the-embed-element/embed-change-src.html [ Skip Timeout ]
@@ -402,7 +398,7 @@ crbug.com/1432082 [ iOS16-simulator ] wpt_internal/printing/icb-scaling-001-prin
 crbug.com/1432082 [ iOS16-simulator ] wpt_internal/printing/icb-scaling-002-print.html [ Skip Crash ]
 crbug.com/1432082 [ iOS16-simulator ] wpt_internal/printing/icb-scaling-003-print.html [ Skip Crash ]
 
-# Needs rebaseline.
+# Popup tests need rebaseline.
 crbug.com/1496147 [ iOS16-simulator ] fast/forms/color-scheme/select/select-appearance-after-closing-popup.html [ Failure ]
 crbug.com/1496147 [ iOS16-simulator ] fast/forms/select/menulist-popup-type-ahead-style-change.html [ Failure ]
 crbug.com/1496147 [ iOS16-simulator ] fast/forms/select/menulist-update-text-popup.html [ Failure ]

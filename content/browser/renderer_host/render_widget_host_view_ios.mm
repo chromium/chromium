@@ -104,7 +104,8 @@ bool IsTesting() {
     // policy is manual.
     if (state.last_vk_visibility_request ==
         ui::mojom::VirtualKeyboardVisibilityRequest::SHOW) {
-      [self showKeyboard:!state.value->empty() withBounds:bounds];
+      [self showKeyboard:(state.value && !state.value->empty())
+              withBounds:bounds];
     } else if (state.last_vk_visibility_request ==
                ui::mojom::VirtualKeyboardVisibilityRequest::HIDE) {
       [self hideKeyboard];
@@ -116,7 +117,8 @@ bool IsTesting() {
     if (hide) {
       [self hideKeyboard];
     } else if (state.show_ime_if_needed) {
-      [self showKeyboard:!state.value->empty() withBounds:bounds];
+      [self showKeyboard:(state.value && !state.value->empty())
+              withBounds:bounds];
     }
   }
 }
