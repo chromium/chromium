@@ -798,6 +798,21 @@ def CheckDevicePolicies(input_api, output_api):
           f"Please add '{policy_name}' to device_policy_proto_map.yaml and map "
           "it to the corresponding field in chrome_device_policy.proto."))
 
+  # Check that the proto field is equal to the policy name for new policies
+  for policy_change in policy_changelist:
+    if ('old_policy' in policy_change and
+        policy_change['old_policy'] is not None):
+      # Ignore existing policies
+      continue
+    policy_name = policy_change['policy']
+
+    field_name = policy_name + ".value"
+
+    if proto_map[policy_name] != field_name:
+      results.append(output_api.PresubmitError(
+        f"The proto field in chrome_device_policy.proto for '{policy_name}' "
+        "must equal the policy name itself."))
+
   # Check external data max size
   total_device_policy_external_data_max_size = 0
   for policy in policy_definitions:
