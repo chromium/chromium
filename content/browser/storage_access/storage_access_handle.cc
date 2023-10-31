@@ -29,8 +29,11 @@ void StorageAccessHandle::Create(
           ->GetPermissionStatusForCurrentDocument(
               blink::PermissionType::STORAGE_ACCESS_GRANT, host);
   if (status != blink::mojom::PermissionStatus::GRANTED) {
-    // TODO(crbug.com/1484966): Consider using ReportBadMessage once we have
-    // a better sense of race conditions and general stability here.
+#if DCHECK_IS_ON()
+    mojo::ReportBadMessage(
+        "Binding a StorageAccessHandle requires the STORAGE_ACCESS_GRANT "
+        "permission.");
+#endif
     return;
   }
   new StorageAccessHandle(*host, std::move(receiver));

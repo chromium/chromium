@@ -1566,6 +1566,7 @@ test("content_browsertests") {
     "../browser/site_per_process_unload_browsertest.cc",
     "../browser/sms/sms_browsertest.cc",
     "../browser/snapshot_browsertest.cc",
+    "../browser/storage_access/storage_access_browsertest.cc",
     "../browser/storage_partition_impl_browsertest.cc",
     "../browser/system_dns_resolution/system_dns_resolver_browsertest.cc",
     "../browser/text_fragment_browsertest.cc",
