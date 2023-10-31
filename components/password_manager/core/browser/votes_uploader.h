@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
@@ -234,10 +235,12 @@ class VotesUploader {
     generated_password_changed_ = generated_password_changed;
   }
 
-  void clear_single_username_vote_data() { single_username_vote_data_.reset(); }
+  void clear_single_username_votes_data() {
+    single_username_votes_data_.clear();
+  }
 
-  void set_single_username_vote_data(const SingleUsernameVoteData& data) {
-    single_username_vote_data_ = data;
+  void add_single_username_vote_data(const SingleUsernameVoteData& data) {
+    single_username_votes_data_.push_back(data);
   }
 
   void set_suggested_username(const std::u16string& suggested_username) {
@@ -287,6 +290,8 @@ class VotesUploader {
       const SingleUsernameVoteData& single_username,
       autofill::ServerFieldTypeSet* available_field_types,
       autofill::FormSignature form_signature,
+      autofill::IsMostRecentSingleUsernameCandidate
+          is_most_recent_single_username_candidate,
       bool is_forgot_password_vote);
 
   // On username first flow votes are uploaded both for the single username form
@@ -307,6 +312,10 @@ class VotesUploader {
                               const std::u16string& potential_username);
 
   // Attempts to send a vote for a single username form.
+  // `is_most_recent_single_username_candidate` specifies whether the single
+  // username is the most recent field outside of the password form that was
+  // modified by the user. Set to `std::nullopt` if vote is on a forgot
+  // password form.
   // `is_forgot_password_form` specifies whether the form is considered to be a
   // part of a username first or a forgot password flow:
   // 1) When it's true, SINGLE_USERNAME_FORGOT_PASSWORD & NOT_USERNAME can be
@@ -316,6 +325,8 @@ class VotesUploader {
   bool MaybeSendSingleUsernameVote(
       const SingleUsernameVoteData& single_username,
       const FormPredictions& predictions,
+      autofill::IsMostRecentSingleUsernameCandidate
+          is_most_recent_single_username_candidate,
       bool is_forgot_password_vote);
 
   // The client which implements embedder-specific PasswordManager operations.
@@ -365,7 +376,7 @@ class VotesUploader {
   // The data for voting on potential single username form for the username
   // first flow. Populated when the password form, that follows single username
   // form, is submitted.
-  absl::optional<SingleUsernameVoteData> single_username_vote_data_;
+  std::vector<SingleUsernameVoteData> single_username_votes_data_;
 
   // The username that is suggested in a save/update prompt. The user might
   // modify it in the prompt before saving.

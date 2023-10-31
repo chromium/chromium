@@ -23,6 +23,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -4617,6 +4618,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameVoteType) {
   FormStructure form_structure(form);
   form_structure.field(0)->set_single_username_vote_type(
       AutofillUploadContents::Field::STRONG);
+  form_structure.field(0)->set_is_most_recent_single_username_candidate(
+      IsMostRecentSingleUsernameCandidate::kMostRecentCandidate);
   for (auto& fs_field : form_structure)
     fs_field->host_form_signature = form_structure.form_signature();
 
@@ -4628,6 +4631,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameVoteType) {
   ASSERT_EQ(1u, uploads.size());
   EXPECT_EQ(form_structure.field(0)->single_username_vote_type(),
             uploads.front().field(0).single_username_vote_type());
+  EXPECT_TRUE(
+      uploads.front().field(0).is_most_recent_single_username_candidate());
 }
 
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameData) {

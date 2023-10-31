@@ -1499,6 +1499,16 @@ void FormStructure::EncodeFormFieldsForUpload(
       added_field->set_single_username_vote_type(
           field->single_username_vote_type().value());
     }
+    switch (field->is_most_recent_single_username_candidate()) {
+      case IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow:
+        added_field->clear_is_most_recent_single_username_candidate();
+        break;
+      case IsMostRecentSingleUsernameCandidate::kHasIntermediateValuesInBetween:
+        added_field->set_is_most_recent_single_username_candidate(false);
+        break;
+      case IsMostRecentSingleUsernameCandidate::kMostRecentCandidate:
+        added_field->set_is_most_recent_single_username_candidate(true);
+    }
   }
 }
 
