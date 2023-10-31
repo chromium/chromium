@@ -1,0 +1,15 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting;
+
+// Used when a service API returns ::google::protobuf::Empty. We would
+// typically just use ::google::protobuf::Empty directly however it does not
+// derive from MessageLite so there is an interop problem between classes which
+// expect a MessageLite instance and those which return the real 'Empty' proto.
+message Empty {}

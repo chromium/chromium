@@ -16,6 +16,7 @@ proto_library("proto") {
     "action.proto",
     "audio.proto",
     "control.proto",
+    "empty.proto",
     "event.proto",
     "file_transfer.proto",
     "internal.proto",

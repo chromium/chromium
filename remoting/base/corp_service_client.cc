@@ -64,12 +64,7 @@ void CorpServiceClient::ProvisionCorpMachine(
             "remote access."
           destination: GOOGLE_OWNED_SERVICE
           internal {
-            contacts { email: "garykac@chromium.org" }
-            contacts { email: "jamiewalch@chromium.org" }
-            contacts { email: "joedow@chromium.org" }
-            contacts { email: "lambroslambrou@chromium.org" }
-            contacts { email: "rkjnsn@chromium.org" }
-            contacts { email: "yuweih@chromium.org" }
+            contacts { owners: "//remoting/OWNERS" }
           }
           last_reviewed: "2023-10-17"
         }
@@ -86,6 +81,48 @@ void CorpServiceClient::ProvisionCorpMachine(
                  internal::GetMachineProvisioningRequest(
                      owner_email, fqdn, public_key, existing_host_id),
                  std::move(callback));
+}
+
+void CorpServiceClient::ReportProvisioningError(
+    const std::string& host_id,
+    const std::string& error_message,
+    ReportProvisioningErrorCallback callback) {
+  constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("remoting_report_provisioning_error",
+                                          R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Reports an error during the machine provisioning process to the "
+            "Chrome Remote Desktop directory server."
+          trigger:
+            "User runs the start-host tool with the corp-user flag and an "
+            "error occurs which prevents the machine from coming online. Note "
+            "that this functionality is not available outside of the corp "
+            "network so external users will never see this request being made."
+          user_data {
+            type: OTHER
+          }
+          data:
+            "The host id and an error message/reason why provisioning failed."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { owners: "//remoting/OWNERS" }
+          }
+          last_reviewed: "2023-10-27"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the start-host utility is not run with the corp-user flag."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+  ExecuteRequest(
+      traffic_annotation, internal::GetReportProvisioningErrorRequestPath(),
+      internal::GetReportProvisioningErrorRequest(host_id, error_message),
+      std::move(callback));
 }
 
 void CorpServiceClient::CancelPendingRequests() {
