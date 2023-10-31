@@ -19,6 +19,7 @@ ts_library("build_ts") {
     "cr_policy_indicator_behavior_test.ts",
     "cr_policy_strings.ts",
     "cr_scrollable_behavior_test.ts",
+    "cr_test.js",
     "fake_method_resolver_test.js",
     "fake_observables_test.js",
     "i18n_behavior_test.js",
@@ -47,7 +48,10 @@ generate_grd("build_grdp") {
   grd_prefix = "webui_chromeos_ash_common"
   out_grd = "$target_gen_dir/resources.grdp"
 
-  input_files = [ "post_message_api/iframe.html" ]
+  input_files = [
+    "post_message_api/iframe.html",
+    "cr_test.html",
+  ]
   input_files_base_dir = rebase_path(".", "//")
 
   deps = [ ":build_ts" ]

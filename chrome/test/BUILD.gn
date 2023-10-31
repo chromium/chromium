@@ -2947,7 +2947,6 @@ if (!is_android) {
         "base/ash/web_ui_browser_test_browsertest.cc",
         "data/webui/async_gen.cc",
         "data/webui/async_gen.h",
-        "data/webui/chromeos/webui_resource_browsertest.cc",
       ]
       deps += [
         "//ash/webui/system_apps/public:system_web_app_type",

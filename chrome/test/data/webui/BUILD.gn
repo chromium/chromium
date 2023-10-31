@@ -99,6 +99,7 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     sources += [
+      "chromeos/ash_common/webui_resource_browsertest.cc",
       "chromeos/enterprise_reporting/enterprise_reporting_browsertest.cc",
       "chromeos/personalization_app/personalization_app_browsertest.cc",
     ]
