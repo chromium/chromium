@@ -13,6 +13,36 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace {
+bool LanguageSupportsTranslate(translate::TranslateLanguageInfo language) {
+  // The language must be marked as translatable.
+  if (!language.supports_translate) {
+    return false;
+  }
+
+  if (language.code == "zh-CN" || language.code == "zh-TW") {
+    // In Translate, general Chinese is not used, and the sub code is
+    // necessary as a language code for the Translate server.
+    return true;
+  }
+
+  if (language.code == "mni-Mtei") {
+    // Translate uses the Meitei Mayek script for Manipuri.
+    return true;
+  }
+
+  const auto& base_language = l10n_util::GetLanguage(language.code);
+  if (base_language == "nb") {
+    // Norwegian Bokmål (nb) is listed as supporting translate but the
+    // Translate server only supports Norwegian (no).
+    return false;
+  }
+
+  // For all other languages only base languages are supported.
+  return language.code == base_language;
+}
+}  // namespace
+
 LiveTranslateComboboxModel::LiveTranslateComboboxModel(Profile* profile)
     : profile_(profile) {
   std::vector<translate::TranslateLanguageInfo> language_list;
@@ -20,8 +50,7 @@ LiveTranslateComboboxModel::LiveTranslateComboboxModel(Profile* profile)
       g_browser_process->GetApplicationLocale(), true, &language_list);
 
   for (const auto& language : language_list) {
-    if (language.supports_translate &&
-        language.code == l10n_util::GetLanguage(language.code)) {
+    if (LanguageSupportsTranslate(language)) {
       languages_.push_back(language);
     }
   }
