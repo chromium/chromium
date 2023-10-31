@@ -486,9 +486,7 @@ void ChipController::HideChip() {
 
 void ChipController::OpenPermissionPromptBubble() {
   DCHECK(!IsBubbleShowing());
-  if (!permission_prompt_model_ ||
-      !permission_prompt_model_->GetDelegate().get() ||
-      permission_prompt_model_->GetDelegate().WasInvalidated()) {
+  if (!permission_prompt_model_ || !permission_prompt_model_->GetDelegate()) {
     return;
   }
 
@@ -565,7 +563,7 @@ void ChipController::OnPromptBubbleDismissed() {
   if (!permission_prompt_model_)
     return;
 
-  if (permission_prompt_model_->GetDelegate().get()) {
+  if (permission_prompt_model_->GetDelegate()) {
     permission_prompt_model_->GetDelegate()->SetDismissOnTabClose();
     // If the permission prompt bubble is closed, we count it as "Dismissed",
     // hence it should record the time when the bubble is closed.
