@@ -170,6 +170,10 @@ class SequenceInformationDictionaryBuilder {
   static std::string_view GetPriorityPath();
 #if BUILDFLAG(IS_CHROMEOS)
   static std::string_view GetGenerationGuidPath();
+
+  // Returns true if a generation guid is required for this device or browser.
+  // Returns false otherwise.
+  static bool GenerationGuidIsRequired();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:

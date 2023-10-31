@@ -126,6 +126,55 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 };
 
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(RecordUploadRequestBuilderTest,
+       GenerationGuidNotRequiredForManagedBrowsersOnNonChromeOSDevices) {
+  // Set up as CBCM enrolled browser on non-ChromeOS device.
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  ASSERT_THAT(
+      policy::ManagementServiceFactory::GetForPlatform()->IsBrowserManaged(),
+      Eq(true));
+
+  SequenceInformation sequence_info;
+  sequence_info.set_generation_id(12345678);
+  sequence_info.set_priority(IMMEDIATE);
+  sequence_info.set_sequencing_id(0);
+  EXPECT_THAT(
+      SequenceInformationDictionaryBuilder(sequence_info).Build().has_value(),
+      Eq(true));
+}
+#endif  // BUILDFLAG(!IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(RecordUploadRequestBuilderTest,
+       GenerationGuidRequiredForUnmanagedChromeOSDevices) {
+  // Set up as an unmanaged ChromeOS device.
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::NONE);
+
+  ASSERT_THAT(
+      policy::ManagementServiceFactory::GetForPlatform()->IsBrowserManaged(),
+      Eq(false));
+
+  EXPECT_THAT(SequenceInformationDictionaryBuilder::GenerationGuidIsRequired(),
+              Eq(true));
+
+  SequenceInformation sequence_info;
+  sequence_info.set_generation_id(12345678);
+  sequence_info.set_priority(IMMEDIATE);
+  sequence_info.set_sequencing_id(0);
+
+  EXPECT_THAT(SequenceInformationDictionaryBuilder(sequence_info).Build(),
+              Eq(absl::nullopt));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
   static constexpr size_t kNumRecords = 10;
 
