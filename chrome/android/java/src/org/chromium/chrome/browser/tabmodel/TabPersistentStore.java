@@ -1490,6 +1490,7 @@ public class TabPersistentStore {
                     }
                 });
         performPersistedTabDataMaintenance(null);
+        TabStateFileManager.cleanupUnusedFiles(getStateDirectory());
     }
 
     @VisibleForTesting

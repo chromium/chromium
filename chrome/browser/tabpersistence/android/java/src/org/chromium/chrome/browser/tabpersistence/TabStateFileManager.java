@@ -522,6 +522,33 @@ public class TabStateFileManager {
     }
 
     /**
+     * Cleanup FlatBuffer files while the experiment is turned off. This ensures when the user
+     * re-enters the FlatBuffer migration experiment we don't attempt to restore their Tabs using
+     * out of date FlatBuffer files.
+     *
+     * @param stateDirectory directory where TabState files are saved.
+     */
+    public static void cleanupUnusedFiles(File stateDirectory) {
+        if (isFlatBufferSchemaEnabled()) {
+            return;
+        }
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    ThreadUtils.assertOnBackgroundThread();
+                    deleteFlatBufferFiles(stateDirectory);
+                });
+    }
+
+    private static void deleteFlatBufferFiles(File stateDirectory) {
+        for (File file : stateDirectory.listFiles()) {
+            if (file.getName().startsWith(FLATBUFFER_PREFIX) && !file.delete()) {
+                Log.e(TAG, "Failed to delete FlatBuffer TabState: " + file);
+            }
+        }
+    }
+
+    /**
      * Parse the tab id and whether the tab is incognito from the tab state filename.
      * @param name The given filename for the tab state file.
      * @return A {@link Pair} with tab id and incognito state read from the filename.

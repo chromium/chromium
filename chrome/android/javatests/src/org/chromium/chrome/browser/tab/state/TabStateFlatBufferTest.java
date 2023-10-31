@@ -17,6 +17,11 @@ import org.mockito.Mock;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Matchers;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -33,8 +38,13 @@ import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** Test relating to FlatBuffer portion of {@link TabStateFileManager} */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -83,6 +93,67 @@ public class TabStateFlatBufferTest {
         verifyTabStateResult(restoredTabState, state);
     }
 
+    @Test
+    @LargeTest
+    @DisableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    public void testFlatBufferCleanup() throws IOException, TimeoutException, ExecutionException {
+        List<File> flatBufferFiles = new ArrayList<>();
+        List<File> legacyHandWrittenFiles = new ArrayList<>();
+        for (int tabId = 0; tabId < 4; tabId++) {
+            legacyHandWrittenFiles.add(
+                    getLegacyTestFile(
+                            tabId,
+                            /** isEncrypted = */
+                            tabId % 2 == 0));
+            flatBufferFiles.add(
+                    getTestFile(
+                            tabId,
+                            /** isEncrypted = */
+                            tabId % 2 == 0));
+        }
+
+        for (int tabId = 0; tabId < 4; tabId++) {
+            TabState tabState =
+                    getTestTabState(
+                            /** isIncognito */
+                            tabId % 2 == 0);
+            TabStateFileManager.saveStateInternal(
+                    legacyHandWrittenFiles.get(tabId),
+                    tabState,
+                    /** encrypted = */
+                    tabId % 2 == 0);
+            TabStateFileManager.saveStateInternal(
+                    flatBufferFiles.get(tabId),
+                    tabState,
+                    /** encrypted = */
+                    tabId % 2 == 0);
+        }
+        for (File file :
+                Stream.concat(legacyHandWrittenFiles.stream(), flatBufferFiles.stream())
+                        .collect(Collectors.toList())) {
+            Assert.assertTrue("File " + file + " should exist.", file.exists());
+        }
+        TabStateFileManager.cleanupUnusedFiles(flatBufferFiles.get(0).getParentFile());
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    for (File file : flatBufferFiles) {
+                        Criteria.checkThat(
+                                "File " + file + " should no longer exist.",
+                                file.exists(),
+                                Matchers.is(false));
+                    }
+                });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    for (File file : legacyHandWrittenFiles) {
+                        Criteria.checkThat(
+                                "File " + file + " should still exist.",
+                                file.exists(),
+                                Matchers.is(true));
+                    }
+                });
+    }
+
     private static TabState getTestTabState(boolean isIncognito) throws ExecutionException {
         TabState state = new TabState();
         state.parentId = 4;
@@ -102,6 +173,16 @@ public class TabStateFlatBufferTest {
         return state;
     }
 
+    private File getLegacyTestFile(int tabId, boolean isEncrypted) throws IOException {
+        String filePrefix;
+        if (isEncrypted) {
+            filePrefix = TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX_INCOGNITO;
+        } else {
+            filePrefix = TabStateFileManager.SAVED_TAB_STATE_FILE_PREFIX;
+        }
+        return temporaryFolder.newFile(String.format(Locale.US, "%s%d", filePrefix, tabId));
+    }
+
     private File getTestFile(int tabId, boolean isEncrypted) throws IOException {
         String filePrefix;
         if (isEncrypted) {
@@ -111,6 +192,7 @@ public class TabStateFlatBufferTest {
         }
         return temporaryFolder.newFile(String.format(Locale.US, "%s%d", filePrefix, tabId));
     }
+
 
     private static void verifyTabStateResult(TabState actual, TabState expected) {
         Assert.assertNotNull(expected);
