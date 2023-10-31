@@ -73,6 +73,37 @@ class PageNodeImpl
 
   ~PageNodeImpl() override;
 
+  // Partial PageNode implementation:
+  const std::string& GetBrowserContextID() const override;
+  resource_attribution::PageContext GetResourceContext() const override;
+  EmbeddingType GetEmbeddingType() const override;
+  PageType GetType() const override;
+  bool IsFocused() const override;
+  bool IsVisible() const override;
+  base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
+  bool IsAudible() const override;
+  absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
+      const override;
+  bool HasPictureInPicture() const override;
+  LoadingState GetLoadingState() const override;
+  ukm::SourceId GetUkmSourceID() const override;
+  LifecycleState GetLifecycleState() const override;
+  bool IsHoldingWebLock() const override;
+  bool IsHoldingIndexedDBLock() const override;
+  int64_t GetNavigationID() const override;
+  const std::string& GetContentsMimeType() const override;
+  base::TimeDelta GetTimeSinceLastNavigation() const override;
+  const GURL& GetMainFrameUrl() const override;
+  uint64_t EstimateMainFramePrivateFootprintSize() const override;
+  bool HadFormInteraction() const override;
+  bool HadUserEdits() const override;
+  const WebContentsProxy& GetContentsProxy() const override;
+  const absl::optional<freezing::FreezingVote>& GetFreezingVote()
+      const override;
+  PageState GetPageState() const override;
+  uint64_t EstimateResidentSetSize() const override;
+  uint64_t EstimatePrivateFootprintSize() const override;
+
   // Returns the web contents associated with this page node. It is valid to
   // call this function on any thread but the weak pointer must only be
   // dereferenced on the UI thread.
@@ -232,41 +263,12 @@ class PageNodeImpl
  private:
   friend class PageNodeImplDescriber;
 
-  // PageNode implementation.
-  PageState GetPageState() const override;
-  const std::string& GetBrowserContextID() const override;
+  // Partial PageNode implementation:
   const FrameNode* GetOpenerFrameNode() const override;
   const FrameNode* GetEmbedderFrameNode() const override;
-  resource_attribution::PageContext GetResourceContext() const override;
-  EmbeddingType GetEmbeddingType() const override;
-  PageType GetType() const override;
-  bool IsFocused() const override;
-  bool IsVisible() const override;
-  base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
-  bool HasPictureInPicture() const override;
-  bool IsAudible() const override;
-  absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
-      const override;
-  LoadingState GetLoadingState() const override;
-  ukm::SourceId GetUkmSourceID() const override;
-  LifecycleState GetLifecycleState() const override;
-  bool IsHoldingWebLock() const override;
-  bool IsHoldingIndexedDBLock() const override;
-  int64_t GetNavigationID() const override;
-  const std::string& GetContentsMimeType() const override;
-  base::TimeDelta GetTimeSinceLastNavigation() const override;
   const FrameNode* GetMainFrameNode() const override;
   bool VisitMainFrameNodes(const FrameNodeVisitor& visitor) const override;
   const base::flat_set<const FrameNode*> GetMainFrameNodes() const override;
-  const GURL& GetMainFrameUrl() const override;
-  uint64_t EstimateMainFramePrivateFootprintSize() const override;
-  bool HadFormInteraction() const override;
-  bool HadUserEdits() const override;
-  const WebContentsProxy& GetContentsProxy() const override;
-  const absl::optional<freezing::FreezingVote>& GetFreezingVote()
-      const override;
-  uint64_t EstimateResidentSetSize() const override;
-  uint64_t EstimatePrivateFootprintSize() const override;
 
   // NodeBase:
   void OnJoiningGraph() override;
