@@ -9,10 +9,10 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -33,14 +33,14 @@ class TestDohServer {
   // Configures the hostname the DoH server serves from. If not specified, the
   // server is accessed over 127.0.0.1. This determines the TLS certificate
   // used, and the hostname in `GetTemplate`.
-  void SetHostname(base::StringPiece name);
+  void SetHostname(std::string_view name);
 
   // Configures whether the server should fail all requests with an HTTP error.
   void SetFailRequests(bool fail_requests);
 
   // Adds `address` to the set of A (or AAAA, if IPv6) responses when querying
   // `name`. This is a convenience wrapper over `AddRecord`.
-  void AddAddressRecord(base::StringPiece name,
+  void AddAddressRecord(std::string_view name,
                         const IPAddress& address,
                         base::TimeDelta ttl = base::Days(1));
 
@@ -72,6 +72,11 @@ class TestDohServer {
   // Returns the number of queries served so far.
   int QueriesServed();
 
+  // Returns the number of queries so far with qnames that are subdomains of
+  // `domain`. Domains are considered subdomains of themselves. The given domain
+  // must be a valid DNS name in dotted form.
+  int QueriesServedForSubdomains(std::string_view domain);
+
   // Returns the URI template to connect to this server. The server's listening
   // port must have been allocated with `Start` or `InitializeAndListen` before
   // calling this function.
@@ -94,6 +99,8 @@ class TestDohServer {
   std::multimap<std::pair<std::string, uint16_t>, DnsResourceRecord> records_
       GUARDED_BY(lock_);
   int queries_served_ GUARDED_BY(lock_) = 0;
+  // Contains qnames parsed from queries.
+  std::vector<std::string> query_qnames_ GUARDED_BY(lock_);
   EmbeddedTestServer server_{EmbeddedTestServer::TYPE_HTTPS};
 };
 
