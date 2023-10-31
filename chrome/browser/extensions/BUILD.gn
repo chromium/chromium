@@ -1127,6 +1127,8 @@ static_library("extensions") {
     sources += [
       "api/crash_report_private/crash_report_private_api.cc",
       "api/crash_report_private/crash_report_private_api.h",
+      "api/enterprise_kiosk_input/enterprise_kiosk_input_api.cc",
+      "api/enterprise_kiosk_input/enterprise_kiosk_input_api.h",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.cc",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.h",
       "api/file_handlers/non_native_file_system_delegate_chromeos.cc",

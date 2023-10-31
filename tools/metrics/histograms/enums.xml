@@ -38159,6 +38159,7 @@ Called by update_extension_histograms.py.-->
   <int value="1837"
       label="OS_DIAGNOSTICS_ISVOLUMEBUTTONROUTINEARGUMENTSUPPORTED"/>
   <int value="1838" label="USERSCRIPTS_CONFIGUREWORLD"/>
+  <int value="1839" label="ENTERPRISE_KIOSKINPUT_SETCURRENTINPUTMETHOD"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -38793,6 +38794,7 @@ Called by update_extension_permission.py.-->
   <int value="252" label="kAccessibilityServicePrivate"/>
   <int value="253" label="kUserScripts"/>
   <int value="254" label="kChromeOSBluetoothPeripheralsInfo"/>
+  <int value="255" label="kEnterpriseKioskInput"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

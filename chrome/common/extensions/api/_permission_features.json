@@ -289,6 +289,16 @@
     "extension_types": ["extension"],
     "location": "policy"
   },
+  "enterprise.kioskInput": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"],
+    "location": "policy",
+    // TODO(b/303379531): Add support for Lacros
+    "platforms": ["chromeos"],
+    "session_types": ["kiosk"],
+    // TODO(b/307230150): Clean up API flag
+    "feature_flag": "ApiEnterpriseKioskInput"
+  },
   "enterprise.platformKeys": [{
     "channel": "stable",
     "platforms": ["chromeos", "lacros"],

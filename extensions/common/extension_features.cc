@@ -11,6 +11,11 @@ namespace extensions_features {
 // API Features
 ///////////////////////////////////////////////////////////////////////////////
 
+// Controls the availability of the enterprise.kioskInput API.
+BASE_FEATURE(kApiEnterpriseKioskInput,
+             "ApiEnterpriseKioskInput",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls the availability of the ReadingList API.
 BASE_FEATURE(kApiReadingList,
              "ApiReadingList",

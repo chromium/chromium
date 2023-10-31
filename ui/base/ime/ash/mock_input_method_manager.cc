@@ -194,6 +194,11 @@ bool MockInputMethodManager::IsLoginKeyboard(const std::string& layout) const {
   return true;
 }
 
+std::string MockInputMethodManager::GetMigratedInputMethodID(
+    const std::string& input_method_id) {
+  return "";
+}
+
 bool MockInputMethodManager::MigrateInputMethods(
     std::vector<std::string>* input_method_ids) {
   return false;

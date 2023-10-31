@@ -4325,6 +4325,7 @@ if (!is_android) {
         "../browser/ash/login/app_mode/test/kiosk_consumer_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_device_owned_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_enterprise_browsertest.cc",
+        "../browser/ash/login/app_mode/test/kiosk_enterprise_input_api_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_remote_command_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_sku_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_update_browsertest.cc",
@@ -9098,6 +9099,7 @@ test("unit_tests") {
     if (is_chromeos_ash) {
       sources += [
         "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api_ash_unittest.cc",
+        "../browser/extensions/api/enterprise_kiosk_input/enterprise_kiosk_input_unittest.cc",
         "../browser/extensions/api/file_system/consent_provider_unittest.cc",
         "../browser/extensions/api/image_writer_private/removable_storage_provider_chromeos_unittest.cc",
         "../browser/extensions/api/quick_unlock_private/quick_unlock_private_api_unittest.cc",

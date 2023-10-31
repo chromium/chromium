@@ -918,6 +918,11 @@ bool InputMethodManagerImpl::IsLoginKeyboard(
   return util_.IsLoginKeyboard(layout);
 }
 
+std::string InputMethodManagerImpl::GetMigratedInputMethodID(
+    const std::string& input_method_id) {
+  return util_.MigrateInputMethod(input_method_id);
+}
+
 bool InputMethodManagerImpl::MigrateInputMethods(
     std::vector<std::string>* input_method_ids) {
   return util_.MigrateInputMethods(input_method_ids);

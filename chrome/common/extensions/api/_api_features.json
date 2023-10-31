@@ -397,6 +397,10 @@
     "dependencies": ["permission:enterprise.deviceAttributes"],
     "contexts": ["blessed_extension"]
   },
+  "enterprise.kioskInput": {
+    "dependencies": ["permission:enterprise.kioskInput"],
+    "contexts": ["blessed_extension"]
+  },
   "enterprise.networkingAttributes": {
     "dependencies": ["permission:enterprise.networkingAttributes"],
     "contexts": ["blessed_extension"]

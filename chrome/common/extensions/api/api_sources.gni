@@ -110,6 +110,7 @@ if (is_chromeos) {
 if (is_chromeos_ash) {
   schema_sources_ += [
     "accessibility_private.json",
+    "enterprise_kiosk_input.idl",
     "enterprise_platform_keys_private.json",
     "file_manager_private.idl",
     "file_manager_private_internal.idl",

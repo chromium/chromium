@@ -338,7 +338,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
   // If keyboard layout can be uset at login screen
   virtual bool IsLoginKeyboard(const std::string& layout) const = 0;
 
-  // Migrates the input method id to extension-based input method id.
+  // Returns an extension-based input method id if |input_method_id| is a valid
+  // engine id. Otherwise, returns |input_method_id|.
+  virtual std::string GetMigratedInputMethodID(
+      const std::string& input_method_id) = 0;
+
+  // Migrates the input method ids to extension-based input method ids.
   virtual bool MigrateInputMethods(
       std::vector<std::string>* input_method_ids) = 0;
 
