@@ -8,7 +8,7 @@
 
 BASE_FEATURE(kPostRestoreDefaultBrowserPromo,
              "PostRestoreDefaultBrowserPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPostRestoreDefaultBrowserPromoHalfscreenParam[] =
     "post-restore-default-browser-promo-halfscreen";
