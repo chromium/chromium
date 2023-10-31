@@ -500,11 +500,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
         "ProfilePicker.FirstRun.DefaultBrowser",
         DefaultBrowserChoice::kClickSetAsDefault, 1);
   }
-  if (WithSearchEngineChoiceStep()) {
-    histogram_tester.ExpectBucketCount(
-        search_engines::kSearchEngineChoiceScreenEventsHistogram,
-        search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
-  }
 
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   if (WithSearchEngineChoiceStep()) {

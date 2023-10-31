@@ -19,6 +19,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -154,6 +155,7 @@ TEST_P(SearchEnginesHandlerParametrizedTest,
   EXPECT_EQ("search-engines-changed", second_call_data.arg1()->GetString());
 }
 
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 TEST_P(SearchEnginesHandlerParametrizedTest,
        SettingTheDefaultSearchEngineRecordsHistogram) {
   base::Value::List first_call_args;
@@ -268,4 +270,5 @@ TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_BING, 1);
 }
+#endif
 }  // namespace settings
