@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -519,8 +520,8 @@ class PDFiumEngine : public PDFEngine,
   // Given an image `buffer` with `stride`, highlights `rect`.
   // `highlighted_rects` contains the already highlighted rectangles and will be
   // updated to include `rect` if `rect` has not already been highlighted.
-  void Highlight(void* buffer,
-                 int stride,
+  void Highlight(base::span<uint8_t> buffer,
+                 size_t stride,
                  const gfx::Rect& rect,
                  int color_red,
                  int color_green,
@@ -549,8 +550,8 @@ class PDFiumEngine : public PDFEngine,
 
   void GetRegion(const gfx::Point& location,
                  SkBitmap& image_data,
-                 void*& region,
-                 int& stride) const;
+                 base::span<uint8_t>& region,
+                 size_t& stride) const;
 
   // Called when the selection changes.
   void OnSelectionTextChanged();
