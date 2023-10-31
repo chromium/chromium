@@ -4,7 +4,7 @@
 
 import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 declare global {
   interface Window {

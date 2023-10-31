@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isMac} from 'chrome://resources/js/platform.js';
-import {$, getRequiredElement, isUndoKeyboardEvent, quoteString as quoteStringJs, quoteString} from 'chrome://resources/js/util_ts.js';
+import {$, getRequiredElement, isUndoKeyboardEvent, quoteString as quoteStringJs, quoteString} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

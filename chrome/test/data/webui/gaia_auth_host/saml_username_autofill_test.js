@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {maybeAutofillUsername} from 'chrome://chrome-signin/gaia_auth_host/saml_username_autofill.js';
-import {appendParam} from 'chrome://resources/js/util_ts.js';
+import {appendParam} from 'chrome://resources/js/util.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 const IDP_URL_FOR_TESTS = 'https://login.corp.example.com/example';

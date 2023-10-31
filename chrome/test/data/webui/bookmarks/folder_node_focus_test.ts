@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BookmarkManagerApiProxyImpl, BookmarksFolderNodeElement, changeFolderOpen, Command, selectFolder, SelectFolderAction} from 'chrome://bookmarks/bookmarks.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

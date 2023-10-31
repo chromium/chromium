@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BrowserServiceImpl, getTrustedHTML, listenForPrivilegedLinkClicks} from 'chrome://history/history.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestBrowserService} from './test_browser_service.js';

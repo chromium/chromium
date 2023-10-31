@@ -4,7 +4,7 @@
 
 import {DnsView} from 'chrome://net-internals/dns_view.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {switchToView} from './test_util.js';

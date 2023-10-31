@@ -4,7 +4,7 @@
 
 import {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {getAboutInfoForTest} from 'chrome://sync-internals/about.js';
 import {setAllNodesForTest} from 'chrome://sync-internals/chrome_sync.js';
 import {setupSyncResultsListForTest} from 'chrome://sync-internals/search.js';

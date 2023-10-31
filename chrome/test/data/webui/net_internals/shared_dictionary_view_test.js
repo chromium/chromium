@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {SharedDictionaryView} from 'chrome://net-internals/shared_dictionary_view.js';
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {switchToView} from './test_util.js';

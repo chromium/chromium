@@ -5,7 +5,7 @@
 import 'chrome://customize-chrome-side-panel.top-chrome/hover_button.js';
 
 import {HoverButtonElement} from 'chrome://customize-chrome-side-panel.top-chrome/hover_button.js';
-import {listenOnce} from 'chrome://resources/js/util_ts.js';
+import {listenOnce} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
