@@ -320,10 +320,8 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
         Runnable runnable =
                 () -> {
                     // While the runnable is waiting to be triggered, hiding animation might be
-                    // triggered:
-                    // while the hiding animation is running, declare this runnable as obsolete so
-                    // that
-                    // it won't cancel the hiding animation.
+                    // triggered: while the hiding animation is running, declare this runnable as
+                    // obsolete so that it won't cancel the hiding animation.
                     if (isAnimatorExpired(frontAnimator, backAnimator)) {
                         return;
                     }
