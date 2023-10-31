@@ -93,6 +93,28 @@ uint32_t StatelessDevice::VideoCodecToV4L2PixFmt(VideoCodec codec) {
   }
 }
 
+// VIDIOC_S_EXT_CTRLS
+bool StatelessDevice::SetHeaders(void* ctrls,
+                                 const base::ScopedFD& request_fd) {
+  DVLOGF(4);
+  if (!ctrls) {
+    return false;
+  }
+
+  struct v4l2_ext_controls* ext_ctrls =
+      static_cast<struct v4l2_ext_controls*>(ctrls);
+
+  if (request_fd.is_valid()) {
+    ext_ctrls->which = V4L2_CTRL_WHICH_REQUEST_VAL;
+  } else {
+    ext_ctrls->which = V4L2_CTRL_WHICH_CUR_VAL;
+  }
+
+  ext_ctrls->request_fd = request_fd.get();
+
+  return (IoctlDevice(VIDIOC_S_EXT_CTRLS, ext_ctrls) == kIoctlOk);
+}
+
 std::string StatelessDevice::DevicePath() {
   // TODO(frkoenig) : better querying?
   return "/dev/video-dec0";

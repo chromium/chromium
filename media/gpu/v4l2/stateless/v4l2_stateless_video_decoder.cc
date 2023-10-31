@@ -170,8 +170,18 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
                                             size_t size,
                                             int32_t bitstream_id) {
   DVLOGF(4);
-  NOTIMPLEMENTED();
-  return false;
+  if (!input_queue_->PrepareBuffers()) {
+    return false;
+  }
+  input_queue_->StartStreaming();
+
+  // The header needs to be parsed before the video resolution and format
+  // can be decided.
+  if (!device_->SetHeaders(ctrls, base::ScopedFD(-1))) {
+    return false;
+  }
+
+  return true;
 }
 
 void V4L2StatelessVideoDecoder::SurfaceReady(
@@ -211,11 +221,6 @@ bool V4L2StatelessVideoDecoder::CreateInputQueue(VideoCodecProfile profile,
 
   const VideoCodec codec = VideoCodecProfileToVideoCodec(profile);
   input_queue_ = InputQueue::Create(device_, codec, resolution);
-
-  if (input_queue_) {
-    input_queue_->PrepareBuffers();
-    input_queue_->StartStreaming();
-  }
 
   return !!input_queue_;
 }

@@ -15,6 +15,13 @@ class MEDIA_GPU_EXPORT StatelessDevice : public Device {
 
   bool IsCompressedVP9HeaderSupported();
 
+  // As part of the stateless uAPI the headers are parsed by the client
+  // and sent to the device. When |request_fd| is invalid the driver parses
+  // the header right away instead of waiting until the compressed data
+  // is present. This is used when the format is being negotiated because
+  // the driver will only expose formats that the bitstream can decode into.
+  bool SetHeaders(void* ctrls, const base::ScopedFD& request_fd);
+
  protected:
   ~StatelessDevice() override;
 
