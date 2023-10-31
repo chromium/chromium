@@ -38,6 +38,17 @@ static void VerifyBusWithOffset(AudioBus* bus,
   }
 }
 
+class TestExternalMemory : public media::AudioBuffer::ExternalMemory {
+ public:
+  explicit TestExternalMemory(std::vector<uint8_t> contents)
+      : contents_(std::move(contents)) {
+    span_ = base::span<uint8_t>(contents_.data(), contents_.size());
+  }
+
+ private:
+  std::vector<uint8_t> contents_;
+};
+
 static std::vector<float*> WrapChannelsAsVector(AudioBus* bus) {
   std::vector<float*> channels(bus->channels());
   for (size_t ch = 0; ch < channels.size(); ++ch)
@@ -276,6 +287,36 @@ TEST(AudioBufferTest, CopyBitstreamFromIECDts) {
   EXPECT_EQ(kTimestamp, buffer->timestamp());
   EXPECT_TRUE(buffer->IsBitstreamFormat());
   EXPECT_FALSE(buffer->end_of_stream());
+}
+
+TEST(AudioBufferTest, WrapExternalMemory) {
+  const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  const int kChannelCount = 2;
+  const int kFrameCount = 10;
+  const base::TimeDelta kTimestamp = base::Microseconds(1337);
+
+  std::vector<uint8_t> test_data;
+  test_data.insert(test_data.end(), kFrameCount, 1);
+  test_data.insert(test_data.end(), kFrameCount, 2);
+  uint8_t* first_channel_ptr = test_data.data();
+  uint8_t* second_channel_ptr = test_data.data() + kFrameCount;
+
+  auto external_memory =
+      std::make_unique<TestExternalMemory>(std::move(test_data));
+  auto buffer = AudioBuffer::CreateFromExternalMemory(
+      kSampleFormatPlanarU8, kChannelLayout, kChannelCount, kSampleRate,
+      kFrameCount, kTimestamp, std::move(external_memory));
+
+  EXPECT_EQ(kChannelLayout, buffer->channel_layout());
+  EXPECT_EQ(kSampleRate, buffer->sample_rate());
+  EXPECT_EQ(kFrameCount, buffer->frame_count());
+  EXPECT_EQ(kChannelCount, buffer->channel_count());
+  EXPECT_EQ(static_cast<size_t>(kChannelCount), buffer->channel_data().size());
+  EXPECT_EQ(kTimestamp, buffer->timestamp());
+  EXPECT_FALSE(buffer->end_of_stream());
+
+  EXPECT_EQ(buffer->channel_data()[0], first_channel_ptr);
+  EXPECT_EQ(buffer->channel_data()[1], second_channel_ptr);
 }
 
 TEST(AudioBufferTest, CreateBitstreamBufferIECDts) {
@@ -770,6 +811,29 @@ TEST(AudioBufferTest, AudioBufferMemoryPool) {
 
   // Destruct final frame after pool; hope nothing explodes.
   b2 = nullptr;
+}
+
+// Test that the channels are aligned according the the pool parameter.
+TEST(AudioBufferTest, AudioBufferMemoryPoolAlignment) {
+  const int kAlignment = 512;
+  const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_6_1;
+  const size_t kChannelCount = ChannelLayoutToChannelCount(kChannelLayout);
+
+  scoped_refptr<AudioBufferMemoryPool> pool(
+      new AudioBufferMemoryPool(kAlignment));
+  scoped_refptr<AudioBuffer> buffer =
+      AudioBuffer::CreateBuffer(kSampleFormatPlanarU8, kChannelLayout,
+                                kChannelCount, kSampleRate, kSampleRate, pool);
+
+  ASSERT_EQ(kChannelCount, buffer->channel_data().size());
+  for (size_t i = 0; i < kChannelCount; i++) {
+    EXPECT_EQ(
+        0u, reinterpret_cast<uintptr_t>(buffer->channel_data()[i]) % kAlignment)
+        << " channel: " << i;
+  }
+
+  buffer.reset();
+  EXPECT_EQ(1u, pool->GetPoolSizeForTesting());
 }
 
 // Planar allocations use a different path, so make sure pool is used.

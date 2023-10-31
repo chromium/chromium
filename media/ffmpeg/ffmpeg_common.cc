@@ -54,14 +54,6 @@ VideoColorSpace GetGuessedColorSpace(const VideoColorSpace& color_space) {
 
 }  // namespace
 
-// Alignment requirement by FFmpeg for input and output buffers. This need to
-// be updated to match FFmpeg when it changes.
-#if defined(ARCH_CPU_ARM_FAMILY)
-static const int kFFmpegBufferAddressAlignment = 16;
-#else
-static const int kFFmpegBufferAddressAlignment = 32;
-#endif
-
 // Allows faster SIMD YUV convert. Also, FFmpeg overreads/-writes occasionally.
 // See video_get_buffer() in libavcodec/utils.c.
 static const int kFFmpegOutputBufferPaddingSize = 16;

@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
 #include "media/base/encryption_scheme.h"
@@ -40,6 +41,14 @@ extern "C" {
 namespace media {
 
 constexpr int64_t kNoFFmpegTimestamp = static_cast<int64_t>(AV_NOPTS_VALUE);
+
+// Alignment requirement by FFmpeg for input and output buffers. This need to
+// be updated to match FFmpeg when it changes.
+#if defined(ARCH_CPU_ARM_FAMILY)
+constexpr inline int kFFmpegBufferAddressAlignment = 16;
+#else
+constexpr inline int kFFmpegBufferAddressAlignment = 32;
+#endif
 
 class AudioDecoderConfig;
 class VideoDecoderConfig;

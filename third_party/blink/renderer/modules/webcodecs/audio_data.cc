@@ -102,6 +102,24 @@ media::SampleFormat BlinkFormatToMediaFormat(V8AudioSampleFormat blink_format) {
   }
 }
 
+class ArrayBufferContentsAsAudioExternalMemory
+    : public media::AudioBuffer::ExternalMemory {
+ public:
+  explicit ArrayBufferContentsAsAudioExternalMemory(
+      ArrayBufferContents contents,
+      base::span<uint8_t> span)
+      : media::AudioBuffer::ExternalMemory(span),
+        contents_(std::move(contents)) {
+    // Check that `span` refers to the memory inside `contents`.
+    auto* contents_data = static_cast<uint8_t*>(contents_.Data());
+    CHECK_GE(span.data(), contents_data);
+    CHECK_LE(span.data() + span.size(), contents_data + contents_.DataLength());
+  }
+
+ private:
+  ArrayBufferContents contents_;
+};
+
 }  // namespace
 
 // static
@@ -148,7 +166,7 @@ AudioData::AudioData(ScriptState* script_state,
     return;
   }
 
-  auto array_span = AsSpan<const uint8_t>(init->data());
+  auto array_span = AsSpan<uint8_t>(init->data());
   if (!array_span.data()) {
     exception_state.ThrowTypeError("data is detached.");
     return;
@@ -184,13 +202,35 @@ AudioData::AudioData(ScriptState* script_state,
     return;
   }
 
-  std::vector<const uint8_t*> wrapped_data;
+  format_ = init->format();
+  auto channel_layout =
+      init->numberOfChannels() > 8
+          // GuesschannelLayout() doesn't know how to guess above 8 channels.
+          ? media::CHANNEL_LAYOUT_DISCRETE
+          : media::GuessChannelLayout(init->numberOfChannels());
+
+  bool sample_aligned = base::IsAligned(array_span.data(), bytes_per_sample);
+  if (buffer_contents.IsValid() && sample_aligned) {
+    // The buffer is properly aligned and allowed to be transferred,
+    // wrap it as external-memory object and move without a copy.
+    auto external_memory =
+        std::make_unique<ArrayBufferContentsAsAudioExternalMemory>(
+            std::move(buffer_contents), array_span);
+    data_ = media::AudioBuffer::CreateFromExternalMemory(
+        media_format, channel_layout, init->numberOfChannels(), sample_rate,
+        init->numberOfFrames(), base::Microseconds(timestamp_),
+        std::move(external_memory));
+    CHECK(data_);
+    return;
+  }
+
+  std::vector<const uint8_t*> channel_ptrs;
   if (media::IsInterleaved(media_format)) {
     // Interleaved data can directly added.
-    wrapped_data.push_back(array_span.data());
+    channel_ptrs.push_back(array_span.data());
   } else {
     // Planar data needs one pointer per channel.
-    wrapped_data.resize(init->numberOfChannels());
+    channel_ptrs.resize(init->numberOfChannels());
 
     uint32_t plane_size_in_bytes =
         init->numberOfFrames() *
@@ -199,22 +239,16 @@ AudioData::AudioData(ScriptState* script_state,
     const uint8_t* plane_start =
         reinterpret_cast<const uint8_t*>(array_span.data());
 
-    for (unsigned ch = 0; ch < init->numberOfChannels(); ++ch)
-      wrapped_data[ch] = plane_start + ch * plane_size_in_bytes;
+    for (unsigned ch = 0; ch < init->numberOfChannels(); ++ch) {
+      channel_ptrs[ch] = plane_start + ch * plane_size_in_bytes;
+    }
   }
-
-  format_ = init->format();
-
-  auto channel_layout =
-      init->numberOfChannels() > 8
-          // GuesschannelLayout() doesn't know how to guess above 8 channels.
-          ? media::CHANNEL_LAYOUT_DISCRETE
-          : media::GuessChannelLayout(init->numberOfChannels());
 
   data_ = media::AudioBuffer::CopyFrom(
       media_format, channel_layout, init->numberOfChannels(), sample_rate,
-      init->numberOfFrames(), wrapped_data.data(),
+      init->numberOfFrames(), channel_ptrs.data(),
       base::Microseconds(timestamp_));
+  CHECK(data_);
 }
 
 AudioData::AudioData(scoped_refptr<media::AudioBuffer> buffer)

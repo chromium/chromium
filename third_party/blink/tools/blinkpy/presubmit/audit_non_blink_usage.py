@@ -1441,6 +1441,7 @@ _CONFIG = [
         ],
         'allowed': [
             'base::ClampMul',
+            'base::IsAligned',
             'base::DoNothingWithBoundArgs',
             'base::PlatformThreadRef',
             'base::WrapRefCounted',
