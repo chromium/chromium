@@ -369,6 +369,14 @@ const int kMainIntentCheckDelay = 1;
 
   if (_startupInformation.isColdStart) {
     [PushNotificationUtil registerDeviceWithAPNS];
+
+    [PushNotificationUtil
+        getPermissionSettings:^(UNNotificationSettings* settings) {
+          // Logs the users iOS settings' push notification permission
+          // status over time.
+          [PushNotificationUtil
+              logPermissionSettingsMetrics:settings.authorizationStatus];
+        }];
   }
 
   [_appState applicationWillEnterForeground:UIApplication.sharedApplication

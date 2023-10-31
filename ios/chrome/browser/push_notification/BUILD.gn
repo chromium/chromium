@@ -85,7 +85,6 @@ source_set("unit_tests") {
     "push_notification_account_context_manager+testing.h",
     "push_notification_account_context_manager_unittest.mm",
     "push_notification_client_manager_unittest.mm",
-    "push_notification_util+testing.h",
     "push_notification_util_unittest.mm",
   ]
   deps = [
@@ -94,9 +93,11 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/sync_preferences:test_support",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

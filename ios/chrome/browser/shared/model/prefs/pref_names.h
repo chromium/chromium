@@ -94,6 +94,7 @@ extern const char kOverflowMenuHiddenDestinations[];
 extern const char kOverflowMenuDestinationBadgeData[];
 extern const char kOverflowMenuActionsOrder[];
 extern const char kPrintingEnabled[];
+extern const char kPushNotificationAuthorizationStatus[];
 extern const char kSearchSuggestEnabled[];
 extern const char kTabPickupEnabled[];
 extern const char kTabPickupLastDisplayedTime[];
