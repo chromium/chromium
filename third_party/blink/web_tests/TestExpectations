@@ -2636,14 +2636,6 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-page/pseudo-first-margin-004-print.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/css/css-page/pseudo-first-margin-004-print.html [ Failure ]
-crbug.com/626703 [ Mac11 ] external/wpt/css/css-page/pseudo-first-margin-004-print.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-page/pseudo-first-margin-004-print.html [ Failure ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/css/css-page/pseudo-first-margin-004-print.html [ Failure ]
-crbug.com/626703 [ Mac13 ] external/wpt/css/css-page/pseudo-first-margin-004-print.html [ Failure ]
-crbug.com/626703 [ Mac12 ] external/wpt/css/css-page/pseudo-first-margin-004-print.html [ Failure ]
-crbug.com/626703 [ Win ] external/wpt/css/css-page/pseudo-first-margin-004-print.html [ Failure ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-pseudo/slider/slider-fill-001.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-pseudo/slider/slider-fill-001.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/css/css-pseudo/slider/slider-fill-001.html [ Failure ]
@@ -2700,7 +2692,6 @@ crbug.com/626703 [ Mac12-arm64 ] external/wpt/css/css-pseudo/slider/slider-track
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-pseudo/slider/slider-track-003.html [ Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/css/css-pseudo/slider/slider-track-003.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-pseudo/slider/slider-track-003.html [ Failure ]
-crbug.com/626703 [ Mac11 ] external/wpt/css/printing/page-size-011-print.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/fetch/fetch-later/policies/csp-redirect-to-blocked.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/fetch/fetch-later/policies/csp-redirect-to-blocked.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/html/cross-origin-opener-policy/resource-popup.https.html [ Timeout ]
@@ -3553,12 +3544,15 @@ crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html
 crbug.com/1494847 external/wpt/css/css-page/pseudo-first-margin-001-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/pseudo-first-margin-002-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/pseudo-first-margin-003-print.html [ Failure ]
+crbug.com/1498013 external/wpt/css/css-page/pseudo-first-margin-004-print.html [ Failure ]
 
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-007.tentative.html [ Failure ]
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-009.tentative.html [ Failure ]
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-011.tentative.html [ Failure ]
 crbug.com/1097992 external/wpt/css/css-pseudo/marker-font-variant-numeric-normal.html [ Failure ]
 crbug.com/1060007 external/wpt/css/css-pseudo/marker-text-combine-upright.html [ Failure ]
+
+crbug.com/1498015 [ Mac11 ] external/wpt/css/printing/page-size-011-print.html [ Timeout ]
 
 # iframe tests time out if the request is blocked as mixed content.
 crbug.com/1001374 external/wpt/upgrade-insecure-requests/gen/iframe-blank-inherit.meta/unset/iframe-tag.https.html [ Skip Timeout ]
