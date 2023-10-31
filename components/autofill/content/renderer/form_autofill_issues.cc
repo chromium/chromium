@@ -41,6 +41,8 @@ using form_util::IsAutofillableElement;
 
 namespace {
 
+constexpr size_t kMaxNumberOfDevtoolsIssuesEmitted = 100;
+
 constexpr base::StringPiece kFor = "for";
 constexpr base::StringPiece kAriaLabelledBy = "aria-labelledby";
 constexpr base::StringPiece kName = "name";
@@ -315,7 +317,10 @@ void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
     form_issues = form_issues::CheckForLabelsWithIncorrectForAttribute(
         document, form.fields, std::move(form_issues));
   }
-
+  if (form_issues.size() > kMaxNumberOfDevtoolsIssuesEmitted) {
+    form_issues.erase(form_issues.begin() + kMaxNumberOfDevtoolsIssuesEmitted,
+                      form_issues.end());
+  }
   for (const blink::WebAutofillClient::FormIssue& form_issue : form_issues) {
     web_local_frame.AddGenericIssue(form_issue.issue_type,
                                     form_issue.violating_node,
