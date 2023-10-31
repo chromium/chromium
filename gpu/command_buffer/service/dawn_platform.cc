@@ -127,8 +127,10 @@ uint64_t DawnPlatform::AddTraceEvent(
   uint64_t result = 0;
   static_assert(sizeof(base::trace_event::TraceEventHandle) <= sizeof(result),
                 "TraceEventHandle must be at most the size of uint64_t");
-  static_assert(std::is_pod<base::trace_event::TraceEventHandle>(),
-                "TraceEventHandle must be memcpy'able");
+  static_assert(
+      std::is_trivial_v<base::trace_event::TraceEventHandle> &&
+          std::is_standard_layout_v<base::trace_event::TraceEventHandle>,
+      "TraceEventHandle must be memcpy'able");
   memcpy(&result, &handle, sizeof(base::trace_event::TraceEventHandle));
   return result;
 }
