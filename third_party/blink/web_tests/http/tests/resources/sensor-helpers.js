@@ -26,6 +26,10 @@ class RingBuffer {
     return { done: false, value: value };
   }
 
+  reset() {
+    this.bufferPosition_ = 0;
+  }
+
   [Symbol.iterator]() {
     return this;
   }
@@ -216,6 +220,10 @@ export function sensorMocks() {
       if (this.sensorReadingTimerId_ != null) {
         window.clearInterval(this.sensorReadingTimerId_);
         this.sensorReadingTimerId_ = null;
+      }
+      this.buffer_.fill(0);
+      if (this.readingData_ !== null) {
+        this.readingData_.reset();
       }
     }
 
