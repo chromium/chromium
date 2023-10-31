@@ -22,14 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="VRFreNotComplete" enum="BooleanHit" expires_after="M85">
-  <owner>ymalik@chromium.org</owner>
-  <summary>
-    Whether the user had been through the FRE when Chrome is launched in VR
-    mode.
-  </summary>
-</histogram>
-
 <histogram name="VRSessionTime" units="ms" expires_after="2024-04-28">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>

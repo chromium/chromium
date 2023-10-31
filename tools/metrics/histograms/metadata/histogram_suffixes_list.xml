@@ -5378,13 +5378,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Media.Video.Roughness"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="VRFreNotCompleteType" separator=".">
-  <suffix name="VrBrowser" label="FRE not complete when starting Chrome"/>
-  <suffix name="WebVRAutopresent"
-      label="FRE not complete when starting WebVR auto-presentation"/>
-  <affected-histogram name="VRFreNotComplete"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="VRSessionType" separator=".">
   <suffix name="WebVR"
       label="The session is restricted to the period that browser is
