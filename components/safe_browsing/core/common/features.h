@@ -327,5 +327,7 @@ extern const base::FeatureParam<std::string> kRedWarningSurveyReportTypeFilter;
 // corresponds to "don't care."
 extern const base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter;
 
+BASE_DECLARE_FEATURE(kClientSideDetectionImagesCache);
+
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_

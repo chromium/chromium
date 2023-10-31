@@ -128,6 +128,11 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   void PhishingDetectionDone(mojom::PhishingDetectorResult result,
                              const std::string& verdict);
 
+  // |verdict| is an object parsed from the serialized string passed into
+  // |PhishingDetectionDone|.
+  void MaybeSendClientPhishingRequest(
+      std::unique_ptr<ClientPhishingRequest> verdict);
+
   // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
   // the outcome of the renderer image embedding. The verdict is passed into
   // this function after the renderer classification is finished.

@@ -21,6 +21,7 @@
 #include "base/time/tick_clock.h"
 #include "base/uuid.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
@@ -72,8 +73,9 @@ void WriteFeaturesToDisk(const ClientPhishingRequest& features,
   base::FilePath path =
       base_path.AppendASCII(base::Uuid::GenerateRandomV4().AsLowercaseString());
   base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  if (!file.IsValid())
+  if (!file.IsValid()) {
     return;
+  }
   std::string serialized_features = features.SerializeAsString();
   file.WriteAtCurrentPos(serialized_features.data(),
                          serialized_features.size());
@@ -127,8 +129,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     DCHECK(database_manager_.get());
     DCHECK(host_);
     url_ = navigation_handle->GetURL();
-    if (navigation_handle->GetResponseHeaders())
+    if (navigation_handle->GetResponseHeaders()) {
       navigation_handle->GetResponseHeaders()->GetMimeType(&mime_type_);
+    }
     remote_endpoint_ = navigation_handle->GetSocketAddress();
   }
 
@@ -328,8 +331,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
 
   void CheckCache(PreClassificationCheckResult phishing_reason) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (phishing_reason != NO_CLASSIFY_MAX)
+    if (phishing_reason != NO_CLASSIFY_MAX) {
       DontClassifyForPhishing(phishing_reason);
+    }
     if (!ShouldClassifyForPhishing()) {
       return;  // No point in doing anything else.
     }
@@ -419,6 +423,14 @@ ClientSideDetectionHost::ClientSideDetectionHost(
   DCHECK(pref_service);
   // Note: csd_service_ and sb_service will be nullptr here in testing.
   csd_service_ = delegate_->GetClientSideDetectionService();
+
+  if (csd_service_ &&
+      base::FeatureList::IsEnabled(kClientSideDetectionImagesCache)) {
+    ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
+    ClientSideDetectionFeatureCache* feature_map =
+        ClientSideDetectionFeatureCache::FromWebContents(web_contents());
+    feature_map->AddClearCacheSubscription(csd_service_);
+  }
 
   // |ui_manager_| and |database_manager_| can
   // be null if safe browsing service is not available in the embedder.
@@ -523,27 +535,58 @@ void ClientSideDetectionHost::PhishingDetectionDone(
         "SBClientPhishing.BrowserReadyOnClassifierNotReady",
         is_model_available);
   }
-  if (result != mojom::PhishingDetectorResult::SUCCESS)
+  if (result != mojom::PhishingDetectorResult::SUCCESS) {
     return;
+  }
 
-  // We parse the protocol buffer here.  If we're unable to parse it we won't
-  // send the verdict further.
+  // We parse the protocol buffer here.  If we're unable to parse it we
+  // won't send the verdict further.
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
   if (csd_service_ && verdict->ParseFromString(verdict_str) &&
       verdict->IsInitialized()) {
-    csd_service_->ClassifyPhishingThroughThresholds(verdict.get());
-    VLOG(2) << "Phishing classification score: " << verdict->client_score();
-    VLOG(2) << "Visual model scores:";
-    for (const ClientPhishingRequest::CategoryScore& label_and_value :
-         verdict->tflite_model_scores()) {
-      VLOG(2) << label_and_value.label() << ": " << label_and_value.value();
+    if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache)) {
+      // We should only cache the string if the result is SUCCESS, so that
+      // in a situation where it is not, PG can retry the classification
+      // because classifier can be ready or a new model is ready to address
+      // the failure reasons.
+      ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
+      ClientSideDetectionFeatureCache* feature_map =
+          ClientSideDetectionFeatureCache::FromWebContents(web_contents());
+
+      // Initial implementation of the feature is that only PG will use the
+      // cache to reuse the images that are computed by CSD-Phishing/PG. In
+      // scenarios where the user reloads the page, we could use the images
+      // again, and we will log to see the efficiency if we were to.
+      bool cache_csd_phishing_data_available =
+          feature_map->GetFeatureMapForURL(current_url_) != nullptr;
+
+      base::UmaHistogramBoolean(
+          "SBClientPhishing.CSDPhishingCachedDataAvailable",
+          cache_csd_phishing_data_available);
+
+      feature_map->Insert(current_url_,
+                          std::make_unique<ClientPhishingRequest>(*verdict));
     }
 
-    if (HasDebugFeatureDirectory()) {
-      base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                                 base::BindOnce(&WriteFeaturesToDisk, *verdict,
-                                                GetDebugFeatureDirectory()));
-    }
+    MaybeSendClientPhishingRequest(std::move(verdict));
+  }
+}
+
+void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
+    std::unique_ptr<ClientPhishingRequest> verdict) {
+  csd_service_->ClassifyPhishingThroughThresholds(verdict.get());
+  VLOG(2) << "Phishing classification score: " << verdict->client_score();
+  VLOG(2) << "Visual model scores:";
+  for (const ClientPhishingRequest::CategoryScore& label_and_value :
+       verdict->tflite_model_scores()) {
+    VLOG(2) << label_and_value.label() << ": " << label_and_value.value();
+  }
+
+  if (HasDebugFeatureDirectory()) {
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                               base::BindOnce(&WriteFeaturesToDisk, *verdict,
+                                              GetDebugFeatureDirectory()));
+  }
 
 #if BUILDFLAG(IS_ANDROID)
     gfx::Size size;
@@ -635,13 +678,10 @@ void ClientSideDetectionHost::PhishingDetectionDone(
           &token);
     }
 
-    // The check for image embedding model is important because the
-    // OptimizationGuide server can send a null model to signal there is a bad
-    // model in disk.
     if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder) &&
         IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
-        csd_service_->IsModelMetadataImageEmbeddingVersionMatching() &&
-        csd_service_->HasImageEmbeddingModel()) {
+        csd_service_->HasImageEmbeddingModel() &&
+        csd_service_->IsModelMetadataImageEmbeddingVersionMatching()) {
       content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
       phishing_image_embedder_.reset();
@@ -665,7 +705,6 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       std::string empty_access_token;
       SendRequest(std::move(verdict), empty_access_token);
     }
-  }
 }
 
 void ClientSideDetectionHost::PhishingImageEmbeddingDone(
@@ -750,8 +789,9 @@ void ClientSideDetectionHost::OnGotAccessToken(
 }
 
 bool ClientSideDetectionHost::CanGetAccessToken() {
-  if (is_off_the_record_)
+  if (is_off_the_record_) {
     return false;
+  }
 
   // Return true if the primary user account of an ESB user is signed in.
   return IsEnhancedProtectionEnabled(*pref_service_) &&

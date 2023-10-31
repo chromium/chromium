@@ -575,6 +575,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.CSDPhishingCachedDataAvailable"
+    units="BooleanAvailable" expires_after="2024-10-09">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the times we could have used the CSD images cache to reuse the
+    images for CSD-Phishing classification.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.FlatBufferMappedRegionValid"
     enum="BooleanSuccess" expires_after="2022-12-11">
   <owner>drubery@chromium.org</owner>

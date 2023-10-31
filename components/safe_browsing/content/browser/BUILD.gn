@@ -170,12 +170,14 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "client_report_util_unittest.cc",
+    "client_side_detection_feature_cache_unittest.cc",
     "client_side_phishing_model_unittest.cc",
     "web_api_handshake_checker_unittest.cc",
   ]
 
   deps = [
-    ":client_side_detection",
+    ":client_side_detection_images_cache",
+    ":client_side_detection_service",
     "//base:base",
     "//base/test:test_support",
     "//components/optimization_guide/core:model_executor",
@@ -232,14 +234,52 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("client_side_detection") {
+source_set("client_side_detection_images_cache") {
   sources = [
-    "client_side_detection_host.cc",
-    "client_side_detection_host.h",
+    "client_side_detection_feature_cache.cc",
+    "client_side_detection_feature_cache.h",
+  ]
+
+  deps = [
+    ":client_side_detection_service",
+    "//components/safe_browsing/core/common/fbs:client_model",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//content/public/browser",
+  ]
+}
+
+source_set("client_side_detection_service") {
+  sources = [
     "client_side_detection_service.cc",
     "client_side_detection_service.h",
     "client_side_phishing_model.cc",
     "client_side_phishing_model.h",
+  ]
+
+  deps = [
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+    "//components/safe_browsing/content/browser/web_ui:web_ui",
+    "//components/safe_browsing/content/common:interfaces",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/fbs:client_model",
+    "//components/safe_browsing/core/common/proto:client_model_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//content/public/browser",
+    "//google_apis:google_apis",
+    "//net:net",
+    "//net/traffic_annotation:traffic_annotation",
+    "//services/network/public/cpp",
+    "//url:url",
+  ]
+}
+
+source_set("client_side_detection") {
+  sources = [
+    "client_side_detection_host.cc",
+    "client_side_detection_host.h",
     "safe_browsing_tab_observer.cc",
     "safe_browsing_tab_observer.h",
   ]
@@ -247,13 +287,12 @@ source_set("client_side_detection") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    ":client_side_detection_images_cache",
+    ":client_side_detection_service",
     "//base:base",
-    "//components/optimization_guide/core:core",
-    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
-    "//components/safe_browsing/content/browser/web_ui:web_ui",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
@@ -264,17 +303,10 @@ source_set("client_side_detection") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/fbs:client_model",
-    "//components/safe_browsing/core/common/proto:client_model_proto",
-    "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/variations",
     "//components/zoom:zoom",
     "//content/public/browser",
-    "//google_apis:google_apis",
-    "//net:net",
-    "//net/traffic_annotation:traffic_annotation",
-    "//services/network/public/cpp",
-    "//url:url",
   ]
 
   if (safe_browsing_mode != 0) {

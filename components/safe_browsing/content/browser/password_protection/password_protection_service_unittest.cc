@@ -48,12 +48,14 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -63,6 +65,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 using base::ASCIIToUTF16;
 using testing::_;
@@ -128,9 +131,10 @@ class TestPhishingDetector : public mojom::PhishingDetector {
   TestPhishingDetector& operator=(const TestPhishingDetector&) = delete;
   ~TestPhishingDetector() override = default;
 
-  void Bind(mojo::ScopedMessagePipeHandle handle) {
-    receiver_.Bind(
-        mojo::PendingReceiver<mojom::PhishingDetector>(std::move(handle)));
+  void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receivers_.Add(this,
+                   mojo::PendingAssociatedReceiver<mojom::PhishingDetector>(
+                       std::move(handle)));
   }
 
   void StartPhishingDetection(
@@ -156,7 +160,7 @@ class TestPhishingDetector : public mojom::PhishingDetector {
  private:
   bool should_timeout_ = false;
   std::vector<StartPhishingDetectionCallback> deferred_callbacks_;
-  mojo::Receiver<mojom::PhishingDetector> receiver_{this};
+  mojo::AssociatedReceiverSet<mojom::PhishingDetector> receivers_;
 };
 
 class TestPasswordProtectionService : public MockPasswordProtectionService {
@@ -213,18 +217,6 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
     return latest_request_ ? latest_request_->request_proto() : nullptr;
   }
 
-  void GetPhishingDetector(
-      service_manager::InterfaceProvider* provider,
-      mojo::Remote<mojom::PhishingDetector>* phishing_detector) override {
-    service_manager::InterfaceProvider::TestApi test_api(provider);
-    test_api.SetBinderForName(
-        mojom::PhishingDetector::Name_,
-        base::BindRepeating(&TestPhishingDetector::Bind,
-                            base::Unretained(&test_phishing_detector_)));
-    provider->GetInterface(phishing_detector->BindNewPipeAndPassReceiver());
-    test_api.ClearBinderForName(mojom::PhishingDetector::Name_);
-  }
-
   void CacheVerdict(const GURL& url,
                     LoginReputationClientRequest::TriggerType trigger_type,
                     ReusedPasswordAccountType password_type,
@@ -235,6 +227,13 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
 
     cache_manager_->CachePhishGuardVerdict(trigger_type, password_type, verdict,
                                            receive_time);
+  }
+
+  void InitTestApi(content::RenderFrameHost* rfh) {
+    rfh->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+        mojom::PhishingDetector::Name_,
+        base::BindRepeating(&TestPhishingDetector::BindReceiver,
+                            base::Unretained(&test_phishing_detector_)));
   }
 
   LoginReputationClientResponse::VerdictType GetCachedVerdict(
@@ -295,6 +294,8 @@ class PasswordProtectionServiceTest : public ::testing::Test {
             content::WebContents::CreateParams(&browser_context_)));
     const std::vector<password_manager::MatchingReusedCredential>
         matching_reused_credentials = {};
+    content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+    password_protection_service_->InitTestApi(rfh);
     request_ =
         base::MakeRefCounted<safe_browsing::PasswordProtectionRequestContent>(
             web_contents_.get(), GURL(kTargetUrl),
@@ -430,7 +431,8 @@ class PasswordProtectionServiceBaseTest
     EXPECT_CALL(*database_manager_, CheckCsdAllowlistUrl(target_url, _))
         .WillRepeatedly(
             Return(match_allowlist ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH));
-
+    password_protection_service_->InitTestApi(
+        web_contents->GetPrimaryMainFrame());
     request_ = new PasswordProtectionRequestContent(
         web_contents, target_url, GURL(kFormActionUrl), GURL(kPasswordFrameUrl),
         web_contents->GetContentsMimeType(), kUserName,
@@ -1525,6 +1527,8 @@ TEST_P(PasswordProtectionServiceBaseTest, TestPingsForAboutBlank) {
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  password_protection_service_->InitTestApi(
+      web_contents->GetPrimaryMainFrame());
   password_protection_service_->StartRequest(
       web_contents.get(), GURL("about:blank"), GURL(), GURL(), "username",
       PasswordType::SAVED_PASSWORD, {{"example1.com", u"username"}},
@@ -1571,6 +1575,8 @@ TEST_P(PasswordProtectionServiceBaseTest, TestDomFeaturesPopulated) {
       .Times(AnyNumber())
       .WillOnce(Return(gfx::Size(1000, 1000)));
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  password_protection_service_->InitTestApi(
+      web_contents->GetPrimaryMainFrame());
   password_protection_service_->StartRequest(
       web_contents.get(), GURL("about:blank"), GURL(), GURL(), kUserName,
       PasswordType::SAVED_PASSWORD, {{"example.com", u"username"}},

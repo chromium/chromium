@@ -193,7 +193,9 @@ class ClientSideDetectionService
                                          const base::FilePath& visual_tf_lite);
 
   bool IsSubscribedToImageEmbeddingModelUpdates();
-  bool ShouldSendImageEmbeddingModelToRenderer();
+
+  base::CallbackListSubscription RegisterCallbackForModelUpdates(
+      base::RepeatingClosure callback);
 
  private:
   friend class ClientSideDetectionServiceTest;

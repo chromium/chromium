@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"
@@ -28,7 +29,6 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -688,6 +688,12 @@ bool ClientSideDetectionService::IsSubscribedToImageEmbeddingModelUpdates() {
                ->IsSubscribedToImageEmbeddingModelUpdates();
   }
   return false;
+}
+
+base::CallbackListSubscription
+ClientSideDetectionService::RegisterCallbackForModelUpdates(
+    base::RepeatingCallback<void()> callback) {
+  return client_side_phishing_model_->RegisterCallback(callback);
 }
 
 // IN-TEST

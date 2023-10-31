@@ -4047,6 +4047,28 @@ chromium-metrics-reviews@google.com.
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
 </histogram>
 
+<histogram name="PasswordProtection.CSDCacheContainsImages"
+    enum="BooleanPresent" expires_after="2024-10-09">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the CSD Features cache had images present for a given URL
+    when using the cache from PhishGuard side. This histogram is used to
+    evaluate the effectiveness of the cache.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.CSDCacheSizeAtHit" units="bytes"
+    expires_after="2024-08-15">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the CSD Features cache size at the time when using the cache
+    from PhishGuard side. This histogram is used to evaluate the memory usage of
+    the cache.
+  </summary>
+</histogram>
+
 <histogram name="PasswordProtection.InterstitialAction"
     enum="PasswordProtectionWarningAction" expires_after="2024-04-28">
   <owner>xinghuilu@chromium.org</owner>
@@ -4181,6 +4203,17 @@ chromium-metrics-reviews@google.com.
     Logs when an event where users reuse their password or focus on a password
     field is sent as a sample ping when the URL in the allowlist to Safe
     Browsing. Events only happen 1% of the time when URLs match the allowlist.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.SuccessfulPhishingDetectionWithinTimeout"
+    enum="BooleanSuccess" expires_after="2024-10-09">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs when a renderer process' phishing detection finishes or not within a
+    timeout when fetching client side detection images for password protection
+    pings.
   </summary>
 </histogram>
 
