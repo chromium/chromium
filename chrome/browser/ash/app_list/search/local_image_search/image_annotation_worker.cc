@@ -249,15 +249,25 @@ void ImageAnnotationWorker::ProcessNextItem() {
 
   const base::FilePath path = files_to_process_.front();
   DVLOG(1) << "ProcessNextItem " << path;
-  if (base::DirectoryExists(path)) {
-    return ProcessNextDirectory();
-  } else if (IsImage(path)) {
-    return ProcessNextImage();
-  } else if (!base::PathExists(path)) {
-    return RemoveOldDirectory();
+  if (base::PathExists(path)) {
+    if (base::DirectoryExists(path)) {  // It's a directory.
+      return ProcessNextDirectory();
+    } else {  // It's a file.
+      if (IsImage(path)) {
+        return ProcessNextImage();
+      } else {
+        files_to_process_.pop();
+        return ProcessNextItem();
+      }
+    }
   } else {
-    files_to_process_.pop();
-    return ProcessNextItem();
+    if (path.FinalExtension().empty()) {
+      return RemoveOldDirectory();
+    } else {
+      annotation_storage_->Remove(path);
+      files_to_process_.pop();
+      return ProcessNextItem();
+    }
   }
 }
 
