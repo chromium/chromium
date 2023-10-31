@@ -358,11 +358,6 @@ BASE_FEATURE(kAutofillUseI18nAddressModel,
 // Changes Autofill Clear Form into Undo Autofill.
 BASE_FEATURE(kAutofillUndo, "AutofillUndo", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Makes is_autofilled = true cached only after filling and not previewing.
-BASE_FEATURE(kAutofillOnlyCacheIsAutofilledOnFill,
-             "AutofillOnlyCacheIsAutofilledOnFill",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables converging towards the longer or shorter street address in profile
 // merging.
 BASE_FEATURE(kAutofillConvergeToExtremeLengthStreetAddress,

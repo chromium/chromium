@@ -3295,9 +3295,7 @@ bool BrowserAutofillManager::FillFieldWithValue(
     if (failure_to_fill) {
       *failure_to_fill = "Decided to fill";
     }
-    if (action_persistence == mojom::ActionPersistence::kFill ||
-        !base::FeatureList::IsEnabled(
-            features::kAutofillOnlyCacheIsAutofilledOnFill)) {
+    if (action_persistence == mojom::ActionPersistence::kFill) {
       // Mark the cached field as autofilled, so that we can detect when a
       // user edits an autofilled field (for metrics).
       autofill_field->is_autofilled = true;
