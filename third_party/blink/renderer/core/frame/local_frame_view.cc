@@ -2475,11 +2475,7 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
     frame_view.PerformScrollAnchoringAdjustments();
   });
 
-  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
-    ExecutePendingSnapUpdates();
-  } else {
-    frame_->GetDocument()->PerformScrollSnappingTasks();
-  }
+  ExecutePendingSnapUpdates();
 
   EnqueueScrollEvents();
 

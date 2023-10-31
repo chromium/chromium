@@ -152,11 +152,6 @@ PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
       GetScrollAnimator().SetCurrentOffset(scroll_offset_);
     element->SetSavedLayerScrollOffset(ScrollOffset());
   }
-
-  if (!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
-    GetLayoutBox()->GetDocument().GetSnapCoordinator().AddSnapContainer(
-        *GetLayoutBox());
-  }
 }
 
 PaintLayerScrollableArea::~PaintLayerScrollableArea() {
@@ -178,11 +173,6 @@ void PaintLayerScrollableArea::DidCompositorScroll(
 void PaintLayerScrollableArea::DisposeImpl() {
   rare_data_.Clear();
 
-  if (!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
-    GetLayoutBox()->GetDocument().GetSnapCoordinator().RemoveSnapContainer(
-        *GetLayoutBox());
-  }
-
   if (InResizeMode() && !GetLayoutBox()->DocumentBeingDestroyed()) {
     if (LocalFrame* frame = GetLayoutBox()->GetFrame())
       frame->GetEventHandler().ResizeScrollableAreaDestroyed();
@@ -193,9 +183,7 @@ void PaintLayerScrollableArea::DisposeImpl() {
       frame_view->RemoveScrollAnchoringScrollableArea(this);
       frame_view->RemoveUserScrollableArea(this);
       frame_view->RemoveAnimatingScrollableArea(this);
-      if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
-        frame_view->RemovePendingSnapUpdate(this);
-      }
+      frame_view->RemovePendingSnapUpdate(this);
     }
   }
 
@@ -979,6 +967,7 @@ void PaintLayerScrollableArea::SetScrollOffsetUnconditionally(
 }
 
 void PaintLayerScrollableArea::UpdateAfterLayout() {
+  EnqueueForSnapUpdateIfNeeded();
   EnqueueForStickyUpdateIfNeeded();
 
   bool is_horizontal_scrollbar_frozen = IsHorizontalScrollbarFrozen();
@@ -1061,14 +1050,6 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
     }
   } else if (!HasScrollbar() && resizer_will_change) {
     Layer()->DirtyStackingContextZOrderLists();
-  }
-
-  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
-    EnqueueForSnapUpdateIfNeeded();
-  } else {
-    // The snap container data will be updated at the end of the layout update.
-    // If the data changes, then this will try to re-snap.
-    SetSnapContainerDataNeedsUpdate(true);
   }
 
   {
@@ -1229,12 +1210,8 @@ void PaintLayerScrollableArea::DidChangeGlobalRootScroller() {
   // Recalculate the snap container data since the scrolling behaviour for this
   // layout box changed (i.e. it either became the layout viewport or it
   // is no longer the layout viewport).
-  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
-    if (!GetLayoutBox()->NeedsLayout()) {
-      EnqueueForSnapUpdateIfNeeded();
-    }
-  } else {
-    SetSnapContainerDataNeedsUpdate(true);
+  if (!GetLayoutBox()->NeedsLayout()) {
+    EnqueueForSnapUpdateIfNeeded();
   }
 }
 
@@ -1881,22 +1858,6 @@ bool PaintLayerScrollableArea::SetTargetSnapAreaElementIds(
     return true;
   }
   return false;
-}
-
-bool PaintLayerScrollableArea::SnapContainerDataNeedsUpdate() const {
-  return RareData() ? RareData()->snap_container_data_needs_update_ : false;
-}
-
-void PaintLayerScrollableArea::SetSnapContainerDataNeedsUpdate(
-    bool needs_update) {
-  DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
-  EnsureRareData().snap_container_data_needs_update_ = needs_update;
-  if (!needs_update)
-    return;
-  GetLayoutBox()
-      ->GetDocument()
-      .GetSnapCoordinator()
-      .SetAnySnapContainerDataNeedsUpdate(true);
 }
 
 absl::optional<gfx::PointF>

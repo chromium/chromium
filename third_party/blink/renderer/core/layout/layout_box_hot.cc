@@ -546,21 +546,6 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   return new_result;
 }
 
-void LayoutBox::SetSnapContainer(LayoutBox* new_container) {
-  NOT_DESTROYED();
-  LayoutBox* old_container = SnapContainer();
-  if (old_container == new_container)
-    return;
-
-  if (old_container)
-    old_container->RemoveSnapArea(*this);
-
-  EnsureRareData().snap_container_ = new_container;
-
-  if (new_container)
-    new_container->AddSnapArea(*this);
-}
-
 const NGPhysicalBoxFragment* LayoutBox::GetPhysicalFragment(
     wtf_size_t i) const {
   NOT_DESTROYED();

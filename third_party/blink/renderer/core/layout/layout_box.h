@@ -71,8 +71,6 @@ enum ShouldIncludeScrollbarGutter {
   kIncludeScrollbarGutter
 };
 
-using SnapAreaSet = HeapHashSet<Member<LayoutBox>>;
-
 struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
  public:
   LayoutBoxRareData();
@@ -89,12 +87,6 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
   bool has_previous_content_box_rect_ : 1;
 
   LayoutUnit override_containing_block_content_logical_width_;
-
-  // For snap area, the owning snap container.
-  Member<LayoutBox> snap_container_;
-  // For snap container, the descendant snap areas that contribute snap
-  // points.
-  SnapAreaSet snap_areas_;
 
   // Used by BoxPaintInvalidator. Stores the previous content rect after the
   // last paint invalidation. It's valid if has_previous_content_box_rect_ is
@@ -1154,15 +1146,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   ShapeOutsideInfo* GetShapeOutsideInfo() const;
 
-  // For snap areas, returns the snap container that owns us.
-  LayoutBox* SnapContainer() const;
-  void SetSnapContainer(LayoutBox*);
-  // For snap containers, returns all associated snap areas.
-  SnapAreaSet* SnapAreas() const;
-  void ClearSnapAreas();
-  // Moves all snap areas to the new container.
-  void ReassignSnapAreas(LayoutBox& new_container);
-
   // CustomLayoutChild only exists if this LayoutBox is a IsCustomItem (aka. a
   // child of a LayoutCustom). This is created/destroyed when this LayoutBox is
   // inserted/removed from the layout tree.
@@ -1471,8 +1454,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                                               const ComputedStyle* old_style);
   void UpdateGridPositionAfterStyleChange(const ComputedStyle*);
   void UpdateScrollSnapMappingAfterStyleChange(const ComputedStyle& old_style);
-  void ClearScrollSnapMapping();
-  void AddScrollSnapMapping();
 
   LayoutBoxRareData& EnsureRareData() {
     NOT_DESTROYED();
@@ -1495,9 +1476,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // TODO(crbug.com/1353190): Remove this data member after enabling
   // LayoutNGNoCopyBack flag.
   PhysicalBoxStrut margin_box_outsets_;
-
-  void AddSnapArea(LayoutBox&);
-  void RemoveSnapArea(const LayoutBox&);
 
   PhysicalRect DebugRect() const override;
 

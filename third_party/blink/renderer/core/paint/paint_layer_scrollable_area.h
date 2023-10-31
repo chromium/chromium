@@ -82,7 +82,6 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   void Trace(Visitor* visitor) const {}
 
   absl::optional<cc::SnapContainerData> snap_container_data_;
-  bool snap_container_data_needs_update_ = true;
   Vector<gfx::Rect> tickmarks_override_;
 };
 
@@ -537,8 +536,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   const cc::SnapContainerData* GetSnapContainerData() const override;
   void SetSnapContainerData(absl::optional<cc::SnapContainerData>) override;
   bool SetTargetSnapAreaElementIds(cc::TargetSnapAreaElementIds) override;
-  bool SnapContainerDataNeedsUpdate() const override;
-  void SetSnapContainerDataNeedsUpdate(bool) override;
 
   absl::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;

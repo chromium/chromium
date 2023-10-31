@@ -2658,12 +2658,8 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
   if (LocalFrameView* frame_view_anchored = View())
     frame_view_anchored->PerformScrollAnchoringAdjustments();
 
-  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
-    if (frame_view) {
-      frame_view->ExecutePendingSnapUpdates();
-    }
-  } else {
-    PerformScrollSnappingTasks();
+  if (frame_view) {
+    frame_view->ExecutePendingSnapUpdates();
   }
 
   if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)
@@ -8190,21 +8186,6 @@ bool Document::ForceSynchronousParsingForTesting() {
   return g_force_synchronous_parsing_for_testing;
 }
 
-SnapCoordinator& Document::GetSnapCoordinator() {
-  if (!snap_coordinator_)
-    snap_coordinator_ = MakeGarbageCollected<SnapCoordinator>();
-
-  return *snap_coordinator_;
-}
-
-void Document::PerformScrollSnappingTasks() {
-  DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
-  SnapCoordinator& snap_coordinator = GetSnapCoordinator();
-  if (!snap_coordinator.AnySnapContainerDataNeedsUpdate())
-    return;
-  snap_coordinator.UpdateAllSnapContainerDataIfNeeded();
-}
-
 void Document::UpdateHoverActiveState(bool is_active,
                                       bool update_active_chain,
                                       Element* inner_element) {
@@ -8822,7 +8803,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(agent_);
   visitor->Trace(canvas_font_cache_);
   visitor->Trace(intersection_observer_controller_);
-  visitor->Trace(snap_coordinator_);
   visitor->Trace(property_registry_);
   visitor->Trace(policy_);
   visitor->Trace(slot_assignment_engine_);

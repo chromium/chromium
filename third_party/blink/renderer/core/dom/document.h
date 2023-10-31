@@ -232,7 +232,6 @@ class SelectorQueryCache;
 class SerializedScriptValue;
 class Settings;
 class SlotAssignmentEngine;
-class SnapCoordinator;
 class StyleEngine;
 class StylePropertyMapReadOnly;
 class StyleResolver;
@@ -1665,9 +1664,6 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 #endif  // DCHECK_IS_ON()
 
-  SnapCoordinator& GetSnapCoordinator();
-  void PerformScrollSnappingTasks();
-
   void SetContainsShadowRoot() { may_contain_shadow_roots_ = true; }
 
   bool MayContainShadowRoots() const { return may_contain_shadow_roots_; }
@@ -2559,8 +2555,6 @@ class CORE_EXPORT Document : public ContainerNode,
 #if DCHECK_IS_ON()
   int node_count_ = 0;
 #endif
-
-  Member<SnapCoordinator> snap_coordinator_;
 
   Member<PropertyRegistry> property_registry_;
 

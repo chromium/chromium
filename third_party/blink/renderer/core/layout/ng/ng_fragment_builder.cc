@@ -248,9 +248,7 @@ void NGFragmentBuilder::PropagateFromFragment(
   PropagateChildAnchors(child, child_offset + relative_offset);
 
   PropagateStickyDescendants(child);
-  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
-    PropagateSnapAreas(child);
-  }
+  PropagateSnapAreas(child);
   PropagateScrollStartTarget(child);
 
   if (child.NeedsOOFPositionedInfoPropagation() &&
