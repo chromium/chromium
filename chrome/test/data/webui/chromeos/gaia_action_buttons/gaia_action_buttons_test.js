@@ -61,7 +61,7 @@ suite(gaia_action_buttons_test.suiteName, () => {
         document.createElement('gaia-action-buttons'));
     document.body.appendChild(actionButtonsComponent);
     testAuthenticator = new TestAuthenticator();
-    actionButtonsComponent.setAuthExtHostForTest(testAuthenticator);
+    actionButtonsComponent.setAuthenticatorForTest(testAuthenticator);
     flush();
     primaryButton = /** @type {!CrButtonElement} */ (
         actionButtonsComponent.shadowRoot.querySelector('.action-button'));

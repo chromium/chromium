@@ -36,7 +36,7 @@ export class TestEduCoexistenceBrowserProxy extends TestBrowserProxy implements
     super([
       'initializeLogin',
       'initializeEduArgs',
-      'authExtensionReady',
+      'authenticatorReady',
       'completeLogin',
       'getAccounts',
       'consentValid',
@@ -58,8 +58,8 @@ export class TestEduCoexistenceBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.coexistenceParams);
   }
 
-  authExtensionReady() {
-    this.methodCalled('authExtensionReady');
+  authenticatorReady() {
+    this.methodCalled('authenticatorReady');
   }
 
   completeLogin(credentials: AuthCompletedCredentials) {

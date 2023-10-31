@@ -669,7 +669,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
         {
           id: 'online-gaia',
           trigger: (screen) => {
-            screen.loadAuthExtension({
+            screen.loadAuthenticator({
               chromeType: 'chromedevice',
               enterpriseManagedDevice: false,
               forceReload: true,

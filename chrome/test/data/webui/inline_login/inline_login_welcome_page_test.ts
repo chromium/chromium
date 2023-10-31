@@ -13,7 +13,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {fakeAuthExtensionData, fakeAuthExtensionDataWithEmail, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
+import {fakeAuthenticationData, fakeAuthenticationDataWithEmail, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
 suite('InlineLoginWelcomePageTest', () => {
   let inlineLoginComponent: InlineLoginAppElement;
@@ -35,7 +35,7 @@ suite('InlineLoginWelcomePageTest', () => {
     inlineLoginComponent = document.createElement('inline-login-app');
     document.body.appendChild(inlineLoginComponent);
     testAuthenticator = new TestAuthenticator();
-    inlineLoginComponent.setAuthExtHostForTest(testAuthenticator);
+    inlineLoginComponent.setAuthenticatorForTest(testAuthenticator);
     flush();
   }
 
@@ -46,7 +46,7 @@ suite('InlineLoginWelcomePageTest', () => {
   test('Reauthentication', () => {
     testSetup(/*dialogArgs=*/ null);
     webUIListenerCallback(
-        'load-auth-extension', fakeAuthExtensionDataWithEmail);
+        'load-authenticator', fakeAuthenticationDataWithEmail);
     // Welcome screen should be skipped for reauth.
     assertEquals(
         View.ADD_ACCOUNT, getActiveViewId(), 'Welcome screen should be active');
@@ -54,7 +54,7 @@ suite('InlineLoginWelcomePageTest', () => {
 
   test('OkButton', () => {
     testSetup(/*dialogArgs=*/ null);
-    webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
+    webUIListenerCallback('load-authenticator', fakeAuthenticationData);
     const okButton =
         inlineLoginComponent.shadowRoot!.querySelector<HTMLElement>(
             '.next-button');
@@ -82,7 +82,7 @@ suite('InlineLoginWelcomePageTest', () => {
   test('Checkbox', () => {
     testSetup(/*dialogArgs=*/ null);
 
-    webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
+    webUIListenerCallback('load-authenticator', fakeAuthenticationData);
     const welcomePageApp =
         inlineLoginComponent.shadowRoot!.querySelector('welcome-page-app');
     assertTrue(!!welcomePageApp);
@@ -104,7 +104,7 @@ suite('InlineLoginWelcomePageTest', () => {
 
   test('GoBack', () => {
     testSetup(/*dialogArgs=*/ null);
-    webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
+    webUIListenerCallback('load-authenticator', fakeAuthenticationData);
     const backButton =
         inlineLoginComponent.shadowRoot!.querySelector<HTMLElement>(
             '.back-button');

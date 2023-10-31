@@ -171,7 +171,7 @@ export const SUPPORTED_PARAMS = [
   'service',       // Name of Gaia service.
   'frameUrl',      // Initial frame URL to use. If empty defaults to
                    // gaiaUrl.
-  'constrained',   // Whether the extension is loaded in a constrained
+  'constrained',   // Whether authentication happens in a constrained
                    // window.
   'clientId',      // Chrome client id.
   'needPassword',  // Whether the host is interested in getting a password.

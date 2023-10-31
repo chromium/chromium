@@ -416,7 +416,7 @@ void WaitUntilUIReady(Browser* browser) {
                 "  if (!document.querySelector('inline-login-app').loading_)"
                 "    handler();"
                 "  else"
-                "    document.querySelector('inline-login-app').authExtHost_"
+                "    document.querySelector('inline-login-app').authenticator_"
                 "       .addEventListener('ready', handler);"
                 "});"));
 }

@@ -67,7 +67,7 @@ export class PasswordChangeElement extends PasswordChangeElementBase {
    * Loads auth extension.
    * @param {Object} data Parameters for auth extension.
    */
-  loadAuthExtension(data) {
+  loadAuthenticator(data) {
     this.authenticator_.load(data);
   }
 

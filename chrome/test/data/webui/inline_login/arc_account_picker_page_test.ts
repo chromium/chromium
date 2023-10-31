@@ -14,7 +14,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {getFakeAccountsNotAvailableInArcList, setTestArcAccountPickerBrowserProxy, TestArcAccountPickerBrowserProxy} from 'chrome://webui-test/chromeos/arc_account_picker/test_util.js';
 
-import {fakeAuthExtensionData, fakeAuthExtensionDataWithEmail, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
+import {fakeAuthenticationData, fakeAuthenticationDataWithEmail, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
 suite('InlineLoginArcPickerPageTest', () => {
   let arcAccountPickerComponent: ArcAccountPickerAppElement;
@@ -30,7 +30,7 @@ suite('InlineLoginArcPickerPageTest', () => {
 
   async function testSetup(
       dialogArgs: AccountAdditionOptions|null,
-      accountsNotAvailableInArc: Account[], authExtensionData: object) {
+      accountsNotAvailableInArc: Account[], authenticationData: object) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testBrowserProxy = new TestInlineLoginBrowserProxy();
@@ -43,7 +43,7 @@ suite('InlineLoginArcPickerPageTest', () => {
 
     inlineLoginComponent = document.createElement('inline-login-app');
     document.body.appendChild(inlineLoginComponent);
-    inlineLoginComponent.setAuthExtHostForTest(new TestAuthenticator());
+    inlineLoginComponent.setAuthenticatorForTest(new TestAuthenticator());
     flush();
     arcAccountPickerComponent = inlineLoginComponent.shadowRoot!.querySelector(
         'arc-account-picker-app')!;
@@ -52,7 +52,7 @@ suite('InlineLoginArcPickerPageTest', () => {
       inlineLoginComponent.addEventListener(
           'switch-view-notify-for-testing', () => resolve());
     });
-    webUIListenerCallback('load-auth-extension', authExtensionData);
+    webUIListenerCallback('load-authenticator', authenticationData);
     await switchViewPromise;
     flush();
   }
@@ -61,9 +61,9 @@ suite('InlineLoginArcPickerPageTest', () => {
     await testSetup(
         {isAvailableInArc: true, showArcAvailabilityPicker: true},
         getFakeAccountsNotAvailableInArcList(),
-        // Send auth extension data without email -> it's account addition
+        // Send authentication data without email -> it's account addition
         // flow.
-        fakeAuthExtensionData);
+        fakeAuthenticationData);
     assertEquals(
         View.ARC_ACCOUNT_PICKER, getActiveViewId(),
         'ARC account picker screen should be active');
@@ -80,9 +80,9 @@ suite('InlineLoginArcPickerPageTest', () => {
     await testSetup(
         {isAvailableInArc: true, showArcAvailabilityPicker: true},
         /*accountsNotAvailableInArc=*/[],
-        // Send auth extension data with email -> it's reauthentication
+        // Send authentication data with email -> it's reauthentication
         // flow.
-        fakeAuthExtensionDataWithEmail);
+        fakeAuthenticationDataWithEmail);
     assertEquals(
         View.ADD_ACCOUNT, getActiveViewId(),
         'Add account view should be active for reauthentication');
@@ -92,9 +92,9 @@ suite('InlineLoginArcPickerPageTest', () => {
     await testSetup(
         {isAvailableInArc: true, showArcAvailabilityPicker: true},
         /*accountsNotAvailableInArc=*/[],
-        // Send auth extension data without email -> it's account addition
+        // Send auth authentication without email -> it's account addition
         // flow.
-        fakeAuthExtensionData);
+        fakeAuthenticationData);
     assertEquals(
         View.WELCOME, getActiveViewId(),
         'Welcome view should be active when there are 0 accounts' +
@@ -105,8 +105,8 @@ suite('InlineLoginArcPickerPageTest', () => {
     await testSetup(
         {isAvailableInArc: true, showArcAvailabilityPicker: true},
         getFakeAccountsNotAvailableInArcList(),
-        // Send auth extension data without email -> it's account addition flow.
-        fakeAuthExtensionData);
+        // Send authentication data without email -> it's account addition flow.
+        fakeAuthenticationData);
     assertEquals(
         View.ARC_ACCOUNT_PICKER, getActiveViewId(),
         'ARC account picker screen should be active');
@@ -125,9 +125,9 @@ suite('InlineLoginArcPickerPageTest', () => {
     await testSetup(
         {isAvailableInArc: true, showArcAvailabilityPicker: true},
         getFakeAccountsNotAvailableInArcList(),
-        // Send auth extension data without email -> it's account addition
+        // Send authentication data without email -> it's account addition
         // flow.
-        fakeAuthExtensionData);
+        fakeAuthenticationData);
     assertEquals(
         View.ARC_ACCOUNT_PICKER, getActiveViewId(),
         'ARC account picker screen should be active');

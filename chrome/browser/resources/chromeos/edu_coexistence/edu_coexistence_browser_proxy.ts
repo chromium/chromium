@@ -17,10 +17,10 @@ export interface EduCoexistenceBrowserProxy {
   initializeEduArgs(): Promise<EduCoexistenceParams>;
 
   /**
-   * Sends 'authExtensionReady' message to handle tasks after auth extension
+   * Sends 'authenticatorReady' message to handle tasks after authenticator
    * loads.
    */
-  authExtensionReady(): void;
+  authenticatorReady(): void;
 
   /**
    * Sends 'completeLogin' message to complete login.
@@ -72,8 +72,8 @@ export class EduCoexistenceBrowserProxyImpl implements
     return sendWithPromise('initializeEduArgs');
   }
 
-  authExtensionReady() {
-    chrome.send('authExtensionReady');
+  authenticatorReady() {
+    chrome.send('authenticatorReady');
   }
 
   completeLogin(credentials: AuthCompletedCredentials) {

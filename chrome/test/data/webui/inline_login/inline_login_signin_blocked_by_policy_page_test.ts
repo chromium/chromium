@@ -42,7 +42,7 @@ suite('InlineLoginSigninBlockedByPolicyPageTest', () => {
         document.createElement('inline-login-app'));
     document.body.appendChild(inlineLoginComponent);
     testAuthenticator = new TestAuthenticator();
-    inlineLoginComponent.setAuthExtHostForTest(testAuthenticator);
+    inlineLoginComponent.setAuthenticatorForTest(testAuthenticator);
     flush();
     signinBlockedByPolicyPageComponent =
         inlineLoginComponent.shadowRoot!.querySelector(

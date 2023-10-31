@@ -95,8 +95,8 @@ IN_PROC_BROWSER_TEST_F(InlineLoginBrowserTest, WebUICallbacks) {
   RunTestCase("WebUICallbacks");
 }
 
-IN_PROC_BROWSER_TEST_F(InlineLoginBrowserTest, AuthExtHostCallbacks) {
-  RunTestCase("AuthExtHostCallbacks");
+IN_PROC_BROWSER_TEST_F(InlineLoginBrowserTest, AuthenticatorCallbacks) {
+  RunTestCase("AuthenticatorCallbacks");
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginBrowserTest, BackButton) {
@@ -133,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(InlineLoginBrowserTestWithArcAccountRestrictionsEnabled,
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginBrowserTestWithArcAccountRestrictionsEnabled,
-                       AuthExtHostCallbacks) {
-  RunTestCase("AuthExtHostCallbacks");
+                       AuthenticatorCallbacks) {
+  RunTestCase("AuthenticatorCallbacks");
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginBrowserTestWithArcAccountRestrictionsEnabled,

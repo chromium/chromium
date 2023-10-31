@@ -285,7 +285,7 @@ class GaiaScreenHandler
 
   void HandleGaiaUIReady();
 
-  void HandleAuthExtensionLoaded();
+  void HandleAuthenticatorLoaded();
 
   // Allows WebUI to control the login shelf's guest and apps buttons visibility
   // during OOBE.
@@ -335,7 +335,7 @@ class GaiaScreenHandler
 
   // Tells webui to load authentication extension. `force` is used to force the
   // extension reloading, if it has already been loaded.
-  void LoadAuthExtension(bool force);
+  void LoadAuthenticator(bool force);
 
   void UpdateStateInternal(NetworkError::ErrorReason reason, bool force_update);
   void HideOfflineMessage(NetworkStateInformer::State state,

@@ -134,7 +134,7 @@ namespace ash {
 
 namespace {
 
-const char kAuthIframeParentName[] = "signin-frame";
+const char kAuthFrameName[] = "signin-frame";
 
 const char kEndpointGen[] = "1.0";
 
@@ -554,7 +554,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   was_security_token_pin_canceled_ = false;
 
-  CallExternalAPI("loadAuthExtension", std::move(params));
+  CallExternalAPI("loadAuthenticator", std::move(params));
 }
 
 void GaiaScreenHandler::ReloadGaia(bool force_reload) {
@@ -571,7 +571,7 @@ void GaiaScreenHandler::ReloadGaia(bool force_reload) {
 
   proxy_auth_dialog_need_reload_ = false;
   VLOG(1) << "Reloading Gaia.";
-  LoadAuthExtension(force_reload);
+  LoadAuthenticator(force_reload);
 }
 
 void GaiaScreenHandler::DeclareLocalizedValues(
@@ -647,8 +647,8 @@ void GaiaScreenHandler::DeclareJSCallbacks() {
   AddCallback("samlChallengeMachineKey",
               &GaiaScreenHandler::HandleSamlChallengeMachineKey);
   AddCallback("loginWebuiReady", &GaiaScreenHandler::HandleGaiaUIReady);
-  AddCallback("authExtensionLoaded",
-              &GaiaScreenHandler::HandleAuthExtensionLoaded);
+  AddCallback("authenticatorLoaded",
+              &GaiaScreenHandler::HandleAuthenticatorLoaded);
   AddCallback("setIsFirstSigninStep",
               &GaiaScreenHandler::HandleIsFirstSigninStep);
   AddCallback("samlStateChanged", &GaiaScreenHandler::HandleSamlStateChanged);
@@ -661,8 +661,8 @@ void GaiaScreenHandler::DeclareJSCallbacks() {
               &GaiaScreenHandler::HandleShowLoadingTimeoutError);
 }
 
-void GaiaScreenHandler::HandleAuthExtensionLoaded() {
-  VLOG(1) << "Auth extension finished loading";
+void GaiaScreenHandler::HandleAuthenticatorLoaded() {
+  VLOG(1) << "Authenticator finished loading";
   // Recreate the client cert usage observer, in order to track only the certs
   // used during the current sign-in attempt.
   extension_provided_client_cert_usage_observer_ =
@@ -902,7 +902,7 @@ void GaiaScreenHandler::CompleteAuthentication(
 }
 
 void GaiaScreenHandler::OnCookieWaitTimeout() {
-  LoadAuthExtension(true /* force */);
+  LoadAuthenticator(true /* force */);
   LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
       SigninError::kCookieWaitTimeout, /*details=*/std::string());
 }
@@ -1146,7 +1146,7 @@ void GaiaScreenHandler::SubmitLoginFormForTest() {
   VLOG(2) << "Submit login form for test, user=" << test_user_;
 
   content::RenderFrameHost* frame =
-      signin::GetAuthFrame(web_ui()->GetWebContents(), kAuthIframeParentName);
+      signin::GetAuthFrame(web_ui()->GetWebContents(), kAuthFrameName);
 
   // clang-format off
   std::string code =
@@ -1360,7 +1360,7 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
                     chromeos::onc::CertificateScope::Default()));
   }
 
-  LoadAuthExtension(/* force=*/true);
+  LoadAuthenticator(/* force=*/true);
 
   UpdateState(NetworkError::ERROR_REASON_UPDATE);
 
@@ -1391,14 +1391,14 @@ void GaiaScreenHandler::ShowEnrollmentNudge(const std::string& email_domain) {
   CallExternalAPI("showEnrollmentNudge", email_domain);
 }
 
-void GaiaScreenHandler::LoadAuthExtension(bool force) {
-  VLOG(1) << "LoadAuthExtension, force: " << force;
+void GaiaScreenHandler::LoadAuthenticator(bool force) {
+  VLOG(1) << "LoadAuthenticator, force: " << force;
   if (!initialized_) {
     VLOG(1) << "Handler wasn't initialized";
     return;
   }
   if (frame_state_ == FRAME_STATE_LOADING && !force) {
-    VLOG(1) << "Skip loading the Auth extension as it's already being loaded";
+    VLOG(1) << "Skip loading authenticator as it's already being loaded";
     return;
   }
 

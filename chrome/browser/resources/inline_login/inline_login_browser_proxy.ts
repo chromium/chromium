@@ -10,10 +10,10 @@ export interface InlineLoginBrowserProxy {
   initialize(): void;
 
   /**
-   * Send 'authExtensionReady' message to handle tasks after auth extension
+   * Send 'authenticatorReady' message to handle tasks after authenticator
    * loads.
    */
-  authExtensionReady(): void;
+  authenticatorReady(): void;
 
   /**
    * Send 'switchToFullTab' message to switch the UI from a constrained dialog
@@ -73,8 +73,8 @@ export class InlineLoginBrowserProxyImpl implements InlineLoginBrowserProxy {
     chrome.send('initialize');
   }
 
-  authExtensionReady() {
-    chrome.send('authExtensionReady');
+  authenticatorReady() {
+    chrome.send('authenticatorReady');
   }
 
   switchToFullTab(url: string) {
