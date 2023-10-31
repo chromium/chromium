@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Dynamic content script test extension",
+  "version": "0.1",
+  "description": "Tests scripting.updateContentScripts calls",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": ["scripting"],
+  "host_permissions": ["*://hostperms.com/*"]
+}

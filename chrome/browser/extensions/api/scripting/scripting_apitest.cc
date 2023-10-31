@@ -150,9 +150,20 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, CSSRemoval) {
   ASSERT_TRUE(RunExtensionTest("scripting/remove_css")) << message_;
 }
 
-// TODO(crbug.com/1491650): Re-enable this test
-IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DISABLED_DynamicContentScripts) {
-  ASSERT_TRUE(RunExtensionTest("scripting/dynamic_scripts")) << message_;
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, RegisterContentScripts) {
+  ASSERT_TRUE(RunExtensionTest("scripting/register_scripts")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, GetContentScripts) {
+  ASSERT_TRUE(RunExtensionTest("scripting/get_scripts")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, UnregisterContentScripts) {
+  ASSERT_TRUE(RunExtensionTest("scripting/unregister_scripts")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, UpdateContentScripts) {
+  ASSERT_TRUE(RunExtensionTest("scripting/update_scripts")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptParameters) {
