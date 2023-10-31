@@ -680,11 +680,16 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
   gfx::Rect visible_rect = input_image.VisibleRect();
   scoped_refptr<VideoFrame> mm21_frame = CreateNV12Frame(
       input_image.Size(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+
+  // The MM21 path only makes sense for V4L2, so we should never get an Intel
+  // media compressed buffer here.
+  ASSERT_FALSE(IsIntelMediaCompressedModifier(mm21_frame->layout().modifier()));
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12,
           VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-          /*force_linear_buffer_mapper=*/true);
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
   scoped_refptr<VideoFrame> mapped_mm21_frame =
       frame_mapper->Map(mm21_frame, PROT_READ | PROT_WRITE);
   ASSERT_TRUE(mapped_mm21_frame);
@@ -804,11 +809,17 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
   uint8_t* vulkan_output_v =
       (uint8_t*)mmap(nullptr, i420_scaled_u_v_size, PROT_READ | PROT_WRITE,
                      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+
+  // The MM21 de-tiling path only makes sense for V4L2, so we should never get
+  // an Intel media compressed buffer here.
+  ASSERT_FALSE(
+      IsIntelMediaCompressedModifier(vulkan_output_frame->layout().modifier()));
   std::unique_ptr<VideoFrameMapper> output_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_ARGB,
           VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-          /*force_linear_buffer_mapper=*/true);
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
   scoped_refptr<VideoFrame> mapped_output_frame =
       output_frame_mapper->Map(vulkan_output_frame, PROT_READ | PROT_WRITE);
   const uint8_t* argb_plane =

@@ -590,9 +590,18 @@ TEST_F(ImageProcessorPerfTest, NV12ScalingComparisonTest) {
       input_image_frame_, gl_upscaling_output_frame, std::move(gl_callback1));
   run_loop.Run();
 
+  // The image processor perf tests are currently only available with V4L2, and
+  // we should never get Intel media compressed buffers in V4L2 platforms.
+  ASSERT_FALSE(IsIntelMediaCompressedModifier(
+      gl_downscaling_output_frame->layout().modifier()));
+  ASSERT_FALSE(
+      IsIntelMediaCompressedModifier(input_image_frame_->layout().modifier()));
+
   const std::unique_ptr<VideoFrameMapper> output_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
-          PIXEL_FORMAT_NV12, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, true);
+          PIXEL_FORMAT_NV12, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
   ASSERT_TRUE(output_frame_mapper);
 
   const scoped_refptr<VideoFrame> mapped_gl_output = output_frame_mapper->Map(
