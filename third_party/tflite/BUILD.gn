@@ -153,6 +153,9 @@ tflite_static_library("tflite_builtin_op_resolver") {
     "src/tensorflow/lite/kernels/right_shift.cc",
     "src/tensorflow/lite/kernels/sign.cc",
     "src/tensorflow/lite/kernels/sign_custom.cc",
+    "src/tensorflow/lite/kernels/stablehlo_add.cc",
+    "src/tensorflow/lite/kernels/stablehlo_elementwise.cc",
+    "src/tensorflow/lite/kernels/stablehlo_multiply.cc",
     "src/tensorflow/lite/kernels/unsorted_segment.cc",
     "src/tensorflow/lite/kernels/var_handle.cc",
   ]

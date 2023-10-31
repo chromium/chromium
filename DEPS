@@ -1849,7 +1849,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '21e56c30e480ac67bed48335a5d122c59a6a6805',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '32bbdef0e4246ba914dab8b1abec0bc256685c37',
 
   'src/third_party/turbine': {
       'packages': [
@@ -1927,7 +1927,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'bbbaa7352a3ea729987d3e654d37be93e8009691',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'c7e7cde37615a81a529c326aa278bfab4cd6fe5a',
 
   'src/tools/page_cycler/acid3':
     Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + 'a926d0a32e02c4c03ae95bb798e6c780e0e184ba',
