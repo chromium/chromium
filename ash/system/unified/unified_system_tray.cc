@@ -20,8 +20,6 @@
 #include "ash/system/hotspot/hotspot_tray_view.h"
 #include "ash/system/human_presence/snooping_protection_view.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/message_center_ui_controller.h"
-#include "ash/system/message_center/message_center_ui_delegate.h"
 #include "ash/system/message_center/notification_grouping_controller.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/model/clock_model.h"
@@ -64,7 +62,6 @@
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/presentation_time_recorder.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/image_view.h"
@@ -79,104 +76,13 @@ constexpr char kStatusAreaShowBubbleHistogram[] =
     "Ash.StatusAreaShowBubble.PresentationTime";
 }  // namespace
 
-class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
- public:
-  explicit UiDelegate(UnifiedSystemTray* owner);
-
-  UiDelegate(const UiDelegate&) = delete;
-  UiDelegate& operator=(const UiDelegate&) = delete;
-
-  ~UiDelegate() override;
-
-  // MessageCenterUiDelegate:
-  void OnMessageCenterContentsChanged() override;
-  bool ShowPopups() override;
-  void HidePopups() override;
-  bool ShowMessageCenter() override;
-  void HideMessageCenter() override;
-
-  MessageCenterUiController* ui_controller() { return ui_controller_.get(); }
-
-  message_center::MessagePopupView* GetPopupViewForNotificationID(
-      const std::string& notification_id) {
-    return message_popup_collection_->GetPopupViewForNotificationID(
-        notification_id);
-  }
-
-  AshMessagePopupCollection* message_popup_collection() {
-    return message_popup_collection_.get();
-  }
-
-  NotificationGroupingController* grouping_controller() {
-    return grouping_controller_.get();
-  }
-
- private:
-  std::unique_ptr<MessageCenterUiController> const ui_controller_;
-  std::unique_ptr<AshMessagePopupCollection> message_popup_collection_;
-
-  const raw_ptr<UnifiedSystemTray, ExperimentalAsh> owner_;
-
-  std::unique_ptr<NotificationGroupingController> grouping_controller_;
-};
-
 const base::TimeDelta UnifiedSystemTray::kNotificationCountUpdateDelay =
     base::Milliseconds(100);
-
-UnifiedSystemTray::UiDelegate::UiDelegate(UnifiedSystemTray* owner)
-    : ui_controller_(std::make_unique<MessageCenterUiController>(this)),
-      message_popup_collection_(
-          std::make_unique<AshMessagePopupCollection>(owner->shelf())),
-      owner_(owner),
-      grouping_controller_(std::make_unique<NotificationGroupingController>(
-          /*unified_system_tray=*/owner,
-          /*notification_center_tray=*/owner->shelf()
-              ->status_area_widget()
-              ->notification_center_tray())) {
-  ui_controller_->set_hide_on_last_notification(false);
-
-  display::Screen* screen = display::Screen::GetScreen();
-  message_popup_collection_->StartObserving(
-      screen, screen->GetDisplayNearestWindow(
-                  owner->shelf()->GetStatusAreaWidget()->GetNativeWindow()));
-}
-
-UnifiedSystemTray::UiDelegate::~UiDelegate() {
-  // We need to destruct `message_popup_collection_` before
-  // `grouping_controller_` to prevent a msan failure, so explicitly delete
-  // it here.
-  message_popup_collection_.reset();
-}
-
-void UnifiedSystemTray::UiDelegate::OnMessageCenterContentsChanged() {
-  owner_->UpdateNotificationInternal();
-}
-
-bool UnifiedSystemTray::UiDelegate::ShowPopups() {
-  if (owner_->IsBubbleShown()) {
-    return false;
-  }
-  return true;
-}
-
-void UnifiedSystemTray::UiDelegate::HidePopups() {}
-
-bool UnifiedSystemTray::UiDelegate::ShowMessageCenter() {
-  if (owner_->IsBubbleShown()) {
-    return false;
-  }
-
-  owner_->ShowBubbleInternal();
-  return true;
-}
-
-void UnifiedSystemTray::UiDelegate::HideMessageCenter() {}
 
 UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
                          TrayBackgroundViewCatalogName::kUnifiedSystem,
                          kEndRounded),
-      ui_delegate_(std::make_unique<UiDelegate>(this)),
       model_(base::MakeRefCounted<UnifiedSystemTrayModel>(shelf)),
       slider_bubble_controller_(
           std::make_unique<UnifiedSliderBubbleController>(this)),
@@ -284,10 +190,6 @@ UnifiedSystemTray::~UnifiedSystemTray() {
   message_center::MessageCenter::Get()->RemoveObserver(this);
 
   DestroyBubbles();
-
-  // We need to destruct `ui_delegate_` before `timer_` to prevent a msan
-  // failure, so explicitly delete it here.
-  ui_delegate_.reset();
 }
 
 void UnifiedSystemTray::AddObserver(Observer* observer) {
@@ -609,13 +511,7 @@ void UnifiedSystemTray::ShowBubble() {
   // ShowBubbleInternal will be called from UiDelegate.
   if (!bubble_) {
     time_opened_ = base::TimeTicks::Now();
-
-    if (features::IsQsRevampEnabled()) {
-      ShowBubbleInternal();
-    } else {
-      ui_delegate_->ui_controller()->ShowMessageCenterBubble();
-    }
-
+    ShowBubbleInternal();
     Shell::Get()->system_tray_notifier()->NotifySystemTrayBubbleShown();
   }
 }
@@ -623,9 +519,6 @@ void UnifiedSystemTray::ShowBubble() {
 void UnifiedSystemTray::CloseBubble() {
   base::UmaHistogramMediumTimes("Ash.QuickSettings.UserJourneyTime",
                                 base::TimeTicks::Now() - time_opened_);
-  // HideMessageCenterBubbleInternal will be called from UiDelegate.
-  ui_delegate_->ui_controller()->HideMessageCenterBubble();
-
   HideBubbleInternal();
 }
 
@@ -808,33 +701,6 @@ void UnifiedSystemTray::UpdateNotificationAfterDelay() {
   if (!features::IsQsRevampEnabled()) {
     notification_icons_controller_->UpdateNotificationIndicators();
   }
-}
-
-message_center::MessagePopupView*
-UnifiedSystemTray::GetPopupViewForNotificationID(
-    const std::string& notification_id) {
-  return ui_delegate_->GetPopupViewForNotificationID(notification_id);
-}
-
-AshMessagePopupCollection* UnifiedSystemTray::GetMessagePopupCollection() {
-  // We need a check here since this function might be called when UiDelegate's
-  // dtor is triggered. In that case, the unique_ptr `ui_delegate_` is null even
-  // though the UiDelegate object is still in the middle of dtor process.
-  if (!ui_delegate_) {
-    return nullptr;
-  }
-  return ui_delegate_->message_popup_collection();
-}
-
-NotificationGroupingController*
-UnifiedSystemTray::GetNotificationGroupingController() {
-  // We need a check here since this function might be called when UiDelegate's
-  // dtor is triggered. In that case, the unique_ptr `ui_delegate_` is null even
-  // though the UiDelegate object is still in the middle of dtor process.
-  if (!ui_delegate_) {
-    return nullptr;
-  }
-  return ui_delegate_->grouping_controller();
 }
 
 template <typename T>

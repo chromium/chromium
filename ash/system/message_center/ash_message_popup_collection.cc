@@ -282,10 +282,14 @@ void AshMessagePopupCollection::NotifierCollisionHandler::OnHotseatStateChanged(
 ///////////////////////////////////////////////////////////////////////////////
 // AshMessagePopupCollection:
 
-AshMessagePopupCollection::AshMessagePopupCollection(Shelf* shelf)
-    : screen_(nullptr), shelf_(shelf) {
+AshMessagePopupCollection::AshMessagePopupCollection(display::Screen* screen,
+                                                     Shelf* shelf)
+    : screen_(screen), shelf_(shelf) {
   notifier_collision_handler_ =
       std::make_unique<NotifierCollisionHandler>(this);
+  StartObserving(screen_,
+                 screen_->GetDisplayNearestWindow(
+                     shelf_->GetStatusAreaWidget()->GetNativeWindow()));
 }
 
 AshMessagePopupCollection::~AshMessagePopupCollection() {

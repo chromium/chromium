@@ -11,7 +11,6 @@
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_center_utils.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
@@ -88,9 +87,9 @@ class TestNotificationViewController
 class TestNotificationGroupingController
     : public NotificationGroupingController {
  public:
-  TestNotificationGroupingController(UnifiedSystemTray* system_tray,
-                                     NotificationCenterTray* notification_tray)
-      : NotificationGroupingController(system_tray, notification_tray) {
+  explicit TestNotificationGroupingController(
+      NotificationCenterTray* notification_tray)
+      : NotificationGroupingController(notification_tray) {
     test_view_controller_ = std::make_unique<TestNotificationViewController>();
   }
 
@@ -113,9 +112,7 @@ class TestNotificationGroupingController
 
 }  // namespace
 
-class NotificationGroupingControllerTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class NotificationGroupingControllerTest : public AshTestBase {
  public:
   NotificationGroupingControllerTest() = default;
   NotificationGroupingControllerTest(
@@ -123,16 +120,6 @@ class NotificationGroupingControllerTest
   NotificationGroupingControllerTest& operator=(
       const NotificationGroupingControllerTest& other) = delete;
   ~NotificationGroupingControllerTest() override = default;
-
-  void SetUp() override {
-    if (IsQsRevampEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    }
-
-    AshTestBase::SetUp();
-  }
 
  protected:
   std::string AddNotificationWithOriginUrl(const GURL& origin_url) {
@@ -143,7 +130,7 @@ class NotificationGroupingControllerTest
 
   void AnimateUntilIdle() {
     AshMessagePopupCollection* popup_collection =
-        GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection();
+        GetPrimaryNotificationCenterTray()->popup_collection();
 
     while (popup_collection->animation()->is_animating()) {
       popup_collection->animation()->SetCurrentValue(1.0);
@@ -152,7 +139,9 @@ class NotificationGroupingControllerTest
   }
 
   message_center::MessagePopupView* GetPopupView(const std::string& id) {
-    return GetPrimaryUnifiedSystemTray()->GetPopupViewForNotificationID(id);
+    return GetPrimaryNotificationCenterTray()
+        ->popup_collection()
+        ->GetPopupViewForNotificationID(id);
   }
 
   // Construct a new notification for testing.
@@ -213,29 +202,15 @@ class NotificationGroupingControllerTest
   }
 
   bool IsNotificationListViewAnimating() const {
-    return features::IsQsRevampEnabled() ? GetPrimaryNotificationCenterTray()
-                                               ->GetNotificationListView()
-                                               ->IsAnimating()
-                                         : GetPrimaryUnifiedSystemTray()
-                                               ->message_center_bubble()
-                                               ->notification_center_view()
-                                               ->notification_list_view()
-                                               ->IsAnimating();
+    return GetPrimaryNotificationCenterTray()
+        ->GetNotificationListView()
+        ->IsAnimating();
   }
-
-  // TODO(b/305075031) clean up after the flag is removed.
-  bool IsQsRevampEnabled() const { return true; }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   size_t notifications_counter_ = 0;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         NotificationGroupingControllerTest,
-                         testing::Bool() /* IsQsRevampEnabled() */);
-
-TEST_P(NotificationGroupingControllerTest, BasicGrouping) {
+TEST_F(NotificationGroupingControllerTest, BasicGrouping) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2;
   const GURL url(u"http://test-url.com/");
@@ -253,7 +228,7 @@ TEST_P(NotificationGroupingControllerTest, BasicGrouping) {
   EXPECT_TRUE(message_center->FindNotificationById(id_parent)->group_parent());
 }
 
-TEST_P(NotificationGroupingControllerTest, BasicRemoval) {
+TEST_F(NotificationGroupingControllerTest, BasicRemoval) {
   std::string id0, id1, id2;
   const GURL url(u"http://test-url.com");
   id0 = AddNotificationWithOriginUrl(url);
@@ -281,7 +256,7 @@ TEST_P(NotificationGroupingControllerTest, BasicRemoval) {
 // Tests that having a grouped notification as the latest notification does not
 // animate the notification list. This happened because latest notifications get
 // expanded and it was rapidly being collapsed due to it being grouped.
-TEST_P(NotificationGroupingControllerTest, LatestNotificationDoesNotAnimate) {
+TEST_F(NotificationGroupingControllerTest, LatestNotificationDoesNotAnimate) {
   TrayBackgroundView* tray;
 
   // Add two grouped notifications.
@@ -289,27 +264,18 @@ TEST_P(NotificationGroupingControllerTest, LatestNotificationDoesNotAnimate) {
   AddNotificationWithOriginUrl(url);
   AddNotificationWithOriginUrl(url);
 
-  // Show the notification center.
-  if (features::IsQsRevampEnabled()) {
-    tray = GetPrimaryNotificationCenterTray();
-  } else {
-    tray = GetPrimaryUnifiedSystemTray();
-  }
+  tray = GetPrimaryNotificationCenterTray();
   tray->ShowBubble();
 
   // List should not be animating when the latest notification is grouped.
   EXPECT_FALSE(IsNotificationListViewAnimating());
 }
 
-TEST_P(NotificationGroupingControllerTest,
+TEST_F(NotificationGroupingControllerTest,
        ParentNotificationReshownWithNewChild) {
   TrayBackgroundView* tray;
 
-  if (features::IsQsRevampEnabled()) {
-    tray = GetPrimaryNotificationCenterTray();
-  } else {
-    tray = GetPrimaryUnifiedSystemTray();
-  }
+  tray = GetPrimaryNotificationCenterTray();
 
   std::string id0;
   const GURL url(u"http://test-url.com");
@@ -341,7 +307,7 @@ TEST_P(NotificationGroupingControllerTest,
   EXPECT_TRUE(GetPopupView(parent_id));
 }
 
-TEST_P(NotificationGroupingControllerTest,
+TEST_F(NotificationGroupingControllerTest,
        RemovingParentRemovesChildGroupNotifications) {
   std::string id0;
   const GURL url(u"http://test-url.com");
@@ -360,7 +326,7 @@ TEST_P(NotificationGroupingControllerTest,
   ASSERT_FALSE(message_center->HasPopupNotifications());
 }
 
-TEST_P(NotificationGroupingControllerTest,
+TEST_F(NotificationGroupingControllerTest,
        RepopulatedParentNotificationRemoval) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2, id3, id4;
@@ -374,15 +340,9 @@ TEST_P(NotificationGroupingControllerTest,
       id0 + message_center_utils::GenerateGroupParentNotificationIdSuffix(
                 message_center->FindNotificationById(id0)->notifier_id());
 
-  if (IsQsRevampEnabled()) {
-    // Toggle the notification tray to dismiss all popups.
-    GetPrimaryNotificationCenterTray()->ShowBubble();
-    GetPrimaryNotificationCenterTray()->CloseBubble();
-  } else {
-    // Toggle the system tray to dismiss all popups.
-    GetPrimaryUnifiedSystemTray()->ShowBubble();
-    GetPrimaryUnifiedSystemTray()->CloseBubble();
-  }
+  // Toggle the notification tray to dismiss all popups.
+  GetPrimaryNotificationCenterTray()->ShowBubble();
+  GetPrimaryNotificationCenterTray()->CloseBubble();
 
   ASSERT_FALSE(MessageCenter::Get()->HasPopupNotifications());
 
@@ -402,7 +362,7 @@ TEST_P(NotificationGroupingControllerTest,
   EXPECT_TRUE(parent->group_parent());
 }
 
-TEST_P(NotificationGroupingControllerTest, ParentNotificationMetadata) {
+TEST_F(NotificationGroupingControllerTest, ParentNotificationMetadata) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2;
   const GURL url(u"http://test-url.com/");
@@ -437,7 +397,7 @@ TEST_P(NotificationGroupingControllerTest, ParentNotificationMetadata) {
 
 // Parent notification's priority should always match the priority of the last
 // added notification to the group.
-TEST_P(NotificationGroupingControllerTest, ParentNotificationPriority) {
+TEST_F(NotificationGroupingControllerTest, ParentNotificationPriority) {
   auto* message_center = MessageCenter::Get();
   std::string id1, id2, id3;
   const GURL url(u"http://test-url.com/");
@@ -464,7 +424,7 @@ TEST_P(NotificationGroupingControllerTest, ParentNotificationPriority) {
   EXPECT_EQ(message_center::HIGH_PRIORITY, parent_notification->priority());
 }
 
-TEST_P(NotificationGroupingControllerTest,
+TEST_F(NotificationGroupingControllerTest,
        NotificationsGroupingOnMultipleScreens) {
   UpdateDisplay("800x600,800x600");
   auto* message_center = MessageCenter::Get();
@@ -490,7 +450,7 @@ TEST_P(NotificationGroupingControllerTest,
 
 // Even though it is not a web notification, privacy indicators notification
 // should group together.
-TEST_P(NotificationGroupingControllerTest, GroupPrivacyIndicatorsNotification) {
+TEST_F(NotificationGroupingControllerTest, GroupPrivacyIndicatorsNotification) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1;
   const GURL url0(u"http://test-url1.com/");
@@ -512,13 +472,9 @@ TEST_P(NotificationGroupingControllerTest, GroupPrivacyIndicatorsNotification) {
 
 // Create a group notification while the message center bubble is
 // is shown.
-TEST_P(NotificationGroupingControllerTest,
+TEST_F(NotificationGroupingControllerTest,
        NotificationsGroupingMessageCenterBubbleShown) {
-  if (IsQsRevampEnabled()) {
-    GetPrimaryNotificationCenterTray()->ShowBubble();
-  } else {
-    GetPrimaryUnifiedSystemTray()->ShowBubble();
-  }
+  GetPrimaryNotificationCenterTray()->ShowBubble();
 
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2;
@@ -537,7 +493,7 @@ TEST_P(NotificationGroupingControllerTest,
   EXPECT_TRUE(message_center->FindNotificationById(id_parent)->group_parent());
 }
 
-TEST_P(NotificationGroupingControllerTest,
+TEST_F(NotificationGroupingControllerTest,
        GroupedNotificationRemovedDuringAnimation) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1;
@@ -558,7 +514,7 @@ TEST_P(NotificationGroupingControllerTest,
   waiter.Wait(GetPopupView(id0)->message_view()->layer());
 }
 
-TEST_P(NotificationGroupingControllerTest,
+TEST_F(NotificationGroupingControllerTest,
        ParentNotificationRemovedDuringAnimation) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
@@ -587,7 +543,7 @@ TEST_P(NotificationGroupingControllerTest,
 // correctly dismissed when swiped in the collapse state rather than moved into
 // the center of the screen. Also, tests that the correct notifications are
 // dismissed by swiping in the expanded state.
-TEST_P(NotificationGroupingControllerTest, NotificationSwipeGestureBehavior) {
+TEST_F(NotificationGroupingControllerTest, NotificationSwipeGestureBehavior) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       ::features::kNotificationGesturesUpdate);
@@ -640,7 +596,7 @@ TEST_P(NotificationGroupingControllerTest, NotificationSwipeGestureBehavior) {
 // Regression test for b/251684908. Tests that a duplicate `AddNotification`
 // event does not cause the associated notification popup to be dismissed or the
 // original notification to be grouped incorrectly.
-TEST_P(NotificationGroupingControllerTest, DuplicateAddNotificationNotGrouped) {
+TEST_F(NotificationGroupingControllerTest, DuplicateAddNotificationNotGrouped) {
   std::string id = AddNotificationWithOriginUrl(GURL(u"http://test-url.com/"));
 
   auto* popup = GetPopupView(id);
@@ -663,7 +619,7 @@ TEST_P(NotificationGroupingControllerTest, DuplicateAddNotificationNotGrouped) {
   EXPECT_FALSE(message_center->FindNotificationById(id)->group_child());
 }
 
-TEST_P(NotificationGroupingControllerTest, ChildNotificationUpdate) {
+TEST_F(NotificationGroupingControllerTest, ChildNotificationUpdate) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2;
   const GURL url(u"http://test-url.com/");
@@ -682,9 +638,9 @@ TEST_P(NotificationGroupingControllerTest, ChildNotificationUpdate) {
   EXPECT_TRUE(message_center->FindNotificationById(id0)->group_child());
 }
 
-TEST_P(NotificationGroupingControllerTest, ChildNotificationViewUpdate) {
+TEST_F(NotificationGroupingControllerTest, ChildNotificationViewUpdate) {
   TestNotificationGroupingController test_controller(
-      GetPrimaryUnifiedSystemTray(), GetPrimaryNotificationCenterTray());
+      GetPrimaryNotificationCenterTray());
 
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2;
@@ -719,7 +675,7 @@ TEST_P(NotificationGroupingControllerTest, ChildNotificationViewUpdate) {
 // notification should be removed as well. We are testing in the case where
 // there is no popup or notification center is not showing.
 // TODO(crbug.com/1417929): Re-enable this test
-TEST_P(NotificationGroupingControllerTest, DISABLED_ChildNotificationRemove) {
+TEST_F(NotificationGroupingControllerTest, DISABLED_ChildNotificationRemove) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1;
   const GURL url(u"http://test-url.com/");
@@ -749,7 +705,7 @@ TEST_P(NotificationGroupingControllerTest, DISABLED_ChildNotificationRemove) {
   EXPECT_FALSE(message_center->FindNotificationById(id0));
 }
 
-TEST_P(NotificationGroupingControllerTest,
+TEST_F(NotificationGroupingControllerTest,
        ChildNotificationsWithDifferentPriorities) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2;
@@ -797,7 +753,7 @@ TEST_P(NotificationGroupingControllerTest,
   EXPECT_EQ(4u, message_center->GetVisibleNotifications().size());
 }
 
-TEST_P(NotificationGroupingControllerTest, ChildNotificationsPinned) {
+TEST_F(NotificationGroupingControllerTest, ChildNotificationsPinned) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2;
   const GURL url(u"http://test-url.com/");
@@ -846,7 +802,7 @@ TEST_P(NotificationGroupingControllerTest, ChildNotificationsPinned) {
   EXPECT_TRUE(parent_notification->pinned());
 }
 
-TEST_P(NotificationGroupingControllerTest, ChildNotificationsUpdatePinned) {
+TEST_F(NotificationGroupingControllerTest, ChildNotificationsUpdatePinned) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2, id3;
   const GURL url(u"http://test-url.com/");
@@ -883,7 +839,7 @@ TEST_P(NotificationGroupingControllerTest, ChildNotificationsUpdatePinned) {
   EXPECT_FALSE(parent_notification->pinned());
 }
 
-TEST_P(NotificationGroupingControllerTest,
+TEST_F(NotificationGroupingControllerTest,
        ArcNotificationGroupingWithoutGroupKey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kRenderArcNotificationsByChrome);
@@ -933,7 +889,7 @@ TEST_P(NotificationGroupingControllerTest,
 
 // Test to make sure `web_app_id` in the `NotifierId` is used to determine
 // grouping.
-TEST_P(NotificationGroupingControllerTest, WebAppIdImpactsGrouping) {
+TEST_F(NotificationGroupingControllerTest, WebAppIdImpactsGrouping) {
   GURL origin_url = GURL("http://test-url.com");
   auto notifier_id = message_center::NotifierId(origin_url);
 
@@ -965,7 +921,7 @@ TEST_P(NotificationGroupingControllerTest, WebAppIdImpactsGrouping) {
 
 // Test to make sure a notification update coming from a PWA for an existing web
 // notification is handled appropriately.
-TEST_P(NotificationGroupingControllerTest, PWANotificationUpdate) {
+TEST_F(NotificationGroupingControllerTest, PWANotificationUpdate) {
   GURL origin_url = GURL("http://test-url.com");
   auto notifier_id = message_center::NotifierId(origin_url);
 

@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -26,8 +25,8 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -3102,8 +3101,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceScreenRecordingUiBrowserTest,
   MessagePopupAnimationWaiter(ash::Shell::GetPrimaryRootWindowController()
                                   ->shelf()
                                   ->GetStatusAreaWidget()
-                                  ->unified_system_tray()
-                                  ->GetMessagePopupCollection())
+                                  ->notification_center_tray()
+                                  ->popup_collection())
       .Wait();
 
   // Verify that the screen recording appears in holding space UI.

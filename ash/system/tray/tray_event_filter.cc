@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_base.h"
@@ -149,8 +150,8 @@ void TrayEventFilter::OnWindowActivated(ActivationReason reason,
   // If the activated window is a popup notification, interacting with it
   // should not close the bubble.
   if (features::IsNotifierCollisionEnabled() &&
-      active_status_area_widget->unified_system_tray()
-          ->GetMessagePopupCollection()
+      active_status_area_widget->notification_center_tray()
+          ->popup_collection()
           ->IsWidgetAPopupNotification(gained_active_widget)) {
     return;
   }

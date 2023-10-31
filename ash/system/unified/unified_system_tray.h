@@ -10,7 +10,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/tray/tray_background_view.h"
@@ -21,10 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-
-namespace message_center {
-class MessagePopupView;
-}  // namespace message_center
 
 namespace ui {
 class Event;
@@ -37,7 +32,6 @@ class Widget;
 namespace ash {
 
 class AutozoomToastController;
-class AshMessagePopupCollection;
 class CameraMicTrayItemView;
 class ChannelIndicatorView;
 class CurrentLocaleView;
@@ -45,7 +39,6 @@ class HotspotTrayView;
 class ImeModeView;
 class ManagedDeviceTrayItemView;
 class NetworkTrayView;
-class NotificationGroupingController;
 class NotificationIconsController;
 class PrivacyIndicatorsTrayItemView;
 class PrivacyScreenToastController;
@@ -242,10 +235,6 @@ class ASH_EXPORT UnifiedSystemTray
 
   std::u16string GetAccessibleNameForQuickSettingsBubble();
 
-  AshMessagePopupCollection* GetMessagePopupCollection();
-
-  NotificationGroupingController* GetNotificationGroupingController();
-
   scoped_refptr<UnifiedSystemTrayModel> model() { return model_; }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }
 
@@ -280,18 +269,11 @@ class ASH_EXPORT UnifiedSystemTray
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayTest;
 
-  // Private class implements `MessageCenterUiDelegate`.
-  class UiDelegate;
-
   // Forwarded from `UiDelegate`.
   void ShowBubbleInternal();
   void HideBubbleInternal();
   void UpdateNotificationInternal();
   void UpdateNotificationAfterDelay();
-
-  // Forwarded to `UiDelegate`.
-  message_center::MessagePopupView* GetPopupViewForNotificationID(
-      const std::string& notification_id);
 
   // Adds the tray item to the the unified system tray container. An unowned
   // pointer is stored in `tray_items_`.
@@ -301,8 +283,6 @@ class ASH_EXPORT UnifiedSystemTray
   // Destroys the `bubble_` and the `message_center_bubble_`, also handles
   // removing bubble related observers.
   void DestroyBubbles();
-
-  std::unique_ptr<UiDelegate> ui_delegate_;
 
   std::unique_ptr<UnifiedSystemTrayBubble> bubble_;
 

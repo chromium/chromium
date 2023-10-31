@@ -154,8 +154,8 @@ class PrivacyIndicatorsControllerTest : public AshTestBase {
 
   // Get the popup notification view associated with `id`.
   views::View* GetPopupNotificationView(const std::string& id) {
-    return GetPrimaryUnifiedSystemTray()
-        ->GetMessagePopupCollection()
+    return GetPrimaryNotificationCenterTray()
+        ->popup_collection()
         ->GetMessageViewForNotificationId(id);
   }
 

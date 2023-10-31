@@ -1540,7 +1540,7 @@ TEST_P(AshNotificationViewDragTest, Basics) {
   if (IsPopupNotification()) {
     // Wait until the notification popup shows.
     MessagePopupAnimationWaiter(
-        GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+        GetPrimaryNotificationCenterTray()->popup_collection())
         .Wait();
     EXPECT_FALSE(
         message_center::MessageCenter::Get()->GetPopupNotifications().empty());
@@ -1607,7 +1607,7 @@ TEST_P(AshNotificationViewDragTest, GroupedNotification) {
   if (IsPopupNotification()) {
     // Wait until the notification popup shows.
     MessagePopupAnimationWaiter(
-        GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+        GetPrimaryNotificationCenterTray()->popup_collection())
         .Wait();
   } else {
     // Show the message center bubble.
@@ -1626,7 +1626,7 @@ TEST_P(AshNotificationViewDragTest, GroupedNotification) {
   child_view->ToggleExpand();
   if (IsPopupNotification()) {
     MessagePopupAnimationWaiter(
-        GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+        GetPrimaryNotificationCenterTray()->popup_collection())
         .Wait();
   } else {
     notification_test_api()->CompleteNotificationListAnimation();
@@ -1687,7 +1687,7 @@ class AshNotificationViewDragAsyncDropTest
     if (IsPopupNotification()) {
       // Wait until the notification popup shows.
       MessagePopupAnimationWaiter(
-          GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+          GetPrimaryNotificationCenterTray()->popup_collection())
           .Wait();
       EXPECT_FALSE(message_center::MessageCenter::Get()
                        ->GetPopupNotifications()
@@ -1894,7 +1894,7 @@ TEST_P(ScreenCaptureNotificationViewDragTest, Basics) {
   if (IsPopupNotification()) {
     // Wait until the notification popup shows.
     MessagePopupAnimationWaiter(
-        GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+        GetPrimaryNotificationCenterTray()->popup_collection())
         .Wait();
     EXPECT_FALSE(
         message_center::MessageCenter::Get()->GetPopupNotifications().empty());
@@ -1934,7 +1934,7 @@ TEST_F(DragAfterNotificationRemovalTest, Basics) {
 
   // Wait until the notification popup shows.
   MessagePopupAnimationWaiter(
-      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      GetPrimaryNotificationCenterTray()->popup_collection())
       .Wait();
   EXPECT_FALSE(
       message_center::MessageCenter::Get()->GetPopupNotifications().empty());

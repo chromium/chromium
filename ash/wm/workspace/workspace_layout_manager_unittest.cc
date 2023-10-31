@@ -36,6 +36,7 @@
 #include "ash/shell_observer.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
@@ -1051,7 +1052,7 @@ TEST_F(WorkspaceLayoutManagerTest,
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
   MessagePopupAnimationWaiter(
-      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      GetPrimaryNotificationCenterTray()->popup_collection())
       .Wait();
 
   // PiP window has moved due to the popup notification window.
@@ -1061,7 +1062,7 @@ TEST_F(WorkspaceLayoutManagerTest,
   message_center::MessageCenter::Get()->RemoveNotification(notification_id,
                                                            /*by_user=*/true);
   MessagePopupAnimationWaiter(
-      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      GetPrimaryNotificationCenterTray()->popup_collection())
       .Wait();
 
   // Now, the PiP window has returned to its original position.

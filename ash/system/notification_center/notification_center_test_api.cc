@@ -298,8 +298,8 @@ message_center::MessagePopupView* NotificationCenterTestApi::GetPopupViewForId(
       ->GetPrimaryRootWindowController()
       ->shelf()
       ->GetStatusAreaWidget()
-      ->unified_system_tray()
-      ->GetMessagePopupCollection()
+      ->notification_center_tray()
+      ->popup_collection()
       ->GetPopupViewForNotificationID(id);
 }
 

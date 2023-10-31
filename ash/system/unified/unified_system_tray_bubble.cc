@@ -375,14 +375,6 @@ void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
     }
   }
 
-  // If the activated window is a popup notification, interacting with it should
-  // not close the bubble.
-  if (features::IsNotifierCollisionEnabled() &&
-      unified_system_tray_->GetMessagePopupCollection()
-          ->IsWidgetAPopupNotification(gained_active_widget)) {
-    return;
-  }
-
   // Deletes this.
   unified_system_tray_->CloseBubble();
 }

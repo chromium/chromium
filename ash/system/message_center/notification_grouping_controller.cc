@@ -4,23 +4,19 @@
 
 #include "ash/system/message_center/notification_grouping_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/message_center/metrics_utils.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/notification_view_controller.h"
-#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
 
@@ -137,10 +133,8 @@ GroupedNotificationList& GetGroupedNotificationListInstance() {
 }  // namespace
 
 NotificationGroupingController::NotificationGroupingController(
-    UnifiedSystemTray* system_tray,
     NotificationCenterTray* notification_tray)
-    : system_tray_(system_tray),
-      notification_tray_(notification_tray),
+    : notification_tray_(notification_tray),
       grouped_notification_list_(&GetGroupedNotificationListInstance()) {
   observer_.Observe(MessageCenter::Get());
 }
@@ -348,22 +342,9 @@ void NotificationGroupingController::RemoveGroupedChild(
 message_center::NotificationViewController*
 NotificationGroupingController::GetActiveNotificationViewController() {
   if (message_center::MessageCenter::Get()->IsMessageCenterVisible()) {
-    if (features::IsQsRevampEnabled()) {
-      return notification_tray_->GetNotificationListView();
-    }
-    // Return `notification_list_view()` if `message_center_bubble()` exists,
-    // return nullptr otherwise. It would be incorrect to return
-    // `MessagePopupCollection` in that case since `IsMessageCenterVisible` is
-    // true which means that `MessagePopupCollection` is not the active view
-    // controller. This state can happen if this function is called during
-    // `message_center_bubble()` construction.
-    return system_tray_->IsMessageCenterBubbleShown()
-               ? system_tray_->message_center_bubble()
-                     ->notification_center_view()
-                     ->notification_list_view()
-               : nullptr;
+    return notification_tray_->GetNotificationListView();
   }
-  return system_tray_->GetMessagePopupCollection();
+  return notification_tray_->popup_collection();
 }
 
 void NotificationGroupingController::OnNotificationAdded(

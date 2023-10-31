@@ -14,8 +14,8 @@
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/message_center/notification_grouping_controller.h"
 #include "ash/system/message_center/session_state_notification_blocker.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -159,8 +159,8 @@ GetActiveNotificationViewControllerForDisplay(int64_t display_id) {
   }
 
   return root_window_controller->GetStatusAreaWidget()
-      ->unified_system_tray()
-      ->GetNotificationGroupingController()
+      ->notification_center_tray()
+      ->notification_grouping_controller()
       ->GetActiveNotificationViewController();
 }
 

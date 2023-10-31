@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 #include "ash/system/accessibility/unified_accessibility_detailed_view_controller.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
@@ -28,6 +29,13 @@
 #include "ui/views/widget/widget_utils.h"
 
 namespace {
+ash::NotificationCenterTray* GetNotificationTray() {
+  return ash::Shell::Get()
+      ->GetPrimaryRootWindowController()
+      ->GetStatusAreaWidget()
+      ->notification_center_tray();
+}
+
 ash::UnifiedSystemTray* GetTray() {
   return ash::Shell::Get()
       ->GetPrimaryRootWindowController()
@@ -176,7 +184,9 @@ void SystemTrayTestApi::TapSelectToSpeakTray() {
 message_center::MessagePopupView*
 SystemTrayTestApi::GetPopupViewForNotificationID(
     const std::string& notification_id) {
-  return GetTray()->GetPopupViewForNotificationID(notification_id);
+  return GetNotificationTray()
+      ->popup_collection()
+      ->GetPopupViewForNotificationID(notification_id);
 }
 
 // static

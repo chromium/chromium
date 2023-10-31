@@ -67,7 +67,7 @@ class ASH_EXPORT AshMessagePopupCollection
     kMaxValue = kSliderBubbleAndExtendedHotseat
   };
 
-  explicit AshMessagePopupCollection(Shelf* shelf);
+  AshMessagePopupCollection(display::Screen* screen, Shelf* shelf);
 
   AshMessagePopupCollection(const AshMessagePopupCollection&) = delete;
   AshMessagePopupCollection& operator=(const AshMessagePopupCollection&) =

@@ -21,6 +21,7 @@
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/network/sms_observer.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
@@ -186,17 +187,18 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
   SnoopingProtectionNotificationBlockerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{ash::features::kSnoopingProtection,
-          {
-              {"SnoopingProtection_pos_window_ms", "4000"},
-              {"SnoopingProtection_filter_config_case", "2"},
-              {"SnoopingProtection_positive_count_threshold", "1"},
-              {"SnoopingProtection_negative_count_threshold", "1"},
-              {"SnoopingProtection_uncertain_count_threshold", "1"},
-              {"SnoopingProtection_positive_score_threshold", "0"},
-              {"SnoopingProtection_negative_score_threshold", "0"},
-          }}},
-        {ash::features::kQuickDim, ash::features::kQsRevamp});
+        {/*enabled_features=*/{
+            ash::features::kSnoopingProtection,
+            {
+                {"SnoopingProtection_pos_window_ms", "4000"},
+                {"SnoopingProtection_filter_config_case", "2"},
+                {"SnoopingProtection_positive_count_threshold", "1"},
+                {"SnoopingProtection_negative_count_threshold", "1"},
+                {"SnoopingProtection_uncertain_count_threshold", "1"},
+                {"SnoopingProtection_positive_score_threshold", "0"},
+                {"SnoopingProtection_negative_score_threshold", "0"},
+            }}},
+        /*disabled_features=*/{ash::features::kQuickDim});
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kHasHps);
   }
@@ -231,10 +233,6 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
 
     controller_ = Shell::Get()->snooping_protection_controller();
     message_center_ = message_center::MessageCenter::Get();
-  }
-
-  UnifiedMessageCenterBubble* GetMessageCenterBubble() {
-    return GetPrimaryUnifiedSystemTray()->message_center_bubble();
   }
 
   bool HasInfoNotification() {
@@ -510,7 +508,7 @@ TEST_F(SnoopingProtectionNotificationBlockerTest, ShowButtonClicked) {
 
   // Click on show button.
   SimulateClick(/*button_index=*/0);
-  EXPECT_TRUE(GetMessageCenterBubble()->IsMessageCenterVisible());
+  EXPECT_TRUE(GetPrimaryNotificationCenterTray()->IsBubbleShown());
 }
 
 // Test that message center is visible when click Settings button.

@@ -8,7 +8,7 @@
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
-#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
@@ -314,7 +314,7 @@ TEST_P(ScreenCaptureNotificationPixelTest, DISABLED_VerifyPopup) {
 
   // Wait until the notification popup shows.
   MessagePopupAnimationWaiter(
-      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      GetPrimaryNotificationCenterTray()->popup_collection())
       .Wait();
 
   // Get the notification view.

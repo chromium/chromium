@@ -9,6 +9,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/message_center/notification_grouping_controller.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/notification_icons_controller.h"
@@ -95,10 +97,25 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
     return notification_icons_controller_.get();
   }
 
+  NotificationGroupingController* notification_grouping_controller() {
+    return notification_grouping_controller_.get();
+  }
+
+  AshMessagePopupCollection* popup_collection() {
+    return popup_collection_.get();
+  }
+
  private:
   friend class NotificationCenterTestApi;
   friend class NotificationCounterViewTest;
   friend class NotificationIconsControllerTest;
+
+  // Manages notification grouping.
+  const std::unique_ptr<NotificationGroupingController>
+      notification_grouping_controller_;
+
+  // Manages notification popups.
+  const std::unique_ptr<AshMessagePopupCollection> popup_collection_;
 
   // Manages notification metrics.
   const std::unique_ptr<NotificationMetricsRecorder>

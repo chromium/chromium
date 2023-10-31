@@ -22,15 +22,14 @@ class GroupedNotificationList;
 }  // namespace
 
 class NotificationCenterTray;
-class UnifiedSystemTray;
 
 // A controller class to manage adding, removing and updating group
 // notifications.
 class ASH_EXPORT NotificationGroupingController
     : public message_center::MessageCenterObserver {
  public:
-  NotificationGroupingController(UnifiedSystemTray* system_tray,
-                                 NotificationCenterTray* notification_tray);
+  explicit NotificationGroupingController(
+      NotificationCenterTray* notification_tray);
   NotificationGroupingController(const NotificationGroupingController& other) =
       delete;
   NotificationGroupingController& operator=(
@@ -108,11 +107,6 @@ class ASH_EXPORT NotificationGroupingController
   bool adding_parent_grouped_notification_ = false;
 
   // Owner of this class.
-  const raw_ptr<UnifiedSystemTray, ExperimentalAsh> system_tray_;
-
-  // Raw ptr to the `NotificationCenterTray` adjacent to `system_tray_`, has the
-  // same owner as `system_tray_`.
-  // TODO(b/251687017): Make this the owner of this class.
   const raw_ptr<NotificationCenterTray, DanglingUntriaged | ExperimentalAsh>
       notification_tray_;
 
