@@ -318,16 +318,9 @@ TEST_P(OverviewSessionTest, CloseButtonDisabledOnDrag) {
       gfx::ToRoundedPoint(item1->GetTransformedBounds().CenterPoint()));
   GetEventGenerator()->MoveTouchIdBy(/*touch_id=*/0, -100, 0);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    // When Jellyroll is enabled, we show the title and hide the close button
-    // only for the overview item being dragged.
-    EXPECT_EQ(1.f, GetTitlebarOpacity(item1));
-    EXPECT_EQ(0.f, GetCloseButtonOpacity(item1));
-  } else {
-    // Make sure the drag event triggered the fade animations.
-    EXPECT_EQ(0.f, GetTitlebarOpacity(item1));
-    EXPECT_EQ(1.f, GetCloseButtonOpacity(item1));
-  }
+  // Close button for both items has 0 opacity.
+  EXPECT_EQ(1.f, GetTitlebarOpacity(item1));
+  EXPECT_EQ(0.f, GetCloseButtonOpacity(item1));
   EXPECT_EQ(1.f, GetTitlebarOpacity(item2));
   EXPECT_EQ(0.f, GetCloseButtonOpacity(item2));
 
@@ -2207,14 +2200,9 @@ TEST_P(OverviewSessionTest, HandleActiveWindowNotInOverviewGrid) {
 
   ClickWindow(widget->GetNativeWindow());
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  // |window1| and |window2| should animate.
-  EXPECT_EQ(is_jellyroll_enabled ? gfx::Tween::ACCEL_20_DECEL_100
-                                 : gfx::Tween::EASE_OUT,
-            tester1.tween_type());
-  EXPECT_EQ(is_jellyroll_enabled ? gfx::Tween::ACCEL_20_DECEL_100
-                                 : gfx::Tween::EASE_OUT,
-            tester2.tween_type());
+  // `window1` and `window2` should animate.
+  EXPECT_EQ(gfx::Tween::ACCEL_20_DECEL_100, tester1.tween_type());
+  EXPECT_EQ(gfx::Tween::ACCEL_20_DECEL_100, tester2.tween_type());
   EXPECT_EQ(gfx::Tween::ZERO, tester3.tween_type());
 }
 
@@ -2465,17 +2453,11 @@ TEST_P(OverviewSessionTest, OverviewItemTitleCloseVisibilityOnDrag) {
   generator->PressLeftButton();
   base::RunLoop().RunUntilIdle();
 
-  if (chromeos::features::IsJellyEnabled()) {
-    // When Jellyroll is enabled, the title is always shown and the layer is
-    // created only after the drag has started moving.
-    EXPECT_TRUE(GetCloseButton(item1)->layer());
-    EXPECT_EQ(0.f, GetCloseButtonOpacity(item1));
-  } else {
-    EXPECT_EQ(0.f, GetTitlebarOpacity(item1));
-    EXPECT_EQ(1.f, GetCloseButtonOpacity(item1));
-    EXPECT_EQ(1.f, GetTitlebarOpacity(item2));
-  }
-
+  // The title is always shown and the layer is created only after the drag has
+  // started moving.
+  EXPECT_TRUE(GetCloseButton(item1)->layer());
+  EXPECT_EQ(0.f, GetCloseButtonOpacity(item1));
+  EXPECT_TRUE(GetCloseButton(item2)->layer());
   EXPECT_EQ(0.f, GetCloseButtonOpacity(item2));
 
   // Drag |item1| in a way so that |window1| does not get activated (drags
@@ -2768,9 +2750,7 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
   // Helper function which returns the ratio of the item width and height minus
   // the header and window margin.
   auto item_ratio = [](OverviewItemBase* item) {
-    gfx::RectF boundsf = chromeos::features::IsJellyrollEnabled()
-                             ? item->target_bounds()
-                             : item->GetTargetBoundsWithInsets();
+    const gfx::RectF boundsf = item->target_bounds();
     return boundsf.width() / boundsf.height();
   };
 
@@ -3168,15 +3148,6 @@ TEST_P(OverviewSessionTest, FadeIn) {
   // Validate item bounds are within the grid.
   const gfx::Rect bounds = gfx::ToEnclosedRect(item->target_bounds());
   EXPECT_TRUE(GetGridBounds().Contains(bounds));
-
-  // Header is expected to be shown immediately without Jelly. With Jelly, the
-  // header isn't painted to layer until dragged.
-  if (!chromeos::features::IsJellyrollEnabled()) {
-    EXPECT_EQ(
-        1.0f,
-        item->overview_item_view()->header_view()->layer()->GetTargetOpacity());
-  }
-
   EXPECT_EQ(OverviewEnterExitType::kFadeInEnter,
             GetOverviewSession()->enter_exit_overview_type());
 }
@@ -5417,7 +5388,7 @@ TEST_F(FloatOverviewSessionTest, ClickingWithFloatedWindow) {
 }
 
 // Tests that dragging a normal window while there is a floated window to a new
-// desk does not result in a crash. Regression test for b/261757970.
+// desk does not result in a crash. Regression test for http://b/261757970.
 TEST_F(FloatOverviewSessionTest, DraggingToNewDeskWithFloatedWindow) {
   // Create one normal and one floated window.
   auto normal_window = CreateAppWindow();
@@ -5439,13 +5410,9 @@ TEST_F(FloatOverviewSessionTest, DraggingToNewDeskWithFloatedWindow) {
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
-  views::LabelButton* new_desk_button = nullptr;
-  if (chromeos::features::IsJellyrollEnabled()) {
-    new_desk_button =
-        const_cast<CrOSNextDeskIconButton*>(desks_bar_view->new_desk_button());
-  } else {
-    new_desk_button = desks_bar_view->zero_state_new_desk_button();
-  }
+
+  const CrOSNextDeskIconButton* new_desk_button =
+      desks_bar_view->new_desk_button();
   ASSERT_TRUE(new_desk_button);
   ASSERT_TRUE(new_desk_button->GetVisible());
   generator->DragMouseTo(new_desk_button->GetBoundsInScreen().CenterPoint());

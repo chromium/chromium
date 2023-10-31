@@ -1874,12 +1874,12 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
 // Tests that launching a template that contains a system web app will move the
 // existing instance of the system web app to the current desk.
 IN_PROC_BROWSER_TEST_P(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
-  if (GetParam()) {
-    // TODO(b/289284602): Temporarily disable when Jelly is enabled.  Clip rect
-    // has an unexpected value.
-    SUCCEED();
+  if (!GetParam()) {
+    // Test fails with jelly disabled, which is OK as non jelly is being
+    // removed.
     return;
   }
+
   Profile* profile = browser()->profile();
 
   // Create the settings and help apps, which are system web apps.

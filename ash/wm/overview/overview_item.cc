@@ -408,19 +408,6 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
 
   FadeInWidgetToOverview(item_widget_.get(), fade_animation,
                          /*observe=*/true);
-
-  // Update the item header visibility immediately if entering from home
-  // launcher.
-  if (new_animation_type == OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER) {
-    overview_item_view_->SetHeaderVisibility(
-        OverviewItemView::HeaderVisibility::kVisible, /*animate=*/true);
-  }
-
-  // Update the item header visibility immediately without an animation.
-  if (new_animation_type == OVERVIEW_ANIMATION_NONE) {
-    overview_item_view_->SetHeaderVisibility(
-        OverviewItemView::HeaderVisibility::kVisible, /*animate=*/false);
-  }
 }
 
 gfx::Transform OverviewItem::ComputeTargetTransform(
@@ -610,17 +597,11 @@ void OverviewItem::PrepareForOverview() {
 }
 
 void OverviewItem::OnStartingAnimationComplete() {
-  DCHECK(item_widget_);
+  CHECK(item_widget_);
 
-  if (transform_window_.IsMinimizedOrTucked()) {
-    // Fade the title in if minimized or tucked. The rest of `item_widget_`
-    // should already be shown.
-    overview_item_view_->SetHeaderVisibility(
-        OverviewItemView::HeaderVisibility::kVisible, /*animate=*/true);
-  } else if (!IsContinuousScrollInProgress() &&
-             overview_session_->enter_exit_overview_type() ==
-                 OverviewEnterExitType::
-                     kContinuousAnimationEnterOnScrollUpdate) {
+  if (!IsContinuousScrollInProgress() &&
+      overview_session_->enter_exit_overview_type() ==
+          OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate) {
     // If a continuous scroll has ended, make the header visible again.
     item_widget_->GetLayer()->SetOpacity(1.f);
   } else {
@@ -769,16 +750,7 @@ void OverviewItem::StartDrag() {
 
 void OverviewItem::OnOverviewItemDragStarted(OverviewItemBase* item) {
   is_being_dragged_ = (item == this);
-
-  if (chromeos::features::IsJellyrollEnabled()) {
-    overview_item_view_->SetCloseButtonVisible(false);
-  } else {
-    overview_item_view_->SetHeaderVisibility(
-        is_being_dragged_
-            ? OverviewItemView::HeaderVisibility::kInvisible
-            : OverviewItemView::HeaderVisibility::kCloseButtonInvisibleOnly,
-        /*animate=*/true);
-  }
+  overview_item_view_->SetCloseButtonVisible(false);
 }
 
 void OverviewItem::OnOverviewItemDragEnded(bool snap) {
@@ -787,12 +759,7 @@ void OverviewItem::OnOverviewItemDragEnded(bool snap) {
       overview_item_view_->HideCloseInstantlyAndThenShowItSlowly();
     }
   } else {
-    if (chromeos::features::IsJellyrollEnabled()) {
-      overview_item_view_->SetCloseButtonVisible(true);
-    } else {
-      overview_item_view_->SetHeaderVisibility(
-          OverviewItemView::HeaderVisibility::kVisible, /*animate=*/true);
-    }
+    overview_item_view_->SetCloseButtonVisible(true);
   }
   is_being_dragged_ = false;
 }
@@ -1276,37 +1243,6 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
 }
 
 void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {
-  if (chromeos::features::IsJellyrollEnabled()) {
-    UpdateHeaderLayoutCrOSNext(animation_type);
-    return;
-  }
-
-  aura::Window* widget_window = item_widget_->GetNativeWindow();
-  ScopedOverviewAnimationSettings animation_settings(animation_type,
-                                                     widget_window);
-  // Create a start animation observer if this is an enter overview layout
-  // animation.
-  if (animation_type == OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_ENTER ||
-      animation_type == OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER) {
-    auto enter_observer = std::make_unique<EnterAnimationObserver>();
-    animation_settings.AddObserver(enter_observer.get());
-    OverviewController::Get()->AddEnterAnimationObserver(
-        std::move(enter_observer));
-  }
-
-  gfx::RectF item_bounds = target_bounds_;
-  ::wm::TranslateRectFromScreen(root_window_, &item_bounds);
-  const gfx::Point origin = gfx::ToRoundedPoint(item_bounds.origin());
-  item_bounds.set_origin(gfx::PointF());
-  widget_window->SetBounds(ToStableSizeRoundedRect(item_bounds));
-
-  gfx::Transform label_transform;
-  label_transform.Translate(origin.x(), origin.y());
-  widget_window->SetTransform(label_transform);
-}
-
-void OverviewItem::UpdateHeaderLayoutCrOSNext(
-    OverviewAnimationType animation_type) {
   gfx::RectF current_item_bounds(item_widget_->GetWindowBoundsInScreen());
   gfx::RectF target_item_bounds = target_bounds_;
 

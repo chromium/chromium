@@ -34,18 +34,13 @@ class OverviewDropTargetView : public views::View {
   OverviewDropTargetView() {
     SetUseDefaultFillLayout(true);
 
-    const int corner_radius =
-        chromeos::features::IsJellyrollEnabled()
-            ? kOverviewItemCornerRadius
-            : views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                  views::Emphasis::kLow);
-
     background_view_ = AddChildView(std::make_unique<views::View>());
     background_view_->SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshShieldAndBase20, corner_radius, /*for_border_thickness=*/0));
+        kColorAshShieldAndBase20, kOverviewItemCornerRadius,
+        /*for_border_thickness=*/0));
 
     SetBorder(views::CreateThemedRoundedRectBorder(
-        kDropTargetBorderThickness, corner_radius,
+        kDropTargetBorderThickness, kOverviewItemCornerRadius,
         cros_tokens::kCrosSysSystemBaseElevated));
   }
   OverviewDropTargetView(const OverviewDropTargetView&) = delete;

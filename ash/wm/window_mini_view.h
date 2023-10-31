@@ -142,9 +142,10 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // Returns the bounds where the backdrop and preview should go.
   gfx::Rect GetContentAreaBounds() const;
 
-  // Subclasses can override these functions to provide customization for
-  // margins and layouts of certain elements.
-  virtual gfx::Rect GetHeaderBounds() const;
+  gfx::Rect GetHeaderBounds() const;
+
+  // Subclasses can override this function to provide customization for margins
+  // and layouts of the preview view.
   virtual gfx::Size GetPreviewViewSize() const;
 
   // views::View:

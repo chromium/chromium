@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -44,6 +43,8 @@ constexpr base::TimeDelta kDropTargetFade = base::Milliseconds(250);
 // stops.
 constexpr base::TimeDelta kFadeInOnWindowDrag = base::Milliseconds(350);
 
+constexpr base::TimeDelta kWindowRestoreDuration = base::Milliseconds(350);
+
 base::TimeDelta GetAnimationDuration(OverviewAnimationType animation_type) {
   switch (animation_type) {
     case OVERVIEW_ANIMATION_NONE:
@@ -53,9 +54,7 @@ base::TimeDelta GetAnimationDuration(OverviewAnimationType animation_type) {
     case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_FADE_OUT:
       return kFadeOut;
     case OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_EXIT:
-      return chromeos::features::IsJellyrollEnabled()
-                 ? kWindowRestoreDurationCrOSNext
-                 : kTransition;
+      return kWindowRestoreDuration;
     case OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_ENTER:
     case OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW:
     case OVERVIEW_ANIMATION_RESTORE_WINDOW:
@@ -78,8 +77,6 @@ base::TimeDelta GetAnimationDuration(OverviewAnimationType animation_type) {
     case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_SAVED_DESK_GRID_FADE_OUT:
       return kFadeOut;
   }
-  NOTREACHED();
-  return base::TimeDelta();
 }
 
 void ReportCloseSmoothness(int smoothness) {
@@ -120,11 +117,7 @@ ScopedOverviewAnimationSettings::ScopedOverviewAnimationSettings(
           ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS);
       break;
     case OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_EXIT:
-      if (chromeos::features::IsJellyrollEnabled()) {
-        animation_settings_->SetTweenType(gfx::Tween::ACCEL_20_DECEL_100);
-      } else {
-        animation_settings_->SetTweenType(gfx::Tween::EASE_OUT);
-      }
+      animation_settings_->SetTweenType(gfx::Tween::ACCEL_20_DECEL_100);
       animation_settings_->SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
       break;

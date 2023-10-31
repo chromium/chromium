@@ -172,14 +172,9 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
                      OverviewAnimationType animation_type,
                      bool is_first_update);
 
-  // Updates the |item_widget|'s bounds. Any change in bounds will be animated
-  // from the current bounds to the new bounds as per the |animation_type|.
+  // Updates the `item_widget`'s bounds. Any change in bounds will be animated
+  // from the current bounds to the new bounds as per the `animation_type`.
   void UpdateHeaderLayout(OverviewAnimationType animation_type);
-
-  // Updates the bounds of `item_widget` if the feature flag Jellyroll is
-  // enabled. Once the feature is fully launched, this function will be renamed
-  // to `UpdateHeaderLayout` and the function above should be removed.
-  void UpdateHeaderLayoutCrOSNext(OverviewAnimationType animation_type);
 
   // Animates opacity of the |transform_window_| and its caption to |opacity|
   // using |animation_type|.
