@@ -12,10 +12,32 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
+#include "third_party/blink/renderer/modules/ml/buildflags.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
 
+#define SKIP_TEST_ON_UNSUPPORTED_BACKEND(backend_type)       \
+  do {                                                       \
+    if (GetBackendType() == backend_type)                    \
+      GTEST_SKIP() << #backend_type << " is not supported."; \
+  } while (0)
+
 namespace blink {
+
+namespace {
+
+const TestVariety kGraphTestVariety[] = {
+#if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
+    {BackendType::kXnnpack, ExecutionMode::kAsync},
+    {BackendType::kXnnpack, ExecutionMode::kSync},
+#endif
+
+#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
+    {BackendType::kModelLoader, ExecutionMode::kAsync},
+#endif
+};
+
+}  // namespace
 
 class MLGraphTest : public MLGraphTestBase {};
 
@@ -56,6 +78,7 @@ struct ElementWiseBinaryTester {
 };
 
 TEST_P(MLGraphTest, ElementWiseBinaryTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test element-wise add operator for two 1-D tensors.
@@ -143,8 +166,8 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
   }
   {
     // Test element-wise mul operator for two 4-D tensors.
-    // The expected results should be the prdocut of the values of the two input
-    // tensors, element-wise.
+    // The expected results should be the product of the values of the two
+    // input tensors, element-wise.
     ElementWiseBinaryTester<float>{
         .kind = ElementWiseBinaryKind::kMul,
         .lhs = {.type = V8MLOperandType::Enum::kFloat32,
@@ -238,6 +261,7 @@ struct PowTester {
 };
 
 TEST_P(MLGraphTest, PowTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test element-wise pow operator with exponent = 2.
@@ -312,6 +336,7 @@ struct ElementWiseUnaryTester {
 };
 
 TEST_P(MLGraphTest, ElementWiseUnaryTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test element-wise abs operator for a 1-D tensor.
@@ -400,6 +425,7 @@ struct PReluTester {
 };
 
 TEST_P(MLGraphTest, PReluTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test prelu operator with input_shape = {3} and slope_shape =
@@ -465,7 +491,7 @@ struct ReluTester {
 };
 
 TEST_P(MLGraphTest, ReluTest) {
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
   {
     // Test relu operator for 1-D tensor.
     // The expected results should be the result of the rectified linear
@@ -537,6 +563,7 @@ struct LeakyReluTester {
 };
 
 TEST_P(MLGraphTest, LeakyReluTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test leakyRelu operator with default options.
@@ -593,6 +620,7 @@ struct ReduceTester {
 };
 
 TEST_P(MLGraphTest, ReduceTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test reduceMean operator with default options.
@@ -652,6 +680,7 @@ struct Resample2dTester {
 };
 
 TEST_P(MLGraphTest, Resample2dTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test resample2d operator with axes = {1, 2}, sizes = {4, 4}.
@@ -718,6 +747,7 @@ struct ClampTester {
 };
 
 TEST_P(MLGraphTest, ClampTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test clamp operator with default options that no minimum and maximum
@@ -804,6 +834,7 @@ struct Conv2dTester {
 };
 
 TEST_P(MLGraphTest, Conv2dTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
@@ -827,8 +858,8 @@ TEST_P(MLGraphTest, Conv2dTest) {
         .Test(*this, scope, builder, options);
   }
   {
-    // Test fused conv2d operator for nhwc input layout and ohwi filter layout,
-    // fusing with bias operand and relu activation.
+    // Test fused conv2d operator for nhwc input layout and ohwi filter
+    // layout, fusing with bias operand and relu activation.
     auto* options = MLConv2dOptions::Create();
     options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
     options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOhwi);
@@ -868,9 +899,9 @@ TEST_P(MLGraphTest, Conv2dTest) {
         .Test(*this, scope, builder, options);
   }
   {
-    // Test fused depthwise conv2d operator by setting groups to input channels,
-    // nhwc input layout, ihwo filter layout, fusing with bias operand and relu
-    // activation.
+    // Test fused depthwise conv2d operator by setting groups to input
+    // channels, nhwc input layout, ihwo filter layout, fusing with bias
+    // operand and relu activation.
     auto* options = MLConv2dOptions::Create();
     options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
     options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kIhwo);
@@ -893,9 +924,9 @@ TEST_P(MLGraphTest, Conv2dTest) {
         .Test(*this, scope, builder, options);
   }
   {
-    // Test fused depthwise conv2d operator by setting groups to input channels,
-    // nhwc input layout, ihwo filter layout, fusing with bias operand and clamp
-    // activation.
+    // Test fused depthwise conv2d operator by setting groups to input
+    // channels, nhwc input layout, ihwo filter layout, fusing with bias
+    // operand and clamp activation.
     auto* options = MLConv2dOptions::Create();
     options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
     options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kIhwo);
@@ -967,6 +998,7 @@ struct ConvTranspose2dTester {
 };
 
 TEST_P(MLGraphTest, ConvTranspose2dTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
@@ -1130,6 +1162,7 @@ struct GemmTester {
 };
 
 TEST_P(MLGraphTest, GemmTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
@@ -1214,11 +1247,12 @@ struct HardSwishTester {
 };
 
 TEST_P(MLGraphTest, HardSwishTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test hardSwish operator for 1-D tensor.
-    // The expected results should be the result of the nonlinear function, y =
-    // x * max(0, min(6, (x + 3))) / 6, applied to the input tensor,
+    // The expected results should be the result of the nonlinear function, y
+    // = x * max(0, min(6, (x + 3))) / 6, applied to the input tensor,
     // element-wise.
     HardSwishTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
                               .dimensions = {2},
@@ -1286,6 +1320,7 @@ struct Pool2dTester {
 };
 
 TEST_P(MLGraphTest, Pool2dTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test averagePool2d operator for nhwc input layout.
@@ -1330,8 +1365,8 @@ TEST_P(MLGraphTest, Pool2dTest) {
   }
 }
 
-// Because reshape Node runs copy operator, ReshapeTester just checks the output
-// against the input. So there is no need to set expected results.
+// Because reshape Node runs copy operator, ReshapeTester just checks the
+// output against the input. So there is no need to set expected results.
 template <typename T>
 struct ReshapeTester {
   OperandInfo<T> input;
@@ -1367,6 +1402,7 @@ struct ReshapeTester {
 };
 
 TEST_P(MLGraphTest, ReshapeTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test reshaping 2-D tensor to 1-D tensor.
@@ -1451,6 +1487,7 @@ struct SplitTester {
 };
 
 TEST_P(MLGraphTest, SplitTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
@@ -1536,6 +1573,7 @@ struct TransposeTester {
 };
 
 TEST_P(MLGraphTest, TransposeTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
@@ -1624,6 +1662,7 @@ struct ConcatTester {
 };
 
 TEST_P(MLGraphTest, ConcatTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test concat operator with one input and axis = 0.
@@ -1737,6 +1776,7 @@ struct PadTester {
 };
 
 TEST_P(MLGraphTest, PadTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
@@ -1802,6 +1842,7 @@ struct SliceTester {
 };
 
 TEST_P(MLGraphTest, SliceTest) {
+  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
@@ -1825,12 +1866,9 @@ TEST_P(MLGraphTest, SliceTest) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MLGraphTest,
-    testing::Combine(::testing::Values(BackendType::kXnnpack),
-                     ::testing::Values(ExecutionMode::kAsync,
-                                       ExecutionMode::kSync)),
-    TestVarietyToString);
+INSTANTIATE_TEST_SUITE_P(All,
+                         MLGraphTest,
+                         testing::ValuesIn(kGraphTestVariety),
+                         TestVarietyToString);
 
 }  // namespace blink

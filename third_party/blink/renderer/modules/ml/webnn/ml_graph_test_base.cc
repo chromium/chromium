@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
@@ -21,8 +20,8 @@ MLGraph* ToMLGraph(V8TestingScope* scope, ScriptValue value) {
 
 std::string TestVarietyToString(
     const ::testing::TestParamInfo<TestVariety>& info) {
-  BackendType backend_type = std::get<0>(info.param);
-  ExecutionMode execution_mode = std::get<1>(info.param);
+  BackendType backend_type = info.param.backend_type;
+  ExecutionMode execution_mode = info.param.execution_mode;
   std::string name;
 
   switch (backend_type) {
@@ -53,8 +52,12 @@ std::string TestVarietyToString(
   return name;
 }
 
+BackendType MLGraphTestBase::GetBackendType() {
+  return GetParam().backend_type;
+}
+
 ExecutionMode MLGraphTestBase::GetExecutionMode() {
-  return std::get<1>(GetParam());
+  return GetParam().execution_mode;
 }
 
 MLGraphTestBase::BuildResult MLGraphTestBase::BuildGraph(

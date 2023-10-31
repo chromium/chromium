@@ -61,6 +61,8 @@ blink_modules_sources("ml") {
     sources += [
       "webnn/ml_graph_cros.cc",
       "webnn/ml_graph_cros.h",
+      "webnn/ml_graph_tflite_converter.cc",
+      "webnn/ml_graph_tflite_converter.h",
     ]
 
     deps += [
@@ -102,6 +104,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":buildflags",
     "//components/ml/mojom:mojom_blink",
     "//components/ml/webnn:features",
     "//services/webnn/public/mojom:mojom_blink",
@@ -124,7 +127,11 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos && current_cpu == "x64") {
-    sources += [ "webnn/ml_graph_test_cros.cc" ]
+    sources += [
+      "webnn/ml_graph_test.cc",
+      "webnn/ml_graph_test_cros.cc",
+      "webnn/ml_graph_test_cros.h",
+    ]
     deps += [ "//third_party/tflite" ]
   }
 

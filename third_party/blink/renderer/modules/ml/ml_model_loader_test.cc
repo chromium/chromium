@@ -102,10 +102,10 @@ class FakeMLModel : public blink_mojom::Model {
       info_->output_tensor_info.insert(WTF::String(name), tensor.ToMojom());
     }
 
-    return WTF::BindOnce(&FakeMLModel::OnCreateModel,
-                         // Safe to WTF::Unretained, this method won't be called
-                         // after test finishes.
-                         WTF::Unretained(this));
+    return WTF::BindRepeating(&FakeMLModel::OnCreateModel,
+                              // Safe to WTF::Unretained, this method won't be
+                              // called after test finishes.
+                              WTF::Unretained(this));
   }
 
   void OnCreateModel(mojo_base::BigBuffer,

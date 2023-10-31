@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_cros.h"
+
 #include "components/ml/mojom/ml_service.mojom-blink.h"
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -66,6 +68,9 @@ blink_mojom::TensorInfoPtr ConvertToMojom(const TfLiteTensor* tensor) {
 class TfLiteOpResolver : public tflite::MutableOpResolver {
  public:
   TfLiteOpResolver() {
+    AddBuiltin(tflite::BuiltinOperator_RELU,
+               tflite::ops::builtin::Register_RELU(), /* min_version = */ 1,
+               /* max_version = */ 2);
     AddBuiltin(tflite::BuiltinOperator_ADD,
                tflite::ops::builtin::Register_ADD(),
                /* min_version = */ 1,
@@ -140,7 +145,8 @@ class FakeWebNNModel : public blink_mojom::Model {
   ~FakeWebNNModel() override = default;
 
   FakeMLModelLoader::LoadFn CreateFromThis() {
-    return WTF::BindOnce(&FakeWebNNModel::OnCreateModel, WTF::Unretained(this));
+    return WTF::BindRepeating(&FakeWebNNModel::OnCreateModel,
+                              WTF::Unretained(this));
   }
 
  private:
@@ -148,7 +154,6 @@ class FakeWebNNModel : public blink_mojom::Model {
                      blink_mojom::ModelLoader::LoadCallback callback) {
     blink_mojom::ModelInfoPtr info = blink_mojom::ModelInfo::New();
     EXPECT_EQ(runtime_->Load(buffer, info), kTfLiteOk);
-
     // Hold the flatbuffer for computing with tflite runtime.
     buffer_ = std::move(buffer);
 
@@ -172,20 +177,22 @@ class FakeWebNNModel : public blink_mojom::Model {
   mojo_base::BigBuffer buffer_;
 };
 
-class MLGraphTestCrOS : public MLGraphTestBase {
- public:
-  ScopedSetMLServiceBinder SetUpMLService(V8TestingScope& scope) {
-    service_.SetCreateModelLoader(loader_.CreateFromThis());
-    loader_.SetLoad(model_.CreateFromThis());
+class MLGraphTestCrOS : public MLGraphTestBase {};
 
-    return ScopedSetMLServiceBinder(&service_, scope);
-  }
+ScopedMLService::ScopedMLService()
+    : loader_(std::make_unique<FakeMLModelLoader>()),
+      model_(std::make_unique<FakeWebNNModel>()),
+      ml_service_(std::make_unique<FakeMLService>()) {}
 
- private:
-  FakeMLService service_;
-  FakeMLModelLoader loader_;
-  FakeWebNNModel model_;
-};
+ScopedMLService::~ScopedMLService() = default;
+
+void ScopedMLService::SetUpMLService(V8TestingScope& scope) {
+  ml_service_->SetCreateModelLoader(loader_->CreateFromThis());
+  loader_->SetLoad(model_->CreateFromThis());
+
+  ml_service_binder_ =
+      std::make_unique<ScopedSetMLServiceBinder>(ml_service_.get(), scope);
+}
 
 template <typename T>
 struct ElementWiseAddTester {
@@ -196,8 +203,6 @@ struct ElementWiseAddTester {
   ~ElementWiseAddTester() { MLGraphCrOS::SetFlatbufferForTesting(nullptr); }
 
   void Test(MLGraphTestCrOS& helper, V8TestingScope& scope) {
-    // Setup binder for MLService
-    ScopedSetMLServiceBinder scoped_setup_binder = helper.SetUpMLService(scope);
     // Set the flatbuffer of tflite model converted from the WebNN graph.
     flatbuffers::DetachedBuffer flatbuffer = GetFlatBuffer();
     MLGraphCrOS::SetFlatbufferForTesting(&flatbuffer);
@@ -320,7 +325,7 @@ struct ElementWiseAddTester {
 };
 
 TEST_P(MLGraphTestCrOS, BuildGraphWithTfliteModel) {
-  V8TestingScope scope;
+  MLGraphV8TestingScope scope;
 
   {
     // Test element-wise add operator for two 1-D tensors.
@@ -353,11 +358,13 @@ TEST_P(MLGraphTestCrOS, BuildGraphWithTfliteModel) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MLGraphTestCrOS,
-    testing::Combine(::testing::Values(BackendType::kModelLoader),
-                     ::testing::Values(ExecutionMode::kAsync)),
-    TestVarietyToString);
+const TestVariety kGraphTestModelLoaderVariety[] = {
+    {BackendType::kModelLoader, ExecutionMode::kAsync},
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MLGraphTestCrOS,
+                         testing::ValuesIn(kGraphTestModelLoaderVariety),
+                         TestVarietyToString);
 
 }  // namespace blink

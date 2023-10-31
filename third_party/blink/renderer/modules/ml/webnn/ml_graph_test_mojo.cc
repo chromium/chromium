@@ -2656,11 +2656,13 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MLGraphTestMojo,
-    testing::Combine(::testing::Values(BackendType::kWebNNService),
-                     ::testing::Values(ExecutionMode::kAsync)),
-    TestVarietyToString);
+const TestVariety kGraphMojoTestVariety[] = {
+    {BackendType::kWebNNService, ExecutionMode::kAsync},
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MLGraphTestMojo,
+                         testing::ValuesIn(kGraphMojoTestVariety),
+                         TestVarietyToString);
 
 }  // namespace blink
