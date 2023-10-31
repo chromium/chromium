@@ -153,12 +153,21 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 
   EXPECT_TRUE(GetIntentChip()->GetVisible());
 
+// If a single app is installed, then clicking on the intent chip button
+// opens the intent picker view on ChromeOS, and directly launches the
+// app on other desktop platforms.
+#if BUILDFLAG(IS_CHROMEOS)
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "IntentPickerBubbleView");
   ClickIntentChip(/*wait_for_browser=*/false);
 
   waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(IntentPickerBubbleView::intent_picker_bubble());
+#else
+  Browser* app_browser = ClickIntentChip(/*wait_for_browser=*/true);
+  ASSERT_TRUE(app_browser);
+  ASSERT_TRUE(app_browser->is_type_app());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,

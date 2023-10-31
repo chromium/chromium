@@ -137,15 +137,12 @@ void WebAppsIntentPickerDelegate::RecordIntentPickerIconEvent(
 bool WebAppsIntentPickerDelegate::ShouldLaunchAppDirectly(
     const GURL& url,
     const std::string& app_id) {
-  // Launch app directly only if the app for app_id is set as the default app to
-  // capture links that looks like url. This requireds the
-  // kDesktopPWAsLinkCapturing flag to be enabled.
-  // TODO(dibyapal): Might need to update also if there is only one app that
-  // supports the scope for the app.
+  // Launch app directly only if |url| is in the scope of |app_id|.
+  // TODO(b/294079334): Use `IsUrlInAppExtendedScope` to support scope
+  // extensions for user link capturing on desktop platforms.
   return base::FeatureList::IsEnabled(
              apps::features::kDesktopPWAsLinkCapturing) &&
-         provider_->registrar_unsafe().IsPreferredAppForCapturingUrl(url,
-                                                                     app_id);
+         provider_->registrar_unsafe().IsUrlInAppScope(url, app_id);
 }
 
 void WebAppsIntentPickerDelegate::RecordOutputMetrics(
