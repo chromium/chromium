@@ -3,15 +3,18 @@
 // found in the LICENSE file.
 
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
 
@@ -71,6 +74,14 @@ class Lock {
       return child;
     }
 
+    // Evict on contention is only enabled when FSA Locking Scheme is enabled.
+    bool evict_on_contention = base::FeatureList::IsEnabled(
+        blink::features::kFileSystemAccessLockingScheme);
+
+    // Start eviction if we can.
+    if (evict_on_contention) {
+      child->IsEvictableAndStartEviction();
+    }
     return nullptr;
   }
 
@@ -116,12 +127,56 @@ class Lock {
     return child_lock;
   }
 
+  std::unique_ptr<Lock> TakeChild(
+      const base::FilePath::StringType& path_component) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    auto child_node = child_locks_.extract(path_component);
+    if (child_node.empty()) {
+      return nullptr;
+    }
+    return std::move(child_node.mapped());
+  }
+
   void ReleaseChild(const base::FilePath::StringType& path_component) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     size_t count_removed = child_locks_.erase(path_component);
 
     CHECK_EQ(1u, count_removed);
+  }
+
+  bool IsHeldOnlyByInactivePages() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    for (const auto& [frame_id, _lock_handle] : frame_id_lock_handles_) {
+      RenderFrameHost* rfh = RenderFrameHost::FromID(frame_id);
+      // Frames without an associated render frame host (e.g. Service Workers,
+      // Shared Workers) cannot be evicted from the BFCache and are therefore
+      // considered active.
+      if (!rfh || rfh->IsActive()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Returns if this lock can be evicted. If it can, it starts evicting this
+  // lock by evicting the pages that hold it.
+  bool IsEvictableAndStartEviction() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (IsHeldOnlyByInactivePages()) {
+      // Evict the lock holders.
+      for (const auto& [frame_id, _lock_handle] : frame_id_lock_handles_) {
+        RenderFrameHost* rfh = RenderFrameHost::FromID(frame_id);
+        if (rfh) {
+          rfh->IsInactiveAndDisallowActivation(
+              content::DisallowActivationReasonId::
+                  kFileSystemAccessLockingContention);
+        }
+      }
+      return true;
+    }
+    return false;
   }
 
   // Called by a `LockHandle` when its destroyed.

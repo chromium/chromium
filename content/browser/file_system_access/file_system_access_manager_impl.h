@@ -194,6 +194,10 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   //
   // `binding_context` is the `BindingContext` of the frame that holds this
   // handle.
+  //
+  // If there is an existing lock that is in contention with the `lock_type`, it
+  // will evict pages that hold the existing lock if they are all inactive (e.g.
+  // in the BFCache).
   void TakeLock(const BindingContext& binding_context,
                 const storage::FileSystemURL& url,
                 FileSystemAccessLockManager::LockType lock_type,

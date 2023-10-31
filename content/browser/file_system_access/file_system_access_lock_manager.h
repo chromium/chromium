@@ -92,6 +92,10 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   //
   // `frame_id` is the `GlobalRenderFrameHostId` of the render frame host
   // associated with the frame that holds this handle.
+  //
+  // If there is an existing lock that is in contention with the `lock_type`, it
+  // will evict pages that hold the existing lock if they are all inactive (e.g.
+  // in the BFCache).
   void TakeLock(const GlobalRenderFrameHostId& frame_id,
                 const storage::FileSystemURL& url,
                 LockType lock_type,

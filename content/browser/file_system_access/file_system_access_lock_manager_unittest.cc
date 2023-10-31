@@ -11,7 +11,9 @@
 #include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -27,15 +29,16 @@ using storage::FileSystemURL;
 
 static constexpr char kTestMountPoint[] = "testfs";
 
-class FileSystemAccessLockManagerTest : public testing::Test {
+class FileSystemAccessLockManagerTest : public RenderViewHostTestHarness {
  public:
-  FileSystemAccessLockManagerTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+  FileSystemAccessLockManagerTest() {
     scoped_feature_list.InitAndEnableFeature(
         blink::features::kFileSystemAccessLockingScheme);
   }
 
   void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
     // Register an external mount point to test support for virtual paths.
@@ -62,8 +65,12 @@ class FileSystemAccessLockManagerTest : public testing::Test {
   void TearDown() override {
     manager_.reset();
 
-    task_environment_.RunUntilIdle();
+    task_environment()->RunUntilIdle();
     EXPECT_TRUE(dir_.Delete());
+
+    chrome_blob_context_.reset();
+
+    RenderViewHostTestHarness::TearDown();
   }
 
   scoped_refptr<FileSystemAccessLockManager::LockHandle> TakeLockSync(
@@ -167,8 +174,6 @@ class FileSystemAccessLockManagerTest : public testing::Test {
   const GlobalRenderFrameHostId kFrameId;
   const FileSystemAccessManagerImpl::BindingContext kBindingContext = {
       kTestStorageKey, kTestURL, kFrameId};
-
-  BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
@@ -404,6 +409,182 @@ TEST_F(FileSystemAccessLockManagerTest, AncestorLocksSandboxed) {
   child_url.SetBucket(kTestBucketLocator);
 
   AssertAncestorLockBehavior(parent_url, child_url);
+}
+
+TEST_F(FileSystemAccessLockManagerTest, BFCacheExclusive) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+  // The document is initially in active state.
+  EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
+
+  auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
+      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+  auto active_context = kBindingContext;
+
+  base::FilePath path = dir_.GetPath().AppendASCII("foo");
+  auto url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, path);
+
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
+
+  {
+    auto exclusive_lock =
+        TakeLockSync(bf_cache_context, url, exclusive_lock_type);
+    ASSERT_TRUE(exclusive_lock);
+
+    // Cannot take another lock of any type while the page is active.
+    ASSERT_FALSE(TakeLockSync(active_context, url, exclusive_lock_type));
+    ASSERT_FALSE(TakeLockSync(active_context, url, shared_lock_type));
+
+    // Entering into the BFCache should not evict the page.
+    rfh->SetLifecycleState(
+        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+    EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
+
+    // Taking a lock of a contentious type won't succeed but will evict the page
+    // from BFCache.
+    ASSERT_FALSE(TakeLockSync(active_context, url, exclusive_lock_type));
+    ASSERT_FALSE(TakeLockSync(active_context, url, shared_lock_type));
+    EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+  }
+}
+
+TEST_F(FileSystemAccessLockManagerTest, BFCacheShared) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+  // The document is initially in active state.
+  EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
+
+  auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
+      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+  auto active_context = kBindingContext;
+
+  base::FilePath path = dir_.GetPath().AppendASCII("foo");
+  auto url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, path);
+
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type_1 = manager_->CreateSharedLockTypeForTesting();
+  LockType shared_lock_type_2 = manager_->CreateSharedLockTypeForTesting();
+
+  {
+    auto shared_lock = TakeLockSync(bf_cache_context, url, shared_lock_type_1);
+    ASSERT_TRUE(shared_lock);
+
+    // Can only take shared locks of the same type.
+    ASSERT_FALSE(TakeLockSync(active_context, url, exclusive_lock_type));
+    ASSERT_FALSE(TakeLockSync(active_context, url, shared_lock_type_2));
+    ASSERT_TRUE(TakeLockSync(active_context, url, shared_lock_type_1));
+
+    // Entering into the BFCache should not evict the page. The lock should not
+    // have been released.
+    rfh->SetLifecycleState(
+        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+    EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
+
+    {
+      // Taking a shared lock of the same type should succeed and not evict the
+      // page.
+      auto shared_lock_2 =
+          TakeLockSync(active_context, url, shared_lock_type_1);
+      ASSERT_TRUE(shared_lock_2);
+      EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
+
+      // While there's an active page holding the lock, taking a lock of a
+      // contentious type will still fail.
+      ASSERT_FALSE(TakeLockSync(active_context, url, exclusive_lock_type));
+      ASSERT_FALSE(TakeLockSync(active_context, url, shared_lock_type_2));
+      EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
+    }
+
+    // Taking a lock of a contentious type won't succeed but will evict the page
+    // from BFCache.
+    ASSERT_FALSE(TakeLockSync(active_context, url, exclusive_lock_type));
+    ASSERT_FALSE(TakeLockSync(active_context, url, shared_lock_type_2));
+    EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+  }
+}
+
+TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeChildThenParent) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+  // The document is initially in active state.
+  EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
+
+  auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
+      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+  auto active_context = kBindingContext;
+
+  base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
+  auto parent_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, parent_path);
+  auto child_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal,
+      parent_path.Append(FILE_PATH_LITERAL("child")));
+
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
+
+  {
+    auto child_lock =
+        TakeLockSync(bf_cache_context, child_url, shared_lock_type);
+    ASSERT_TRUE(child_lock);
+
+    // Entering into the BFCache should not evict the page. The lock should
+    // not have been released.
+    rfh->SetLifecycleState(
+        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+    EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
+
+    // Taking a lock on a parent won't succeed but will evict the page from
+    // BFCache.
+    ASSERT_FALSE(TakeLockSync(active_context, parent_url, exclusive_lock_type));
+    EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+  }
+}
+
+TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeParentThenChild) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+  // The document is initially in active state.
+  EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
+
+  auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
+      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+  auto active_context = kBindingContext;
+
+  base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
+  auto parent_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, parent_path);
+  auto child_url_1 = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal,
+      parent_path.Append(FILE_PATH_LITERAL("child1")));
+  auto child_url_2 = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal,
+      parent_path.Append(FILE_PATH_LITERAL("child2")));
+
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
+
+  {
+    auto parent_lock =
+        TakeLockSync(bf_cache_context, parent_url, shared_lock_type);
+    ASSERT_TRUE(parent_lock);
+
+    // Entering into the BFCache should not evict the page. The lock should
+    // not have been released.
+    rfh->SetLifecycleState(
+        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+    EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
+
+    // Taking a lock on a child won't succeed but will evict the page from
+    // BFCache.
+    ASSERT_FALSE(
+        TakeLockSync(active_context, child_url_1, exclusive_lock_type));
+    ASSERT_FALSE(TakeLockSync(active_context, child_url_2, shared_lock_type));
+    EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+  }
 }
 
 }  // namespace content
