@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -59,6 +61,41 @@ class WindowSplitterTest : public AshTestBase {
   gfx::Rect RightHalf(gfx::Rect bounds) {
     bounds.Subtract(LeftHalf(bounds));
     return bounds;
+  }
+
+  void ExpectHistogramWithSplit(const base::HistogramTester& histogram_tester,
+                                SplitRegion split_region,
+                                int preview_count) {
+    histogram_tester.ExpectUniqueSample(kWindowSplittingDragTypeHistogramName,
+                                        DragType::kSplit, 1);
+    histogram_tester.ExpectUniqueSample(
+        kWindowSplittingSplitRegionHistogramName, split_region, 1);
+    histogram_tester.ExpectTotalCount(
+        kWindowSplittingDragDurationPerSplitHistogramName, 1);
+    histogram_tester.ExpectTotalCount(
+        kWindowSplittingDragDurationPerNoSplitHistogramName, 0);
+    histogram_tester.ExpectUniqueSample(
+        kWindowSplittingPreviewsShownCountPerSplitDragHistogramName,
+        preview_count, 1);
+    histogram_tester.ExpectTotalCount(
+        kWindowSplittingPreviewsShownCountPerNoSplitDragHistogramName, 0);
+  }
+
+  void ExpectHistogramWithNoSplit(const base::HistogramTester& histogram_tester,
+                                  int preview_count) {
+    histogram_tester.ExpectUniqueSample(kWindowSplittingDragTypeHistogramName,
+                                        DragType::kNoSplit, 1);
+    histogram_tester.ExpectTotalCount(kWindowSplittingSplitRegionHistogramName,
+                                      0);
+    histogram_tester.ExpectTotalCount(
+        kWindowSplittingDragDurationPerSplitHistogramName, 0);
+    histogram_tester.ExpectTotalCount(
+        kWindowSplittingDragDurationPerNoSplitHistogramName, 1);
+    histogram_tester.ExpectTotalCount(
+        kWindowSplittingPreviewsShownCountPerSplitDragHistogramName, 0);
+    histogram_tester.ExpectUniqueSample(
+        kWindowSplittingPreviewsShownCountPerNoSplitDragHistogramName,
+        preview_count, 1);
   }
 };
 
@@ -203,18 +240,8 @@ TEST_F(WindowSplitterTest, DragSplitWindow) {
               RightHalf(kTopmostWindowBounds));
   }
 
-  histogram_tester.ExpectUniqueSample(kWindowSplittingDragTypeHistogramName,
-                                      DragType::kSplit, 1);
-  histogram_tester.ExpectUniqueSample(kWindowSplittingSplitRegionHistogramName,
-                                      SplitRegion::kRight, 1);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerSplitHistogramName, 1);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerNoSplitHistogramName, 0);
-  histogram_tester.ExpectUniqueSample(
-      kWindowSplittingPreviewsShownCountPerSplitDragHistogramName, 1, 1);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingPreviewsShownCountPerNoSplitDragHistogramName, 0);
+  ExpectHistogramWithSplit(histogram_tester, SplitRegion::kRight,
+                           /*preview_count=*/1);
 }
 
 TEST_F(WindowSplitterTest, DragSplitWindowShowPreviewMultipleTimes) {
@@ -261,18 +288,8 @@ TEST_F(WindowSplitterTest, DragSplitWindowShowPreviewMultipleTimes) {
               BottomHalf(kTopmostWindowBounds));
   }
 
-  histogram_tester.ExpectUniqueSample(kWindowSplittingDragTypeHistogramName,
-                                      DragType::kSplit, 1);
-  histogram_tester.ExpectUniqueSample(kWindowSplittingSplitRegionHistogramName,
-                                      SplitRegion::kBottom, 1);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerSplitHistogramName, 1);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerNoSplitHistogramName, 0);
-  histogram_tester.ExpectUniqueSample(
-      kWindowSplittingPreviewsShownCountPerSplitDragHistogramName, 3, 1);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingPreviewsShownCountPerNoSplitDragHistogramName, 0);
+  ExpectHistogramWithSplit(histogram_tester, SplitRegion::kBottom,
+                           /*preview_count=*/3);
 }
 
 TEST_F(WindowSplitterTest, DragEnterExitMarginNoSplit) {
@@ -304,18 +321,8 @@ TEST_F(WindowSplitterTest, DragEnterExitMarginNoSplit) {
     EXPECT_EQ(dragged_window->GetBoundsInScreen(), kDraggedWindowBounds);
   }
 
-  histogram_tester.ExpectUniqueSample(kWindowSplittingDragTypeHistogramName,
-                                      DragType::kNoSplit, 1);
-  histogram_tester.ExpectTotalCount(kWindowSplittingSplitRegionHistogramName,
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerSplitHistogramName, 0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerNoSplitHistogramName, 1);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingPreviewsShownCountPerSplitDragHistogramName, 0);
-  histogram_tester.ExpectUniqueSample(
-      kWindowSplittingPreviewsShownCountPerNoSplitDragHistogramName, 1, 1);
+  ExpectHistogramWithNoSplit(histogram_tester,
+                             /*preview_count=*/1);
 }
 
 TEST_F(WindowSplitterTest, DragWithCantSplit) {
@@ -345,18 +352,8 @@ TEST_F(WindowSplitterTest, DragWithCantSplit) {
     EXPECT_EQ(dragged_window->GetBoundsInScreen(), kDraggedWindowBounds);
   }
 
-  histogram_tester.ExpectUniqueSample(kWindowSplittingDragTypeHistogramName,
-                                      DragType::kNoSplit, 1);
-  histogram_tester.ExpectTotalCount(kWindowSplittingSplitRegionHistogramName,
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerSplitHistogramName, 0);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingDragDurationPerNoSplitHistogramName, 1);
-  histogram_tester.ExpectTotalCount(
-      kWindowSplittingPreviewsShownCountPerSplitDragHistogramName, 0);
-  histogram_tester.ExpectUniqueSample(
-      kWindowSplittingPreviewsShownCountPerNoSplitDragHistogramName, 1, 1);
+  ExpectHistogramWithNoSplit(histogram_tester,
+                             /*preview_count=*/1);
 }
 
 TEST_F(WindowSplitterTest, DragDraggedWindowDestroyed) {
@@ -393,6 +390,80 @@ TEST_F(WindowSplitterTest, DragDraggedWindowDestroyed) {
       kWindowSplittingPreviewsShownCountPerSplitDragHistogramName, 0);
   histogram_tester.ExpectTotalCount(
       kWindowSplittingPreviewsShownCountPerNoSplitDragHistogramName, 0);
+}
+
+TEST_F(WindowSplitterTest, SplitMaximizedWindow) {
+  auto topmost_window = CreateToplevelTestWindow(kTopmostWindowBounds);
+  auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
+
+  auto* topmost_window_state = WindowState::Get(topmost_window.get());
+  topmost_window_state->Maximize();
+  ASSERT_EQ(topmost_window_state->GetStateType(),
+            chromeos::WindowStateType::kMaximized);
+  const auto topmost_window_bounds = topmost_window->GetBoundsInScreen();
+  EXPECT_EQ(topmost_window_bounds, GetPrimaryDisplay().work_area());
+
+  base::HistogramTester histogram_tester;
+
+  {
+    WindowSplitter splitter(dragged_window.get());
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    gfx::PointF screen_location(topmost_window_bounds.top_center());
+    screen_location.set_y(screen_location.y() + 5);
+    splitter.UpdateDrag(screen_location, /*can_split=*/true);
+    EXPECT_TRUE(TopHalf(topmost_window_bounds)
+                    .Contains(GetPhantomWindowTargetBounds(splitter)));
+
+    splitter.CompleteDrag(screen_location);
+    EXPECT_EQ(topmost_window->GetBoundsInScreen(),
+              BottomHalf(topmost_window_bounds));
+    EXPECT_EQ(dragged_window->GetBoundsInScreen(),
+              TopHalf(topmost_window_bounds));
+    EXPECT_TRUE(chromeos::IsNormalWindowStateType(
+        topmost_window_state->GetStateType()));
+  }
+
+  ExpectHistogramWithSplit(histogram_tester, SplitRegion::kTop,
+                           /*preview_count=*/1);
+}
+
+TEST_F(WindowSplitterTest, SplitSnappedWindow) {
+  auto topmost_window = CreateToplevelTestWindow(kTopmostWindowBounds);
+  auto dragged_window = CreateToplevelTestWindow(kDraggedWindowBounds);
+
+  const WindowSnapWMEvent event(
+      WM_EVENT_SNAP_SECONDARY, WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  auto* topmost_window_state = WindowState::Get(topmost_window.get());
+  topmost_window_state->OnWMEvent(&event);
+  ASSERT_TRUE(
+      chromeos::IsSnappedWindowStateType(topmost_window_state->GetStateType()));
+  const auto topmost_window_bounds = topmost_window->GetBoundsInScreen();
+  EXPECT_EQ(topmost_window_bounds, RightHalf(GetPrimaryDisplay().work_area()));
+
+  base::HistogramTester histogram_tester;
+
+  {
+    WindowSplitter splitter(dragged_window.get());
+    EXPECT_TRUE(GetPhantomWindowTargetBounds(splitter).IsEmpty());
+
+    gfx::PointF screen_location(topmost_window_bounds.bottom_center());
+    screen_location.set_y(screen_location.y() - 5);
+    splitter.UpdateDrag(screen_location, /*can_split=*/true);
+    EXPECT_TRUE(BottomHalf(topmost_window_bounds)
+                    .Contains(GetPhantomWindowTargetBounds(splitter)));
+
+    splitter.CompleteDrag(screen_location);
+    EXPECT_EQ(topmost_window->GetBoundsInScreen(),
+              TopHalf(topmost_window_bounds));
+    EXPECT_EQ(dragged_window->GetBoundsInScreen(),
+              BottomHalf(topmost_window_bounds));
+    EXPECT_TRUE(chromeos::IsNormalWindowStateType(
+        topmost_window_state->GetStateType()));
+  }
+
+  ExpectHistogramWithSplit(histogram_tester, SplitRegion::kBottom,
+                           /*preview_count=*/1);
 }
 
 }  // namespace ash

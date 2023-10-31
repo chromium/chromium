@@ -10,10 +10,13 @@
 
 #include "ash/public/cpp/window_finder.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -30,8 +33,23 @@ using SplitWindowInfo = WindowSplitter::SplitWindowInfo;
 constexpr gfx::Insets kBaseTriggerMargins = gfx::Insets::VH(25, 45);
 
 // Returns true if `split_region` is a splittable region.
-bool IsSplittable(SplitRegion split_region) {
+bool IsRegionSplittable(SplitRegion split_region) {
   return split_region != SplitRegion::kNone;
+}
+
+// Returns true if the `window`'s state type allows the window to be split.
+bool IsWindowStateTypeSplittable(aura::Window* window) {
+  switch (WindowState::Get(window)->GetStateType()) {
+    case chromeos::WindowStateType::kDefault:
+    case chromeos::WindowStateType::kNormal:
+    case chromeos::WindowStateType::kInactive:
+    case chromeos::WindowStateType::kMaximized:
+    case chromeos::WindowStateType::kPrimarySnapped:
+    case chromeos::WindowStateType::kSecondarySnapped:
+      return true;
+    default:
+      return false;
+  }
 }
 
 aura::Window* GetTopmostWindow(aura::Window* dragged_window,
@@ -42,14 +60,16 @@ aura::Window* GetTopmostWindow(aura::Window* dragged_window,
     if (auto* topmost_window = GetTopmostWindowAtPoint(screen_point, ignore)) {
       // Some targeters slightly extend hit region outside window bounds, e.g.
       // `chromeos::kResizeOutsideBoundsSize`, so ignore those hits.
-      if (topmost_window->GetBoundsInScreen().Contains(screen_point) &&
-          CanIncludeWindowInMruList(topmost_window)) {
+      if (!topmost_window->GetBoundsInScreen().Contains(screen_point)) {
+        ignore.insert(topmost_window);
+        continue;
+      }
+      if (CanIncludeWindowInMruList(topmost_window) &&
+          IsWindowStateTypeSplittable(topmost_window)) {
         return topmost_window;
       }
-      ignore.insert(topmost_window);
-    } else {
-      return nullptr;
     }
+    return nullptr;
   }
 }
 
@@ -133,17 +153,31 @@ bool ContainedInWorkArea(aura::Window* window) {
       .Contains(window->GetBoundsInScreen());
 }
 
+void ResizeWindow(aura::Window* window, const gfx::Rect& screen_bounds) {
+  auto* window_state = WindowState::Get(window);
+  if (!chromeos::IsNormalWindowStateType(window_state->GetStateType())) {
+    // TODO(b/308194482): Disable animation, e.g. if this would unmaximize.
+    // But having animation may be ok, so need UX input.
+    const WMEvent event(WM_EVENT_NORMAL);
+    window_state->OnWMEvent(&event);
+  }
+  // TODO(b/306204394): Also bring window to the front for visibility.
+  window->SetBounds(screen_bounds);
+}
+
 absl::optional<SplitWindowInfo> WindowSplitter::MaybeSplitWindow(
     aura::Window* topmost_window,
     aura::Window* dragged_window,
     const gfx::PointF& screen_location) {
   // Don't split if `topmost_window` is not fully inside a display's work area.
+  // This gets around some corner cases, where the split window may end up
+  // entirely off screen.
   if (!ContainedInWorkArea(topmost_window)) {
     return absl::nullopt;
   }
 
   const auto split_region = GetSplitRegion(topmost_window, screen_location);
-  if (!IsSplittable(split_region)) {
+  if (!IsRegionSplittable(split_region)) {
     return absl::nullopt;
   }
 
@@ -189,13 +223,13 @@ void WindowSplitter::UpdateDrag(const gfx::PointF& location_in_screen,
           GetTopmostWindow(dragged_window_, location_in_screen)) {
     if (auto split_bounds = MaybeSplitWindow(topmost_window, dragged_window_,
                                              location_in_screen)) {
-      // TODO(b/252550043): Support dwell delay to not activate right away.
+      // TODO(b/306237420): Support dwell delay to not activate right away.
       can_split_window_ = true;
       ShowPhantomWindow(split_bounds->dragged_window_bounds);
       return;
     }
   }
-  // TODO(b/252550043): Support cancellation after dwell delay.
+  // TODO(b/306237420): Support cancellation after dwell delay.
   Disengage();
 }
 
@@ -209,9 +243,8 @@ void WindowSplitter::CompleteDrag(const gfx::PointF& last_location_in_screen) {
           GetTopmostWindow(dragged_window_, last_location_in_screen)) {
     if (auto split_bounds = MaybeSplitWindow(topmost_window, dragged_window_,
                                              last_location_in_screen)) {
-      // TODO(b/252550043): Change window states to normal beforehand.
-      dragged_window_->SetBounds(split_bounds->dragged_window_bounds);
-      topmost_window->SetBounds(split_bounds->topmost_window_bounds);
+      ResizeWindow(topmost_window, split_bounds->topmost_window_bounds);
+      ResizeWindow(dragged_window_, split_bounds->dragged_window_bounds);
       completed_split_region_ = split_bounds->split_region;
     }
   }
@@ -280,8 +313,8 @@ DragType WindowSplitter::GetDragType() const {
   if (!is_drag_completed_) {
     return DragType::kIncomplete;
   }
-  return IsSplittable(completed_split_region_) ? DragType::kSplit
-                                               : DragType::kNoSplit;
+  return IsRegionSplittable(completed_split_region_) ? DragType::kSplit
+                                                     : DragType::kNoSplit;
 }
 
 }  // namespace ash
