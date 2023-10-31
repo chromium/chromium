@@ -241,7 +241,7 @@ bool PrefProvider::UpdateSetting(
     return false;
   }
 
-  auto it = GetRuleIterator(content_type, false);
+  auto it = GetRuleIterator(content_type, off_the_record_);
   if (!it) {
     return false;
   }
