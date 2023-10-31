@@ -13,7 +13,7 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SecureDnsInputElement, SettingsSecureDnsElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
+import {SecureDnsInputElement, SettingsSecureDnsElement, SecureDnsResolverType, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
 import {PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -120,7 +120,7 @@ suite('SettingsSecureDns', function() {
   let secureDnsToggle: SettingsToggleButtonElement;
 
   const resolverList: ResolverOption[] = [
-    {name: 'Custom', value: 'custom', policy: ''},
+    {name: 'Resolver 1', value: 'resolver', policy: ''},
   ];
 
   // Possible subtitle overrides.
@@ -131,13 +131,13 @@ suite('SettingsSecureDns', function() {
       'disabled for parental control description';
 
   /**
-   * Checks that the radio buttons are shown and the toggle is properly
-   * configured for showing the radio buttons.
+   * Checks that the select menu is shown and the toggle is properly
+   * configured for showing the configuration options.
    */
-  function assertRadioButtonsShown() {
+  function assertResolverSelectShown() {
     assertTrue(secureDnsToggle.checked);
     assertFalse(secureDnsToggle.$.control.disabled);
-    assertFalse(testElement.$.secureDnsRadioGroup.hidden);
+    assertFalse(testElement.$.resolverSelect.hidden);
   }
 
   suiteSetup(function() {
@@ -169,15 +169,21 @@ suite('SettingsSecureDns', function() {
         testElement.shadowRoot!.querySelector('#secureDnsToggle')!;
     assertTrue(isVisible(secureDnsToggle));
 
-    assertRadioButtonsShown();
+    assertResolverSelectShown();
     assertEquals(
-        testBrowserProxy.secureDnsSetting.mode,
-        testElement.$.secureDnsRadioGroup.selected);
+        SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
   });
 
   teardown(function() {
     testElement.remove();
   });
+
+  function getResolverOptions(): HTMLElement {
+    const options =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#resolverOptions');
+    assertTrue(!!options);
+    return options;
+  }
 
   test('SecureDnsOff', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
@@ -188,7 +194,10 @@ suite('SettingsSecureDns', function() {
     flush();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
     assertFalse(secureDnsToggle.$.control.disabled);
-    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
+    assertTrue(getResolverOptions().hidden);
+    assertEquals(
+        'none',
+        getComputedStyle(testElement.$.secureDnsInputContainer).display);
     assertEquals(defaultDescription, secureDnsToggle.subLabel);
     assertFalse(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
@@ -201,27 +210,26 @@ suite('SettingsSecureDns', function() {
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
-    assertRadioButtonsShown();
+    assertResolverSelectShown();
     assertEquals(defaultDescription, secureDnsToggle.subLabel);
     assertFalse(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
     assertEquals(
-        SecureDnsMode.AUTOMATIC, testElement.$.secureDnsRadioGroup.selected);
+        SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
   });
 
   test('SecureDnsSecure', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
-      config: '',
+      config: resolverList[0]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
-    assertRadioButtonsShown();
+    assertResolverSelectShown();
     assertEquals(defaultDescription, secureDnsToggle.subLabel);
     assertFalse(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
-    assertEquals(
-        SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
+    assertEquals('0', testElement.$.resolverSelect.value);
   });
 
   test('SecureDnsManagedEnvironment', function() {
@@ -233,7 +241,7 @@ suite('SettingsSecureDns', function() {
     flush();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
     assertTrue(secureDnsToggle.$.control.disabled);
-    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
+    assertTrue(getResolverOptions().hidden);
     assertEquals(managedEnvironmentDescription, secureDnsToggle.subLabel);
     assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
@@ -251,7 +259,7 @@ suite('SettingsSecureDns', function() {
     flush();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
     assertTrue(secureDnsToggle.$.control.disabled);
-    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
+    assertTrue(getResolverOptions().hidden);
     assertEquals(parentalControlDescription, secureDnsToggle.subLabel);
     assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
@@ -274,7 +282,7 @@ suite('SettingsSecureDns', function() {
     flush();
     assertTrue(secureDnsToggle.hasAttribute('checked'));
     assertTrue(secureDnsToggle.$.control.disabled);
-    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
+    assertTrue(getResolverOptions().hidden);
     assertEquals(defaultDescription, secureDnsToggle.subLabel);
     assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
@@ -317,12 +325,12 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
   let secureDnsToggleDialog: SettingsSecureDnsDialogElement;
 
   /**
-   * Checks that the radio buttons are shown and the toggle is properly
-   * configured for showing the radio buttons.
+   * Checks that the select menu is shown and the toggle is properly
+   * configured for showing the configuration options.
    */
-  function assertRadioButtonsShown() {
+  function assertResolverSelectShown() {
     assertTrue(secureDnsToggle.checked);
-    assertFalse(testElement.$.secureDnsRadioGroup.hidden);
+    assertFalse(testElement.$.resolverSelect.hidden);
   }
 
   function setAndAssertSecureDnsDialog() {
@@ -332,6 +340,13 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
     assertTrue(!!secureDnsToggleDialog.$.dialog);
     assertTrue(isVisible(secureDnsToggleDialog.$.cancelButton));
     assertTrue(isVisible(secureDnsToggleDialog.$.disableButton));
+  }
+
+  function getResolverOptions(): HTMLElement {
+    const options =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#resolverOptions');
+    assertTrue(!!options);
+    return options;
   }
 
   suiteSetup(function() {
@@ -359,10 +374,9 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
         testElement.shadowRoot!.querySelector('#secureDnsToggle')!;
     assertTrue(isVisible(secureDnsToggle));
 
-    assertRadioButtonsShown();
+    assertResolverSelectShown();
     assertEquals(
-        testBrowserProxy.secureDnsSetting.mode,
-        testElement.$.secureDnsRadioGroup.selected);
+        SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
   });
 
   teardown(function() {
@@ -390,9 +404,9 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
     await flushTasks();
 
     assertTrue(secureDnsToggle.checked);
-    assertRadioButtonsShown();
+    assertResolverSelectShown();
     assertEquals(
-        SecureDnsMode.AUTOMATIC, testElement.$.secureDnsRadioGroup.selected);
+        SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
   });
 
   test('SecureDnsDialogOnToOff', () => {
@@ -411,7 +425,7 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
     flush();
 
     assertFalse(secureDnsToggle.checked);
-    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
+    assertTrue(getResolverOptions().hidden);
   });
 
   test('SecureDnsDialogSecureOffToOn', () => {
@@ -420,7 +434,7 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
     // secure_dns_dialog.ts), however, when toggled off and on, we will still
     // show that the user had selected Custom before.
 
-    // Select Secure in the radio button with no input and config.
+    // Select Secure in the menu button with no input and config.
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
       config: '',
@@ -446,9 +460,9 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
     secureDnsToggle.click();
     flush();
     assertTrue(secureDnsToggle.checked);
-    assertRadioButtonsShown();
+    assertResolverSelectShown();
     assertEquals(
-        SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
+        SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
 
     // Turn off the toggle, this will dispatch an event from the dialog since
     // the invalid Custom secure mode was not registered to the pref. For more
@@ -460,16 +474,16 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
     secureDnsToggleDialog.$.disableButton.click();
     flush();
     assertFalse(secureDnsToggle.checked);
-    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
+    assertTrue(getResolverOptions().hidden);
 
-    // Turn on the toggle. The selected radio option should still be secure
+    // Turn on the toggle. The selected menu option should still be secure
     // mode.
     secureDnsToggle.click();
     flush();
     assertTrue(secureDnsToggle.checked);
-    assertRadioButtonsShown();
+    assertResolverSelectShown();
     assertEquals(
-        SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
+        SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
   });
 });
 // </if>

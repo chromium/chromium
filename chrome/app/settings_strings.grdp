@@ -2278,27 +2278,21 @@
     Use secure DNS
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-    Determines how to connect to websites over a secure connection
+    Use a secure connection to look up a site’s IP address in the DNS (Domain Name System)
   </message>
   <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-      Determines how to connect to websites over a secure connection. This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
+      Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
     </message>
   </if>
-  <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the radio button that puts secure DNS in auto-upgrade mode">
-    With your current service provider
-  </message>
-  <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION_SECONDARY" desc="Secondary, continued explanation of the radio button that puts secure DNS in auto-upgrade mode">
-    Secure DNS may not be available all the time
-  </message>
-  <message name="IDS_SETTINGS_SECURE_MODE_DESCRIPTION_ACCESSIBILITY_LABEL" desc="Accessibility label for the radio button that puts secure DNS in secure mode">
-    With a provider of your choice
+  <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the select option that puts secure DNS in auto-upgrade mode">
+    OS default (when available)
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS_DROPDOWN_ACCESSIBILITY_LABEL" desc="Accessibility label for the dropdown menu containing secure resolvers">
     Provider options
   </message>
-  <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION" desc="Text of the radio button that allows a secure resolver to be selected from a dropdown menu">
-    With
+  <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION" desc="Label for the select menu that allows a secure resolver to be selected">
+    Select DNS Provider
   </message>
   <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_PRIVACY_POLICY" desc="Text that displays a link to the privacy policy of the resolver selected from a dropdown menu">
     See this provider's <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>privacy policy<ph name="END_LINK">&lt;/a&gt;</ph>
@@ -2309,8 +2303,11 @@
   <message name="IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_PARENTAL_CONTROL" desc="Substring of the secure DNS setting when secure DNS is disabled due to detection of OS-level parental controls">
     This setting is disabled because parental controls are on
   </message>
+  <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_DESCRIPTION" desc="Text of the select option that is used for a custom secure DNS provider">
+    Add custom DNS service provider
+  </message>
   <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_PLACEHOLDER" desc="Placeholder text for a textbox where users can enter a custom secure DNS provider">
-    Enter custom provider
+    Enter custom DNS query URL
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR" desc="Error text for an incorrectly formatted entry for the custom secure DNS provider">
     Enter a correctly formatted URL

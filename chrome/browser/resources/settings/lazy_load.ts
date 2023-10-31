@@ -89,7 +89,7 @@ export {ControlledButtonElement} from '/shared/settings/controls/controlled_butt
 export {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
 export {SettingsSliderElement} from '/shared/settings/controls/settings_slider.js';
 export {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
-export {SettingsSecureDnsElement} from '/shared/settings/privacy_page/secure_dns.js';
+export {SecureDnsResolverType, SettingsSecureDnsElement} from '/shared/settings/privacy_page/secure_dns.js';
 // <if expr="chromeos_ash">
 export {SettingsSecureDnsDialogElement} from '/shared/settings/privacy_page/secure_dns_dialog.js';
 // </if>

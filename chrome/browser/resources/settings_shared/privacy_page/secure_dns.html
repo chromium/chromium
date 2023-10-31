@@ -6,41 +6,18 @@
       include="cr-shared-style md-select cros-color-overrides"
     </if>
     >
-      #automaticRadioButton {
-        align-items: flex-start;
-        min-height: var(--cr-section-min-height);
-        padding: 6px 0;
-        --cr-radio-button-disc-margin-block-start: calc(
-            (1.54em /* line-height */ - var(--cr-radio-button-size)) / 2);
+
+      #resolverSelect {
+        width: inherit;
       }
 
-      #secureDnsRadioGroup {
-        display: block;
-        padding-inline-end: var(--cr-section-padding);
-        padding-inline-start: var(--cr-section-indent-padding);
-      }
-
-      #secureResolverSelectRadioButton {
-        align-items: flex-start;
-        --cr-radio-button-disc-margin-block-start: calc(
-            (1.54em /* line-height */ + 12px /* md-select padding */ -
-             var(--cr-radio-button-size)) / 2);
-      }
-
-      #secureRadioButtonItem {
-        align-items: baseline;
-        display: flex;
-        min-height: var(--cr-section-min-height);
-      }
-
-      #secureRadioButtonItemInner {
-        margin-inline-start: 0.5em;
-        width: 80%;
+      #resolverLabel {
+        flex: 1;
       }
 
       #privacyPolicy {
         display: none;
-        padding: 8px /* md-select left padding */;
+        padding: calc(var(--cr-section-padding) / 2) var(--cr-section-padding);
       }
 
       /* Style the link appearing within the privacyPolicy's localized
@@ -49,8 +26,8 @@
         color: var(--cr-link-color);
       }
 
-      #secureDnsInput {
-        margin-top: 6px;
+      #secureDnsInputContainer {
+        margin-top: calc(var(--cr-section-padding) / 2);
       }
     </style>
 
@@ -89,42 +66,43 @@
     </template>
 </if>
 
-    <cr-radio-group id="secureDnsRadioGroup"
-        selected="{{secureDnsRadio_}}"
-        on-selected-changed="onRadioSelectionChanged_"
-        hidden="[[!showRadioGroup_]]">
-      <cr-radio-button id="automaticRadioButton"
-          name="[[secureDnsModeEnum_.AUTOMATIC]]"
-          label="$i18n{secureDnsAutomaticModeDescription}">
-        <div class="cr-secondary-text">
-          $i18n{secureDnsAutomaticModeDescriptionSecondary}
-        </div>
-      </cr-radio-button>
-      <cr-radio-button id="secureResolverSelectRadioButton"
-          name="[[secureDnsModeEnum_.SECURE]]"
-          aria-label="$i18n{secureDnsSecureModeA11yLabel}">
-        <div id="secureRadioButtonItem">
+    <div id="resolverOptions" hidden="[[!showSecureDnsOptions_]]">
+      <div class="cr-row continuation">
+        <div id="resolverLabel" class="flex cr-padded-text">
           $i18n{secureDnsSecureDropdownModeDescription}
-          <div id="secureRadioButtonItemInner">
-            <select id="secureResolverSelect" class="md-select"
-                aria-label="$i18n{secureDnsDropdownA11yLabel}"
-                on-click="stopEventPropagation_"
-                on-change="onDropdownSelectionChanged_">
-              <template is="dom-repeat" items="[[resolverOptions_]]">
-                <option value="[[item.value]]">[[item.name]]</option>
-              </template>
-            </select>
-            <div id="privacyPolicy" class="cr-secondary-text"
-                inner-h-t-m-l="[[privacyPolicyString_]]"></div>
-            <secure-dns-input id="secureDnsInput"
-                value="[[secureDnsInputValue_]]"
-                on-value-update="onSecureDnsInputEvaluated_"
-                on-click="stopEventPropagation_">
-            </secure-dns-input>
-          </div>
         </div>
-      </cr-radio-button>
-    </cr-radio-group>
+
+        <select id="resolverSelect"
+            class="md-select"
+            aria-labelledby="resolverLabel"
+            on-change="onDropdownSelectionChanged_">
+          <option value="[[resolverTypeEnum_.AUTOMATIC]]">
+            $i18n{secureDnsAutomaticModeDescription}
+          </option>
+          <option value="[[resolverTypeEnum_.CUSTOM]]">
+            $i18n{secureDnsCustomProviderDescription}
+          </option>
+          <template is="dom-repeat" items="[[resolverOptions_]]">
+            <option data-resolver-type$="[[resolverTypeEnum_.BUILT_IN]]"
+                value="[[index]]">
+              [[item.name]]
+            </option>
+          </template>
+        </select>
+      </div>
+
+      <div id="privacyPolicy">
+        <div class="cr-secondary-text"
+            inner-h-t-m-l="[[privacyPolicyString_]]"></div>
+      </div>
+
+      <div id="secureDnsInputContainer" class="cr-row continuation">
+        <secure-dns-input id="secureDnsInput"
+            value="[[secureDnsInputValue_]]"
+            on-value-update="onSecureDnsInputEvaluated_">
+        </secure-dns-input>
+      </div>
+    </div>
 
 <if expr="chromeos_ash">
     <template is="dom-if" if="[[showDisableDnsDialog_]]" restamp>

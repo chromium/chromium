@@ -357,10 +357,9 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownList) {
   EXPECT_EQ(kWebUiFunctionName, call_data.arg1()->GetString());
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
-  // Check results.
+  // Check results (no providers set for testing).
   const base::Value::List& resolver_list = call_data.arg3()->GetList();
-  ASSERT_GE(resolver_list.size(), 1U);
-  EXPECT_TRUE(resolver_list[0].GetDict().FindString("value")->empty());
+  ASSERT_GE(resolver_list.size(), 0U);
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
@@ -368,8 +367,7 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
   handler_->SetProvidersForTesting(entries);
   const base::Value::List resolver_list = handler_->GetSecureDnsResolverList();
 
-  EXPECT_EQ(entries.size() + 1, resolver_list.size());
-  EXPECT_TRUE(resolver_list[0].GetDict().FindString("value")->empty());
+  EXPECT_EQ(entries.size(), resolver_list.size());
   for (const auto* entry : entries) {
     EXPECT_TRUE(FindDropdownItem(resolver_list, entry->ui_name,
                                  entry->doh_server_config.server_template(),
