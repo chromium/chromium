@@ -8,10 +8,6 @@
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "base/json/json_reader.h"
 
-// Used to indicate an unset key/id/secret.  This works better with
-// various unit tests than leaving the token empty.
-#define DUMMY_API_TOKEN "dummytoken"
-
 namespace enterprise_connectors {
 
 namespace {
