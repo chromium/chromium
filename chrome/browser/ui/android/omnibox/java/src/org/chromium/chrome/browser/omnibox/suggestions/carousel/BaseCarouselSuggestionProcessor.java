@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -46,7 +47,9 @@ public abstract class BaseCarouselSuggestionProcessor implements SuggestionProce
     @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int matchIndex) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
-        model.set(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE, isTablet);
+        model.set(
+                BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE,
+                isTablet && !OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext));
         model.set(BaseCarouselSuggestionViewProperties.ITEM_WIDTH, getCarouselItemViewWidth());
     }
 
