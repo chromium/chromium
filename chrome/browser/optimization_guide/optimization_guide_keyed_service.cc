@@ -33,6 +33,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -419,6 +420,14 @@ void OptimizationGuideKeyedService::ExecuteModel(
   }
   model_execution_manager_->ExecuteModel(feature, request_metadata,
                                          std::move(callback));
+}
+
+void OptimizationGuideKeyedService::UploadModelQualityLogs(
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // TODO(b/301301447): Uploads logs by passing the log entry's ownership to the
+  // server.
 }
 
 void OptimizationGuideKeyedService::OnProfileInitializationComplete(

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -42,6 +43,7 @@ class OptimizationGuideModelExecutionFeaturesController;
 class ChromeHintsManager;
 class ModelExecutionManager;
 class ModelInfo;
+class ModelQualityLogEntry;
 class OptimizationGuideStore;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
@@ -70,6 +72,7 @@ class OptimizationGuideKeyedService
       public optimization_guide::OptimizationGuideDecider,
       public optimization_guide::OptimizationGuideModelProvider,
       public optimization_guide::OptimizationGuideModelExecutor,
+      public optimization_guide::ModelQualityLogsUploader,
       public ProfileObserver {
  public:
   explicit OptimizationGuideKeyedService(
@@ -109,6 +112,14 @@ class OptimizationGuideKeyedService
       const google::protobuf::MessageLite& request_metadata,
       optimization_guide::OptimizationGuideModelExecutionResultCallback
           callback) override;
+
+  // optimization_guide::ModelQualityLogsUploader implementation.
+  //
+  // It passes ownership of ModelQualityLogEntry, which is reset after upload
+  // has been completed.
+  void UploadModelQualityLogs(
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry)
+      override;
 
   // Returns true if the opt-in setting should be shown for this profile for
   // given `feature`.
