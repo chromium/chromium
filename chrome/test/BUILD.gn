@@ -490,6 +490,17 @@ static_library("test_support") {
       "../browser/printing/print_test_utils.h",
     ]
 
+    if (is_chromeos_ash && use_cups) {
+      sources += [
+        "../browser/extensions/api/printing/printing_test_utils.cc",
+        "../browser/extensions/api/printing/printing_test_utils.h",
+      ]
+      public_deps += [
+        "//chrome/services/printing/public/mojom",
+        "//printing/backend:test_support",
+      ]
+    }
+
     public_deps += [
       "//printing",
       "//printing/backend",

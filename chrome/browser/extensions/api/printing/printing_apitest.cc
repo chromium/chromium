@@ -4,221 +4,62 @@
 
 #include <string>
 
-#include "base/containers/fixed_flat_map.h"
-#include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
-#include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
 #include "chrome/browser/extensions/api/printing/fake_print_job_controller_ash.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
-#include "chrome/browser/extensions/api/printing/printing_api.h"
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
+#include "chrome/browser/extensions/api/printing/printing_test_utils.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/constants.h"
-#include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "printing/backend/print_backend.h"
-#include "printing/backend/test_print_backend.h"
-#include "printing/buildflags/buildflags.h"
-#include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-#include "base/feature_list.h"
-#include "chrome/browser/printing/print_backend_service_manager.h"
-#include "chrome/browser/printing/print_backend_service_test_impl.h"
-#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "printing/printing_features.h"
-#endif
 
 namespace extensions {
 
 namespace {
-
 constexpr char kId[] = "id";
-
-constexpr int kHorizontalDpi = 300;
-constexpr int kVerticalDpi = 400;
-constexpr int kMediaSizeWidth = 210000;
-constexpr int kMediaSizeHeight = 297000;
-constexpr char kMediaSizeVendorId[] = "iso_a4_210x297mm";
-
-// Enum used to initialize the parameterized test with different types of
-// extensions.
-enum class ExtensionType {
-  kChromeApp,
-  kExtensionMV2,
-  kExtensionMV3,
-};
-
-// Mapping of the different extension types used in the test to the specific
-// manifest file names to create an extension of that type. The actual location
-// of these files is at //chrome/test/data/extensions/api_test/printing/.
-static constexpr auto kManifestFileNames =
-    base::MakeFixedFlatMap<ExtensionType, const char*>(
-        {{ExtensionType::kChromeApp, "manifest_chrome_app.json"},
-         {ExtensionType::kExtensionMV2, "manifest_extension.json"},
-         {ExtensionType::kExtensionMV3, "manifest_v3_extension.json"}});
-
-std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
-    content::BrowserContext* context) {
-  return std::make_unique<ash::TestCupsPrintJobManager>(
-      Profile::FromBrowserContext(context));
-}
-
-std::unique_ptr<KeyedService> BuildFakeCupsPrintersManager(
-    content::BrowserContext* context) {
-  return std::make_unique<ash::FakeCupsPrintersManager>();
-}
-
-std::unique_ptr<printing::PrinterSemanticCapsAndDefaults>
-ConstructPrinterCapabilities() {
-  auto capabilities =
-      std::make_unique<printing::PrinterSemanticCapsAndDefaults>();
-  capabilities->color_model = printing::mojom::ColorModel::kColor;
-  capabilities->duplex_modes.push_back(printing::mojom::DuplexMode::kSimplex);
-  capabilities->copies_max = 2;
-  capabilities->dpis.emplace_back(kHorizontalDpi, kVerticalDpi);
-  printing::PrinterSemanticCapsAndDefaults::Paper paper(
-      /*display_name=*/"", kMediaSizeVendorId,
-      {kMediaSizeWidth, kMediaSizeHeight});
-  capabilities->papers.push_back(std::move(paper));
-  capabilities->collate_capable = true;
-  return capabilities;
-}
-
 }  // namespace
 
 class PrintingApiTest : public ExtensionApiTest,
                         public testing::WithParamInterface<ExtensionType> {
  public:
-  PrintingApiTest() = default;
-  ~PrintingApiTest() override = default;
-
-  PrintingApiTest(const PrintingApiTest&) = delete;
-  PrintingApiTest& operator=(const PrintingApiTest&) = delete;
-
- protected:
-  void SetUp() override {
-    ExtensionApiTest::SetUp();
-    printing::PrintBackend::SetPrintBackendForTesting(
-        test_print_backend_.get());
-  }
-
-  void TearDown() override {
-    printing::PrintBackend::SetPrintBackendForTesting(nullptr);
-    ExtensionApiTest::TearDown();
-  }
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
-    if (base::FeatureList::IsEnabled(
-            printing::features::kEnableOopPrintDrivers)) {
-      print_backend_service_ =
-          printing::PrintBackendServiceTestImpl::LaunchForTesting(
-              test_remote_, test_print_backend_.get(), /*sandboxed=*/true);
-    }
+    helper_->Init(browser()->profile());
   }
 
   void TearDownOnMainThread() override {
-    print_backend_service_.reset();
-    test_remote_.reset_on_disconnect();
-    printing::PrintBackendServiceManager::GetInstance().ResetForTesting();
+    helper_.reset();
     ExtensionApiTest::TearDownOnMainThread();
   }
-#endif
 
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &PrintingApiTest::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
+    helper_ = std::make_unique<PrintingTestHelper>();
   }
 
-  ash::TestCupsPrintJobManager* GetPrintJobManager() {
-    return static_cast<ash::TestCupsPrintJobManager*>(
-        ash::CupsPrintJobManagerFactory::GetForBrowserContext(
-            browser()->profile()));
-  }
-
-  ash::FakeCupsPrintersManager* GetPrintersManager() {
-    return static_cast<ash::FakeCupsPrintersManager*>(
-        ash::CupsPrintersManagerFactory::GetForBrowserContext(
-            browser()->profile()));
-  }
-
-  void AddAvailablePrinter(
-      const std::string& printer_id,
-      std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> capabilities) {
-    auto printer = chromeos::Printer(printer_id);
-    printer.SetUri("ipp://192.168.1.0");
-    GetPrintersManager()->AddPrinter(printer,
-                                     chromeos::PrinterClass::kEnterprise);
-    chromeos::CupsPrinterStatus status(printer_id);
-    status.AddStatusReason(
-        chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Reason::
-            kPrinterUnreachable,
-        chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Severity::kError);
-    GetPrintersManager()->SetPrinterStatus(status);
-    test_print_backend_->AddValidPrinter(printer_id, std::move(capabilities),
-                                         nullptr);
-  }
-
+ protected:
   void RunTest(const char* html_test_page) {
-    TestExtensionDir dir;
-
-    {
-      // Prepare test files.
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      base::CopyDirectory(test_data_dir_.AppendASCII("printing"),
-                          dir.UnpackedPath(), /*recursive=*/false);
-      base::CopyFile(
-          test_data_dir_.AppendASCII("printing")
-              .AppendASCII(kManifestFileNames.at(GetExtensionType())),
-          dir.UnpackedPath().AppendASCII(extensions::kManifestFilename));
-    }
-
+    auto dir = CreatePrintingExtension(GetExtensionType());
     auto run_options = GetExtensionType() == ExtensionType::kChromeApp
                            ? RunOptions{.custom_arg = html_test_page,
                                         .launch_as_platform_app = true}
                            : RunOptions({.extension_url = html_test_page});
-    ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), run_options, {}));
+    ASSERT_TRUE(RunExtensionTest(dir->UnpackedPath(), run_options, {}));
   }
+
+  PrintingTestHelper* helper() { return helper_.get(); }
 
  private:
   ExtensionType GetExtensionType() const { return GetParam(); }
 
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    ash::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildTestCupsPrintJobManager));
-    ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildFakeCupsPrintersManager));
-  }
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  mojo::Remote<printing::mojom::PrintBackendService> test_remote_;
-  std::unique_ptr<printing::PrintBackendServiceTestImpl> print_backend_service_;
-#endif
-
-  base::CallbackListSubscription create_services_subscription_;
-
-  scoped_refptr<printing::TestPrintBackend> test_print_backend_ =
-      base::MakeRefCounted<printing::TestPrintBackend>();
+  std::unique_ptr<PrintingTestHelper> helper_;
 };
 
 using PrintingPromiseApiTest = PrintingApiTest;
@@ -226,13 +67,14 @@ using PrintingPromiseApiTest = PrintingApiTest;
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinters) {
   chromeos::Printer printer = chromeos::Printer(kId);
   printer.set_display_name("name");
-  GetPrintersManager()->AddPrinter(printer, chromeos::PrinterClass::kSaved);
+  helper()->GetPrintersManager()->AddPrinter(printer,
+                                             chromeos::PrinterClass::kSaved);
 
   RunTest("get_printers.html");
 }
 
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinterInfo) {
-  AddAvailablePrinter(
+  helper()->AddAvailablePrinter(
       kId, std::make_unique<printing::PrinterSemanticCapsAndDefaults>());
 
   RunTest("get_printer_info.html");
@@ -248,11 +90,11 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinterInfo) {
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJob) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  AddAvailablePrinter(kId, ConstructPrinterCapabilities());
+  helper()->AddAvailablePrinter(kId, ConstructPrinterCapabilities());
   PrintingAPIHandler* handler = PrintingAPIHandler::Get(browser()->profile());
   handler->SetPrintJobControllerForTesting(
-      std::make_unique<FakePrintJobControllerAsh>(GetPrintJobManager(),
-                                                  GetPrintersManager()));
+      std::make_unique<FakePrintJobControllerAsh>(
+          helper()->GetPrintJobManager(), helper()->GetPrintersManager()));
   base::AutoReset<bool> skip_confirmation_dialog_reset(
       PrintJobSubmitter::SkipConfirmationDialogForTesting());
 
@@ -263,11 +105,11 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJob) {
 IN_PROC_BROWSER_TEST_P(PrintingPromiseApiTest, SubmitJob) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  AddAvailablePrinter(kId, ConstructPrinterCapabilities());
+  helper()->AddAvailablePrinter(kId, ConstructPrinterCapabilities());
   PrintingAPIHandler* handler = PrintingAPIHandler::Get(browser()->profile());
   handler->SetPrintJobControllerForTesting(
-      std::make_unique<FakePrintJobControllerAsh>(GetPrintJobManager(),
-                                                  GetPrintersManager()));
+      std::make_unique<FakePrintJobControllerAsh>(
+          helper()->GetPrintJobManager(), helper()->GetPrintersManager()));
   base::AutoReset<bool> skip_confirmation_dialog_reset(
       PrintJobSubmitter::SkipConfirmationDialogForTesting());
 
@@ -280,11 +122,11 @@ IN_PROC_BROWSER_TEST_P(PrintingPromiseApiTest, SubmitJob) {
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, CancelJob) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  AddAvailablePrinter(kId, ConstructPrinterCapabilities());
+  helper()->AddAvailablePrinter(kId, ConstructPrinterCapabilities());
   PrintingAPIHandler* handler = PrintingAPIHandler::Get(browser()->profile());
   handler->SetPrintJobControllerForTesting(
-      std::make_unique<FakePrintJobControllerAsh>(GetPrintJobManager(),
-                                                  GetPrintersManager()));
+      std::make_unique<FakePrintJobControllerAsh>(
+          helper()->GetPrintJobManager(), helper()->GetPrintersManager()));
   base::AutoReset<bool> skip_confirmation_dialog_reset(
       PrintJobSubmitter::SkipConfirmationDialogForTesting());
 
