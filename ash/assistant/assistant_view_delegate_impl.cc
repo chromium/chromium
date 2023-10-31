@@ -157,4 +157,11 @@ bool AssistantViewDelegateImpl::ShouldShowOnboarding() const {
          base::Days(28);
 }
 
+void AssistantViewDelegateImpl::OnLauncherSearchChipPressed(
+    const std::u16string& query) {
+  for (auto& observer : view_delegate_observers_) {
+    observer.OnLauncherSearchChipPressed(query);
+  }
+}
+
 }  // namespace ash

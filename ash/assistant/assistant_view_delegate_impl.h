@@ -45,6 +45,7 @@ class AssistantViewDelegateImpl : public AssistantViewDelegate {
   void OnSuggestionPressed(
       const base::UnguessableToken& suggestion_id) override;
   bool ShouldShowOnboarding() const override;
+  void OnLauncherSearchChipPressed(const std::u16string& query) override;
 
  private:
   const raw_ptr<AssistantControllerImpl, ExperimentalAsh> assistant_controller_;

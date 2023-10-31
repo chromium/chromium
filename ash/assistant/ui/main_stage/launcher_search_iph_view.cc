@@ -66,10 +66,10 @@ constexpr int kBackgroundRadiusTablet = 16;
 }  // namespace
 
 LauncherSearchIphView::LauncherSearchIphView(
-    std::unique_ptr<ScopedIphSession> scoped_iph_session,
     Delegate* delegate,
-    bool is_in_tablet_mode)
-    : scoped_iph_session_(std::move(scoped_iph_session)), delegate_(delegate) {
+    bool is_in_tablet_mode,
+    std::unique_ptr<ScopedIphSession> scoped_iph_session)
+    : delegate_(delegate), scoped_iph_session_(std::move(scoped_iph_session)) {
   SetID(ViewId::kSelf);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -164,12 +164,16 @@ LauncherSearchIphView::~LauncherSearchIphView() = default;
 
 void LauncherSearchIphView::RunLauncherSearchQuery(
     const std::u16string& query) {
-  scoped_iph_session_->NotifyEvent(kIphEventNameChipClick);
+  if (scoped_iph_session_) {
+    scoped_iph_session_->NotifyEvent(kIphEventNameChipClick);
+  }
   delegate_->RunLauncherSearchQuery(query);
 }
 
 void LauncherSearchIphView::OpenAssistantPage() {
-  scoped_iph_session_->NotifyEvent(kIphEventNameAssistantClick);
+  if (scoped_iph_session_) {
+    scoped_iph_session_->NotifyEvent(kIphEventNameAssistantClick);
+  }
   delegate_->OpenAssistantPage();
 }
 

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/app_list/app_list_model_provider.h"
@@ -15,6 +16,7 @@
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/ash_export.h"
+#include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/search_box/search_box_view_base.h"
@@ -44,7 +46,8 @@ class SearchResultBaseView;
 class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
                                  public AppListModelProvider::Observer,
                                  public SearchBoxModelObserver,
-                                 public LauncherSearchIphView::Delegate {
+                                 public LauncherSearchIphView::Delegate,
+                                 public AssistantViewDelegateObserver {
  public:
   enum class PlaceholderTextType {
     kShortcuts = 0,
@@ -111,6 +114,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // LauncherSearchIphView::Delegate:
   void RunLauncherSearchQuery(const std::u16string& query) override;
   void OpenAssistantPage() override;
+
+  // AssistantViewDelegateObserver:
+  void OnLauncherSearchChipPressed(const std::u16string& query) override;
 
   // Shows the category filter menu that allows users to enable/disable specific
   // search categories.
@@ -329,6 +335,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
       search_box_model_observer_{this};
+
+  base::ScopedObservation<AssistantViewDelegate, AssistantViewDelegateObserver>
+      assistant_view_delegate_observer_{this};
 
   base::WeakPtrFactory<SearchBoxView> weak_ptr_factory_{this};
 };

@@ -7,7 +7,6 @@
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
-#include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/assistant/assistant_test_api_impl.h"
 #include "ash/app_list/views/contents_view.h"
@@ -234,16 +233,16 @@ class AppListIphBrowserTest : public MixinBasedInProcessBrowserTest,
             ash::AssistantViewID::kZeroStateView));
   }
 
-  ash::AppListToastView* GetAssistantLearnMoreToast() {
+  ash::LauncherSearchIphView* GetAssistantLauncherSearchIph() {
     if (IsClamshellModeTest()) {
-      return static_cast<ash::AppListToastView*>(
+      return static_cast<ash::LauncherSearchIphView*>(
           ash::GetAppListBubbleView()->GetViewByID(
-              ash::AssistantViewID::kLearnMoreToast));
+              ash::AssistantViewID::kLauncherSearchIph));
     }
 
-    return static_cast<ash::AppListToastView*>(
+    return static_cast<ash::LauncherSearchIphView*>(
         ash::GetAppListView()->GetViewByID(
-            ash::AssistantViewID::kLearnMoreToast));
+            ash::AssistantViewID::kLauncherSearchIph));
   }
 
   bool IsSearchPageActive() {
@@ -427,7 +426,7 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
 }
 
 // The bool param indicates if the AssistantLearnMore feature is enabled or not.
-class AppListIphBrowserTestWithLearnMoreToast : public AppListIphBrowserTest {
+class AppListIphBrowserTestAssistantZeroState : public AppListIphBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitAndEnableFeature(
@@ -440,8 +439,7 @@ class AppListIphBrowserTestWithLearnMoreToast : public AppListIphBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest,
-                       NoAssistantLearnMoreToastFlagOff) {
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest, NoAssistantZeroStateIphFlagOff) {
   ASSERT_FALSE(base::FeatureList::IsEnabled(
       ash::assistant::features::kEnableAssistantLearnMore));
 
@@ -451,30 +449,32 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTest,
   ASSERT_TRUE(assistant_button);
   Click(assistant_button);
 
-  // The learn more toast is shown in the zero state view.
+  // The LauncherSearchIphView is not shown in the zero state view.
   ASSERT_TRUE(IsAssistantPageActive());
   ASSERT_TRUE(GetAssistantZeroStateView()->GetVisible());
 
-  ash::AppListToastView* learn_more_toast = GetAssistantLearnMoreToast();
-  EXPECT_FALSE(learn_more_toast->GetVisible());
-  EXPECT_FALSE(learn_more_toast->IsDrawn());
+  ash::LauncherSearchIphView* launcher_search_iph =
+      GetAssistantLauncherSearchIph();
+  EXPECT_FALSE(launcher_search_iph->GetVisible());
+  EXPECT_FALSE(launcher_search_iph->IsDrawn());
 }
 
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithLearnMoreToast,
-                       ShowAssistantLearnMoreToast) {
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
+                       ShowAssistantZeroStateIph) {
   OpenAppList();
 
   views::ImageButton* assistant_button = search_box_view()->assistant_button();
   ASSERT_TRUE(assistant_button);
   Click(assistant_button);
 
-  // The learn more toast is shown in the zero state view.
+  // The LauncherSearchIphView is shown in the zero state view.
   ASSERT_TRUE(IsAssistantPageActive());
   ASSERT_TRUE(GetAssistantZeroStateView()->GetVisible());
 
-  ash::AppListToastView* learn_more_toast = GetAssistantLearnMoreToast();
-  EXPECT_TRUE(learn_more_toast->GetVisible());
-  EXPECT_TRUE(learn_more_toast->IsDrawn());
+  ash::LauncherSearchIphView* launcher_search_iph =
+      GetAssistantLauncherSearchIph();
+  EXPECT_TRUE(launcher_search_iph->GetVisible());
+  EXPECT_TRUE(launcher_search_iph->IsDrawn());
 }
 
 INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,
@@ -493,6 +493,6 @@ INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,
                          &GenerateTestSuffix);
 
 INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,
-                         AppListIphBrowserTestWithLearnMoreToast,
+                         AppListIphBrowserTestAssistantZeroState,
                          /*is_tablet_mode=*/testing::Bool(),
                          &GenerateTestSuffix);

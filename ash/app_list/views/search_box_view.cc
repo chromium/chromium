@@ -479,6 +479,12 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
       model_provider->search_model()->search_box();
   search_box_model_observer_.Observe(search_box_model);
 
+  // The assistant view delegate could be nullptr in test.
+  if (view_delegate_->GetAssistantViewDelegate()) {
+    assistant_view_delegate_observer_.Observe(
+        view_delegate_->GetAssistantViewDelegate());
+  }
+
   if (features::IsUserEducationEnabled()) {
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
     // in case registration causes a help bubble to be created synchronously.
@@ -810,6 +816,10 @@ void SearchBoxView::RunLauncherSearchQuery(const std::u16string& query) {
 
 void SearchBoxView::OpenAssistantPage() {
   delegate_->AssistantButtonPressed();
+}
+
+void SearchBoxView::OnLauncherSearchChipPressed(const std::u16string& query) {
+  UpdateQuery(query);
 }
 
 void SearchBoxView::ShowFilterMenu() {
@@ -1655,8 +1665,8 @@ void SearchBoxView::UpdateIphViewVisibility() {
     }
 
     SetIphView(std::make_unique<LauncherSearchIphView>(
-        std::move(scoped_iph_session), /*delegate=*/this,
-        /*is_in_tablet_mode=*/!is_app_list_bubble_));
+        /*delegate=*/this, /*is_in_tablet_mode=*/!is_app_list_bubble_,
+        std::move(scoped_iph_session)));
 
     assistant_button()->SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshControlBackgroundColorInactive,

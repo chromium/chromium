@@ -6,18 +6,19 @@
 
 #include <memory>
 
-#include "ash/app_list/views/app_list_toast_view.h"  //nogncheck
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/main_stage/assistant_onboarding_view.h"
+#include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -41,15 +42,8 @@ namespace {
 constexpr int kGreetingLabelTopMarginDip = 28;
 constexpr int kOnboardingViewTopMarginDip = 48;
 
-// TODO(b/274527683): add i18n strings.
-constexpr char16_t kLearnMoreLabelText[] = u"Learn more about Google Assistant";
-constexpr char16_t kLearnMoreButtonA11yName[] = u"Learn more about Assistant";
-
-constexpr base::StringPiece kLearnMoreUrl =
-    "https://support.google.com/chromebook?p=assistant";
-
-constexpr auto kToastMarginDip = gfx::Insets::TLBR(0, 24, 2, 24);
-constexpr auto kToastMarginTabletModeDip = gfx::Insets::TLBR(12, 16, 2, 16);
+constexpr auto kIphMarginDip = gfx::Insets::TLBR(0, 24, 2, 24);
+constexpr auto kIphMarginTabletModeDip = gfx::Insets::TLBR(12, 16, 2, 16);
 
 bool ShouldShowGreetingOrOnboarding(bool in_tablet_mode) {
   if (assistant::features::IsAssistantLearnMoreEnabled()) {
@@ -65,13 +59,13 @@ bool ShouldShowSpacer(bool in_tablet_mode) {
   return false;
 }
 
-bool ShouldShowLearnMoreToast() {
+bool ShouldShowIph() {
   return assistant::features::IsAssistantLearnMoreEnabled();
 }
 
 int GetMarginWidth(bool in_tablet_mode) {
-  return in_tablet_mode ? kToastMarginTabletModeDip.width()
-                        : kToastMarginDip.width();
+  return in_tablet_mode ? kIphMarginTabletModeDip.width()
+                        : kIphMarginDip.width();
 }
 
 }  // namespace
@@ -108,12 +102,11 @@ void AssistantZeroStateView::OnBoundsChanged(const gfx::Rect& prev_bounds) {
   if (prev_bounds.size() != bounds().size()) {
     // Update `learn_more_toast_` preferred size to layout the title label.
     // The actual height may change based on the text in the toast.
-    const int kToastMaxHeightDip = 64;
-    const auto kToastPreferredSizeDip =
+    const int kIphMaxHeightDip = 64;
+    const auto kIphPreferredSizeDip =
         gfx::Size(bounds().width() - GetMarginWidth(delegate_->IsTabletMode()),
-                  kToastMaxHeightDip);
-    learn_more_toast_->SetPreferredSize(kToastPreferredSizeDip);
-    learn_more_toast_->SetTitleLabelMaximumWidth();
+                  kIphMaxHeightDip);
+    iph_view_->SetPreferredSize(kIphPreferredSizeDip);
   }
 }
 
@@ -169,22 +162,13 @@ void AssistantZeroStateView::InitLayout() {
   spacer_ = AddChildView(std::make_unique<views::View>());
   layout->SetFlexForView(spacer_, 1);
 
-  // Learn more toast.
-  learn_more_toast_ = AddChildView(
-      AppListToastView::Builder(kLearnMoreLabelText)
-          .SetButton(l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE),
-                     base::BindRepeating(
-                         &AssistantZeroStateView::OnLearnMoreButtonPressed,
-                         base::Unretained(this)))
-          .Build());
-  learn_more_toast_->toast_button()->GetViewAccessibility().OverrideRole(
-      ax::mojom::Role::kLink);
-  learn_more_toast_->toast_button()->GetViewAccessibility().OverrideName(
-      kLearnMoreButtonA11yName);
-  learn_more_toast_->SetID(AssistantViewID::kLearnMoreToast);
-  learn_more_toast_->SetProperty(
-      views::kMarginsKey,
-      delegate_->IsTabletMode() ? kToastMarginTabletModeDip : kToastMarginDip);
+  // Launcher search IPH view:
+  iph_view_ = AddChildView(std::make_unique<LauncherSearchIphView>(
+      /*delegate=*/this, /*is_in_tablet_mode=*/delegate_->IsTabletMode()));
+  iph_view_->SetID(AssistantViewID::kLauncherSearchIph);
+  iph_view_->SetProperty(views::kMarginsKey, delegate_->IsTabletMode()
+                                                 ? kIphMarginTabletModeDip
+                                                 : kIphMarginDip);
 }
 
 void AssistantZeroStateView::UpdateLayout() {
@@ -197,12 +181,17 @@ void AssistantZeroStateView::UpdateLayout() {
   const bool show_spacer = ShouldShowSpacer(delegate_->IsTabletMode());
   spacer_->SetVisible(show_spacer);
 
-  const bool show_learn_more_toast = ShouldShowLearnMoreToast();
-  learn_more_toast_->SetVisible(show_learn_more_toast);
+  const bool show_iph = ShouldShowIph();
+  iph_view_->SetVisible(show_iph);
 }
 
-void AssistantZeroStateView::OnLearnMoreButtonPressed() {
-  AssistantController::Get()->OpenUrl(GURL(kLearnMoreUrl));
+void AssistantZeroStateView::RunLauncherSearchQuery(
+    const std::u16string& query) {
+  delegate_->OnLauncherSearchChipPressed(query);
+}
+
+void AssistantZeroStateView::OpenAssistantPage() {
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace ash

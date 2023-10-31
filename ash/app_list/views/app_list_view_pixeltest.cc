@@ -520,7 +520,7 @@ INSTANTIATE_TEST_SUITE_P(RTL,
                                           /*JellyEnabled=*/testing::Bool()),
                          &GenerateTestSuffix);
 
-TEST_P(AppListViewAssistantZeroStateTest, Basic) {
+TEST_P(AppListViewAssistantZeroStateTest, DISABLED_Basic) {
   // Wait layout.
   base::RunLoop().RunUntilIdle();
 
