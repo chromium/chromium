@@ -5126,7 +5126,7 @@
   {
     "name": "local-pdp-detection",
     "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 119
+    "expiry_milestone": 124
   },
   {
     "name": "local-printer-observing",
