@@ -536,6 +536,7 @@ ios_builder(
         ),
         build_gs_bucket = "chromium-mac-archive",
     ),
+    cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
             category = "ios|default",

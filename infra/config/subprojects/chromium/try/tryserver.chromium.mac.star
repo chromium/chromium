@@ -466,6 +466,7 @@ ios_builder(
     mirrors = [
         "ci/ios-simulator-full-configs",
     ],
+    cpu = cpu.ARM64,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
     main_list_view = "try",
