@@ -96,7 +96,14 @@ class VisitedLinkCommon {
 
     // goes into salt_
     uint8_t salt[LINK_SALT_LENGTH];
+
+    // Padding to ensure the Fingerprint table is aligned. Without this, reading
+    // from the table causes unaligned reads.
+    uint8_t padding[4];
   };
+
+  static_assert(sizeof(SharedHeader) % alignof(Fingerprint) == 0,
+                "Fingerprint must be aligned when placed after SharedHeader");
 
   // Returns the fingerprint at the given index into the URL table. This
   // function should be called instead of accessing the table directly to
