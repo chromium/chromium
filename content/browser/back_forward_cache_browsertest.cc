@@ -136,10 +136,6 @@ EvalJsResult GetLocalStorage(RenderFrameHostImpl* rfh, std::string key) {
   return EvalJs(rfh, JsReplace("localStorage.getItem($1)", key));
 }
 
-// Because we are dealing with multiple renderer processes and the storage
-// service, we sometimes need to wait for the storage changes to show up the
-// renderer. See https://crbug.com/1494646.
-// Returns whether the expected value was found (so timeouts can be recognized).
 [[nodiscard]] bool WaitForLocalStorage(RenderFrameHostImpl* rfh,
                                        std::string key,
                                        std::string expected_value) {

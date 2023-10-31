@@ -2100,10 +2100,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Check that the value for 'pagehide_storage' and 'visibilitychange_storage'
   // are set correctly.
-  EXPECT_EQ("dispatched_once",
-            GetLocalStorage(main_frame_3, "pagehide_storage"));
-  EXPECT_EQ("dispatched_once",
-            GetLocalStorage(main_frame_3, "visibilitychange_storage"));
+  EXPECT_TRUE(
+      WaitForLocalStorage(main_frame_3, "pagehide_storage", "dispatched_once"));
+  EXPECT_TRUE(WaitForLocalStorage(main_frame_3, "visibilitychange_storage",
+                                  "dispatched_once"));
 }
 
 // Tests that the history value saved in the renderer is updated correctly when
