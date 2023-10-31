@@ -1265,9 +1265,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kDriveOpenSourceVolumeMetric,
       ash::cloud_upload::OfficeFilesSourceVolume::kGoogleDrive, 1);
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kGoogleDrive,
-                                1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
   histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveOpenSourceVolumeMetric,
                                 VolumeType::VOLUME_TYPE_GOOGLE_DRIVE, 1);
   histogram_.ExpectUniqueSample(
@@ -1350,9 +1350,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileInDriveOpensSetUpDialog) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kGoogleDrive,
-                                1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
 }
 
 // Test that the setup flow for office files, that has never been run before,
@@ -1390,9 +1390,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileNotInDriveOpensSetUpDialog) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kGoogleDrive,
-                                1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
 }
 
 // Fake app service web app publisher to test when an app is launched.
@@ -1646,8 +1646,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
   CHECK_EQ(launches[0].app_id, web_app::kMicrosoft365AppId);
   CHECK_EQ(launches[0].intent_url, kODFSSampleUrl);
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kOneDrive, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kOneDrive, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
       ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive, 1);
@@ -1708,8 +1709,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
 
   ASSERT_EQ(0u, web_app_publisher_->GetLaunches().size());
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kOneDrive, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kOneDrive, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback, 1);
@@ -2098,8 +2100,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileInOneDriveOpensSetUpDialog) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kOneDrive, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kOneDrive, 1);
 }
 
 // Test that the setup flow for office files, that has never been run before,
@@ -2130,8 +2133,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileNotInOneDriveOpensSetUpDialog) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kOneDrive, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kOneDrive, 1);
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(

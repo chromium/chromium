@@ -1217,10 +1217,10 @@ chromium-metrics-reviews@google.com.
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Chrome OS File Browser: Records the cloud provider used when opening a file.
-    Record Google Drive or OneDrive cloud provider if a file is being opened
-    with Drive web or Microsoft 365, respectively. Record Unknown if an unknown
-    cloud provider is used and record None if no cloud provider used.
+    Chrome OS File Browser: Records the initial cloud provider selected to open
+    a file. Record Google Drive or OneDrive cloud provider if a file is being
+    opened with Drive web or Microsoft 365, respectively. Record Unknown if an
+    unknown cloud provider is used and record None if no cloud provider used.
   </summary>
 </histogram>
 
