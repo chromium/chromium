@@ -213,4 +213,13 @@ bool TestUkmRecorder::HumanReadableUkmEntry::operator==(
   return source_id == other.source_id && metrics == other.metrics;
 }
 
+void PrintTo(const TestUkmRecorder::HumanReadableUkmEntry& entry,
+             std::ostream* os) {
+  (*os) << "Entry{source=" << entry.source_id << " ";
+  for (const auto& name_value : entry.metrics) {
+    (*os) << name_value.first << "=" << name_value.second << ' ';
+  }
+  (*os) << "}";
+}
+
 }  // namespace ukm
