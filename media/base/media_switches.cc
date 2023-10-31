@@ -563,6 +563,11 @@ BASE_FEATURE(kShowForceRespectUiGainsToggle,
 BASE_FEATURE(kCrOSSystemVoiceIsolationOption,
              "CrOSSystemVoiceIsolationOption",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(b/306569817): Enable by default
+BASE_FEATURE(kAudioFlexibleLoopbackForSystemLoopback,
+             "AudioFlexibleLoopbackForSystemLoopback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Make MSE garbage collection algorithm more aggressive when we are under

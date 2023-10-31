@@ -5584,6 +5584,12 @@ const char kAudioFlexibleLoopbackName[] =
 const char kAudioFlexibleLoopbackDescription[] =
     "Enable flexible loopback API support in ChromeOS.";
 
+const char kAudioFlexibleLoopbackForSystemLoopbackName[] =
+    "Use FLEXIBLE_LOOPBACK instead of POST_MIX_LOOPBACK";
+const char kAudioFlexibleLoopbackForSystemLoopbackDescription[] =
+    "Request a FLEXIBLE_LOOPBACK instead of POST_MIX_LOOPBACK for system "
+    "loopback";
+
 const char kAudioHFPMicSRName[] =
     "Audio super-resolution Bluetooth HFP microphone";
 const char kAudioHFPMicSRDescription[] =

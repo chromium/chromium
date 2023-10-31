@@ -61086,6 +61086,8 @@ from previous Chrome versions.
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
   <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
   <int value="-2014920890" label="ForgotPasswordFormSupport:disabled"/>
+  <int value="-2013948438"
+      label="AudioFlexibleLoopbackForSystemLoopback:disabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
   <int value="-2013124655" label="EnableEphemeralFlashPermission:disabled"/>
   <int value="-2013071623" label="BacklightOcr:disabled"/>
@@ -67922,6 +67924,8 @@ from previous Chrome versions.
   <int value="1339191800" label="OmniboxMaxZeroSuggestMatches:disabled"/>
   <int value="1339426771" label="TopSitesFromSiteEngagement:disabled"/>
   <int value="1340525505" label="CrOSLateBootMissiveStorage:enabled"/>
+  <int value="1340553854"
+      label="AudioFlexibleLoopbackForSystemLoopback:enabled"/>
   <int value="1340690624" label="WebPaymentsMethodSectionOrderV2:disabled"/>
   <int value="1340970682" label="WebViewSendVariationsHeaders:enabled"/>
   <int value="1343050930" label="ContextualSearchUnityIntegration:enabled"/>
