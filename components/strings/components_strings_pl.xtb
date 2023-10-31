@@ -2134,7 +2134,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5414446060143308245">Wymagane jest sprawdzenie plików przed przeniesieniem</translation>
 <translation id="5414511064953050917">Przenieś mimo to</translation>
 <translation id="5421136146218899937">Wyczyść dane przeglądania...</translation>
-<translation id="5423269318075950257">Monitoruj cenę</translation>
+<translation id="5423269318075950257">Śledź cenę</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Brak witryn z zablokowanym dostępem}=1{1 witryna z zablokowanym dostępem}few{# witryny z zablokowanym dostępem}many{# witryn z zablokowanym dostępem}other{# witryny z zablokowanym dostępem}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> chce wysyłać Ci powiadomienia</translation>
 <translation id="5430298929874300616">Usuń zakładkę</translation>
