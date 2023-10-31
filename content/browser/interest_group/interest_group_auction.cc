@@ -2477,6 +2477,8 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
   DCHECK_EQ(0, config_->NumPromises());
   config_promises_resolved_ = true;
 
+  auction_metrics_recorder_->OnConfigPromisesResolved();
+
   // If we haven't started the bidding and scoring phase, we will just handle
   // this information at its start; setting `config_promises_resolved_` is
   // enough both for us and the BuyerHelper. If we are after the phase, that
@@ -2485,8 +2487,6 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
   if (bidding_and_scoring_phase_state_ != PhaseState::kDuring) {
     return;
   }
-
-  auction_metrics_recorder_->OnConfigPromisesResolved();
 
   for (const auto& buyer_helper : buyer_helpers_) {
     buyer_helper->NotifyConfigPromisesResolved();
