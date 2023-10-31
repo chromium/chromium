@@ -79,10 +79,16 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   // |timestamp_us| is |frame->timestamp()| in Microseconds but clipped to
   // ensure that it doesn't exceed the current system time. However,
   // |capture_time_identifier| is just |frame->timestamp()|.
+  // |reference_time| corresponds to a monotonically increasing clock time
+  // and represents the time when the frame was captured. Not all platforms
+  // provide the "true" sample capture time in |reference_time| but might
+  // instead use a somewhat delayed (by the time it took to capture the frame)
+  // version of it.
   void DeliverFrame(scoped_refptr<media::VideoFrame> frame,
                     gfx::Rect* update_rect,
                     int64_t timestamp_us,
-                    absl::optional<webrtc::Timestamp> capture_time_identifier);
+                    absl::optional<webrtc::Timestamp> capture_time_identifier,
+                    absl::optional<webrtc::Timestamp> reference_time);
 
   // This checks if the colorspace information should be passed to webrtc. Avoid
   // sending unknown or unnecessary color space.
