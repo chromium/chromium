@@ -16,12 +16,12 @@
  */
 import {Input, InvalidArgumentException} from '../../../protocol/protocol.js';
 import type {EmptyResult} from '../../../protocol/webdriver-bidi';
-import {InputStateManager} from '../input/InputStateManager.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {ActionDispatcher} from '../input/ActionDispatcher.js';
 import type {ActionOption} from '../input/ActionOption.js';
 import {SourceType} from '../input/InputSource.js';
 import type {InputState} from '../input/InputState.js';
-import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
+import {InputStateManager} from '../input/InputStateManager.js';
 
 export class InputProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;

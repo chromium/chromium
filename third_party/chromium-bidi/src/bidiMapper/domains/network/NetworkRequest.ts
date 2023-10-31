@@ -20,26 +20,26 @@
  * @fileoverview `NetworkRequest` represents a single network request and keeps
  * track of all the related CDP events.
  */
-import type Protocol from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {Deferred} from '../../../utils/Deferred.js';
-import type {EventManager} from '../events/EventManager.js';
 import {
   Network,
   type BrowsingContext,
   ChromiumBidi,
   type JsUint,
 } from '../../../protocol/protocol.js';
-import type {Result} from '../../../utils/result.js';
 import {assert} from '../../../utils/assert.js';
+import {Deferred} from '../../../utils/Deferred.js';
+import type {Result} from '../../../utils/result.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
+import type {EventManager} from '../events/EventManager.js';
 
+import type {NetworkStorage} from './NetworkStorage.js';
 import {
   computeHeadersSize,
   bidiNetworkHeadersFromCdpFetchHeaders,
   bidiNetworkHeadersFromCdpNetworkHeaders,
 } from './NetworkUtils.js';
-import type {NetworkStorage} from './NetworkStorage.js';
 
 /** Abstracts one individual network request. */
 export class NetworkRequest {

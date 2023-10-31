@@ -33,8 +33,8 @@ import {readFile} from 'fs/promises';
 import {homedir} from 'os';
 import {resolve} from 'path';
 
+import {setOutput, setFailed} from '@actions/core';
 import {install, computeExecutablePath} from '@puppeteer/browsers';
-import actions from '@actions/core';
 
 const SHELL_ARG = '--shell';
 
@@ -60,9 +60,9 @@ try {
     buildId,
   });
   if (!process.argv.includes(SHELL_ARG)) {
-    actions.setOutput('executablePath', executablePath);
+    setOutput('executablePath', executablePath);
   }
   console.log(executablePath);
 } catch (err) {
-  actions.setFailed(`Failed to download the browser: ${err.message}`);
+  setFailed(`Failed to download the browser: ${err.message}`);
 }

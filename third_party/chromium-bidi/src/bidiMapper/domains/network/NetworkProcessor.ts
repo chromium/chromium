@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type Protocol from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import {
   Network,
@@ -22,14 +22,14 @@ import {
   NoSuchRequestException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
-import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {assert} from '../../../utils/assert.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
+import {NetworkStorage} from './NetworkStorage.js';
 import {
   cdpFetchHeadersFromBidiNetworkHeaders,
   cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
 } from './NetworkUtils.js';
-import {NetworkStorage} from './NetworkStorage.js';
 
 /** Dispatches Network domain commands. */
 export class NetworkProcessor {

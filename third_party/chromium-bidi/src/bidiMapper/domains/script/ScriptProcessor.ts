@@ -22,12 +22,12 @@ import {
   InvalidArgumentException,
 } from '../../../protocol/protocol';
 import type {LoggerFn} from '../../../utils/log';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
 import type {CdpTarget} from '../context/CdpTarget';
-import type {BrowsingContextImpl} from '../context/BrowsingContextImpl';
 
-import type {PreloadScriptStorage} from './PreloadScriptStorage';
 import {PreloadScript} from './PreloadScript';
+import type {PreloadScriptStorage} from './PreloadScriptStorage';
 import type {Realm} from './Realm';
 import type {RealmStorage} from './RealmStorage';
 

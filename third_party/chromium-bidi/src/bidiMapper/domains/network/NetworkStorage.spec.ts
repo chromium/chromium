@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import {expect} from 'chai';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 
 import {Network} from '../../../protocol/protocol.js';
 import {EventManager} from '../events/EventManager.js';

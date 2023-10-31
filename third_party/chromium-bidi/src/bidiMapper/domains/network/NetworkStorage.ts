@@ -14,15 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type Protocol from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {URLPattern} from '../../../utils/UrlPattern.js';
-import {uuidv4} from '../../../utils/uuid.js';
 import {
   Network,
   NoSuchInterceptException,
   ChromiumBidi,
 } from '../../../protocol/protocol.js';
+import {URLPattern} from '../../../utils/UrlPattern.js';
+import {uuidv4} from '../../../utils/uuid.js';
 import type {EventManager} from '../events/EventManager.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';

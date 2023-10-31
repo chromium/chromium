@@ -19,8 +19,8 @@ import {
   ChromiumBidi,
   type BrowsingContext,
 } from '../../../protocol/protocol.js';
-import {DefaultMap} from '../../../utils/DefaultMap.js';
 import {Buffer} from '../../../utils/Buffer.js';
+import {DefaultMap} from '../../../utils/DefaultMap.js';
 import {IdWrapper} from '../../../utils/IdWrapper.js';
 import type {Result} from '../../../utils/result.js';
 import type {BidiServer} from '../../BidiServer.js';

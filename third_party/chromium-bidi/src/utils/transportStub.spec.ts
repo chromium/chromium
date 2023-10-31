@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 
 import type {ITransport} from './transport.js';
 

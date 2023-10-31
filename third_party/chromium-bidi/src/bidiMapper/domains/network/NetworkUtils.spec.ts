@@ -15,8 +15,8 @@
  * limitations under the License.
  *
  */
-import type Protocol from 'devtools-protocol';
 import {expect} from 'chai';
+import type {Protocol} from 'devtools-protocol';
 
 import type {Network} from '../../../protocol/protocol.js';
 

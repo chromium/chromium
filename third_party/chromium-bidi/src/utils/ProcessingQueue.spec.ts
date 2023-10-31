@@ -16,12 +16,12 @@
  */
 
 import {expect} from 'chai';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 
 import {Deferred} from './Deferred.js';
+import {LogType} from './log.js';
 import {ProcessingQueue} from './ProcessingQueue.js';
 import type {Result} from './result.js';
-import {LogType} from './log.js';
 
 describe('ProcessingQueue', () => {
   it('should wait and call processor in order', async () => {

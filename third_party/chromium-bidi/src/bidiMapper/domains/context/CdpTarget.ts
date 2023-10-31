@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-import type Protocol from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import type {ICdpClient} from '../../../cdp/CdpClient.js';
 import {Deferred} from '../../../utils/Deferred.js';

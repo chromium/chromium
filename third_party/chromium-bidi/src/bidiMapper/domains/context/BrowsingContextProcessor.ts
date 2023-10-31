@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type Protocol from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import type {ICdpClient} from '../../../cdp/CdpClient.js';
 import type {ICdpConnection} from '../../../cdp/CdpConnection.js';
@@ -23,12 +23,12 @@ import {
   type EmptyResult,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
+import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import type {EventManager} from '../events/EventManager.js';
-import type {RealmStorage} from '../script/RealmStorage.js';
-import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
-import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
+import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
+import type {RealmStorage} from '../script/RealmStorage.js';
 
 import {BrowsingContextImpl} from './BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';

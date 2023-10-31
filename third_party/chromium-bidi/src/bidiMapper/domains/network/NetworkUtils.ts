@@ -19,7 +19,7 @@
 /**
  * @fileoverview Utility functions for the Network domain.
  */
-import type Protocol from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import type {Network} from '../../../protocol/protocol.js';
 

@@ -16,7 +16,7 @@
  */
 import {Protocol} from 'devtools-protocol';
 
-import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
+import type {ICdpClient} from '../../../cdp/CdpClient.js';
 import {
   ChromiumBidi,
   type BrowsingContext,
@@ -25,10 +25,10 @@ import {
   UnknownErrorException,
   Script,
 } from '../../../protocol/protocol.js';
+import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
+import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../events/EventManager.js';
-import type {ICdpClient} from '../../../cdp/CdpClient.js';
-import {LogType, type LoggerFn} from '../../../utils/log.js';
 
 import {ChannelProxy} from './ChannelProxy.js';
 import type {RealmStorage} from './RealmStorage.js';

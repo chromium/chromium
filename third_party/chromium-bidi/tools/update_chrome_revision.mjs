@@ -17,8 +17,8 @@
  * limitations under the License.
  */
 
-import {writeFile, readFile} from 'fs/promises';
 import {execSync} from 'child_process';
+import {writeFile, readFile} from 'fs/promises';
 
 import packageJson from '../package.json' assert {type: 'json'};
 

@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
+import type {Protocol} from 'devtools-protocol';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
-import type Protocol from 'devtools-protocol';
 
 import {EventEmitter} from '../utils/EventEmitter.js';
 

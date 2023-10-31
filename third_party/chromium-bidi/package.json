@@ -211,6 +211,7 @@
     "devtools-protocol": "0.0.1213968",
     "eslint": "8.51.0",
     "eslint-config-prettier": "9.0.0",
+    "eslint-import-resolver-typescript": "3.6.1",
     "eslint-plugin-import": "2.28.1",
     "eslint-plugin-mocha": "10.2.0",
     "eslint-plugin-prettier": "5.0.1",
@@ -234,7 +235,7 @@
     "zod": "3.22.4"
   },
   "dependencies": {
-    "urlpattern-polyfill": "9.0.0",
-    "mitt": "3.0.1"
+    "mitt": "3.0.1",
+    "urlpattern-polyfill": "9.0.0"
   }
 }

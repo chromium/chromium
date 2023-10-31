@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 import type {IBidiParser} from '../bidiMapper/BidiMapper.js';
-import * as Parser from '../protocol-parser/protocol-parser.js';
 import type {
   BrowsingContext,
   Cdp,
@@ -24,6 +23,7 @@ import type {
   Script,
   Session,
 } from '../protocol/protocol.js';
+import * as Parser from '../protocol-parser/protocol-parser.js';
 
 export class BidiParser implements IBidiParser {
   // Browsing Context domain

@@ -42,6 +42,11 @@ module.exports = {
       // keep-sorted end
     ],
   },
+  settings: {
+    'import/resolver': {
+      typescript: true,
+    },
+  },
   plugins: [
     '@typescript-eslint',
     'import',
@@ -55,6 +60,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:import/recommended',
+    'plugin:import/typescript',
     'plugin:mocha/recommended',
     'plugin:prettier/recommended',
     'plugin:promise/recommended',
@@ -63,7 +69,7 @@ module.exports = {
   rules: {
     // https://denar90.github.io/eslint.github.io/docs/rules/
     // Some rules use 'warn' in order to ease local development iteration.
-    // keep-sorted start
+    // keep-sorted start block=yes sticky_comments=yes
     '@typescript-eslint/array-type': 'warn',
     '@typescript-eslint/consistent-generic-constructors': 'warn',
     '@typescript-eslint/consistent-type-imports': ['warn', {fixStyle: 'inline-type-imports'}],
@@ -85,14 +91,24 @@ module.exports = {
     '@typescript-eslint/prefer-return-this-type': 'warn',
     '@typescript-eslint/require-await': 'warn',
     '@typescript-eslint/restrict-template-expressions': 'off',
-    '@typescript-eslint/return-await': ['error', 'always'], // This is more performant; see https://v8.dev/blog/fast-async.
+    // This is more performant; see https://v8.dev/blog/fast-async.
+    '@typescript-eslint/return-await': ['error', 'always'],
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
     'func-names': 'error',
     'import/first': 'error',
     'import/newline-after-import': 'warn',
+    'import/no-cycle': ['error', {maxDepth: Infinity}],
     'import/no-duplicates': 'error',
     'import/no-unresolved': 'off',
-    'import/order': ['warn', {'newlines-between': 'always'}],
+    'import/order': [
+      'error', {
+        'newlines-between': 'always',
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true
+        },
+      },
+    ],
     'mocha/no-mocha-arrows': 'off',
     'mocha/no-setup-in-describe': 'off',
     'no-console': 'warn',

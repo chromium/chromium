@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type {Protocol} from 'devtools-protocol';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
-import type Protocol from 'devtools-protocol';
 
-import type {ITransport} from '../utils/transport.js';
 import {LogType} from '../utils/log.js';
 import type {LoggerFn} from '../utils/log.js';
+import type {ITransport} from '../utils/transport.js';
 
 import {CloseError, CdpClient, type ICdpClient} from './CdpClient.js';
 import type {CdpMessage} from './cdpMessage.js';

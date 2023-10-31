@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import type {ICdpClient} from '../cdp/CdpClient';
 import type {ICdpConnection} from '../cdp/CdpConnection.js';
 import {
   Exception,
@@ -25,23 +26,22 @@ import {
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
 import type {Result} from '../utils/result.js';
-import type {ICdpClient} from '../cdp/CdpClient';
 
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {IBidiParser} from './BidiParser.js';
-import {OutgoingMessage} from './OutgoingMessage.js';
 import {BrowserProcessor} from './domains/browser/BrowserProcessor.js';
 import {CdpProcessor} from './domains/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './domains/context/BrowsingContextProcessor.js';
 import type {BrowsingContextStorage} from './domains/context/BrowsingContextStorage.js';
 import type {EventManager} from './domains/events/EventManager.js';
 import {InputProcessor} from './domains/input/InputProcessor.js';
-import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
-import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
-import type {RealmStorage} from './domains/script/RealmStorage.js';
 import {NetworkProcessor} from './domains/network/NetworkProcessor.js';
-import {SessionProcessor} from './domains/session/SessionProcessor.js';
 import {NetworkStorage} from './domains/network/NetworkStorage.js';
+import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
+import type {RealmStorage} from './domains/script/RealmStorage.js';
+import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
+import {SessionProcessor} from './domains/session/SessionProcessor.js';
+import {OutgoingMessage} from './OutgoingMessage.js';
 
 export const enum CommandProcessorEvents {
   Response = 'response',

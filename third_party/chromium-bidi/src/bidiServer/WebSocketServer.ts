@@ -16,9 +16,9 @@
  */
 import http from 'http';
 
-import debug from 'debug';
-import websocket from 'websocket';
 import type {ChromeReleaseChannel} from '@puppeteer/browsers';
+import debug from 'debug';
+import * as websocket from 'websocket';
 
 import {ErrorCode} from '../protocol/webdriver-bidi.js';
 

@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import argparse from 'argparse';
 import {ChromeReleaseChannel} from '@puppeteer/browsers';
+import {ArgumentParser} from 'argparse';
 
 import {debugInfo, WebSocketServer} from './WebSocketServer.js';
 
@@ -26,7 +26,7 @@ function parseArguments(): {
   port: number;
   verbose: boolean;
 } {
-  const parser = new argparse.ArgumentParser({
+  const parser = new ArgumentParser({
     add_help: true,
     exit_on_error: true,
   });

@@ -22,8 +22,8 @@ import {CdpConnection} from '../cdp/CdpConnection.js';
 import {LogType} from '../utils/log.js';
 
 import {BidiParser} from './BidiParser.js';
-import {WindowBidiTransport, WindowCdpTransport} from './Transport.js';
 import {generatePage, log} from './mapperTabPage.js';
+import {WindowBidiTransport, WindowCdpTransport} from './Transport.js';
 
 declare global {
   interface Window {
@@ -71,6 +71,7 @@ const cdpConnection = new CdpConnection(cdpTransport, log);
  * @param {string} selfTargetId
  */
 async function runMapperInstance(selfTargetId: string) {
+  // eslint-disable-next-line no-console
   console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
 
   const bidiServer = await BidiServer.createAndStart(

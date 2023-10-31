@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 import {expect} from 'chai';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 
 import {CdpTarget} from '../context/CdpTarget.js';
 
-import {PreloadScriptStorage} from './PreloadScriptStorage.js';
 import {PreloadScript} from './PreloadScript.js';
+import {PreloadScriptStorage} from './PreloadScriptStorage.js';
 
 const MOCKED_UUID_1 = '00000000-0000-0000-0000-00000000000a';
 const MOCKED_UUID_2 = '00000000-0000-0000-0000-00000000000b';

@@ -20,7 +20,7 @@
  * responsible for processing Network domain events and redirecting events to
  * related `NetworkRequest`.
  */
-import type Protocol from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
 import type {Network} from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../context/CdpTarget.js';

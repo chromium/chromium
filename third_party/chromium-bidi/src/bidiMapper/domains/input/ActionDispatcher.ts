@@ -32,8 +32,8 @@ import {
   type WheelSource,
 } from './InputSource.js';
 import type {InputState} from './InputState.js';
-import {KeyToKeyCode} from './USKeyboardLayout.js';
 import {getKeyCode, getKeyLocation, getNormalizedKey} from './keyUtils.js';
+import {KeyToKeyCode} from './USKeyboardLayout.js';
 
 /** https://w3c.github.io/webdriver/#dfn-center-point */
 const CALCULATE_IN_VIEW_CENTER_PT_DECL = ((i: Element) => {

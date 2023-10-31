@@ -17,13 +17,13 @@
 
 import * as chai from 'chai';
 import {expect} from 'chai';
-import * as sinon from 'sinon';
 import chaiAsPromised from 'chai-as-promised';
+import sinon from 'sinon';
 
 import {StubTransport} from '../utils/transportStub.spec.js';
 
-import {CdpConnection} from './CdpConnection.js';
 import type {CdpClient} from './CdpClient';
+import {CdpConnection} from './CdpConnection.js';
 
 chai.use(chaiAsPromised);
 
