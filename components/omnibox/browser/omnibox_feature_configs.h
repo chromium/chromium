@@ -34,9 +34,8 @@ regressions. 3 steps:
                base::FEATURE_DISABLED_BY_DEFAULT);
 
   MyFeature::MyFeature() {
-    enabled = base::FeatureList::IsEnabled(omnibox::kMyFeature);
-    my_param =
-        base::FeatureParam<int>(&omnibox::kMyFeature, "my_param", 0).Get();
+    enabled = base::FeatureList::IsEnabled(kMyFeature);
+    my_param = base::FeatureParam<int>(&kMyFeature, "my_param", 0).Get();
   }
 
 
@@ -49,13 +48,13 @@ regressions. 3 steps:
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      omnibox::kMyFeature, {{"my_param", "1"}});
+      omnibox_feature_configs::MyFeature::kMyFeature, {{"my_param", "1"}});
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::MyFeature> scoped_config;
 
   scoped_feature_list.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      omnibox::kMyFeature, {{"my_param", "2"}});
+      omnibox_feature_configs::MyFeature::kMyFeature, {{"my_param", "2"}});
   scoped_config.Reset();
 */
 
