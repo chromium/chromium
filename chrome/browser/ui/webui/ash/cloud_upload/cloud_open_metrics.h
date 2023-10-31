@@ -172,27 +172,31 @@ class CloudOpenMetrics {
 
  private:
   // Print debug information about the detected inconsistency and every metric.
-  // Record that an inconsistency was found.
+  // If `immediately_dump`, `DumpWithoutCrashing()`, otherwise set
+  // `delayed_dump_`.
   template <typename MetricType>
-  void PrintDebugInformation(Metric<MetricType>& metric);
+  void OnInconsistencyFound(Metric<MetricType>& metric,
+                            bool immediately_dump = true);
 
   // Expect that the `metric` is not logged. Otherwise update the state and
-  // print debug information.
+  // call `OnInconsistencyFound()` with `immediately_dump` as false.
   template <typename MetricType>
   void ExpectNotLogged(Metric<MetricType>& metric);
 
   // Expect that the `metric` metric is logged with a value. Otherwise update
-  // the state and print debug information.
+  // the state and call `OnInconsistencyFound()` with `immediately_dump` as
+  // false.
   template <typename MetricType>
   void ExpectLogged(Metric<MetricType>& metric);
 
-  // Update the `metric` state to `kWrongValueLogged` and print debug
-  // information.
+  // Update the `metric` state to `kWrongValueLogged` and call
+  // `OnInconsistencyFound()` with `immediately_dump` as false.
   template <typename MetricType>
   void SetWrongValueLogged(Metric<MetricType>& metric);
 
-  bool inconsistency_found_ = false;
   bool multiple_files_;
+  // Whether to `DumpWithoutCrashing()` at the end of the destructor.
+  bool delayed_dump_ = false;
   CloudProvider cloud_provider_;
   Metric<base::File::Error> copy_error_;
   Metric<base::File::Error> move_error_;

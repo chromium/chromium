@@ -138,31 +138,33 @@ TEST_F(CloudOpenMetricsTest, TaskResultLogged) {
                                 MetricState::kCorrectlyLogged, 1);
 }
 
-// Tests that the TaskResult companion metric is set correctly when TaskResult
-// is not logged.
+// Tests that the TaskResult companion metric is set correctly and
+// DumpWithoutCrashing is called after the destructor when TaskResult is not
+// logged.
 TEST_F(CloudOpenMetricsTest, TaskResultNotLogged) {
   {
     CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
                                         /*file_count=*/1);
+    ASSERT_EQ(0, CloudOpenMetricsTest::number_of_dump_calls());
   }
   histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricStateMetricName,
                                 MetricState::kIncorrectlyNotLogged, 1);
   ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
 }
 
-// Tests that the TaskResult companion metric is set correctly when TaskResult
-// is logged twice.
+// Tests that the TaskResult companion metric is set correctly and
+// DumpWithoutCrashing is called immediately when TaskResult is logged twice.
 TEST_F(CloudOpenMetricsTest, TaskResultLoggedTwice) {
   {
     CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
                                         /*file_count=*/1);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kOpened);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kFailedToOpen);
+    ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
   }
   histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricStateMetricName,
                                 MetricState::kIncorrectlyLoggedMultipleTimes,
                                 1);
-  ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
 }
 
 // Tests that no DumpWithoutCrashing calls were made and the TaskResult
