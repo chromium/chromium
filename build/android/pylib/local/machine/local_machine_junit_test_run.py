@@ -207,7 +207,12 @@ class LocalMachineJunitTestRun(test_run.TestRun):
   def GetTestsForListing(self):
     with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
       json_config = self._QueryTestJsonConfig(temp_dir)
-      return sorted(x['name'] for x in json_config['tests'])
+      ret = []
+      for config in json_config['configs'].values():
+        for class_name, methods in config.items():
+          ret.extend(f'{class_name}.{method}' for method in methods)
+      ret.sort()
+      return ret
 
   # override
   def RunTests(self, results, raw_logs_fh=None):
