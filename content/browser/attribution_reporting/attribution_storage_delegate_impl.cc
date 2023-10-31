@@ -22,6 +22,7 @@
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
@@ -200,9 +201,9 @@ double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
     int max_event_level_reports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return content::GetRandomizedResponseRate(
-      GetNumStates(
-          attribution_reporting::DefaultTriggerDataCardinality(source_type),
-          event_report_windows, max_event_level_reports),
+      GetNumStates(attribution_reporting::TriggerSpecs::Default(
+                       source_type, event_report_windows),
+                   max_event_level_reports),
       config_.event_level_limit.randomized_response_epsilon);
 }
 
@@ -214,8 +215,9 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
     base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RandomizedResponseData response = DoRandomizedResponse(
-      attribution_reporting::DefaultTriggerDataCardinality(source_type),
-      event_report_windows, max_event_level_reports,
+      attribution_reporting::TriggerSpecs::Default(source_type,
+                                                   event_report_windows),
+      max_event_level_reports,
       config_.event_level_limit.randomized_response_epsilon);
 
   if (response.channel_capacity() > GetMaxChannelCapacity(source_type)) {

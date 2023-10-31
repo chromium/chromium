@@ -7,13 +7,17 @@
 
 #include <stdint.h>
 
+#include <map>
+#include <tuple>
 #include <vector>
 
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 class EventReportWindows;
+class TriggerSpecs;
 }
 
 namespace content {
@@ -58,14 +62,13 @@ class CONTENT_EXPORT RandomizedResponseData {
 CONTENT_EXPORT bool GenerateWithRate(double r);
 
 // https://wicg.github.io/attribution-reporting-api/#obtain-a-randomized-source-response-pick-rate
-CONTENT_EXPORT double GetRandomizedResponseRate(int64_t num_states,
+CONTENT_EXPORT double GetRandomizedResponseRate(absl::uint128 num_states,
                                                 double epsilon);
 
 // Returns the number of possible output states for the given API configuration.
-CONTENT_EXPORT int64_t
-GetNumStates(int trigger_data_cardinality,
-             const attribution_reporting::EventReportWindows&,
-             int max_event_level_reports);
+CONTENT_EXPORT absl::uint128 GetNumStates(
+    const attribution_reporting::TriggerSpecs& specs,
+    int max_reports);
 
 // Determines the randomized response flip probability for the given API
 // configuration, and performs randomized response on that otutput space.
@@ -73,9 +76,8 @@ GetNumStates(int trigger_data_cardinality,
 // Returns `absl::nullopt` if the output should be determined truthfully.
 // Otherwise will return a vector of fake reports.
 CONTENT_EXPORT RandomizedResponseData
-DoRandomizedResponse(int trigger_data_cardinality,
-                     const attribution_reporting::EventReportWindows&,
-                     int max_event_level_reports,
+DoRandomizedResponse(const attribution_reporting::TriggerSpecs& specs,
+                     int max_reports,
                      double epsilon);
 
 // Exposed for testing purposes.
@@ -125,16 +127,8 @@ CONTENT_EXPORT double BinaryEntropy(double p);
 
 // Computes the channel capacity of a qary-symmetric channel.
 // https://wicg.github.io/attribution-reporting-api/#computing-channel-capacity
-CONTENT_EXPORT double ComputeChannelCapacity(int64_t num_states,
+CONTENT_EXPORT double ComputeChannelCapacity(absl::uint128 num_states,
                                              double randomized_response_rate);
-
-// Generates fake reports using a random "stars and bars" sequence index of a
-// possible output of the API.
-CONTENT_EXPORT std::vector<FakeEventLevelReport> GetRandomFakeReports(
-    int trigger_data_cardinality,
-    const attribution_reporting::EventReportWindows&,
-    int max_event_level_reports,
-    int64_t num_states);
 
 // Generates fake reports from the "stars and bars" sequence index of a
 // possible output of the API. This output is determined by the following
@@ -149,6 +143,27 @@ CONTENT_EXPORT std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
     const attribution_reporting::EventReportWindows&,
     int max_event_level_reports,
     int64_t random_stars_and_bars_sequence_index);
+
+// Note: this method for sampling is not 1:1 with the above function for the
+// same sequence index, even for equivalent API configs.
+//
+// Takes a `StateMap`, to optimize with the cache from previous calls that
+// pre-compute the number of states (`GetNumStatesRecursive()`).
+using ConfigForCache = std::tuple<uint8_t, uint8_t, uint8_t, uint8_t>;
+using StateMap = std::map<ConfigForCache, absl::uint128>;
+CONTENT_EXPORT std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
+    const attribution_reporting::TriggerSpecs& specs,
+    int max_reports,
+    absl::uint128 index,
+    StateMap& map);
+
+// Exposed to speed up tests which perform randomized response many times in a
+// row.
+CONTENT_EXPORT RandomizedResponseData
+DoRandomizedResponseWithCache(const attribution_reporting::TriggerSpecs& specs,
+                              int max_reports,
+                              double epsilon,
+                              StateMap& map);
 
 }  // namespace internal
 

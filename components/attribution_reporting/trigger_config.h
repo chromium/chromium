@@ -85,6 +85,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
 
   size_t size() const { return trigger_data_indices_.size(); }
 
+  // Will return nullptr if there is not a single shared spec.
+  const TriggerSpec* SingleSharedSpec() const;
+
   // TODO(apaseltiner): Add a `find(uint32_t)` method that performs an optimized
   // lookup for a given trigger data value and use it in
   // `content::AttributionStorageSql`.
@@ -120,6 +123,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
     uint8_t index() const {
       return base::checked_cast<uint8_t>(
           std::distance(specs_->trigger_data_indices_.cbegin(), it_));
+    }
+
+    explicit operator bool() const {
+      return it_ != specs_->trigger_data_indices_.end();
     }
 
     friend bool operator==(const Iterator& a, const Iterator& b) {

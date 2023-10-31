@@ -24,6 +24,7 @@
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -327,6 +328,10 @@ TriggerSpecs& TriggerSpecs::operator=(const TriggerSpecs&) = default;
 TriggerSpecs::TriggerSpecs(TriggerSpecs&&) = default;
 
 TriggerSpecs& TriggerSpecs::operator=(TriggerSpecs&&) = default;
+
+const TriggerSpec* TriggerSpecs::SingleSharedSpec() const {
+  return specs_.size() == 1 ? &specs_[0] : nullptr;
+}
 
 void TriggerSpecs::Serialize(base::Value::Dict& dict) const {
   base::Value::List spec_list;
