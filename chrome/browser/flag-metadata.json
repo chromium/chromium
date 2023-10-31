@@ -6352,8 +6352,8 @@
   },
   {
     "name": "preloading-on-performance-page",
-    "owners": [ "fmacintosh@google.com", "koilos@google.com" ],
-    "expiry_milestone": 121
+    "owners": [ "charlesmeng@chromium.org" ],
+    "expiry_milestone": 122
   },
   {
     "name": "price-insights",
