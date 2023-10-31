@@ -51,17 +51,6 @@ class CONTENT_EXPORT MixedContentChecker {
   RenderFrameHostImpl* InWhichFrameIsContentMixed(FrameTreeNode* node,
                                                   const GURL& url);
 
-  // Updates the renderer about any Blink feature usage.
-  void MaybeSendBlinkFeatureUsageReport(NavigationHandle& navigation_handle);
-
-  // Records basic mixed content "feature" usage when any kind of mixed content
-  // is found.
-  //
-  // Based off of `blink::MixedContentChecker::Count()`.
-  void ReportBasicMixedContentFeatures(
-      blink::mojom::RequestContextType request_context_type,
-      blink::mojom::MixedContentContextType mixed_content_context_type);
-
   FRIEND_TEST_ALL_PREFIXES(MixedContentCheckerTest, IsMixedContent);
   // This mirrors `blink::MixedContentChecker::IsMixedContent()`.
   static bool IsMixedContentForTesting(const GURL& origin_url, const GURL& url);
@@ -69,7 +58,7 @@ class CONTENT_EXPORT MixedContentChecker {
   // Keeps track of mixed content features encountered while running one of the
   // navigation throttling steps. These values are reported to the respective
   // renderer process after each mixed content check is finished.
-  std::set<blink::mojom::WebFeature> mixed_content_features_;
+  std::set<blink::mojom::WebFeature> navigation_mixed_content_features_;
 };
 
 }  // namespace content
