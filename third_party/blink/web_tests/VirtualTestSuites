@@ -2524,23 +2524,6 @@
     ]
   },
   {
-    "prefix": "fetch-later",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/fetch/fetch-later",
-      "http/tests/origin_trials/webexposed/fetch-later-origin-trial-interfaces.html",
-      "wpt_internal/fetch/fetch-later"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=FetchLaterAPI",
-      "--enable-blink-features=FetchLaterAPI",
-      "--disable-threaded-compositing", "--disable-threaded-animation"
-    ],
-    "expires": "Jul 24, 2024",
-    "owners": ["mych@chromium.org"]
-  },
-  {
     "prefix": "deprecated-css-appearance-values-enabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
