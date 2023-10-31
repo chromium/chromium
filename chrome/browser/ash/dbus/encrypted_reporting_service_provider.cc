@@ -79,7 +79,7 @@ EncryptedReportingServiceProvider::EncryptedReportingServiceProvider(
       memory_resource_(base::MakeRefCounted<::reporting::ResourceManager>(
           kDefaultMemoryAllocation)),
       upload_provider_(std::move(upload_provider)) {
-  CHECK(upload_provider_.get());
+  CHECK(upload_provider_);
 }
 
 EncryptedReportingServiceProvider::~EncryptedReportingServiceProvider() =
@@ -177,12 +177,34 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   ::reporting::UploadEncryptedRecordResponse response_message;
 
   if (!::reporting::StorageSelector::is_uploader_required()) {
-    // We should never get to here, since the provider is only exported
-    // when is_uploader_required() is true. Have this code only as
-    // in order to let `missive` daemon to log configuration inconsistency.
+    // We should never get to here, since the provider is only exported when
+    // is_uploader_required() is true. Have this code only as a door stopper in
+    // order to let `missive` daemon log configuration inconsistency.
     ::reporting::Status status{
         ::reporting::error::FAILED_PRECONDITION,
         "Uploads are not expected in this configuration"};
+    LOG(ERROR) << status;
+    SendStatusAsResponse(std::move(response), std::move(response_sender),
+                         std::move(response_message), status);
+    return;
+  }
+
+  chromeos::MissiveClient* const missive_client =
+      chromeos::MissiveClient::Get();
+  if (!missive_client) {
+    ::reporting::Status status{::reporting::error::FAILED_PRECONDITION,
+                               "No Missive client available"};
+    LOG(ERROR) << status;
+    SendStatusAsResponse(std::move(response), std::move(response_sender),
+                         std::move(response_message), status);
+    return;
+  }
+
+  if (!missive_client->has_valid_api_key()) {
+    response_message.set_disable(true);  // Signal `missived` to disable itself.
+    ::reporting::Status status{
+        ::reporting::error::FAILED_PRECONDITION,
+        "Cannot communicate with server, unsupported API Key"};
     LOG(ERROR) << status;
     SendStatusAsResponse(std::move(response), std::move(response_sender),
                          std::move(response_message), status);
@@ -250,28 +272,6 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
           network_condition_service_, new_events_rate,
           remaining_storage_capacity,
           ::reporting::FileUploadDelegate::kMaxUploadBufferSize))};
-
-  CHECK(upload_provider_);
-  chromeos::MissiveClient* const missive_client =
-      chromeos::MissiveClient::Get();
-  if (!missive_client) {
-    ::reporting::Status status{::reporting::error::FAILED_PRECONDITION,
-                               "No Missive client available"};
-    LOG(ERROR) << status;
-    SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), status);
-    return;
-  }
-
-  if (missive_client->is_disabled()) {
-    response_message.set_disable(true);  // Signal `missived` to disable itself.
-    ::reporting::Status status{::reporting::error::FAILED_PRECONDITION,
-                               "Reporting disabled, unsupported API Key"};
-    LOG(ERROR) << status;
-    SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), status);
-    return;
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Accept health data if present (ChromeOS only)
