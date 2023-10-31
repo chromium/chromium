@@ -93,6 +93,24 @@ class ProcessNodeImpl
       const blink::RemoteFrameToken& remote_frame_token) override;
   void FireBackgroundTracingTrigger(const std::string& trigger_name) override;
 
+  // Partial ProcessNode implementation:
+  content::ProcessType GetProcessType() const override;
+  base::ProcessId GetProcessId() const override;
+  const base::Process& GetProcess() const override;
+  resource_attribution::ProcessContext GetResourceContext() const override;
+  base::TimeTicks GetLaunchTime() const override;
+  absl::optional<int32_t> GetExitStatus() const override;
+  const std::string& GetMetricsName() const override;
+  bool GetMainThreadTaskLoadIsLow() const override;
+  uint64_t GetPrivateFootprintKb() const override;
+  uint64_t GetResidentSetKb() const override;
+  RenderProcessHostId GetRenderProcessHostId() const override;
+  const RenderProcessHostProxy& GetRenderProcessHostProxy() const override;
+  const BrowserChildProcessHostProxy& GetBrowserChildProcessHostProxy()
+      const override;
+  base::TaskPriority GetPriority() const override;
+  ContentTypes GetHostedContentTypes() const override;
+
   void SetProcessExitStatus(int32_t exit_status);
   void SetProcessMetricsName(const std::string& metrics_name);
   void SetProcess(base::Process process, base::TimeTicks launch_time);
@@ -226,28 +244,12 @@ class ProcessNodeImpl
   ProcessNodeImpl(content::ProcessType process_type,
                   AnyChildProcessHostProxy proxy);
 
-  // ProcessNode implementation. These are private so that users of the impl use
-  // the private getters rather than the public interface.
-  content::ProcessType GetProcessType() const override;
-  base::ProcessId GetProcessId() const override;
-  const base::Process& GetProcess() const override;
-  resource_attribution::ProcessContext GetResourceContext() const override;
-  base::TimeTicks GetLaunchTime() const override;
-  absl::optional<int32_t> GetExitStatus() const override;
-  const std::string& GetMetricsName() const override;
+  // Rest of ProcessNode implementation. These are private so that users of the
+  // impl use the private getters rather than the public interface.
   bool VisitFrameNodes(const FrameNodeVisitor& visitor) const override;
   bool VisitWorkerNodes(const WorkerNodeVisitor& visitor) const override;
   base::flat_set<const FrameNode*> GetFrameNodes() const override;
   base::flat_set<const WorkerNode*> GetWorkerNodes() const override;
-  bool GetMainThreadTaskLoadIsLow() const override;
-  uint64_t GetPrivateFootprintKb() const override;
-  uint64_t GetResidentSetKb() const override;
-  RenderProcessHostId GetRenderProcessHostId() const override;
-  const RenderProcessHostProxy& GetRenderProcessHostProxy() const override;
-  const BrowserChildProcessHostProxy& GetBrowserChildProcessHostProxy()
-      const override;
-  base::TaskPriority GetPriority() const override;
-  ContentTypes GetHostedContentTypes() const override;
 
   void OnAllFramesInProcessFrozen();
 

@@ -165,6 +165,88 @@ void ProcessNodeImpl::FireBackgroundTracingTrigger(
       base::BindOnce(&FireBackgroundTracingTriggerOnUI, trigger_name));
 }
 
+content::ProcessType ProcessNodeImpl::GetProcessType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return process_type();
+}
+
+base::ProcessId ProcessNodeImpl::GetProcessId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return process_id();
+}
+
+const base::Process& ProcessNodeImpl::GetProcess() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return process();
+}
+
+resource_attribution::ProcessContext ProcessNodeImpl::GetResourceContext()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resource_context();
+}
+
+base::TimeTicks ProcessNodeImpl::GetLaunchTime() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return launch_time();
+}
+
+absl::optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return exit_status();
+}
+
+const std::string& ProcessNodeImpl::GetMetricsName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return metrics_name();
+}
+
+bool ProcessNodeImpl::GetMainThreadTaskLoadIsLow() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return main_thread_task_load_is_low();
+}
+
+uint64_t ProcessNodeImpl::GetPrivateFootprintKb() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return private_footprint_kb();
+}
+
+uint64_t ProcessNodeImpl::GetResidentSetKb() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resident_set_kb();
+}
+
+RenderProcessHostId ProcessNodeImpl::GetRenderProcessHostId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetRenderProcessId();
+}
+
+const RenderProcessHostProxy& ProcessNodeImpl::GetRenderProcessHostProxy()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  return render_process_host_proxy();
+}
+
+const BrowserChildProcessHostProxy&
+ProcessNodeImpl::GetBrowserChildProcessHostProxy() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(process_type_, content::PROCESS_TYPE_BROWSER);
+  DCHECK_NE(process_type_, content::PROCESS_TYPE_RENDERER);
+  return browser_child_process_host_proxy();
+}
+
+base::TaskPriority ProcessNodeImpl::GetPriority() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return priority();
+}
+
+ProcessNode::ContentTypes ProcessNodeImpl::GetHostedContentTypes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  return hosted_content_types();
+}
+
 void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This may occur as the first event seen in the case where the process
@@ -310,42 +392,6 @@ void ProcessNodeImpl::SetProcessImpl(base::Process process,
   process_.SetAndNotify(this, std::move(process));
 }
 
-content::ProcessType ProcessNodeImpl::GetProcessType() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return process_type();
-}
-
-base::ProcessId ProcessNodeImpl::GetProcessId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return process_id();
-}
-
-const base::Process& ProcessNodeImpl::GetProcess() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return process();
-}
-
-resource_attribution::ProcessContext ProcessNodeImpl::GetResourceContext()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_context();
-}
-
-base::TimeTicks ProcessNodeImpl::GetLaunchTime() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return launch_time();
-}
-
-absl::optional<int32_t> ProcessNodeImpl::GetExitStatus() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return exit_status();
-}
-
-const std::string& ProcessNodeImpl::GetMetricsName() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return metrics_name();
-}
-
 bool ProcessNodeImpl::VisitFrameNodes(const FrameNodeVisitor& visitor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
@@ -378,52 +424,6 @@ base::flat_set<const FrameNode*> ProcessNodeImpl::GetFrameNodes() const {
 base::flat_set<const WorkerNode*> ProcessNodeImpl::GetWorkerNodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return UpcastNodeSet<WorkerNode>(worker_nodes_);
-}
-
-bool ProcessNodeImpl::GetMainThreadTaskLoadIsLow() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return main_thread_task_load_is_low();
-}
-
-uint64_t ProcessNodeImpl::GetPrivateFootprintKb() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb();
-}
-
-uint64_t ProcessNodeImpl::GetResidentSetKb() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb();
-}
-
-RenderProcessHostId ProcessNodeImpl::GetRenderProcessHostId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetRenderProcessId();
-}
-
-const RenderProcessHostProxy& ProcessNodeImpl::GetRenderProcessHostProxy()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return render_process_host_proxy();
-}
-
-const BrowserChildProcessHostProxy&
-ProcessNodeImpl::GetBrowserChildProcessHostProxy() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(process_type_, content::PROCESS_TYPE_BROWSER);
-  DCHECK_NE(process_type_, content::PROCESS_TYPE_RENDERER);
-  return browser_child_process_host_proxy();
-}
-
-base::TaskPriority ProcessNodeImpl::GetPriority() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return priority();
-}
-
-ProcessNode::ContentTypes ProcessNodeImpl::GetHostedContentTypes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return hosted_content_types();
 }
 
 void ProcessNodeImpl::OnAllFramesInProcessFrozen() {
