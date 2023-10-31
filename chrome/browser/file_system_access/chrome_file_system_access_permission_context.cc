@@ -546,8 +546,21 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   // FileSystemAccessPermissionGrant:
   PermissionStatus GetStatus() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // TODO(crbug.com/1011533): Determine if this should return denied for
+    // guard block, and how ancestor permission should be handled.
+    if (status_ == PermissionStatus::ASK &&
+        context_->CanAutoGrantViaPersistentPermission(origin_, path_,
+                                                      handle_type_, type_)) {
+      return PermissionStatus::GRANTED;
+    }
     return status_;
   }
+
+  PermissionStatus GetActivePermissionStatus() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return status_;
+  }
+
   base::FilePath GetPath() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return path_;
@@ -562,8 +575,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     // Check if a permission request has already been processed previously. This
     // check is done first because we don't want to reset the status of a
     // permission if it has already been granted.
-    if (GetStatus() != PermissionStatus::ASK || !context_) {
-      if (GetStatus() == PermissionStatus::GRANTED) {
+    if (GetActivePermissionStatus() != PermissionStatus::ASK || !context_) {
+      if (GetActivePermissionStatus() == PermissionStatus::GRANTED) {
         SetStatus(PermissionStatus::GRANTED,
                   PersistedPermissionOptions::kUpdatePersistedPermission);
       }
@@ -829,7 +842,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
-    DCHECK_EQ(entry_it->second->GetStatus(), PermissionStatus::GRANTED);
+    DCHECK_EQ(entry_it->second->GetActivePermissionStatus(),
+              PermissionStatus::GRANTED);
 
     auto* const grant_impl = entry_it->second;
     grant_impl->SetPath(new_path);
@@ -1205,7 +1219,8 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
       break;
   }
 
-  if (existing_grant->GetStatus() == PermissionStatus::GRANTED) {
+  if (existing_grant->GetActivePermissionStatus() ==
+      PermissionStatus::GRANTED) {
     ScheduleUsageIconUpdate();
   }
 
@@ -1291,7 +1306,8 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
       break;
   }
 
-  if (existing_grant->GetStatus() == PermissionStatus::GRANTED) {
+  if (existing_grant->GetActivePermissionStatus() ==
+      PermissionStatus::GRANTED) {
     ScheduleUsageIconUpdate();
   }
 
@@ -1334,7 +1350,8 @@ ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
   auto it = active_permissions_map_.find(origin);
   if (it != active_permissions_map_.end()) {
     for (const auto& grant : it->second.read_grants) {
-      if (grant.second->GetStatus() == PermissionStatus::GRANTED) {
+      if (grant.second->GetActivePermissionStatus() ==
+          PermissionStatus::GRANTED) {
         auto value = grant.second->AsValue();
 
         // Persisted permissions include both read and write information in
@@ -1343,7 +1360,8 @@ ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
         auto file_path = grant.first;
         auto write_grant_it = it->second.write_grants.find(file_path);
         if (write_grant_it != it->second.write_grants.end() &&
-            write_grant_it->second->GetStatus() == PermissionStatus::GRANTED) {
+            write_grant_it->second->GetActivePermissionStatus() ==
+                PermissionStatus::GRANTED) {
           value.Set(kPermissionWritableKey, true);
         }
 
@@ -1838,14 +1856,16 @@ void ChromeFileSystemAccessPermissionContext::
     if (origin_it != active_permissions_map_.end()) {
       OriginState& origin_state = origin_it->second;
       for (auto& read_grant : origin_state.read_grants) {
-        if (read_grant.second->GetStatus() == PermissionStatus::GRANTED) {
+        if (read_grant.second->GetActivePermissionStatus() ==
+            PermissionStatus::GRANTED) {
           read_grant.second->SetStatus(
               PermissionStatus::GRANTED,
               PersistedPermissionOptions::kUpdatePersistedPermission);
         }
       }
       for (auto& write_grant : origin_state.write_grants) {
-        if (write_grant.second->GetStatus() == PermissionStatus::GRANTED) {
+        if (write_grant.second->GetActivePermissionStatus() ==
+            PermissionStatus::GRANTED) {
           write_grant.second->SetStatus(
               PermissionStatus::GRANTED,
               PersistedPermissionOptions::kUpdatePersistedPermission);
@@ -1914,7 +1934,8 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasReadAccess(
   auto it = active_permissions_map_.find(origin);
   if (it != active_permissions_map_.end()) {
     return base::ranges::any_of(it->second.read_grants, [&](const auto& grant) {
-      return grant.second->GetStatus() == PermissionStatus::GRANTED;
+      return grant.second->GetActivePermissionStatus() ==
+             PermissionStatus::GRANTED;
     });
   }
 
@@ -1943,7 +1964,8 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
   if (it != active_permissions_map_.end()) {
     return base::ranges::any_of(
         it->second.write_grants, [&](const auto& grant) {
-          return grant.second->GetStatus() == PermissionStatus::GRANTED;
+          return grant.second->GetActivePermissionStatus() ==
+                 PermissionStatus::GRANTED;
         });
   }
 
@@ -2304,7 +2326,7 @@ bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(
        parent = parent.DirName()) {
     auto i = relevant_grants.find(parent);
     if (i != relevant_grants.end() && i->second &&
-        i->second->GetStatus() == PermissionStatus::GRANTED) {
+        i->second->GetActivePermissionStatus() == PermissionStatus::GRANTED) {
       return true;
     }
   }
@@ -2612,7 +2634,7 @@ void ChromeFileSystemAccessPermissionContext::PermissionGrantDestroyed(
   // be granted but won't be visible in any UI because the permission context
   // isn't tracking them anymore.
   if (grant_it == grants.end()) {
-    DCHECK_EQ(PermissionStatus::DENIED, grant->GetStatus());
+    DCHECK_EQ(PermissionStatus::DENIED, grant->GetActivePermissionStatus());
     return;
   }
 
