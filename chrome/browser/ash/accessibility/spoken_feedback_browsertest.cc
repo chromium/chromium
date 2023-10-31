@@ -24,6 +24,7 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/status_area_widget.h"
@@ -33,6 +34,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
@@ -72,6 +74,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/candidate_window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -436,6 +439,42 @@ IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest, OpenBubble) {
     EXPECT_TRUE(test_api()->IsBubbleShown());
   });
   sm_.ExpectSpeech("Notification Center");
+
+  sm_.Replay();
+}
+
+// Tests that an incoming silent notification (i.e. a notification that goes
+// straight to the notification center without generating a popup) generates an
+// accessibility announcement.
+IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest,
+                       SilentNotification) {
+  // Enable spoken feedback.
+  EnableChromeVox();
+
+  // Add a silent notification while the notification center is not showing.
+  sm_.Call([this]() {
+    ASSERT_FALSE(
+        message_center::MessageCenter::Get()->IsMessageCenterVisible());
+    test_api()->AddLowPriorityNotification();
+  });
+
+  // Verify that the silent notification was announced.
+  auto expected_announcement = l10n_util::GetStringFUTF16Int(
+      IDS_ASH_MESSAGE_CENTER_SILENT_NOTIFICATION_ANNOUNCEMENT, 1);
+  sm_.ExpectSpeech(base::UTF16ToUTF8(expected_announcement));
+
+  // Add another silent notification, this time while the notification center is
+  // showing.
+  sm_.Call([this]() {
+    test_api()->ToggleBubble();
+    ASSERT_TRUE(message_center::MessageCenter::Get()->IsMessageCenterVisible());
+    test_api()->AddLowPriorityNotification();
+  });
+
+  // Verify that the silent notification was announced.
+  expected_announcement = l10n_util::GetStringFUTF16Int(
+      IDS_ASH_MESSAGE_CENTER_SILENT_NOTIFICATION_ANNOUNCEMENT, 2);
+  sm_.ExpectSpeech(base::UTF16ToUTF8(expected_announcement));
 
   sm_.Replay();
 }

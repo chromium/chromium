@@ -93,6 +93,7 @@ class ASH_EXPORT AshMessagePopupCollection
       const message_center::Notification& notification) const override;
   void NotifyPopupAdded(message_center::MessagePopupView* popup) override;
   void NotifyPopupClosed(message_center::MessagePopupView* popup) override;
+  void NotifySilentNotification(const std::string& notification_id) override;
   void NotifyPopupCollectionHeightChanged() override;
   void AnimationStarted() override;
   void AnimationFinished() override;

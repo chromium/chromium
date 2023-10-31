@@ -14,6 +14,7 @@
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/desktop_message_popup_collection.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/views/test/views_test_base.h"
@@ -70,6 +71,10 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
     return popup_collection_height_changed_;
   }
 
+  int notify_silent_notification_count() const {
+    return notify_silent_notification_count_;
+  }
+
  protected:
   MessagePopupView* CreatePopup(const Notification& notification) override;
 
@@ -103,6 +108,10 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
     ++popup_collection_height_changed_;
   }
 
+  void NotifySilentNotification(const std::string& notification_id) override {
+    ++notify_silent_notification_count_;
+  }
+
  private:
   gfx::NativeWindow context_;
 
@@ -113,6 +122,7 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
   bool is_fullscreen_ = false;
   int new_popup_height_ = 84;
   int popup_collection_height_changed_ = 0;
+  int notify_silent_notification_count_ = 0;
 };
 
 class MockMessagePopupView : public MessagePopupView {
@@ -282,10 +292,21 @@ class MessagePopupCollectionTest : public views::ViewsTestBase,
         NotifierId(), RichNotificationData(), new NotificationDelegate());
   }
 
+  std::unique_ptr<Notification> CreateLowPriorityNotification() {
+    std::unique_ptr<Notification> notification =
+        CreateNotification(base::NumberToString(id_++));
+    notification->set_priority(LOW_PRIORITY);
+    return notification;
+  }
+
   std::string AddNotification() {
     std::string id = base::NumberToString(id_++);
     MessageCenter::Get()->AddNotification(CreateNotification(id));
     return id;
+  }
+
+  void AddNotification(std::unique_ptr<Notification> notification) {
+    MessageCenter::Get()->AddNotification(std::move(notification));
   }
 
   void Update() { popup_collection_->Update(); }
@@ -945,6 +966,25 @@ TEST_F(MessagePopupCollectionTest, PopupCollectionHeightChanged) {
   AnimateUntilIdle();
 
   EXPECT_EQ(4, popup_collection()->popup_collection_height_changed());
+}
+
+// Tests that `MessagePopupCollection` notifies when there is an incoming silent
+// notification.
+TEST_F(MessagePopupCollectionTest, NotifySilentNotification) {
+  ASSERT_EQ(0, popup_collection()->notify_silent_notification_count());
+
+  // Add a silent notification.
+  AddNotification(CreateLowPriorityNotification());
+
+  // Assert that clients are notified of the incoming silent notification.
+  EXPECT_EQ(1, popup_collection()->notify_silent_notification_count());
+
+  // Add a non-silent notification.
+  AddNotification();
+
+  // Assert that clients are not notified for the incoming non-silent
+  // notification.
+  EXPECT_EQ(1, popup_collection()->notify_silent_notification_count());
 }
 
 TEST_F(MessagePopupCollectionTest, DefaultPositioning) {
