@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './scanning_mojom_imports.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://scanning/loading_page.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
@@ -10,7 +10,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {LoadingPageElement} from 'chrome://scanning/loading_page.js';
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
-import {isVisible, eventToPromise} from 'chrome://webui-test/chromeos/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/chromeos/test_util.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

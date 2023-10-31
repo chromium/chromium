@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './scanning_mojom_imports.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://scanning/scanning_app.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 

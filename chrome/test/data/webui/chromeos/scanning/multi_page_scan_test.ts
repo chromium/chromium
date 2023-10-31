@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './scanning_mojom_imports.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://scanning/multi_page_scan.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';

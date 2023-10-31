@@ -27,7 +27,6 @@ build_webui_tests("build_webui_tests") {
     "scanner_select_test.ts",
     "scanning_app_test.ts",
     "scanning_app_test_utils.ts",
-    "scanning_mojom_imports.js",
     "scan_preview_test.ts",
     "scan_to_select_test.ts",
     "source_select_test.ts",
