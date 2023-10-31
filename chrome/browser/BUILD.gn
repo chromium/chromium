@@ -5457,6 +5457,10 @@ static_library("browser") {
       "//chrome/browser/apps/almanac_api_client",
     ]
 
+    if (is_chrome_branded) {
+      deps += [ "//chrome/browser/nearby_sharing/internal/icons:vector_icons" ]
+    }
+
     if (target_cpu == "x64") {
       sources += [
         "performance_manager/mechanisms/userspace_swap_chromeos.cc",

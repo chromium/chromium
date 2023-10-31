@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
@@ -32,6 +34,10 @@
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/nearby_sharing/internal/icons/vector_icons.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
@@ -147,6 +153,11 @@ const std::u16string NearbyShareAction::GetActionName() {
 }
 
 const gfx::VectorIcon& NearbyShareAction::GetActionIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (features::IsNameEnabled()) {
+    return kNearbyShareInternalIcon;
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return kNearbyShareIcon;
 }
 
