@@ -34,6 +34,7 @@
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/optional_util.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1917,14 +1918,18 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
-               net::CookieOptions::SameSiteCookieContext context) {
+               net::CookieOptions::SameSiteCookieContext context,
+               net::CookiePartitionKey* cookie_partition_key) {
+  if (cookie_partition_key) {
+    DCHECK(base::Contains(base::ToLowerASCII(value), ";partitioned"));
+  }
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
   browser_context->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       url, value, base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      base::OptionalFromPtr(cookie_partition_key)));
   DCHECK(cc.get());
 
   net::CookieOptions options;
@@ -1933,29 +1938,6 @@ bool SetCookie(BrowserContext* browser_context,
   base::test::TestFuture<net::CookieAccessResult> future;
   cookie_manager->SetCanonicalCookie(*cc.get(), url, options,
                                      future.GetCallback());
-  return future.Get().status.IsInclude();
-}
-
-bool SetPartitionedCookie(BrowserContext* browser_context,
-                          const GURL& url,
-                          const std::string& value,
-                          const net::CookiePartitionKey& cookie_partition_key,
-                          net::CookieOptions::SameSiteCookieContext context) {
-  DCHECK(base::Contains(value, ";Partitioned"));
-  mojo::Remote<network::mojom::CookieManager> cookie_manager;
-  browser_context->GetDefaultStoragePartition()
-      ->GetNetworkContext()
-      ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
-  std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      url, value, base::Time::Now(), absl::nullopt /* server_time */,
-      cookie_partition_key));
-  DCHECK(cc);
-
-  net::CookieOptions options;
-  options.set_include_httponly();
-  options.set_same_site_cookie_context(context);
-  base::test::TestFuture<net::CookieAccessResult> future;
-  cookie_manager->SetCanonicalCookie(*cc, url, options, future.GetCallback());
   return future.Get().status.IsInclude();
 }
 

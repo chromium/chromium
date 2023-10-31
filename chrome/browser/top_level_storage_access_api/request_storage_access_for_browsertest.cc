@@ -138,10 +138,11 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
         base::StrCat({"cross-site=", embedded_host, "(partitioned)"});
     net::CookiePartitionKey partition_key =
         net::CookiePartitionKey::FromURLForTesting(GetURL(top_level_host));
-    content::SetPartitionedCookie(
+    content::SetCookie(
         browser()->profile(), host_url,
         base::StrCat({cookie, ";SameSite=None;Secure;Partitioned"}),
-        partition_key);
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+        &partition_key);
     ASSERT_THAT(content::GetCookies(
                     browser()->profile(), host_url,
                     net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
