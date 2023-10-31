@@ -40,6 +40,18 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
   // Returns whether OnDidUploadCard() was called.
   bool CreditCardWasUploaded();
 
+  // Returns whether AttemptToOfferCvcLocalSave() was called.
+  bool CvcLocalSaveStarted();
+  bool AttemptToOfferCvcLocalSave(const CreditCard& card) override;
+
+  // Returns whether AttemptToOfferCvcUploadSave() was called.
+  bool CvcUploadSaveStarted();
+  void AttemptToOfferCvcUploadSave(const CreditCard& card) override;
+
+  // Returns whether AttemptToOfferCardLocalSave() was called.
+  bool CardLocalSaveStarted();
+  bool AttemptToOfferCardLocalSave(const CreditCard& card) override;
+
   void set_show_save_prompt(bool show_save_prompt);
 
   void set_upload_request_card_number(const std::u16string& credit_card_number);
@@ -56,6 +68,9 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   bool credit_card_upload_enabled_ = false;
   bool credit_card_was_uploaded_ = false;
+  bool cvc_local_save_started_ = false;
+  bool cvc_upload_save_started_ = false;
+  bool card_local_save_started_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
                            OnDidUploadCard_DoNotAddServerCvcIfCvcIsEmpty);

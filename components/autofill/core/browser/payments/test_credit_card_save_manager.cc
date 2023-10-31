@@ -33,6 +33,36 @@ bool TestCreditCardSaveManager::CreditCardWasUploaded() {
   return credit_card_was_uploaded_;
 }
 
+bool TestCreditCardSaveManager::CvcLocalSaveStarted() {
+  return cvc_local_save_started_;
+}
+
+bool TestCreditCardSaveManager::AttemptToOfferCvcLocalSave(
+    const CreditCard& card) {
+  cvc_local_save_started_ = true;
+  return CreditCardSaveManager::AttemptToOfferCvcLocalSave(card);
+}
+
+bool TestCreditCardSaveManager::CvcUploadSaveStarted() {
+  return cvc_upload_save_started_;
+}
+
+void TestCreditCardSaveManager::AttemptToOfferCvcUploadSave(
+    const CreditCard& card) {
+  cvc_upload_save_started_ = true;
+  CreditCardSaveManager::AttemptToOfferCvcUploadSave(card);
+}
+
+bool TestCreditCardSaveManager::CardLocalSaveStarted() {
+  return card_local_save_started_;
+}
+
+bool TestCreditCardSaveManager::AttemptToOfferCardLocalSave(
+    const CreditCard& card) {
+  card_local_save_started_ = true;
+  return CreditCardSaveManager::AttemptToOfferCardLocalSave(card);
+}
+
 void TestCreditCardSaveManager::set_show_save_prompt(bool show_save_prompt) {
   show_save_prompt_ = show_save_prompt;
 }

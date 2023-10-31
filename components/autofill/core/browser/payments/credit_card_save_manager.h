@@ -110,7 +110,7 @@ class CreditCardSaveManager {
 
   // Begins the process to offer local credit card save to the user. Returns
   // true if the prompt is shown.
-  bool AttemptToOfferCardLocalSave(const CreditCard& card);
+  virtual bool AttemptToOfferCardLocalSave(const CreditCard& card);
 
   // Begins the process to offer local CVC save to the user. Returns true if the
   // prompt is shown. `card` is the credit card extracted from the form.
@@ -124,6 +124,15 @@ class CreditCardSaveManager {
   // TODO(crbug.com/1450749): Update param after resolving duplicate local and
   // server card issue.
   virtual bool ShouldOfferCvcSave(
+      const CreditCard& card,
+      FormDataImporter::CreditCardImportType credit_card_import_type,
+      bool is_credit_card_upstream_enabled);
+
+  // Check and attempt to offer if CVC or card local or upload save should be
+  // offered to the user. `card` is the credit card extracted from the form.
+  // `credit_card_import_type` is the credit card type extracted from the form.
+  virtual bool ProceedWithSavingIfApplicable(
+      const FormStructure& submitted_form,
       const CreditCard& card,
       FormDataImporter::CreditCardImportType credit_card_import_type,
       bool is_credit_card_upstream_enabled);

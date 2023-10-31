@@ -5103,6 +5103,95 @@ INSTANTIATE_TEST_SUITE_P(
                         FormDataImporter::CreditCardImportType::kLocalCard),
         testing::Bool()));
 
+class ProceedWithSavingIfApplicableTest
+    : public CreditCardSaveManagerTest,
+      public testing::WithParamInterface<
+          std::
+              tuple<bool, bool, FormDataImporter::CreditCardImportType, bool>> {
+ public:
+  ProceedWithSavingIfApplicableTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillEnableCvcStorageAndFilling,
+        IsSaveCvcFeatureEnabled());
+    prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                                IsSaveCvcPrefEnabled());
+  }
+  // This bool indicates if save CVC storage flag is enabled.
+  bool IsSaveCvcFeatureEnabled() const { return std::get<0>(GetParam()); }
+  // This bool indicates if user has opted-in to the features on the settings
+  // page.
+  bool IsSaveCvcPrefEnabled() const { return std::get<1>(GetParam()); }
+  // Returns the credit card import type.
+  FormDataImporter::CreditCardImportType CreditCardImportType() const {
+    return std::get<2>(GetParam());
+  }
+  // This bool indicates whether the user has credit card upload enabled.
+  bool IsCreditCardUpstreamEnabled() const { return std::get<3>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that ProceedWithSavingIfApplicable should initiate card save or upload
+// flow with expected input.
+TEST_P(ProceedWithSavingIfApplicableTest, ProceedWithSavingIfApplicable_Card) {
+  FormData form;
+  FormStructure form_structure(form);
+  CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
+  credit_card_save_manager_->ProceedWithSavingIfApplicable(
+      form_structure, card, CreditCardImportType(),
+      IsCreditCardUpstreamEnabled());
+  EXPECT_EQ(credit_card_save_manager_->CreditCardWasUploaded(),
+            IsCreditCardUpstreamEnabled() &&
+                CreditCardImportType() !=
+                    FormDataImporter::CreditCardImportType::kServerCard);
+  EXPECT_EQ(credit_card_save_manager_->CardLocalSaveStarted(),
+            CreditCardImportType() ==
+                    FormDataImporter::CreditCardImportType::kNewCard &&
+                !IsCreditCardUpstreamEnabled());
+}
+
+// Tests that ProceedWithSavingIfApplicable should initiate CVC save or upload
+// flow with expected input.
+TEST_P(ProceedWithSavingIfApplicableTest, ProceedWithSavingIfApplicable_Cvc) {
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
+                              IsSaveCvcPrefEnabled());
+  FormData form;
+  FormStructure form_structure(form);
+  CreditCard local_card = test::WithCvc(test::GetCreditCard(), u"123");
+  personal_data().AddCreditCard(local_card);
+  local_card.set_cvc(u"234");
+  credit_card_save_manager_->ProceedWithSavingIfApplicable(
+      form_structure, local_card,
+      FormDataImporter::CreditCardImportType::kLocalCard,
+      IsCreditCardUpstreamEnabled());
+  EXPECT_EQ(credit_card_save_manager_->CvcLocalSaveStarted(),
+            IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
+                !IsCreditCardUpstreamEnabled());
+
+  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard(), u"123");
+  personal_data().AddServerCreditCard(server_card);
+  server_card.set_cvc(u"234");
+  credit_card_save_manager_->ProceedWithSavingIfApplicable(
+      form_structure, server_card,
+      FormDataImporter::CreditCardImportType::kServerCard,
+      IsCreditCardUpstreamEnabled());
+  EXPECT_EQ(credit_card_save_manager_->CvcUploadSaveStarted(),
+            IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
+                IsCreditCardUpstreamEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CreditCardSaveManagerTest,
+    ProceedWithSavingIfApplicableTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Bool(),
+        testing::Values(FormDataImporter::CreditCardImportType::kServerCard,
+                        FormDataImporter::CreditCardImportType::kLocalCard,
+                        FormDataImporter::CreditCardImportType::kNewCard),
+        testing::Bool()));
+
 // Tests that server CVC is not added to AutofillTable during credit card
 // upload save if CVC was empty.
 TEST_F(CreditCardSaveManagerTest,
