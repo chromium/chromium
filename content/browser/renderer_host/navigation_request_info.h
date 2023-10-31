@@ -23,6 +23,8 @@
 
 namespace content {
 
+class PrefetchServingPageMetricsContainer;
+
 // A struct to hold the parameters needed to start a navigation request in
 // ResourceDispatcherHost. It is initialized on the UI thread, and then passed
 // to the IO thread by a NavigationRequest object.
@@ -51,6 +53,8 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       int initiator_process_id,
       absl::optional<blink::DocumentToken> initiator_document_token,
       const GlobalRenderFrameHostId& previous_render_frame_host_id,
+      base::WeakPtr<PrefetchServingPageMetricsContainer>
+          prefetch_serving_page_metrics_container,
       bool allow_cookies_from_browser,
       int64_t navigation_id,
       bool shared_storage_writable);
@@ -142,6 +146,10 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // prefetch.
   // This corresponds to `NavigationRequest::GetPreviousRenderFrameHostId()`.
   const GlobalRenderFrameHostId previous_render_frame_host_id;
+
+  // For per-navigation metrics of speculation rules prefetch.
+  base::WeakPtr<PrefetchServingPageMetricsContainer>
+      prefetch_serving_page_metrics_container;
 
   // Whether a Cookie header added to this request should not be overwritten by
   // the network service.

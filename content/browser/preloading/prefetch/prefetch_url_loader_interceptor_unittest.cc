@@ -202,8 +202,10 @@ class TestPrefetchURLLoaderInterceptor : public PrefetchURLLoaderInterceptor {
   TestPrefetchURLLoaderInterceptor(
       int frame_tree_node_id,
       const blink::DocumentToken& initiator_document_token)
-      : PrefetchURLLoaderInterceptor(frame_tree_node_id,
-                                     initiator_document_token) {}
+      : PrefetchURLLoaderInterceptor(
+            frame_tree_node_id,
+            initiator_document_token,
+            nullptr /* serving_page_metrics_container */) {}
   ~TestPrefetchURLLoaderInterceptor() override = default;
 
   void AddPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container) {

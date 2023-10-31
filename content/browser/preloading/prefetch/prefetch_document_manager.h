@@ -44,6 +44,12 @@ class CONTENT_EXPORT PrefetchDocumentManager
   const PrefetchDocumentManager operator=(const PrefetchDocumentManager&) =
       delete;
 
+  // Returns the `PrefetchDocumentManager` associated with a Document if already
+  // exists, or `nullptr` otherwise.
+  static PrefetchDocumentManager* FromDocumentToken(
+      int process_id,
+      const blink::DocumentToken& document_token);
+
   // WebContentsObserver.
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
 

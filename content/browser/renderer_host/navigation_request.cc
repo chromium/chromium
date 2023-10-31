@@ -61,6 +61,8 @@
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/origin_trials/origin_trials_utils.h"
+#include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/process_lock.h"
@@ -4939,6 +4941,19 @@ void NavigationRequest::OnStartChecksComplete(
   BrowserContext* browser_context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
 
+  // Create `PrefetchServingPageMetricsContainer` only if the initiator
+  // document has its `PrefetchDocumentManager`.
+  base::WeakPtr<PrefetchServingPageMetricsContainer>
+      serving_page_metrics_container;
+  if (!IsSameDocument() && initiator_document_token_ &&
+      PrefetchDocumentManager::FromDocumentToken(initiator_process_id_,
+                                                 *initiator_document_token_)) {
+    serving_page_metrics_container =
+        PrefetchServingPageMetricsContainer::GetOrCreateForNavigationHandle(
+            *this)
+            ->GetWeakPtr();
+  }
+
   loader_ = NavigationURLLoader::Create(
       browser_context, partition,
       std::make_unique<NavigationRequestInfo>(
@@ -4958,6 +4973,7 @@ void NavigationRequest::OnStartChecksComplete(
           BuildClientSecurityStateForNavigationFetch(),
           devtools_accepted_stream_types, is_pdf_, GetInitiatorProcessId(),
           initiator_document_token_, GetPreviousRenderFrameHostId(),
+          std::move(serving_page_metrics_container),
           allow_cookies_from_browser_, navigation_id_,
           shared_storage_writable_eligible_),
       std::move(navigation_ui_data), service_worker_handle_.get(),

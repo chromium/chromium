@@ -15,8 +15,6 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
-#include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
-#include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -34,29 +32,6 @@ namespace content {
 
 namespace {
 static PrefetchService* g_prefetch_service_for_testing = nullptr;
-
-// Sets ServingPageMetrics for all prefetches that might match under
-// No-Vary-Search hint.
-void SetMetricsForPossibleNoVarySearchHintMatches(
-    const std::map<GURL, base::WeakPtr<PrefetchContainer>>& all_prefetches,
-    const GURL& nav_url,
-    PrefetchServingPageMetricsContainer& serving_page_metrics_container) {
-  for (const auto& itr : all_prefetches) {
-    if (!itr.second) {
-      continue;
-    }
-    if (!itr.second->HasPrefetchBeenConsideredToServe() &&
-        itr.second->GetNoVarySearchHint() &&
-        itr.second->GetNoVarySearchHint()->AreEquivalent(
-            nav_url, itr.second->GetURL())) {
-      // In this case we need to set serving page metrics in case we end up
-      // using the prefetch after No-Vary-Search header is received.
-      itr.second->SetServingPageMetrics(
-          serving_page_metrics_container.GetWeakPtr());
-      itr.second->UpdateServingPageMetrics();
-    }
-  }
-}
 
 std::tuple<GURL,
            PrefetchType,
@@ -107,6 +82,26 @@ PrefetchDocumentManager::~PrefetchDocumentManager() {
   }
 }
 
+// static
+PrefetchDocumentManager* PrefetchDocumentManager::FromDocumentToken(
+    int process_id,
+    const blink::DocumentToken& document_token) {
+  if (auto* rfh =
+          RenderFrameHostImpl::FromDocumentToken(process_id, document_token)) {
+    if (auto* prefetch_document_manager = GetForCurrentDocument(rfh)) {
+      // A RenderFrameHost can have multiple Documents/PrefetchDocumentManagers
+      // and the Document of `document_token` might be pending deletion or
+      // bfcached, so check `document_token_` to confirm we get the correct
+      // `PrefetchDocumentManager`.
+      // TODO(crbug.com/936696): clean this up once RenderDocument ships.
+      if (prefetch_document_manager->document_token_ == document_token) {
+        return prefetch_document_manager;
+      }
+    }
+  }
+  return nullptr;
+}
+
 base::WeakPtr<PrefetchContainer> PrefetchDocumentManager::MatchUrl(
     const GURL& url) const {
   return no_vary_search::MatchUrl(url, all_prefetches_);
@@ -142,29 +137,11 @@ void PrefetchDocumentManager::DidStartNavigation(
     return;
   }
 
-  // Create |PrefetchServingPageMetricsContainer| for potential navigation that
-  // might use a prefetch, and update it with metrics from the page load
-  // associated with |this|.
-  PrefetchServingPageMetricsContainer* serving_page_metrics_container =
-      PrefetchServingPageMetricsContainer::GetOrCreateForNavigationHandle(
-          *navigation_handle);
-
   base::WeakPtr<PrefetchContainer> prefetch_container =
       MatchUrl(navigation_handle->GetURL());
-
   if (!prefetch_container) {
-    DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
-             << navigation_handle->GetURL()
-             << ": skipped (PrefetchContainer not found)";
-    SetMetricsForPossibleNoVarySearchHintMatches(
-        all_prefetches_, navigation_handle->GetURL(),
-        *serving_page_metrics_container);
     return;
   }
-
-  prefetch_container->SetServingPageMetrics(
-      serving_page_metrics_container->GetWeakPtr());
-  prefetch_container->UpdateServingPageMetrics();
 
   switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kServable:

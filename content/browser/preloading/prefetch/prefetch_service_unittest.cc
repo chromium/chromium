@@ -22,6 +22,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
+#include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
@@ -628,10 +629,11 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     return result;
   }
 
-  void Navigate(const GURL& url,
-                int initiator_process_id,
-                const absl::optional<blink::LocalFrameToken>&
-                    initiator_local_frame_token) {
+  void Navigate(
+      const GURL& url,
+      int initiator_process_id,
+      const absl::optional<blink::LocalFrameToken>& initiator_local_frame_token,
+      const absl::optional<blink::DocumentToken>& initiator_document_token) {
     mock_navigation_handle_ =
         std::make_unique<testing::NiceMock<MockNavigationHandle>>(
             web_contents());
@@ -640,15 +642,19 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     mock_navigation_handle_->set_initiator_frame_token(
         base::OptionalToPtr(initiator_local_frame_token));
 
-    PrefetchDocumentManager* prefetch_document_manager =
-        PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
-    prefetch_document_manager->DidStartNavigation(
-        mock_navigation_handle_.get());
+    // Simulate how `NavigationRequest` calls
+    // `PrefetchServingPageMetricsContainer::GetOrCreateForNavigationHandle()`.
+    if (initiator_document_token &&
+        PrefetchDocumentManager::FromDocumentToken(initiator_process_id,
+                                                   *initiator_document_token)) {
+      PrefetchServingPageMetricsContainer::GetOrCreateForNavigationHandle(
+          *mock_navigation_handle_);
+    }
   }
 
   void Navigate(const GURL& url) {
     Navigate(url, main_rfh()->GetProcess()->GetID(),
-             main_rfh()->GetFrameToken());
+             main_rfh()->GetFrameToken(), MainDocumentToken());
   }
 
   absl::optional<PrefetchServingPageMetrics>
@@ -668,6 +674,21 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     PrefetchMatchResolver::CreateForNavigationHandle(*mock_navigation_handle_);
     return PrefetchMatchResolver::GetForNavigationHandle(
         *mock_navigation_handle_);
+  }
+
+  base::WeakPtr<PrefetchServingPageMetricsContainer>
+  GetServingPageMetricsContainerForMostRecentNavigation() {
+    if (!mock_navigation_handle_) {
+      return nullptr;
+    }
+
+    auto* serving_page_metrics_container =
+        PrefetchServingPageMetricsContainer::GetForNavigationHandle(
+            *mock_navigation_handle_);
+    if (!serving_page_metrics_container) {
+      return nullptr;
+    }
+    return serving_page_metrics_container->GetWeakPtr();
   }
 
   blink::DocumentToken MainDocumentToken() {
@@ -706,6 +727,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         base::Unretained(&request_handler_keep_alive_)));
     prefetch_service_->GetPrefetchToServe(
         PrefetchContainer::Key(*initiator_document_token, url),
+        GetServingPageMetricsContainerForMostRecentNavigation(),
         *prefetch_match_resolver);
   }
 
@@ -1485,7 +1507,7 @@ TEST_F(PrefetchServiceTest, NotEligibleNonHttps) {
           PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps));
 
   Navigate(GURL("http://example.com"));
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
+  EXPECT_FALSE(GetPrefetchToServe(GURL("http://example.com")));
   ExpectServingMetrics(PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps);
 }
 
@@ -2326,10 +2348,14 @@ TEST_F(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
   // prefetch was requested from, we cannot use it.
   blink::LocalFrameToken other_token(base::UnguessableToken::Create());
   ASSERT_NE(other_token, main_rfh()->GetFrameToken());
+  blink::DocumentToken different_document_token;
+  ASSERT_NE(different_document_token, MainDocumentToken());
   Navigate(GURL("https://example.com"), main_rfh()->GetProcess()->GetID(),
-           other_token);
+           other_token, different_document_token);
 
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
+  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com"),
+                                  different_document_token));
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
       GetMetricsForMostRecentNavigation();
   EXPECT_FALSE(serving_page_metrics);

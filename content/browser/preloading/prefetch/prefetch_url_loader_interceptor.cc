@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -44,21 +45,28 @@ void RecordWasFullRedirectChainServedHistogram(
 std::unique_ptr<PrefetchURLLoaderInterceptor>
 PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
     int frame_tree_node_id,
-    absl::optional<blink::DocumentToken> initiator_document_token) {
+    absl::optional<blink::DocumentToken> initiator_document_token,
+    base::WeakPtr<PrefetchServingPageMetricsContainer>
+        serving_page_metrics_container) {
   if (!initiator_document_token) {
     // This is expected to occur only in unit tests.
     return nullptr;
   }
 
   return std::make_unique<PrefetchURLLoaderInterceptor>(
-      frame_tree_node_id, *initiator_document_token);
+      frame_tree_node_id, *initiator_document_token,
+      std::move(serving_page_metrics_container));
 }
 
 PrefetchURLLoaderInterceptor::PrefetchURLLoaderInterceptor(
     int frame_tree_node_id,
-    const blink::DocumentToken& initiator_document_token)
+    const blink::DocumentToken& initiator_document_token,
+    base::WeakPtr<PrefetchServingPageMetricsContainer>
+        serving_page_metrics_container)
     : frame_tree_node_id_(frame_tree_node_id),
-      initiator_document_token_(initiator_document_token) {}
+      initiator_document_token_(initiator_document_token),
+      serving_page_metrics_container_(
+          std::move(serving_page_metrics_container)) {}
 
 PrefetchURLLoaderInterceptor::~PrefetchURLLoaderInterceptor() = default;
 
@@ -127,7 +135,7 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
   prefetch_service->GetPrefetchToServe(
       PrefetchContainer::Key(initiator_document_token_,
                              tentative_resource_request.url),
-      prefetch_match_resolver);
+      serving_page_metrics_container_, prefetch_match_resolver);
 }
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(

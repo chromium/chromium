@@ -98,6 +98,8 @@ class CONTENT_EXPORT PrefetchService {
   using OnPrefetchToServeReady =
       base::OnceCallback<void(PrefetchContainer::Reader prefetch_to_serve)>;
   void GetPrefetchToServe(const PrefetchContainer::Key& key,
+                          base::WeakPtr<PrefetchServingPageMetricsContainer>
+                              serving_page_metrics_container,
                           PrefetchMatchResolver& prefetch_match_resolver);
 
   // Copies any cookies in the isolated network context associated with
@@ -323,7 +325,9 @@ class CONTENT_EXPORT PrefetchService {
   // Helper function for |GetPrefetchToServe| which identifies the
   // |prefetch_container|'s that could potentially be served.
   std::vector<PrefetchContainer*> FindPrefetchContainerToServe(
-      const PrefetchContainer::Key& key);
+      const PrefetchContainer::Key& key,
+      base::WeakPtr<PrefetchServingPageMetricsContainer>
+          serving_page_metrics_container);
 
   // Helper function for |GetPrefetchToServe| which handles a
   // |prefetch_container| that could potentially be served to the navigation.

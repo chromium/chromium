@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/prefetch_metrics.h"
 
@@ -14,7 +15,7 @@ namespace content {
 
 // Holds an instance |PrefetchServingPageMetrics| for its associated
 // |NavigationHandle|.
-class PrefetchServingPageMetricsContainer
+class CONTENT_EXPORT PrefetchServingPageMetricsContainer
     : public NavigationHandleUserData<PrefetchServingPageMetricsContainer> {
  public:
   ~PrefetchServingPageMetricsContainer() override;

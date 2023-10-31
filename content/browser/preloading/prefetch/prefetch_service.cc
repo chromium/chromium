@@ -1453,7 +1453,9 @@ void PrefetchService::DumpPrefetchesForDebug() const {
 }
 
 std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
-    const PrefetchContainer::Key& key) {
+    const PrefetchContainer::Key& key,
+    base::WeakPtr<PrefetchServingPageMetricsContainer>
+        serving_page_metrics_container) {
   std::vector<PrefetchContainer*> matches;
   std::vector<PrefetchContainer*> hint_matches;
   DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe(" << key << ")";
@@ -1487,6 +1489,11 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
 
   // Insert the No-Vary-Search hint matches at the end of `matches`.
   matches.insert(matches.end(), hint_matches.begin(), hint_matches.end());
+
+  for (PrefetchContainer* prefetch_container : matches) {
+    prefetch_container->SetServingPageMetrics(serving_page_metrics_container);
+    prefetch_container->UpdateServingPageMetrics();
+  }
 
   base::EraseIf(matches, [](const auto* prefetch_container) {
     if (prefetch_container->HasPrefetchBeenConsideredToServe()) {
@@ -1589,9 +1596,12 @@ PrefetchService::HandlePrefetchContainerToServe(
 
 void PrefetchService::GetPrefetchToServe(
     const PrefetchContainer::Key& key,
+    base::WeakPtr<PrefetchServingPageMetricsContainer>
+        serving_page_metrics_container,
     PrefetchMatchResolver& prefetch_match_resolver) {
   DumpPrefetchesForDebug();
-  auto potential_matching_prefetches = FindPrefetchContainerToServe(key);
+  auto potential_matching_prefetches = FindPrefetchContainerToServe(
+      key, std::move(serving_page_metrics_container));
   DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key.second
            << "): Potential matched with "
            << potential_matching_prefetches.size() << " prefetch containers.";

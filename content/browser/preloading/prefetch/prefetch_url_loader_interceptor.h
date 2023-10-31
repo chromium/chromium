@@ -27,11 +27,15 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
  public:
   static std::unique_ptr<PrefetchURLLoaderInterceptor> MaybeCreateInterceptor(
       int frame_tree_node_id,
-      absl::optional<blink::DocumentToken> initiator_document_token);
+      absl::optional<blink::DocumentToken> initiator_document_token,
+      base::WeakPtr<PrefetchServingPageMetricsContainer>
+          serving_page_metrics_container);
 
   PrefetchURLLoaderInterceptor(
       int frame_tree_node_id,
-      const blink::DocumentToken& initiator_document_token);
+      const blink::DocumentToken& initiator_document_token,
+      base::WeakPtr<PrefetchServingPageMetricsContainer>
+          serving_page_metrics_container);
   ~PrefetchURLLoaderInterceptor() override;
 
   PrefetchURLLoaderInterceptor(const PrefetchURLLoaderInterceptor&) = delete;
@@ -77,6 +81,11 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
   // `PrefetchContainer::Key` to make prefetches per-Document.
   // https://wicg.github.io/nav-speculation/prefetch.html
   const blink::DocumentToken initiator_document_token_;
+
+  // The `PrefetchServingPageMetricsContainer` associated with the current
+  // navigation and to be set to the selected `PrefetchContainer` if any.
+  base::WeakPtr<PrefetchServingPageMetricsContainer>
+      serving_page_metrics_container_;
 
   // Called once |this| has decided whether to intercept or not intercept the
   // navigation.
