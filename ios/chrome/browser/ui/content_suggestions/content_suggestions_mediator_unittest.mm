@@ -185,7 +185,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     delivered_status.state = commerce::ParcelStatus::FINISHED;
     delivered_status.tracking_id = "def";
     delivered_status.estimated_delivery_time =
-        base::Time::Now() - base::Hours(3);
+        base::Time::Now() - base::Days(3);
     parcels.emplace_back(delivered_status);
 
     shopping_service_->SetGetAllParcelStatusesCallbackValue(parcels);
@@ -665,6 +665,10 @@ TEST_F(ContentSuggestionsMediatorTest, TestParcelTrackingReceived) {
                           11 == [magicStackOrder[3] intValue];
                  }]]);
   OCMExpect([consumer_ showParcelTrackingItems:[OCMArg any]]);
+  // One of the parcels should be untracked since it was delivered more than two
+  // days ago.
+  EXPECT_CALL(*shopping_service_, StopTrackingParcel(testing::_, testing::_))
+      .Times(1);
   mediator_.consumer = consumer_;
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(

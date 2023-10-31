@@ -131,8 +131,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 // Maximum number of most visited tiles fetched.
 const NSInteger kMaxNumMostVisitedTiles = 4;
 
-const NSTimeInterval kTwoDays = 2 * 24 * 60 * 60;
-
 // Checks the last action the user took on the Credential Provider Promo to
 // determine if it was dismissed.
 bool CredentialProviderPromoDismissed(PrefService* local_state) {
@@ -1593,10 +1591,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     item.status = (ParcelState)iter->state;
     [parcelItems addObject:item];
 
-    NSDate* estimatedDeliveryTime = iter->estimated_delivery_time.ToNSDate();
-    if ([estimatedDeliveryTime
-            compare:[NSDate dateWithTimeIntervalSinceNow:-kTwoDays]] ==
-        NSOrderedDescending) {
+    if (iter->estimated_delivery_time < base::Time::Now() - base::Days(2)) {
       // Parcel was delivered more than two days ago, make this the last time it
       // is shown by stopping tracking.
       _shoppingService->StopTrackingParcel(iter->tracking_id,

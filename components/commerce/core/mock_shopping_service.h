@@ -116,6 +116,11 @@ class MockShoppingService : public commerce::ShoppingService {
               GetAllParcelStatuses,
               (GetParcelStatusCallback callback),
               (override));
+  MOCK_METHOD(void,
+              StopTrackingParcel,
+              (const std::string& tracking_id,
+               base::OnceCallback<void(bool)> callback),
+              (override));
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);

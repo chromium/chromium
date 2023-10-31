@@ -266,4 +266,7 @@ void MockShoppingService::SetGetAllParcelStatusesCallbackValue(
           });
 }
 
+void StopTrackingParcel(const std::string& tracking_id,
+                        base::OnceCallback<void(bool)> callback) {}
+
 }  // namespace commerce

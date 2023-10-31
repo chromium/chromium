@@ -435,8 +435,8 @@ class ShoppingService : public KeyedService,
 
   // Called to stop tracking a given parcel.
   // DEPRECATED: use StopTrackingParcels() below()
-  void StopTrackingParcel(const std::string& tracking_id,
-                          base::OnceCallback<void(bool)> callback);
+  virtual void StopTrackingParcel(const std::string& tracking_id,
+                                  base::OnceCallback<void(bool)> callback);
 
   // Called to stop tracking multiple parcels.
   void StopTrackingParcels(
