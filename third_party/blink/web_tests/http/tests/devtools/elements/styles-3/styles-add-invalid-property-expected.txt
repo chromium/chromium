@@ -13,7 +13,6 @@ After append:
 [expanded] 
 element.style { ()
     font-size: 12px;
-/-- overloaded --/     color: rgb();
 
 [expanded] 
 div { (user agent stylesheet)
