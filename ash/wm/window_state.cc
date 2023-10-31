@@ -1013,7 +1013,8 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds) {
     // Changing the size of the PIP window can detach it from one of the edges
     // of the screen, which makes the snap fraction logic fail. Ensure to snap
     // it again.
-    if (IsPip() && !is_dragged()) {
+    if (IsPip() && !is_dragged() &&
+        !Shell::Get()->pip_controller()->is_tucked()) {
       wm::ConvertRectToScreen(window_->GetRootWindow(), &actual_new_bounds);
       actual_new_bounds = CollisionDetectionUtils::GetRestingPosition(
           display, actual_new_bounds,

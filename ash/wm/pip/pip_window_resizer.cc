@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -137,7 +138,7 @@ void PipWindowResizer::Drag(const gfx::PointF& location_in_parent,
   // If the PIP window is at a corner, lock swipe to dismiss to the axis
   // of movement. Require that the direction of movement is mainly in the
   // direction of dismissing to start a swipe-to-dismiss gesture.
-  if (dismiss_fraction_ == 1.f) {
+  if (in_screen_fraction_ == 1.f) {
     bool swipe_is_horizontal =
         std::abs(movement_direction.x()) > std::abs(movement_direction.y());
     may_dismiss_horizontally_ =
@@ -166,24 +167,32 @@ void PipWindowResizer::Drag(const gfx::PointF& location_in_parent,
   // If we aren't dismissing, make sure to collide with objects.
   if (!may_dismiss_horizontally_ && !may_dismiss_vertically_) {
     // Reset opacity if it's not a dismiss gesture.
+    Shell::Get()->pip_controller()->SetDimOpacity(0.f);
     GetTarget()->layer()->SetOpacity(1.f);
     new_bounds = PipPositioner::GetBoundsForDrag(display, new_bounds,
                                                  GetTarget()->transform());
   } else {
-    gfx::Rect dismiss_bounds = new_bounds;
-    dismiss_bounds.Intersect(area);
+    gfx::Rect in_screen_bounds = new_bounds;
+    in_screen_bounds.Intersect(area);
     float bounds_area = new_bounds.width() * new_bounds.height();
-    float dismiss_area = dismiss_bounds.width() * dismiss_bounds.height();
+    float in_screen_area = in_screen_bounds.width() * in_screen_bounds.height();
     if (bounds_area != 0.f) {
-      dismiss_fraction_ = dismiss_area / bounds_area;
-      GetTarget()->layer()->SetOpacity(dismiss_fraction_);
+      in_screen_fraction_ = in_screen_area / bounds_area;
+      if (may_dismiss_horizontally_ && features::IsPipTuckEnabled()) {
+        if (bounds_area != 0.f) {
+          Shell::Get()->pip_controller()->SetDimOpacity(
+              fmin(0.5f, 1 - in_screen_fraction_));
+        }
+      } else {
+        GetTarget()->layer()->SetOpacity(in_screen_fraction_);
+      }
     }
   }
 
   // If the user has dragged the PIP window more than kPipDismissSlop distance
   // and no dismiss gesture has begun, make it impossible to initiate one for
   // the rest of the drag.
-  if (dismiss_fraction_ == 1.f &&
+  if (in_screen_fraction_ == 1.f &&
       movement_distance2 > kPipDismissSlop * kPipDismissSlop) {
     may_dismiss_horizontally_ = false;
     may_dismiss_vertically_ = false;
@@ -350,14 +359,27 @@ void PipWindowResizer::CompleteDrag() {
   // Trigger a dismiss if less than |kPipDismissFraction| of the PIP window area
   // is on-screen, or, if it was flung faster than
   // |kPipSwipeToDimissFlingThresholdSquared| during a dismiss gesture.
-  bool should_dismiss =
-      dismiss_fraction_ < kPipDismissFraction ||
-      (dismiss_fraction_ != 1.f &&
+  bool should_dismiss_or_tuck =
+      in_screen_fraction_ < kPipDismissFraction ||
+      (in_screen_fraction_ != 1.f &&
        fling_amount >= kPipSwipeToDismissFlingThresholdSquared);
+  bool should_tuck = should_dismiss_or_tuck && may_dismiss_horizontally_ &&
+                     features::IsPipTuckEnabled();
+  bool should_dismiss = should_dismiss_or_tuck && !should_tuck;
+
   if (should_dismiss) {
     // Close the widget. This will trigger an animation dismissing the PIP
     // window.
     window_util::CloseWidgetForWindow(window_state()->window());
+  } else if (should_tuck) {
+    const gfx::Point display_bounds_center =
+        display::Screen::GetScreen()
+            ->GetDisplayMatching(GetTarget()->bounds())
+            .bounds()
+            .CenterPoint();
+    const gfx::Point center_point = GetTarget()->bounds().CenterPoint();
+    bool left = center_point.x() < display_bounds_center.x();
+    Shell::Get()->pip_controller()->TuckWindow(left);
   } else {
     // Animate the PIP window to its resting position.
     gfx::Rect intended_bounds;
@@ -376,6 +398,8 @@ void PipWindowResizer::CompleteDrag() {
       } else {
         intended_bounds = GetTarget()->GetBoundsInScreen();
       }
+      // Reset the dimmer for tucking.
+      Shell::Get()->pip_controller()->SetDimOpacity(0.f);
     }
 
     // The origin includes the offset for the scaling effect with

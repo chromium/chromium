@@ -7,12 +7,18 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
+#include "ash/wm/scoped_window_tucker.h"
+#include "ash/wm/window_dimmer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/compositor/layer.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
+
+constexpr int kPipWidth = 300;
+constexpr int kPipHeight = 200;
 
 class PipControllerTest : public AshTestBase {
  public:
@@ -21,6 +27,11 @@ class PipControllerTest : public AshTestBase {
   PipControllerTest(const PipControllerTest&) = delete;
   PipControllerTest& operator=(const PipControllerTest&) = delete;
   ~PipControllerTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+    UpdateDisplay("1000x800");
+  }
 
  protected:
   std::unique_ptr<aura::Window> CreatePipWindow(gfx::Rect bounds) {
@@ -38,8 +49,22 @@ class PipControllerTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class PipControllerTestAPI {
+ public:
+  PipControllerTestAPI(PipController* controller) : controller_(controller) {}
+
+  WindowDimmer* dimmer() { return controller_->dimmer_.get(); }
+
+  ScopedWindowTucker* scoped_window_tucker() {
+    return controller_->scoped_window_tucker_.get();
+  }
+
+ private:
+  const raw_ptr<PipController> controller_;
+};
+
 TEST_F(PipControllerTest, WMEventPipSetsTargetWindow) {
-  const gfx::Rect bounds_in_screen(100, 100, 300, 200);
+  const gfx::Rect bounds_in_screen(100, 100, kPipWidth, kPipHeight);
   std::unique_ptr<aura::Window> window(CreatePipWindow(bounds_in_screen));
 
   // `OnWMEvent` in `CreatePipWindow()` should set the target window to
@@ -49,7 +74,7 @@ TEST_F(PipControllerTest, WMEventPipSetsTargetWindow) {
 }
 
 TEST_F(PipControllerTest, UpdatePipBounds) {
-  const gfx::Rect bounds_in_screen(100, 100, 300, 200);
+  const gfx::Rect bounds_in_screen(100, 100, kPipWidth, kPipHeight);
   std::unique_ptr<aura::Window> window(CreatePipWindow(bounds_in_screen));
 
   // `CreatePipWindow()`'s `OnWMEvent()` ends up calling
@@ -59,6 +84,95 @@ TEST_F(PipControllerTest, UpdatePipBounds) {
       WindowState::Get(window.get())->GetDisplay(), bounds_in_screen,
       CollisionDetectionUtils::RelativePriority::kPictureInPicture);
   EXPECT_EQ(expected_bounds, window->bounds());
+}
+
+TEST_F(PipControllerTest, TuckCreatesWindowTucker) {
+  PipController* controller = Shell::Get()->pip_controller();
+  PipControllerTestAPI test_api(controller);
+
+  const gfx::Rect bounds(0, 0, kPipWidth, kPipHeight);
+  std::unique_ptr<aura::Window> window(CreatePipWindow(bounds));
+
+  EXPECT_EQ(window.get(), controller->pip_window());
+
+  // Tucking the window should create the `ScopedWindowTucker`.
+  controller->TuckWindow(/*left=*/true);
+  EXPECT_TRUE(test_api.scoped_window_tucker());
+
+  // Untucking the window should destroy the `ScopedWindowTucker`.
+  controller->UntuckWindow();
+  EXPECT_FALSE(test_api.scoped_window_tucker());
+}
+
+TEST_F(PipControllerTest, TuckAndUntuckChangesWindowBounds) {
+  const gfx::Rect bounds(0, 0, kPipWidth, kPipHeight);
+  std::unique_ptr<aura::Window> window(CreatePipWindow(bounds));
+
+  PipController* controller = Shell::Get()->pip_controller();
+  EXPECT_EQ(window.get(), controller->pip_window());
+
+  // Tuck the PiP window to the left.
+  controller->TuckWindow(/*left=*/true);
+  EXPECT_TRUE(controller->is_tucked());
+  EXPECT_EQ(window->bounds(),
+            gfx::Rect(ScopedWindowTucker::kTuckHandleWidth - bounds.width(),
+                      kCollisionWindowWorkAreaInsetsDp, kPipWidth, kPipHeight));
+
+  // Untuck from the left.
+  controller->UntuckWindow();
+  EXPECT_FALSE(controller->is_tucked());
+  EXPECT_EQ(window->bounds(),
+            gfx::Rect(kCollisionWindowWorkAreaInsetsDp,
+                      kCollisionWindowWorkAreaInsetsDp, kPipWidth, kPipHeight));
+
+  // Tuck the PiP window to the right.
+  controller->TuckWindow(/*left=*/false);
+  EXPECT_TRUE(controller->is_tucked());
+  EXPECT_EQ(window->bounds(),
+            gfx::Rect(1000 - ScopedWindowTucker::kTuckHandleWidth,
+                      kCollisionWindowWorkAreaInsetsDp, kPipWidth, kPipHeight));
+
+  // Untuck from the right.
+  controller->UntuckWindow();
+  EXPECT_FALSE(controller->is_tucked());
+  EXPECT_EQ(window->bounds(),
+            gfx::Rect(1000 - kCollisionWindowWorkAreaInsetsDp - bounds.width(),
+                      kCollisionWindowWorkAreaInsetsDp, kPipWidth, kPipHeight));
+}
+
+TEST_F(PipControllerTest, TuckDimsWindow) {
+  PipController* controller = Shell::Get()->pip_controller();
+  PipControllerTestAPI test_api(controller);
+
+  const gfx::Rect bounds(0, 0, kPipWidth, kPipHeight);
+  std::unique_ptr<aura::Window> window(CreatePipWindow(bounds));
+
+  // Tuck the window and confirm that the dimmer is shown.
+  controller->TuckWindow(/*left=*/true);
+  EXPECT_NE(test_api.dimmer(), nullptr);
+  EXPECT_TRUE(test_api.dimmer()->window()->IsVisible());
+  EXPECT_EQ(test_api.dimmer()->window()->layer()->opacity(), 1.f);
+
+  // Untuck the window and confirm that the dimmer's opacity is now 0.
+  controller->UntuckWindow();
+  EXPECT_EQ(test_api.dimmer()->window()->layer()->opacity(), 0.f);
+}
+
+TEST_F(PipControllerTest, TuckHandleIsShownOnTuck) {
+  PipController* controller = Shell::Get()->pip_controller();
+  PipControllerTestAPI test_api(controller);
+
+  const gfx::Rect bounds(0, 0, kPipWidth, kPipHeight);
+  std::unique_ptr<aura::Window> window(CreatePipWindow(bounds));
+
+  // Tuck the window and confirm that the dimmer is shown.
+  controller->TuckWindow(/*left=*/true);
+  EXPECT_TRUE(test_api.scoped_window_tucker());
+  EXPECT_TRUE(test_api.scoped_window_tucker()->tuck_handle_widget());
+
+  // Untuck the window and confirm that the dimmer's opacity is now 0.
+  controller->UntuckWindow();
+  EXPECT_FALSE(test_api.scoped_window_tucker());
 }
 
 }  // namespace ash

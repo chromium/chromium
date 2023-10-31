@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -744,8 +745,11 @@ void DefaultState::UpdateBoundsForDisplayOrWorkAreaBoundsChange(
   gfx::Rect bounds = window_state->window()->GetTargetBounds();
   if (ensure_full_window_visibility)
     bounds.AdjustToFit(work_area_in_parent);
-  else if (!::wm::GetTransientParent(window_state->window()))
+  else if (!wm::GetTransientParent(window_state->window()) &&
+           !(window_state->IsPip() &&
+             Shell::Get()->pip_controller()->is_tucked())) {
     AdjustBoundsToEnsureMinimumWindowVisibility(work_area_in_parent, &bounds);
+  }
   window_state->AdjustSnappedBoundsForDisplayWorkspaceChange(&bounds);
 
   if (window_state->window()->GetTargetBounds() == bounds)
