@@ -1459,12 +1459,6 @@ BASE_FEATURE(kRecordWebAudioEngagement,
              "RecordWebAudioEngagement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables reporting "smpteSt2086" HDR Metadata as supported in the
-// MediaCapabilities API.
-BASE_FEATURE(kSupportSmpteSt2086HdrMetadata,
-             "SupportSmpteSt2086HdrMetadata",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // The following Media Engagement flags are not enabled on mobile platforms:
 // - MediaEngagementBypassAutoplayPolicies: enables the Media Engagement Index
 //   data to be esude to override autoplay policies. An origin with a high MEI

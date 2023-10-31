@@ -296,6 +296,11 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
 
+  // HDR metadata w/o an HDR color space should return false.
+  EXPECT_FALSE(
+      IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel,
+                            color_space, gfx::HdrMetadataType::kSmpteSt2086}));
+
   // All combinations of combinations of color gamuts and transfer functions
   // should be supported.
   color_space.primaries = VideoColorSpace::PrimaryID::SMPTEST431_2;
@@ -307,6 +312,9 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
   EXPECT_TRUE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
+  EXPECT_TRUE(
+      IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel,
+                            color_space, gfx::HdrMetadataType::kSmpteSt2086}));
 
   color_space.primaries = VideoColorSpace::PrimaryID::BT2020;
   color_space.transfer = VideoColorSpace::TransferID::ARIB_STD_B67;
@@ -317,12 +325,12 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
   EXPECT_TRUE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
-
-  // No HDR metadata types are supported.
+  // HDR metadata only works with the PQ transfer.
   EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel,
                             color_space, gfx::HdrMetadataType::kSmpteSt2086}));
 
+  // Only HDR10 metadata is currently supported.
   EXPECT_FALSE(IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY,
                                      kUnspecifiedLevel, color_space,
                                      gfx::HdrMetadataType::kSmpteSt2094_10}));
