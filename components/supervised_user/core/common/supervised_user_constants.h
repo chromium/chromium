@@ -31,14 +31,14 @@ enum SupervisedUserSafetyFilterResult {
 enum class SupervisedUserFilterTopLevelResult {
   // A parent has explicitly allowed the domain on the allowlist or all sites
   // are allowed through parental controls.
-  kAllow = 1,
+  kAllow = 0,
   // Site is blocked by the safe sites filter
-  kBlockSafeSites = 2,
+  kBlockSafeSites = 1,
   // Sites that were blocked due to being on the blocklist
-  kBlockManual = 3,
+  kBlockManual = 2,
   // Sites are blocked by default when the "Only allow certain sites" setting is
   // enabled for the supervised user. Sites on the allowlist are not blocked.
-  kBlockNotInAllowlist = 4,
+  kBlockNotInAllowlist = 3,
 };
 
 // Constants used by SupervisedUserURLFilter::RecordFilterResultEvent.
