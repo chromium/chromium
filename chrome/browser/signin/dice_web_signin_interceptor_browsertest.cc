@@ -551,6 +551,49 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
 // Desktop enabled.
 class DiceWebSigninInterceptorWithUnoEnabledBrowserTest
     : public DiceWebSigninInterceptorBrowserTest {
+ public:
+  absl::optional<int> GetChromeSigninInterceptDeclinedCountPref(
+      const AccountInfo& account_info) {
+    return GetProfile()
+        ->GetPrefs()
+        // Content of `kChromeSigninInterceptionDeclinedPref`.
+        ->GetDict("signin.ChromeSigninInterceptionDeclinedPref")
+        .FindInt(DiceWebSigninInterceptor::GetPersistentEmailHash(
+            account_info.email));
+  }
+
+  void ShowAndCompleteSigninBubbleWithResult(
+      const AccountInfo& account_info,
+      SigninInterceptionResult expected_result) {
+    GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+    content::WebContents* contents = AddTab(intercepted_url);
+
+    // Set up the result expectations.
+    FakeDiceWebSigninInterceptorDelegate* interceptor_delegate =
+        GetInterceptorDelegate(GetProfile());
+    interceptor_delegate->set_expected_interception_type(
+        WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
+    interceptor_delegate->set_expected_interception_result(expected_result);
+
+    DiceWebSigninInterceptor* interceptor =
+        DiceWebSigninInterceptorFactory::GetForProfile(
+            Profile::FromBrowserContext(contents->GetBrowserContext()));
+    interceptor->MaybeInterceptWebSignin(contents, account_info.account_id,
+                                         /*is_new_account=*/true,
+                                         /*is_sync_signin=*/false);
+
+    // Bubble should be shown following the intercept.
+    EXPECT_TRUE(interceptor_delegate->intercept_bubble_shown());
+
+    // The handling of the response to the bubble is done asynchronously in
+    // `FakeDiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble()`.
+    base::RunLoop().RunUntilIdle();
+
+    // Following the results the .
+    EXPECT_TRUE(interceptor_delegate->intercept_bubble_destroyed());
+  }
+
+ private:
   base::test::ScopedFeatureList feature_list_{switches::kUnoDesktop};
 };
 
@@ -558,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
                        ChromeSigninInterceptAccepted) {
   base::HistogramTester histogram_tester;
 
-  // Setup profile for interception.
+  // Setup account for interception.
   AccountInfo account_info =
       MakeAccountInfoAvailableAndUpdate("alice@example.com");
   // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
@@ -566,31 +609,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
 
-  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
-  content::WebContents* contents = AddTab(intercepted_url);
+  ShowAndCompleteSigninBubbleWithResult(account_info,
+                                        SigninInterceptionResult::kAccepted);
 
-  // Set up the result expectations.
-  // By default the delegate accepts the bubble.
-  FakeDiceWebSigninInterceptorDelegate* interceptor_delegate =
-      GetInterceptorDelegate(GetProfile());
-  interceptor_delegate->set_expected_interception_type(
-      WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
-
-  DiceWebSigninInterceptor* interceptor =
-      DiceWebSigninInterceptorFactory::GetForProfile(
-          Profile::FromBrowserContext(contents->GetBrowserContext()));
-  interceptor->MaybeInterceptWebSignin(contents, account_info.account_id,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
-
-  EXPECT_TRUE(interceptor_delegate->intercept_bubble_shown());
-
-  // The handling of the response to the bubble is done asynchronously in
-  // `FakeDiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble()`.
-  base::RunLoop().RunUntilIdle();
-
-  // We are expected to be signed in to Chrome and the bubble is destroyed.
-  EXPECT_TRUE(interceptor_delegate->intercept_bubble_destroyed());
   EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
 
@@ -606,13 +627,16 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.ChromeSignin.AttemptsBeforeAccept",
+      /*sample=*/0, /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
                        ChromeSigninInterceptDeclined) {
   base::HistogramTester histogram_tester;
 
-  // Setup profile for interception.
+  // Setup account for interception.
   AccountInfo account_info =
       MakeAccountInfoAvailableAndUpdate("alice@example.com");
   // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
@@ -620,38 +644,75 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
 
-  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
-  content::WebContents* contents = AddTab(intercepted_url);
+  // This pref should contain no data before the bubble is shown.
+  ASSERT_FALSE(
+      GetChromeSigninInterceptDeclinedCountPref(account_info).has_value());
 
-  // Set up the result expectations.
-  FakeDiceWebSigninInterceptorDelegate* interceptor_delegate =
-      GetInterceptorDelegate(GetProfile());
-  interceptor_delegate->set_expected_interception_type(
-      WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
-  interceptor_delegate->set_expected_interception_result(
-      SigninInterceptionResult::kDeclined);
+  ShowAndCompleteSigninBubbleWithResult(account_info,
+                                        SigninInterceptionResult::kDeclined);
 
-  DiceWebSigninInterceptor* interceptor =
-      DiceWebSigninInterceptorFactory::GetForProfile(
-          Profile::FromBrowserContext(contents->GetBrowserContext()));
-  interceptor->MaybeInterceptWebSignin(contents, account_info.account_id,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
-
-  EXPECT_TRUE(interceptor_delegate->intercept_bubble_shown());
-
-  // The handling of the response to the bubble is done asynchronously in
-  // `FakeDiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble()`.
-  base::RunLoop().RunUntilIdle();
-
-  // We are not expected to be signed in to Chrome (declining the bubble) and
-  // the bubble is destroyed.
-  EXPECT_TRUE(interceptor_delegate->intercept_bubble_destroyed());
   EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
+  // The pref should have recorded the declined action.
+  EXPECT_EQ(GetChromeSigninInterceptDeclinedCountPref(account_info), 1);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
+}
+
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
+                       ChromeSigninInterceptDeclinedPrefCheck) {
+  base::HistogramTester histogram_tester;
+
+  // Setup a first account for interception.
+  AccountInfo info1 = MakeAccountInfoAvailableAndUpdate("alice1@example.com");
+
+  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // bubble.
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  // This pref should contain no data before the bubble is shown.
+  ASSERT_FALSE(GetChromeSigninInterceptDeclinedCountPref(info1).has_value());
+
+  // Intercept declined on account1 twice.
+  ShowAndCompleteSigninBubbleWithResult(info1,
+                                        SigninInterceptionResult::kDeclined);
+  ShowAndCompleteSigninBubbleWithResult(info1,
+                                        SigninInterceptionResult::kDeclined);
+
+  // Expect the pref to record both declines.
+  int expected_info1_decline_count = 2;
+  EXPECT_EQ(GetChromeSigninInterceptDeclinedCountPref(info1),
+            expected_info1_decline_count);
+
+  // Setup the second account for interception.
+  AccountInfo info2 = MakeAccountInfoAvailableAndUpdate("alice2@example.com");
+  ASSERT_FALSE(GetChromeSigninInterceptDeclinedCountPref(info2).has_value());
+  // Signout the account1 so that the account2 can get the interception.
+  identity_test_env()->RemoveRefreshTokenForAccount(info1.account_id);
+
+  // Intercept declined on account2.
+  ShowAndCompleteSigninBubbleWithResult(info2,
+                                        SigninInterceptionResult::kDeclined);
+
+  // Account2 pref should be affected and account1 should not.
+  EXPECT_EQ(GetChromeSigninInterceptDeclinedCountPref(info1),
+            expected_info1_decline_count);
+  EXPECT_EQ(GetChromeSigninInterceptDeclinedCountPref(info2), 1);
+
+  // Accepting the intercept on account2 should reset the pref and log in the
+  // histogram.
+  ShowAndCompleteSigninBubbleWithResult(info2,
+                                        SigninInterceptionResult::kAccepted);
+
+  EXPECT_FALSE(GetChromeSigninInterceptDeclinedCountPref(info2).has_value());
+  EXPECT_EQ(GetChromeSigninInterceptDeclinedCountPref(info1),
+            expected_info1_decline_count);
+  // Record the 2 declines that happened before accepting the intercept.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.ChromeSignin.AttemptsBeforeAccept",
+      /*sample=*/1, /*expected_bucket_count=*/1);
 }
 
 // WebApps do not trigger interception. Regression test for

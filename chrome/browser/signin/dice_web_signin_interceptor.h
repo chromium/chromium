@@ -132,6 +132,8 @@ class DiceWebSigninInterceptor : public KeyedService,
   void Shutdown() override;
 
  private:
+  friend class DiceWebSigninInterceptorWithUnoEnabledBrowserTest;
+
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldShowProfileSwitchBubble);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
@@ -230,12 +232,21 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Returns a 8-bit hash of the email that can be persisted.
   static std::string GetPersistentEmailHash(const std::string& email);
 
-  // Should be called when the user declines profile creation, in order to
-  // remember their decision. This information is stored in prefs. Only a hash
-  // of the email is saved, as Chrome does not need to store the actual email,
-  // but only need to compare emails. The hash has low entropy to ensure it
-  // cannot be reversed.
-  void RecordProfileCreationDeclined(const std::string& email);
+  // Should be called when the user declines the intercept bubble for the
+  // interested interception types, in order to remember their decision. This
+  // information is stored in prefs. Only a hash of the email is saved, as
+  // Chrome does not need to store the actual email, but only need to compare
+  // emails. The hash has low entropy to ensure it cannot be reversed.
+  // There should be a pref for each group of Interception types that are of
+  // interest:
+  // - `kMultiUser`, `kEnterprise`: for profile creation bubble.
+  // - `kChromeSignin`: for Chrome Signin bubble.
+  void UpdateDiceWebSigninInterceptDeclinedPref(const std::string& email);
+
+  // Records the number of times the user previously declined the Chrome Signin
+  // bubble when accepting it. Also resets the value in the prefs.
+  void RecordAndResetChromeSigninNumberOfAttemptsBeforeAccept(
+      const std::string& email);
 
   // Checks if the user previously declined 2 times creating a new profile for
   // this account.
