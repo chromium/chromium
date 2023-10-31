@@ -839,10 +839,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       // kills `_chromeMain.reset()` is responsible for.
       GetApplicationContext()->GetLocalState()->CommitPendingWrite(
           {}, base::BindOnce(completionBlock));
-      dispatch_time_t dispatchTime =
-          dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC);
-      dispatch_semaphore_wait(semaphore, dispatchTime);
     }
+
+    dispatch_time_t dispatchTime =
+        dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC);
+    dispatch_semaphore_wait(semaphore, dispatchTime);
 
     return;
   }
