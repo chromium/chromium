@@ -43,6 +43,15 @@ class WorkerNodeImpl
 
   ~WorkerNodeImpl() override;
 
+  // Partial WorkerNode implementation:
+  WorkerType GetWorkerType() const override;
+  const std::string& GetBrowserContextID() const override;
+  const blink::WorkerToken& GetWorkerToken() const override;
+  resource_attribution::WorkerContext GetResourceContext() const override;
+  const GURL& GetURL() const override;
+  uint64_t GetResidentSetKbEstimate() const override;
+  uint64_t GetPrivateFootprintKbEstimate() const override;
+
   // Invoked when a frame starts/stops being a client of this worker.
   void AddClientFrame(FrameNodeImpl* frame_node);
   void RemoveClientFrame(FrameNodeImpl* frame_node);
@@ -95,14 +104,9 @@ class WorkerNodeImpl
   void OnBeforeLeavingGraph() override;
   void RemoveNodeAttachedData() override;
 
-  // WorkerNode: These are private so that users of the
+  // Rest of WorkerNode implementation. These are private so that users of the
   // impl use the private getters rather than the public interface.
-  WorkerType GetWorkerType() const override;
-  const std::string& GetBrowserContextID() const override;
   const ProcessNode* GetProcessNode() const override;
-  const blink::WorkerToken& GetWorkerToken() const override;
-  resource_attribution::WorkerContext GetResourceContext() const override;
-  const GURL& GetURL() const override;
   const base::flat_set<const FrameNode*> GetClientFrames() const override;
   bool VisitClientFrames(const FrameNodeVisitor&) const override;
   const base::flat_set<const WorkerNode*> GetClientWorkers() const override;
@@ -110,8 +114,6 @@ class WorkerNodeImpl
   const base::flat_set<const WorkerNode*> GetChildWorkers() const override;
   bool VisitChildDedicatedWorkers(const WorkerNodeVisitor&) const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
-  uint64_t GetResidentSetKbEstimate() const override;
-  uint64_t GetPrivateFootprintKbEstimate() const override;
 
   // Invoked when |worker_node| becomes a child of this worker.
   void AddChildWorker(WorkerNodeImpl* worker_node);

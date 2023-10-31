@@ -42,6 +42,41 @@ WorkerNodeImpl::~WorkerNodeImpl() {
   DCHECK(!execution_context_);
 }
 
+WorkerNode::WorkerType WorkerNodeImpl::GetWorkerType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return worker_type();
+}
+
+const std::string& WorkerNodeImpl::GetBrowserContextID() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return browser_context_id();
+}
+
+const blink::WorkerToken& WorkerNodeImpl::GetWorkerToken() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return worker_token();
+}
+
+resource_attribution::WorkerContext WorkerNodeImpl::GetResourceContext() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resource_context();
+}
+
+const GURL& WorkerNodeImpl::GetURL() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return url();
+}
+
+uint64_t WorkerNodeImpl::GetResidentSetKbEstimate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resident_set_kb_estimate();
+}
+
+uint64_t WorkerNodeImpl::GetPrivateFootprintKbEstimate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return private_footprint_kb_estimate();
+}
+
 void WorkerNodeImpl::AddClientFrame(FrameNodeImpl* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool inserted = client_frames_.insert(frame_node).second;
@@ -229,34 +264,9 @@ void WorkerNodeImpl::RemoveNodeAttachedData() {
   execution_context_.reset();
 }
 
-WorkerNode::WorkerType WorkerNodeImpl::GetWorkerType() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return worker_type();
-}
-
-const std::string& WorkerNodeImpl::GetBrowserContextID() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browser_context_id();
-}
-
 const ProcessNode* WorkerNodeImpl::GetProcessNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return process_node();
-}
-
-const GURL& WorkerNodeImpl::GetURL() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return url();
-}
-
-const blink::WorkerToken& WorkerNodeImpl::GetWorkerToken() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return worker_token();
-}
-
-resource_attribution::WorkerContext WorkerNodeImpl::GetResourceContext() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_context();
 }
 
 const base::flat_set<const FrameNode*> WorkerNodeImpl::GetClientFrames() const {
@@ -323,14 +333,6 @@ bool WorkerNodeImpl::VisitChildDedicatedWorkers(
 
 const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {
   return priority_and_reason();
-}
-
-uint64_t WorkerNodeImpl::GetResidentSetKbEstimate() const {
-  return resident_set_kb_estimate();
-}
-
-uint64_t WorkerNodeImpl::GetPrivateFootprintKbEstimate() const {
-  return private_footprint_kb_estimate();
 }
 
 void WorkerNodeImpl::AddChildWorker(WorkerNodeImpl* worker_node) {
