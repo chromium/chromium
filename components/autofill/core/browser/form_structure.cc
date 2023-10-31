@@ -381,6 +381,33 @@ std::string ServerTypesToString(const AutofillField* field) {
   return "[" + buffer.str() + "]";
 }
 
+bool HasPasswordManagerPrediction(const FieldSuggestion& field_suggestion) {
+  return base::ranges::any_of(
+      field_suggestion.predictions(), [](const auto& prediction) {
+        auto group_type = GroupTypeOfServerFieldType(
+            ToSafeServerFieldType(prediction.type(), NO_SERVER_DATA));
+        return group_type == FieldTypeGroup::kPasswordField ||
+               group_type == FieldTypeGroup::kUsernameField;
+      });
+}
+
+void MergePasswordManagerPredictions(
+    FieldSuggestion& current_predictions,
+    const FieldSuggestion& autofill_predictions) {
+  CHECK_NE(&current_predictions, &autofill_predictions);
+  for (const auto& prediction : autofill_predictions.predictions()) {
+    auto group_type = GroupTypeOfServerFieldType(
+        ToSafeServerFieldType(prediction.type(), NO_SERVER_DATA));
+    // Skip predictions irrelevant for PasswordManager.
+    if (group_type != FieldTypeGroup::kPasswordField &&
+        group_type != FieldTypeGroup::kUsernameField) {
+      continue;
+    }
+    auto* new_prediction = current_predictions.add_predictions();
+    new_prediction->CopyFrom(prediction);
+  }
+}
+
 }  // namespace
 
 FormStructure::FormStructure(const FormData& form)
@@ -740,6 +767,15 @@ void FormStructure::ProcessQueryResponse(
         return field_suggestion && !field_suggestion->predictions().empty() &&
                field_suggestion->predictions()[0].override();
       };
+      auto has_only_no_server_data =
+          [](absl::optional<FieldSuggestion> field_suggestion) {
+            return field_suggestion &&
+                   base::ranges::all_of(field_suggestion->predictions(),
+                                        [](const auto& prediction) {
+                                          return prediction.type() ==
+                                                 NO_SERVER_DATA;
+                                        });
+          };
       if (field->host_form_signature &&
           field->host_form_signature != form->form_signature() &&
           !is_override(current_field)) {
@@ -747,13 +783,17 @@ void FormStructure::ProcessQueryResponse(
         // the alternative predictions are popped.
         absl::optional<FieldSuggestion> alternative_field = GetPrediction(
             field->host_form_signature, field->GetFieldSignature());
-        if (alternative_field &&
-            (!current_field || is_override(alternative_field) ||
-             base::ranges::all_of(current_field->predictions(),
-                                  [](const auto& prediction) {
-                                    return prediction.type() == NO_SERVER_DATA;
-                                  }))) {
-          current_field = *alternative_field;
+        if (alternative_field) {
+          if (!current_field || has_only_no_server_data(current_field) ||
+              is_override(alternative_field)) {
+            current_field = *alternative_field;
+          } else if (current_field &&
+                     !HasPasswordManagerPrediction(*current_field) &&
+                     HasPasswordManagerPrediction(*alternative_field)) {
+            // Add predictions for PasswordManager from
+            // `alternative_field` if `current_field` is missing them.
+            MergePasswordManagerPredictions(*current_field, *alternative_field);
+          }
         }
       }
       if (form->alternative_form_signature() && !is_override(current_field)) {
@@ -761,10 +801,7 @@ void FormStructure::ProcessQueryResponse(
             form->alternative_form_signature(), field->GetFieldSignature());
         if (alternative_field &&
             (!current_field || is_override(alternative_field) ||
-             base::ranges::all_of(current_field->predictions(),
-                                  [](const auto& prediction) {
-                                    return prediction.type() == NO_SERVER_DATA;
-                                  }))) {
+             has_only_no_server_data(current_field))) {
           current_field = *alternative_field;
         }
       }

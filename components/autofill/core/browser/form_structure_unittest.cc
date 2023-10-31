@@ -5048,6 +5048,49 @@ TEST_F(FormStructureTestImpl,
   }
 }
 
+TEST_F(FormStructureTestImpl,
+       ParseQueryResponse_MergeAutofillAndPasswordsPredictions) {
+  FormData form_data;
+  form_data.url = GURL("http://foo.com");
+
+  FormFieldData field;
+  field.form_control_type = FormControlType::kInputText;
+  field.name = u"name";
+  field.unique_renderer_id = test::MakeFieldRendererId();
+  field.host_form_signature = FormSignature(12345);
+  form_data.fields = {field};
+
+  FormStructure form(form_data);
+  form.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr, nullptr);
+
+  // Setup the query response.
+  AutofillQueryResponse response;
+  std::vector<FormStructure*> forms{&form};
+  std::vector<FormSignature> encoded_signatures =
+      test::GetEncodedSignatures(forms);
+  // Main frame response.
+  auto* main_frame_form_suggestion = response.add_form_suggestions();
+  AddFieldPredictionToForm(form_data.fields[0], EMAIL_ADDRESS,
+                           main_frame_form_suggestion);
+  // Iframe response.
+  encoded_signatures.emplace_back(12345);
+  auto* iframe_form_suggestion = response.add_form_suggestions();
+  AddFieldPredictionToForm(form_data.fields[0], SINGLE_USERNAME,
+                           iframe_form_suggestion);
+
+  std::string response_string = SerializeAndEncode(response);
+
+  // Parse the response and update the field type predictions.
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       encoded_signatures, nullptr, nullptr);
+  ASSERT_EQ(form.field_count(), 1U);
+
+  // Validate field 0.
+  EXPECT_THAT(forms[0]->field(0)->server_predictions(),
+              ElementsAre(EqualsPrediction(EMAIL_ADDRESS),
+                          EqualsPrediction(SINGLE_USERNAME)));
+}
+
 // Tests that the signatures of a field's FormFieldData::host_form_signature are
 // used as a fallback if the form's signature does not contain useful type
 // predictions.
