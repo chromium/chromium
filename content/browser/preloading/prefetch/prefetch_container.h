@@ -17,6 +17,7 @@
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/preloading_data.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -89,6 +90,8 @@ struct PrefetchResponseSizes {
 // `PrefetchService::MakePrefetchRequest()`.
 class CONTENT_EXPORT PrefetchContainer {
  public:
+  // When `matcher` is null (only in unit tests),
+  // `PreloadingData::GetSameURLMatcher` is used.
   PrefetchContainer(
       const GlobalRenderFrameHostId& referring_render_frame_host_id,
       const blink::DocumentToken& referring_document_token,
@@ -97,7 +100,8 @@ class CONTENT_EXPORT PrefetchContainer {
       const blink::mojom::Referrer& referrer,
       absl::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       blink::mojom::SpeculationInjectionWorld world,
-      base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager);
+      base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
+      PreloadingURLMatchCallback matcher = {});
   ~PrefetchContainer();
 
   PrefetchContainer(const PrefetchContainer&) = delete;

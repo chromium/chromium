@@ -147,6 +147,14 @@ class CONTENT_EXPORT PrefetchService {
     on_prefetch_response_completed_for_testing_ = std::move(callback);
   }
 
+  base::WeakPtr<PrefetchContainer> MatchUrl(
+      const PrefetchContainer::Key& key) const;
+  std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
+  GetAllForUrlWithoutRefAndQueryForTesting(
+      const PrefetchContainer::Key& key) const;
+
+  base::WeakPtr<PrefetchService> GetWeakPtr();
+
  private:
   // Checks whether the given |prefetch_container| is eligible for prefetch.
   // Once the eligibility is determined then |result_callback| will be called

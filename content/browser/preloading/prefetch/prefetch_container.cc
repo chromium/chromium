@@ -368,7 +368,8 @@ PrefetchContainer::PrefetchContainer(
     const blink::mojom::Referrer& referrer,
     absl::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     blink::mojom::SpeculationInjectionWorld world,
-    base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager)
+    base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
+    PreloadingURLMatchCallback matcher)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
       referring_document_token_(referring_document_token),
       prefetch_url_(url),
@@ -386,11 +387,9 @@ PrefetchContainer::PrefetchContainer(
     auto* web_contents = WebContents::FromRenderFrameHost(rfhi);
     auto* preloading_data =
         PreloadingData::GetOrCreateForWebContents(web_contents);
-    auto matcher =
-        base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)
-            ? PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
-                  prefetch_document_manager_, prefetch_url_)
-            : PreloadingDataImpl::GetSameURLMatcher(prefetch_url_);
+    if (!matcher) {
+      matcher = PreloadingData::GetSameURLMatcher(prefetch_url_);
+    }
     auto* attempt = static_cast<PreloadingAttemptImpl*>(
         preloading_data->AddPreloadingAttempt(
             GetPredictorForSpeculationRules(world), PreloadingType::kPrefetch,

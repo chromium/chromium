@@ -109,9 +109,6 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // Whether the prefetch attempt for target |url| failed or discarded
   bool IsPrefetchAttemptFailedOrDiscarded(const GURL& url);
 
-  base::WeakPtr<PrefetchContainer> MatchUrl(const GURL& url) const;
-  std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
-  GetAllForUrlWithoutRefAndQueryForTesting(const GURL& url) const;
   void EnableNoVarySearchSupport();
   bool NoVarySearchSupportEnabled() const;
 

@@ -1522,6 +1522,18 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
   return matches;
 }
 
+base::WeakPtr<PrefetchContainer> PrefetchService::MatchUrl(
+    const PrefetchContainer::Key& key) const {
+  return no_vary_search::MatchUrl(key, all_prefetches_);
+}
+
+std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
+PrefetchService::GetAllForUrlWithoutRefAndQueryForTesting(
+    const PrefetchContainer::Key& key) const {
+  return no_vary_search::GetAllForUrlWithoutRefAndQueryForTesting(
+      key, all_prefetches_);
+}
+
 PrefetchService::HandlePrefetchContainerResult
 PrefetchService::HandlePrefetchContainerToServe(
     const PrefetchContainer::Key& key,
@@ -1797,6 +1809,10 @@ void PrefetchService::SetURLLoaderFactoryForTesting(
 void PrefetchService::SetNetworkContextForProxyLookupForTesting(
     network::mojom::NetworkContext* network_context) {
   g_network_context_for_proxy_lookup_for_testing = network_context;
+}
+
+base::WeakPtr<PrefetchService> PrefetchService::GetWeakPtr() {
+  return weak_method_factory_.GetWeakPtr();
 }
 
 void PrefetchService::RecordExistingPrefetchWithMatchingURL(

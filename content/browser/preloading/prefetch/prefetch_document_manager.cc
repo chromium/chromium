@@ -15,6 +15,7 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -102,18 +103,6 @@ PrefetchDocumentManager* PrefetchDocumentManager::FromDocumentToken(
   return nullptr;
 }
 
-base::WeakPtr<PrefetchContainer> PrefetchDocumentManager::MatchUrl(
-    const GURL& url) const {
-  return no_vary_search::MatchUrl(url, all_prefetches_);
-}
-
-std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
-PrefetchDocumentManager::GetAllForUrlWithoutRefAndQueryForTesting(
-    const GURL& url) const {
-  return no_vary_search::GetAllForUrlWithoutRefAndQueryForTesting(
-      url, all_prefetches_);
-}
-
 void PrefetchDocumentManager::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   // Ignore navigations for a different LocalFrameToken.
@@ -137,21 +126,24 @@ void PrefetchDocumentManager::DidStartNavigation(
     return;
   }
 
+  PrefetchService* prefetch_service = GetPrefetchService();
+  if (!prefetch_service) {
+    return;
+  }
+
   base::WeakPtr<PrefetchContainer> prefetch_container =
-      MatchUrl(navigation_handle->GetURL());
+      prefetch_service->MatchUrl(
+          PrefetchContainer::Key(document_token_, navigation_handle->GetURL()));
   if (!prefetch_container) {
     return;
   }
 
   switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kServable:
-      if (PrefetchService* prefetch_service = GetPrefetchService()) {
-        // For prefetches that are already servable, start the process of
-        // copying cookies from the isolated network context used to make the
-        // prefetch to the default network context.
-        prefetch_service->CopyIsolatedCookies(
-            prefetch_container->CreateReader());
-      }
+      // For prefetches that are already servable, start the process of
+      // copying cookies from the isolated network context used to make the
+      // prefetch to the default network context.
+      prefetch_service->CopyIsolatedCookies(prefetch_container->CreateReader());
       break;
 
     case PrefetchContainer::ServableState::kNotServable:
@@ -264,11 +256,14 @@ void PrefetchDocumentManager::PrefetchUrl(
         no_vary_search::ParseHttpNoVarySearchDataFromMojom(
             mojo_no_vary_search_expected);
   }
+  PrefetchService* prefetch_service = GetPrefetchService();
   // Create a new |PrefetchContainer| and take ownership of it
   auto container = std::make_unique<PrefetchContainer>(
       render_frame_host().GetGlobalId(), document_token_, url, prefetch_type,
       referrer, std::move(no_vary_search_expected), world,
-      weak_method_factory_.GetWeakPtr());
+      weak_method_factory_.GetWeakPtr(),
+      PreloadingDataImpl::GetPrefetchServiceMatcher(
+          prefetch_service, PrefetchContainer::Key(document_token_, url)));
   container->SetDevToolsObserver(std::move(devtools_observer));
   DVLOG(1) << *container << ": created";
   base::WeakPtr<PrefetchContainer> weak_container = container->GetWeakPtr();
@@ -279,7 +274,6 @@ void PrefetchDocumentManager::PrefetchUrl(
 
   // Send a reference of the new |PrefetchContainer| to |PrefetchService| to
   // start the prefetch process.
-  PrefetchService* prefetch_service = GetPrefetchService();
   if (prefetch_service) {
     prefetch_service->PrefetchUrl(weak_container);
   }
