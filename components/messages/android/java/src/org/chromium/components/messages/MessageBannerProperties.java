@@ -21,21 +21,17 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-import java.util.function.BooleanSupplier;
-
-/**
- * Properties of message banner.
- */
+/** Properties of message banner. */
 public class MessageBannerProperties {
     /** A Color value indicating that the "natural" colors from the image should be used. */
-    @ColorInt
-    public static final int TINT_NONE = Color.TRANSPARENT;
+    @ColorInt public static final int TINT_NONE = Color.TRANSPARENT;
 
     /**
      * The identifier for the message for recording metrics. It should be one of the values from
      * MessageIdentifier enum.
      */
     public static final ReadableIntPropertyKey MESSAGE_IDENTIFIER = new ReadableIntPropertyKey();
+
     /**
      * Controls the appearance of the primary widget, according to which value of the
      * PrimaryWidgetAppearance enum that this is set to. See the documentation of
@@ -44,8 +40,10 @@ public class MessageBannerProperties {
      */
     public static final WritableIntPropertyKey PRIMARY_WIDGET_APPEARANCE =
             new WritableIntPropertyKey();
+
     public static final WritableObjectPropertyKey<String> PRIMARY_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
+
     /**
      * See the documentation of PrimaryActionClickBehavior in
      * components/messages/android/message_enums.h for more information about the return value of
@@ -53,6 +51,7 @@ public class MessageBannerProperties {
      */
     public static final WritableObjectPropertyKey<Supplier</*@PrimaryActionClickBehavior*/ Integer>>
             ON_PRIMARY_ACTION = new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<Runnable> ON_SECONDARY_ACTION =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
@@ -63,6 +62,7 @@ public class MessageBannerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Drawable> DESCRIPTION_ICON =
             new WritableObjectPropertyKey<>();
+
     /**
      * RESIZE_DESCRIPTION_ICON allows resizing the width of the drawable represented by
      * DESCRIPTION_ICON. This is useful when the icon width and height are unequal. If
@@ -91,6 +91,7 @@ public class MessageBannerProperties {
      * to completely remove the tint.
      */
     public static final WritableIntPropertyKey ICON_TINT_COLOR = new WritableIntPropertyKey();
+
     // Secondary icon is shown as a button, so content description should be always set.
     public static final WritableObjectPropertyKey<Drawable> SECONDARY_ICON =
             new WritableObjectPropertyKey<>();
@@ -106,13 +107,12 @@ public class MessageBannerProperties {
             new WritableIntPropertyKey();
     // Unit: milliseconds.
     public static final WritableLongPropertyKey DISMISSAL_DURATION = new WritableLongPropertyKey();
+
     /**
      * The callback invoked when the message is dismissed. DismissReason is passed through the
      * callback's parameter.
      */
     public static final WritableObjectPropertyKey<Callback<Integer>> ON_DISMISSED =
-            new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<BooleanSupplier> ON_STARTED_SHOWING =
             new WritableObjectPropertyKey<>();
 
     /**
@@ -175,7 +175,6 @@ public class MessageBannerProperties {
                 ON_PRIMARY_ACTION,
                 ON_SECONDARY_ACTION,
                 ON_DISMISSED,
-                ON_STARTED_SHOWING,
                 ON_FULLY_VISIBLE,
                 IS_FULLY_VISIBLE,
                 SECONDARY_MENU_BUTTON_DELEGATE,

@@ -13,9 +13,7 @@ import androidx.annotation.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Interface of a handler to show, hide or dismiss the message.
- */
+/** Interface of a handler to show, hide or dismiss the message. */
 public interface MessageStateHandler {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({Position.INVISIBLE, Position.FRONT, Position.BACK})
@@ -27,6 +25,7 @@ public interface MessageStateHandler {
 
     /**
      * Signals that the message needs to show its UI.
+     *
      * @param fromIndex The position from which the message view starts to move.
      * @param toIndex The target position at which the message view animation will stop.
      * @return The animator to trigger the showing animation.
@@ -36,6 +35,7 @@ public interface MessageStateHandler {
 
     /**
      * Signals that the message needs to hide its UI.
+     *
      * @param fromIndex The position from which the message view starts to move.
      * @param toIndex The target position at which the message view animation will stop.
      * @param animate Whether animation should be run or not.
@@ -46,20 +46,10 @@ public interface MessageStateHandler {
 
     /**
      * Notify that the message is about to be dismissed from the queue.
+     *
      * @param dismissReason The reason why the message is being dismissed.
      */
     void dismiss(@DismissReason int dismissReason);
-
-    /**
-     * Determines if the message should be shown after it is enqueued. This can be used in features
-     * that require an enqueued message to be shown or not depending on some prerequisites. It is
-     * the responsibility of the feature code to dismiss the message if it is not to be shown
-     * permanently.
-     * @return true if an enqueued message should be shown, false otherwise.
-     */
-    default boolean shouldShow() {
-        return true;
-    }
 
     /** Returns MessageIdentifier of the current message. */
     @MessageIdentifier

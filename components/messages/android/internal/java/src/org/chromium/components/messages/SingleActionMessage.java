@@ -17,11 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.components.messages.MessageContainer.MessageContainerA11yDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.function.BooleanSupplier;
-
-/**
- * Coordinator to show / hide a banner message on given container and delegate events.
- */
+/** Coordinator to show / hide a banner message on given container and delegate events. */
 public class SingleActionMessage implements MessageStateHandler, MessageContainerA11yDelegate {
     /**
      * The interface that consumers of SingleActionMessage should implement to receive notification
@@ -32,8 +28,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         void invoke(PropertyModel messageProperties, int dismissReason);
     }
 
-    @Nullable
-    private MessageBannerCoordinator mMessageBanner;
+    @Nullable private MessageBannerCoordinator mMessageBanner;
     private MessageBannerView mView;
     private final MessageContainer mContainer;
     private final PropertyModel mModel;
@@ -49,20 +44,22 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     private long mMessageShownTime;
 
     /**
-
      * @param container The container holding messages.
      * @param model The PropertyModel with {@link MessageBannerProperties#ALL_KEYS}.
      * @param dismissHandler The {@link DismissCallback} able to dismiss a message by given property
-     * model.
+     *     model.
      * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y.
      * @param topOffsetSupplier A {@link Supplier} that supplies the message's top offset.
      * @param autodismissDurationProvider A {@link MessageAutodismissDurationProvider} providing
-     * autodismiss duration for message banner. The actual duration can be extended by clients.
+     *     autodismiss duration for message banner. The actual duration can be extended by clients.
      * @param swipeAnimationHandler The Handler that will be used by the message banner to delegate
-     * starting custom swiping animations to the {@link WindowAndroid}.
+     *     starting custom swiping animations to the {@link WindowAndroid}.
      */
-    public SingleActionMessage(MessageContainer container, PropertyModel model,
-            DismissCallback dismissHandler, Supplier<Integer> maxTranslationSupplier,
+    public SingleActionMessage(
+            MessageContainer container,
+            PropertyModel model,
+            DismissCallback dismissHandler,
+            Supplier<Integer> maxTranslationSupplier,
             Supplier<Integer> topOffsetSupplier,
             MessageAutodismissDurationProvider autodismissDurationProvider,
             SwipeAnimationHandler swipeAnimationHandler) {
@@ -76,12 +73,14 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
 
         long dismissalDuration =
                 mModel.getAllSetProperties().contains(MessageBannerProperties.DISMISSAL_DURATION)
-                ? mModel.get(MessageBannerProperties.DISMISSAL_DURATION)
-                : 0;
+                        ? mModel.get(MessageBannerProperties.DISMISSAL_DURATION)
+                        : 0;
 
-        mAutodismissDurationMs = ()
-                -> autodismissDurationProvider.get(
-                        model.get(MessageBannerProperties.MESSAGE_IDENTIFIER), dismissalDuration);
+        mAutodismissDurationMs =
+                () ->
+                        autodismissDurationProvider.get(
+                                model.get(MessageBannerProperties.MESSAGE_IDENTIFIER),
+                                dismissalDuration);
 
         mModel.set(
                 MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, this::handlePrimaryAction);
@@ -90,6 +89,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
 
     /**
      * Show a message view on the given {@link MessageContainer}.
+     *
      * @param fromIndex The initial position of the message view.
      * @param toIndex The target position of the message view.
      * @return The animator to move the message view.
@@ -98,20 +98,34 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     @Override
     public Animator show(int fromIndex, int toIndex) {
         if (mMessageBanner == null) {
-            mView = (MessageBannerView) LayoutInflater.from(mContainer.getContext())
-                            .inflate(R.layout.message_banner_view, mContainer, false);
-            mMessageBanner = new MessageBannerCoordinator(mView, mModel, mMaxTranslationSupplier,
-                    mTopOffsetSupplier, mContainer.getResources(),
-                    ()
-                            -> { mDismissHandler.invoke(mModel, DismissReason.GESTURE); },
-                    mSwipeAnimationHandler, mAutodismissDurationMs,
-                    () -> { mDismissHandler.invoke(mModel, DismissReason.TIMER); });
+            mView =
+                    (MessageBannerView)
+                            LayoutInflater.from(mContainer.getContext())
+                                    .inflate(R.layout.message_banner_view, mContainer, false);
+            mMessageBanner =
+                    new MessageBannerCoordinator(
+                            mView,
+                            mModel,
+                            mMaxTranslationSupplier,
+                            mTopOffsetSupplier,
+                            mContainer.getResources(),
+                            () -> {
+                                mDismissHandler.invoke(mModel, DismissReason.GESTURE);
+                            },
+                            mSwipeAnimationHandler,
+                            mAutodismissDurationMs,
+                            () -> {
+                                mDismissHandler.invoke(mModel, DismissReason.TIMER);
+                            });
         }
 
         // Update elevation to ensure background view is always behind the front one.
-        int elevationDimen = toIndex == Position.FRONT ? R.dimen.message_banner_elevation
-                                                       : R.dimen.message_banner_back_elevation;
-        mModel.set(MessageBannerProperties.ELEVATION,
+        int elevationDimen =
+                toIndex == Position.FRONT
+                        ? R.dimen.message_banner_elevation
+                        : R.dimen.message_banner_back_elevation;
+        mModel.set(
+                MessageBannerProperties.ELEVATION,
                 mView.getResources().getDimension(elevationDimen));
         // #show can be called multiple times when its own index is updated.
         if (mContainer.indexOfChild(mView) == -1) {
@@ -130,6 +144,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
 
     /**
      * Hide the message view shown on the given {@link MessageContainer}.
+     *
      * @param fromIndex The initial position of the message view.
      * @param toIndex The target position of the message view.
      * @param animate Whether to show animation.
@@ -145,6 +160,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
 
     /**
      * Remove message from the message queue so that the message will not be shown anymore.
+     *
      * @param dismissReason The reason why message is being dismissed.
      */
     @Override
@@ -156,24 +172,11 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
                 || dismissReason == DismissReason.SECONDARY_ACTION
                 || dismissReason == DismissReason.GESTURE) {
             // Only record time to dismiss when the user explicitly dismissed the message.
-            MessagesMetrics.recordTimeToAction(getMessageIdentifier(),
+            MessagesMetrics.recordTimeToAction(
+                    getMessageIdentifier(),
                     dismissReason == DismissReason.GESTURE,
                     MessagesMetrics.now() - mMessageShownTime);
         }
-    }
-
-    /**
-     * Invoke a {@link BooleanSupplier} optionally defined by a consumer to determine if an enqueued
-     * message should be shown.
-     * @return true if an enqueued message should be shown, false otherwise.
-     */
-    @Override
-    public boolean shouldShow() {
-        BooleanSupplier onStartedShowing = mModel.get(MessageBannerProperties.ON_STARTED_SHOWING);
-        if (onStartedShowing != null) {
-            return onStartedShowing.getAsBoolean();
-        }
-        return true;
     }
 
     @Override

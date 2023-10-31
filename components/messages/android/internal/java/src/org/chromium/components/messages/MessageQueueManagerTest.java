@@ -16,7 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -252,39 +251,6 @@ public class MessageQueueManagerTest {
                 queueManager.getMessagesForTesting().isEmpty());
     }
 
-    @Test
-    @SmallTest
-    public void testMessageShouldShow() {
-        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
-
-        queueManager.setDelegate(mEmptyDelegate);
-        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        when(m1.shouldShow())
-                .thenReturn(
-                        true, true,
-                        true, // This is called by #getNextMessage after a message is shown.
-                        true, false);
-
-        // m1#shouldShow will be invoked and will return true.
-        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
-
-        // The enqueued message should be chosen as a candidate to be shown.
-        // m1#shouldShow will be invoked and will return true.
-        MessageState messageState = queueManager.getNextMessage();
-        Assert.assertNotNull("Next message candidate should not be null.", messageState);
-
-        // The enqueued message should not be chosen as a candidate to be shown.
-        // m1#shouldShow will be invoked and will return false.
-        messageState = queueManager.getNextMessage();
-        Assert.assertNull("Next message candidate should be null.", messageState);
-
-        verify(m1, times(5)).shouldShow();
-
-        queueManager.dismissMessage(m1, DismissReason.TIMER);
-        verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
-        verify(m1).dismiss(DismissReason.TIMER);
-    }
-
     /** Tests that, with multiple enqueued messages, only one message is shown at a time. */
     @Test
     @SmallTest
@@ -319,8 +285,6 @@ public class MessageQueueManagerTest {
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
-        when(m1.shouldShow()).thenReturn(true);
-        when(m2.shouldShow()).thenReturn(true);
 
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
