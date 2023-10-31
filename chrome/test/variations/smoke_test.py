@@ -2,17 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import logging
-import os
-
 import pytest
 
 from chrome.test.variations import drivers
 from chrome.test.variations import fixtures
 from http.server import HTTPServer
-from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
-from selenium.webdriver import ChromeOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -20,10 +15,16 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 def test_load_simple_url(driver_factory: drivers.DriverFactory,
                          local_http_server: HTTPServer,
-                         seed_locator: fixtures.SeedLocator):
+                         seed_locator: fixtures.SeedLocator,
+                         add_tag: fixtures.result_sink.AddTag):
   url = (f'http://localhost:{local_http_server.server_port}')
   with driver_factory.create_driver(
     seed_file=seed_locator.get_seed()) as driver:
+    versions = driver.execute_cdp_cmd(cmd='Browser.getVersion', cmd_args={})
+    # https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-getVersion
+    # expecting { 'product': 'Chrome/120.0.6090.0' }
+    version = versions['product'].split('/')[1]
+    add_tag('launched_version', version)
     driver.set_window_size(800, 600)
     driver.get(url)
     WebDriverWait(driver, 5).until(
