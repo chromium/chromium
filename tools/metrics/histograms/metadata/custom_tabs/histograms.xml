@@ -515,24 +515,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.PredictionStatus" enum="PredictionStatus"
-    expires_after="2020-03-01">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    For Custom Tabs, records whether mayLaunchUrl() has been called, and if so,
-    whether the call was later matched by a URL launch.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.PredictionToLaunch" units="ms"
-    expires_after="2020-03-01">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    When a URL prediction succeeds, time in ms between the prediction and the
-    actual launch.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.ResizeType" enum="CustomTabsResizeType"
     expires_after="2023-05-14">
   <obsolete>

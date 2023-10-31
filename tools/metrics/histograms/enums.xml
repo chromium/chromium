@@ -70068,12 +70068,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="14" label="Server and heuristic type, autocomplete=off"/>
 </enum>
 
-<enum name="PredictionStatus">
-  <int value="0" label="No prediction"/>
-  <int value="1" label="Successful prediction"/>
-  <int value="2" label="Wrong prediction"/>
-</enum>
-
 <enum name="PredictorConfusionMatrix">
   <int value="0" label="TruePositive"/>
   <int value="1" label="FalsePositive"/>

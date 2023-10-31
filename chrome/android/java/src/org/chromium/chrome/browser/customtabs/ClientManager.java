@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.util.SparseBooleanArray;
 
 import androidx.annotation.IntDef;
@@ -78,7 +77,7 @@ class ClientManager {
         int NUM_ENTRIES = 5;
     }
 
-    // Values for the "CustomTabs.PredictionStatus" UMA histogram. Append-only.
+    // Values for the PredictionStatus. Append-only.
     @IntDef({PredictionStatus.NONE, PredictionStatus.GOOD, PredictionStatus.BAD})
     @Retention(RetentionPolicy.SOURCE)
     @interface PredictionStatus {
@@ -489,16 +488,10 @@ class ClientManager {
     public synchronized void registerLaunch(CustomTabsSessionToken session, String url) {
         @PredictionStatus
         int outcome = getPredictionOutcome(session, url);
-        RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.PredictionStatus", outcome, PredictionStatus.NUM_ENTRIES);
 
         SessionParams params = mSessionParams.get(session);
         if (outcome == PredictionStatus.GOOD) {
-            long elapsedTimeMs = SystemClock.elapsedRealtime()
-                    - params.getLastMayLaunchUrlTimestamp();
             RequestThrottler.getForUid(params.uid).registerSuccess(params.mPredictedUrl);
-            RecordHistogram.recordCustomTimesHistogram("CustomTabs.PredictionToLaunch",
-                    elapsedTimeMs, 1, DateUtils.MINUTE_IN_MILLIS * 3, 100);
         }
         RecordHistogram.recordEnumeratedHistogram("CustomTabs.WarmupStateOnLaunch",
                 getWarmupState(session), CalledWarmup.NUM_ENTRIES);
