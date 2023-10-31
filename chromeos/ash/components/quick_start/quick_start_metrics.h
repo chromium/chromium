@@ -192,14 +192,6 @@ class QuickStartMetrics {
 
   static void RecordForcedUpdateRequired(int32_t session_id);
 
-  static void RecordMessageSent(MessageType message_type);
-
-  static void RecordMessageReceived(
-      MessageType desired_message_type,
-      bool succeeded,
-      base::TimeDelta listen_duration,
-      absl::optional<MessageReceivedErrorCode> error_code);
-
   static void RecordAttestationCertificateRequested(int32_t session_id);
 
   static void RecordAttestationCertificateRequestEnded(
@@ -239,6 +231,13 @@ class QuickStartMetrics {
   void RecordHandshakeResult(bool succeeded,
                              absl::optional<HandshakeErrorCode> error_code);
 
+  void RecordMessageSent(MessageType message_type);
+
+  void RecordMessageReceived(
+      MessageType desired_message_type,
+      bool succeeded,
+      absl::optional<MessageReceivedErrorCode> error_code);
+
  private:
   // Timer to keep track of Fast Pair advertising duration. Should be
   // constructed when advertising starts and destroyed when advertising
@@ -249,6 +248,11 @@ class QuickStartMetrics {
   // Timer to keep track of handshake duration. Should be constructed when
   // the handshake starts and destroyed when the handshake finishes.
   std::unique_ptr<base::ElapsedTimer> handshake_elapsed_timer_;
+
+  // Timer to keep track of the duration of request/response pairs. Should be
+  // constructed when the request is sent and destroyed when the response is
+  // received.
+  std::unique_ptr<base::ElapsedTimer> message_elapsed_timer_;
 };
 
 }  // namespace ash::quick_start

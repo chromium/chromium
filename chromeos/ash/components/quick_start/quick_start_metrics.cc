@@ -133,31 +133,6 @@ void QuickStartMetrics::RecordGaiaTransferAttempted(bool attempted) {
 }
 
 // static
-void QuickStartMetrics::RecordMessageSent(MessageType message_type) {
-  base::UmaHistogramEnumeration(kMessageSentMessageTypeName, message_type);
-}
-
-// static
-void QuickStartMetrics::RecordMessageReceived(
-    MessageType desired_message_type,
-    bool succeeded,
-    base::TimeDelta listen_duration,
-    absl::optional<MessageReceivedErrorCode> error_code) {
-  std::string metric_name = MapMessageTypeToMetric(desired_message_type);
-  if (succeeded) {
-    CHECK(!error_code.has_value());
-  } else {
-    CHECK(error_code.has_value());
-    base::UmaHistogramEnumeration(metric_name + ".ErrorCode",
-                                  error_code.value());
-  }
-  base::UmaHistogramBoolean(metric_name + ".Succeeded", succeeded);
-  base::UmaHistogramTimes(metric_name + ".ListenDuration", listen_duration);
-  base::UmaHistogramEnumeration(kMessageReceivedDesiredMessageTypeName,
-                                desired_message_type);
-}
-
-// static
 void QuickStartMetrics::RecordAttestationCertificateRequested(
     int32_t session_id) {
   // TODO(b/279614284): Add FIDO assertion metrics.
@@ -269,6 +244,34 @@ void QuickStartMetrics::RecordHandshakeResult(
   base::UmaHistogramTimes(kHandshakeResultDurationName,
                           handshake_elapsed_timer_->Elapsed());
   handshake_elapsed_timer_.reset();
+}
+
+void QuickStartMetrics::RecordMessageSent(MessageType message_type) {
+  message_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
+  base::UmaHistogramEnumeration(kMessageSentMessageTypeName, message_type);
+}
+
+void QuickStartMetrics::RecordMessageReceived(
+    MessageType desired_message_type,
+    bool succeeded,
+    absl::optional<MessageReceivedErrorCode> error_code) {
+  std::string metric_name = MapMessageTypeToMetric(desired_message_type);
+  if (succeeded) {
+    CHECK(!error_code.has_value());
+  } else {
+    CHECK(error_code.has_value());
+    base::UmaHistogramEnumeration(metric_name + ".ErrorCode",
+                                  error_code.value());
+  }
+  base::UmaHistogramBoolean(metric_name + ".Succeeded", succeeded);
+  if (message_elapsed_timer_) {
+    base::UmaHistogramTimes(metric_name + ".ListenDuration",
+                            message_elapsed_timer_->Elapsed());
+  }
+  base::UmaHistogramEnumeration(kMessageReceivedDesiredMessageTypeName,
+                                desired_message_type);
+
+  message_elapsed_timer_.reset();
 }
 
 }  // namespace ash::quick_start

@@ -303,7 +303,6 @@ void Connection::SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,
       &Connection::OnResponseReceived, response_weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), response_type));
 
-  message_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   response_timeout_timer_.Start(
       FROM_HERE, timeout,
       base::BindOnce(&Connection::OnResponseTimeout,
@@ -466,9 +465,7 @@ void Connection::OnResponseTimeout(QuickStartResponseType response_type) {
       /*desired_message_type=*/QuickStartMetrics::MapResponseToMessageType(
           response_type),
       /*succeeded=*/false,
-      /*listen_duration=*/kDefaultRoundTripTimeout,
       QuickStartMetrics::MessageReceivedErrorCode::kTimeOut);
-  message_elapsed_timer_.reset();
 }
 
 void Connection::OnResponseReceived(
@@ -486,16 +483,13 @@ void Connection::OnResponseReceived(
         /*desired_message_type=*/QuickStartMetrics::MapResponseToMessageType(
             response_type),
         /*succeeded=*/false,
-        /*listen_duration=*/message_elapsed_timer_->Elapsed(),
         QuickStartMetrics::MessageReceivedErrorCode::kDeserializationFailure);
   } else {
     quick_start_metrics_.RecordMessageReceived(
         /*desired_message_type=*/QuickStartMetrics::MapResponseToMessageType(
             response_type),
-        /*succeeded=*/true,
-        /*listen_duration=*/message_elapsed_timer_->Elapsed(), absl::nullopt);
+        /*succeeded=*/true, absl::nullopt);
   }
-  message_elapsed_timer_.reset();
   std::move(callback).Run(std::move(response_bytes));
 }
 

@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/account_transfer_client_data.h"
@@ -196,7 +195,6 @@ class Connection
   ConnectionAuthenticatedCallback on_connection_authenticated_;
   std::string challenge_b64url_;
   mojo::SharedRemote<mojom::QuickStartDecoder> decoder_;
-  std::unique_ptr<base::ElapsedTimer> message_elapsed_timer_;
   std::unique_ptr<AccountTransferClientData> client_data_;
   QuickStartMetrics quick_start_metrics_;
 
