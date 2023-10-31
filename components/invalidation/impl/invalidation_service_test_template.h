@@ -118,7 +118,7 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
 
   FakeInvalidationHandler handler("owner");
 
-  invalidator->RegisterInvalidationHandler(&handler);
+  invalidator->AddObserver(&handler);
 
   const auto inv1 = Invalidation(this->topic1, 1, "1");
   const auto inv2 = Invalidation(this->topic2, 2, "2");
@@ -159,7 +159,7 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
   this->delegate_.TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
 
-  invalidator->UnregisterInvalidationHandler(&handler);
+  invalidator->RemoveObserver(&handler);
 
   // Should be ignored since |handler| isn't registered anymore.
   TriggerOnIncomingInvalidation(this->delegate_, inv1, inv2, inv3);
@@ -180,10 +180,10 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
   FakeInvalidationHandler handler3(/*owner=*/"owner_3");
   FakeInvalidationHandler handler4(/*owner=*/"owner_4");
 
-  invalidator->RegisterInvalidationHandler(&handler1);
-  invalidator->RegisterInvalidationHandler(&handler2);
-  invalidator->RegisterInvalidationHandler(&handler3);
-  invalidator->RegisterInvalidationHandler(&handler4);
+  invalidator->AddObserver(&handler1);
+  invalidator->AddObserver(&handler2);
+  invalidator->AddObserver(&handler3);
+  invalidator->AddObserver(&handler4);
 
   {
     TopicSet topics;
@@ -206,7 +206,7 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
     EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler4, topics));
   }
 
-  invalidator->UnregisterInvalidationHandler(&handler4);
+  invalidator->RemoveObserver(&handler4);
 
   this->delegate_.TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler1.GetInvalidatorState());
@@ -238,9 +238,9 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler3.GetInvalidatorState());
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler4.GetInvalidatorState());
 
-  invalidator->UnregisterInvalidationHandler(&handler3);
-  invalidator->UnregisterInvalidationHandler(&handler2);
-  invalidator->UnregisterInvalidationHandler(&handler1);
+  invalidator->RemoveObserver(&handler3);
+  invalidator->RemoveObserver(&handler2);
+  invalidator->RemoveObserver(&handler1);
 }
 
 // Multiple registrations by different handlers on the same Topic should return
@@ -252,8 +252,8 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleRegistrations) {
   FakeInvalidationHandler handler1(/*owner=*/"owner_1");
   FakeInvalidationHandler handler2(/*owner=*/"owner_2");
 
-  invalidator->RegisterInvalidationHandler(&handler1);
-  invalidator->RegisterInvalidationHandler(&handler2);
+  invalidator->AddObserver(&handler1);
+  invalidator->AddObserver(&handler2);
 
   // Registering both handlers for the same topic. First call should succeed,
   // second should fail.
@@ -262,8 +262,8 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleRegistrations) {
   EXPECT_TRUE(invalidator->UpdateInterestedTopics(&handler1, topics));
   EXPECT_FALSE(invalidator->UpdateInterestedTopics(&handler2, topics));
 
-  invalidator->UnregisterInvalidationHandler(&handler2);
-  invalidator->UnregisterInvalidationHandler(&handler1);
+  invalidator->RemoveObserver(&handler2);
+  invalidator->RemoveObserver(&handler1);
 }
 
 // Make sure that passing an empty set to UpdateInterestedTopics clears
@@ -277,8 +277,8 @@ TYPED_TEST_P(InvalidationServiceTest, EmptySetUnregisters) {
   // Control observer.
   FakeInvalidationHandler handler2(/*owner=*/"owner_2");
 
-  invalidator->RegisterInvalidationHandler(&handler1);
-  invalidator->RegisterInvalidationHandler(&handler2);
+  invalidator->AddObserver(&handler1);
+  invalidator->AddObserver(&handler2);
 
   {
     TopicSet topics;
@@ -314,8 +314,8 @@ TYPED_TEST_P(InvalidationServiceTest, EmptySetUnregisters) {
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler1.GetInvalidatorState());
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler2.GetInvalidatorState());
 
-  invalidator->UnregisterInvalidationHandler(&handler2);
-  invalidator->UnregisterInvalidationHandler(&handler1);
+  invalidator->RemoveObserver(&handler2);
+  invalidator->RemoveObserver(&handler1);
 }
 
 // A FakeInvalidationHandler that is "bound" to a specific
@@ -350,7 +350,7 @@ TYPED_TEST_P(InvalidationServiceTest, GetInvalidatorStateAlwaysCurrent) {
       this->CreateAndInitializeInvalidationService();
 
   BoundFakeInvalidationHandler handler(*invalidator, "owner");
-  invalidator->RegisterInvalidationHandler(&handler);
+  invalidator->AddObserver(&handler);
 
   this->delegate_.TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);
   EXPECT_EQ(INVALIDATIONS_ENABLED, handler.GetInvalidatorState());
@@ -360,7 +360,7 @@ TYPED_TEST_P(InvalidationServiceTest, GetInvalidatorStateAlwaysCurrent) {
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler.GetInvalidatorState());
   EXPECT_EQ(TRANSIENT_INVALIDATION_ERROR, handler.GetLastRetrievedState());
 
-  invalidator->UnregisterInvalidationHandler(&handler);
+  invalidator->RemoveObserver(&handler);
 }
 
 REGISTER_TYPED_TEST_SUITE_P(InvalidationServiceTest,

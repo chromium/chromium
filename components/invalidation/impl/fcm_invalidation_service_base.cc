@@ -61,11 +61,16 @@ void FCMInvalidationServiceBase::ClearDeprecatedPrefs(PrefService* prefs) {
   }
 }
 
-void FCMInvalidationServiceBase::RegisterInvalidationHandler(
-    InvalidationHandler* handler) {
+void FCMInvalidationServiceBase::AddObserver(InvalidationHandler* handler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "Registering an invalidation handler";
-  invalidator_registrar_.RegisterHandler(handler);
+  invalidator_registrar_.AddObserver(handler);
+}
+
+bool FCMInvalidationServiceBase::HasObserver(
+    const InvalidationHandler* handler) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return invalidator_registrar_.HasObserver(handler);
 }
 
 bool FCMInvalidationServiceBase::UpdateInterestedTopics(
@@ -88,11 +93,11 @@ bool FCMInvalidationServiceBase::UpdateInterestedTopics(
   return true;
 }
 
-void FCMInvalidationServiceBase::UnregisterInvalidationHandler(
-    InvalidationHandler* handler) {
+void FCMInvalidationServiceBase::RemoveObserver(
+    const InvalidationHandler* handler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "Unregistering";
-  invalidator_registrar_.UnregisterHandler(handler);
+  invalidator_registrar_.RemoveObserver(handler);
 }
 
 InvalidatorState FCMInvalidationServiceBase::GetInvalidatorState() const {

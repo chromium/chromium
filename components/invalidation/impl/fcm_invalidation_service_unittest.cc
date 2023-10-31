@@ -248,4 +248,20 @@ TEST(FCMInvalidationServiceTest, ClearsInstanceIDOnSignout) {
   EXPECT_TRUE(invalidation_service->GetInvalidatorClientId().empty());
 }
 
+TEST(FCMInvalidationServiceTest, ObserverBasics) {
+  // Set up an invalidation service and make sure it generated a client ID (aka
+  // InstanceID).
+  auto delegate = std::make_unique<FCMInvalidationServiceTestDelegate>();
+  delegate->CreateInvalidationService();
+  FCMInvalidationService* invalidation_service =
+      delegate->GetInvalidationService();
+
+  FakeInvalidationHandler handler("some_name");
+  EXPECT_FALSE(invalidation_service->HasObserver(&handler));
+  invalidation_service->AddObserver(&handler);
+  EXPECT_TRUE(invalidation_service->HasObserver(&handler));
+  invalidation_service->RemoveObserver(&handler);
+  EXPECT_FALSE(invalidation_service->HasObserver(&handler));
+}
+
 }  // namespace invalidation

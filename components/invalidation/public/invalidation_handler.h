@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/observer_list_types.h"
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
@@ -15,12 +16,12 @@ namespace invalidation {
 
 class Invalidation;
 
-class INVALIDATION_EXPORT InvalidationHandler {
+class INVALIDATION_EXPORT InvalidationHandler : public base::CheckedObserver {
  public:
   InvalidationHandler() = default;
   InvalidationHandler(const InvalidationHandler& other) = delete;
   InvalidationHandler& operator=(const InvalidationHandler& other) = delete;
-  virtual ~InvalidationHandler() = default;
+  ~InvalidationHandler() override;
 
   // Called when the invalidator state changes.
   virtual void OnInvalidatorStateChange(InvalidatorState state) = 0;

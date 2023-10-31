@@ -54,12 +54,14 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
 
   // Starts sending notifications to |handler|.  |handler| must not be nullptr,
   // and it must not already be registered.
-  void RegisterHandler(InvalidationHandler* handler);
+  void AddObserver(InvalidationHandler* handler);
+
+  bool HasObserver(const InvalidationHandler* handler) const;
 
   // Stops sending notifications to |handler|.  |handler| must not be nullptr,
   // and it must already be registered.  Note that this doesn't unregister the
   // topics associated with |handler| from the server.
-  void UnregisterHandler(InvalidationHandler* handler);
+  void RemoveObserver(const InvalidationHandler* handler);
 
   // Updates the set of topics associated with |handler|. |handler| must not be
   // nullptr, and must already be registered. A topic must be registered for at
@@ -109,11 +111,11 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::ObserverList<InvalidationHandler, true>::Unchecked handlers_;
+  base::ObserverList<InvalidationHandler, true> handlers_;
   // Note: When a handler is unregistered, its entry is removed from
   // |registered_handler_to_topics_map_| but NOT from
   // |handler_name_to_subscribed_topics_map_|.
-  std::map<InvalidationHandler*, std::set<TopicData>>
+  std::map<InvalidationHandler*, std::set<TopicData>, std::less<>>
       registered_handler_to_topics_map_;
   std::map<std::string, std::set<TopicData>>
       handler_name_to_subscribed_topics_map_;

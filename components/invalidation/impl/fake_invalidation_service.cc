@@ -21,9 +21,13 @@ FakeInvalidationService::FakeInvalidationService()
 
 FakeInvalidationService::~FakeInvalidationService() = default;
 
-void FakeInvalidationService::RegisterInvalidationHandler(
-    InvalidationHandler* handler) {
-  invalidator_registrar_->RegisterHandler(handler);
+void FakeInvalidationService::AddObserver(InvalidationHandler* handler) {
+  invalidator_registrar_->AddObserver(handler);
+}
+
+bool FakeInvalidationService::HasObserver(
+    const InvalidationHandler* handler) const {
+  return invalidator_registrar_->HasObserver(handler);
 }
 
 bool FakeInvalidationService::UpdateInterestedTopics(
@@ -36,9 +40,9 @@ bool FakeInvalidationService::UpdateInterestedTopics(
   return invalidator_registrar_->UpdateRegisteredTopics(handler, topic_set);
 }
 
-void FakeInvalidationService::UnregisterInvalidationHandler(
-    InvalidationHandler* handler) {
-  invalidator_registrar_->UnregisterHandler(handler);
+void FakeInvalidationService::RemoveObserver(
+    const InvalidationHandler* handler) {
+  invalidator_registrar_->RemoveObserver(handler);
 }
 
 InvalidatorState FakeInvalidationService::GetInvalidatorState() const {

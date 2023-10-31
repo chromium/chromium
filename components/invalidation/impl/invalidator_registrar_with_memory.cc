@@ -103,24 +103,38 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
 
 InvalidatorRegistrarWithMemory::~InvalidatorRegistrarWithMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This should never print anything. Exceptions:
+  //  - except https://crbug.com/1186159 and
+  //  - https://crbug.com/1475104.
+  for (const auto& [handler, topics] : registered_handler_to_topics_map_) {
+    LOG(ERROR) << handler->GetOwnerName();
+  }
   CHECK(registered_handler_to_topics_map_.empty());
 }
 
-void InvalidatorRegistrarWithMemory::RegisterHandler(
-    InvalidationHandler* handler) {
+void InvalidatorRegistrarWithMemory::AddObserver(InvalidationHandler* handler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(handler);
   CHECK(!handlers_.HasObserver(handler));
   handlers_.AddObserver(handler);
 }
 
-void InvalidatorRegistrarWithMemory::UnregisterHandler(
-    InvalidationHandler* handler) {
+bool InvalidatorRegistrarWithMemory::HasObserver(
+    const InvalidationHandler* handler) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return handlers_.HasObserver(handler);
+}
+
+void InvalidatorRegistrarWithMemory::RemoveObserver(
+    const InvalidationHandler* handler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(handler);
   CHECK(handlers_.HasObserver(handler));
   handlers_.RemoveObserver(handler);
-  registered_handler_to_topics_map_.erase(handler);
+  if (const auto it = registered_handler_to_topics_map_.find(handler);
+      it != registered_handler_to_topics_map_.end()) {
+    registered_handler_to_topics_map_.erase(it);
+  }
   // Note: Do *not* remove the entry from
   // |handler_name_to_subscribed_topics_map_| - we haven't actually unsubscribed
   // from any of the topics on the server, so GetAllSubscribedTopics() should

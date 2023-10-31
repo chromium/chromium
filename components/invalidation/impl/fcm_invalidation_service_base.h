@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
 #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
@@ -63,10 +62,11 @@ class FCMInvalidationServiceBase : public InvalidationService,
 
   // InvalidationService implementation.
   // It is an error to have registered handlers when the service is destroyed.
-  void RegisterInvalidationHandler(InvalidationHandler* handler) override;
+  void AddObserver(InvalidationHandler* handler) override;
+  bool HasObserver(const InvalidationHandler* handler) const override;
   bool UpdateInterestedTopics(InvalidationHandler* handler,
                               const TopicSet& topics) override;
-  void UnregisterInvalidationHandler(InvalidationHandler* handler) override;
+  void RemoveObserver(const InvalidationHandler* handler) override;
   InvalidatorState GetInvalidatorState() const override;
   std::string GetInvalidatorClientId() const override;
 

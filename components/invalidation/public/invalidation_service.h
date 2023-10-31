@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_SERVICE_H_
 #define COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_SERVICE_H_
 
-#include "base/scoped_observation_traits.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 
@@ -20,17 +19,17 @@ class InvalidationHandler;
 //
 // When starting the handler:
 //
-//   service->RegisterInvalidationHandler(client_handler);
+//   service->AddObserver(client_handler);
 //
 // When the set of topics to register changes for the handler during its
-// lifetime (i.e., between calls to RegisterInvalidationHandler(client_handler)
-// and UnregisterInvalidationHandler(client_handler):
+// lifetime (i.e., between calls to AddObserver(client_handler)
+// and RemoveObserver(client_handler):
 //
 //   service->UpdateInterestedTopics(client_handler, client_topics);
 //
 // When shutting down the handler for browser shutdown:
 //
-//   service->UnregisterInvalidationHandler(client_handler);
+//   service->RemoveObserver(client_handler);
 //
 // Note that there's no need to call to unregister topics. The
 // invalidation API persists subscribed topics across browser restarts.
@@ -62,8 +61,25 @@ class InvalidationService {
   // Starts sending notifications to |handler|.  |handler| must not be NULL,
   // and it must not already be registered.
   //
-  // Handler must unregister before browser shutdown.
-  virtual void RegisterInvalidationHandler(InvalidationHandler* handler) = 0;
+  // Handler must unregister via `RemoveObserver` before InvalidationService
+  // shutdown.
+  // TODO(b/308435631) Drop RegisterInvalidationHandler in favor of AddObserver.
+  virtual void AddObserver(InvalidationHandler* handler) = 0;
+  void RegisterInvalidationHandler(InvalidationHandler* handler) {
+    AddObserver(handler);
+  }
+
+  // Stops sending invalidations to |handler|. |handler| must not be NULL, and
+  // it must already be registered. Note that this doesn't unregister the topics
+  // associated with |handler|.
+  // TODO(b/308435631) Drop UnregisterInvalidationHandler in favor of
+  // RemoveObserver.
+  virtual void RemoveObserver(const InvalidationHandler* handler) = 0;
+  void UnregisterInvalidationHandler(InvalidationHandler* handler) {
+    RemoveObserver(handler);
+  }
+
+  virtual bool HasObserver(const InvalidationHandler* handler) const = 0;
 
   // Updates the set of topics associated with |handler|. |handler| must not be
   // nullptr, and must already be registered. A topic must be subscribed for at
@@ -80,11 +96,6 @@ class InvalidationService {
       InvalidationHandler* handler,
       const TopicSet& topics) = 0;
 
-  // Stops sending invaldations to |handler|. |handler| must not be NULL, and
-  // it must already be registered. Note that this doesn't unregister the topics
-  // associated with |handler|.
-  virtual void UnregisterInvalidationHandler(InvalidationHandler* handler) = 0;
-
   // Returns the current invalidator state.  When called from within
   // InvalidationHandler::OnInvalidatorStateChange(), this must return
   // the updated state.
@@ -98,19 +109,6 @@ class InvalidationService {
 }  // namespace invalidation
 
 namespace base {
-
-template <>
-struct ScopedObservationTraits<invalidation::InvalidationService,
-                               invalidation::InvalidationHandler> {
-  static void AddObserver(invalidation::InvalidationService* source,
-                          invalidation::InvalidationHandler* observer) {
-    source->RegisterInvalidationHandler(observer);
-  }
-  static void RemoveObserver(invalidation::InvalidationService* source,
-                             invalidation::InvalidationHandler* observer) {
-    source->UnregisterInvalidationHandler(observer);
-  }
-};
 
 }  // namespace base
 

@@ -28,10 +28,11 @@ class FakeInvalidationService : public InvalidationService {
       delete;
   ~FakeInvalidationService() override;
 
-  void RegisterInvalidationHandler(InvalidationHandler* handler) override;
+  void AddObserver(InvalidationHandler* handler) override;
+  bool HasObserver(const InvalidationHandler* handler) const override;
   bool UpdateInterestedTopics(InvalidationHandler* handler,
                               const TopicSet& topics) override;
-  void UnregisterInvalidationHandler(InvalidationHandler* handler) override;
+  void RemoveObserver(const InvalidationHandler* handler) override;
 
   InvalidatorState GetInvalidatorState() const override;
   std::string GetInvalidatorClientId() const override;

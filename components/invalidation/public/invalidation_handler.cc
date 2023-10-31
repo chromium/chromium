@@ -6,6 +6,8 @@
 
 namespace invalidation {
 
+InvalidationHandler::~InvalidationHandler() = default;
+
 bool InvalidationHandler::IsPublicTopic(const Topic& topic) const {
   return false;
 }
