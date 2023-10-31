@@ -282,29 +282,41 @@ public class PartialCustomTabDisplayManager
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.PartialCustomTabType", type, PartialCustomTabType.COUNT);
 
-        switch (type) {
-            case PartialCustomTabType.BOTTOM_SHEET: {
-                return new PartialCustomTabBottomSheetStrategy(mActivity, mIntentData,
-                        mTouchEventProvider, mTab, mOnResizedCallback, mOnActivityLayoutCallback,
-                        mActivityLifecycleDispatcher, mFullscreenManager, mIsTablet,
-                        maximized, mHandleStrategyFactory);
-            }
-            case PartialCustomTabType.SIDE_SHEET: {
-                return new PartialCustomTabSideSheetStrategy(mActivity, mIntentData,
-                        mOnResizedCallback, mOnActivityLayoutCallback, mFullscreenManager,
-                        mIsTablet, maximized, mHandleStrategyFactory);
-            }
-            case PartialCustomTabType.FULL_SIZE: {
-                return new PartialCustomTabFullSizeStrategy(mActivity, mIntentData,
-                        mOnResizedCallback, mOnActivityLayoutCallback, mFullscreenManager,
-                        mIsTablet, mHandleStrategyFactory);
-            }
-            default: {
+        return switch (type) {
+            case PartialCustomTabType.BOTTOM_SHEET -> new PartialCustomTabBottomSheetStrategy(
+                    mActivity,
+                    mIntentData,
+                    mTouchEventProvider,
+                    mTab,
+                    mOnResizedCallback,
+                    mOnActivityLayoutCallback,
+                    mActivityLifecycleDispatcher,
+                    mFullscreenManager,
+                    mIsTablet,
+                    maximized,
+                    mHandleStrategyFactory);
+            case PartialCustomTabType.SIDE_SHEET -> new PartialCustomTabSideSheetStrategy(
+                    mActivity,
+                    mIntentData,
+                    mOnResizedCallback,
+                    mOnActivityLayoutCallback,
+                    mFullscreenManager,
+                    mIsTablet,
+                    maximized,
+                    mHandleStrategyFactory);
+            case PartialCustomTabType.FULL_SIZE -> new PartialCustomTabFullSizeStrategy(
+                    mActivity,
+                    mIntentData,
+                    mOnResizedCallback,
+                    mOnActivityLayoutCallback,
+                    mFullscreenManager,
+                    mIsTablet,
+                    mHandleStrategyFactory);
+            default -> {
                 assert false : "Partial Custom Tab type not supported: " + type;
+                yield null;
             }
-        }
-
-        return null;
+        };
     }
 
     private void updatePosition() {}

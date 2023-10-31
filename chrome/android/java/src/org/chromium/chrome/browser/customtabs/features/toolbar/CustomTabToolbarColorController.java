@@ -190,32 +190,31 @@ public class CustomTabToolbarColorController {
                         mIntentDataProvider)) {
             return mActivity.getColor(R.color.gm3_baseline_surface_container);
         }
-        switch (toolbarColorType) {
-            case ToolbarColorType.THEME_COLOR:
-                return mTopUiThemeColorProvider.calculateColor(tab, tab.getThemeColor());
-            case ToolbarColorType.DEFAULT_COLOR:
-                return getDefaultColor();
-            case ToolbarColorType.INTENT_TOOLBAR_COLOR:
-                return mIntentDataProvider.getColorProvider().getToolbarColor();
-        }
-        return getDefaultColor();
+        return switch (toolbarColorType) {
+            case ToolbarColorType.THEME_COLOR -> mTopUiThemeColorProvider.calculateColor(
+                    tab, tab.getThemeColor());
+            case ToolbarColorType.DEFAULT_COLOR -> getDefaultColor();
+            case ToolbarColorType.INTENT_TOOLBAR_COLOR -> mIntentDataProvider
+                    .getColorProvider()
+                    .getToolbarColor();
+            default -> getDefaultColor();
+        };
     }
 
     private @BrandedColorScheme int computeBrandedColorScheme(
             @ToolbarColorType int toolbarColorType, @ColorInt int toolbarColor) {
-        switch (toolbarColorType) {
-            case ToolbarColorType.THEME_COLOR:
-                return OmniboxResourceProvider.getBrandedColorScheme(
-                        mActivity, mIntentDataProvider.isIncognito(), toolbarColor);
-            case ToolbarColorType.DEFAULT_COLOR:
-                return mIntentDataProvider.isIncognito() ? BrandedColorScheme.INCOGNITO
-                                                         : BrandedColorScheme.APP_DEFAULT;
-            case ToolbarColorType.INTENT_TOOLBAR_COLOR:
-                return ColorUtils.shouldUseLightForegroundOnBackground(toolbarColor)
-                        ? BrandedColorScheme.DARK_BRANDED_THEME
-                        : BrandedColorScheme.LIGHT_BRANDED_THEME;
-        }
-        return BrandedColorScheme.APP_DEFAULT;
+        return switch (toolbarColorType) {
+            case ToolbarColorType.THEME_COLOR -> OmniboxResourceProvider.getBrandedColorScheme(
+                    mActivity, mIntentDataProvider.isIncognito(), toolbarColor);
+            case ToolbarColorType.DEFAULT_COLOR -> mIntentDataProvider.isIncognito()
+                    ? BrandedColorScheme.INCOGNITO
+                    : BrandedColorScheme.APP_DEFAULT;
+            case ToolbarColorType.INTENT_TOOLBAR_COLOR -> ColorUtils
+                            .shouldUseLightForegroundOnBackground(toolbarColor)
+                    ? BrandedColorScheme.DARK_BRANDED_THEME
+                    : BrandedColorScheme.LIGHT_BRANDED_THEME;
+            default -> BrandedColorScheme.APP_DEFAULT;
+        };
     }
 
     private int getDefaultColor() {

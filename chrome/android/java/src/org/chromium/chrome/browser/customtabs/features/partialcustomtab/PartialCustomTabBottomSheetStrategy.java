@@ -47,8 +47,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.ContentGestureListener.GestureState;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -342,18 +342,15 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             mStatus = mTabAnimator.getTargetStatus();
             mTabAnimator.cancel();
         }
-        int newStatus;
-        switch (mStatus) {
-            case HeightStatus.INITIAL_HEIGHT:
-                newStatus = HeightStatus.TOP;
-                break;
-            case HeightStatus.TOP:
-                newStatus = HeightStatus.INITIAL_HEIGHT;
-                break;
-            default:
-                assert false : "Invalid height status: " + mStatus;
-                newStatus = HeightStatus.INITIAL_HEIGHT;
-        }
+        int newStatus =
+                switch (mStatus) {
+                    case HeightStatus.INITIAL_HEIGHT -> HeightStatus.TOP;
+                    case HeightStatus.TOP -> HeightStatus.INITIAL_HEIGHT;
+                    default -> {
+                        assert false : "Invalid height status: " + mStatus;
+                        yield HeightStatus.INITIAL_HEIGHT;
+                    }
+                };
         animateTabTo(newStatus, false);
     }
 

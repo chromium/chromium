@@ -26,14 +26,11 @@ import java.util.concurrent.TimeoutException;
 public class CustomTabActivityTypeTestUtils {
     public static ChromeActivityTestRule<? extends BaseCustomTabActivity> createActivityTestRule(
             @ActivityType int activityType) {
-        switch (activityType) {
-            case ActivityType.WEBAPP:
-                return new WebappActivityTestRule();
-            case ActivityType.WEB_APK:
-                return new WebApkActivityTestRule();
-            default:
-                return new CustomTabActivityTestRule();
-        }
+        return switch (activityType) {
+            case ActivityType.WEBAPP -> new WebappActivityTestRule();
+            case ActivityType.WEB_APK -> new WebApkActivityTestRule();
+            default -> new CustomTabActivityTestRule();
+        };
     }
 
     public static void launchActivity(
