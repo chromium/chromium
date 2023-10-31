@@ -147,6 +147,23 @@ enum class FedCmSetLoginStatusIgnoredReason {
   kMaxValue = kCrossOrigin
 };
 
+// This enum describes the result of the error dialog.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FedCmErrorDialogResult {
+  kMoreDetails = 0,
+  kGotItWithoutMoreDetails = 1,
+  kGotItWithMoreDetails = 2,
+  kCloseWithoutMoreDetails = 3,
+  kCloseWithMoreDetails = 4,
+  kSwipeWithoutMoreDetails = 5,
+  kSwipeWithMoreDetails = 6,
+  kOtherWithoutMoreDetails = 7,
+  kOtherWithMoreDetails = 8,
+
+  kMaxValue = kOtherWithMoreDetails
+};
+
 class CONTENT_EXPORT FedCmMetrics {
  public:
   FedCmMetrics(const GURL& provider,
@@ -251,6 +268,9 @@ class CONTENT_EXPORT FedCmMetrics {
   // Records the type of error dialog shown.
   void RecordErrorDialogType(
       IdpNetworkRequestManager::FedCmErrorDialogType type);
+
+  // Records the outcome of the error dialog.
+  void RecordErrorDialogResult(FedCmErrorDialogResult result);
 
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.

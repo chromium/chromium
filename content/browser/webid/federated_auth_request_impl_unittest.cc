@@ -285,6 +285,16 @@ enum class IdpSigninStatusMismatchDialogAction {
   kClosePopup,
 };
 
+// Action on error dialog taken by TestDialogController.
+// Does not indicate a test expectation.
+enum class ErrorDialogAction {
+  kNone,
+  kClose,
+  kSwipe,
+  kGotIt,
+  kMoreDetails,
+};
+
 struct MockConfiguration {
   const char* token;
   base::flat_map<std::string, MockIdpInfo> idp_info;
@@ -292,6 +302,7 @@ struct MockConfiguration {
   bool delay_token_response;
   AccountsDialogAction accounts_dialog_action;
   IdpSigninStatusMismatchDialogAction idp_signin_status_mismatch_dialog_action;
+  ErrorDialogAction error_dialog_action;
   absl::optional<GURL> continue_on;
   MediationRequirement mediation_requirement = MediationRequirement::kOptional;
   absl::optional<TokenError> token_error;
@@ -353,7 +364,8 @@ static const MockConfiguration kConfigurationValid{
     {ParseStatus::kSuccess, net::HTTP_OK},
     /*delay_token_response=*/false,
     AccountsDialogAction::kSelectFirstAccount,
-    IdpSigninStatusMismatchDialogAction::kNone};
+    IdpSigninStatusMismatchDialogAction::kNone,
+    ErrorDialogAction::kClose};
 
 static const RequestExpectations kExpectationSuccess{
     RequestTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
@@ -375,7 +387,8 @@ MockConfiguration kConfigurationMultiIdpValid{
     {ParseStatus::kSuccess, net::HTTP_OK},
     false /* delay_token_response */,
     AccountsDialogAction::kSelectFirstAccount,
-    IdpSigninStatusMismatchDialogAction::kNone};
+    IdpSigninStatusMismatchDialogAction::kNone,
+    ErrorDialogAction::kClose};
 
 url::Origin OriginFromString(const std::string& url_string) {
   return url::Origin::Create(GURL(url_string));
@@ -628,7 +641,8 @@ class TestDialogController
   explicit TestDialogController(MockConfiguration config)
       : accounts_dialog_action_(config.accounts_dialog_action),
         idp_signin_status_mismatch_dialog_action_(
-            config.idp_signin_status_mismatch_dialog_action) {}
+            config.idp_signin_status_mismatch_dialog_action),
+        error_dialog_action_(config.error_dialog_action) {}
 
   ~TestDialogController() override = default;
   TestDialogController(TestDialogController&) = delete;
@@ -727,9 +741,29 @@ class TestDialogController
 
     state_->did_show_error_dialog = true;
     state_->token_error = error;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(dismiss_callback),
-                                  DismissReason::kCloseButton));
+    switch (error_dialog_action_) {
+      case ErrorDialogAction::kClose:
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(dismiss_callback),
+                                      DismissReason::kCloseButton));
+        break;
+      case ErrorDialogAction::kSwipe:
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(dismiss_callback), DismissReason::kSwipe));
+        break;
+      case ErrorDialogAction::kGotIt:
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(dismiss_callback),
+                                      DismissReason::kGotItButton));
+        break;
+      case ErrorDialogAction::kMoreDetails:
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(more_details_callback)));
+        break;
+      case ErrorDialogAction::kNone:
+        break;
+    }
   }
 
   void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override {
@@ -746,6 +780,7 @@ class TestDialogController
   AccountsDialogAction accounts_dialog_action_{AccountsDialogAction::kNone};
   IdpSigninStatusMismatchDialogAction idp_signin_status_mismatch_dialog_action_{
       IdpSigninStatusMismatchDialogAction::kNone};
+  ErrorDialogAction error_dialog_action_{ErrorDialogAction::kNone};
 
   // Pointer so that the state can be queried after FederatedAuthRequestImpl
   // destroys TestDialogController.
@@ -5099,8 +5134,12 @@ TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogShown) {
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.ErrorDialogType",
                                        error_dialog_type, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.Error.ErrorDialogResult",
+      FedCmErrorDialogResult::kCloseWithoutMoreDetails, 1);
 
   ExpectUKMPresence("Error.ErrorDialogType");
+  ExpectUKMPresence("Error.ErrorDialogResult");
   CheckAllFedCmSessionIDs();
 }
 
@@ -5125,8 +5164,10 @@ TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogDisabled) {
   EXPECT_FALSE(dialog_controller_state_.did_show_error_dialog);
 
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorDialogType", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorDialogResult", 0);
 
   ExpectNoUKMPresence("Error.ErrorDialogType");
+  ExpectNoUKMPresence("Error.ErrorDialogResult");
   CheckAllFedCmSessionIDs();
 }
 
@@ -5152,8 +5193,12 @@ TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.ErrorDialogType",
                                        error_dialog_type, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.Error.ErrorDialogResult",
+      FedCmErrorDialogResult::kCloseWithoutMoreDetails, 1);
 
   ExpectUKMPresence("Error.ErrorDialogType");
+  ExpectUKMPresence("Error.ErrorDialogResult");
   CheckAllFedCmSessionIDs();
 }
 
@@ -5182,8 +5227,12 @@ TEST_F(FederatedAuthRequestImplTest, ErrorUrlDisplayedWithProperUrl) {
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.ErrorDialogType",
                                        error_dialog_type, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.Error.ErrorDialogResult",
+      FedCmErrorDialogResult::kCloseWithMoreDetails, 1);
 
   ExpectUKMPresence("Error.ErrorDialogType");
+  ExpectUKMPresence("Error.ErrorDialogResult");
   CheckAllFedCmSessionIDs();
 }
 
@@ -5256,10 +5305,42 @@ TEST_F(FederatedAuthRequestImplTest, ErrorDialogTypeMetrics) {
   EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
   EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
 
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.ErrorDialogType",
                                        error_dialog_type, 1);
 
   ExpectUKMPresence("Error.ErrorDialogType");
+  CheckAllFedCmSessionIDs();
+}
+
+// Test that error dialog result metrics are recorded.
+TEST_F(FederatedAuthRequestImplTest, ErrorDialogResultMetrics) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.token_error =
+      TokenError(/*code=*/"", GURL("https://foo.idp.example/error"));
+  configuration.error_dialog_action = ErrorDialogAction::kGotIt;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
+
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.Error.ErrorDialogResult",
+      FedCmErrorDialogResult::kGotItWithMoreDetails, 1);
+
+  ExpectUKMPresence("Error.ErrorDialogResult");
   CheckAllFedCmSessionIDs();
 }
 

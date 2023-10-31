@@ -409,6 +409,24 @@ void FedCmMetrics::RecordRevokeStatus(FedCmRevokeStatus status) {
   base::UmaHistogramEnumeration("Blink.FedCm.Status.Revoke2", status);
 }
 
+void FedCmMetrics::RecordErrorDialogResult(FedCmErrorDialogResult result) {
+  if (is_disabled_) {
+    return;
+  }
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetError_ErrorDialogResult(static_cast<int>(result));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  RecordUkm(fedcm_idp_builder);
+
+  base::UmaHistogramEnumeration("Blink.FedCm.Error.ErrorDialogResult", result);
+}
+
 void RecordPreventSilentAccess(RenderFrameHost& rfh,
                                PreventSilentAccessFrameType frame_type) {
   base::UmaHistogramEnumeration("Blink.FedCm.PreventSilentAccessFrameType",

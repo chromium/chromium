@@ -64,6 +64,7 @@ using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
 using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
+using ErrorDialogResult = content::FedCmErrorDialogResult;
 using CompleteRequestWithErrorCallback =
     base::OnceCallback<void(blink::mojom::FederatedAuthRequestResult,
                             absl::optional<content::FedCmRequestIdTokenStatus>,
@@ -1845,7 +1846,31 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
     IdpNetworkRequestManager::FetchStatus status,
     absl::optional<TokenError> token_error,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
-  // TODO(crbug.com/1478837): Record metrics for error UI
+  bool has_url = token_error && !token_error->url.is_empty();
+  ErrorDialogResult result;
+  switch (dismiss_reason) {
+    case IdentityRequestDialogController::DismissReason::kCloseButton:
+      result = has_url ? ErrorDialogResult::kCloseWithMoreDetails
+                       : ErrorDialogResult::kCloseWithoutMoreDetails;
+      break;
+    case IdentityRequestDialogController::DismissReason::kSwipe:
+      result = has_url ? ErrorDialogResult::kSwipeWithMoreDetails
+                       : ErrorDialogResult::kSwipeWithoutMoreDetails;
+      break;
+    case IdentityRequestDialogController::DismissReason::kGotItButton:
+      result = has_url ? ErrorDialogResult::kGotItWithMoreDetails
+                       : ErrorDialogResult::kGotItWithoutMoreDetails;
+      break;
+    case IdentityRequestDialogController::DismissReason::kMoreDetailsButton:
+      result = ErrorDialogResult::kMoreDetails;
+      break;
+    default:
+      result = has_url ? ErrorDialogResult::kOtherWithMoreDetails
+                       : ErrorDialogResult::kOtherWithoutMoreDetails;
+      break;
+  }
+  fedcm_metrics_->RecordErrorDialogResult(result);
+
   CompleteTokenRequest(idp_config_url, status, /*token=*/absl::nullopt,
                        token_error, /*should_delay_callback=*/false);
 }
