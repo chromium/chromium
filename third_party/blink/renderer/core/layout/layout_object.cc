@@ -1848,7 +1848,7 @@ bool LayoutObject::ComputeIsAbsoluteContainer(
 }
 
 const LayoutBoxModelObject* LayoutObject::FindFirstStickyContainer(
-    LayoutBox* below) const {
+    const LayoutBox* below) const {
   const LayoutObject* maybe_sticky_ancestor = this;
   while (maybe_sticky_ancestor && maybe_sticky_ancestor != below) {
     if (maybe_sticky_ancestor->StyleRef().HasStickyConstrainedPosition()) {

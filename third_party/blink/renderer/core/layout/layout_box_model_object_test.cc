@@ -128,7 +128,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionConstraints) {
       gfx::PointF(scrollable_area->ScrollOffsetInt().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
-  sticky->UpdateStickyPositionConstraints();
   ASSERT_EQ(scroller->Layer(),
             sticky->Layer()->ContainingScrollContainerLayer());
 
@@ -171,7 +170,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLConstraints) {
       gfx::PointF(scrollable_area->ScrollOffsetInt().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
-  sticky->UpdateStickyPositionConstraints();
   ASSERT_EQ(scroller->Layer(),
             sticky->Layer()->ContainingScrollContainerLayer());
 
@@ -221,7 +219,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionInlineConstraints) {
   EXPECT_EQ(50.f, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
 
-  sticky->UpdateStickyPositionConstraints();
 
   EXPECT_EQ(scroller->Layer(),
             sticky->Layer()->ContainingScrollContainerLayer());
@@ -279,8 +276,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLInlineConstraints) {
   EXPECT_EQ(50.f, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
 
-  sticky->UpdateStickyPositionConstraints();
-
   EXPECT_EQ(scroller->Layer(),
             sticky->Layer()->ContainingScrollContainerLayer());
 
@@ -321,7 +316,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionTransforms) {
       gfx::PointF(scrollable_area->ScrollOffsetInt().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
-  sticky->UpdateStickyPositionConstraints();
   ASSERT_EQ(scroller->Layer(),
             sticky->Layer()->ContainingScrollContainerLayer());
 
@@ -359,7 +353,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionPercentageStyles) {
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
-  sticky->UpdateStickyPositionConstraints();
   ASSERT_EQ(scroller->Layer(),
             sticky->Layer()->ContainingScrollContainerLayer());
 
@@ -402,7 +395,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionContainerIsScroller) {
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
-  sticky->UpdateStickyPositionConstraints();
   ASSERT_EQ(scroller->Layer(),
             sticky->Layer()->ContainingScrollContainerLayer());
 
@@ -438,7 +430,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionAnonymousContainer) {
       gfx::PointF(scrollable_area->ScrollPosition().x(), 50));
   ASSERT_EQ(50.0, scrollable_area->ScrollPosition().y());
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
-  sticky->UpdateStickyPositionConstraints();
   ASSERT_EQ(scroller->Layer(),
             sticky->Layer()->ContainingScrollContainerLayer());
 
@@ -470,7 +461,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionTableContainers) {
   auto* scroller = GetLayoutBoxModelObjectByElementId("scroller");
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   auto* sticky = GetLayoutBoxModelObjectByElementId("sticky");
-  sticky->UpdateStickyPositionConstraints();
 
   const auto* constraints = sticky->StickyConstraints();
   ASSERT_TRUE(constraints);
@@ -840,15 +830,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNested) {
   // its parent so should not move at all.
   EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
   EXPECT_EQ(PhysicalOffset(0, 0), sticky_child->StickyPositionOffset());
-
-  sticky_parent->UpdateStickyPositionConstraints();
-
-  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
-
-  sticky_child->UpdateStickyPositionConstraints();
-
-  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0), sticky_child->StickyPositionOffset());
 }
 
 // Verifies that the calculated position:sticky offsets are correct when the
@@ -878,15 +859,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionChildHasLargerTop) {
   // whilst the child is attempting to be 25 pixels from the top. To achieve
   // this both must offset on the y-axis against their starting positions, but
   // note the child is offset relative to the parent.
-  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 25), sticky_child->StickyPositionOffset());
-
-  sticky_parent->UpdateStickyPositionConstraints();
-
-  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
-
-  sticky_child->UpdateStickyPositionConstraints();
-
   EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
   EXPECT_EQ(PhysicalOffset(0, 25), sticky_child->StickyPositionOffset());
 }
@@ -920,15 +892,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionParentHasLargerTop) {
   // down to the same height. As always, the child offset is relative.
   EXPECT_EQ(PhysicalOffset(0, 75), sticky_parent->StickyPositionOffset());
   EXPECT_EQ(PhysicalOffset(0, 0), sticky_child->StickyPositionOffset());
-
-  sticky_parent->UpdateStickyPositionConstraints();
-
-  EXPECT_EQ(PhysicalOffset(0, 75), sticky_parent->StickyPositionOffset());
-
-  sticky_child->UpdateStickyPositionConstraints();
-
-  EXPECT_EQ(PhysicalOffset(0, 75), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0), sticky_child->StickyPositionOffset());
 }
 
 // Verifies that the calculated position:sticky offsets are correct when the
@@ -958,15 +921,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionChildPushingOutsideParent) {
   // whilst the child is attempting to be 50 pixels from the top. However, there
   // is only 25 pixels of space for the child to move into, so it should be
   // capped by that offset. As always, the child offset is relative.
-  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 25), sticky_child->StickyPositionOffset());
-
-  sticky_parent->UpdateStickyPositionConstraints();
-
-  EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
-
-  sticky_child->UpdateStickyPositionConstraints();
-
   EXPECT_EQ(PhysicalOffset(0, 50), sticky_parent->StickyPositionOffset());
   EXPECT_EQ(PhysicalOffset(0, 25), sticky_child->StickyPositionOffset());
 }
@@ -1005,21 +959,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionTripleNestedDiv) {
   // this sticky offset calculation is quite simple, but internally the child
   // offset has to offset both its sticky box constraint rect and its containing
   // block constraint rect.
-  EXPECT_EQ(PhysicalOffset(0, 50), outmost_sticky->StickyPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0), middle_sticky->StickyPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 25), inner_sticky->StickyPositionOffset());
-
-  outmost_sticky->UpdateStickyPositionConstraints();
-
-  EXPECT_EQ(PhysicalOffset(0, 50), outmost_sticky->StickyPositionOffset());
-
-  middle_sticky->UpdateStickyPositionConstraints();
-
-  EXPECT_EQ(PhysicalOffset(0, 50), outmost_sticky->StickyPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0), middle_sticky->StickyPositionOffset());
-
-  inner_sticky->UpdateStickyPositionConstraints();
-
   EXPECT_EQ(PhysicalOffset(0, 50), outmost_sticky->StickyPositionOffset());
   EXPECT_EQ(PhysicalOffset(0, 0), middle_sticky->StickyPositionOffset());
   EXPECT_EQ(PhysicalOffset(0, 25), inner_sticky->StickyPositionOffset());
@@ -1079,15 +1018,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNestedStickyTable) {
 
   EXPECT_EQ(PhysicalOffset(0, 200), sticky_div->StickyPositionOffset());
   EXPECT_EQ(PhysicalOffset(0, 100), sticky_th->StickyPositionOffset());
-
-  sticky_div->UpdateStickyPositionConstraints();
-
-  EXPECT_EQ(PhysicalOffset(0, 200), sticky_div->StickyPositionOffset());
-
-  sticky_th->UpdateStickyPositionConstraints();
-
-  EXPECT_EQ(PhysicalOffset(0, 200), sticky_div->StickyPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 100), sticky_th->StickyPositionOffset());
 }
 
 // Verifies that the calculated position:sticky offsets are correct in the case
@@ -1122,15 +1052,6 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionComplexTableNesting) {
   scrollable_area->ScrollToAbsolutePosition(
       gfx::PointF(scrollable_area->ScrollPosition().x(), 150));
   ASSERT_EQ(150.0, scrollable_area->ScrollPosition().y());
-
-  EXPECT_EQ(PhysicalOffset(0, 100), outer_sticky_th->StickyPositionOffset());
-  EXPECT_EQ(PhysicalOffset(0, 25), inner_sticky_th->StickyPositionOffset());
-
-  outer_sticky_th->UpdateStickyPositionConstraints();
-
-  EXPECT_EQ(PhysicalOffset(0, 100), outer_sticky_th->StickyPositionOffset());
-
-  inner_sticky_th->UpdateStickyPositionConstraints();
 
   EXPECT_EQ(PhysicalOffset(0, 100), outer_sticky_th->StickyPositionOffset());
   EXPECT_EQ(PhysicalOffset(0, 25), inner_sticky_th->StickyPositionOffset());

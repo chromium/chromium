@@ -126,10 +126,8 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // This is the only way layers should ever be destroyed.
   void DestroyLayer();
 
-  // If needed, populates StickyPositionConstraints, setting the sticky box
-  // rect, containing block rect and updating the constraint offsets according
-  // to the available space, and returns true. Otherwise returns false.
-  bool UpdateStickyPositionConstraints();
+  // Computes the sticky constraints for this object.
+  StickyPositionScrollingConstraints* ComputeStickyPositionConstraints() const;
 
   PhysicalOffset StickyPositionOffset() const;
   virtual LayoutBlock* StickyContainer() const;

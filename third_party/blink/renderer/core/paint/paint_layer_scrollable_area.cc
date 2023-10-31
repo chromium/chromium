@@ -2194,12 +2194,13 @@ void PaintLayerScrollableArea::EnqueueForSnapUpdateIfNeeded() {
 }
 
 void PaintLayerScrollableArea::UpdateAllStickyConstraints() {
-  // TODO(ikilpatrick): Change `UpdateStickyPositionConstraints` return the
-  // sticky constraints object instead of performing a mutation.
   for (const auto& fragment : GetLayoutBox()->PhysicalFragments()) {
     if (auto* sticky_descendants = fragment.StickyDescendants()) {
       for (auto& sticky_descendant : *sticky_descendants) {
-        sticky_descendant->UpdateStickyPositionConstraints();
+        auto* constraints =
+            sticky_descendant->ComputeStickyPositionConstraints();
+        constraints->ComputeStickyOffset(ScrollPosition());
+        sticky_descendant->SetStickyConstraints(constraints);
       }
     }
   }
