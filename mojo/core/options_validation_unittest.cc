@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "mojo/public/c/system/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -88,6 +89,29 @@ TEST(OptionsValidationTest, Invalid) {
   }
 }
 
+// Creating unaligned points is undefined in C++, so even manufacturing these
+// situations would trip UBSan. Suppress the sanitizer in these tests, so it
+// does not interfere with situation being tested.
+NO_SANITIZE("undefined")
+void TestUnalignedPointer1() {
+  UserOptionsReader<TestOptions> reader(
+      reinterpret_cast<const TestOptions*>(1));
+}
+
+NO_SANITIZE("undefined")
+void TestUnalignedPointer2() {
+  // Note: The current implementation checks the size only after checking the
+  // alignment versus that required for the |uint32_t| size, so it won't die in
+  // the expected way if you pass, e.g., 4. So we have to manufacture a valid
+  // pointer at an offset of alignment 4.
+  uint32_t buffer[100] = {};
+  TestOptions* options = (reinterpret_cast<uintptr_t>(buffer) % 8 == 0)
+                             ? reinterpret_cast<TestOptions*>(&buffer[1])
+                             : reinterpret_cast<TestOptions*>(&buffer[0]);
+  options->struct_size = static_cast<uint32_t>(sizeof(TestOptions));
+  UserOptionsReader<TestOptions> reader(options);
+}
+
 // These test invalid arguments that should cause death if we're being paranoid
 // about checking arguments (which we would want to do if, e.g., we were in a
 // true "kernel" situation, but we might not want to do otherwise for
@@ -107,26 +131,8 @@ TEST(OptionsValidationTest, InvalidDeath) {
       kMemoryCheckFailedRegex);
 
   // Unaligned:
-  EXPECT_DEATH_IF_SUPPORTED(
-      {
-        UserOptionsReader<TestOptions> reader(
-            reinterpret_cast<const TestOptions*>(1));
-      },
-      kMemoryCheckFailedRegex);
-  // Note: The current implementation checks the size only after checking the
-  // alignment versus that required for the |uint32_t| size, so it won't die in
-  // the expected way if you pass, e.g., 4. So we have to manufacture a valid
-  // pointer at an offset of alignment 4.
-  EXPECT_DEATH_IF_SUPPORTED(
-      {
-        uint32_t buffer[100] = {};
-        TestOptions* options = (reinterpret_cast<uintptr_t>(buffer) % 8 == 0)
-                                   ? reinterpret_cast<TestOptions*>(&buffer[1])
-                                   : reinterpret_cast<TestOptions*>(&buffer[0]);
-        options->struct_size = static_cast<uint32_t>(sizeof(TestOptions));
-        UserOptionsReader<TestOptions> reader(options);
-      },
-      kMemoryCheckFailedRegex);
+  EXPECT_DEATH_IF_SUPPORTED(TestUnalignedPointer1(), kMemoryCheckFailedRegex);
+  EXPECT_DEATH_IF_SUPPORTED(TestUnalignedPointer2(), kMemoryCheckFailedRegex);
 }
 
 }  // namespace
