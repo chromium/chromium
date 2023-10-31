@@ -51,7 +51,7 @@ gfx::Size FillLayout::GetPreferredSize(const View* host) const {
   for (const View* child : host->children()) {
     if (!IsChildViewIgnoredByLayout(child)) {
       has_child = true;
-      result.SetToMax(child->GetPreferredSize());
+      result.SetToMax(child->GetPreferredSize(GetContentsSizeBounds(host)));
     }
   }
 
@@ -68,8 +68,9 @@ gfx::Size FillLayout::GetPreferredSize(const View* host) const {
 gfx::Size FillLayout::GetMinimumSize(const View* host) const {
   DCHECK_EQ(host_view(), host);
 
-  if (!minimum_size_enabled_)
-    return host->GetPreferredSize();
+  if (!minimum_size_enabled_) {
+    return host->GetPreferredSize(GetContentsSizeBounds(host));
+  }
 
   gfx::Size result;
 
@@ -105,6 +106,12 @@ int FillLayout::GetPreferredHeightForWidth(const View* host, int width) const {
   }
 
   return height;
+}
+
+SizeBounds FillLayout::GetContentsSizeBounds(const View* host) const {
+  return host->bounds().IsEmpty()
+             ? SizeBounds()
+             : SizeBounds(host->GetContentsBounds().size());
 }
 
 }  // namespace views
