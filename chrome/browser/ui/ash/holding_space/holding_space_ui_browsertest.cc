@@ -24,8 +24,10 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/containers/contains.h"
@@ -73,6 +75,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -101,6 +104,7 @@ using ::testing::Conditional;
 using ::testing::Eq;
 using ::testing::Matches;
 using ::testing::Optional;
+using ::testing::Property;
 
 // Matchers --------------------------------------------------------------------
 
@@ -496,6 +500,33 @@ class DropTargetView : public views::WidgetDelegateView {
   }
 
   base::FilePath copied_file_path_;
+};
+
+// NextMainFrameWaiter ---------------------------------------------------------
+
+// A helper class that waits until the next main frame is processed.
+class NextMainFrameWaiter : public ui::CompositorObserver {
+ public:
+  explicit NextMainFrameWaiter(ui::Compositor* compositor) {
+    observation_.Observe(compositor);
+  }
+
+  void Wait() {
+    CHECK(!run_loop_.running());
+    run_loop_.Run();
+  }
+
+ private:
+  // ui::CompositorObserver:
+  void OnDidBeginMainFrame(ui::Compositor* compositor) override {
+    if (run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<ui::Compositor, ui::CompositorObserver> observation_{
+      this};
 };
 
 // HoldingSpaceUiBrowserTest ---------------------------------------------------
@@ -2116,6 +2147,19 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // Verify the existence of a single download chip.
   std::vector<views::View*> download_chips = test_api().GetDownloadChips();
   ASSERT_EQ(download_chips.size(), 1u);
+
+  // Wait for the download chip to be drawn with an indeterminate progress ring
+  // animation.
+  NextMainFrameWaiter(Shell::GetPrimaryRootWindow()->GetHost()->compositor())
+      .Wait();
+  EXPECT_THAT(
+      HoldingSpaceAnimationRegistry::GetInstance()
+          ->GetProgressRingAnimationForKey(
+              ProgressIndicatorAnimationRegistry::AsAnimationKey(
+                  HoldingSpaceController::Get()->model()->GetItem(
+                      test_api().GetHoldingSpaceItemId(download_chips[0])))),
+      Property(&ProgressRingAnimation::type,
+               Eq(ProgressRingAnimation::Type::kIndeterminate)));
 
   // Cache pointers to the `primary_label` and `secondary_label`.
   auto* primary_label = static_cast<views::Label*>(
