@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.KeyguardManager;
 import android.app.assist.AssistContent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -1183,11 +1184,16 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         getManualFillingComponent().onResume();
-        checkForMissingDeviceLockOnAutomotive();
+        checkForDeviceLockOnAutomotive();
     }
 
-    private void checkForMissingDeviceLockOnAutomotive() {
+    private void checkForDeviceLockOnAutomotive() {
         if (BuildInfo.getInstance().isAutomotive) {
+            KeyguardManager keyguardManager =
+                    (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.Automotive.DeviceLockSet", keyguardManager.isDeviceSecure());
+
             if (mMissingDeviceLockLauncher == null) {
                 mMissingDeviceLockLauncher = new MissingDeviceLockLauncher(this,
                         Profile.getLastUsedRegularProfile(), getModalDialogManagerSupplier().get());
