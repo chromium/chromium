@@ -109,7 +109,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   bool should_expand_for_testing();
 
-  bool is_collapse_timer_running_for_testing() {
+  bool is_collapse_timer_running_for_testing() const {
     CHECK_IS_TEST();
     return collapse_timer_.IsRunning();
   }
@@ -119,7 +119,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
     collapse_timer_.FireNow();
   }
 
-  bool is_dismiss_timer_running_for_testing() {
+  bool is_dismiss_timer_running_for_testing() const {
     CHECK_IS_TEST();
     return dismiss_timer_.IsRunning();
   }
@@ -139,6 +139,16 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   active_permission_request_manager_for_testing() {
     CHECK_IS_TEST();
     return active_chip_permission_request_manager_;
+  }
+
+  bool is_confirmation_showing_for_testing() const {
+    CHECK_IS_TEST();
+    return is_confirmation_showing_;
+  }
+
+  bool is_waiting_for_confirmation_collapse_for_testing() const {
+    CHECK_IS_TEST();
+    return is_waiting_for_confirmation_collapse_;
   }
 
  private:

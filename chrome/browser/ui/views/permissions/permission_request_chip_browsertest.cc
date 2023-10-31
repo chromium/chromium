@@ -374,3 +374,38 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
                        InvokeUi_geolocation) {
   ShowAndVerifyUi();
 }
+
+// This test verifies that the confirmation chip is hidden after it collapses
+// even if animation is disabled.
+IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
+                       TestDisabledAnimation) {
+  RequestPermission(browser());
+  LocationBarView* lbv = GetLocationBarView(browser());
+
+  // The chip is expanded and a bubble is shown.
+  EXPECT_TRUE(lbv->chip_controller()->IsPermissionPromptChipVisible());
+  EXPECT_TRUE(lbv->chip_controller()->IsBubbleShowing());
+
+  lbv->chip_controller()
+      ->active_permission_request_manager_for_testing()
+      .value()
+      ->Deny();
+
+  base::RunLoop().RunUntilIdle();
+
+  // The chip is visible as we show the confirmation.
+  EXPECT_TRUE(lbv->chip_controller()->IsPermissionPromptChipVisible());
+  EXPECT_FALSE(lbv->chip_controller()->IsBubbleShowing());
+  EXPECT_TRUE(lbv->chip_controller()->is_confirmation_showing_for_testing());
+  EXPECT_TRUE(lbv->chip_controller()->is_collapse_timer_running_for_testing());
+  EXPECT_FALSE(lbv->chip_controller()
+                   ->is_waiting_for_confirmation_collapse_for_testing());
+
+  lbv->chip_controller()->fire_collapse_timer_for_testing();
+
+  EXPECT_FALSE(lbv->chip_controller()->IsPermissionPromptChipVisible());
+  EXPECT_FALSE(lbv->chip_controller()->is_confirmation_showing_for_testing());
+  EXPECT_FALSE(lbv->chip_controller()->is_collapse_timer_running_for_testing());
+  EXPECT_FALSE(lbv->chip_controller()
+                   ->is_waiting_for_confirmation_collapse_for_testing());
+}
