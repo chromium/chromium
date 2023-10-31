@@ -3037,8 +3037,9 @@
           "dimensions": {
             "os": "Ubuntu-22.04"
           },
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 120
+          "shards": 140
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"

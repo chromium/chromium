@@ -1021,8 +1021,10 @@
       'Linux Chromium OS ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/1257927
+        # And even more slow on linux-chromeos: crbug.com/1491533.
         'swarming': {
-          'shards': 120,
+          'shards': 140,
+          'hard_timeout': 7200,
         },
       },
       'Linux ChromiumOS MSan Tests': {
