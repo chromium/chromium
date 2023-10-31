@@ -676,7 +676,7 @@ class AutofillClient : public RiskDataLoader {
   // card. Runs |callback| when a card is selected.
   virtual void OfferVirtualCardOptions(
       const std::vector<CreditCard*>& candidates,
-      base::OnceCallback<void(const std::string&)> callback) = 0;
+      base::OnceCallback<void(const std::string&)> callback);
 
 #else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Display the cardholder name fix flow prompt and run the |callback| if

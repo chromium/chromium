@@ -213,6 +213,13 @@ bool AutofillClient::CloseWebauthnDialog() {
   // This is overridden by platform subclasses.
   return false;
 }
+
+void AutofillClient::OfferVirtualCardOptions(
+    const std::vector<CreditCard*>& candidates,
+    base::OnceCallback<void(const std::string&)> callback) {
+  // This is overridden by platform subclasses. Currently only
+  // ChromeAutofillClient (Chrome Desktop) implements this.
+}
 #else
 void AutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {

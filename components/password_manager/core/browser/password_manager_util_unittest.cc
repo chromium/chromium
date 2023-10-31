@@ -151,12 +151,7 @@ class MockAutofillClient : public autofill::AutofillClient {
                bool,
                SaveIbanPromptCallback),
               (override));
-  MOCK_METHOD(void,
-              OfferVirtualCardOptions,
-              (const std::vector<autofill::CreditCard*>&,
-               base::OnceCallback<void(const std::string&)>),
-              (override));
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MOCK_METHOD(void,
               ConfirmCreditCardFillAssist,
               (const autofill::CreditCard&, base::OnceClosure),
