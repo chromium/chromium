@@ -203,7 +203,6 @@ nyquist@chromium.org
 tby@chromium.org
 # login
 jorgelo@chromium.org
-rsorokin@google.com
 alemate@chromium.org
 # media
 evliu@google.com
@@ -255,7 +254,6 @@ ender@google.com
 manukh@chromium.org
 toyoshim@chromium.org
 # oobe
-rsorokin@google.com
 alemate@chromium.org
 # optimization
 mcrouse@chromium.org
@@ -444,7 +442,5 @@ kron@chromium.org
 # xr
 alcooper@chromium.org
 # Custom: not in any subdirectory
-hujame@google.com
-jihanli@chromium.org
 lyf@chromium.org
 pwnall@chromium.org
