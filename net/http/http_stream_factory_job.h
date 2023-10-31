@@ -372,7 +372,7 @@ class HttpStreamFactory::Job
   RequestPriority priority_;
   const ProxyInfo proxy_info_;
   SSLConfig server_ssl_config_;
-  SSLConfig proxy_ssl_config_;
+  SSLConfig base_proxy_ssl_config_;
   const NetLogWithSource net_log_;
 
   const CompletionRepeatingCallback io_callback_;

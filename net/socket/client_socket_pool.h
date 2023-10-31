@@ -165,12 +165,12 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     // For non-SSL requests / non-HTTPS proxies, the corresponding SSLConfig
     // argument may be nullptr.
     SocketParams(std::unique_ptr<SSLConfig> ssl_config_for_origin,
-                 std::unique_ptr<SSLConfig> ssl_config_for_proxy);
+                 std::unique_ptr<SSLConfig> base_ssl_config_for_proxies);
 
     SocketParams(const SocketParams&) = delete;
     SocketParams& operator=(const SocketParams&) = delete;
 
-    // Creates a  SocketParams object with none of the fields populated. This
+    // Creates a SocketParams object with none of the fields populated. This
     // works for the HTTP case only.
     static scoped_refptr<SocketParams> CreateForHttpForTesting();
 
@@ -178,8 +178,8 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       return ssl_config_for_origin_.get();
     }
 
-    const SSLConfig* ssl_config_for_proxy() const {
-      return ssl_config_for_proxy_.get();
+    const SSLConfig* base_ssl_config_for_proxies() const {
+      return base_ssl_config_for_proxies_.get();
     }
 
    private:
@@ -187,7 +187,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     ~SocketParams();
 
     std::unique_ptr<SSLConfig> ssl_config_for_origin_;
-    std::unique_ptr<SSLConfig> ssl_config_for_proxy_;
+    std::unique_ptr<SSLConfig> base_ssl_config_for_proxies_;
   };
 
   ClientSocketPool(const ClientSocketPool&) = delete;

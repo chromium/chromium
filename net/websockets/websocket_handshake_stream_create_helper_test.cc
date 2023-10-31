@@ -133,19 +133,20 @@ class MockClientSocketHandleFactory {
   MockClientSocketHandleFactory()
       : common_connect_job_params_(
             socket_factory_maker_.factory(),
-            nullptr /* host_resolver */,
-            nullptr /* http_auth_cache */,
-            nullptr /* http_auth_handler_factory */,
-            nullptr /* spdy_session_pool */,
-            nullptr /* quic_supported_versions */,
-            nullptr /* quic_stream_factory */,
-            nullptr /* proxy_delegate */,
-            nullptr /* http_user_agent_settings */,
-            nullptr /* ssl_client_context */,
-            nullptr /* socket_performance_watcher_factory */,
-            nullptr /* network_quality_estimator */,
-            nullptr /* net_log */,
-            nullptr /* websocket_endpoint_lock_manager */),
+            /*host_resolver=*/nullptr,
+            /*http_auth_cache=*/nullptr,
+            /*http_auth_handler_factory=*/nullptr,
+            /*spdy_session_pool=*/nullptr,
+            /*quic_supported_versions=*/nullptr,
+            /*quic_stream_factory=*/nullptr,
+            /*proxy_delegate=*/nullptr,
+            /*http_user_agent_settings=*/nullptr,
+            /*ssl_client_context=*/nullptr,
+            /*socket_performance_watcher_factory=*/nullptr,
+            /*network_quality_estimator=*/nullptr,
+            /*net_log=*/nullptr,
+            /*websocket_endpoint_lock_manager=*/nullptr,
+            /*http_server_properties=*/nullptr),
         pool_(1, 1, &common_connect_job_params_) {}
 
   MockClientSocketHandleFactory(const MockClientSocketHandleFactory&) = delete;

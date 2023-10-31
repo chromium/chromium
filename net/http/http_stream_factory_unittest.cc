@@ -1804,7 +1804,7 @@ TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
     scoped_refptr<ClientSocketPool::SocketParams> socket_params =
         base::MakeRefCounted<ClientSocketPool::SocketParams>(
             std::move(ssl_config_for_origin),
-            /*ssl_config_for_proxy=*/nullptr);
+            /*base_ssl_config_for_proxies=*/nullptr);
     ClientSocketPool::GroupId group_id(
         destination, PrivacyMode::PRIVACY_MODE_DISABLED,
         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);

@@ -53,18 +53,19 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
         common_connect_job_params_(
             &client_socket_factory_,
             &host_resolver_,
-            nullptr /* http_auth_cache */,
-            nullptr /* http_auth_handler_factory */,
-            nullptr /* spdy_session_pool */,
-            nullptr /* quic_supported_versions */,
-            nullptr /* quic_stream_factory */,
-            nullptr /* proxy_delegate */,
-            nullptr /* http_user_agent_settings */,
-            nullptr /* ssl_client_context */,
-            nullptr /* socket_performance_watcher_factory */,
-            nullptr /* network_quality_estimator */,
+            /*http_auth_cache=*/nullptr,
+            /*http_auth_handler_factory=*/nullptr,
+            /*spdy_session_pool=*/nullptr,
+            /*quic_supported_versions=*/nullptr,
+            /*quic_stream_factory=*/nullptr,
+            /*proxy_delegate=*/nullptr,
+            /*http_user_agent_settings=*/nullptr,
+            /*ssl_client_context=*/nullptr,
+            /*socket_performance_watcher_factory=*/nullptr,
+            /*network_quality_estimator=*/nullptr,
             NetLog::Get(),
-            nullptr /* websocket_endpoint_lock_manager */) {}
+            /*websocket_endpoint_lock_manager=*/nullptr,
+            /*http_server_properties=*/nullptr) {}
 
   ~SOCKSConnectJobTest() override = default;
 

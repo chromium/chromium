@@ -106,7 +106,8 @@ base::WeakPtr<SpdySession> CreateSpdyProxySession(
 
   SSLConfig ssl_config;
   auto ssl_params = base::MakeRefCounted<SSLSocketParams>(
-      transport_params, nullptr, nullptr,
+      transport_params, /*socks_proxy_params=*/nullptr,
+      /*http_proxy_params=*/nullptr,
       HostPortPair::FromSchemeHostPort(destination), ssl_config,
       key.privacy_mode(), key.network_anonymization_key());
   TestConnectJobDelegate connect_job_delegate;

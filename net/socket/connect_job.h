@@ -21,6 +21,7 @@
 #include "net/base/request_priority.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/http/http_server_properties.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/socket_tag.h"
@@ -71,7 +72,8 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
       NetworkQualityEstimator* network_quality_estimator,
       NetLog* net_log,
-      WebSocketEndpointLockManager* websocket_endpoint_lock_manager);
+      WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
+      HttpServerProperties* http_server_properties);
   CommonConnectJobParams(const CommonConnectJobParams& other);
   ~CommonConnectJobParams();
 
@@ -93,6 +95,8 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
 
   // This must only be non-null for WebSockets.
   raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager;
+
+  raw_ptr<HttpServerProperties> http_server_properties;
 };
 
 // When a host resolution completes, OnHostResolutionCallback() is invoked. If
@@ -273,6 +277,9 @@ class NET_EXPORT_PRIVATE ConnectJob {
   }
   WebSocketEndpointLockManager* websocket_endpoint_lock_manager() {
     return common_connect_job_params_->websocket_endpoint_lock_manager;
+  }
+  HttpServerProperties* http_server_properties() {
+    return common_connect_job_params_->http_server_properties;
   }
   const CommonConnectJobParams* common_connect_job_params() const {
     return common_connect_job_params_;

@@ -367,7 +367,8 @@ CommonConnectJobParams HttpNetworkSession::CreateCommonConnectJobParams(
       context_.http_user_agent_settings, &ssl_client_context_,
       context_.socket_performance_watcher_factory,
       context_.network_quality_estimator, context_.net_log,
-      for_websockets ? &websocket_endpoint_lock_manager_ : nullptr);
+      for_websockets ? &websocket_endpoint_lock_manager_ : nullptr,
+      context_.http_server_properties);
 }
 
 ClientSocketPoolManager* HttpNetworkSession::GetSocketPoolManager(

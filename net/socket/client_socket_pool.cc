@@ -61,16 +61,17 @@ OnHostResolutionCallbackResult OnHostResolution(
 
 ClientSocketPool::SocketParams::SocketParams(
     std::unique_ptr<SSLConfig> ssl_config_for_origin,
-    std::unique_ptr<SSLConfig> ssl_config_for_proxy)
+    std::unique_ptr<SSLConfig> base_ssl_config_for_proxies)
     : ssl_config_for_origin_(std::move(ssl_config_for_origin)),
-      ssl_config_for_proxy_(std::move(ssl_config_for_proxy)) {}
+      base_ssl_config_for_proxies_(std::move(base_ssl_config_for_proxies)) {}
 
 ClientSocketPool::SocketParams::~SocketParams() = default;
 
 scoped_refptr<ClientSocketPool::SocketParams>
 ClientSocketPool::SocketParams::CreateForHttpForTesting() {
-  return base::MakeRefCounted<SocketParams>(nullptr /* ssl_config_for_origin */,
-                                            nullptr /* ssl_config_for_proxy */);
+  return base::MakeRefCounted<SocketParams>(
+      /*ssl_config_for_origin=*/nullptr,
+      /*base_ssl_config_for_proxies=*/nullptr);
 }
 
 ClientSocketPool::GroupId::GroupId()
@@ -207,7 +208,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
   return connect_job_factory_->CreateConnectJob(
       group_id.destination(), proxy_chain, proxy_annotation_tag,
       socket_params->ssl_config_for_origin(),
-      socket_params->ssl_config_for_proxy(), is_for_websockets_,
+      socket_params->base_ssl_config_for_proxies(), is_for_websockets_,
       group_id.privacy_mode(), resolution_callback, request_priority,
       socket_tag, group_id.network_anonymization_key(),
       group_id.secure_dns_policy(), common_connect_job_params_, delegate);

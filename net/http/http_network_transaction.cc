@@ -234,7 +234,7 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
 
   if (request_->load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES) {
     server_ssl_config_.disable_cert_verification_network_fetches = true;
-    proxy_ssl_config_.disable_cert_verification_network_fetches = true;
+    base_proxy_ssl_config_.disable_cert_verification_network_fetches = true;
   }
 
   if (request_->idempotency == IDEMPOTENT ||
@@ -901,12 +901,12 @@ int HttpNetworkTransaction::DoCreateStream() {
   if (ForWebSocketHandshake()) {
     stream_request_ =
         session_->http_stream_factory()->RequestWebSocketHandshakeStream(
-            *request_, priority_, server_ssl_config_, proxy_ssl_config_, this,
-            websocket_handshake_stream_base_create_helper_,
+            *request_, priority_, server_ssl_config_, base_proxy_ssl_config_,
+            this, websocket_handshake_stream_base_create_helper_,
             enable_ip_based_pooling_, enable_alternative_services_, net_log_);
   } else {
     stream_request_ = session_->http_stream_factory()->RequestStream(
-        *request_, priority_, server_ssl_config_, proxy_ssl_config_, this,
+        *request_, priority_, server_ssl_config_, base_proxy_ssl_config_, this,
         enable_ip_based_pooling_, enable_alternative_services_, net_log_);
   }
   DCHECK(stream_request_.get());

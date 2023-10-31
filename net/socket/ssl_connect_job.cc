@@ -333,8 +333,6 @@ int SSLConnectJob::DoTunnelConnect() {
   DCHECK(!TimerIsRunning());
 
   next_state_ = STATE_TUNNEL_CONNECT_COMPLETE;
-  scoped_refptr<HttpProxySocketParams> http_proxy_params =
-      params_->GetHttpProxyConnectionParams();
   nested_connect_job_ = std::make_unique<HttpProxyConnectJob>(
       priority(), socket_tag(), common_connect_job_params(),
       params_->GetHttpProxyConnectionParams(), this, &net_log());

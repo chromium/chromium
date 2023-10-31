@@ -412,7 +412,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // configured in this transaction.
   bool configured_client_cert_for_server_ = false;
 
-  // SSL configuration used for the server and proxy, respectively. Note
+  // SSL configuration used for the server and proxies, respectively. Note
   // |server_ssl_config_| may be updated from the HttpStreamFactory, which will
   // be applied on retry.
   //
@@ -420,7 +420,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // modifications being idempotent. Address this as part of other work to make
   // sense of SSLConfig (related to https://crbug.com/488043).
   SSLConfig server_ssl_config_;
-  SSLConfig proxy_ssl_config_;
+  SSLConfig base_proxy_ssl_config_;
 
   HttpRequestHeaders request_headers_;
 #if BUILDFLAG(ENABLE_REPORTING)

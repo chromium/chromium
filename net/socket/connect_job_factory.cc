@@ -109,7 +109,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const ProxyChain& proxy_chain,
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const SSLConfig* ssl_config_for_origin,
-    const SSLConfig* ssl_config_for_proxy,
+    const SSLConfig* base_ssl_config_for_proxies,
     bool force_tunnel,
     PrivacyMode privacy_mode,
     const OnHostResolutionCallback& resolution_callback,
@@ -119,12 +119,12 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     SecureDnsPolicy secure_dns_policy,
     const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate) const {
-  return CreateConnectJob(Endpoint(std::move(endpoint)), proxy_chain,
-                          proxy_annotation_tag, ssl_config_for_origin,
-                          ssl_config_for_proxy, force_tunnel, privacy_mode,
-                          resolution_callback, request_priority, socket_tag,
-                          network_anonymization_key, secure_dns_policy,
-                          common_connect_job_params, delegate);
+  return CreateConnectJob(
+      Endpoint(std::move(endpoint)), proxy_chain, proxy_annotation_tag,
+      ssl_config_for_origin, base_ssl_config_for_proxies, force_tunnel,
+      privacy_mode, resolution_callback, request_priority, socket_tag,
+      network_anonymization_key, secure_dns_policy, common_connect_job_params,
+      delegate);
 }
 
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
@@ -133,7 +133,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const ProxyChain& proxy_chain,
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const SSLConfig* ssl_config_for_origin,
-    const SSLConfig* ssl_config_for_proxy,
+    const SSLConfig* base_ssl_config_for_proxies,
     bool force_tunnel,
     PrivacyMode privacy_mode,
     const OnHostResolutionCallback& resolution_callback,
@@ -144,12 +144,12 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate) const {
   SchemelessEndpoint schemeless_endpoint{using_ssl, std::move(endpoint)};
-  return CreateConnectJob(std::move(schemeless_endpoint), proxy_chain,
-                          proxy_annotation_tag, ssl_config_for_origin,
-                          ssl_config_for_proxy, force_tunnel, privacy_mode,
-                          resolution_callback, request_priority, socket_tag,
-                          network_anonymization_key, secure_dns_policy,
-                          common_connect_job_params, delegate);
+  return CreateConnectJob(
+      std::move(schemeless_endpoint), proxy_chain, proxy_annotation_tag,
+      ssl_config_for_origin, base_ssl_config_for_proxies, force_tunnel,
+      privacy_mode, resolution_callback, request_priority, socket_tag,
+      network_anonymization_key, secure_dns_policy, common_connect_job_params,
+      delegate);
 }
 
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
@@ -157,7 +157,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const ProxyChain& proxy_chain,
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const SSLConfig* ssl_config_for_origin,
-    const SSLConfig* ssl_config_for_proxy,
+    const SSLConfig* base_ssl_config_for_proxies,
     bool force_tunnel,
     PrivacyMode privacy_mode,
     const OnHostResolutionCallback& resolution_callback,
@@ -173,6 +173,27 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
 
   DCHECK(proxy_chain.IsValid());
   if (!proxy_chain.is_direct()) {
+    SSLConfig first_proxy_server_ssl_config;
+    if (proxy_chain.proxy_server().is_secure_http_like()) {
+      DCHECK(base_ssl_config_for_proxies);
+      first_proxy_server_ssl_config = *base_ssl_config_for_proxies;
+
+      HttpServerProperties* http_server_properties =
+          common_connect_job_params->http_server_properties;
+      if (http_server_properties) {
+        // TODO(https://crbug.com/1491092): Also do this for the other hops if
+        // the proxy chain is multi-hop.
+        if (proxy_chain.proxy_server().is_https()) {
+          http_server_properties->MaybeForceHTTP11(
+              url::SchemeHostPort(
+                  url::kHttpsScheme,
+                  proxy_chain.proxy_server().host_port_pair().host(),
+                  proxy_chain.proxy_server().host_port_pair().port()),
+              network_anonymization_key, &first_proxy_server_ssl_config);
+        }
+      }
+    }
+
     // TODO(crbug.com/1206799): For an http-like proxy, should this pass a
     // `SchemeHostPort`, so proxies can participate in ECH? Note doing so with
     // `SCHEME_HTTP` requires handling the HTTPS record upgrade.
@@ -183,17 +204,16 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
         proxy_dns_network_anonymization_key_, secure_dns_policy,
         resolution_callback,
         first_proxy_server.is_secure_http_like()
-            ? SupportedProtocolsFromSSLConfig(*ssl_config_for_proxy)
+            ? SupportedProtocolsFromSSLConfig(first_proxy_server_ssl_config)
             : no_alpn_protocols);
 
     if (first_proxy_server.is_http_like()) {
       scoped_refptr<SSLSocketParams> ssl_params;
       if (first_proxy_server.is_secure_http_like()) {
-        DCHECK(ssl_config_for_proxy);
         // Set `ssl_params`, and unset `proxy_tcp_params`.
         ssl_params = base::MakeRefCounted<SSLSocketParams>(
             std::move(proxy_tcp_params), nullptr, nullptr,
-            first_proxy_server.host_port_pair(), *ssl_config_for_proxy,
+            first_proxy_server.host_port_pair(), first_proxy_server_ssl_config,
             PRIVACY_MODE_DISABLED, network_anonymization_key);
         proxy_tcp_params = nullptr;
       }

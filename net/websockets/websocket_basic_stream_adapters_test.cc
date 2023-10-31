@@ -136,7 +136,7 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
     scoped_refptr<ClientSocketPool::SocketParams> socks_params =
         base::MakeRefCounted<ClientSocketPool::SocketParams>(
             std::move(ssl_config_for_origin),
-            /*ssl_config_for_proxy=*/nullptr);
+            /*base_ssl_config_for_proxies=*/nullptr);
     TestCompletionCallback callback;
     int rv = connection->Init(
         ClientSocketPool::GroupId(

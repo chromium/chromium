@@ -546,7 +546,7 @@ class TestConnectJobFactory : public ConnectJobFactory {
       const ProxyChain& proxy_chain,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* ssl_config_for_proxy,
+      const SSLConfig* base_ssl_configs_for_proxies,
       bool force_tunnel,
       PrivacyMode privacy_mode,
       const OnHostResolutionCallback& resolution_callback,
@@ -695,20 +695,21 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
   size_t completion_count() const { return test_base_.completion_count(); }
 
   const CommonConnectJobParams common_connect_job_params_{
-      nullptr /* client_socket_factory */,
-      nullptr /* host_resolver */,
-      nullptr /* http_auth_cache */,
-      nullptr /* http_auth_handler_factory */,
-      nullptr /* spdy_session_pool */,
-      nullptr /* quic_supported_versions */,
-      nullptr /* quic_stream_factory */,
-      nullptr /* proxy_delegate */,
-      nullptr /* http_user_agent_settings */,
-      nullptr /* ssl_client_context */,
-      nullptr /* socket_performance_watcher_factory */,
-      nullptr /* network_quality_estimator */,
+      /*client_socket_factory=*/nullptr,
+      /*host_resolver=*/nullptr,
+      /*http_auth_cache=*/nullptr,
+      /*http_auth_handler_factory=*/nullptr,
+      /*spdy_session_pool=*/nullptr,
+      /*quic_supported_versions=*/nullptr,
+      /*quic_stream_factory=*/nullptr,
+      /*proxy_delegate=*/nullptr,
+      /*http_user_agent_settings=*/nullptr,
+      /*ssl_client_context=*/nullptr,
+      /*socket_performance_watcher_factory=*/nullptr,
+      /*network_quality_estimator=*/nullptr,
       NetLog::Get(),
-      nullptr /* websocket_endpoint_lock_manager */};
+      /*websocket_endpoint_lock_manager=*/nullptr,
+      /*http_server_properties=*/nullptr};
   bool connect_backup_jobs_enabled_;
   MockClientSocketFactory client_socket_factory_;
   RecordingNetLogObserver net_log_observer_;
