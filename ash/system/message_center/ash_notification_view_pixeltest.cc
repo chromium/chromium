@@ -77,11 +77,7 @@ class AshNotificationViewPixelTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    // The `NotificationCenterTray` does not exist until the `QsRevamp` feature
-    // is enabled.
-    test_api_ = std::make_unique<NotificationCenterTestApi>(
-        /*notification_center_tray=*/nullptr);
+    test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }

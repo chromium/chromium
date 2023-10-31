@@ -10,11 +10,10 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -110,10 +109,8 @@ message_center::MessageView* FindViewForNotification(
     const message_center::Notification* notification) {
   NotificationListView* notification_list_view =
       FindStatusAreaWidget()
-          ->unified_system_tray()
-          ->message_center_bubble()
-          ->notification_center_view()
-          ->notification_list_view();
+          ->notification_center_tray()
+          ->GetNotificationListView();
 
   // TODO(crbug/1335196): `FindDescendentsOfClass` returning empty list for
   // `NotificationCenterView` even when `MessageView`s exist. Need to

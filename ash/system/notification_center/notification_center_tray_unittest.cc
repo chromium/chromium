@@ -41,15 +41,12 @@ class NotificationCenterTrayTest : public AshTestBase {
   ~NotificationCenterTrayTest() override = default;
 
   void SetUp() override {
-    // Enable quick settings revamp feature.
     scoped_feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kCameraEffectsSupportedByHardware}, {});
+        {features::kCameraEffectsSupportedByHardware}, {});
 
     AshTestBase::SetUp();
 
-    test_api_ = std::make_unique<NotificationCenterTestApi>(
-        StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-            ->notification_center_tray());
+    test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
@@ -486,8 +483,7 @@ class NotificationCenterTrayPrivacyIndicatorsTest : public AshTestBase {
   ~NotificationCenterTrayPrivacyIndicatorsTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kPrivacyIndicators}, {});
+    scoped_feature_list_.InitWithFeatures({features::kPrivacyIndicators}, {});
 
     AshTestBase::SetUp();
   }

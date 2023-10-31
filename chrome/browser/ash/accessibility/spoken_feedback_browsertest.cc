@@ -391,9 +391,7 @@ class NotificationCenterSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
 
   NotificationCenterTestApi* test_api() {
     if (!test_api_) {
-      test_api_ = std::make_unique<NotificationCenterTestApi>(
-          StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-              ->notification_center_tray());
+      test_api_ = std::make_unique<NotificationCenterTestApi>();
     }
     return test_api_.get();
   }

@@ -43,7 +43,6 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
               shelf,
               /*model=*/nullptr,
               /*notification_center_tray=*/this)) {
-  DCHECK(features::IsQsRevampEnabled());
   SetCallback(base::BindRepeating(&NotificationCenterTray::OnTrayButtonPressed,
                                   base::Unretained(this)));
   SetID(VIEW_ID_SA_NOTIFICATION_TRAY);

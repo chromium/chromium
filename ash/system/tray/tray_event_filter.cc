@@ -13,7 +13,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"

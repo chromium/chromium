@@ -6,13 +6,9 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
-#include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -139,10 +135,8 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
     AshTestBase::SetUp();
     test_delegate_ =
         base::MakeRefCounted<message_center::NotificationDelegate>();
-    notification_center_test_api_ = std::make_unique<NotificationCenterTestApi>(
-        /*tray=*/features::IsQsRevampEnabled()
-            ? GetPrimaryNotificationCenterTray()
-            : nullptr);
+    notification_center_test_api_ =
+        std::make_unique<NotificationCenterTestApi>();
   }
 
   // Create a test notification. Noted that the notifications are using the same

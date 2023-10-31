@@ -4139,8 +4139,7 @@ class CameraPreviewWithQsRevampTest : public CaptureModeCameraTest {
   void SetUp() override {
     CaptureModeCameraTest::SetUp();
 
-    auto test_api = std::make_unique<NotificationCenterTestApi>(
-        GetPrimaryNotificationCenterTray());
+    auto test_api = std::make_unique<NotificationCenterTestApi>();
     // Add a notification to show the notification center tray in the shelf.
     test_api->AddNotification();
     ASSERT_TRUE(test_api->IsTrayShown());

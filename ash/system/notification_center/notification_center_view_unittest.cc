@@ -16,7 +16,6 @@
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/notification_center/stacked_notification_bar.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
@@ -55,7 +54,7 @@ class NotificationCenterViewTest : public AshTestBase,
   void SetUp() override {
     AshTestBase::SetUp();
 
-    test_api_ = std::make_unique<NotificationCenterTestApi>(/*tray=*/nullptr);
+    test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
   void TearDown() override {

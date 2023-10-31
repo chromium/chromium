@@ -7,7 +7,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/session/test_session_controller_client.h"
@@ -18,7 +17,6 @@
 #include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -35,8 +33,7 @@ const char kNotifierSystemPriority[] = "ash.some-high-priority-component";
 
 class SessionStateNotificationBlockerTest
     : public NoSessionAshTestBase,
-      public message_center::NotificationBlocker::Observer,
-      public testing::WithParamInterface<bool> {
+      public message_center::NotificationBlocker::Observer {
  public:
   SessionStateNotificationBlockerTest() = default;
 
@@ -49,19 +46,12 @@ class SessionStateNotificationBlockerTest
 
   // tests::AshTestBase overrides:
   void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kQsRevamp,
-                                               IsQsRevampEnabled());
-
     NoSessionAshTestBase::SetUp();
     blocker_ = std::make_unique<SessionStateNotificationBlocker>(
         message_center::MessageCenter::Get());
     blocker_->Init();
     blocker_->AddObserver(this);
   }
-
-  // TODO(b/305075031) clean up after the flag is removed.
-  bool IsQsRevampEnabled() const { return true; }
 
   void TearDown() override {
     blocker_->RemoveObserver(this);
@@ -163,14 +153,9 @@ class SessionStateNotificationBlockerTest
 
   int state_changed_count_ = 0;
   std::unique_ptr<message_center::NotificationBlocker> blocker_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SessionStateNotificationBlockerTest,
-                         testing::Bool() /* IsQsRevampEnabled() */);
-
-TEST_P(SessionStateNotificationBlockerTest, BaseTest) {
+TEST_F(SessionStateNotificationBlockerTest, BaseTest) {
   // OOBE.
   GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
@@ -195,18 +180,15 @@ TEST_P(SessionStateNotificationBlockerTest, BaseTest) {
   SetLockedState(true);
   EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-  if (IsQsRevampEnabled()) {
-    // Only system notifications are allowed to be shown in the notification
-    // center in the lock screen when QsRevamp is enabled.
-    EXPECT_FALSE(ShouldShowNotification(notifier_id));
 
-    message_center::NotifierId system_notifier_id(
-        message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,
-        NotificationCatalogName::kTestCatalogName);
-    EXPECT_TRUE(ShouldShowNotification(system_notifier_id));
-  } else {
-    EXPECT_TRUE(ShouldShowNotification(notifier_id));
-  }
+  // Only system notifications are allowed to be shown in the notification
+  // center in the lock screen.
+  EXPECT_FALSE(ShouldShowNotification(notifier_id));
+
+  message_center::NotifierId system_notifier_id(
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,
+      NotificationCatalogName::kTestCatalogName);
+  EXPECT_TRUE(ShouldShowNotification(system_notifier_id));
 
   // Unlock.
   SetLockedState(false);
@@ -215,7 +197,7 @@ TEST_P(SessionStateNotificationBlockerTest, BaseTest) {
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
 }
 
-TEST_P(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
+TEST_F(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
   // NOTIFIER_DISPLAY is allowed to shown in the login screen.
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,
@@ -252,7 +234,7 @@ TEST_P(SessionStateNotificationBlockerTest, AlwaysAllowedNotifier) {
   EXPECT_TRUE(ShouldShowNotification(notifier_id));
 }
 
-TEST_P(SessionStateNotificationBlockerTest, BlockOnPrefService) {
+TEST_F(SessionStateNotificationBlockerTest, BlockOnPrefService) {
   // OOBE.
   GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
   EXPECT_EQ(0, GetStateChangedCountAndReset());
@@ -292,7 +274,7 @@ TEST_P(SessionStateNotificationBlockerTest, BlockOnPrefService) {
   EXPECT_TRUE(ShouldShowNotificationAsPopup(notifier_id));
 }
 
-TEST_P(SessionStateNotificationBlockerTest, BlockInKioskMode) {
+TEST_F(SessionStateNotificationBlockerTest, BlockInKioskMode) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,
       NotificationCatalogName::kTestCatalogName);
@@ -304,7 +286,7 @@ TEST_P(SessionStateNotificationBlockerTest, BlockInKioskMode) {
   EXPECT_FALSE(ShouldShowNotification(notifier_id));
 }
 
-TEST_P(SessionStateNotificationBlockerTest, DelayAfterLogin) {
+TEST_F(SessionStateNotificationBlockerTest, DelayAfterLogin) {
   SessionStateNotificationBlocker::SetUseLoginNotificationDelayForTest(true);
   GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
 
@@ -326,7 +308,7 @@ TEST_P(SessionStateNotificationBlockerTest, DelayAfterLogin) {
   SessionStateNotificationBlocker::SetUseLoginNotificationDelayForTest(false);
 }
 
-TEST_P(SessionStateNotificationBlockerTest, DoNotDisturbNotification) {
+TEST_F(SessionStateNotificationBlockerTest, DoNotDisturbNotification) {
   // OOBE.
   GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
   EXPECT_FALSE(ShouldShowDoNotDisturbNotification());
@@ -348,7 +330,7 @@ TEST_P(SessionStateNotificationBlockerTest, DoNotDisturbNotification) {
   EXPECT_TRUE(ShouldShowDoNotDisturbNotification());
 }
 
-TEST_P(SessionStateNotificationBlockerTest, LockScreenNotification) {
+TEST_F(SessionStateNotificationBlockerTest, LockScreenNotification) {
   // OOBE.
   GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
   EXPECT_FALSE(ShouldShowNotification(
@@ -375,7 +357,7 @@ TEST_P(SessionStateNotificationBlockerTest, LockScreenNotification) {
       lock_screen_notification_controller()->CreateNotification().get()));
 }
 
-TEST_P(SessionStateNotificationBlockerTest, NotificationAllowedDuringOOBE) {
+TEST_F(SessionStateNotificationBlockerTest, NotificationAllowedDuringOOBE) {
   const std::unordered_map<std::string, /*expected_notification_allowed=*/bool>
       kTestCases = {
           {BatteryNotification::kNotificationId, true},

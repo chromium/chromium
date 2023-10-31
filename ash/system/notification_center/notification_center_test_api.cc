@@ -5,14 +5,12 @@
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include <cstdint>
 
-#include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/message_center_utils.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
@@ -36,10 +34,8 @@
 
 namespace ash {
 
-NotificationCenterTestApi::NotificationCenterTestApi(
-    NotificationCenterTray* tray)
-    : notification_center_tray_(tray),
-      primary_display_id_(
+NotificationCenterTestApi::NotificationCenterTestApi()
+    : primary_display_id_(
           display::Screen::GetScreen()->GetPrimaryDisplay().id()) {}
 
 void NotificationCenterTestApi::ToggleBubble() {
@@ -50,20 +46,8 @@ void NotificationCenterTestApi::ToggleBubbleOnDisplay(int64_t display_id) {
   auto event_generator = std::make_unique<ui::test::EventGenerator>(
       Shell::GetRootWindowForDisplayId(display_id));
 
-  auto* status_area_widget =
-      Shell::Get()
-          ->GetRootWindowControllerWithDisplayId(display_id)
-          ->shelf()
-          ->status_area_widget();
-
   gfx::Point click_location =
-      features::IsQsRevampEnabled()
-          ? status_area_widget->notification_center_tray()
-                ->GetBoundsInScreen()
-                .CenterPoint()
-          : status_area_widget->unified_system_tray()
-                ->GetBoundsInScreen()
-                .CenterPoint();
+      GetTrayOnDisplay(display_id)->GetBoundsInScreen().CenterPoint();
 
   event_generator->MoveMouseTo(click_location);
   event_generator->ClickLeftButton();
@@ -189,7 +173,7 @@ size_t NotificationCenterTestApi::GetNotificationCount() const {
 }
 
 bool NotificationCenterTestApi::IsBubbleShown() {
-  return notification_center_tray_->is_active() && GetWidget()->IsVisible();
+  return GetTray()->is_active() && GetWidget()->IsVisible();
 }
 
 bool NotificationCenterTestApi::IsNotificationCounterShown() {
@@ -220,7 +204,7 @@ bool NotificationCenterTestApi::IsPopupShown(const std::string& id) {
 }
 
 bool NotificationCenterTestApi::IsTrayShown() {
-  return notification_center_tray_->GetVisible();
+  return GetTray()->GetVisible();
 }
 
 bool NotificationCenterTestApi::IsTrayShownOnDisplay(int64_t display_id) {
@@ -230,7 +214,7 @@ bool NotificationCenterTestApi::IsTrayShownOnDisplay(int64_t display_id) {
 }
 
 bool NotificationCenterTestApi::IsTrayAnimating() {
-  return notification_center_tray_->layer()->GetAnimator()->is_animating();
+  return GetTray()->layer()->GetAnimator()->is_animating();
 }
 
 bool NotificationCenterTestApi::IsTrayAnimatingOnDisplay(int64_t display_id) {
@@ -249,15 +233,14 @@ bool NotificationCenterTestApi::IsNotificationCounterAnimatingOnDisplay(
 }
 
 bool NotificationCenterTestApi::IsDoNotDisturbIconShown() {
-  return notification_center_tray_->notification_icons_controller_
-      ->quiet_mode_view()
+  return GetTray()
+      ->notification_icons_controller_->quiet_mode_view()
       ->GetVisible();
 }
 
 NotificationIconTrayItemView*
 NotificationCenterTestApi::GetNotificationIconForId(const std::string& id) {
-  auto tray_items =
-      notification_center_tray_->notification_icons_controller_->tray_items();
+  auto tray_items = GetTray()->notification_icons_controller_->tray_items();
   auto tray_item_iter = base::ranges::find_if(
       tray_items, [&id](NotificationIconTrayItemView* tray_item) {
         return tray_item->GetNotificationId() == id;
@@ -296,26 +279,22 @@ NotificationCenterTestApi::GetNotificationViewForIdOnDisplay(
 
 message_center::MessagePopupView* NotificationCenterTestApi::GetPopupViewForId(
     const std::string& id) {
-  // TODO(b/259459804): Move `MessagePopupCollection` to be owned by
-  // `NotificationCenterTray` instead of `UnifiedSystemTray`.
+  return GetTray()->popup_collection()->GetPopupViewForNotificationID(id);
+}
+
+NotificationCenterTray* NotificationCenterTestApi::GetTray() {
   return Shell::Get()
       ->GetPrimaryRootWindowController()
       ->shelf()
       ->GetStatusAreaWidget()
-      ->notification_center_tray()
-      ->popup_collection()
-      ->GetPopupViewForNotificationID(id);
-}
-
-NotificationCenterTray* NotificationCenterTestApi::GetTray() {
-  return features::IsQsRevampEnabled() ? notification_center_tray_ : nullptr;
+      ->notification_center_tray();
 }
 
 NotificationCenterTray* NotificationCenterTestApi::GetTrayOnDisplay(
     int64_t display_id) {
   auto* root_window_controller =
       Shell::Get()->GetRootWindowControllerWithDisplayId(display_id);
-  if (!root_window_controller || !features::IsQsRevampEnabled()) {
+  if (!root_window_controller) {
     return nullptr;
   }
   return root_window_controller->shelf()
@@ -324,11 +303,11 @@ NotificationCenterTray* NotificationCenterTestApi::GetTrayOnDisplay(
 }
 
 views::Widget* NotificationCenterTestApi::GetWidget() {
-  return notification_center_tray_->GetBubbleWidget();
+  return GetTray()->GetBubbleWidget();
 }
 
 NotificationCenterBubble* NotificationCenterTestApi::GetBubble() {
-  return notification_center_tray_->bubble_.get();
+  return GetTray()->bubble_.get();
 }
 
 NotificationCenterView*
@@ -337,17 +316,8 @@ NotificationCenterTestApi::GetNotificationCenterViewOnDisplay(
   if (!Shell::Get()->GetRootWindowControllerWithDisplayId(display_id)) {
     return nullptr;
   }
-  auto* status_area_widget =
-      Shell::Get()
-          ->GetRootWindowControllerWithDisplayId(display_id)
-          ->shelf()
-          ->status_area_widget();
-  return features::IsQsRevampEnabled()
-             ? status_area_widget->notification_center_tray()
-                   ->bubble_->notification_center_view_.get()
-             : status_area_widget->unified_system_tray()
-                   ->message_center_bubble()
-                   ->notification_center_view();
+
+  return GetTrayOnDisplay(display_id)->bubble_->notification_center_view_.get();
 }
 
 NotificationCenterView* NotificationCenterTestApi::GetNotificationCenterView() {
@@ -365,8 +335,9 @@ void NotificationCenterTestApi::CompleteNotificationListAnimation() {
 }
 
 views::View* NotificationCenterTestApi::GetClearAllButton() {
-  return notification_center_tray_->bubble_->notification_center_view_
-      ->notification_bar_->clear_all_button_;
+  return GetTray()
+      ->bubble_->notification_center_view_->notification_bar_
+      ->clear_all_button_;
 }
 
 std::string NotificationCenterTestApi::NotificationIdToParentNotificationId(
@@ -377,14 +348,13 @@ std::string NotificationCenterTestApi::NotificationIdToParentNotificationId(
                       ->notifier_id());
 }
 
-views::FocusRing* NotificationCenterTestApi::GetFocusRing() const {
-  return views::FocusRing::Get(notification_center_tray_);
+views::FocusRing* NotificationCenterTestApi::GetFocusRing() {
+  return views::FocusRing::Get(GetTray());
 }
 
 void NotificationCenterTestApi::FocusTray() {
-  Shell::Get()->focus_cycler()->FocusWidget(
-      notification_center_tray_->GetWidget());
-  notification_center_tray_->RequestFocus();
+  Shell::Get()->focus_cycler()->FocusWidget(GetTray()->GetWidget());
+  GetTray()->RequestFocus();
 }
 
 std::string NotificationCenterTestApi::GenerateNotificationId() {
@@ -396,21 +366,8 @@ NotificationCenterTestApi::GetNotificationListViewOnDisplay(
     int64_t display_id) {
   DCHECK(message_center::MessageCenter::Get()->IsMessageCenterVisible());
 
-  auto* status_area_widget =
-      Shell::Get()
-          ->GetRootWindowControllerWithDisplayId(display_id)
-          ->shelf()
-          ->GetStatusAreaWidget();
-
-  if (features::IsQsRevampEnabled()) {
-    return status_area_widget->notification_center_tray()
-        ->bubble_->notification_center_view_->notification_list_view();
-  }
-
-  return status_area_widget->unified_system_tray()
-      ->message_center_bubble()
-      ->notification_center_view()
-      ->notification_list_view();
+  return GetTrayOnDisplay(display_id)
+      ->bubble_->notification_center_view_->notification_list_view();
 }
 
 std::unique_ptr<message_center::Notification>

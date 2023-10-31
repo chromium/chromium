@@ -23,7 +23,6 @@
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
 #include "ash/system/message_center/metrics_utils.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
@@ -202,8 +201,8 @@ class AshNotificationViewTestBase : public AshTestBase,
   void SetUp() override {
     AshTestBase::SetUp();
     delegate_ = new NotificationTestDelegate();
-    notification_center_test_api_ = std::make_unique<NotificationCenterTestApi>(
-        GetPrimaryNotificationCenterTray());
+    notification_center_test_api_ =
+        std::make_unique<NotificationCenterTestApi>();
   }
 
   // Create a test notification that is used in the view.
@@ -1366,8 +1365,7 @@ class AshNotificationViewDragTestBase : public AshNotificationViewTestBase {
         {{features::kNotificationImageDrag, true}});
 
     AshNotificationViewTestBase::SetUp();
-    notification_test_api_ =
-        std::make_unique<NotificationCenterTestApi>(/*tray=*/nullptr);
+    notification_test_api_ = std::make_unique<NotificationCenterTestApi>();
 
     // Configure the widget that handles notification drop.
     drop_handling_widget_ = CreateTestWidget(

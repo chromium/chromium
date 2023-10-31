@@ -15,7 +15,6 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"

@@ -257,15 +257,13 @@ TEST_F(NotificationGroupingControllerTest, BasicRemoval) {
 // animate the notification list. This happened because latest notifications get
 // expanded and it was rapidly being collapsed due to it being grouped.
 TEST_F(NotificationGroupingControllerTest, LatestNotificationDoesNotAnimate) {
-  TrayBackgroundView* tray;
-
   // Add two grouped notifications.
   const GURL url(u"http://test-url.com");
   AddNotificationWithOriginUrl(url);
   AddNotificationWithOriginUrl(url);
 
-  tray = GetPrimaryNotificationCenterTray();
-  tray->ShowBubble();
+  // Show the notification center.
+  GetPrimaryNotificationCenterTray()->ShowBubble();
 
   // List should not be animating when the latest notification is grouped.
   EXPECT_FALSE(IsNotificationListViewAnimating());

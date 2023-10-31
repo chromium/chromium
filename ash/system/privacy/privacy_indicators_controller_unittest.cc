@@ -7,9 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -17,7 +15,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/message_center_utils.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
@@ -128,23 +125,14 @@ class PrivacyIndicatorsControllerTest : public AshTestBase {
     // Privacy notifications have been moved to the notification center tray if
     // QsRevamp is enabled.
     message_center::MessageView* view;
-    if (features::IsQsRevampEnabled()) {
-      NotificationCenterTray* notification_center_tray =
-          Shell::GetPrimaryRootWindowController()
-              ->GetStatusAreaWidget()
-              ->notification_center_tray();
+    NotificationCenterTray* notification_center_tray =
+        Shell::GetPrimaryRootWindowController()
+            ->GetStatusAreaWidget()
+            ->notification_center_tray();
 
-      notification_center_tray->ShowBubble();
-      view = notification_center_tray->GetNotificationListView()
-                 ->GetMessageViewForNotificationId(id);
-    } else {
-      GetPrimaryUnifiedSystemTray()->ShowBubble();
-      view = GetPrimaryUnifiedSystemTray()
-                 ->message_center_bubble()
-                 ->notification_center_view()
-                 ->notification_list_view()
-                 ->GetMessageViewForNotificationId(id);
-    }
+    notification_center_tray->ShowBubble();
+    view = notification_center_tray->GetNotificationListView()
+               ->GetMessageViewForNotificationId(id);
 
     auto* notification_view =
         static_cast<message_center::NotificationViewBase*>(view);

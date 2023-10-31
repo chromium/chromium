@@ -73,9 +73,7 @@ class StatusAreaAnimationControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    test_api = std::make_unique<NotificationCenterTestApi>(
-        StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-            ->notification_center_tray());
+    test_api = std::make_unique<NotificationCenterTestApi>();
     // Tray visibility animations may still be disabled due to changes in
     // session state not fully propagating. Running all pending tasks guarantees
     // that the necessary scoped closure runners are executed, thus ensuring

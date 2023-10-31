@@ -10,7 +10,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/tray/tray_background_view.h"
@@ -359,22 +358,6 @@ void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
     return;
   }
 
-  // Don't close the bubble if the message center is gaining activation.
-  if (unified_system_tray_->IsMessageCenterBubbleShown()) {
-    views::Widget* message_center_widget =
-        unified_system_tray_->message_center_bubble()->GetBubbleWidget();
-    if (message_center_widget == gained_active_widget) {
-      return;
-    }
-
-    // If the message center is not visible, ignore activation changes.
-    // Otherwise, this may cause a crash when closing the dialog via
-    // accelerator. See crbug.com/1041174.
-    if (!message_center_widget->IsVisible()) {
-      return;
-    }
-  }
-
   // Deletes this.
   unified_system_tray_->CloseBubble();
 }
@@ -462,12 +445,6 @@ void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
       unified_system_tray_->shelf()->alignment());
   bubble_view_->ChangeAnchorRect(
       unified_system_tray_->shelf()->GetSystemTrayAnchorRect());
-  if (is_qs_revamp_enabled_) {
-    return;
-  }
-  if (unified_system_tray_->IsMessageCenterBubbleShown()) {
-    unified_system_tray_->message_center_bubble()->UpdatePosition();
-  }
 }
 
 void UnifiedSystemTrayBubble::NotifyAccessibilityEvent(ax::mojom::Event event,

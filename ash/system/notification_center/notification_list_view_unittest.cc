@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
@@ -139,8 +138,7 @@ class NotificationListViewTest : public AshTestBase,
     AshTestBase::SetUp();
     model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
 
-    test_api_ = std::make_unique<NotificationCenterTestApi>(
-        GetPrimaryNotificationCenterTray());
+    test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
   void TearDown() override {

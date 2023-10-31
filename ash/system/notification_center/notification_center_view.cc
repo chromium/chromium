@@ -75,7 +75,7 @@ void NotificationCenterView::Init() {
   AddChildView(scroller_.get());
 
   // Make sure the scroll view takes up the entirety of available height in the
-  // revamped notification center view. We're relying on a max height constraint
+  // notification center view. We're relying on a max height constraint
   // for the `TrayBubbleView` so we need to set flex for the scroll view here.
   scroller_->AddObserver(this);
   scroller_->ClipHeightTo(0, INT_MAX);

@@ -14,7 +14,6 @@
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/ash_notification_view.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"

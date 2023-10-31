@@ -30,9 +30,7 @@ class LockScreenNotificationControllerTest
 
     AshTestBase::SetUp();
 
-    test_api_ = std::make_unique<NotificationCenterTestApi>(
-        StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-            ->notification_center_tray());
+    test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
   bool IsLockScreenNotificationPresent() {

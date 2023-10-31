@@ -20,8 +20,6 @@
 #include "ash/system/hotspot/hotspot_tray_view.h"
 #include "ash/system/human_presence/snooping_protection_view.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/notification_grouping_controller.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_tray_view.h"
@@ -189,7 +187,7 @@ UnifiedSystemTray::~UnifiedSystemTray() {
   ShelfConfig::Get()->RemoveObserver(this);
   message_center::MessageCenter::Get()->RemoveObserver(this);
 
-  DestroyBubbles();
+  DestroyBubble();
 }
 
 void UnifiedSystemTray::AddObserver(Observer* observer) {
@@ -234,10 +232,6 @@ UnifiedSliderView* UnifiedSystemTray::GetSliderView() const {
 }
 
 bool UnifiedSystemTray::IsMessageCenterBubbleShown() const {
-  if (message_center_bubble_) {
-    return message_center_bubble_->IsMessageCenterVisible();
-  }
-
   return false;
 }
 
@@ -260,15 +254,9 @@ void UnifiedSystemTray::CloseSecondaryBubbles() {
 }
 
 void UnifiedSystemTray::CollapseMessageCenter() {
-  if (message_center_bubble_) {
-    message_center_bubble_->CollapseMessageCenter();
-  }
 }
 
 void UnifiedSystemTray::ExpandMessageCenter() {
-  if (message_center_bubble_) {
-    message_center_bubble_->ExpandMessageCenter();
-  }
 }
 
 void UnifiedSystemTray::EnsureQuickSettingsCollapsed(bool animate) {
@@ -338,23 +326,7 @@ void UnifiedSystemTray::NotifySecondaryBubbleHeight(int height) {
 
 bool UnifiedSystemTray::FocusMessageCenter(bool reverse,
                                            bool collapse_quick_settings) {
-  if (!IsMessageCenterBubbleShown()) {
-    return false;
-  }
-
-  views::Widget* message_center_widget =
-      message_center_bubble_->GetBubbleWidget();
-  message_center_widget->widget_delegate()->SetCanActivate(true);
-
-  Shell::Get()->focus_cycler()->FocusWidget(message_center_widget);
-
-  // Focus an individual element in the message center if chrome vox is
-  // disabled.
-  if (!ShouldEnableExtraKeyboardAccessibility()) {
-    message_center_bubble_->FocusEntered(reverse);
-  }
-
-  return true;
+  return false;
 }
 
 bool UnifiedSystemTray::FocusQuickSettings(bool reverse) {
@@ -655,11 +627,6 @@ void UnifiedSystemTray::ShowBubbleInternal() {
   bubble_ = std::make_unique<UnifiedSystemTrayBubble>(this);
   bubble_->unified_system_tray_controller()->AddObserver(this);
 
-  if (!features::IsQsRevampEnabled()) {
-    message_center_bubble_ = std::make_unique<UnifiedMessageCenterBubble>(this);
-    message_center_bubble_->ShowBubble();
-  }
-
   // crbug/1310675 Add observers in `UnifiedSystemTrayBubble` after both bubbles
   // have been completely created, without this the bubbles can be destroyed
   // before their creation is complete resulting in crashes.
@@ -681,7 +648,7 @@ void UnifiedSystemTray::ShowBubbleInternal() {
 }
 
 void UnifiedSystemTray::HideBubbleInternal() {
-  DestroyBubbles();
+  DestroyBubble();
   SetIsActive(false);
 }
 
@@ -712,8 +679,7 @@ T* UnifiedSystemTray::AddTrayItemToContainer(
   return unowned_tray_item_view;
 }
 
-void UnifiedSystemTray::DestroyBubbles() {
-  message_center_bubble_.reset();
+void UnifiedSystemTray::DestroyBubble() {
   if (bubble_) {
     bubble_->unified_system_tray_controller()->RemoveObserver(this);
   }
