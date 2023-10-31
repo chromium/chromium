@@ -506,18 +506,23 @@ void NativeWidgetNSWindowBridge::SetInitialBounds(
     adjusted_bounds = gfx::Rect(
         gfx::Point(), gfx::Size(NSWidth(frame_rect), NSHeight(frame_rect)));
   }
-  SetBounds(adjusted_bounds, minimum_content_size);
+  SetBounds(adjusted_bounds, minimum_content_size, absl::nullopt);
 }
 
 void NativeWidgetNSWindowBridge::SetBounds(
     const gfx::Rect& new_bounds,
-    const gfx::Size& minimum_content_size) {
-  // -[NSWindow contentMinSize] is only checked by Cocoa for user-initiated
-  // resizes. This is not what toolkit-views expects, so clamp. Note there is
-  // no check for maximum size (consistent with aura::Window::SetBounds()).
+    const gfx::Size& minimum_content_size,
+    const absl::optional<gfx::Size>& maximum_content_size) {
+  // -[NSWindow contentMinSize] and [NSWindow contentMaxSize] are only checked
+  // by Cocoa for user-initiated resizes. This is not what toolkit-views
+  // expects, so clamp.
   gfx::Size clamped_content_size =
       GetClientSizeForWindowSize(window_, new_bounds.size());
   clamped_content_size.SetToMax(minimum_content_size);
+
+  if (maximum_content_size.has_value()) {
+    clamped_content_size.SetToMin(*maximum_content_size);
+  }
 
   // A contentRect with zero width or height is a banned practice in ChromeMac,
   // due to unpredictable macOS treatment.
@@ -557,7 +562,7 @@ void NativeWidgetNSWindowBridge::SetSize(
   // which -[NSWindow setContentSize:] would do).
   gfx::Rect new_window_bounds = gfx::ScreenRectFromNSRect([window_ frame]);
   new_window_bounds.set_size(new_size);
-  SetBounds(new_window_bounds, minimum_content_size);
+  SetBounds(new_window_bounds, minimum_content_size, absl::nullopt);
 }
 
 void NativeWidgetNSWindowBridge::SetSizeAndCenter(
@@ -565,7 +570,7 @@ void NativeWidgetNSWindowBridge::SetSizeAndCenter(
     const gfx::Size& minimum_content_size) {
   gfx::Rect new_window_bounds = gfx::ScreenRectFromNSRect([window_ frame]);
   new_window_bounds.set_size(GetWindowSizeForClientSize(window_, content_size));
-  SetBounds(new_window_bounds, minimum_content_size);
+  SetBounds(new_window_bounds, minimum_content_size, absl::nullopt);
 
   // Note that this is not the precise center of screen, but it is the standard
   // location for windows like dialogs to appear on screen for Mac.

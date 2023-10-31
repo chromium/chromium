@@ -238,8 +238,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void CloseWindowNow() override;
   void SetInitialBounds(const gfx::Rect& new_bounds,
                         const gfx::Size& minimum_content_size) override;
-  void SetBounds(const gfx::Rect& new_bounds,
-                 const gfx::Size& minimum_content_size) override;
+  void SetBounds(
+      const gfx::Rect& new_bounds,
+      const gfx::Size& minimum_content_size,
+      const absl::optional<gfx::Size>& maximum_content_size) override;
   void SetSize(const gfx::Size& new_size,
                const gfx::Size& minimum_content_size) override;
   void SetSizeAndCenter(const gfx::Size& content_size,

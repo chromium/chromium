@@ -520,8 +520,18 @@ void NativeWidgetMacNSWindowHost::SetBoundsInScreen(const gfx::Rect& bounds) {
          !native_widget_mac_->GetWidget()->GetMinimumSize().IsEmpty())
       << "Zero-sized windows are not supported on Mac";
   UpdateLocalWindowFrame(bounds);
+
+  // `SetBounds()` accepts an optional maximum size, while
+  // `Widget::GetMaximumSize()` uses an empty size to represent "no maximum
+  // size", so we convert between those here.
+  absl::optional<gfx::Size> maximum_size =
+      native_widget_mac_->GetWidget()->GetMaximumSize();
+  if (maximum_size->IsEmpty()) {
+    maximum_size = absl::nullopt;
+  }
+
   GetNSWindowMojo()->SetBounds(
-      bounds, native_widget_mac_->GetWidget()->GetMinimumSize());
+      bounds, native_widget_mac_->GetWidget()->GetMinimumSize(), maximum_size);
 
   if (remote_ns_window_remote_) {
     gfx::Rect window_in_screen =
