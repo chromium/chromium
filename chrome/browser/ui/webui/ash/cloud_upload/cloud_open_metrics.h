@@ -94,10 +94,6 @@ class Metric {
 
   void set_state(MetricState new_state) { state = new_state; }
 
-  void set_metric_name(std::string new_metric_name) {
-    metric_name = new_metric_name;
-  }
-
   std::string metric_name;
   MetricState state = MetricState::kCorrectlyNotLogged;
   MetricType value;
@@ -119,11 +115,9 @@ inline void Metric<MetricType>::LogMetric(MetricType new_value) {
   base::UmaHistogramEnumeration(metric_name, new_value);
 }
 
-// TODO(b/300861997): Add "LogMetric" functions so metrics can be logged through
-// this class. Add ability to track the state of each relevant metric in the
-// flow and detect inconsistencies.
 // Passed through the cloud upload and open flow. Accessed as a `unique_ptr` or
-// a SafeRef.
+// a SafeRef. Log metrics through this class. Track the state of each metric in
+// the flow and detect inconsistencies.
 class CloudOpenMetrics {
  public:
   explicit CloudOpenMetrics(CloudProvider cloud_provider, size_t file_count);
@@ -161,8 +155,7 @@ class CloudOpenMetrics {
   // Log the `value` for the UploadResult metric.
   void LogUploadResult(OfficeFilesUploadResult value);
 
-  // Updates the cloud provider for the cloud upload flow. Updates the metric
-  // names to log with.
+  // Updates the cloud provider for the cloud upload flow.
   void UpdateCloudProvider(CloudProvider cloud_provider);
 
   base::SafeRef<CloudOpenMetrics> GetSafeRef() const;
@@ -194,18 +187,42 @@ class CloudOpenMetrics {
   template <typename MetricType>
   void SetWrongValueLogged(Metric<MetricType>& metric);
 
+  // Check metric consistency and update metric states as required.
+  void CheckForInconsistencies(
+      Metric<base::File::Error>& copy_error,
+      Metric<base::File::Error>& move_error,
+      Metric<OfficeDriveOpenErrors>& drive_open_error,
+      Metric<OfficeOneDriveOpenErrors>& one_drive_open_error,
+      Metric<OfficeFilesSourceVolume>& source_volume,
+      Metric<OfficeTaskResult>& task_result,
+      Metric<OfficeFilesTransferRequired>& transfer_required,
+      Metric<OfficeFilesUploadResult>& upload_result);
+
+  // Log the `value` to the metric corresponding to the `cloud_provider_`. If
+  // there is an inconsistency, call `OnInconsistencyFound()`.
+  template <typename MetricType>
+  void LogAndCheckForInconsistency(Metric<MetricType>& drive_metric,
+                                   Metric<MetricType>& one_drive_metric,
+                                   MetricType value);
+
   bool multiple_files_;
   // Whether to `DumpWithoutCrashing()` at the end of the destructor.
   bool delayed_dump_ = false;
   CloudProvider cloud_provider_;
-  Metric<base::File::Error> copy_error_;
-  Metric<base::File::Error> move_error_;
+  Metric<base::File::Error> drive_copy_error_;
+  Metric<base::File::Error> one_drive_copy_error_;
+  Metric<base::File::Error> drive_move_error_;
+  Metric<base::File::Error> one_drive_move_error_;
   Metric<OfficeDriveOpenErrors> drive_open_error_;
   Metric<OfficeOneDriveOpenErrors> one_drive_open_error_;
-  Metric<OfficeFilesSourceVolume> source_volume_;
-  Metric<OfficeTaskResult> task_result_;
-  Metric<OfficeFilesTransferRequired> transfer_required_;
-  Metric<OfficeFilesUploadResult> upload_result_;
+  Metric<OfficeFilesSourceVolume> drive_source_volume_;
+  Metric<OfficeFilesSourceVolume> one_drive_source_volume_;
+  Metric<OfficeTaskResult> drive_task_result_;
+  Metric<OfficeTaskResult> one_drive_task_result_;
+  Metric<OfficeFilesTransferRequired> drive_transfer_required_;
+  Metric<OfficeFilesTransferRequired> one_drive_transfer_required_;
+  Metric<OfficeFilesUploadResult> drive_upload_result_;
+  Metric<OfficeFilesUploadResult> one_drive_upload_result_;
   base::WeakPtrFactory<CloudOpenMetrics> weak_ptr_factory_{this};
 };
 

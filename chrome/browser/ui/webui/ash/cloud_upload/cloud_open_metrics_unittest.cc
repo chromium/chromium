@@ -549,6 +549,23 @@ TEST_F(CloudOpenMetricsTest, NoDumpWhenAllMetricsAreConsistentForOpenFlow) {
                                 MetricState::kCorrectlyLogged, 1);
   histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
                                 MetricState::kCorrectlyNotLogged, 1);
+
+  // No Google Drive metrics should be logged.
+  histogram_.ExpectUniqueSample(kGoogleDriveCopyErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kGoogleDriveMoveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kDriveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kDriveOpenSourceVolumeMetricStateMetric,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kDriveTransferRequiredMetricStateMetric,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kGoogleDriveUploadResultMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+
   ASSERT_EQ(0, CloudOpenMetricsTest::number_of_dump_calls());
 }
 
@@ -580,21 +597,48 @@ TEST_F(CloudOpenMetricsTest, NoDumpWhenAllMetricsAreConsistentForMoveFlow) {
                                 MetricState::kCorrectlyLogged, 1);
   histogram_.ExpectUniqueSample(kGoogleDriveUploadResultMetricStateMetricName,
                                 MetricState::kCorrectlyLogged, 1);
+
+  // No OneDrive metrics should be logged.
+  histogram_.ExpectUniqueSample(kOneDriveCopyErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveMoveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveOpenSourceVolumeMetricStateMetric,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveTaskResultMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveTransferRequiredMetricStateMetric,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+
   ASSERT_EQ(0, CloudOpenMetricsTest::number_of_dump_calls());
 }
 
-// Tests that the right metrics are logged after updating the cloud provider.
+// Tests that the right metrics and companion metrics are logged when the cloud
+// provider is updated halfway through.
 TEST_F(CloudOpenMetricsTest, UpdateCloudProvider) {
-  CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
-                                      /*file_count=*/1);
-  cloud_open_metrics.LogTaskResult(OfficeTaskResult::kMoved);
-  histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricName,
-                                OfficeTaskResult::kMoved, 1);
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kGoogleDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kMoved);
+    histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricName,
+                                  OfficeTaskResult::kMoved, 1);
 
-  cloud_open_metrics.UpdateCloudProvider(CloudProvider::kOneDrive);
-  cloud_open_metrics.LogTaskResult(OfficeTaskResult::kMoved);
-  histogram_.ExpectUniqueSample(kOneDriveTaskResultMetricName,
-                                OfficeTaskResult::kMoved, 1);
+    cloud_open_metrics.UpdateCloudProvider(CloudProvider::kOneDrive);
+
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kMoved);
+    histogram_.ExpectUniqueSample(kOneDriveTaskResultMetricName,
+                                  OfficeTaskResult::kMoved, 1);
+  }
+  // TODO(b/300861997): Change this to kIncorrectlyLogged once consistency check
+  // is added for cloud provider change.
+  histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricStateMetricName,
+                                MetricState::kCorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveTaskResultMetricStateMetricName,
+                                MetricState::kCorrectlyLogged, 1);
 }
 
 }  // namespace ash::cloud_upload

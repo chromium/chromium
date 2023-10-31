@@ -60,51 +60,45 @@ CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider,
                                    size_t file_count)
     : multiple_files_(file_count > 1),
       cloud_provider_(cloud_provider),
-      copy_error_(cloud_provider_ == CloudProvider::kGoogleDrive
-                      ? kGoogleDriveCopyErrorMetricName
-                      : kOneDriveCopyErrorMetricName),
-      move_error_(cloud_provider_ == CloudProvider::kGoogleDrive
-                      ? kGoogleDriveMoveErrorMetricName
-                      : kOneDriveMoveErrorMetricName),
+      drive_copy_error_(kGoogleDriveCopyErrorMetricName),
+      one_drive_copy_error_(kOneDriveCopyErrorMetricName),
+      drive_move_error_(kGoogleDriveMoveErrorMetricName),
+      one_drive_move_error_(kOneDriveMoveErrorMetricName),
       drive_open_error_(kDriveErrorMetricName),
       one_drive_open_error_(kOneDriveErrorMetricName),
-      source_volume_(cloud_provider_ == CloudProvider::kGoogleDrive
-                         ? kDriveOpenSourceVolumeMetric
-                         : kOneDriveOpenSourceVolumeMetric),
-      task_result_(cloud_provider_ == CloudProvider::kGoogleDrive
-                       ? kGoogleDriveTaskResultMetricName
-                       : kOneDriveTaskResultMetricName),
-      transfer_required_(cloud_provider_ == CloudProvider::kGoogleDrive
-                             ? kDriveTransferRequiredMetric
-                             : kOneDriveTransferRequiredMetric),
-      upload_result_(cloud_provider_ == CloudProvider::kGoogleDrive
-                         ? kGoogleDriveUploadResultMetricName
-                         : kOneDriveUploadResultMetricName) {}
+      drive_source_volume_(kDriveOpenSourceVolumeMetric),
+      one_drive_source_volume_(kOneDriveOpenSourceVolumeMetric),
+      drive_task_result_(kGoogleDriveTaskResultMetricName),
+      one_drive_task_result_(kOneDriveTaskResultMetricName),
+      drive_transfer_required_(kDriveTransferRequiredMetric),
+      one_drive_transfer_required_(kOneDriveTransferRequiredMetric),
+      drive_upload_result_(kGoogleDriveUploadResultMetricName),
+      one_drive_upload_result_(kOneDriveUploadResultMetricName) {}
 
-// Check metric consistency and update metric states as required. Log the
-// companion metrics with the final metric states. Dump without crashing if an
-// inconsistency was found.
-CloudOpenMetrics::~CloudOpenMetrics() {
-  if (multiple_files_) {
-    // TODO(b/242685536): Define CloudOpenMetrics for multiple files.
-    return;
-  }
-
+void CloudOpenMetrics::CheckForInconsistencies(
+    Metric<base::File::Error>& copy_error,
+    Metric<base::File::Error>& move_error,
+    Metric<OfficeDriveOpenErrors>& drive_open_error,
+    Metric<OfficeOneDriveOpenErrors>& one_drive_open_error,
+    Metric<OfficeFilesSourceVolume>& source_volume,
+    Metric<OfficeTaskResult>& task_result,
+    Metric<OfficeFilesTransferRequired>& transfer_required,
+    Metric<OfficeFilesUploadResult>& upload_result) {
   bool google_drive = cloud_provider_ == CloudProvider::kGoogleDrive;
-  ExpectLogged(task_result_);
-  if (task_result_.logged()) {
-    if (task_result_.value == OfficeTaskResult::kFallbackQuickOffice ||
-        task_result_.value == OfficeTaskResult::kCancelledAtFallback ||
-        task_result_.value == OfficeTaskResult::kCancelledAtSetup ||
-        task_result_.value == OfficeTaskResult::kLocalFileTask) {
-      ExpectNotLogged(transfer_required_);
-      ExpectNotLogged(upload_result_);
-      if (task_result_.value == OfficeTaskResult::kFallbackQuickOffice ||
-          task_result_.value == OfficeTaskResult::kCancelledAtFallback) {
+  ExpectLogged(task_result);
+  if (task_result.logged()) {
+    if (task_result.value == OfficeTaskResult::kFallbackQuickOffice ||
+        task_result.value == OfficeTaskResult::kCancelledAtFallback ||
+        task_result.value == OfficeTaskResult::kCancelledAtSetup ||
+        task_result.value == OfficeTaskResult::kLocalFileTask) {
+      ExpectNotLogged(transfer_required);
+      ExpectNotLogged(upload_result);
+      if (task_result.value == OfficeTaskResult::kFallbackQuickOffice ||
+          task_result.value == OfficeTaskResult::kCancelledAtFallback) {
         if (google_drive) {
-          ExpectLogged(drive_open_error_);
-          if (drive_open_error_.logged()) {
-            switch (drive_open_error_.value) {
+          ExpectLogged(drive_open_error);
+          if (drive_open_error.logged()) {
+            switch (drive_open_error.value) {
               case OfficeDriveOpenErrors::kOffline:
               case OfficeDriveOpenErrors::kDriveFsInterface:
               case OfficeDriveOpenErrors::kDriveDisabled:
@@ -118,14 +112,14 @@ CloudOpenMetrics::~CloudOpenMetrics() {
               case OfficeDriveOpenErrors::kDriveAlternateUrl:
               case OfficeDriveOpenErrors::kUnexpectedAlternateUrl:
               case OfficeDriveOpenErrors::kSuccess:
-                SetWrongValueLogged(drive_open_error_);
+                SetWrongValueLogged(drive_open_error);
                 break;
             }
           }
         } else {
-          ExpectLogged(one_drive_open_error_);
-          if (one_drive_open_error_.logged()) {
-            switch (one_drive_open_error_.value) {
+          ExpectLogged(one_drive_open_error);
+          if (one_drive_open_error.logged()) {
+            switch (one_drive_open_error.value) {
               case OfficeOneDriveOpenErrors::kOffline:
                 break;
               case OfficeOneDriveOpenErrors::kSuccess:
@@ -140,35 +134,35 @@ CloudOpenMetrics::~CloudOpenMetrics() {
               case OfficeOneDriveOpenErrors::kGetActionsNoEmail:
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
-                SetWrongValueLogged(one_drive_open_error_);
+                SetWrongValueLogged(one_drive_open_error);
                 break;
             }
           }
         }
       }
     } else {
-      ExpectLogged(source_volume_);
-      ExpectLogged(transfer_required_);
-      if (task_result_.value == OfficeTaskResult::kCancelledAtConfirmation) {
-        ExpectNotLogged(upload_result_);
-        ExpectNotLogged(drive_open_error_);
-        ExpectNotLogged(one_drive_open_error_);
-        ExpectLogged(transfer_required_);
-        if (transfer_required_.logged()) {
-          switch (transfer_required_.value) {
+      ExpectLogged(source_volume);
+      ExpectLogged(transfer_required);
+      if (task_result.value == OfficeTaskResult::kCancelledAtConfirmation) {
+        ExpectNotLogged(upload_result);
+        ExpectNotLogged(drive_open_error);
+        ExpectNotLogged(one_drive_open_error);
+        ExpectLogged(transfer_required);
+        if (transfer_required.logged()) {
+          switch (transfer_required.value) {
             case OfficeFilesTransferRequired::kMove:
             case OfficeFilesTransferRequired::kCopy:
               break;
             case OfficeFilesTransferRequired::kNotRequired:
-              SetWrongValueLogged(transfer_required_);
+              SetWrongValueLogged(transfer_required);
               break;
           }
         }
-      } else if (task_result_.value == OfficeTaskResult::kFailedToOpen) {
+      } else if (task_result.value == OfficeTaskResult::kFailedToOpen) {
         if (google_drive) {
-          ExpectLogged(drive_open_error_);
-          if (drive_open_error_.logged()) {
-            switch (drive_open_error_.value) {
+          ExpectLogged(drive_open_error);
+          if (drive_open_error.logged()) {
+            switch (drive_open_error.value) {
               case OfficeDriveOpenErrors::kOffline:
               case OfficeDriveOpenErrors::kDriveFsInterface:
               case OfficeDriveOpenErrors::kTimeout:
@@ -182,15 +176,15 @@ CloudOpenMetrics::~CloudOpenMetrics() {
               case OfficeDriveOpenErrors::kMeteredConnection:
                 break;
               case OfficeDriveOpenErrors::kSuccess:
-                SetWrongValueLogged(drive_open_error_);
+                SetWrongValueLogged(drive_open_error);
                 break;
             }
           }
 
         } else {
-          ExpectLogged(one_drive_open_error_);
-          if (one_drive_open_error_.logged()) {
-            switch (one_drive_open_error_.value) {
+          ExpectLogged(one_drive_open_error);
+          if (one_drive_open_error.logged()) {
+            switch (one_drive_open_error.value) {
               case OfficeOneDriveOpenErrors::kOffline:
               case OfficeOneDriveOpenErrors::kNoProfile:
               case OfficeOneDriveOpenErrors::kNoFileSystemURL:
@@ -205,18 +199,18 @@ CloudOpenMetrics::~CloudOpenMetrics() {
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
                 break;
               case OfficeOneDriveOpenErrors::kSuccess:
-                SetWrongValueLogged(one_drive_open_error_);
+                SetWrongValueLogged(one_drive_open_error);
                 break;
             }
           }
         }
-      } else if (task_result_.value == OfficeTaskResult::kOpened ||
-                 task_result_.value == OfficeTaskResult::kCopied ||
-                 task_result_.value == OfficeTaskResult::kMoved) {
+      } else if (task_result.value == OfficeTaskResult::kOpened ||
+                 task_result.value == OfficeTaskResult::kCopied ||
+                 task_result.value == OfficeTaskResult::kMoved) {
         if (google_drive) {
-          ExpectLogged(drive_open_error_);
-          if (drive_open_error_.logged()) {
-            switch (drive_open_error_.value) {
+          ExpectLogged(drive_open_error);
+          if (drive_open_error.logged()) {
+            switch (drive_open_error.value) {
               case OfficeDriveOpenErrors::kSuccess:
                 break;
               case OfficeDriveOpenErrors::kOffline:
@@ -230,14 +224,14 @@ CloudOpenMetrics::~CloudOpenMetrics() {
               case OfficeDriveOpenErrors::kNoDriveService:
               case OfficeDriveOpenErrors::kDriveAuthenticationNotReady:
               case OfficeDriveOpenErrors::kMeteredConnection:
-                SetWrongValueLogged(drive_open_error_);
+                SetWrongValueLogged(drive_open_error);
                 break;
             }
           }
         } else {
-          ExpectLogged(one_drive_open_error_);
-          if (one_drive_open_error_.logged()) {
-            switch (one_drive_open_error_.value) {
+          ExpectLogged(one_drive_open_error);
+          if (one_drive_open_error.logged()) {
+            switch (one_drive_open_error.value) {
               case OfficeOneDriveOpenErrors::kSuccess:
                 break;
               case OfficeOneDriveOpenErrors::kOffline:
@@ -252,51 +246,51 @@ CloudOpenMetrics::~CloudOpenMetrics() {
               case OfficeOneDriveOpenErrors::kGetActionsNoEmail:
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
-                SetWrongValueLogged(one_drive_open_error_);
+                SetWrongValueLogged(one_drive_open_error);
                 break;
             }
           }
         }
-        ExpectLogged(transfer_required_);
-        if (task_result_.value == OfficeTaskResult::kOpened) {
-          ExpectNotLogged(upload_result_);
-          if (transfer_required_.logged()) {
-            switch (transfer_required_.value) {
+        ExpectLogged(transfer_required);
+        if (task_result.value == OfficeTaskResult::kOpened) {
+          ExpectNotLogged(upload_result);
+          if (transfer_required.logged()) {
+            switch (transfer_required.value) {
               case OfficeFilesTransferRequired::kNotRequired:
                 break;
               case OfficeFilesTransferRequired::kMove:
               case OfficeFilesTransferRequired::kCopy:
-                SetWrongValueLogged(transfer_required_);
+                SetWrongValueLogged(transfer_required);
                 break;
             }
           }
         } else {
-          if (task_result_.value == OfficeTaskResult::kCopied) {
-            if (transfer_required_.logged()) {
-              switch (transfer_required_.value) {
+          if (task_result.value == OfficeTaskResult::kCopied) {
+            if (transfer_required.logged()) {
+              switch (transfer_required.value) {
                 case OfficeFilesTransferRequired::kCopy:
                   break;
                 case OfficeFilesTransferRequired::kNotRequired:
                 case OfficeFilesTransferRequired::kMove:
-                  SetWrongValueLogged(transfer_required_);
+                  SetWrongValueLogged(transfer_required);
                   break;
               }
             }
           } else {
-            if (transfer_required_.logged()) {
-              switch (transfer_required_.value) {
+            if (transfer_required.logged()) {
+              switch (transfer_required.value) {
                 case OfficeFilesTransferRequired::kMove:
                   break;
                 case OfficeFilesTransferRequired::kNotRequired:
                 case OfficeFilesTransferRequired::kCopy:
-                  SetWrongValueLogged(transfer_required_);
+                  SetWrongValueLogged(transfer_required);
                   break;
               }
             }
           }
-          ExpectLogged(upload_result_);
-          if (upload_result_.logged()) {
-            switch (upload_result_.value) {
+          ExpectLogged(upload_result);
+          if (upload_result.logged()) {
+            switch (upload_result.value) {
               case OfficeFilesUploadResult::kSuccess:
                 break;
               case OfficeFilesUploadResult::kOtherError:
@@ -321,7 +315,7 @@ CloudOpenMetrics::~CloudOpenMetrics() {
               case OfficeFilesUploadResult::kSyncError:
               case OfficeFilesUploadResult::kSyncCancelledAndDeleted:
               case OfficeFilesUploadResult::kSyncCancelledAndTrashed:
-                SetWrongValueLogged(upload_result_);
+                SetWrongValueLogged(upload_result);
                 break;
             }
           }
@@ -330,14 +324,14 @@ CloudOpenMetrics::~CloudOpenMetrics() {
     }
   }
 
-  if (transfer_required_.logged()) {
-    ExpectLogged(source_volume_);
-    if (transfer_required_.value == OfficeFilesTransferRequired::kNotRequired) {
-      ExpectNotLogged(upload_result_);
+  if (transfer_required.logged()) {
+    ExpectLogged(source_volume);
+    if (transfer_required.value == OfficeFilesTransferRequired::kNotRequired) {
+      ExpectNotLogged(upload_result);
       if (google_drive) {
-        ExpectLogged(drive_open_error_);
-        if (source_volume_.logged()) {
-          switch (source_volume_.value) {
+        ExpectLogged(drive_open_error);
+        if (source_volume.logged()) {
+          switch (source_volume.value) {
             case OfficeFilesSourceVolume::kGoogleDrive:
               break;
             case OfficeFilesSourceVolume::kDownloadsDirectory:
@@ -354,14 +348,14 @@ CloudOpenMetrics::~CloudOpenMetrics() {
             case OfficeFilesSourceVolume::kGuestOS:
             case OfficeFilesSourceVolume::kUnknown:
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
-              SetWrongValueLogged(source_volume_);
+              SetWrongValueLogged(source_volume);
               break;
           }
         }
       } else {
-        ExpectLogged(one_drive_open_error_);
-        if (source_volume_.logged()) {
-          switch (source_volume_.value) {
+        ExpectLogged(one_drive_open_error);
+        if (source_volume.logged()) {
+          switch (source_volume.value) {
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
               break;
             case OfficeFilesSourceVolume::kDownloadsDirectory:
@@ -378,19 +372,19 @@ CloudOpenMetrics::~CloudOpenMetrics() {
             case OfficeFilesSourceVolume::kGuestOS:
             case OfficeFilesSourceVolume::kUnknown:
             case OfficeFilesSourceVolume::kGoogleDrive:
-              SetWrongValueLogged(source_volume_);
+              SetWrongValueLogged(source_volume);
               break;
           }
         }
       }
     } else {
-      if (task_result_.logged() &&
-          task_result_.value != OfficeTaskResult::kCancelledAtConfirmation) {
-        ExpectLogged(upload_result_);
+      if (task_result.logged() &&
+          task_result.value != OfficeTaskResult::kCancelledAtConfirmation) {
+        ExpectLogged(upload_result);
       }
       if (google_drive) {
-        if (source_volume_.logged()) {
-          switch (source_volume_.value) {
+        if (source_volume.logged()) {
+          switch (source_volume.value) {
             case OfficeFilesSourceVolume::kDownloadsDirectory:
             case OfficeFilesSourceVolume::kRemovableDiskPartition:
             case OfficeFilesSourceVolume::kMountedArchiveFile:
@@ -407,13 +401,13 @@ CloudOpenMetrics::~CloudOpenMetrics() {
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
               break;
             case OfficeFilesSourceVolume::kGoogleDrive:
-              SetWrongValueLogged(source_volume_);
+              SetWrongValueLogged(source_volume);
               break;
           }
         }
       } else {
-        if (source_volume_.logged()) {
-          switch (source_volume_.value) {
+        if (source_volume.logged()) {
+          switch (source_volume.value) {
             case OfficeFilesSourceVolume::kDownloadsDirectory:
             case OfficeFilesSourceVolume::kRemovableDiskPartition:
             case OfficeFilesSourceVolume::kMountedArchiveFile:
@@ -430,7 +424,7 @@ CloudOpenMetrics::~CloudOpenMetrics() {
             case OfficeFilesSourceVolume::kGoogleDrive:
               break;
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
-              SetWrongValueLogged(source_volume_);
+              SetWrongValueLogged(source_volume);
               break;
           }
         }
@@ -438,50 +432,72 @@ CloudOpenMetrics::~CloudOpenMetrics() {
     }
   }
 
-  if (upload_result_.logged()) {
-    if (upload_result_.value == OfficeFilesUploadResult::kCopyOperationError) {
-      ExpectLogged(copy_error_);
-    } else if (upload_result_.value ==
+  if (upload_result.logged()) {
+    if (upload_result.value == OfficeFilesUploadResult::kCopyOperationError) {
+      ExpectLogged(copy_error);
+    } else if (upload_result.value ==
                OfficeFilesUploadResult::kMoveOperationError) {
-      ExpectLogged(move_error_);
+      ExpectLogged(move_error);
     }
   }
 
-  if (copy_error_.logged() || move_error_.logged()) {
-    ExpectLogged(upload_result_);
+  if (copy_error.logged() || move_error.logged()) {
+    ExpectLogged(upload_result);
+  }
+}
+
+// Check metric consistency and update metric states as required. Log the
+// companion metrics with the final metric states. Dump without crashing if an
+// inconsistency was found.
+CloudOpenMetrics::~CloudOpenMetrics() {
+  if (multiple_files_) {
+    // TODO(b/242685536): Define CloudOpenMetrics for multiple files.
+    return;
   }
 
-  if (google_drive) {
-    base::UmaHistogramEnumeration(kGoogleDriveCopyErrorMetricStateMetricName,
-                                  copy_error_.state);
-    base::UmaHistogramEnumeration(kGoogleDriveMoveErrorMetricStateMetricName,
-                                  move_error_.state);
-    base::UmaHistogramEnumeration(kDriveErrorMetricStateMetricName,
-                                  drive_open_error_.state);
-    base::UmaHistogramEnumeration(kDriveOpenSourceVolumeMetricStateMetric,
-                                  source_volume_.state);
-    base::UmaHistogramEnumeration(kGoogleDriveTaskResultMetricStateMetricName,
-                                  task_result_.state);
-    base::UmaHistogramEnumeration(kDriveTransferRequiredMetricStateMetric,
-                                  transfer_required_.state);
-    base::UmaHistogramEnumeration(kGoogleDriveUploadResultMetricStateMetricName,
-                                  upload_result_.state);
+  if (cloud_provider_ == CloudProvider::kGoogleDrive) {
+    CheckForInconsistencies(drive_copy_error_, drive_move_error_,
+                            drive_open_error_, one_drive_open_error_,
+                            drive_source_volume_, drive_task_result_,
+                            drive_transfer_required_, drive_upload_result_);
+    // TODO(b/300861997): ExpectNotLogged for OneDrive metrics.
   } else {
-    base::UmaHistogramEnumeration(kOneDriveCopyErrorMetricStateMetricName,
-                                  copy_error_.state);
-    base::UmaHistogramEnumeration(kOneDriveMoveErrorMetricStateMetricName,
-                                  move_error_.state);
-    base::UmaHistogramEnumeration(kOneDriveErrorMetricStateMetricName,
-                                  one_drive_open_error_.state);
-    base::UmaHistogramEnumeration(kOneDriveOpenSourceVolumeMetricStateMetric,
-                                  source_volume_.state);
-    base::UmaHistogramEnumeration(kOneDriveTaskResultMetricStateMetricName,
-                                  task_result_.state);
-    base::UmaHistogramEnumeration(kOneDriveTransferRequiredMetricStateMetric,
-                                  transfer_required_.state);
-    base::UmaHistogramEnumeration(kOneDriveUploadResultMetricStateMetricName,
-                                  upload_result_.state);
+    CheckForInconsistencies(
+        one_drive_copy_error_, one_drive_move_error_, drive_open_error_,
+        one_drive_open_error_, one_drive_source_volume_, one_drive_task_result_,
+        one_drive_transfer_required_, one_drive_upload_result_);
+    // TODO(b/300861997): ExpectNotLogged for Drive metrics.
   }
+
+  // TODO(b/300861997): Make companion metric logging a Metric method.
+  base::UmaHistogramEnumeration(kGoogleDriveCopyErrorMetricStateMetricName,
+                                drive_copy_error_.state);
+  base::UmaHistogramEnumeration(kOneDriveCopyErrorMetricStateMetricName,
+                                one_drive_copy_error_.state);
+  base::UmaHistogramEnumeration(kGoogleDriveMoveErrorMetricStateMetricName,
+                                drive_move_error_.state);
+  base::UmaHistogramEnumeration(kOneDriveMoveErrorMetricStateMetricName,
+                                one_drive_move_error_.state);
+  base::UmaHistogramEnumeration(kDriveErrorMetricStateMetricName,
+                                drive_open_error_.state);
+  base::UmaHistogramEnumeration(kOneDriveErrorMetricStateMetricName,
+                                one_drive_open_error_.state);
+  base::UmaHistogramEnumeration(kDriveOpenSourceVolumeMetricStateMetric,
+                                drive_source_volume_.state);
+  base::UmaHistogramEnumeration(kOneDriveOpenSourceVolumeMetricStateMetric,
+                                one_drive_source_volume_.state);
+  base::UmaHistogramEnumeration(kGoogleDriveTaskResultMetricStateMetricName,
+                                drive_task_result_.state);
+  base::UmaHistogramEnumeration(kOneDriveTaskResultMetricStateMetricName,
+                                one_drive_task_result_.state);
+  base::UmaHistogramEnumeration(kDriveTransferRequiredMetricStateMetric,
+                                drive_transfer_required_.state);
+  base::UmaHistogramEnumeration(kOneDriveTransferRequiredMetricStateMetric,
+                                one_drive_transfer_required_.state);
+  base::UmaHistogramEnumeration(kGoogleDriveUploadResultMetricStateMetricName,
+                                drive_upload_result_.state);
+  base::UmaHistogramEnumeration(kOneDriveUploadResultMetricStateMetricName,
+                                one_drive_upload_result_.state);
 
   if (delayed_dump_) {
     base::debug::DumpWithoutCrashing();
@@ -489,15 +505,11 @@ CloudOpenMetrics::~CloudOpenMetrics() {
 }
 
 void CloudOpenMetrics::LogCopyError(base::File::Error value) {
-  if (!copy_error_.Log(value)) {
-    OnInconsistencyFound(copy_error_);
-  }
+  LogAndCheckForInconsistency(drive_copy_error_, one_drive_copy_error_, value);
 }
 
 void CloudOpenMetrics::LogMoveError(base::File::Error value) {
-  if (!move_error_.Log(value)) {
-    OnInconsistencyFound(move_error_);
-  }
+  LogAndCheckForInconsistency(drive_move_error_, one_drive_move_error_, value);
 }
 
 void CloudOpenMetrics::LogGoogleDriveOpenError(OfficeDriveOpenErrors value) {
@@ -513,46 +525,27 @@ void CloudOpenMetrics::LogOneDriveOpenError(OfficeOneDriveOpenErrors value) {
 }
 
 void CloudOpenMetrics::LogSourceVolume(OfficeFilesSourceVolume value) {
-  if (!source_volume_.Log(value)) {
-    OnInconsistencyFound(source_volume_);
-  }
+  LogAndCheckForInconsistency(drive_source_volume_, one_drive_source_volume_,
+                              value);
 }
 
 void CloudOpenMetrics::LogTaskResult(OfficeTaskResult value) {
-  if (!task_result_.Log(value)) {
-    OnInconsistencyFound(task_result_);
-  }
+  LogAndCheckForInconsistency(drive_task_result_, one_drive_task_result_,
+                              value);
 }
 
 void CloudOpenMetrics::LogTransferRequired(OfficeFilesTransferRequired value) {
-  if (!transfer_required_.Log(value)) {
-    OnInconsistencyFound(transfer_required_);
-  }
+  LogAndCheckForInconsistency(drive_transfer_required_,
+                              one_drive_transfer_required_, value);
 }
 
 void CloudOpenMetrics::LogUploadResult(OfficeFilesUploadResult value) {
-  if (!upload_result_.Log(value)) {
-    OnInconsistencyFound(upload_result_);
-  }
+  LogAndCheckForInconsistency(drive_upload_result_, one_drive_upload_result_,
+                              value);
 }
 
 void CloudOpenMetrics::UpdateCloudProvider(CloudProvider cloud_provider) {
   cloud_provider_ = cloud_provider;
-  if (cloud_provider == CloudProvider::kGoogleDrive) {
-    copy_error_.set_metric_name(kGoogleDriveCopyErrorMetricName);
-    move_error_.set_metric_name(kGoogleDriveMoveErrorMetricName);
-    source_volume_.set_metric_name(kDriveOpenSourceVolumeMetric);
-    task_result_.set_metric_name(kGoogleDriveTaskResultMetricName);
-    transfer_required_.set_metric_name(kDriveTransferRequiredMetric);
-    upload_result_.set_metric_name(kGoogleDriveUploadResultMetricName);
-  } else if (cloud_provider == CloudProvider::kOneDrive) {
-    copy_error_.set_metric_name(kOneDriveCopyErrorMetricName);
-    move_error_.set_metric_name(kOneDriveMoveErrorMetricName);
-    source_volume_.set_metric_name(kOneDriveOpenSourceVolumeMetric);
-    task_result_.set_metric_name(kOneDriveTaskResultMetricName);
-    transfer_required_.set_metric_name(kOneDriveTransferRequiredMetric);
-    upload_result_.set_metric_name(kOneDriveUploadResultMetricName);
-  }
 }
 
 base::SafeRef<CloudOpenMetrics> CloudOpenMetrics::GetSafeRef() const {
@@ -572,15 +565,22 @@ void CloudOpenMetrics::OnInconsistencyFound(Metric<MetricType>& metric,
     return;
   }
   LOG(ERROR) << "Inconsistent metric found: " << metric;
-  LOG(ERROR) << "Metrics: " << std::endl
-             << copy_error_ << std::endl
-             << move_error_ << std::endl
+  LOG(ERROR) << "Drive metrics: " << std::endl
+             << drive_copy_error_ << std::endl
+             << drive_move_error_ << std::endl
              << drive_open_error_ << std::endl
+             << drive_source_volume_ << std::endl
+             << drive_task_result_ << std::endl
+             << drive_transfer_required_ << std::endl
+             << drive_upload_result_;
+  LOG(ERROR) << "OneDrive metrics: " << std::endl
+             << one_drive_copy_error_ << std::endl
+             << one_drive_move_error_ << std::endl
              << one_drive_open_error_ << std::endl
-             << source_volume_ << std::endl
-             << task_result_ << std::endl
-             << transfer_required_ << std::endl
-             << upload_result_;
+             << one_drive_source_volume_ << std::endl
+             << one_drive_task_result_ << std::endl
+             << one_drive_transfer_required_ << std::endl
+             << one_drive_upload_result_;
   if (immediately_dump) {
     base::debug::DumpWithoutCrashing();
   } else {
@@ -606,6 +606,20 @@ template <typename MetricType>
 void CloudOpenMetrics::SetWrongValueLogged(Metric<MetricType>& metric) {
   metric.set_state(MetricState::kWrongValueLogged);
   OnInconsistencyFound(metric, /*immediately_dump=*/false);
+}
+
+template <typename MetricType>
+void CloudOpenMetrics::LogAndCheckForInconsistency(
+    Metric<MetricType>& drive_metric,
+    Metric<MetricType>& one_drive_metric,
+    MetricType value) {
+  if (cloud_provider_ == CloudProvider::kGoogleDrive) {
+    if (!drive_metric.Log(value)) {
+      OnInconsistencyFound(drive_metric);
+    }
+  } else if (!one_drive_metric.Log(value)) {
+    OnInconsistencyFound(one_drive_metric);
+  }
 }
 
 }  // namespace ash::cloud_upload
