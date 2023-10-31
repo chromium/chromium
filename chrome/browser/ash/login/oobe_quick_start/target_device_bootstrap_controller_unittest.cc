@@ -53,8 +53,6 @@ using ConnectionClosedReason =
 
 constexpr char kWifiTransferResultHistogramName[] =
     "QuickStart.WifiTransferResult";
-constexpr char kWifiTransferResultFailureReasonHistogramName[] =
-    "QuickStart.WifiTransferResult.FailureReason";
 constexpr char kGaiaTransferAttemptedName[] =
     "QuickStart.GaiaTransferAttempted";
 
@@ -145,8 +143,8 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
     fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
     fake_target_device_connection_broker_->AuthenticateConnection(
         kSourceDeviceId);
-    ASSERT_EQ(fake_observer_->last_status.step,
-              Step::REQUESTING_WIFI_CREDENTIALS);
+
+    ASSERT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   }
 
   void NotifySourceOfUpdateResponse(bool ack_successful) {
@@ -287,7 +285,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_Pin) {
 
 TEST_F(TargetDeviceBootstrapControllerTest, AuthenticateConnection) {
   BootstrapConnection();
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
       fake_observer_->last_status.payload));
 }
 
@@ -417,15 +415,19 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
-  EXPECT_EQ(fake_observer_->last_status.step,
-            Step::REQUESTING_WIFI_CREDENTIALS);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
+  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
       fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
       mojom::UserVerificationResponse(
           mojom::UserVerificationResult::kUserVerified,
           /*is_first_user_verification=*/true));
+
+  EXPECT_EQ(fake_observer_->last_status.step,
+            Step::REQUESTING_WIFI_CREDENTIALS);
+  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+      fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()
       ->SendWifiCredentials(
@@ -460,8 +462,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
             Step::EMPTY_WIFI_CREDENTIALS_RECEIVED);
 }
 
-TEST_F(TargetDeviceBootstrapControllerTest,
-       RequestWifiCredentialsFailsIfUserNotVerified) {
+TEST_F(TargetDeviceBootstrapControllerTest, ConnectionFailsIfUserNotVerified) {
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
@@ -469,9 +470,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
-  EXPECT_EQ(fake_observer_->last_status.step,
-            Step::REQUESTING_WIFI_CREDENTIALS);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
+  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
       fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
@@ -485,7 +485,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
-       RequestWifiCredentialsFailsIfEmptyVerificationResult) {
+       ConnectionFailsIfEmptyVerificationResult) {
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
@@ -493,9 +493,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
-  EXPECT_EQ(fake_observer_->last_status.step,
-            Step::REQUESTING_WIFI_CREDENTIALS);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
+  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
       fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
@@ -638,8 +637,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, DiscoverableName) {
   EXPECT_EQ(bootstrap_controller_->GetDiscoverableName(), expected_string);
 }
 
-TEST_F(TargetDeviceBootstrapControllerTest,
-       RequestWifiCredentials_ConnectionDropped) {
+TEST_F(TargetDeviceBootstrapControllerTest, ConnectionDropped) {
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
@@ -647,9 +645,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
-  EXPECT_EQ(fake_observer_->last_status.step,
-            Step::REQUESTING_WIFI_CREDENTIALS);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
+  EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
       fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->CloseConnection(
@@ -661,13 +658,6 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::CONNECTION_CLOSED);
 
-  histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, false,
-                                      1);
-  histogram_tester_.ExpectBucketCount(
-      kWifiTransferResultFailureReasonHistogramName,
-      QuickStartMetrics::WifiTransferResultFailureReason::
-          kConnectionDroppedDuringAttempt,
-      1);
   ExpectQuickStartConnectivityServiceCleanupCalled();
 }
 

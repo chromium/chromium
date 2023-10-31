@@ -162,9 +162,8 @@ class TargetDeviceBootstrapController
   void OnStartAdvertisingResult(bool success);
   void OnStopAdvertising();
 
-  void WaitForUserVerification(base::OnceClosure on_verification);
-  void OnUserVerificationResult(base::OnceClosure on_verification,
-                                absl::optional<mojom::UserVerificationResponse>
+  void WaitForUserVerification();
+  void OnUserVerificationResult(absl::optional<mojom::UserVerificationResponse>
                                     user_verification_response);
 
   // If the target device successfully receives an ack message, it prepares to

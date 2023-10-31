@@ -363,11 +363,12 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
       quick_start::QuickStartMetrics::ScreenName::kSetUpAndroidPhone, 1);
 
   SimulatePhoneConnection();
+  SimulateUserVerification();
+
   histogram_tester.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kConnectingToWifi, 1);
 
-  SimulateUserVerification();
   SimulateWiFiTransfer();
 
   test::WaitForNetworkSelectionScreen();

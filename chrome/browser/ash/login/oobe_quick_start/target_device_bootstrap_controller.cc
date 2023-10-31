@@ -165,13 +165,8 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
                                      Step::ADVERTISING_WITHOUT_QR_CODE,
                                      Step::PIN_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
-
   authenticated_connection_ = authenticated_connection;
-
-  status_.step = Step::CONNECTED;
-  status_.payload.emplace<absl::monostate>();
-  NotifyObservers();
-  AttemptWifiCredentialTransfer();
+  WaitForUserVerification();
 }
 
 void TargetDeviceBootstrapController::OnConnectionRejected() {
@@ -257,15 +252,13 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
   }
 }
 
-void TargetDeviceBootstrapController::WaitForUserVerification(
-    base::OnceClosure on_verification) {
-  authenticated_connection_->WaitForUserVerification(base::BindOnce(
-      &TargetDeviceBootstrapController::OnUserVerificationResult,
-      weak_ptr_factory_.GetWeakPtr(), std::move(on_verification)));
+void TargetDeviceBootstrapController::WaitForUserVerification() {
+  authenticated_connection_->WaitForUserVerification(
+      base::BindOnce(&TargetDeviceBootstrapController::OnUserVerificationResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TargetDeviceBootstrapController::OnUserVerificationResult(
-    base::OnceClosure on_verification,
     absl::optional<mojom::UserVerificationResponse>
         user_verification_response) {
   if (!user_verification_response.has_value() ||
@@ -277,22 +270,21 @@ void TargetDeviceBootstrapController::OnUserVerificationResult(
     return;
   }
 
-  std::move(on_verification).Run();
+  status_.step = Step::CONNECTED;
+  status_.payload.emplace<absl::monostate>();
+  NotifyObservers();
+
+  AttemptWifiCredentialTransfer();
 }
 
 void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
   status_.step = Step::REQUESTING_WIFI_CREDENTIALS;
   status_.payload.emplace<absl::monostate>();
-
-  WaitForUserVerification(base::BindOnce(
-      &TargetDeviceConnectionBroker::AuthenticatedConnection::
-          RequestWifiCredentials,
-      authenticated_connection_,
-      base::BindOnce(
-          &TargetDeviceBootstrapController::OnWifiCredentialsReceived,
-          weak_ptr_factory_.GetWeakPtr())));
-
   NotifyObservers();
+
+  authenticated_connection_->RequestWifiCredentials(base::BindOnce(
+      &TargetDeviceBootstrapController::OnWifiCredentialsReceived,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
