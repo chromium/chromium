@@ -136,40 +136,49 @@ suite('SettingsToggleButton', () => {
     assertEquals(DEFAULT_CHECKED_VALUE, prefNum.value);
   });
 
-  const CUSTOM_UNCHECKED_VALUE = 5;
-  const CUSTOM_CHECKED_VALUE = 2;
-  const UNKNOWN_VALUE = 3;
-
   test('numerical pref with custom values', () => {
+    const UNCHECKED_VALUE_1 = 1;
+    const UNCHECKED_VALUE_2 = 2;
+    const CHECKED_VALUE = 3;
+
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: CUSTOM_UNCHECKED_VALUE,
+      value: UNCHECKED_VALUE_2,
     };
 
-    testElement.numericUncheckedValue = CUSTOM_UNCHECKED_VALUE;
-    testElement.numericCheckedValue = CUSTOM_CHECKED_VALUE;
+    testElement.numericUncheckedValues = [UNCHECKED_VALUE_1, UNCHECKED_VALUE_2];
+    testElement.numericCheckedValue = CHECKED_VALUE;
 
+    // Test initial 'off' case.
     testElement.set('pref', prefNum);
     assertFalse(testElement.checked);
+    assertEquals(UNCHECKED_VALUE_2, prefNum.value);
 
+    // Test 'off' -> 'on' case.
     testElement.click();
     assertTrue(testElement.checked);
-    assertEquals(CUSTOM_CHECKED_VALUE, prefNum.value);
+    assertEquals(CHECKED_VALUE, prefNum.value);
 
+    // Test 'on' -> 'off' case.
     testElement.click();
     assertFalse(testElement.checked);
-    assertEquals(CUSTOM_UNCHECKED_VALUE, prefNum.value);
+    assertEquals(UNCHECKED_VALUE_1, prefNum.value);
   });
 
+  const UNKNOWN_VALUE = 3;
+
   test('numerical pref with unknown initial value', () => {
+    const CUSTOM_UNCHECKED_VALUE = 5;
+    const CUSTOM_CHECKED_VALUE = 2;
+
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: UNKNOWN_VALUE,
     };
 
-    testElement.numericUncheckedValue = CUSTOM_UNCHECKED_VALUE;
+    testElement.numericUncheckedValues = [CUSTOM_UNCHECKED_VALUE];
     testElement.numericCheckedValue = CUSTOM_CHECKED_VALUE;
 
     testElement.set('pref', prefNum);

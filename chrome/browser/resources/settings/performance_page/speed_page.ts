@@ -49,8 +49,15 @@ export class SpeedPageElement extends SpeedPageElementBase {
         type: Object,
         value: NetworkPredictionOptions,
       },
+
+      numericUncheckedValues_: {
+        type: Array,
+        value: () => [NetworkPredictionOptions.DISABLED],
+      },
     };
   }
+
+  private numericUncheckedValues_: NetworkPredictionOptions[];
 
   override ready() {
     super.ready();
