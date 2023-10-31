@@ -194,18 +194,18 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
 @pytest.mark.asyncio
 @pytest.mark.parametrize("ignoreCache", [True, False])
 async def test_browsingContext_reload_ignoreCache(websocket, context_id,
-                                                  ignoreCache):
+                                                  ignoreCache, cacheable_url):
     if not ignoreCache:
-        pytest.xfail(reason="TODO: Fix flakiness with ignoreCache=False")
-
-    url = "https://example.com/"
+        pytest.xfail(
+            "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/pull/1466/files#r1377517937 need to be fixed"
+        )
 
     await subscribe(websocket, [
         "network.beforeRequestSent",
         "network.responseCompleted",
     ])
 
-    initial_navigation = await goto_url(websocket, context_id, url)
+    initial_navigation = await goto_url(websocket, context_id, cacheable_url)
 
     id = await send_JSON_command(
         websocket, {
@@ -254,7 +254,7 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
         "type": "success",
         "result": {
             "navigation": ANY_STR,
-            "url": url,
+            "url": cacheable_url,
         },
     }
 

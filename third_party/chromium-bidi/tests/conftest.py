@@ -183,6 +183,12 @@ def bad_ssl_url():
 
 
 @pytest.fixture
+def cacheable_url(local_server: LocalHttpServer):
+    """Return a generic example URL that can be cached."""
+    return local_server.url_cacheable()
+
+
+@pytest.fixture
 def read_sorted_messages(websocket):
     """Read the given number of messages from the websocket, and returns them
     in consistent order."""

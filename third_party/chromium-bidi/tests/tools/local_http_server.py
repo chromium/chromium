@@ -14,6 +14,7 @@
 #  limitations under the License.
 
 import base64
+from datetime import datetime
 from threading import Event
 
 from pytest_httpserver import HTTPServer
@@ -26,16 +27,21 @@ class LocalHttpServer:
 
     __http_server: HTTPServer
 
+    __start_time: datetime
+
     __path_200 = "/200"
     __path_permanent_redirect = "/301"
     __path_basic_auth = "/401"
     __path_hang_forever = "/hang_forever"
+    __path_cacheable = "/cacheable"
 
     default_200_page_content: str = 'default 200 page'
 
     def __init__(self, http_server: HTTPServer) -> None:
         super().__init__()
         self.__http_server = http_server
+
+        self.__start_time = datetime.now()
 
         # Set up 200 page.
         self.__http_server \
@@ -78,6 +84,26 @@ class LocalHttpServer:
 
         self.__http_server.expect_request(self.__path_hang_forever) \
             .respond_with_handler(hang_forever)
+
+        def cache(request: Request):
+            content = f"<html><body>{self.default_200_page_content}</body></html>"
+            if_modified_since = request.headers.get("If-Modified-Since")
+
+            if if_modified_since is not None:
+                return Response(content, 304, content_type="text/html")
+            else:
+                return Response(
+                    content,
+                    200,
+                    content_type="text/html",
+                    headers={
+                        "Cache-Control": 'public, max-age=31536000',
+                        'Last-Modified':
+                            self.__start_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    })
+
+        self.__http_server.expect_request(self.__path_cacheable) \
+            .respond_with_handler(cache)
 
     def hang_forever_stop(self):
         self.hang_forever_stop_flag.set()
@@ -123,3 +149,7 @@ class LocalHttpServer:
     def url_hang_forever(self) -> str:
         """Returns the url for the page, request to which will never be finished."""
         return self._url_for(self.__path_hang_forever)
+
+    def url_cacheable(self, host='localhost') -> str:
+        """Returns the url for the cacheable page with the `default_200_page_content`."""
+        return self._url_for(self.__path_cacheable, host)
