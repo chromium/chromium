@@ -278,26 +278,7 @@ void AppServerWin::PostRpcTaskOnMainSequence(base::OnceClosure task) {
   main_task_runner_->PostTask(FROM_HERE, std::move(task));
 }
 
-bool AppServerWin::RestoreComInterfaces(bool is_internal) {
-  if (AreComInterfacesPresent(updater_scope(), is_internal)) {
-    return true;
-  }
-
-  // Skip `DUMP_WILL_BE_CHECK` when running
-  // `IntegrationTest.UpdateAppSucceedsEvenAfterDeletingInterfaces`.
-  if (!base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, KEY_READ)
-           .HasValue(kRegValueIntegrationTestMode)) {
-    DUMP_WILL_BE_CHECK(false);
-  }
-  return InstallComInterfaces(updater_scope(), is_internal);
-}
-
 HRESULT AppServerWin::RegisterClassObjects() {
-  // TODO(crbug.com/1484803): maybe remove once the E_NOINTERFACE issue is
-  // fixed.
-  const bool succeeded = RestoreComInterfaces(false);
-  LOG_IF(ERROR, !succeeded);
-
   // Register COM class objects that are under either the ActiveSystem or the
   // ActiveUser group.
   // See wrl_classes.cc for details on the COM classes within the group.
@@ -306,11 +287,6 @@ HRESULT AppServerWin::RegisterClassObjects() {
 }
 
 HRESULT AppServerWin::RegisterInternalClassObjects() {
-  // TODO(crbug.com/1484803): maybe remove once the E_NOINTERFACE issue is
-  // fixed.
-  const bool succeeded = RestoreComInterfaces(true);
-  LOG_IF(ERROR, !succeeded);
-
   // Register COM class objects that are under either the InternalSystem or the
   // InternalUser group.
   // See wrl_classes.cc for details on the COM classes within the group.
@@ -323,12 +299,6 @@ void AppServerWin::UnregisterClassObjects() {
       Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
           .UnregisterObjects();
   LOG_IF(ERROR, FAILED(hr)) << "UnregisterObjects failed; hr: " << hr;
-
-  // TODO(crbug.com/1484803): maybe remove once the E_NOINTERFACE issue is
-  // fixed.
-  const bool succeeded =
-      RestoreComInterfaces(update_service_internal_ != nullptr);
-  LOG_IF(ERROR, !succeeded);
 }
 
 void AppServerWin::CreateWRLModule() {

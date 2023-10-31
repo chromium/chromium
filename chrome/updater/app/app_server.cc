@@ -36,7 +36,31 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/registry.h"
+#include "chrome/updater/win/setup/setup_util.h"
+#include "chrome/updater/win/win_constants.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace updater {
+
+namespace {
+#if BUILDFLAG(IS_WIN)
+void RestoreComInterfaces(UpdaterScope scope, bool is_internal) {
+  if (AreComInterfacesPresent(scope, is_internal)) {
+    return;
+  }
+
+  // Skip `DUMP_WILL_BE_CHECK` when running tests.
+  if (!base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, KEY_READ)
+           .HasValue(kRegValueIntegrationTestMode)) {
+    DUMP_WILL_BE_CHECK(false);
+  }
+
+  InstallComInterfaces(scope, is_internal);
+}
+#endif  // BUILDFLAG(IS_WIN)
+}  // namespace
 
 bool IsInternalService() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -115,6 +139,10 @@ base::OnceClosure AppServer::ModeCheck() {
 
   CHECK_EQ(base::Version(global_prefs->GetActiveVersion()),
            base::Version(kUpdaterVersion));
+
+#if BUILDFLAG(IS_WIN)
+  RestoreComInterfaces(updater_scope(), IsInternalService());
+#endif  // BUILDFLAG(IS_WIN)
 
   if (IsInternalService()) {
     prefs_ = CreateLocalPrefs(updater_scope());
