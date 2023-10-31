@@ -173,6 +173,9 @@ class RenderViewContextMenu
   // Returns the correct IDC for the Region Search context menu string
   int GetRegionSearchIdc() const;
 
+  // Returns the provider for image search.
+  const TemplateURL* GetImageSearchProvider() const;
+
   // Returns the correct provider name for the Search by Image context menu
   // string
   std::u16string GetImageSearchProviderName(const TemplateURL* provider) const;

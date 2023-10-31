@@ -1317,12 +1317,50 @@ int RenderViewContextMenu::GetRegionSearchIdc() const {
              : IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH;
 }
 
+const TemplateURL* RenderViewContextMenu::GetImageSearchProvider() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
+    // If Lacros is the only browser, disable region search in Ash because we
+    // have decided not to support this feature in the system UI so as not to
+    // confuse users by opening an Ash browser window.
+    return nullptr;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (!GetBrowser()) {
+    return nullptr;
+  }
+
+  // TODO(b/266624865): Image Search items do not function correctly when
+  // |GetBrowser| returns nullptr, as is the case for a context menu in the
+  // side panel, so for now we do not append image items in that case.
+  // TODO(nguyenbryan): Refactor to use lens_region_search_helper.cc after PDF
+  // support is cleaned up.
+  auto* service = TemplateURLServiceFactory::GetForProfile(GetProfile());
+  if (!service) {
+    return nullptr;
+  }
+
+  const TemplateURL* provider = service->GetDefaultSearchProvider();
+  if (!provider) {
+    return nullptr;
+  }
+
+  if (provider->image_url().empty() ||
+      !provider->image_url_ref().IsValid(service->search_terms_data())) {
+    return nullptr;
+  }
+
+  return provider;
+}
+
 std::u16string RenderViewContextMenu::GetImageSearchProviderName(
     const TemplateURL* provider) const {
   if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
     // The image search branding label should always be 'Google'.
     return provider->short_name();
   }
+
   // image_search_branding_label() returns the provider short name if no
   // image_search_branding_label is set.
   return provider->image_search_branding_label();
@@ -1878,27 +1916,12 @@ void RenderViewContextMenu::AppendImageItems() {
 }
 
 void RenderViewContextMenu::AppendSearchWebForImageItems() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    // If Lacros is the only browser, disable image search in Ash because we
-    // have decided not to support this feature in the system UI so as not to
-    // confuse users by opening an Ash browser window.
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // TODO(b/266624865): Image Search items do not function correctly when
-  // |GetBrowser| returns nullptr, as is the case for a context menu in the
-  // side panel, so for now we do not append image items in that case.
-  if (!GetBrowser() || !params_.has_image_contents) {
+  if (!params_.has_image_contents) {
     return;
   }
 
-  TemplateURLService* service =
-      TemplateURLServiceFactory::GetForProfile(GetProfile());
-  const TemplateURL* const provider = service->GetDefaultSearchProvider();
-  if (!provider || provider->image_url().empty() ||
-      !provider->image_url_ref().IsValid(service->search_terms_data())) {
+  const auto* provider = GetImageSearchProvider();
+  if (!provider) {
     return;
   }
 
@@ -1912,6 +1935,8 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   }
 
   MaybePrepareForLensQuery();
+
+  auto* service = TemplateURLServiceFactory::GetForProfile(GetProfile());
 
   if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
       base::FeatureList::IsEnabled(lens::features::kEnableImageTranslate) &&
@@ -2510,13 +2535,11 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
   }
 
-  TemplateURLService* service =
-      TemplateURLServiceFactory::GetForProfile(GetProfile());
-  const TemplateURL* provider = service->GetDefaultSearchProvider();
   // GetDefaultSearchProvider can return null in unit tests or when the
   // default search provider is disabled by policy. In these cases, we align
   // with the search web for image menu item by not adding the region search
   // menu item.
+  const TemplateURL* provider = GetImageSearchProvider();
   if (provider) {
     menu_model_.AddItem(GetRegionSearchIdc(),
                         l10n_util::GetStringFUTF16(
@@ -3638,37 +3661,14 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
 
 bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    // If Lacros is the only browser, disable region search in Ash because we
-    // have decided not to support this feature in the system UI so as not to
-    // confuse users by opening an Ash browser window.
-    return false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // TODO(nguyenbryan): Refactor to use lens_region_search_helper.cc after PDF
-  // support is cleaned up.
-  if (!GetBrowser())
-    return false;
-
-  TemplateURLService* service =
-      TemplateURLServiceFactory::GetForProfile(GetProfile());
-  if (!service)
-    return false;
-
-// Region selection is broken in PWAs on Mac b/250074889
 #if BUILDFLAG(IS_MAC)
+  // Region selection is broken in PWAs on Mac b/250074889
   if (IsInProgressiveWebApp())
     return false;
 #endif  // BUILDFLAG(IS_MAC)
 
-  const TemplateURL* provider = service->GetDefaultSearchProvider();
-  const bool provider_supports_image_search =
-      provider && !provider->image_url().empty() &&
-      provider->image_url_ref().IsValid(service->search_terms_data());
   return base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
-         provider_supports_image_search &&
+         GetImageSearchProvider() &&
          !params_.frame_url.SchemeIs(content::kChromeUIScheme) &&
          GetPrefs(browser_context_)
              ->GetBoolean(prefs::kLensRegionSearchEnabled);
