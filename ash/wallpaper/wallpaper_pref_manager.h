@@ -15,7 +15,6 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
@@ -57,9 +56,7 @@ class WallpaperProfileHelper {
 };
 
 // Manages wallpaper preferences and tracks the currently configured wallpaper.
-class ASH_EXPORT WallpaperPrefManager
-    : public base::SupportsWeakPtr<WallpaperPrefManager>,
-      public SessionObserver {
+class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
  public:
   // Names of nodes with wallpaper info in |kUserWallpaperInfo| dictionary.
   static const char kNewWallpaperAssetIdNodeName[];
