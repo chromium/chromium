@@ -1976,9 +1976,12 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #pragma mark - Sign in
 
 - (void)showSignIn {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.isSigninInProgress);
+  if (self.isSigninInProgress) {
+    // According to crbug.com/1498153, it is possible for the user to tap twice
+    // on the sign-in cell from the settings to open the sign-in dialog.
+    // If this happens, the second tap should ignored.
+    return;
+  }
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
   AuthenticationOperation operation =
