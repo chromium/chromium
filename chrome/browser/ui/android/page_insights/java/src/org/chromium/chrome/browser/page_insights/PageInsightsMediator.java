@@ -428,6 +428,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                             metadata,
                             /* isPrivacyNoticeRequired= */ config.getShouldXsurfaceLog(),
                             /* shouldHavePeekState= */ false);
+                    setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded */ 1.0f);
                     setCornerRadiusPx(mMaxCornerRadiusPx);
                     logPageInsightsEvent(PageInsightsEvent.USER_INVOKES_PIH);
                     // We need to perform this logging here, even though we also do it when the
