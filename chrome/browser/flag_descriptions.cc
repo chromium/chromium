@@ -6384,10 +6384,6 @@ const char kFilesConflictDialogDescription[] =
     "When enabled, the conflict dialog will be shown during file transfers "
     "if a file entry in the transfer exists at the destination.";
 
-const char kFilesDriveShortcutsName[] = "Files app Google Drive shortcut icons";
-const char kFilesDriveShortcutsDescription[] =
-    "When enabled, shows an icon for files in Google Drive that are shortcuts";
-
 const char kFilesExtractArchiveName[] = "Extract archive in Files app";
 const char kFilesExtractArchiveDescription[] =
     "Enable the simplified archive extraction feature in Files app";

@@ -9,7 +9,7 @@ import {RateLimiter} from '../../../common/js/async_util.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs, isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
-import {isDlpEnabled, isDriveShortcutsEnabled, isInlineSyncStatusEnabled, isJellyEnabled} from '../../../common/js/flags.js';
+import {isDlpEnabled, isInlineSyncStatusEnabled, isJellyEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
@@ -1020,11 +1020,9 @@ export class FileTable extends Table {
     }
     icon.appendChild(this.renderCheckmark_());
     label.appendChild(icon);
-    if (isDriveShortcutsEnabled()) {
-      // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on
-      // type 'FileTable'.
-      label.appendChild(filelist.renderIconBadge(this.ownerDocument));
-    }
+    // @ts-ignore: error TS2339: Property 'ownerDocument' does not exist on
+    // type 'FileTable'.
+    label.appendChild(filelist.renderIconBadge(this.ownerDocument));
     // @ts-ignore: error TS2339: Property 'entry' does not exist on type
     // 'HTMLDivElement'.
     label.entry = entry;

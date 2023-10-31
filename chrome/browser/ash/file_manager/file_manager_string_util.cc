@@ -1347,9 +1347,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("JELLY", chromeos::features::IsJellyEnabled());
 
-  dict->Set("DRIVE_SHORTCUTS",
-            base::FeatureList::IsEnabled(ash::features::kFilesDriveShortcuts));
-
   dict->Set("DRIVE_FS_BULK_PINNING",
             drive::util::IsDriveFsBulkPinningAvailable(profile));
 

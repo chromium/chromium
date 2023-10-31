@@ -12,7 +12,7 @@ import {decorate} from '../../../common/js/cr_ui.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
-import {isDriveShortcutsEnabled, isJellyEnabled} from '../../../common/js/flags.js';
+import {isJellyEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str} from '../../../common/js/translations.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
 import type {FilesTooltip} from '../../elements/files_tooltip.js';
@@ -758,9 +758,7 @@ export class FileGrid extends Grid {
     checkmark.className = 'detail-checkmark';
     detailIcon.appendChild(checkmark);
     bottom.appendChild(detailIcon);
-    if (isDriveShortcutsEnabled()) {
-      bottom.appendChild(filelist.renderIconBadge(li.ownerDocument));
-    }
+    bottom.appendChild(filelist.renderIconBadge(li.ownerDocument));
     bottom.appendChild(
         filelist.renderFileNameLabel(li.ownerDocument, entry, locationInfo));
     frame.appendChild(bottom);

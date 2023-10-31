@@ -2365,12 +2365,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
         ash::features::kFeatureManagementDriveFsBulkPinning);
   }
 
-  if (options.enable_drive_shortcuts) {
-    enabled_features.push_back(ash::features::kFilesDriveShortcuts);
-  } else {
-    disabled_features.push_back(ash::features::kFilesDriveShortcuts);
-  }
-
   if (options.enable_cros_components) {
     enabled_features.push_back(chromeos::features::kCrosComponents);
   } else {
@@ -3684,11 +3678,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "isInlineSyncStatusProgressEventsEnabled") {
     *output =
         options.enable_inline_sync_status_progress_events ? "true" : "false";
-    return;
-  }
-
-  if (name == "isDriveShortcutsEnabled") {
-    *output = options.enable_drive_shortcuts ? "true" : "false";
     return;
   }
 

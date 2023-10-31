@@ -70,13 +70,6 @@ export function isInlineSyncStatusEnabled() {
 }
 
 /**
- * Returns true if FilesDriveShortcuts flag is enabled.
- */
-export function isDriveShortcutsEnabled() {
-  return isFlagEnabled('DRIVE_SHORTCUTS');
-}
-
-/**
  * Returns whether the DriveFsBulkPinning feature flag is enabled.
  */
 export function isDriveFsBulkPinningEnabled() {
