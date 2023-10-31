@@ -332,28 +332,6 @@ class Runner():
         else:
           xcode.remove_runtimes(self.args.xcode_path)
 
-      # For MacOS13+, delete iOS simulator runtime because it will
-      # be re-added on the next task depending on test args
-      if self.args.version:
-        if mac_util.is_macos_13_or_higher() and not xcode.is_runtime_builtin(
-            self.args.version):
-          logging.debug(
-              'Deleting iOS simulator runtime %s after tests are finished...' %
-              self.args.version)
-          iossim_util.delete_simulator_runtime_and_wait(self.args.version)
-
-          # in case the above mechanism does not work, the below command
-          # will still cleanup any stale runtimes after 3 days.
-          # TODO(crbug.com/1487018): automatically clean up iOS runtime after
-          # we have deprecated iOS15.5.
-          """
-          logging.debug(
-              'Deleting stale iOS simulator runtime for more than %s days...' %
-              constants.MAX_RUNTIME_KEPT_DAYS)
-          iossim_util.delete_simulator_runtime_after_days(
-              constants.MAX_RUNTIME_KEPT_DAYS)
-          """
-
       if self.should_delete_xcode_cache:
         shutil.rmtree(self.args.xcode_path)
 

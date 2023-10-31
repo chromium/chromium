@@ -27,6 +27,17 @@ Build version 15A5209g
 
 ADD_SIMULATOR_RUNTIME_OUTPUT = 'ramdomid (iOS 15.0)'
 
+RUNTIME_15_0 = {
+    "build": "20C52",
+    "deletable": True,
+    "identifier": "F58C93A6-E6F2-4AC3-BBED-CA9195B186D3",
+    "kind": "Disk Image",
+    "signatureState": "Verified",
+    "sizeBytes": 6407069874,
+    "state": "Ready",
+    "version": "15.0"
+}
+
 
 class XcodeUtilTest(test_runner_test.TestCase):
   """Test class for xcode_util functions."""
@@ -283,32 +294,65 @@ class InstallTest(XcodeUtilTest):
 
   def test_install_runtime_dmg_with_non_builtin_runtime(self):
     with mock.patch('xcode_util.is_runtime_builtin', return_value=False):
-      with mock.patch('iossim_util.delete_simulator_runtime_and_wait'
-                     ) as mock_delete_simulator_runtime_and_wait:
+      with mock.patch(
+          'iossim_util.delete_least_recently_used_simulator_runtimes'
+      ) as mock_delete_least_recently_used_simulator_runtimes:
         with mock.patch(
-            'xcode_util._install_runtime_dmg') as mock__install_runtime_dmg:
+            'xcode_util.get_latest_runtime_build_cipd',
+            return_value='20C52') as mock_get_latest_runtime_build_cipd:
           with mock.patch(
-              'iossim_util.add_simulator_runtime',
-              return_value=ADD_SIMULATOR_RUNTIME_OUTPUT
-          ) as mock_add_simulator_runtime:
+              'iossim_util.get_simulator_runtime_info_by_build',
+              return_value=None) as mock_get_simulator_runtime_info_by_build:
             with mock.patch(
-                'xcode_util.get_runtime_dmg_name',
-                return_value='/path/to/runtime_cache_folder/test.dmg'):
-              with mock.patch('iossim_util.override_default_iphonesim_runtime'
-                             ) as mock_override_default_iphonesim_runtime:
-                result = xcode_util.install_runtime_dmg(
-                    mac_toolchain='mac_toolchain',
-                    runtime_cache_folder='/path/to/runtime_cache_folder',
-                    ios_version='15.0',
-                    xcode_build_version='15a123')
+                'xcode_util._install_runtime_dmg') as mock__install_runtime_dmg:
+              with mock.patch(
+                  'iossim_util.add_simulator_runtime',
+                  return_value=ADD_SIMULATOR_RUNTIME_OUTPUT
+              ) as mock_add_simulator_runtime:
+                with mock.patch(
+                    'xcode_util.get_runtime_dmg_name',
+                    return_value='/path/to/runtime_cache_folder/test.dmg'):
+                  with mock.patch(
+                      'iossim_util.override_default_iphonesim_runtime'
+                  ) as mock_override_default_iphonesim_runtime:
+                    result = xcode_util.install_runtime_dmg(
+                        mac_toolchain='mac_toolchain',
+                        runtime_cache_folder='/path/to/runtime_cache_folder',
+                        ios_version='15.0',
+                        xcode_build_version='15a123')
 
-    mock_delete_simulator_runtime_and_wait.assert_called_once_with('15.0')
+    mock_delete_least_recently_used_simulator_runtimes.assert_called_once_with()
+    mock_get_simulator_runtime_info_by_build.assert_called_once_with('20C52')
     mock__install_runtime_dmg.assert_called_once_with(
         'mac_toolchain', '/path/to/runtime_cache_folder', '15.0', '15a123')
     mock_add_simulator_runtime.assert_called_once_with(
         '/path/to/runtime_cache_folder/test.dmg')
     mock_override_default_iphonesim_runtime.assert_called_once_with(
         ADD_SIMULATOR_RUNTIME_OUTPUT, '15.0')
+
+  def test_install_runtime_dmg_already_exists(self):
+    with mock.patch('xcode_util.is_runtime_builtin', return_value=False):
+      with mock.patch(
+          'iossim_util.delete_least_recently_used_simulator_runtimes'
+      ) as mock_delete_least_recently_used_simulator_runtimes:
+        with mock.patch(
+            'xcode_util.get_latest_runtime_build_cipd',
+            return_value='20C52') as mock_get_latest_runtime_build_cipd:
+          with mock.patch(
+              'iossim_util.get_simulator_runtime_info_by_build',
+              return_value=RUNTIME_15_0
+          ) as mock_get_simulator_runtime_info_by_build:
+            with mock.patch(
+                'xcode_util._install_runtime_dmg') as mock__install_runtime_dmg:
+              result = xcode_util.install_runtime_dmg(
+                  mac_toolchain='mac_toolchain',
+                  runtime_cache_folder='/path/to/runtime_cache_folder',
+                  ios_version='15.0',
+                  xcode_build_version='15a123')
+
+    mock_delete_least_recently_used_simulator_runtimes.assert_called_once_with()
+    mock_get_simulator_runtime_info_by_build.assert_called_once_with('20C52')
+    mock__install_runtime_dmg.assert_not_called()
 
 
 class HelperFunctionTests(XcodeUtilTest):
@@ -443,6 +487,25 @@ Use "mac_toolchain help [command]" for more information about a command."""
     expected_result = "ios-14-4"
     actual_result = xcode_util.convert_ios_version_to_cipd_ref("14.4")
     self.assertEqual(expected_result, actual_result)
+
+  def test_get_latest_runtime_build_cipd_with_ios_version(self):
+    with mock.patch(
+        'xcode_util.describe_cipd_ref',
+        return_value='ios_runtime_build:21A342'):
+      result = xcode_util.get_latest_runtime_build_cipd('14c18', '15.0')
+    self.assertEqual(result, '21A342')
+
+  def test_get_latest_runtime_build_cipd_with_xcode_version(self):
+    with mock.patch('xcode_util.describe_cipd_ref') as mock_describe_cipd_ref:
+      mock_describe_cipd_ref.side_effect = ['', 'ios_runtime_build:21A342']
+      result = xcode_util.get_latest_runtime_build_cipd('14c18', '15.0')
+    self.assertEqual(result, '21A342')
+
+  def test_get_latest_runtime_build_cipd_return_no_match(self):
+    with mock.patch('xcode_util.describe_cipd_ref') as mock_describe_cipd_ref:
+      mock_describe_cipd_ref.side_effect = ['', '']
+      result = xcode_util.get_latest_runtime_build_cipd('14c18', '15.0')
+    self.assertIsNone(result)
 
 
 class MoveRuntimeTests(XcodeUtilTest):
