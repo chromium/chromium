@@ -58,7 +58,16 @@
   "background.persistent": {
     "channel": "stable",
     "extension_types": [
-      "extension", "legacy_packaged_app", "login_screen_extension" ]
+      "extension", "legacy_packaged_app", "login_screen_extension" ],
+    "max_manifest_version": 2
+  },
+  "background.scripts": {
+    "channel": "stable",
+    "max_manifest_version": 2
+  },
+  "background.page": {
+    "channel": "stable",
+    "max_manifest_version": 2
   },
   "background.service_worker": {
     "channel": "stable",

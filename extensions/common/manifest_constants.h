@@ -239,9 +239,6 @@ inline constexpr char16_t kBackgroundPermissionNeeded[] =
     "permission.";
 inline constexpr char16_t kBackgroundRequiredForPlatformApps[] =
     u"Packaged apps must have a background page or background scripts.";
-inline constexpr char kBackgroundSpecificationInvalidForManifestV3[] =
-    "The \"*\" key cannot be used with manifest_version 3. Use the "
-    "\"background.service_worker\" key instead.";
 inline constexpr char kCannotAccessAboutUrl[] =
     "Cannot access \"*\" at origin \"*\". Extension must have permission to "
     "access the frame's origin, and matchAboutBlank must be true.";

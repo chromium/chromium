@@ -49,6 +49,8 @@ const char* kDisallowedFeatures[] = {
     extensions::manifest_keys::kAutomation,
     extensions::manifest_keys::kBackground,
     extensions::manifest_keys::kBackgroundPersistent,
+    extensions::manifest_keys::kBackgroundScripts,
+    extensions::manifest_keys::kBackgroundPage,
     extensions::manifest_keys::kBackgroundServiceWorkerScript,
     extensions::manifest_keys::kBluetooth,
     extensions::manifest_keys::kBrowserAction,
