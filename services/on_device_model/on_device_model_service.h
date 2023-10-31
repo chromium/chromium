@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/on_device_model/public/cpp/on_device_model.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace on_device_model {
@@ -35,7 +36,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
       GetEstimatedPerformanceClassCallback callback) override;
 
  private:
-  static std::unique_ptr<mojom::OnDeviceModel> CreateModel(ModelAssets assets);
+  static std::unique_ptr<OnDeviceModel> CreateModel(ModelAssets assets);
 
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_receivers_;

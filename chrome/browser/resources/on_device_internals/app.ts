@@ -12,7 +12,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {OnDeviceModelRemote, PerformanceClass, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
+import {OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
 
 interface Response {
   text: string;
@@ -97,6 +97,7 @@ class OnDeviceInternalsAppElement extends PolymerElement {
   private model_: OnDeviceModelRemote|null;
   private performanceClassText_: string;
   private responses_: Response[];
+  private session_: SessionRemote|null = null;
   private text_: string;
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
@@ -141,6 +142,8 @@ class OnDeviceInternalsAppElement extends PolymerElement {
       this.error_ = result.error;
     } else {
       this.model_ = result.model || null;
+      this.session_ = new SessionRemote();
+      this.model_?.startSession(this.session_.$.bindNewPipeAndPassReceiver());
       this.modelPath_ = modelPath;
     }
   }
@@ -150,11 +153,12 @@ class OnDeviceInternalsAppElement extends PolymerElement {
   }
 
   private onExecute_() {
-    if (this.model_ === null) {
+    if (this.session_ === null) {
       return;
     }
     const router = new StreamingResponderCallbackRouter();
-    this.model_.execute(this.text_, router.$.bindNewPipeAndPassRemote());
+    this.session_.execute(
+        {text: this.text_}, router.$.bindNewPipeAndPassRemote());
     const onResponseId = router.onResponse.addListener((text: string) => {
       this.set(
           'currentResponse_.response',
