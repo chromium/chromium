@@ -26,6 +26,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+class PrefService;
+
 namespace password_manager {
 
 // These values are persisted to logs. Entries should not be renumbered and

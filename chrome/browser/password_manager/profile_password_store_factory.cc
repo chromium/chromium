@@ -14,6 +14,7 @@
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/affiliations_prefetcher_factory.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
+#include "chrome/browser/password_manager/password_store_backend_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,7 +22,6 @@
 #include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store.h"
-#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -107,8 +107,7 @@ ProfilePasswordStoreFactory::BuildServiceInstanceFor(
   // user isn't syncing which forces moving the passwords to the Android backend
   // to avoid data loss.
   ps = new password_manager::PasswordStore(
-      password_manager::PasswordStoreBackend::Create(profile->GetPath(),
-                                                     profile->GetPrefs()));
+      CreatePasswordStoreBackend(profile->GetPath(), profile->GetPrefs()));
 #else
   NOTIMPLEMENTED();
 #endif

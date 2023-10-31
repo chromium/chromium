@@ -19,8 +19,6 @@ class ProxyModelTypeControllerDelegate;
 class SyncService;
 }  // namespace syncer
 
-class PrefService;
-
 namespace password_manager {
 
 struct PasswordForm;
@@ -153,13 +151,6 @@ class PasswordStoreBackend
 
   // Propagates sync initialization event.
   virtual void OnSyncServiceInitialized(syncer::SyncService* sync_service) = 0;
-
-  // Factory function for creating the backend. The Local backend requires the
-  // provided `login_db_directory` for storage and Android backend for migration
-  // purposes.
-  static std::unique_ptr<PasswordStoreBackend> Create(
-      const base::FilePath& login_db_directory,
-      PrefService* prefs);
 };
 
 }  // namespace password_manager
