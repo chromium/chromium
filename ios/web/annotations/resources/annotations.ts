@@ -415,7 +415,7 @@ function removeHighlight(): void {
 function enumerateTextNodes(
     root: Node, process: EnumNodesFunction,
     includeShadowDOM: boolean = true,
-    filterInvisibles: boolean = false): void {
+    filterInvisibles: boolean = true): void {
   const nodes: Node[] = [root];
   let index = 0;
   let isPreviousSpace = true;
