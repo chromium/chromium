@@ -103,7 +103,53 @@ def parse_testharness_baseline(content_text: str) -> List[TestharnessLine]:
     return lines
 
 
-def format_testharness_baseline(lines: List[TestharnessLine]) -> str:
+def compact_test_output(lines: List[TestharnessLine]) -> List[TestharnessLine]:
+    """Returns a compact output for reflection test results.
+
+    The reflection tests contain a large number of tests.
+    This test output merges PASS lines to make baselines smaller.
+    """
+    def maybe_append_pass_line(compact_lines, prefix, subtest, passes):
+        if passes > 1:
+            compact_lines.append(
+                TestharnessLine(LineType.SUBTEST, {Status.PASS}, None,
+                                f'{prefix}: {passes} tests'))
+        elif passes == 1:
+            compact_lines.append(
+                TestharnessLine(LineType.SUBTEST, {Status.PASS}, None,
+                                subtest))
+
+    compact_lines = []
+    prev_prefix = None
+    prev_subtest = None
+    prev_passes = 0
+    for line in lines:
+        if (line.line_type != LineType.SUBTEST
+                or line.statuses != set([Status.PASS])
+                or ':' not in line.subtest):
+            maybe_append_pass_line(compact_lines, prev_prefix, prev_subtest,
+                                   prev_passes)
+            prev_passes = 0
+            compact_lines.append(line)
+            continue
+
+        # We get a PASS subtest with ':' in test name
+        prefix, suffix = line.subtest.split(':', 1)
+        if prefix != prev_prefix:
+            maybe_append_pass_line(compact_lines, prev_prefix, prev_subtest,
+                                   prev_passes)
+            prev_prefix, prev_subtest = prefix, line.subtest
+            prev_passes = 1
+        else:
+            prev_passes += 1
+
+    maybe_append_pass_line(compact_lines, prev_prefix, prev_subtest,
+                           prev_passes)
+    return compact_lines
+
+
+def format_testharness_baseline(lines: List[TestharnessLine],
+                                do_compact: bool) -> str:
     """Format testharness.js results in the same way as [0].
 
     [0]: //third_party/blink/web_tests/resources/testharnessreport.js
@@ -121,6 +167,9 @@ def format_testharness_baseline(lines: List[TestharnessLine]) -> str:
             status_counts[status] += 1
         except ValueError:
             pass
+
+    if do_compact:
+        lines = compact_test_output(lines)
 
     for line in lines:
         if line.line_type is LineType.SUBTEST:

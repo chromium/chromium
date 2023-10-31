@@ -293,6 +293,54 @@ class TestResultCheckerTest(unittest.TestCase):
         self.assertIsNone(results[5].subtest)
         self.assertIsNone(results[5].message)
 
+    def test_compact_test_output(self):
+        lines = [
+            TestharnessLine(LineType.TESTHARNESS_HEADER),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test1: a'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test1: b'),
+            TestharnessLine(LineType.FOOTER),
+        ]
+        expected_lines = [
+            TestharnessLine(LineType.TESTHARNESS_HEADER),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None,
+                            'Test1: 2 tests'),
+            TestharnessLine(LineType.FOOTER),
+        ]
+        self.assertEqual(expected_lines,
+                         testharness_results.compact_test_output(lines))
+
+        lines = [
+            TestharnessLine(LineType.HARNESS_ERROR, {Status.ERROR},
+                            'SyntaxError'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test1: a'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test2: a'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test2: b'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test3: a'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test3: b'),
+            TestharnessLine(LineType.SUBTEST, {Status.FAIL}, None, 'Test3: c'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test4: a'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test4'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test4: b'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test4: c'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test4: d'),
+        ]
+        expected_lines = [
+            TestharnessLine(LineType.HARNESS_ERROR, {Status.ERROR},
+                            'SyntaxError'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test1: a'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None,
+                            'Test2: 2 tests'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None,
+                            'Test3: 2 tests'),
+            TestharnessLine(LineType.SUBTEST, {Status.FAIL}, None, 'Test3: c'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test4: a'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None, 'Test4'),
+            TestharnessLine(LineType.SUBTEST, {Status.PASS}, None,
+                            'Test4: 3 tests'),
+        ]
+        self.assertEqual(expected_lines,
+                         testharness_results.compact_test_output(lines))
+
     def test_format_testharness_baseline(self):
         lines = [
             TestharnessLine(LineType.CONSOLE_WARNING,
@@ -307,7 +355,7 @@ class TestResultCheckerTest(unittest.TestCase):
             TestharnessLine(LineType.FOOTER),
         ]
         self.assertEqual(
-            testharness_results.format_testharness_baseline(lines),
+            testharness_results.format_testharness_baseline(lines, False),
             textwrap.dedent("""\
                 CONSOLE WARNING: warning before test
                 This is a testharness.js-based test.
@@ -329,7 +377,7 @@ class TestResultCheckerTest(unittest.TestCase):
         # to detect that this is an all-pass baseline, and possibly not write
         # it.
         self.assertEqual(
-            testharness_results.format_testharness_baseline(lines),
+            testharness_results.format_testharness_baseline(lines, False),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
                 [PASS] subtest
@@ -349,4 +397,4 @@ class TestResultCheckerTest(unittest.TestCase):
         self.assertIn(
             'Found 50 tests; 0 PASS, 50 FAIL, 0 TIMEOUT, 0 NOTRUN.',
             testharness_results.format_testharness_baseline(
-                lines).splitlines())
+                lines, False).splitlines())
