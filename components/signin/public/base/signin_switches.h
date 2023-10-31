@@ -43,6 +43,9 @@ enum class EnableBoundSessionCredentialsDiceSupport {
 };
 extern const base::FeatureParam<EnableBoundSessionCredentialsDiceSupport>
     kEnableBoundSessionCredentialsDiceSupport;
+
+BASE_DECLARE_FEATURE(kEnableChromeRefreshTokenBinding);
+bool IsChromeRefreshTokenBindingEnabled();
 #endif
 
 BASE_DECLARE_FEATURE(kEnableFetchingAccountCapabilities);

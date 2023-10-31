@@ -161,9 +161,10 @@ class DiceResponseHandlerTest : public testing::Test,
             SigninErrorController::AccountMode::PRIMARY_ACCOUNT,
             identity_test_env_.identity_manager()) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kEnableBoundSessionCredentials,
-        {{"dice-support", "enabled"}});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kEnableBoundSessionCredentials,
+                              switches::kEnableChromeRefreshTokenBinding},
+        /*disabled_features=*/{});
 #endif
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     AboutSigninInternals::RegisterPrefs(pref_service_.registry());

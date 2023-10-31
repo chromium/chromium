@@ -28,7 +28,7 @@ BASE_FEATURE(kEnableBoundSessionCredentials,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsBoundSessionCredentialsEnabled() {
-  return base::FeatureList::IsEnabled(switches::kEnableBoundSessionCredentials);
+  return base::FeatureList::IsEnabled(kEnableBoundSessionCredentials);
 }
 
 const base::FeatureParam<EnableBoundSessionCredentialsDiceSupport>::Option
@@ -40,6 +40,17 @@ const base::FeatureParam<EnableBoundSessionCredentialsDiceSupport>
         &kEnableBoundSessionCredentials, "dice-support",
         EnableBoundSessionCredentialsDiceSupport::kDisabled,
         &enable_bound_session_credentials_dice_support};
+
+// Enables Chrome refresh tokens binding to a device. Requires
+// "EnableBoundSessionCredentials" being enabled as a prerequisite.
+BASE_FEATURE(kEnableChromeRefreshTokenBinding,
+             "EnableChromeRefreshTokenBinding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsChromeRefreshTokenBindingEnabled() {
+  return IsBoundSessionCredentialsEnabled() &&
+         base::FeatureList::IsEnabled(kEnableChromeRefreshTokenBinding);
+}
 #endif
 
 // Enables fetching account capabilities and populating AccountInfo with the

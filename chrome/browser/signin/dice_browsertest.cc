@@ -721,18 +721,21 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
 class DiceBrowserTestWithBoundSessionCredentialsEnabled
     : public DiceBrowserTest {
  public:
-  DiceBrowserTestWithBoundSessionCredentialsEnabled() = default;
+  DiceBrowserTestWithBoundSessionCredentialsEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kEnableBoundSessionCredentials,
+                              switches::kEnableChromeRefreshTokenBinding},
+        /*disabled_features=*/{});
+  }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kEnableBoundSessionCredentials};
+  base::test::ScopedFeatureList scoped_feature_list_;
+  crypto::ScopedMockUnexportableKeyProvider mock_key_provider_;
 };
 
 // Checks that signin on Gaia triggers the fetch for a refresh token.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithBoundSessionCredentialsEnabled,
                        SigninWithTokenBinding) {
-  crypto::ScopedMockUnexportableKeyProvider mock_key_provider_;
-
   // Navigate to Gaia and sign in.
   NavigateToURL(kSigninURL);
 
