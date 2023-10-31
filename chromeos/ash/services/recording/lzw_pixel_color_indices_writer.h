@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_RECORDING_LZW_PIXEL_COLOR_INDICES_WRITER_H_
 
 #include <cstdint>
+#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -78,6 +79,11 @@ class LzwPixelColorIndicesWriter {
     // Maps from a color index appearing in a sequence of color indices in the
     // input stream to an LZW compression code that represents this sequence of
     // indices.
+    // This map doesn't need to be sorted, and contains generally small number
+    // of entries. Therefore, a flat hash data structure achieved better results
+    // in the benchmarks done in http://b/308218563. However,
+    // `absl::flat_hash_map` is still not allowed in the Chromium codebase, so
+    // we'll keep this as a `base::flat_map` for now.
     base::flat_map<ColorIndex, LzwCode> next_index_to_code;
   };
 
@@ -153,7 +159,12 @@ class LzwPixelColorIndicesWriter {
   //   represents a new color indices pattern that starts at this pixel.
   //
   // This table implements a variant of an R-way Trie data structure.
-  base::flat_map<LzwCode, CodeTableEntry> code_table_;
+  //
+  // This map doesn't need to be sorted, and shouldn't be flat, since it will
+  // have a lot of insertions in it (at least `kMaxNumberOfLzwCodes` (4096)
+  // before it gets reset and reused). `std::unordered_map` achieved better
+  // results in the benhcmarks (see http://b/308218563).
+  std::unordered_map<LzwCode, CodeTableEntry> code_table_;
 };
 
 }  // namespace recording
