@@ -7,7 +7,7 @@ import pathlib
 import sys
 
 _SRC_ROOT = pathlib.Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(_SRC_ROOT / 'build' / '3pp'))
+sys.path.insert(0, str(_SRC_ROOT / 'build' / '3pp_common'))
 import fetch_github_release
 
 

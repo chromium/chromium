@@ -8,6 +8,8 @@ import json
 import os
 import pathlib
 import re
+import sys
+from typing import Dict, List
 import urllib.request
 
 
@@ -15,7 +17,14 @@ def _fetch_json(url):
     return json.load(urllib.request.urlopen(url))
 
 
-def _latest(api_url, install_scripts=None):
+def _find_valid_urls(release, artifact_regex):
+    urls = [x['browser_download_url'] for x in release['assets']]
+    if artifact_regex:
+        urls = [x for x in urls if re.search(artifact_regex, x)]
+    return urls
+
+
+def _latest(api_url, install_scripts=None, artifact_regex=None):
     # Make the version change every time this file changes.
     md5 = hashlib.md5()
     md5.update(pathlib.Path(__file__).read_bytes())
@@ -27,8 +36,15 @@ def _latest(api_url, install_scripts=None):
             md5.update(pathlib.Path(path).read_bytes())
     file_hash = md5.hexdigest()[:10]
 
-    release = _fetch_json(f'{api_url}/releases/latest')['tag_name']
-    print('{}.{}'.format(release, file_hash))
+    releases: List[Dict] = _fetch_json(f'{api_url}/releases')
+    for release in releases:
+        tag_name = release['tag_name']
+        urls = _find_valid_urls(release, artifact_regex)
+        if len(urls) == 1:
+            print('{}.{}'.format(tag_name, file_hash))
+            return
+        print(f'Bad urls={urls} for tag_name={tag_name}, skipping.',
+              file=sys.stderr)
 
 
 def _get_url(api_url,
@@ -38,13 +54,10 @@ def _get_url(api_url,
     # Split off our md5 hash.
     version = os.environ['_3PP_VERSION'].rsplit('.', 1)[0]
     json_dict = _fetch_json(f'{api_url}/releases/tags/{version}')
-    urls = [x['browser_download_url'] for x in json_dict['assets']]
-
-    if artifact_regex:
-        urls = [x for x in urls if re.search(artifact_regex, x)]
+    urls = _find_valid_urls(json_dict, artifact_regex)
 
     if len(urls) != 1:
-        raise Exception('len(urls) != 1: \n' + '\n'.join(urls))
+        raise Exception('len(urls) != 1, urls: \n' + '\n'.join(urls))
 
     partial_manifest = {
         'url': urls,
@@ -61,8 +74,7 @@ def main(*,
          artifact_filename=None,
          artifact_extension=None,
          artifact_regex=None,
-         install_scripts=None,
-         extract_extension=None):
+         install_scripts=None):
     """The fetch.py script for a 3pp module.
 
     Args:
@@ -82,13 +94,11 @@ def main(*,
 
     api_url = f'https://api.github.com/repos/{project}'
     if args.action == 'latest':
-        _latest(api_url, install_scripts=install_scripts)
+        _latest(api_url,
+                install_scripts=install_scripts,
+                artifact_regex=artifact_regex)
     else:
         _get_url(api_url,
                  artifact_filename=artifact_filename,
                  artifact_extension=artifact_extension,
                  artifact_regex=artifact_regex)
-
-
-if __name__ == '__main__':
-    main()
