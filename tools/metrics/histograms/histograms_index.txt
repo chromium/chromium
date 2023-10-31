@@ -48,6 +48,7 @@ tools/metrics/histograms/metadata/download/histograms.xml
 tools/metrics/histograms/metadata/enterprise/histograms.xml
 tools/metrics/histograms/metadata/event/histograms.xml
 tools/metrics/histograms/metadata/extensions/histograms.xml
+tools/metrics/histograms/metadata/families/enums.xml
 tools/metrics/histograms/metadata/families/histograms.xml
 tools/metrics/histograms/metadata/fastpair/histograms.xml
 tools/metrics/histograms/metadata/feature_engagement/histograms.xml
