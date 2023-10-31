@@ -257,7 +257,7 @@ class ChildType(object):
 
 
 class ObjectNodeType(NodeType):
-  """A complex node type that has attributes or other nodes as children.
+  r"""A complex node type that has attributes or other nodes as children.
 
   Unmarshalls nodes to objects.
 
@@ -268,7 +268,7 @@ class ObjectNodeType(NodeType):
         attributes, when serializing objects to XML. The "regex" can be None
         to do no validation, otherwise the attribute must match that pattern.
     text_attribute: An attribute stored in the text content of the node.
-    children: A list of ChildTypes describing the objects children.
+    children: A list of ChildTypes describing the objects' children.
 
   Raises:
     ValueError: Attributes contains duplicate definitions.
