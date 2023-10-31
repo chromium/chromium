@@ -8197,8 +8197,8 @@
   },
   {
     "name": "webui-omnibox-popup",
-    "owners": [ "mahmadi@chromium.org", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 120
+    "owners": [ "mahmadi@chromium.org", "orinj@chromium.org", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "webui-tab-strip",
