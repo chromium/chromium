@@ -37,6 +37,8 @@
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
@@ -126,6 +128,8 @@ class TextfieldDestroyerController : public TextfieldController {
 
 // Class that focuses a textfield when it sees a KeyDown event.
 class TextfieldFocuser : public View {
+  METADATA_HEADER(TextfieldFocuser, View)
+
  public:
   explicit TextfieldFocuser(Textfield* textfield) : textfield_(textfield) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -146,6 +150,9 @@ class TextfieldFocuser : public View {
   bool consume_ = true;
   raw_ptr<Textfield, DanglingUntriaged> textfield_;
 };
+
+BEGIN_METADATA(TextfieldFocuser)
+END_METADATA
 
 class MockInputMethod : public ui::InputMethodBase {
  public:
@@ -340,6 +347,8 @@ void MockInputMethod::ClearComposition() {
 
 // A Textfield wrapper to intercept OnKey[Pressed|Released]() results.
 class TestTextfield : public views::Textfield {
+  METADATA_HEADER(TestTextfield, views::Textfield)
+
  public:
   TestTextfield() = default;
 
@@ -404,6 +413,9 @@ class TestTextfield : public views::Textfield {
 
   base::WeakPtrFactory<TestTextfield> weak_ptr_factory_{this};
 };
+
+BEGIN_METADATA(TestTextfield)
+END_METADATA
 
 TextfieldTest::TextfieldTest() {
   ui::SetUpInputMethodForTesting(new MockInputMethod());

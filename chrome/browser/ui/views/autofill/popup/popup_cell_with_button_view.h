@@ -22,10 +22,6 @@ namespace views {
 class ImageButton;
 }  // namespace views
 
-namespace gfx {
-class canvas;
-}  // namespace gfx
-
 namespace autofill {
 
 // Receives notifications of mouse enter/exit events of the cell button.
@@ -36,30 +32,7 @@ class CellButtonDelegate {
 };
 
 namespace {
-
-// Used to determine when both the placeholder and the button are painted
-// and have dimensions. This is important to solve the issue where deleting an
-// entry leads to another entry being rendered right under the cursor.
-class ButtonPlaceholder : public views::View, public views::ViewObserver {
- public:
-  explicit ButtonPlaceholder(CellButtonDelegate* cell_button_delegate);
-  ~ButtonPlaceholder() override;
-
-  // views::View:
-  void OnPaint(gfx::Canvas* canvas) override;
-  int GetHeightForWidth(int width) const override;
-
-  // views::ViewObserver:
-  void OnViewBoundsChanged(views::View* observed_view) override;
-
- private:
-  // Scoped observation for OnViewBoundsChanged.
-  base::ScopedObservation<views::View, views::ViewObserver>
-      view_bounds_changed_observer_{this};
-  const raw_ptr<CellButtonDelegate> cell_button_delegate_ = nullptr;
-  bool first_paint_happened_ = false;
-};
-
+class ButtonPlaceholder;
 }  // namespace
 
 // A class for a single selectable popup cell that also has a button.
@@ -93,7 +66,7 @@ class PopupCellWithButtonView : public PopupCellView,
   void SetCellButtonBehavior(CellButtonBehavior cell_button_behavior);
 
   // Returns the view that contains the button or `nullptr` if no button is set.
-  views::View* GetButtonContainer() { return button_placeholder_; }
+  views::View* GetButtonContainer();
 
   // PopupCellView:
   void SetSelected(bool selected) override;

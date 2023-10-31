@@ -13,6 +13,7 @@
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
@@ -55,6 +56,31 @@ class CellButtonController : public views::ButtonController {
 
  private:
   raw_ptr<CellButtonDelegate> cell_button_delegate_ = nullptr;
+};
+
+// Used to determine when both the placeholder and the button are painted
+// and have dimensions. This is important to solve the issue where deleting an
+// entry leads to another entry being rendered right under the cursor.
+class ButtonPlaceholder : public views::View, public views::ViewObserver {
+  METADATA_HEADER(ButtonPlaceholder, views::View)
+
+ public:
+  explicit ButtonPlaceholder(CellButtonDelegate* cell_button_delegate);
+  ~ButtonPlaceholder() override;
+
+  // views::View:
+  void OnPaint(gfx::Canvas* canvas) override;
+  int GetHeightForWidth(int width) const override;
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+
+ private:
+  // Scoped observation for OnViewBoundsChanged.
+  base::ScopedObservation<views::View, views::ViewObserver>
+      view_bounds_changed_observer_{this};
+  const raw_ptr<CellButtonDelegate> cell_button_delegate_ = nullptr;
+  bool first_paint_happened_ = false;
 };
 
 ButtonPlaceholder::ButtonPlaceholder(CellButtonDelegate* cell_button_delegate)
@@ -114,6 +140,10 @@ int ButtonPlaceholder::GetHeightForWidth(int width) const {
   // height regardless of children being visible or not.
   return GetPreferredSize().height();
 }
+
+BEGIN_METADATA(ButtonPlaceholder)
+END_METADATA
+
 }  // namespace
 
 PopupCellWithButtonView::PopupCellWithButtonView(
@@ -152,6 +182,10 @@ void PopupCellWithButtonView::SetCellButtonBehavior(
   if (button_) {
     button_->SetVisible(ShouldCellButtonBeVisible());
   }
+}
+
+views::View* PopupCellWithButtonView::GetButtonContainer() {
+  return button_placeholder_;
 }
 
 void PopupCellWithButtonView::HandleKeyPressEventFocusOnButton() {

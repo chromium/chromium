@@ -530,7 +530,7 @@ void ActionItem::EndUpdate() {
   }
 }
 
-BEGIN_METADATA(ActionItem, BaseAction)
+BEGIN_METADATA(ActionItem)
 ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 ADD_PROPERTY_METADATA(absl::optional<ActionId>, ActionId)
 ADD_PROPERTY_METADATA(ui::Accelerator, Accelerator)

@@ -7,6 +7,7 @@
 #include "components/media_message_center/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
@@ -22,6 +23,8 @@ constexpr auto kViewInsets = gfx::Insets::VH(0, 5);
 constexpr auto kButtonInsets = gfx::Insets::TLBR(5, 8, 5, 12);
 
 class StopCastingButton : public views::LabelButton {
+  METADATA_HEADER(StopCastingButton, views::LabelButton)
+
  public:
   StopCastingButton(PressedCallback callback,
                     const std::u16string& text,
@@ -49,6 +52,9 @@ class StopCastingButton : public views::LabelButton {
     views::FocusRing::Get(this)->SetColorId(focus_ring_color_id);
   }
 };
+
+BEGIN_METADATA(StopCastingButton)
+END_METADATA
 
 }  // namespace
 

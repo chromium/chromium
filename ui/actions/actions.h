@@ -134,6 +134,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionInvocationContext
 };
 
 class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
+  METADATA_HEADER(ActionItem, BaseAction)
+
  public:
   using ActionChangedCallback = ui::metadata::PropertyChangedCallback;
   using InvokeActionCallback =
@@ -230,8 +232,6 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
     std::unique_ptr<ActionItem> action_item_;
     ChildList children_;
   };
-
-  METADATA_HEADER(ActionItem);
 
   ActionItem();
   explicit ActionItem(InvokeActionCallback callback);

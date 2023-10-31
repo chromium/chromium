@@ -18,6 +18,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -43,12 +45,17 @@ namespace views::test {
 namespace {
 
 class TestButton : public Button {
+  METADATA_HEADER(TestButton, Button)
+
  public:
   TestButton() : Button(Button::PressedCallback()) {}
   TestButton(const TestButton&) = delete;
   TestButton& operator=(const TestButton&) = delete;
   ~TestButton() override = default;
 };
+
+BEGIN_METADATA(TestButton)
+END_METADATA
 
 class TestAXEventObserver : public AXEventObserver {
  public:
@@ -1110,12 +1117,17 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
 
 #if defined(USE_AURA)
 class DerivedTestView : public View {
+  METADATA_HEADER(DerivedTestView, View)
+
  public:
   DerivedTestView() = default;
   ~DerivedTestView() override = default;
 
   void OnBlur() override { SetVisible(false); }
 };
+
+BEGIN_METADATA(DerivedTestView)
+END_METADATA
 
 using AXViewTest = ViewsTestBase;
 
