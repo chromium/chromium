@@ -28,6 +28,9 @@ constexpr gfx::Size kMinLandscapeDialogSize{738, 540};
 constexpr gfx::Size kMaxPortraitDialogSize{680, 1040};
 constexpr gfx::Size kMinPortraitDialogSize{461, 820};
 
+constexpr int kOobeDialogShadowElevation = 12;
+constexpr int kOobeDialogCornerRadius = 24;
+
 gfx::Size CalculateOobeDialogSize(const gfx::Size& host_size,
                                   int shelf_height,
                                   bool is_horizontal) {

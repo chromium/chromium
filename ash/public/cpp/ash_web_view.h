@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/view.h"
 
 class GURL;
@@ -25,16 +26,16 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
   // Initialization parameters which dictate how an instance of AshWebView
   // should behave.
   struct InitParams {
-    InitParams();
-    InitParams(const InitParams& copy);
-    ~InitParams();
-
     // If enabled, AshWebView will automatically resize to the size
     // desired by its embedded WebContents. Note that, if specified, the
     // WebContents will be bounded by |min_size| and |max_size|.
     bool enable_auto_resize = false;
     absl::optional<gfx::Size> min_size;
     absl::optional<gfx::Size> max_size;
+
+    // If present the corners of the web view will be clipped to the specified
+    // radii.
+    absl::optional<gfx::RoundedCornersF> rounded_corners;
 
     // If enabled, AshWebView will suppress navigation attempts of its
     // embedded WebContents. When navigation suppression occurs,

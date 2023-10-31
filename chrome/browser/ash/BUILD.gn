@@ -2042,6 +2042,8 @@ source_set("ash") {
     "login/ui/login_web_dialog.h",
     "login/ui/oobe_dialog_size_utils.cc",
     "login/ui/oobe_dialog_size_utils.h",
+    "login/ui/oobe_dialog_util_impl.cc",
+    "login/ui/oobe_dialog_util_impl.h",
     "login/ui/oobe_ui_dialog_delegate.cc",
     "login/ui/oobe_ui_dialog_delegate.h",
     "login/ui/signin_ui.h",

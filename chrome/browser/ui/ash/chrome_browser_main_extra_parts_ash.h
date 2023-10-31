@@ -17,6 +17,7 @@ namespace ash {
 class ArcWindowWatcher;
 class NetworkPortalNotificationController;
 class NewWindowDelegateProvider;
+class OobeDialogUtil;
 class RefreshRateController;
 class VideoConferenceTrayController;
 }  // namespace ash
@@ -157,6 +158,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<AppAccessNotifier> app_access_notifier_;
   std::unique_ptr<policy::DisplaySettingsHandler> display_settings_handler_;
   std::unique_ptr<AshWebViewFactoryImpl> ash_web_view_factory_;
+  std::unique_ptr<ash::OobeDialogUtil> oobe_dialog_util_;
   std::unique_ptr<chromeos::ReadWriteCardsManager> read_write_cards_manager_;
 
   // Initialized in PostBrowserStart in all configs:

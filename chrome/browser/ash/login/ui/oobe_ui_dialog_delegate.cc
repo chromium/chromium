@@ -47,8 +47,6 @@ namespace ash {
 namespace {
 
 constexpr char kGaiaURL[] = "chrome://oobe/gaia-signin";
-constexpr int kOobeDialogShadowElevation = 12;
-constexpr int kOobeDialogCornerRadius = 24;
 
 }  // namespace
 

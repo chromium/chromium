@@ -341,6 +341,7 @@
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/remote_maintenance_curtain_ui.h"
 #include "chrome/browser/ui/webui/ash/sensor_info/sensor.mojom.h"
 #include "chrome/browser/ui/webui/ash/sensor_info/sensor_info_ui.h"
 #include "chrome/browser/ui/webui/ash/set_time_ui.h"
@@ -1147,7 +1148,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::BluetoothPairingDialogUI, nearby_share::NearbyShareDialogUI,
       ash::cloud_upload::CloudUploadUI, ash::office_fallback::OfficeFallbackUI,
       ash::multidevice_setup::MultiDeviceSetupDialogUI, ash::ParentAccessUI,
-      ash::EmojiUI,
+      ash::EmojiUI, ash::RemoteMaintenanceCurtainUI,
 #endif
 #if BUILDFLAG(ENABLE_COMPOSE)
       ComposeUI,

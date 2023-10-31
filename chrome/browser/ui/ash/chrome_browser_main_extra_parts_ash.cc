@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
+#include "chrome/browser/ash/login/ui/oobe_dialog_util_impl.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
@@ -117,8 +118,9 @@ class ChromeShelfControllerInitializer
       const ChromeShelfControllerInitializer&) = delete;
 
   ~ChromeShelfControllerInitializer() override {
-    if (!chrome_shelf_controller_)
+    if (!chrome_shelf_controller_) {
       session_manager::SessionManager::Get()->RemoveObserver(this);
+    }
   }
 
   // session_manager::SessionManagerObserver:
@@ -304,8 +306,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
                                                      bool is_initial_profile) {
   // The setup below is intended to run for only the initial profile.
-  if (!is_initial_profile)
+  if (!is_initial_profile) {
     return;
+  }
 
   login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
   // https://crbug.com/884127 ensuring that LoginScreenClientImpl is initialized
@@ -342,6 +345,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
   bool force_throttle = base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kForceRefreshRateThrottle);
+
+  oobe_dialog_util_ = std::make_unique<ash::OobeDialogUtilImpl>();
 
   game_mode_controller_ = std::make_unique<game_mode::GameModeController>();
   refresh_rate_controller_ = std::make_unique<ash::RefreshRateController>(
@@ -394,6 +399,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // Initialized in PostProfileInit (which may not get called in some tests).
   refresh_rate_controller_.reset();
   game_mode_controller_.reset();
+  oobe_dialog_util_.reset();
   ash_web_view_factory_.reset();
   network_portal_notification_controller_.reset();
   display_settings_handler_.reset();
@@ -424,8 +430,9 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   ambient_client_.reset();
 
   cast_config_controller_media_router_.reset();
-  if (ash::NetworkConnect::IsInitialized())
+  if (ash::NetworkConnect::IsInitialized()) {
     ash::NetworkConnect::Shutdown();
+  }
   network_connect_delegate_.reset();
   user_profile_loaded_observer_.reset();
   arc_window_watcher_.reset();

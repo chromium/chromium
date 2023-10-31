@@ -247,6 +247,8 @@ component("cpp") {
     "notifier_settings_controller.cc",
     "notifier_settings_controller.h",
     "notifier_settings_observer.h",
+    "oobe_dialog_util.cc",
+    "oobe_dialog_util.h",
     "pagination/pagination_controller.cc",
     "pagination/pagination_controller.h",
     "pagination/pagination_model.cc",

@@ -11,10 +11,4 @@ namespace ash {
 AshWebView::AshWebView() = default;
 AshWebView::~AshWebView() = default;
 
-// AshWebView::InitParams ------------------------------------------------
-
-AshWebView::InitParams::InitParams() = default;
-AshWebView::InitParams::InitParams(const InitParams& copy) = default;
-AshWebView::InitParams::~InitParams() = default;
-
 }  // namespace ash
