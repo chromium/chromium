@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address_mediator.h"
 
-#import <vector>
-
 #import "base/metrics/user_metrics.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"

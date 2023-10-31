@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #include <memory>
+#include <vector>
 
 namespace autofill {
 class AutofillProfile;
