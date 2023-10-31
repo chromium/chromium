@@ -24,6 +24,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {Network} from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
+import type {EventManager} from '../events/EventManager.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
@@ -31,10 +32,16 @@ import type {NetworkStorage} from './NetworkStorage.js';
 /** Maps 1:1 to CdpTarget. */
 export class NetworkManager {
   readonly #cdpTarget: CdpTarget;
+  readonly #eventManager: EventManager;
   readonly #networkStorage: NetworkStorage;
 
-  private constructor(cdpTarget: CdpTarget, networkStorage: NetworkStorage) {
+  private constructor(
+    cdpTarget: CdpTarget,
+    eventManager: EventManager,
+    networkStorage: NetworkStorage
+  ) {
     this.#cdpTarget = cdpTarget;
+    this.#eventManager = eventManager;
     this.#networkStorage = networkStorage;
   }
 
@@ -58,7 +65,8 @@ export class NetworkManager {
 
     request = new NetworkRequest(
       id,
-      this.#networkStorage.eventManager,
+      this.#eventManager,
+      this.#networkStorage,
       this.#cdpTarget,
       redirectCount
     );
@@ -70,9 +78,14 @@ export class NetworkManager {
 
   static create(
     cdpTarget: CdpTarget,
+    eventManager: EventManager,
     networkStorage: NetworkStorage
   ): NetworkManager {
-    const networkManager = new NetworkManager(cdpTarget, networkStorage);
+    const networkManager = new NetworkManager(
+      cdpTarget,
+      eventManager,
+      networkStorage
+    );
 
     cdpTarget.browserCdpClient.on(
       'Target.detachedFromTarget',

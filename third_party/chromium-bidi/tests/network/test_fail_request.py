@@ -119,6 +119,7 @@ async def test_fail_request_twice(websocket, context_id, example_url):
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [result["intercept"]],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -322,6 +323,7 @@ async def test_fail_request_completes(websocket, context_id, example_url):
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [result["intercept"]],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -395,6 +397,7 @@ async def test_fail_request_completes_new_request_still_blocks(
     assert result == {
         "intercept": ANY_UUID,
     }
+    intercept_id = result["intercept"]
 
     await send_JSON_command(
         websocket, {
@@ -415,6 +418,7 @@ async def test_fail_request_completes_new_request_still_blocks(
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [intercept_id],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -487,6 +491,7 @@ async def test_fail_request_completes_new_request_still_blocks(
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [intercept_id],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -553,6 +558,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [result["intercept"]],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -592,6 +598,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [result["intercept"]],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -721,6 +728,7 @@ async def test_fail_request_remove_intercept_inflight_request(
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [intercept_id],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,

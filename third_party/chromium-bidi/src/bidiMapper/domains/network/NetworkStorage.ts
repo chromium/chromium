@@ -16,20 +16,14 @@
  */
 import type {Protocol} from 'devtools-protocol';
 
-import {
-  Network,
-  NoSuchInterceptException,
-  ChromiumBidi,
-} from '../../../protocol/protocol.js';
+import {Network, NoSuchInterceptException} from '../../../protocol/protocol.js';
 import {URLPattern} from '../../../utils/UrlPattern.js';
 import {uuidv4} from '../../../utils/uuid.js';
-import type {EventManager} from '../events/EventManager.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
 
 /** Stores network and intercept maps. */
 export class NetworkStorage {
-  #eventManager: EventManager;
   /**
    * A map from network request ID to Network Request objects.
    * Needed as long as information about requests comes from different events.
@@ -55,14 +49,6 @@ export class NetworkStorage {
       response: Network.ResponseData;
     }
   >();
-
-  constructor(eventManager: EventManager) {
-    this.#eventManager = eventManager;
-  }
-
-  get eventManager() {
-    return this.#eventManager;
-  }
 
   disposeRequestMap() {
     for (const request of this.#requestMap.values()) {
@@ -291,30 +277,12 @@ export class NetworkStorage {
 
   /** #@see https://w3c.github.io/webdriver-bidi/#get-the-network-intercepts */
   getNetworkIntercepts(
-    event: Exclude<
-      ChromiumBidi.Network.EventNames,
-      ChromiumBidi.Network.EventNames.FetchError
-    >,
-    requestId: Network.Request
+    requestId: Network.Request,
+    phase?: Network.InterceptPhase
   ): Network.Intercept[] {
     const request = this.#requestMap.get(requestId);
     if (!request) {
       return [];
-    }
-
-    let phase: Network.InterceptPhase | undefined = undefined;
-    switch (event) {
-      case ChromiumBidi.Network.EventNames.BeforeRequestSent:
-        phase = Network.InterceptPhase.BeforeRequestSent;
-        break;
-      case ChromiumBidi.Network.EventNames.ResponseStarted:
-        phase = Network.InterceptPhase.ResponseStarted;
-        break;
-      case ChromiumBidi.Network.EventNames.AuthRequired:
-        phase = Network.InterceptPhase.AuthRequired;
-        break;
-      case ChromiumBidi.Network.EventNames.ResponseCompleted:
-        return [];
     }
 
     const interceptIds: Network.Intercept[] = [];

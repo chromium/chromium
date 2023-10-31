@@ -151,6 +151,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [intercept_id],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -249,6 +250,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
                 }, ]
             },
         })
+    intercept_id_2 = result["intercept"]
 
     await send_JSON_command(
         websocket, {
@@ -268,6 +270,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [intercept_id_1],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -304,6 +307,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [intercept_id_2],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,

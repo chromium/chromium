@@ -164,7 +164,7 @@ async def test_continue_request_completes(websocket, context_id, example_url):
                     ["network.beforeRequestSent", "network.responseCompleted"],
                     [context_id])
 
-    await execute_command(
+    result = await execute_command(
         websocket, {
             "method": "network.addIntercept",
             "params": {
@@ -195,6 +195,7 @@ async def test_continue_request_completes(websocket, context_id, example_url):
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [result["intercept"]],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -246,7 +247,7 @@ async def test_continue_request_twice(websocket, context_id, example_url):
                     ["network.beforeRequestSent", "network.responseCompleted"],
                     [context_id])
 
-    await execute_command(
+    result = await execute_command(
         websocket, {
             "method": "network.addIntercept",
             "params": {
@@ -277,6 +278,7 @@ async def test_continue_request_twice(websocket, context_id, example_url):
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [result["intercept"]],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -367,6 +369,7 @@ async def test_continue_request_remove_intercept_inflight_request(
             "initiator": {
                 "type": "other",
             },
+            "intercepts": [intercept_id],
             "isBlocked": True,
             "navigation": ANY_STR,
             "redirectCount": 0,

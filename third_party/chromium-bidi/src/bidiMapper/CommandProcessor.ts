@@ -82,7 +82,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#parser = parser;
     this.#logger = logger;
 
-    const networkStorage = new NetworkStorage(eventManager);
+    const networkStorage = new NetworkStorage();
     const preloadScriptStorage = new PreloadScriptStorage();
 
     // keep-sorted start block=yes

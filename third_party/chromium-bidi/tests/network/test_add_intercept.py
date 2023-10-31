@@ -322,6 +322,7 @@ async def test_add_intercept_blocks(websocket, context_id, url_patterns):
     assert event_response == {
         "method": "network.beforeRequestSent",
         "params": {
+            "intercepts": [result["intercept"]],
             "isBlocked": True,
             "initiator": {
                 "type": "other",
