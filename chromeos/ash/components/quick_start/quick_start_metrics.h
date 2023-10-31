@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_METRICS_H_
 
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/quick_start/quick_start_response_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -191,31 +192,6 @@ class QuickStartMetrics {
 
   static void RecordForcedUpdateRequired(int32_t session_id);
 
-  static void RecordFastPairAdvertisementStarted(
-      AdvertisingMethod advertising_method);
-
-  static void RecordFastPairAdvertisementEnded(
-      AdvertisingMethod advertising_method,
-      bool succeeded,
-      base::TimeDelta duration,
-      absl::optional<FastPairAdvertisingErrorCode> error_code);
-
-  static void RecordNearbyConnectionsAdvertisementStarted(int32_t session_id);
-
-  static void RecordNearbyConnectionsAdvertisementEnded(
-      int32_t session_id,
-      AdvertisingMethod advertising_method,
-      bool succeeded,
-      int duration,
-      absl::optional<NearbyConnectionsAdvertisingErrorCode> error_code);
-
-  static void RecordHandshakeStarted(bool handshake_started);
-
-  static void RecordHandshakeResult(
-      bool succeeded,
-      base::TimeDelta duration,
-      absl::optional<HandshakeErrorCode> error_code);
-
   static void RecordMessageSent(MessageType message_type);
 
   static void RecordMessageReceived(
@@ -242,6 +218,37 @@ class QuickStartMetrics {
   QuickStartMetrics(const QuickStartMetrics&) = delete;
   const QuickStartMetrics& operator=(const QuickStartMetrics&) = delete;
   virtual ~QuickStartMetrics();
+
+  void RecordFastPairAdvertisementStarted(AdvertisingMethod advertising_method);
+
+  void RecordFastPairAdvertisementEnded(
+      bool succeeded,
+      absl::optional<FastPairAdvertisingErrorCode> error_code);
+
+  void RecordNearbyConnectionsAdvertisementStarted(
+      int32_t session_id,
+      AdvertisingMethod advertising_method);
+
+  void RecordNearbyConnectionsAdvertisementEnded(
+      bool succeeded,
+      absl::optional<NearbyConnectionsAdvertisingErrorCode> error_code);
+
+  // TODO(b/308200138): Change the wording here to make this less confusing.
+  void RecordHandshakeStarted(bool handshake_started);
+
+  void RecordHandshakeResult(bool succeeded,
+                             absl::optional<HandshakeErrorCode> error_code);
+
+ private:
+  // Timer to keep track of Fast Pair advertising duration. Should be
+  // constructed when advertising starts and destroyed when advertising
+  // finishes.
+  std::unique_ptr<base::ElapsedTimer> fast_pair_advertising_timer_;
+  absl::optional<AdvertisingMethod> fast_pair_advertising_method_;
+
+  // Timer to keep track of handshake duration. Should be constructed when
+  // the handshake starts and destroyed when the handshake finishes.
+  std::unique_ptr<base::ElapsedTimer> handshake_elapsed_timer_;
 };
 
 }  // namespace ash::quick_start

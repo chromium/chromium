@@ -10,7 +10,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
@@ -87,10 +86,7 @@ class FastPairAdvertiser : public device::BluetoothAdvertisement::Observer {
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<device::BluetoothAdvertisement> advertisement_;
   base::OnceClosure stop_callback_;
-  // Timer to keep track of advertising duration.
-  std::unique_ptr<base::ElapsedTimer> advertising_timer_;
-  // Used for metrics to record advertising method.
-  QuickStartMetrics::AdvertisingMethod advertising_method_;
+  QuickStartMetrics quick_start_metrics_;
   base::WeakPtrFactory<FastPairAdvertiser> weak_ptr_factory_{this};
 };
 

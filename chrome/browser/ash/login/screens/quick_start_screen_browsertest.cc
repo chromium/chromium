@@ -150,7 +150,8 @@ class QuickStartBrowserTest : public OobeBaseTest {
   void SimulatePhoneConnection() {
     connection_broker()->on_start_advertising_callback().Run(true);
     connection_broker()->InitiateConnection("fake_device_id");
-    connection_broker()->AuthenticateConnection("fake_device_id");
+    connection_broker()->AuthenticateConnection(
+        "fake_device_id", quick_start::Connection::AuthenticationMethod::kQR);
   }
 
   void AbortFlowFromPhoneSide() {

@@ -133,73 +133,6 @@ void QuickStartMetrics::RecordGaiaTransferAttempted(bool attempted) {
 }
 
 // static
-void QuickStartMetrics::RecordFastPairAdvertisementStarted(
-    AdvertisingMethod advertising_method) {
-  base::UmaHistogramEnumeration(
-      kFastPairAdvertisementStartedAdvertisingMethodHistogramName,
-      advertising_method);
-}
-
-// static
-void QuickStartMetrics::RecordFastPairAdvertisementEnded(
-    AdvertisingMethod advertising_method,
-    bool succeeded,
-    base::TimeDelta duration,
-    absl::optional<FastPairAdvertisingErrorCode> error_code) {
-  if (succeeded) {
-    CHECK(!error_code.has_value());
-  } else {
-    CHECK(error_code.has_value());
-    base::UmaHistogramEnumeration(
-        kFastPairAdvertisementEndedErrorCodeHistogramName, error_code.value());
-  }
-  base::UmaHistogramBoolean(kFastPairAdvertisementEndedSucceededHistogramName,
-                            succeeded);
-  base::UmaHistogramTimes(kFastPairAdvertisementEndedDurationHistogramName,
-                          duration);
-  base::UmaHistogramEnumeration(
-      kFastPairAdvertisementEndedAdvertisingMethodHistogramName,
-      advertising_method);
-}
-
-// static
-void QuickStartMetrics::RecordNearbyConnectionsAdvertisementStarted(
-    int32_t session_id) {
-  // TODO(279614071): Add advertising metrics.
-}
-
-// static
-void QuickStartMetrics::RecordNearbyConnectionsAdvertisementEnded(
-    int32_t session_id,
-    AdvertisingMethod advertising_method,
-    bool succeeded,
-    int duration,
-    absl::optional<NearbyConnectionsAdvertisingErrorCode> error_code) {
-  // TODO(279614071): Add advertising metrics.
-}
-
-// static
-void QuickStartMetrics::RecordHandshakeStarted(bool handshake_started) {
-  base::UmaHistogramBoolean(kHandshakeStartedName, handshake_started);
-}
-
-// static
-void QuickStartMetrics::RecordHandshakeResult(
-    bool succeeded,
-    base::TimeDelta duration,
-    absl::optional<HandshakeErrorCode> error_code) {
-  if (succeeded) {
-    CHECK(!error_code.has_value());
-  } else {
-    CHECK(error_code.has_value());
-    base::UmaHistogramEnumeration(kHandshakeResultErrorCodeName,
-                                  error_code.value());
-  }
-  base::UmaHistogramBoolean(kHandshakeResultSucceededName, succeeded);
-  base::UmaHistogramTimes(kHandshakeResultDurationName, duration);
-}
-
-// static
 void QuickStartMetrics::RecordMessageSent(MessageType message_type) {
   base::UmaHistogramEnumeration(kMessageSentMessageTypeName, message_type);
 }
@@ -227,7 +160,7 @@ void QuickStartMetrics::RecordMessageReceived(
 // static
 void QuickStartMetrics::RecordAttestationCertificateRequested(
     int32_t session_id) {
-  // TODO(279614284): Add FIDO assertion metrics.
+  // TODO(b/279614284): Add FIDO assertion metrics.
 }
 
 // static
@@ -236,7 +169,7 @@ void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
     bool succeded,
     int duration,
     absl::optional<AttestationCertificateRequestErrorCode> error_code) {
-  // TODO(279614284): Add FIDO assertion metrics.
+  // TODO(b/279614284): Add FIDO assertion metrics.
 }
 
 // static
@@ -255,11 +188,87 @@ void QuickStartMetrics::RecordGaiaTransferResult(
 
 // static
 void QuickStartMetrics::RecordEntryPoint(EntryPoint entry_point) {
-  // TODO(280306867): Add metric for entry point.
+  // TODO(b/280306867): Add metric for entry point.
 }
 
 QuickStartMetrics::QuickStartMetrics() = default;
 
 QuickStartMetrics::~QuickStartMetrics() = default;
+
+void QuickStartMetrics::RecordFastPairAdvertisementStarted(
+    AdvertisingMethod advertising_method) {
+  CHECK(!fast_pair_advertising_timer_);
+  CHECK(!fast_pair_advertising_method_);
+
+  fast_pair_advertising_timer_ = std::make_unique<base::ElapsedTimer>();
+  fast_pair_advertising_method_ = advertising_method;
+  base::UmaHistogramEnumeration(
+      kFastPairAdvertisementStartedAdvertisingMethodHistogramName,
+      advertising_method);
+}
+
+void QuickStartMetrics::RecordFastPairAdvertisementEnded(
+    bool succeeded,
+    absl::optional<FastPairAdvertisingErrorCode> error_code) {
+  CHECK(fast_pair_advertising_timer_);
+  CHECK(fast_pair_advertising_method_.has_value());
+
+  base::TimeDelta duration = fast_pair_advertising_timer_->Elapsed();
+
+  if (succeeded) {
+    CHECK(!error_code.has_value());
+  } else {
+    CHECK(error_code.has_value());
+    base::UmaHistogramEnumeration(
+        kFastPairAdvertisementEndedErrorCodeHistogramName, error_code.value());
+  }
+  base::UmaHistogramBoolean(kFastPairAdvertisementEndedSucceededHistogramName,
+                            succeeded);
+  base::UmaHistogramTimes(kFastPairAdvertisementEndedDurationHistogramName,
+                          duration);
+  base::UmaHistogramEnumeration(
+      kFastPairAdvertisementEndedAdvertisingMethodHistogramName,
+      fast_pair_advertising_method_.value());
+
+  fast_pair_advertising_method_ = absl::nullopt;
+  fast_pair_advertising_timer_.reset();
+}
+
+void QuickStartMetrics::RecordNearbyConnectionsAdvertisementStarted(
+    int32_t session_id,
+    AdvertisingMethod advertising_method) {
+  // TODO(b/279614071): Add advertising metrics.
+}
+
+void QuickStartMetrics::RecordNearbyConnectionsAdvertisementEnded(
+    bool succeeded,
+    absl::optional<NearbyConnectionsAdvertisingErrorCode> error_code) {
+  // TODO(b/279614071): Add advertising metrics.
+}
+
+void QuickStartMetrics::RecordHandshakeStarted(bool handshake_started) {
+  base::UmaHistogramBoolean(kHandshakeStartedName, handshake_started);
+  CHECK(!handshake_elapsed_timer_);
+
+  if (handshake_started) {
+    handshake_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
+  }
+}
+
+void QuickStartMetrics::RecordHandshakeResult(
+    bool succeeded,
+    absl::optional<HandshakeErrorCode> error_code) {
+  CHECK(handshake_elapsed_timer_);
+
+  if (!succeeded) {
+    CHECK(error_code.has_value());
+    base::UmaHistogramEnumeration(kHandshakeResultErrorCodeName,
+                                  error_code.value());
+  }
+  base::UmaHistogramBoolean(kHandshakeResultSucceededName, succeeded);
+  base::UmaHistogramTimes(kHandshakeResultDurationName,
+                          handshake_elapsed_timer_->Elapsed());
+  handshake_elapsed_timer_.reset();
+}
 
 }  // namespace ash::quick_start
