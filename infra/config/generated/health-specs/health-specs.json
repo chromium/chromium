@@ -795,6 +795,12 @@
       "android-cronet-marshmallow-arm64-perf-rel": {
         "_default": "_default"
       },
+      "android-cronet-riscv64-dbg": {
+        "_default": "_default"
+      },
+      "android-cronet-riscv64-rel": {
+        "_default": "_default"
+      },
       "android-cronet-x64-dbg": {
         "_default": "_default"
       },

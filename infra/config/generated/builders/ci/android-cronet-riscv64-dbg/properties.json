@@ -11,7 +11,7 @@
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
-              "builder_group": "chromium.android.fyi",
+              "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
                 "config": "main_builder"
@@ -47,7 +47,7 @@
   },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -58,6 +58,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android.fyi",
+  "builder_group": "chromium.android",
   "recipe": "chromium"
 }
