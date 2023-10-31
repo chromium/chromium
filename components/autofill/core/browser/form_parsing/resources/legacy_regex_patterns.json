@@ -1328,7 +1328,29 @@
     ],
     "es": [
       {
-        "positive_pattern": "entre.*calle",
+        "positive_pattern": "entre.*calles",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+      }
+    ]
+  },
+  "BETWEEN_STREETS_LINE_1": {
+    "es": [
+      {
+        "positive_pattern": "entre.*calle(.*1)?",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+      }
+    ]
+  },
+  "BETWEEN_STREETS_LINE_2": {
+    "es": [
+      {
+        "positive_pattern": "entre.*calle(.*2)?|y.*calle",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],

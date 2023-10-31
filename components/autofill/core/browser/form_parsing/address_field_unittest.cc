@@ -165,9 +165,36 @@ TEST_P(AddressFieldTest, ParseBetweenStreets) {
   enabled.InitAndEnableFeature(
       features::kAutofillEnableSupportForBetweenStreets);
 
-  AddTextFormFieldData("entre-calle", "Entre calle",
+  AddTextFormFieldData("entre-calles", "Entre calles",
                        ADDRESS_HOME_BETWEEN_STREETS);
   ClassifyAndVerify();
+}
+
+// Tests that multiple between streets field are correctly classified.
+TEST_P(AddressFieldTest, ParseBetweenStreetsLines) {
+  // TODO(crbug.com/1441904): Remove once launched.
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableSupportForBetweenStreets};
+
+  std::vector<std::pair<std::pair<std::string, std::string>,
+                        std::pair<std::string, std::string>>>
+      // "Name", "Label" for ADDRESS_HOME_BETWEEN_STREETS_1
+      // "Name", "Label" for ADDRESS_HOME_BETWEEN_STREETS_2
+      instances = {{{"entre-calle1", "Entre calle 1"},
+                    {"entre-calle2", "Entre calle 2"}},
+                   {{"entre-calle1", ""}, {"entre-calle2", ""}},
+                   {{"entre-calle", ""}, {"entre-calle", ""}},
+                   {{"entre-calle", ""}, {"y-calle", ""}},
+                   {{"", "Entre calle 1"}, {"", "Entre calle 2"}}};
+
+  for (const auto& [first_field, second_field] : instances) {
+    ClearFieldsAndExpectations();
+    AddTextFormFieldData(first_field.first, first_field.second,
+                         ADDRESS_HOME_BETWEEN_STREETS_1);
+    AddTextFormFieldData(second_field.first, second_field.second,
+                         ADDRESS_HOME_BETWEEN_STREETS_2);
+    ClassifyAndVerify();
+  }
 }
 
 // Tests that address level 2 field is correctly classified.
@@ -267,7 +294,7 @@ TEST_P(AddressFieldTest,
   AddTextFormFieldData("country", "Country", ADDRESS_HOME_COUNTRY);
   AddTextFormFieldData("zip", "Zip", ADDRESS_HOME_ZIP);
   AddTextFormFieldData("landmark", "Landmark", ADDRESS_HOME_LANDMARK);
-  AddTextFormFieldData("entre-calle", "Entre calle",
+  AddTextFormFieldData("entre-calles", "Entre calles",
                        ADDRESS_HOME_BETWEEN_STREETS);
   AddTextFormFieldData("municipio", "Municipio", ADDRESS_HOME_ADMIN_LEVEL2);
   AddTextFormFieldData("complemento", "Complemento", ADDRESS_HOME_OVERFLOW);
