@@ -55,18 +55,6 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
           rp_embedder_url, ContentSettingsType::FEDERATED_IDENTITY_API)) {
     return PermissionStatus::BLOCKED_EMBARGO;
   }
-  // TODO(npm): FedCM is currently restricted to contexts where third party
-  // cookies are not blocked unless the FedCmWithoutThirdPartyCookies flag or
-  // FedCmIdpSigninStatusEnabled flag is enabled. The IDP signin status API
-  // override is implemented in the caller because it can be enabled through
-  // origin trials. This block can be removed when the IDP Signin status API
-  // ships.
-  // See https://crbug.com/1451396
-  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
-      !cookie_settings_->IsThirdPartyAccessAllowed(rp_embedder_url) &&
-      !base::FeatureList::IsEnabled(features::kFedCmWithoutThirdPartyCookies)) {
-    return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
-  }
 
   return PermissionStatus::GRANTED;
 }

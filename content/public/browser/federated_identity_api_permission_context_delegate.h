@@ -20,7 +20,6 @@ class CONTENT_EXPORT FederatedIdentityApiPermissionContextDelegate {
   enum class PermissionStatus {
     GRANTED,
     BLOCKED_VARIATIONS,
-    BLOCKED_THIRD_PARTY_COOKIES_BLOCKED,
     BLOCKED_SETTINGS,
     BLOCKED_EMBARGO,
   };

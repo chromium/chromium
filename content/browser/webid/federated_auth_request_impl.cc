@@ -770,11 +770,6 @@ void FederatedAuthRequestImpl::RequestToken(
     case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
       error_token_status = TokenStatus::kDisabledInFlags;
       break;
-    case FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED:
-      error_token_status = TokenStatus::kThirdPartyCookiesBlocked;
-      request_result =
-          FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked;
-      break;
     case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
       error_token_status = TokenStatus::kDisabledInSettings;
       request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
@@ -2474,17 +2469,7 @@ void FederatedAuthRequestImpl::OnRejectRequest() {
 FederatedApiPermissionStatus FederatedAuthRequestImpl::GetApiPermissionStatus(
     const url::Origin& idp_origin) {
   DCHECK(api_permission_delegate_);
-  FederatedApiPermissionStatus status =
-      api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin());
-  // We allow FedCM without third-party cookies when the IDP sign-in
-  // status API is enabled, in general or through OT.
-  if (status ==
-          FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED &&
-      webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin) ==
-          FedCmIdpSigninStatusMode::ENABLED) {
-    status = FederatedApiPermissionStatus::GRANTED;
-  }
-  return status;
+  return api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin());
 }
 
 void FederatedAuthRequestImpl::AcceptAccountsDialogForDevtools(

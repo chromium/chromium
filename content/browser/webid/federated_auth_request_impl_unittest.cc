@@ -2604,27 +2604,6 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsVisible", 0, 1);
 }
 
-TEST_F(FederatedAuthRequestImplTest, DisabledWhenThirdPartyCookiesBlocked) {
-  // We only disable FedCM when the signin status API is disabled.
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmIdpSigninStatusEnabled);
-
-  test_api_permission_delegate_->permission_override_ =
-      std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
-                     ApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED);
-
-  RequestExpectations expectations = {
-      RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked,
-      /*standalone_console_message=*/absl::nullopt,
-      /*selected_idp_config_url=*/absl::nullopt};
-  RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
-  EXPECT_FALSE(DidFetchAnyEndpoint());
-
-  ExpectStatusMetrics(TokenStatus::kThirdPartyCookiesBlocked);
-  CheckAllFedCmSessionIDs();
-}
-
 TEST_F(FederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),

@@ -92,11 +92,6 @@ void FederatedAuthRevokeRequest::SetCallbackAndStart(
     case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
       error_revoke_status = RevokeStatusForMetrics::kDisabledInFlags;
       break;
-    case FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED:
-      // Use a generic error because by the time we ship we should not have this
-      // type of status.
-      error_revoke_status = RevokeStatusForMetrics::kDisabledInSettings;
-      break;
     case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
       // TODO(crbug.com/1495108): determine if blocking is the right behavior.
       error_revoke_status = RevokeStatusForMetrics::kDisabledInSettings;
