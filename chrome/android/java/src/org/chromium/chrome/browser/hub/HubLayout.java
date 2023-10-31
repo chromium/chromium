@@ -180,7 +180,7 @@ public class HubLayout extends Layout {
         Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
         if (mPreviousLayoutType == LayoutType.BROWSING) {
             final Tab currentTab = mTabModelSelector.getCurrentTab();
-            createLayoutTabsForTab(currentTab);
+            createLayoutTabForTabId(getIdForTab(currentTab));
             mCurrentSceneLayer = mTabSceneLayer;
             captureTabThumbnail(currentTab, thumbnailCallback);
         } else {
@@ -218,7 +218,7 @@ public class HubLayout extends Layout {
         mCurrentSceneLayer = mEmptySceneLayer;
         mPreviousLayoutType = LayoutType.NONE;
         mCurrentAnimationRunner = null;
-        resetLayoutTabs();
+        resetLayoutTabs(/* clearVisibleIds= */ true);
     }
 
     @Override
@@ -235,22 +235,27 @@ public class HubLayout extends Layout {
 
         forceAnimationToFinish();
 
-        mCurrentSceneLayer = mEmptySceneLayer;
-
+        // TODO(crbug/1495121): Remove the need for this logic if feasible and just get the value
+        // from TabModelSelector.
+        int tabId =
+                nextTabId != Tab.INVALID_TAB_ID ? nextTabId : mTabModelSelector.getCurrentTabId();
         @LayoutType
         int nextLayoutType = mLayoutStateProvider.getNextLayoutType();
+        if (nextLayoutType == LayoutType.BROWSING) {
+            // During fade and translate animations the composited scene layer is visible. At the
+            // end of the animation a composited tab will be fully visible. To ensure continuity
+            // during the animation create and show the mTabSceneLayer with the LayoutTab for the
+            // tabId that will be shown once the animation finishes.
+            createLayoutTabForTabId(tabId);
+            mCurrentSceneLayer = mTabSceneLayer;
+        }
+
         HubContainerView containerView = mHubController.getContainerView();
         HubLayoutAnimatorProvider animatorProvider =
                 createHideAnimatorProvider(containerView, nextLayoutType);
 
         Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
         if (thumbnailCallback != null) {
-            // TODO(crbug/1495121): Remove the need for this logic if feasible and just get the
-            // value from TabModelSelector.
-            int tabId =
-                    nextTabId != Tab.INVALID_TAB_ID
-                            ? nextTabId
-                            : mTabModelSelector.getCurrentTabId();
             if (nextLayoutType == LayoutType.BROWSING
                     && mTabContentManager != null
                     && tabId != Tab.INVALID_TAB_ID) {
@@ -282,6 +287,10 @@ public class HubLayout extends Layout {
         containerView.setVisibility(View.INVISIBLE);
         mCurrentAnimationRunner = null;
         mHubController.onHubLayoutDoneHiding();
+
+        mCurrentSceneLayer = mEmptySceneLayer;
+        // Don't clear the visible ids because the next layout might have already updated them.
+        resetLayoutTabs(/* clearVisibleIds= */ false);
     }
 
     @Override
@@ -479,17 +488,18 @@ public class HubLayout extends Layout {
         return mLayoutTabs[0];
     }
 
-    private void createLayoutTabsForTab(@Nullable Tab tab) {
-        int tabId = getIdForTab(tab);
+    private void createLayoutTabForTabId(int tabId) {
         LayoutTab layoutTab = createLayoutTab(tabId, mTabModelSelector.isIncognitoSelected());
         mLayoutTabs = new LayoutTab[] {layoutTab};
         updateCacheVisibleIds(Collections.singletonList(tabId));
     }
 
-    private void resetLayoutTabs() {
-        // Clear the visible IDs as once mLayoutTabs is empty tabs thumbnails cannot be captured.
-        // This prevents thumbnail requests from waiting indefinitely.
-        updateCacheVisibleIds(Collections.emptyList());
+    private void resetLayoutTabs(boolean clearVisibleIds) {
+        if (clearVisibleIds) {
+            // Clear the visible IDs as once mLayoutTabs is empty tabs thumbnails cannot be
+            // captured. This prevents thumbnail requests from waiting indefinitely.
+            updateCacheVisibleIds(Collections.emptyList());
+        }
 
         // mLayoutTabs is used in conjunction with mTabSceneLayer to capture a tab thumbnail for
         // the last visible Tab prior to transitioning to the Hub. This should be nulled once

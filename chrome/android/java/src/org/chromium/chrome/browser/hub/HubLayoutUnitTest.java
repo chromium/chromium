@@ -245,47 +245,19 @@ public class HubLayoutUnitTest {
 
     @Test
     @SmallTest
-    public void testUpdateLayoutAndLayoutTabsDuringShow() {
-        assertThat(mHubLayout.getSceneLayer(), instanceOf(SceneLayer.class));
-        LayoutTab[] layoutTabs = mHubLayout.getLayoutTabsToRender();
-        assertNull(layoutTabs);
+    public void testUpdateSceneLayerAndLayoutTabsDuringShow() {
+        animateCheckingSceneLayerAndLayoutTabs(
+                () -> startShowing(LayoutType.BROWSING, true), TAB_ID);
+        verify(mTabContentManager)
+                .updateVisibleIds(eq(Collections.emptyList()), eq(Tab.INVALID_TAB_ID));
+    }
 
-        mHubLayout.updateLayout(FAKE_TIME, FAKE_TIME);
-        verify(mUpdateHost, never()).requestUpdate();
-
-        startShowing(LayoutType.BROWSING, true);
-
-        assertThat(mHubLayout.getSceneLayer(), instanceOf(StaticTabSceneLayer.class));
-        layoutTabs = mHubLayout.getLayoutTabsToRender();
-        assertEquals(1, layoutTabs.length);
-        assertEquals(TAB_ID, layoutTabs[0].getId());
-        verify(mTabContentManager, times(1))
-                .updateVisibleIds(eq(Collections.singletonList(TAB_ID)), eq(Tab.INVALID_TAB_ID));
-
-        assertEquals(0f, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET), FLOAT_ERROR);
-
-        float contentOffset = 100f;
-        when(mBrowserControlsStateProvider.getContentOffset())
-                .thenReturn(Math.round(contentOffset));
-        mHubLayout.updateSceneLayer(
-                new RectF(),
-                new RectF(),
-                mTabContentManager,
-                mResourceManager,
-                mBrowserControlsStateProvider);
-        assertEquals(contentOffset, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET), FLOAT_ERROR);
-
-        // Change this so updateSnap() returns true.
-        layoutTabs[0].set(LayoutTab.RENDER_X, 5);
-        mHubLayout.updateLayout(FAKE_TIME, FAKE_TIME);
-        verify(mUpdateHost, times(1)).requestUpdate();
-
-        ShadowLooper.runUiThreadTasks();
-
-        assertThat(mHubLayout.getSceneLayer(), instanceOf(SceneLayer.class));
-        layoutTabs = mHubLayout.getLayoutTabsToRender();
-        assertNull(layoutTabs);
-        verify(mTabContentManager, times(1))
+    @Test
+    @SmallTest
+    public void testUpdateSceneLayerAndLayoutTabsDuringHide() {
+        animateCheckingSceneLayerAndLayoutTabs(
+                () -> startHiding(LayoutType.BROWSING, NEW_TAB_ID), NEW_TAB_ID);
+        verify(mTabContentManager, never())
                 .updateVisibleIds(eq(Collections.emptyList()), eq(Tab.INVALID_TAB_ID));
     }
 
@@ -661,6 +633,49 @@ public class HubLayoutUnitTest {
         when(mLayoutStateProvider.getNextLayoutType()).thenReturn(nextLayout);
 
         mHubLayout.startHiding(nextTabId);
+    }
+
+    private void animateCheckingSceneLayerAndLayoutTabs(
+            Runnable startAnimationRunnable, int tabId) {
+        assertThat(mHubLayout.getSceneLayer(), instanceOf(SceneLayer.class));
+        LayoutTab[] layoutTabs = mHubLayout.getLayoutTabsToRender();
+        assertNull(layoutTabs);
+
+        mHubLayout.updateLayout(FAKE_TIME, FAKE_TIME);
+        verify(mUpdateHost, never()).requestUpdate();
+
+        startAnimationRunnable.run();
+
+        assertThat(mHubLayout.getSceneLayer(), instanceOf(StaticTabSceneLayer.class));
+        layoutTabs = mHubLayout.getLayoutTabsToRender();
+        assertEquals(1, layoutTabs.length);
+        assertEquals(tabId, layoutTabs[0].getId());
+        verify(mTabContentManager)
+                .updateVisibleIds(eq(Collections.singletonList(tabId)), eq(Tab.INVALID_TAB_ID));
+
+        assertEquals(0f, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET), FLOAT_ERROR);
+
+        float contentOffset = 100f;
+        when(mBrowserControlsStateProvider.getContentOffset())
+                .thenReturn(Math.round(contentOffset));
+        mHubLayout.updateSceneLayer(
+                new RectF(),
+                new RectF(),
+                mTabContentManager,
+                mResourceManager,
+                mBrowserControlsStateProvider);
+        assertEquals(contentOffset, layoutTabs[0].get(LayoutTab.CONTENT_OFFSET), FLOAT_ERROR);
+
+        // Change this so updateSnap() returns true.
+        layoutTabs[0].set(LayoutTab.RENDER_X, 5);
+        mHubLayout.updateLayout(FAKE_TIME, FAKE_TIME);
+        verify(mUpdateHost).requestUpdate();
+
+        ShadowLooper.runUiThreadTasks();
+
+        assertThat(mHubLayout.getSceneLayer(), instanceOf(SceneLayer.class));
+        layoutTabs = mHubLayout.getLayoutTabsToRender();
+        assertNull(layoutTabs);
     }
 
     private void setupHubLayoutAnimatorAndProvider(@HubLayoutAnimationType int animationType) {
