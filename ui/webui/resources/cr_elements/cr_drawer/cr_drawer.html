@@ -1,12 +1,14 @@
     <style>
       :host {
         --cr-drawer-width: 256px;
+        --cr-drawer-border-start-end-radius: 0;
       }
 
       :host dialog {
         --transition-timing: 200ms ease;
         background-color: var(--cr-drawer-background-color, #fff);
         border: none;
+        border-start-end-radius: var(--cr-drawer-border-start-end-radius);
         bottom: 0;
         left: calc(-1 * var(--cr-drawer-width));
         margin: 0;
