@@ -55,12 +55,12 @@
   </message>
   <if expr="use_titlecase">
   <message name="IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL" desc="Label of the item in drop-down menu that allows user to open the history cluster in the side panel.">
-    History Side Panel
+    Grouped History
   </message>
   </if>
   <if expr="not use_titlecase">
   <message name="IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL" desc="Label of the item in drop-down menu that allows user to open the history cluster in the side panel.">
-    History side panel
+    Grouped history
   </message>
   </if>
   <message name="IDS_HISTORY_CLUSTERS_OPEN_ALL_IN_TABGROUP" desc="Label of the item in drop-down menu that allows the user to open a group of urls in a tab group."
