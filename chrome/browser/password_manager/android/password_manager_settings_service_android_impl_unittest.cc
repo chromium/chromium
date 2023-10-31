@@ -1361,3 +1361,67 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   EXPECT_FALSE(pref_service()->GetBoolean(
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
 }
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+       PasswordSyncEnablingGMSSettingAbsent) {
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+
+  // Settings should be requested from GMS Core on sync state change.
+  ExpectSettingsRetrievalFromBackend(SyncingAccount(kTestAccount),
+                                     /*times=*/1);
+  SetPasswordsSync(/*enabled=*/true);
+  sync_service()->FireStateChanged();
+
+  // Settings shouldn't be written to GMS Core.
+  EXPECT_CALL(
+      *bridge_helper(),
+      SetPasswordSettingValue(_, Eq(PasswordManagerSetting::kAutoSignIn), _))
+      .Times(0);
+  updater_bridge_consumer()->OnSettingValueAbsent(
+      PasswordManagerSetting::kAutoSignIn);
+
+  // The old Chrome pref is also updated, because settings sync is off, so there
+  // is no risk of sync cycles.
+  EXPECT_EQ(pref_service()->GetUserPrefValue(
+                password_manager::prefs::kCredentialsEnableAutosignin),
+            nullptr);
+  EXPECT_EQ(pref_service()->GetUserPrefValue(
+                password_manager::prefs::kAutoSignInEnabledGMS),
+            nullptr);
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+       PasswordSyncEnablingGMSHasSetting) {
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+
+  // Settings should be requested from GMS Core on sync state change.
+  ExpectSettingsRetrievalFromBackend(SyncingAccount(kTestAccount),
+                                     /*times=*/1);
+  SetPasswordsSync(/*enabled=*/true);
+  sync_service()->FireStateChanged();
+
+  // Settings shouldn't be written to GMS Core.
+  EXPECT_CALL(
+      *bridge_helper(),
+      SetPasswordSettingValue(_, Eq(PasswordManagerSetting::kAutoSignIn), _))
+      .Times(0);
+  updater_bridge_consumer()->OnSettingValueFetched(
+      PasswordManagerSetting::kAutoSignIn, /*value=*/false);
+
+  // The old Chrome pref is also updated, because settings sync is off, so there
+  // is no risk of sync cycles.
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+}
