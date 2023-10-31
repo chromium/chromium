@@ -36,6 +36,7 @@ class CupsProxyServiceManager : public KeyedService {
  private:
   void OnDaemonAvailable(bool daemon_available);
 
+  bool service_was_started_ = false;
   raw_ptr<Profile, ExperimentalAsh> profile_;
   base::WeakPtrFactory<CupsProxyServiceManager> weak_factory_{this};
 };
