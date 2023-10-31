@@ -32,8 +32,6 @@ class FakeAssistantClient : public AssistantClient {
   }
 
   void StartServices(ServicesStatusObserver* services_status_observer) override;
-  void SetChromeOSApiDelegate(
-      assistant_client::ChromeOSApiDelegate* delegate) override;
   bool StartGrpcServices() override;
   void StartGrpcHttpConnectionClient(
       assistant_client::HttpConnectionFactory*) override;

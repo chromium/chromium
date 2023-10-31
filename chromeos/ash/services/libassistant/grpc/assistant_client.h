@@ -50,7 +50,6 @@ namespace assistant_client {
 class ActionModule;
 class AssistantManager;
 class AssistantManagerInternal;
-class ChromeOSApiDelegate;
 class HttpConnectionFactory;
 }  // namespace assistant_client
 
@@ -108,9 +107,6 @@ class AssistantClient {
 
   virtual void StartGrpcHttpConnectionClient(
       assistant_client::HttpConnectionFactory*) = 0;
-
-  virtual void SetChromeOSApiDelegate(
-      assistant_client::ChromeOSApiDelegate* delegate) = 0;
 
   // 1. Start a gRPC server which hosts the services that Libassistant depends
   // on (maybe called by Libassistant) or receive events from Libassistant.

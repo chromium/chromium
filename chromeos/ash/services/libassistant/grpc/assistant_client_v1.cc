@@ -333,13 +333,6 @@ void AssistantClientV1::StartServices(
   services_status_observer_ = services_status_observer;
 }
 
-void AssistantClientV1::SetChromeOSApiDelegate(
-    assistant_client::ChromeOSApiDelegate* delegate) {
-  assistant_manager_internal()
-      ->GetFuchsiaApiHelperOrDie()
-      ->SetChromeOSApiDelegate(delegate);
-}
-
 bool AssistantClientV1::StartGrpcServices() {
   return true;
 }

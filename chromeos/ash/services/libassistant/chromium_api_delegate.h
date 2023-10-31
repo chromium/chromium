@@ -8,17 +8,12 @@
 #include <memory>
 
 #include "chromeos/ash/services/libassistant/chromium_http_connection.h"
-#include "chromeos/assistant/internal/libassistant/shared_headers.h"
-
-namespace network {
-class PendingSharedURLLoaderFactory;
-}  // namespace network
 
 namespace ash::libassistant {
 
 class ChromiumHttpConnectionFactory;
 
-class ChromiumApiDelegate : public assistant_client::ChromeOSApiDelegate {
+class ChromiumApiDelegate {
  public:
   explicit ChromiumApiDelegate(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -27,12 +22,9 @@ class ChromiumApiDelegate : public assistant_client::ChromeOSApiDelegate {
   ChromiumApiDelegate(const ChromiumApiDelegate&) = delete;
   ChromiumApiDelegate& operator=(const ChromiumApiDelegate&) = delete;
 
-  ~ChromiumApiDelegate() override;
+  ~ChromiumApiDelegate();
 
-  // assistant_client::FuchsiaApiDelegate overrides:
-  assistant_client::HttpConnectionFactory* GetHttpConnectionFactory() override;
-
-  void OverrideDoNotDisturb(bool do_not_disturb_enabled) override {}
+  assistant_client::HttpConnectionFactory* GetHttpConnectionFactory();
 
  private:
   ChromiumHttpConnectionFactory http_connection_factory_;

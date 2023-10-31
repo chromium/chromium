@@ -26,9 +26,6 @@ FakeAssistantClient::~FakeAssistantClient() = default;
 void FakeAssistantClient::StartServices(
     ServicesStatusObserver* services_status_observer) {}
 
-void FakeAssistantClient::SetChromeOSApiDelegate(
-    assistant_client::ChromeOSApiDelegate* delegate) {}
-
 bool FakeAssistantClient::StartGrpcServices() {
   return true;
 }
