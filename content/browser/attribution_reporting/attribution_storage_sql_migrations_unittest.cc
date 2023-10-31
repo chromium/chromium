@@ -362,7 +362,9 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion55ToCurrent) {
         db.GetUniqueStatement("SELECT read_only_source_data FROM sources"));
     ASSERT_TRUE(s.Step());
     proto::AttributionReadOnlySourceData msg;
-    ASSERT_TRUE(msg.ParseFromString(s.ColumnString(0)));
+    std::string blob;
+    ASSERT_TRUE(s.ColumnBlobAsString(0, &blob));
+    ASSERT_TRUE(msg.ParseFromString(blob));
     EXPECT_EQ(3, msg.max_event_level_reports());
     EXPECT_FALSE(msg.has_randomized_response_rate());
     EXPECT_EQ(0, msg.event_level_report_window_start_time());

@@ -324,7 +324,7 @@ bool To56(sql::Database& db) {
 
     set_statement.Reset(/*clear_bound_vars=*/true);
     // '-1' represents null for the randomized response rate field.
-    set_statement.BindString(
+    set_statement.BindBlob(
         0, SerializeReadOnlySourceData(*event_report_windows,
                                        max_event_level_reports,
                                        /*randomized_response_rate=*/-1,
