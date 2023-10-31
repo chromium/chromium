@@ -155,20 +155,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BackForwardCache.CountEntriesWithoutRendererAck" units="count"
-    expires_after="2021-10-01">
-  <owner>yuzus@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    This metric is emitted when we try to enforce the cache size limit, which is
-    1) when a page enters BackForwardCache and 2) when a page entering
-    BackForwardCache receives an acknowledgement from the renderer.
-
-    This reports the number of the entries that have not received an
-    acknowledgement from the renderer.
-  </summary>
-</histogram>
-
 <histogram name="BackForwardCache.EvictedAfterDocumentRestoredReason"
     enum="BackForwardCacheEvictedAfterDocumentRestoredReason"
     expires_after="2024-03-03">

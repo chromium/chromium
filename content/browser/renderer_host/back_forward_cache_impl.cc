@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
@@ -1225,14 +1224,12 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     size_t limit,
     bool foregrounded_only) {
   size_t count = 0;
-  size_t not_received_ack_count = 0;
   for (auto& stored_entry : entries_) {
     if (stored_entry->render_frame_host()->is_evicted_from_back_forward_cache())
       continue;
     if (foregrounded_only && !HasForegroundedProcess(*stored_entry))
       continue;
     if (!AllRenderViewHostsReceivedAckFromRenderer(*stored_entry)) {
-      not_received_ack_count++;
       continue;
     }
     if (++count > limit) {
@@ -1243,10 +1240,6 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
               : BackForwardCacheMetrics::NotRestoredReason::kCacheLimit);
     }
   }
-  UMA_HISTOGRAM_COUNTS_100(
-      "BackForwardCache.AllSites.HistoryNavigationOutcome."
-      "CountEntriesWithoutRendererAck",
-      not_received_ack_count);
   return count;
 }
 
