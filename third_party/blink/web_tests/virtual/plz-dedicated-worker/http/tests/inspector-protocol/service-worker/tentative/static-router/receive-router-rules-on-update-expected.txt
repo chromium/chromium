@@ -1,0 +1,3 @@
+Tests receiving static router rules from the service worker.
+undefined
+

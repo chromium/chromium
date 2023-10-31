@@ -441,8 +441,12 @@ void ServiceWorkerHandler::OnWorkerVersionUpdated(
             ->GetDevToolsAgentHostForWorker(
                 version.process_id,
                 version.devtools_agent_route_id));
-    if (host)
+    if (host) {
       version_value->SetTargetId(host->GetId());
+    }
+    if (version.router_rules) {
+      version_value->SetRouterRules(*version.router_rules);
+    }
     result->emplace_back(std::move(version_value));
   }
   frontend_->WorkerVersionUpdated(std::move(result));

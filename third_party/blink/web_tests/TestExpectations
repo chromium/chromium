@@ -6787,6 +6787,9 @@ external/wpt/resource-timing/tentative/stylesheet-initiated.html [ Failure Timeo
 # Until ServiceWorkerStaticRouter is unflagged, the tests run in virtual tests.
 crbug.com/1371756 external/wpt/service-workers/service-worker/tentative/static-router/* [ Failure ]
 crbug.com/1371756 virtual/static-routing-api/external/wpt/service-workers/service-worker/tentative/static-router/* [ Pass ]
+crbug.com/1371756 http/tests/inspector-protocol/service-worker/tentative/static-router/* [ Failure ]
+crbug.com/1371756 virtual/static-routing-api/http/tests/inspector-protocol/service-worker/tentative/static-router/* [ Pass ]
+crbug.com/1371756 virtual/plz-dedicated-worker/http/tests/inspector-protocol/service-worker/tentative/static-router/* [ Failure ]
 
 # Gardener 2023-07-11
 crbug.com/1463964 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-about-blank.https.window.html [ Crash Failure Pass Timeout ]
