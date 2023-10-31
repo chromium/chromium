@@ -91,6 +91,8 @@ SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
        SystemProfileProto_ComponentId_SODA_DE_DE},
       {"jdmajdolkmhiifibdijabfojmfjmfkpb",
        SystemProfileProto_ComponentId_DEMO_MODE_RESOURCES},
+      {"jflhchccmppkfebkiaminageehmchikm",
+       SystemProfileProto_ComponentId_THIRD_PARTY_COOKIE_DEPRECATION_METADATA},
       {"jflookgnkcckhobaglndicnbbgbonegd",
        SystemProfileProto_ComponentId_SAFETY_TIPS},
       {"jhefnhlmpagbceldaobdpcjhkknfjohi",
@@ -142,8 +144,9 @@ SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
   });
 
   const auto* result = kComponentMap.find(app_id);
-  if (result == kComponentMap.end())
+  if (result == kComponentMap.end()) {
     return SystemProfileProto_ComponentId_UNKNOWN;
+  }
   return result->second;
 }
 
@@ -152,11 +155,13 @@ SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
 // https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md
 uint32_t Trim(const std::string& fp) {
   const auto len_prefix = fp.find(".");
-  if (len_prefix == std::string::npos)
+  if (len_prefix == std::string::npos) {
     return 0;
+  }
   uint32_t result = 0;
-  if (base::HexStringToUInt(fp.substr(len_prefix + 1, 8), &result))
+  if (base::HexStringToUInt(fp.substr(len_prefix + 1, 8), &result)) {
     return result;
+  }
   return 0;
 }
 
@@ -175,8 +180,9 @@ void ComponentMetricsProvider::ProvideSystemProfileMetrics(
     // Ignore any unknown components - in practice these are the
     // SupervisedUserWhitelists, which we do not want to transmit to UMA or
     // Crash.
-    if (id == SystemProfileProto_ComponentId_UNKNOWN)
+    if (id == SystemProfileProto_ComponentId_UNKNOWN) {
       continue;
+    }
     auto* proto = system_profile->add_chrome_component();
     proto->set_component_id(id);
     proto->set_version(component.version.GetString());
