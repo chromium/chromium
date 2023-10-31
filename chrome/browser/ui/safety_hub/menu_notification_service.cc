@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ui/safety_hub/extensions_result.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
@@ -41,7 +42,9 @@ SafetyHubModuleInfoElement::SafetyHubModuleInfoElement(
 SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
     PrefService* pref_service,
     UnusedSitePermissionsService* unused_site_permissions_service,
-    NotificationPermissionsReviewService* notification_permissions_service) {
+    NotificationPermissionsReviewService* notification_permissions_service,
+    extensions::CWSInfoService* extension_info_service,
+    Profile* profile) {
   pref_service_ = std::move(pref_service);
   const base::Value::Dict& stored_notifications =
       pref_service_->GetDict(safety_hub_prefs::kMenuNotificationsPrefsKey);
@@ -66,6 +69,12 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
                  MenuNotificationPriority::MEDIUM, base::Days(90),
                  base::BindRepeating(&SafetyHubSafeBrowsingResult::GetResult,
                                      base::Unretained(pref_service)),
+                 stored_notifications);
+  SetInfoElement(safety_hub::SafetyHubModuleType::EXTENSIONS,
+                 MenuNotificationPriority::LOW, base::Days(10),
+                 base::BindRepeating(&SafetyHubExtensionsResult::GetResult,
+                                     base::Unretained(extension_info_service),
+                                     profile, true),
                  stored_notifications);
   // Listen for changes to the Safe Browsing pref to accommodate the trigger
   // logic.

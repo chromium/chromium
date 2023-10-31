@@ -9,6 +9,7 @@
 
 #include "base/json/values_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/safety_hub/extensions_result.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
@@ -212,6 +213,8 @@ SafetyHubMenuNotification::GetResultFromDict(
           dict);
     case safety_hub::SafetyHubModuleType::SAFE_BROWSING:
       return std::make_unique<SafetyHubSafeBrowsingResult>(dict);
+    case safety_hub::SafetyHubModuleType::EXTENSIONS:
+      return std::make_unique<SafetyHubExtensionsResult>(dict);
   }
 }
 

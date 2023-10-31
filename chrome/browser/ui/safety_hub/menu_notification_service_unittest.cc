@@ -102,6 +102,9 @@ class SafetyHubMenuNotificationServiceTest
   SafetyHubMenuNotificationService* menu_notification_service() {
     return SafetyHubMenuNotificationServiceFactory::GetForProfile(profile());
   }
+  extensions::CWSInfoService* extension_info_service() {
+    return extensions::CWSInfoService::Get(profile());
+  }
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return profile()->GetTestingPrefService();
   }
@@ -166,7 +169,8 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
   std::unique_ptr<SafetyHubMenuNotificationService> new_service =
       std::make_unique<SafetyHubMenuNotificationService>(
           prefs(), unused_site_permissions_service(),
-          notification_permissions_service());
+          notification_permissions_service(), extension_info_service(),
+          profile());
   // Getting the in-memory notification to prevent the service from generating a
   // new one.
   SafetyHubMenuNotification* new_notification =
@@ -332,4 +336,25 @@ TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingTriggerLogic) {
   AdvanceClockBy(base::Days(1));
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
+}
+
+TEST_F(SafetyHubMenuNotificationServiceTest, ExtensionsMenuNotification) {
+  // Create mock extensions that should result in two violations that are shown
+  // in the menu notification.
+  safety_hub_test_util::CreateMockExtensions(profile());
+  // The mock CWS info service ensures that the correct extension properties are
+  // provided.
+  std::unique_ptr<testing::NiceMock<safety_hub_test_util::MockCWSInfoService>>
+      cws_info_service = safety_hub_test_util::GetMockCWSInfoService(profile());
+  // Create a menu notification service with the mocked CWS info service.
+  std::unique_ptr<SafetyHubMenuNotificationService> mocked_service =
+      std::make_unique<SafetyHubMenuNotificationService>(
+          prefs(), unused_site_permissions_service(),
+          notification_permissions_service(), cws_info_service.get(),
+          profile());
+  absl::optional<MenuNotificationEntry> notification =
+      mocked_service->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  ExpectPluralString(IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MENU_NOTIFICATION, 2,
+                     notification->label);
 }
