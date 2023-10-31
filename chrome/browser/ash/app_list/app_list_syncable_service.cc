@@ -877,6 +877,11 @@ void AppListSyncableService::CopyPromiseItemAttributesToItem(
 
   bool changed = false;
   SyncItem* sync_item = FindSyncItem(target_id);
+  if (sync_item && sync_item->item_type ==
+      sync_pb::AppListSpecifics::TYPE_REMOVE_DEFAULT_APP) {
+    DeleteSyncItem(target_id);
+    sync_item = nullptr;
+  }
   SyncChange::SyncChangeType sync_change_type;
   if (sync_item) {
     CHECK_EQ(sync_item->item_type, sync_pb::AppListSpecifics::TYPE_APP);
@@ -1116,7 +1121,8 @@ AppListSyncableService::CreateLinkedPromiseSyncItemIfAvailable(
 
   const SyncItem* linked_sync_item = nullptr;
   for (const auto& [item_id, sync_item] : sync_items_) {
-    if (sync_item->promise_package_id == promise_package_id &&
+    if (sync_item->item_type == sync_pb::AppListSpecifics::TYPE_APP &&
+        sync_item->promise_package_id == promise_package_id &&
         sync_item->item_id != promise_package_id) {
       linked_sync_item = sync_item.get();
       break;

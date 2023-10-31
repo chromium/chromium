@@ -887,4 +887,53 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
       apps::PromiseAppLifecycleEvent::kCreatedInLauncher, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
+                       ReinstallRemovedDefaultApp) {
+  const std::string app_activity = "test.com.example.activity";
+  const std::string app_id =
+      ArcAppListPrefs::GetAppId(kTestPackageId.identifier(), app_activity);
+
+  syncer::StringOrdinal ordinal = syncer::StringOrdinal::CreateInitialOrdinal();
+  syncer::StringOrdinal pin_ordinal = ordinal.CreateAfter();
+  // Add entry in sync data that has a matching PackageId with the promise app.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back((app_list::CreateAppRemoteData(
+      app_id, "App Name", /*parent_id=*/std::string(),
+      ordinal.ToInternalValue(), pin_ordinal.ToInternalValue(),
+      /*item_type=*/
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_REMOVE_DEFAULT_APP,
+      /*is_user_pinned=*/absl::nullopt,
+      /*promise_package_id=*/kTestPackageId.ToString())));
+  app_list::AppListSyncableServiceFactory::GetForProfile(profile())
+      ->MergeDataAndStartSyncing(
+          syncer::APP_LIST, sync_list,
+          std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  // Register a promise app in the promise app registry cache.
+  apps::PromiseAppPtr promise_app =
+      std::make_unique<PromiseApp>(kTestPackageId);
+  promise_app->should_show = true;
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  const std::string promise_app_id = kTestPackageId.ToString();
+  ash::AppListItem* item = GetAppListItem(promise_app_id);
+  ASSERT_TRUE(item);
+
+  syncer::StringOrdinal promise_app_ordinal = pin_ordinal.CreateAfter();
+  GetChromeAppListModelUpdater()->RequestPositionUpdate(
+      promise_app_id, promise_app_ordinal,
+      ash::RequestPositionUpdateReason::kMoveItem);
+  AppListClientImpl::GetInstance()->PinApp(promise_app_id);
+
+  AddArcPackageWithApps(kTestPackageId.identifier(), {app_activity});
+
+  EXPECT_FALSE(GetAppListItem(promise_app_id));
+  EXPECT_FALSE(IsItemPinned(promise_app_id));
+  ash::AppListItem* app_item = GetAppListItem(app_id);
+  ASSERT_TRUE(app_item);
+  EXPECT_EQ(promise_app_ordinal, app_item->position());
+  EXPECT_TRUE(IsItemPinned(app_id));
+}
+
 }  // namespace apps
