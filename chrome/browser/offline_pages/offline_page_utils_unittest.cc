@@ -73,10 +73,8 @@ void RunTasksForDuration(base::TimeDelta delta) {
 
 }  // namespace
 
-class OfflinePageUtilsTest
-    : public testing::Test,
-      public OfflinePageTestArchiver::Observer,
-      public base::SupportsWeakPtr<OfflinePageUtilsTest> {
+class OfflinePageUtilsTest : public testing::Test,
+                             public OfflinePageTestArchiver::Observer {
  public:
   OfflinePageUtilsTest();
   ~OfflinePageUtilsTest() override;
