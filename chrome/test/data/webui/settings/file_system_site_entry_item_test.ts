@@ -55,7 +55,7 @@ suite(
         const directoryGrantDisplayName =
             testElement.shadowRoot!.querySelector('.display-name');
         assertTrue(!!directoryGrantDisplayName);
-        const icon = testElement.shadowRoot!.querySelector('cr-icon-button');
+        const icon = testElement.shadowRoot!.querySelector('#fileTypeIcon');
         assertTrue(!!icon);
         assertTrue(icon.classList.contains('icon-folder-open'));
       });
@@ -66,7 +66,7 @@ suite(
         const fileGrantDisplayName =
             testElement.shadowRoot!.querySelector('.display-name');
         assertTrue(!!fileGrantDisplayName);
-        const icon = testElement.shadowRoot!.querySelector('cr-icon-button');
+        const icon = testElement.shadowRoot!.querySelector('#fileTypeIcon');
         assertTrue(!!icon);
         assertTrue(icon.classList.contains('icon-file'));
       });
