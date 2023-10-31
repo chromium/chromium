@@ -4,6 +4,7 @@
 
 #include "ui/gl/egl_surface_io_surface.h"
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "ui/gfx/buffer_format_util.h"

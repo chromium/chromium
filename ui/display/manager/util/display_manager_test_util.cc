@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/check_op.h"
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/util/display_util.h"

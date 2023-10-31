@@ -8,6 +8,7 @@
 #include "ui/gfx/linux/gbm_defines.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/check_op.h"
 #include "base/environment.h"
 #include "ui/gfx/switches.h"
 #endif
