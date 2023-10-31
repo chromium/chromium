@@ -67,7 +67,7 @@ const MANIFEST = process.env.MANIFEST || 'MANIFEST.json';
 const PRODUCT = process.env.PRODUCT || 'chrome';
 
 // Multiplier relative to standard test timeout to use.
-const TIMEOUT_MULTIPLIER = process.env.TIMEOUT_MULTIPLIER || '8';
+const TIMEOUT_MULTIPLIER = process.env.TIMEOUT_MULTIPLIER || '4';
 
 // Whether to update the WPT expectations after running the tests.
 const UPDATE_EXPECTATIONS = process.env.UPDATE_EXPECTATIONS || 'false';
