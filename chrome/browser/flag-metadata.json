@@ -4791,11 +4791,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "ios-force-translate-enabled",
-    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "ios-hide-feed-with-search-choice",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 123

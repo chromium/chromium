@@ -243,19 +243,6 @@ void TestResponseProvider::GetLanguageResponse(
 
 @implementation TranslateInfobarTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testLanguageDetectionDisabledWithForceTranslate)]) {
-    config.features_enabled.push_back(translate::kIOSForceTranslateEnabled);
-  }
-  if ([self isRunningTest:@selector
-            (testLanguageDetectionDisabledWithoutForceTranslate)]) {
-    config.features_disabled.push_back(translate::kIOSForceTranslateEnabled);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 
@@ -490,8 +477,8 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that language detection is performed but no infobar is triggered when
-// translate is disabled but force translate is on.
-- (void)testLanguageDetectionDisabledWithForceTranslate {
+// translate is disabled.
+- (void)testLanguageDetectionDisabled {
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
 
@@ -515,35 +502,6 @@ void TestResponseProvider::GetLanguageResponse(
   // Check Banner was not presented.
   GREYAssertFalse([self isBeforeTranslateBannerVisible],
                   @"Before Translate banner was found");
-
-  // Enable translate.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:YES
-       forUserPref:base::SysUTF8ToNSString(
-                       translate::prefs::kOfferTranslateEnabled)];
-}
-
-// Tests that language detection is not performed when translate is disabled
-// with force translate disabled.
-- (void)testLanguageDetectionDisabledWithoutForceTranslate {
-  const GURL URL = web::test::HttpServer::MakeUrl(
-      "http://scenarioLanguageDetectionDisabled");
-  std::map<GURL, std::string> responses;
-  // A page with some text.
-  responses[URL] = "<html><body>Hello world!</body></html>";
-  web::test::SetUpSimpleHttpServer(responses);
-
-  // Disable translate.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:NO
-       forUserPref:base::SysUTF8ToNSString(
-                       translate::prefs::kOfferTranslateEnabled)];
-
-  // Open some webpage.
-  [ChromeEarlGrey loadURL:URL];
-  // Check that no language has been detected.
-  GREYAssertFalse([self waitForLanguageDetection],
-                  @"A language has been detected");
 
   // Enable translate.
   [ChromeEarlGreyAppInterface

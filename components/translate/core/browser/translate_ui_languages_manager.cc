@@ -45,12 +45,9 @@ TranslateUILanguagesManager::TranslateUILanguagesManager(
   std::vector<std::string> language_codes;
   TranslateDownloadManager::GetSupportedLanguages(
       prefs_->IsTranslateAllowedByPolicy(), &language_codes);
-  // Reserve additional space for unknown language option. This is currently
-  // supported on all platforms and under experimentation on iOS.
+  // Reserve additional space for unknown language option.
   std::vector<std::string>::size_type languages_size = language_codes.size();
-  if (translate::IsForceTranslateEnabled()) {
-    languages_size += 1;
-  }
+  languages_size += 1;
   languages_.reserve(languages_size);
 
   // Preparing for the alphabetical order in the locale.
@@ -88,12 +85,9 @@ TranslateUILanguagesManager::TranslateUILanguagesManager(
         return lhs.first < rhs.first;
       });
 
-  if (translate::IsForceTranslateEnabled()) {
-    languages_.emplace_back(kUnknownLanguageCode,
-                            GetUnknownLanguageDisplayName());
-    std::rotate(languages_.rbegin(), languages_.rbegin() + 1,
-                languages_.rend());
-  }
+  languages_.emplace_back(kUnknownLanguageCode,
+                          GetUnknownLanguageDisplayName());
+  std::rotate(languages_.rbegin(), languages_.rbegin() + 1, languages_.rend());
 
   for (std::vector<LanguageNamePair>::const_iterator iter = languages_.begin();
        iter != languages_.end(); ++iter) {

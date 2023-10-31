@@ -954,11 +954,7 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
   translate_manager_->GetLanguageState()->LanguageDetermined(
       kUnknownLanguageCode, true);
 
-  // Manual translation of unknown source language pages is supported
-  // experimentally on iOS and is fully supported on all other platforms.
-  bool unknown_source_supported = translate::IsForceTranslateEnabled();
-  EXPECT_EQ(translate_manager_->CanManuallyTranslate(),
-            unknown_source_supported);
+  EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
 }
 
 TEST_F(TranslateManagerTest, PredefinedTargetLanguage) {

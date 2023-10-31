@@ -561,10 +561,6 @@ extern const char kIOSEditMenuHideSearchWebName[] =
 extern const char kIOSEditMenuHideSearchWebDescription[] =
     "Hides the Search Web entry in edit menu.";
 
-const char kIOSForceTranslateEnabledName[] = "Allow force translate on iOS.";
-const char kIOSForceTranslateEnabledDescription[] =
-    "Enable the translate feature when language detection failed.";
-
 const char kIOSIncognitoDownloadsWarningName[] =
     "Enable Incognito downloads warning on iOS";
 const char kIOSIncognitoDownloadsWarningDescription[] =

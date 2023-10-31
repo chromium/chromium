@@ -18,9 +18,6 @@ BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionEnabled);
 // and the CLD3 version is used instead.
 BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionIgnoreEnabled);
 
-// Controls whether force translate is enabled on iOS.
-BASE_DECLARE_FEATURE(kIOSForceTranslateEnabled);
-
 // When enabled, language detection is attempted when the page finishes loading
 // if no page content is captured when parsing completes.
 BASE_DECLARE_FEATURE(kRetryLanguageDetection);
@@ -42,9 +39,6 @@ GURL GetTranslateSecurityOrigin();
 
 // Return whether sub frame language detection is enabled.
 bool IsSubFrameLanguageDetectionEnabled();
-
-// Return whether manual force translate is enabled.
-bool IsForceTranslateEnabled();
 
 // Return whether TFLite-based language detection is enabled.
 bool IsTFLiteLanguageDetectionEnabled();

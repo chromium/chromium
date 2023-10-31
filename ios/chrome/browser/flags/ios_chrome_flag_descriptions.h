@@ -475,11 +475,6 @@ extern const char kIOSEditMenuSearchWithDescription[];
 extern const char kIOSEditMenuHideSearchWebName[];
 extern const char kIOSEditMenuHideSearchWebDescription[];
 
-// Title and description for the flag to enable force translate when language
-// detection failed.
-extern const char kIOSForceTranslateEnabledName[];
-extern const char kIOSForceTranslateEnabledDescription[];
-
 // Title and description for the flag to enable Incognito downloads education.
 extern const char kIOSIncognitoDownloadsWarningName[];
 extern const char kIOSIncognitoDownloadsWarningDescription[];
