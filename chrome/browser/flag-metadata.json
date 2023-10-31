@@ -1518,11 +1518,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "data-retention-policies-disable-sync-types-needed",
-    "owners": [ "esalma@google.com", "ftirelo@google.com"],
-    "expiry_milestone": 118
-  },
-  {
     "name": "dcheck-is-fatal",
     "owners": [ "wez@chromium.org" ],
     // Used to debug failed assertions in environments where debug builds cannot
