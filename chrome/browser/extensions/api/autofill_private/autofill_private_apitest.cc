@@ -194,14 +194,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                    "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
 }
 
-// TODO(1495229): Flaking on Mac, Linux and ChromeOS bots
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_showEditCardDialogForLocalCard_ReauthOn DISABLED_showEditCardDialogForLocalCard_ReauthOn
-#else
-#define MAYBE_showEditCardDialogForLocalCard_ReauthOn showEditCardDialogForLocalCard_ReauthOn
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
-                       MAYBE_showEditCardDialogForLocalCard_ReauthOn) {
+                       showEditCardDialogForLocalCard_ReauthOn) {
   base::UserActionTester user_action_tester;
 
   autofill_client()
@@ -230,14 +224,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
 }
 #endif
 
-// TODO(1495229): Flaking on Mac, Linux and ChromeOS bots
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_showEditCardDialogForLocalCard_ReauthOff DISABLED_showEditCardDialogForLocalCard_ReauthOff
-#else
-#define MAYBE_showEditCardDialogForLocalCard_ReauthOff showEditCardDialogForLocalCard_ReauthOff
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
-                       MAYBE_showEditCardDialogForLocalCard_ReauthOff) {
+                       showEditCardDialogForLocalCard_ReauthOff) {
   base::UserActionTester user_action_tester;
 
   autofill_client()

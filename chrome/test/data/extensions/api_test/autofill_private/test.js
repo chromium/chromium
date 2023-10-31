@@ -559,26 +559,24 @@ var availableTests = [
           var cardGuid = cardList[0].guid;
 
           // Get the card based on the `cardGuid` with unmasked card number.
-          chrome.autofillPrivate.getLocalCard(cardGuid, function(card) {
-            assert(card);
-            if (card) {
-              chrome.test.assertEq(
-                  [{
-                    guid: cardGuid,
-                    cardNumber: NUMBER,
-                    expirationMonth: EXP_MONTH,
-                    expirationYear: EXP_YEAR,
-                  }],
-                  [{
-                    guid: card.guid,
-                    cardNumber: card.cardNumber,
-                    expirationMonth: card.expirationMonth,
-                    expirationYear: card.expirationYear,
-                  }]);
-            }
-            chrome.test.assertNoLastError();
-            chrome.test.succeed();
-          });
+          chrome.autofillPrivate.getLocalCard(
+              cardGuid, chrome.test.callbackPass(function(card) {
+                chrome.test.assertTrue(!!card);
+                chrome.test.assertEq(
+                    [{
+                      guid: cardGuid,
+                      cardNumber: NUMBER,
+                      expirationMonth: EXP_MONTH,
+                      expirationYear: EXP_YEAR,
+                    }],
+                    [{
+                      guid: card.guid,
+                      cardNumber: card.cardNumber,
+                      expirationMonth: card.expirationMonth,
+                      expirationYear: card.expirationYear,
+                    }]);
+                chrome.test.assertNoLastError();
+              }));
         }));
   },
 ];
