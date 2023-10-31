@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<link rel="help" href="https://open-ui.org/components/invokers.explainer/">
+<link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev">
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-vendor.js"></script>
+<body>
+<div id="tests">
+  <input type="color">
+  <input type="date">
+  <input type="datetime-local">
+  <input type="time">
+  <input type="week">
+  <input type="month">
+</div>
+<button id="invokerbutton" invoketarget="invokee"></button>
+</body>
+<script>
+document.querySelectorAll('#tests>*').forEach(el => {
+  promise_test(async (t) => {
+    el.id = 'invokee';
+    t.add_cleanup(() => el.remove());
+    await test_driver.click(invokerbutton);
+    assert_equals(internals.pagePopupWindow, null, "Picker is closed.");
+  }, `invoking ${el.type} input with auto action shouldn\'t show picker`)
+})
+</script>

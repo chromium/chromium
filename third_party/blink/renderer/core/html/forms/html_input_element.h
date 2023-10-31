@@ -385,6 +385,9 @@ class CORE_EXPORT HTMLInputElement
 
   ShadowRoot* EnsureShadowSubtree();
 
+  bool HandleInvokeInternal(HTMLElement& invoker,
+                            AtomicString& action) override;
+
  protected:
   void DefaultEventHandler(Event&) override;
 

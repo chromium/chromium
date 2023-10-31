@@ -78,6 +78,8 @@
     "toggle",
     "close",
     "open",
+    // invokeaction for input and select
+    "showPicker",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used

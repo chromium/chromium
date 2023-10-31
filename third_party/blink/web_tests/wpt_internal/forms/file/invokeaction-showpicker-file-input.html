@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<link rel="help" href="https://open-ui.org/components/invokers.explainer/">
+<link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<title>INPUT TYPE=FILE and invoketarget</title>
+<input type="file" id="invokee">
+<button id="invokerbutton" invoketarget="invokee" invokeaction="showpicker"></button>
+<script type="module">
+import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
+
+promise_test(async _ => {
+  const promise = new Promise(
+      resolve => mockFileChooserFactory.addEventListener('open', resolve));
+
+  await test_driver.click(document.querySelector('#invokerbutton'));
+  const openEvent = await promise;
+  assert_equals(openEvent.detail, 'kOpen');
+}, "invoking file input with showPicker action should show picker");
+</script>

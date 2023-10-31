@@ -199,6 +199,9 @@ class CORE_EXPORT HTMLSelectElement final
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
+  bool HandleInvokeInternal(HTMLElement& invoker,
+                            AtomicString& action) override;
+
  private:
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
