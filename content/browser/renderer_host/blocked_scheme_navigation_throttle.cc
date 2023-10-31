@@ -14,6 +14,9 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/url_constants.h"
 
@@ -22,6 +25,13 @@ namespace content {
 namespace {
 const char kConsoleError[] = "Not allowed to navigate top frame to %s URL: %s";
 const char kAnyFrameConsoleError[] = "Not allowed to navigate to %s URL: %s";
+
+bool IsExternalMountedFile(const GURL& url) {
+  storage::FileSystemURL file_system_url =
+      storage::ExternalMountPoints::GetSystemInstance()->CrackURL(
+          url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
+  return file_system_url.is_valid();
+}
 }
 
 BlockedSchemeNavigationThrottle::BlockedSchemeNavigationThrottle(
@@ -45,6 +55,7 @@ BlockedSchemeNavigationThrottle::WillStartRequest() {
 
   if (base::FeatureList::IsEnabled(
           blink::features::kFileSystemUrlNavigationForChromeAppsOnly) &&
+      !IsExternalMountedFile(request->GetURL()) &&
       (url::Origin::Create(request->GetURL()) ==
        request->GetInitiatorOrigin()) &&
       content::GetContentClient()->browser()->IsFileSystemURLNavigationAllowed(
@@ -121,6 +132,12 @@ BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(
           blink::features::kFileSystemUrlNavigation) &&
       request->IsRendererInitiated() &&
       request->GetURL().SchemeIs(url::kFileSystemScheme)) {
+    return std::make_unique<BlockedSchemeNavigationThrottle>(request);
+  }
+  // Block any external mounted files.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFileSystemUrlNavigation) &&
+      IsExternalMountedFile(request->GetURL())) {
     return std::make_unique<BlockedSchemeNavigationThrottle>(request);
   }
   return nullptr;
