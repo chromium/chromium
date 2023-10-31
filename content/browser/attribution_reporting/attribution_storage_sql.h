@@ -414,7 +414,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   // Time at which `DeleteExpiredSources()` was last called. Initialized to
   // the NULL time.
-  base::Time last_deleted_expired_sources_
+  base::TimeTicks last_deleted_expired_sources_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

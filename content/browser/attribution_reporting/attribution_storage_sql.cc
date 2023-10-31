@@ -490,11 +490,12 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   const base::TimeDelta delete_frequency =
       delegate_->GetDeleteExpiredSourcesFrequency();
   DCHECK_GE(delete_frequency, base::TimeDelta());
-  if (source_time - last_deleted_expired_sources_ >= delete_frequency) {
+  if (base::TimeTicks now = base::TimeTicks::Now();
+      now - last_deleted_expired_sources_ >= delete_frequency) {
     if (!DeleteExpiredSources()) {
       return StoreSourceResult(StorableSource::Result::kInternalError);
     }
-    last_deleted_expired_sources_ = source_time;
+    last_deleted_expired_sources_ = now;
   }
 
   const CommonSourceInfo& common_info = source.common_info();

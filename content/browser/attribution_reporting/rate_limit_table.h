@@ -169,7 +169,7 @@ class CONTENT_EXPORT RateLimitTable {
 
   // Time at which `DeleteExpiredRateLimits()` was last called. Initialized to
   // the NULL time.
-  base::Time last_cleared_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::TimeTicks last_cleared_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
