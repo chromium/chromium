@@ -28,7 +28,6 @@ import {ChromeColorsElement} from './chrome_colors.js';
 import {BackgroundCollection, CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {ThemesElement} from './themes.js';
-import {WallpaperSearchElement} from './wallpaper_search/wallpaper_search.js';
 
 const SECTION_TO_SELECTOR = {
   [CustomizeChromeSection.kAppearance]: '#appearance',
@@ -57,7 +56,6 @@ export interface AppElement {
     themesPage: ThemesElement,
     appearanceElement: AppearanceElement,
     chromeColorsPage: ChromeColorsElement,
-    wallpaperSearchPage: WallpaperSearchElement,
   };
 }
 
@@ -173,7 +171,10 @@ export class AppElement extends AppElementBase {
 
   private onWallpaperSearchSelect_() {
     this.page_ = CustomizeChromePage.WALLPAPER_SEARCH;
-    this.$.wallpaperSearchPage.focusOnBackButton();
+    const page =
+        this.shadowRoot!.querySelector('customize-chrome-wallpaper-search');
+    assert(page);
+    page.focusOnBackButton();
   }
 }
 
