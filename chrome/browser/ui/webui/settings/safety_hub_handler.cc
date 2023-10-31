@@ -478,7 +478,7 @@ void SafetyHubHandler::HandleGetPasswordCardData(
 base::Value::Dict SafetyHubHandler::GetPasswordCardData() {
   PasswordStatusCheckService* service =
       PasswordStatusCheckServiceFactory::GetForProfile(profile_);
-
+  CHECK(service);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   bool signed_in = identity_manager && identity_manager->HasPrimaryAccount(
