@@ -1243,8 +1243,9 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
   SetCookieControlsMode(content_settings::CookieControlsMode::kIncognitoOnly);
   OpenPageInfoAndGoToCookiesSubpage(/*fps_owner =*/{});
 
-  // FPS blocked and 3pc allowed -> only button for opening cookie dialog.
-  size_t kExpectedChildren = 1;
+  // FPS blocked and 3pc allowed -> button for opening cookie dialog +
+  // separator.
+  size_t kExpectedChildren = 2;
   auto* cookies_buttons_container =
       GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
@@ -1272,13 +1273,14 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
   OpenPageInfoAndGoToCookiesSubpage({fps_owner});
 
   if (IsParamFeatureEnabled()) {
-    size_t kExpectedChildren = 2;
+    size_t kExpectedChildren = 3;
     auto* cookies_buttons_container = GetView(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
     EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
   } else {
-    // FPS allowed and 3pc blocked -> buttons for cookie dialog and 3pc and fps.
-    size_t kExpectedChildren = 3;
+    // FPS allowed and 3pc blocked -> buttons for cookie dialog and 3pc and fps
+    // and separator.
+    size_t kExpectedChildren = 4;
     auto* cookies_buttons_container = GetView(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
     EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
@@ -1324,7 +1326,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
   // FPS blocked and 3pc blocked -> buttons for cookie dialog and third party
   // cookies.
   if (IsParamFeatureEnabled()) {
-    size_t kExpectedChildren = 1;
+    size_t kExpectedChildren = 2;
     auto* cookies_buttons_container = GetView(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
     EXPECT_THAT(cookies_buttons_container->children().size(),
@@ -1349,7 +1351,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
     EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
     EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Blocked"), 1);
   } else {
-    size_t kExpectedChildren = 2;
+    size_t kExpectedChildren = 3;
     auto* cookies_buttons_container = GetView(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
     EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
@@ -1387,8 +1389,9 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   OpenPageInfoAndGoToCookiesSubpage({fps_owner});
 
-  // FPS allowed and 3pc allowed -> buttons for cookie dialog and fps button.
-  size_t kExpectedChildren = 2;
+  // FPS allowed and 3pc allowed -> buttons for cookie dialog and fps button and
+  // separator.
+  size_t kExpectedChildren = 3;
   auto* cookies_buttons_container =
       GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());

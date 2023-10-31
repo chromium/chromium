@@ -1177,7 +1177,7 @@ TEST_F(PageInfoBubbleViewCookiesSubpageTest, TextsOnButtonsAreCorrect) {
   cookie_info.status = CookieControlsStatus::kEnabled;
   cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
-  size_t kExpectedChildren = 3;
+  size_t kExpectedChildren = 4;
   const std::u16string owner_name = u"example_owner";
   cookie_info.fps_info = {PageInfoMainView::CookiesFpsInfo(owner_name)};
 
