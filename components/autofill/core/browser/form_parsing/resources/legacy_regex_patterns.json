@@ -1337,7 +1337,7 @@
     ]
   },
   "BETWEEN_STREETS_LINE_1": {
-    "es": [
+    "es": [ // es-MX
       {
         "positive_pattern": "entre.*calle(.*1)?",
         "positive_score": 1.1,
@@ -1348,7 +1348,7 @@
     ]
   },
   "BETWEEN_STREETS_LINE_2": {
-    "es": [
+    "es": [ // es-MX
       {
         "positive_pattern": "entre.*calle(.*2)?|y.*calle",
         "positive_score": 1.1,
