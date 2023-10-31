@@ -116,7 +116,7 @@ bool GetEnrollmentTokenFromPolicy(std::string* enrollment_token) {
       !CFPreferencesAppValueIsForced(kEnrollmentTokenPolicyName, kBundleId)) {
     return false;
   }
-  CFStringRef value_string = base::apple::CFCast<CFStringRef>(value);
+  CFStringRef value_string = base::apple::CFCast<CFStringRef>(value.get());
   if (!value_string)
     return false;
 
@@ -147,7 +147,7 @@ absl::optional<bool> IsEnrollmentMandatoryByPolicy() {
     return absl::optional<bool>();
   }
 
-  CFBooleanRef value_bool = base::apple::CFCast<CFBooleanRef>(value);
+  CFBooleanRef value_bool = base::apple::CFCast<CFBooleanRef>(value.get());
   if (!value_bool)
     return absl::optional<bool>();
   return value_bool == kCFBooleanTrue;

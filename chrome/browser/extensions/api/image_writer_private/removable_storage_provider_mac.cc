@@ -29,8 +29,9 @@ RemovableStorageProvider::PopulateDeviceList() {
   // Match only writable whole-disks.
   base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> matching(
       IOServiceMatching(kIOMediaClass));
-  CFDictionaryAddValue(matching, CFSTR(kIOMediaWholeKey), kCFBooleanTrue);
-  CFDictionaryAddValue(matching, CFSTR(kIOMediaWritableKey), kCFBooleanTrue);
+  CFDictionaryAddValue(matching.get(), CFSTR(kIOMediaWholeKey), kCFBooleanTrue);
+  CFDictionaryAddValue(matching.get(), CFSTR(kIOMediaWritableKey),
+                       kCFBooleanTrue);
 
   // IOServiceGetMatchingServices consumes a reference to the matching
   // dictionary passed to it.
@@ -44,18 +45,18 @@ RemovableStorageProvider::PopulateDeviceList() {
 
   base::mac::ScopedIOObject<io_object_t> disk_obj;
   auto device_list = base::MakeRefCounted<StorageDeviceList>();
-  while (disk_obj.reset(IOIteratorNext(disk_iterator)), disk_obj) {
+  while (disk_obj.reset(IOIteratorNext(disk_iterator.get())), disk_obj) {
     std::string bsd_name;
     uint64_t size_in_bytes;
     bool removable;
 
     bool is_suitable = IsSuitableRemovableStorageDevice(
-        disk_obj, &bsd_name, &size_in_bytes, &removable);
+        disk_obj.get(), &bsd_name, &size_in_bytes, &removable);
     if (!is_suitable)
       continue;
 
     base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
-    if (IORegistryEntryCreateCFProperties(disk_obj, dict.InitializeInto(),
+    if (IORegistryEntryCreateCFProperties(disk_obj.get(), dict.InitializeInto(),
                                           kCFAllocatorDefault,
                                           0) != KERN_SUCCESS) {
       LOG(ERROR) << "Unable to get properties of disk object.";
@@ -64,7 +65,7 @@ RemovableStorageProvider::PopulateDeviceList() {
 
     base::apple::ScopedCFTypeRef<CFDictionaryRef> characteristics(
         static_cast<CFDictionaryRef>(IORegistryEntrySearchCFProperty(
-            disk_obj, kIOServicePlane,
+            disk_obj.get(), kIOServicePlane,
             CFSTR(kIOPropertyDeviceCharacteristicsKey), kCFAllocatorDefault,
             kIORegistryIterateParents | kIORegistryIterateRecursively)));
 
@@ -74,11 +75,11 @@ RemovableStorageProvider::PopulateDeviceList() {
     }
 
     CFStringRef cf_vendor = base::apple::GetValueFromDictionary<CFStringRef>(
-        characteristics, CFSTR(kIOPropertyVendorNameKey));
+        characteristics.get(), CFSTR(kIOPropertyVendorNameKey));
     std::string vendor = base::SysCFStringRefToUTF8(cf_vendor);
 
     CFStringRef cf_model = base::apple::GetValueFromDictionary<CFStringRef>(
-        characteristics, CFSTR(kIOPropertyProductNameKey));
+        characteristics.get(), CFSTR(kIOPropertyProductNameKey));
     std::string model = base::SysCFStringRefToUTF8(cf_model);
 
     api::image_writer_private::RemovableStorageDevice device;

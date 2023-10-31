@@ -302,7 +302,8 @@ absl::optional<std::string> ReadValueFromPlist(const base::FilePath& path,
     return absl::nullopt;
   }
   CFStringRef value = base::apple::GetValueFromDictionary<CFStringRef>(
-      base::apple::NSToCFPtrCast(all_keys), base::SysUTF8ToCFStringRef(key));
+      base::apple::NSToCFPtrCast(all_keys),
+      base::SysUTF8ToCFStringRef(key).get());
   if (value == nullptr) {
     return absl::nullopt;
   }

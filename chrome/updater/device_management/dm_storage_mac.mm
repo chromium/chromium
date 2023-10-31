@@ -32,12 +32,13 @@ const CFStringRef kBrowserBundleId =
 bool LoadEnrollmentTokenFromPolicy(std::string* enrollment_token) {
   base::apple::ScopedCFTypeRef<CFPropertyListRef> token_value(
       CFPreferencesCopyAppValue(kEnrollmentTokenKey, kBrowserBundleId));
-  if (!token_value || CFGetTypeID(token_value) != CFStringGetTypeID() ||
+  if (!token_value || CFGetTypeID(token_value.get()) != CFStringGetTypeID() ||
       !CFPreferencesAppValueIsForced(kEnrollmentTokenKey, kBrowserBundleId)) {
     return false;
   }
 
-  CFStringRef value_string = base::apple::CFCast<CFStringRef>(token_value);
+  CFStringRef value_string =
+      base::apple::CFCast<CFStringRef>(token_value.get());
   if (!value_string)
     return false;
 
