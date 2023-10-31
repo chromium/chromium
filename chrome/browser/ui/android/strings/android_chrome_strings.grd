@@ -1546,10 +1546,13 @@ Your Google account may have other forms of browsing history like searches and a
         When you tap or type in the address bar or search box, you'll see suggestions from your default search engine. This is off in Incognito.
       </message>
       <message name="IDS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_ITEM_TWO" desc="Second bullet point that describes the details of the search suggestions toggle.">
-        What you type in the address bar or search box is sent to your default search engine
+        As you type, Chrome sends the content of the address bar or search box to your default search engine
       </message>
       <message name="IDS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_ITEM_THREE" desc="Third bullet point that describes the details of the search suggestions toggle.">
-        Depending on your settings, Chrome may also send cookies and your current URL
+        Depending on your settings, Chrome may also send cookies, your current URL, and your location
+      </message>
+      <message name="IDS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_ITEM_FOUR" desc="Fourth bullet point that describes the details of the search suggestions toggle.">
+        When off, you’ll still see suggestions that Chrome provides locally
       </message>
 
       <!-- Tracking protection -->
