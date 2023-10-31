@@ -1267,32 +1267,7 @@ StoragePartitionImpl::~StoragePartitionImpl() {
 #if DCHECK_IS_ON()
   DCHECK(on_browser_context_will_be_destroyed_called_);
 #endif
-}
-
-void StoragePartitionImpl::OnBrowserContextWillBeDestroyed() {
-#if DCHECK_IS_ON()
-  on_browser_context_will_be_destroyed_called_ = true;
-#endif
-  // Shut down service worker and shared worker machinery because these can keep
-  // RenderProcessHosts and SiteInstances alive, and the codebase assumes these
-  // are destroyed before the BrowserContext is destroyed.
-  GetServiceWorkerContext()->Shutdown();
-  GetSharedWorkerService()->Shutdown();
-
-  // These may hold raw pointers to objects that are about to be destroyed,
-  // before this object is destroyed. Shut them down now to avoid dangling
-  // pointers.
-  if (GetFileSystemAccessManager()) {
-    GetFileSystemAccessManager()->Shutdown();
-  }
-
-  if (GetContentIndexContext()) {
-    GetContentIndexContext()->Shutdown();
-  }
-
-  if (keep_alive_url_loader_service_) {
-    keep_alive_url_loader_service_->Shutdown();
-  }
+  browser_context_ = nullptr;
 
   if (url_loader_factory_getter_) {
     url_loader_factory_getter_->OnStoragePartitionDestroyed();
@@ -1338,8 +1313,32 @@ void StoragePartitionImpl::OnBrowserContextWillBeDestroyed() {
   if (GetGeneratedCodeCacheContext()) {
     GetGeneratedCodeCacheContext()->Shutdown();
   }
+}
 
-  browser_context_ = nullptr;
+void StoragePartitionImpl::OnBrowserContextWillBeDestroyed() {
+#if DCHECK_IS_ON()
+  on_browser_context_will_be_destroyed_called_ = true;
+#endif
+
+  // Shut down service worker and shared worker machinery because these can keep
+  // RenderProcessHosts and SiteInstances alive, and the codebase assumes these
+  // are destroyed before the BrowserContext is destroyed.
+  GetServiceWorkerContext()->Shutdown();
+  GetSharedWorkerService()->Shutdown();
+
+  // These hold raw pointers to objects that are about to be destroyed, before
+  // this object is destroyed. Shut them down now to avoid dangling pointers.
+  if (GetFileSystemAccessManager()) {
+    GetFileSystemAccessManager()->Shutdown();
+  }
+
+  if (GetContentIndexContext()) {
+    GetContentIndexContext()->Shutdown();
+  }
+
+  if (keep_alive_url_loader_service_) {
+    keep_alive_url_loader_service_->Shutdown();
+  }
 }
 
 // static
