@@ -126,8 +126,8 @@ bool RateLimitTable::AddRateLimit(
   const base::TimeDelta delete_frequency =
       delegate_->GetDeleteExpiredRateLimitsFrequency();
   DCHECK_GE(delete_frequency, base::TimeDelta());
-  if (base::TimeTicks now = base::TimeTicks::Now();
-      now - last_cleared_ >= delete_frequency) {
+  const base::Time now = base::Time::Now();
+  if (now - last_cleared_ >= delete_frequency) {
     if (!DeleteExpiredRateLimits(db)) {
       return false;
     }
