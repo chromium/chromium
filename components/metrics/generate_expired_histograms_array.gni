@@ -121,6 +121,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/optimization/histograms.xml",
       "//tools/metrics/histograms/metadata/others/histograms.xml",
       "//tools/metrics/histograms/metadata/page/histograms.xml",
+      "//tools/metrics/histograms/metadata/password/enums.xml",
       "//tools/metrics/histograms/metadata/password/histograms.xml",
       "//tools/metrics/histograms/metadata/payment/histograms.xml",
       "//tools/metrics/histograms/metadata/pcscan/histograms.xml",
