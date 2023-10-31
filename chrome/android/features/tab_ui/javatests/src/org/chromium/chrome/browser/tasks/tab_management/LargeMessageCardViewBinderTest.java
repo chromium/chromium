@@ -152,7 +152,11 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
 
         Drawable iconDrawable =
                 AppCompatResources.getDrawable(getActivity(), R.drawable.ic_globe_24dp);
-        mItemViewModel.set(MessageCardViewProperties.ICON_PROVIDER, () -> iconDrawable);
+        mItemViewModel.set(
+                MessageCardViewProperties.ICON_PROVIDER,
+                (callback) -> {
+                    callback.onResult(iconDrawable);
+                });
         assertEquals(iconDrawable, mIcon.getDrawable());
     }
 

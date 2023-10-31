@@ -9,7 +9,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
@@ -22,9 +21,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -54,6 +56,8 @@ public class LargeMessageCardViewBinderUnitTest {
     @Mock Drawable mMockDrawable;
 
     @Mock private OnClickListener mMockOnClickListenerMock;
+
+    @Captor ArgumentCaptor<Callback<Drawable>> mCallbackDrawableArgumentCaptor;
 
     private PropertyModel mModel;
 
@@ -175,10 +179,15 @@ public class LargeMessageCardViewBinderUnitTest {
     @Test
     @SmallTest
     public void updateIconDrawable() {
-        when(mMockIconProvider.getIconDrawable()).thenReturn(mMockDrawable);
-        mModel.set(MessageCardViewProperties.ICON_PROVIDER, mMockIconProvider);
+        mModel =
+                new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
+                        .with(MessageCardViewProperties.ICON_PROVIDER, mMockIconProvider)
+                        .build();
 
-        verify(mMockIconProvider, times(1)).getIconDrawable();
+        LargeMessageCardViewBinder.updateIconDrawable(mModel, mMockLargeCardView);
+        verify(mMockIconProvider).fetchIconDrawable(mCallbackDrawableArgumentCaptor.capture());
+        Callback<Drawable> callback = mCallbackDrawableArgumentCaptor.getValue();
+        callback.onResult(mMockDrawable);
         verify(mMockLargeCardView, times(1)).setIconDrawable(mMockDrawable);
     }
 

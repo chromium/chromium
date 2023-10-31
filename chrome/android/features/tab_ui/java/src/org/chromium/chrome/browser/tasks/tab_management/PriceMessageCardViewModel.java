@@ -40,29 +40,37 @@ public class PriceMessageCardViewModel {
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
 
         return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
-                .with(MessageCardViewProperties.MESSAGE_TYPE,
+                .with(
+                        MessageCardViewProperties.MESSAGE_TYPE,
                         MessageService.MessageType.PRICE_MESSAGE)
                 .with(MessageCardViewProperties.MESSAGE_IDENTIFIER, data.getType())
                 .with(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER, uiDismissActionProvider)
-                .with(MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
+                .with(
+                        MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
                         data.getDismissActionProvider())
-                .with(MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
+                .with(
+                        MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
                         data.getReviewActionProvider())
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT, descriptionText)
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE, null)
                 .with(MessageCardViewProperties.ACTION_TEXT, actionText)
-                .with(MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION,
+                .with(
+                        MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION,
                         dismissButtonContextDescription)
                 .with(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW, false)
                 .with(MessageCardViewProperties.IS_ICON_VISIBLE, isIconVisible)
                 .with(MessageCardViewProperties.IS_INCOGNITO, false)
-                .with(MessageCardViewProperties
+                .with(
+                        MessageCardViewProperties
                                 .MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,
                         MessageCardViewProperties.MessageCardScope.REGULAR)
                 .with(MessageCardViewProperties.TITLE_TEXT, titleText)
                 .with(MessageCardViewProperties.PRICE_DROP, data.getPriceDrop())
-                .with(MessageCardViewProperties.ICON_PROVIDER,
-                        () -> getIconDrawable(context, data.getType()))
+                .with(
+                        MessageCardViewProperties.ICON_PROVIDER,
+                        (callback) -> {
+                            callback.onResult(getIconDrawable(context, data.getType()));
+                        })
                 .with(CARD_TYPE, MESSAGE)
                 .with(CARD_ALPHA, 1f)
                 .build();

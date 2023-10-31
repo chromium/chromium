@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -35,33 +34,36 @@ public class IphMessageCardViewModel {
 
         return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
                 .with(MessageCardViewProperties.MESSAGE_TYPE, MessageService.MessageType.IPH)
-                .with(MessageCardViewProperties.MESSAGE_IDENTIFIER,
+                .with(
+                        MessageCardViewProperties.MESSAGE_IDENTIFIER,
                         MessageService.DEFAULT_MESSAGE_IDENTIFIER)
-                .with(MessageCardViewProperties.ICON_PROVIDER,
-                        IphMessageCardViewModel::getIconDrawable)
+                .with(
+                        MessageCardViewProperties.ICON_PROVIDER,
+                        (callback) -> {
+                            callback.onResult(null);
+                        })
                 .with(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER, uiDismissActionProvider)
-                .with(MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
+                .with(
+                        MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
                         data.getDismissActionProvider())
-                .with(MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
+                .with(
+                        MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
                         data.getReviewActionProvider())
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT, descriptionText)
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE, null)
                 .with(MessageCardViewProperties.ACTION_TEXT, actionText)
-                .with(MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION,
+                .with(
+                        MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION,
                         dismissButtonContextDescription)
                 .with(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW, true)
                 .with(MessageCardViewProperties.IS_ICON_VISIBLE, false)
                 .with(MessageCardViewProperties.IS_INCOGNITO, false)
-                .with(MessageCardViewProperties
+                .with(
+                        MessageCardViewProperties
                                 .MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,
                         MessageCardViewProperties.MessageCardScope.BOTH)
                 .with(CARD_TYPE, MESSAGE)
                 .with(CARD_ALPHA, 1f)
                 .build();
-    }
-
-    private static Drawable getIconDrawable() {
-        // TODO(yuezhanggg): make it possible for message card to not have icon.
-        return null;
     }
 }

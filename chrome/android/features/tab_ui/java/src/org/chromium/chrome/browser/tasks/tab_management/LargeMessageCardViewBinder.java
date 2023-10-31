@@ -43,8 +43,7 @@ class LargeMessageCardViewBinder {
         } else if (MessageCardViewProperties.PRICE_DROP == propertyKey) {
             itemView.setupPriceInfoBox(model.get(MessageCardViewProperties.PRICE_DROP));
         } else if (MessageCardViewProperties.ICON_PROVIDER == propertyKey) {
-            itemView.setIconDrawable(
-                    model.get(MessageCardViewProperties.ICON_PROVIDER).getIconDrawable());
+            updateIconDrawable(model, itemView);
         } else if (MessageCardViewProperties.IS_ICON_VISIBLE == propertyKey) {
             itemView.setIconVisibility(model.get(MessageCardViewProperties.IS_ICON_VISIBLE));
         } else if (CARD_ALPHA == propertyKey) {
@@ -58,6 +57,18 @@ class LargeMessageCardViewBinder {
             itemView.updateIconWidth(model.get(MessageCardViewProperties.ICON_WIDTH_IN_PIXELS));
         } else if (MessageCardViewProperties.ICON_HEIGHT_IN_PIXELS == propertyKey) {
             itemView.updateIconHeight(model.get(MessageCardViewProperties.ICON_HEIGHT_IN_PIXELS));
+        }
+    }
+
+    @VisibleForTesting
+    static void updateIconDrawable(PropertyModel model, LargeMessageCardView itemView) {
+        MessageCardView.IconProvider provider = model.get(MessageCardViewProperties.ICON_PROVIDER);
+
+        if (provider != null) {
+            provider.fetchIconDrawable(
+                    (drawable) -> {
+                        itemView.setIconDrawable(drawable);
+                    });
         }
     }
 
