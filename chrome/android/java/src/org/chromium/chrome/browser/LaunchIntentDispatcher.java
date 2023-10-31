@@ -31,6 +31,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -420,6 +421,8 @@ public class LaunchIntentDispatcher {
                 // the flag to take effect only once.
                 newIntent.setFlags(newIntent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
             }
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.Intent.HasNonSpoofablePackageName", hasNonSpoofablePackageName());
         }
 
         Uri extraReferrer = mActivity.getReferrer();
@@ -487,6 +490,16 @@ public class LaunchIntentDispatcher {
             // mistakenly lead to a Chrome task being removed.
             return true;
         }
+    }
+
+    private boolean hasNonSpoofablePackageName() {
+        ComponentName callingActivity = mActivity.getCallingActivity();
+        String packageName = "";
+        if (callingActivity != null) {
+            packageName = callingActivity.getPackageName();
+        }
+        return !TextUtils.isEmpty(packageName)
+                || !TextUtils.isEmpty(getClientPackageNameFromIdentitySharing());
     }
 
     /**

@@ -311,6 +311,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.HasNonSpoofablePackageName" enum="Boolean"
+    expires_after="2024-05-01">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Boolean histogram denoting whether the package name can be
+    retrieved in a non-spoofable way for Custom Tabs. When the histogram returns
+    true, it means we can confirm the package name was passed by the defined
+    host app. Emitted when the Custom Tab is launched.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.ImmersiveModeConfirmationsSettingConfirmed"
     enum="Boolean" expires_after="2023-05-14">
   <obsolete>
