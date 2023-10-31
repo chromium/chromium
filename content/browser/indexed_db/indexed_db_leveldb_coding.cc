@@ -108,32 +108,30 @@ inline void EncodeIntSafely(int64_t value, int64_t max, std::string* into) {
 // efficient. TODO(estade): use variable length encoding.
 void EncodeStringWithSentinel(const std::u16string& value, std::string* into) {
   size_t length = value.length();
-  size_t current = into->size();
-  into->resize(into->size() + length * sizeof(char16_t) * 2 + 1);
+  into->reserve(into->size() + length * sizeof(char16_t) * 2 + 1);
 
-  char16_t* dst = reinterpret_cast<char16_t*>(&*into->begin() + current);
   for (char16_t c : value) {
-    *dst++ = 0x01;
-    *dst++ = base::HostToNet16(c);
+    into->push_back(1);
+    into->push_back(0);
+    into->push_back(static_cast<char>(c >> 8));
+    into->push_back(static_cast<char>(c));
   }
 
-  into->back() = kSentinel;
+  into->push_back(kSentinel);
 }
 
 // This doubles the length of the data; a variable length encoding would be more
 // efficient. TODO(estade): use variable length encoding.
 void EncodeBinaryWithSentinel(const std::string& value, std::string* into) {
   size_t length = value.length();
-  size_t current = into->size();
-  into->resize(into->size() + length * sizeof(char) * 2 + 1);
+  into->reserve(into->size() + length * sizeof(char) * 2 + 1);
 
-  char* dst = reinterpret_cast<char*>(&*into->begin() + current);
   for (char c : value) {
-    *dst++ = 0x01;
-    *dst++ = c;
+    into->push_back(0x01);
+    into->push_back(c);
   }
 
-  into->back() = kSentinel;
+  into->push_back(kSentinel);
 }
 
 void EncodeSortableDouble(double value, std::string* into) {
@@ -202,15 +200,13 @@ void EncodeInt(int64_t value, std::string* into) {
 void EncodeString(const std::u16string& value, std::string* into) {
   if (value.empty())
     return;
-  // Backing store is UTF-16BE, convert from host endianness.
-  size_t length = value.length();
-  size_t current = into->size();
-  into->resize(into->size() + length * sizeof(char16_t));
 
-  const char16_t* src = value.c_str();
-  char16_t* dst = reinterpret_cast<char16_t*>(&*into->begin() + current);
-  for (unsigned i = 0; i < length; ++i)
-    *dst++ = base::HostToNet16(*src++);
+  // Backing store is UTF-16BE, convert from host endianness.
+  into->reserve(into->size() + value.length() * 2);
+  for (char16_t c : value) {
+    into->push_back(static_cast<char>(c >> 8));
+    into->push_back(static_cast<char>(c));
+  }
 }
 
 void EncodeBinary(const std::string& value, std::string* into) {
@@ -426,9 +422,11 @@ bool DecodeString(StringPiece* slice, std::u16string* value) {
   size_t length = slice->size() / sizeof(char16_t);
   std::u16string decoded;
   decoded.reserve(length);
-  const char16_t* encoded = reinterpret_cast<const char16_t*>(slice->begin());
-  for (unsigned i = 0; i < length; ++i)
-    decoded.push_back(base::NetToHost16(*encoded++));
+  for (size_t i = 0; i < length; ++i) {
+    uint8_t hi = static_cast<uint8_t>((*slice)[2 * i]);
+    uint8_t lo = static_cast<uint8_t>((*slice)[2 * i + 1]);
+    decoded.push_back((char16_t{hi} << 8) | char16_t{lo});
+  }
 
   *value = decoded;
   slice->remove_prefix(length * sizeof(char16_t));

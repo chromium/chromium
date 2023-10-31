@@ -7,12 +7,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -132,7 +134,8 @@ void ReadData(
   CHECK_GE(num_bytes, output_size);
   CHECK_LE(output_offset + output_size, bytes->size());
 
-  memcpy(buffer, bytes->front() + output_offset, output_size);
+  base::ranges::copy(base::span(*bytes).subspan(output_offset, output_size),
+                     static_cast<char*>(buffer));
   result = pipe_producer_handle->EndWriteData(output_size);
   CHECK_EQ(result, MOJO_RESULT_OK);
 

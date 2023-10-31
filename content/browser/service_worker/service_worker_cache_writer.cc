@@ -494,8 +494,8 @@ int ServiceWorkerCacheWriter::DoReadDataForCompareDone(int result) {
 
   // Compare the data from the ServiceWorker script cache to the data from the
   // network.
-  if (memcmp(data_to_read_->data(), data_to_write_->data() + compare_offset_,
-             result)) {
+  if (!std::equal(data_to_read_->data(), data_to_read_->data() + result,
+                  data_to_write_->data() + compare_offset_)) {
     // Data mismatched. This method already validated that all the bytes through
     // |bytes_compared_| were identical, so copy the first |bytes_compared_|
     // over, then start writing network data back after the changed point.

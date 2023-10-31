@@ -92,7 +92,11 @@ bool DoImagesMatch(const gfx::Image& a, const gfx::Image& b) {
       a_bitmap.height() != b_bitmap.height()) {
     return false;
   }
-  return memcmp(a_bitmap.getPixels(), b_bitmap.getPixels(),
+
+  // memcmp(nullptr, nullptr, 0) is undefined, so empty bitmaps must be
+  // special-cased.
+  return a_bitmap.computeByteSize() == 0 ||
+         memcmp(a_bitmap.getPixels(), b_bitmap.getPixels(),
                 a_bitmap.computeByteSize()) == 0;
 }
 
