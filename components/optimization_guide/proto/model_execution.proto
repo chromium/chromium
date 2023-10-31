@@ -36,3 +36,15 @@ enum ModelExecutionFeature {
   MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION = 2;
   MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH = 3;
 }
+
+message OnDeviceModelExecutionConfig {
+  // The set of configs for features that leverage the on-device model.
+  //
+  // It is expected that there is only one feature config per feature.
+  repeated OnDeviceModelExecutionFeatureConfig feature_configs = 1;
+}
+
+message OnDeviceModelExecutionFeatureConfig {
+  // The feature this configuration is for.
+  optional ModelExecutionFeature feature = 1;
+}

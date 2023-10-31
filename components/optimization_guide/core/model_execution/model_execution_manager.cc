@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_stream_receiver.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -50,13 +51,17 @@ ModelExecutionManager::ModelExecutionManager(
       identity_manager_(identity_manager),
       oauth_scopes_(features::GetOAuthScopesForModelExecution()),
       on_device_model_service_controller_(
-          std::move(on_device_model_service_controller)) {
+          std::move(on_device_model_service_controller)),
+      on_device_model_execution_config_interpreter_(
+          std::make_unique<OnDeviceModelExecutionConfigInterpreter>()) {
   auto model_path_override_switch =
       switches::GetOnDeviceModelExecutionOverride();
   if (model_path_override_switch) {
     auto file_path = StringToFilePath(*model_path_override_switch);
     if (file_path) {
       on_device_model_path_ = *file_path;
+      on_device_model_execution_config_interpreter_->UpdateConfigWithFileDir(
+          on_device_model_path_);
     }
   }
 }
