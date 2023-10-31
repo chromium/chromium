@@ -20,8 +20,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './kerberos_page.html.js';

@@ -38,13 +38,13 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isExternalStorageEnabled, isInputDeviceSettingsSplitEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {PrefsState} from '../common/types.js';
 import {KeyboardPolicies, MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {GraphicsTabletSettingsObserverReceiver, KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {ACCESSIBILITY_COMMON_IME_ID} from '../os_languages_page/languages.js';
 import {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './device_page.html.js';

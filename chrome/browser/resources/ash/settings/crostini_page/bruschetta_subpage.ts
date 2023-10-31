@@ -14,7 +14,7 @@ import '../settings_shared.css.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './bruschetta_subpage.html.js';

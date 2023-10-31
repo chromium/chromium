@@ -16,10 +16,13 @@ import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {afterNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Constructor} from './common/types.js';
-import {ElementConfig, FocusConfig} from './focus_config.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
-import {Route, Router, routes} from './router.js';
+import {Constructor} from './types.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {Route, Router, routes} from '../router.js';
+
+type FinderFn = () => HTMLElement|null;
+export type ElementConfig = string|HTMLElement|FinderFn;
+export type FocusConfig = Map<string, ElementConfig>;
 
 export interface RouteOriginMixinInterface extends RouteObserverMixinInterface {
   route: Route|undefined;

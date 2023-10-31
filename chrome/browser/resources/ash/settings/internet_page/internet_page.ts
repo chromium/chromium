@@ -50,11 +50,11 @@ import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/ser
 import {afterNextRender, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {RouteOriginMixin, RouteOriginMixinInterface} from '../common/route_origin_mixin.js';
 import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin, RouteOriginMixinInterface} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {ApnSubpageElement} from './apn_subpage.js';

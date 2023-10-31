@@ -27,8 +27,8 @@ import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState,
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './os_bluetooth_device_detail_subpage.html.js';

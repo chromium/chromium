@@ -17,7 +17,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isCrostiniSupported, isExternalStorageEnabled} from '../common/load_time_booleans.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, StorageSpaceState} from './device_page_browser_proxy.js';
