@@ -3110,7 +3110,7 @@
   {
     "name": "enable-os-integration-sub-managers",
     "owners": [ "dibyapal@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "enable-palm-suppression",
