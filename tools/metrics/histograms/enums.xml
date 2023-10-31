@@ -45781,12 +45781,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1"
       label="kContextDestroyed: FetchLater's context is destroyed (implying
              activated by browser)">
-    Recorded once every time a scheduled FetchLater request is aborted in a
-    renderer process. It happens when JavaScript code explicitly aborts a
-    FetchLater request.
+    Recorded once every time a scheduled FetchLater request is activated on
+    Fetch context being destroyed.
 
     This number should be compared with
-    `FetchLater.Browser.Metrics.AbortedByInitiator`.
+    `FetchLater.Browser.Metrics.kStartedByInitiator`.
   </int>
   <int value="2"
       label="kActivatedByTimeout: FetchLater request is activated by user
@@ -45798,6 +45797,13 @@ Called by update_permissions_policy_enum.py.-->
 
     This number should be compared with
     `FetchLater.Browser.Metrics.StartedAfterInitiatorDisconnected`.
+  </int>
+  <int value="3"
+      label="kActivatedOnEnteredBackForwardCache: FetchLater request is
+             activated when the context is put into BackForwardCache">
+    Recorded once every time a scheduled FetchLater request is activated on
+    entering BackForwardCache in a renderer process. It happens only when
+    BackgroundSync permission of the FetchContext is off.
   </int>
 </enum>
 

@@ -11,6 +11,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -24,6 +26,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace network {
 
@@ -67,7 +70,8 @@ class CORE_EXPORT FetchManager final
 
 class CORE_EXPORT FetchLaterManager final
     : public GarbageCollected<FetchLaterManager>,
-      public ExecutionContextLifecycleObserver {
+      public ExecutionContextLifecycleObserver,
+      public mojom::blink::PermissionObserver {
  public:
   explicit FetchLaterManager(ExecutionContext*);
 
@@ -79,6 +83,7 @@ class CORE_EXPORT FetchLaterManager final
 
   // ExecutionContextLifecycleObserver overrides:
   void ContextDestroyed() override;
+  void ContextEnteredBackForwardCache() override;
 
   void Trace(Visitor*) const override;
 
@@ -107,11 +112,27 @@ class CORE_EXPORT FetchLaterManager final
       ResourceRequest request,
       const ResourceLoaderOptions& options) const;
 
+  // mojom::blink::PermissionObserver overrides:
+  void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
+
+  // Returns true if BackgroundSync permission has been enabled for the
+  // ExecutionContext of this.
+  bool IsBackgroundSyncGranted() const;
+
   // Removes a loader from `deferred_loaders_`.
   void OnDeferredLoaderFinished(DeferredLoader*);
 
   // Every deferred loader represents a FetchLater request.
   HeapHashSet<Member<DeferredLoader>> deferred_loaders_;
+
+  // Whether the ExecutionContext of `this` has permission to run deferred
+  // requests after the context enters BackForwardCache.
+  // Defaults to denied. It should be updated by
+  // `permission_observer_receiver_` shortly after ctor.
+  mojom::blink::PermissionStatus background_sync_permission_ =
+      mojom::blink::PermissionStatus::DENIED;
+  HeapMojoReceiver<mojom::blink::PermissionObserver, FetchLaterManager>
+      permission_observer_receiver_;
 };
 
 }  // namespace blink

@@ -514,6 +514,43 @@ TEST_F(FetchLaterTest, ContextDestroyed) {
                                  1 /*kContextDestroyed*/, 1);
 }
 
+// Test to cover when a FetchLaterManager::DeferredLoader triggers its Process()
+// method when its context enters BackForwardCache with BackgroundSync
+// permission off.
+TEST_F(FetchLaterTest, ForcedSendingWithBackgroundSyncOff) {
+  FetchLaterTestingScope scope(FrameClient());
+  auto& exception_state = scope.GetExceptionState();
+  auto target_url = AtomicString("/");
+  url_test_helpers::RegisterMockedURLLoad(KURL(GetSourcePageURL() + target_url),
+                                          test::CoreTestDataPath("foo.html"),
+                                          "text/html");
+  auto* fetch_later_manager =
+      MakeGarbageCollected<FetchLaterManager>(scope.GetExecutionContext());
+  auto* controller = AbortController::Create(scope.GetScriptState());
+  auto* request =
+      CreateFetchLaterRequest(scope, target_url, controller->signal());
+  // Sets up a FetchLater request.
+  auto* result = fetch_later_manager->FetchLater(
+      scope.GetScriptState(),
+      request->PassRequestData(scope.GetScriptState(), exception_state),
+      request->signal(), /*activate_after=*/absl::nullopt, exception_state);
+  EXPECT_THAT(result, Not(IsNull()));
+
+  // Simluates the context enters BackForwardCache.
+  // The default BackgroundSync is DENIED, so the following call should trigger
+  // immediate sending.
+  fetch_later_manager->ContextEnteredBackForwardCache();
+
+  // The FetchLaterResult held by user should still exist.
+  EXPECT_THAT(result, Not(IsNull()));
+  // The FetchLater sending is triggered, so its state should be updated.
+  EXPECT_TRUE(result->activated());
+  EXPECT_FALSE(exception_state.HadException());
+  Histogram().ExpectTotalCount("FetchLater.Renderer.Total", 1);
+  Histogram().ExpectUniqueSample("FetchLater.Renderer.Metrics",
+                                 3 /*kActivatedOnEnteredBackForwardCache*/, 1);
+}
+
 // The default priority for FetchLater request without FetchPriorityHint or
 // RenderBlockingBehavior should be kHigh.
 TEST(FetchLaterLoadPriorityTest, DefaultHigh) {
