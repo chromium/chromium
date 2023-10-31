@@ -16,6 +16,7 @@
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -268,10 +269,10 @@ void UserPerformanceTuningManager::Start() {
           &UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged,
           base::Unretained(this)));
   // Make sure the initial state of the pref is passed on to the policy.
-  OnHighEfficiencyModePrefChanged();
+  UpdateHighEfficiencyModeState();
 }
 
-void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
+void UserPerformanceTuningManager::UpdateHighEfficiencyModeState() {
   HighEfficiencyModeState state =
       prefs::GetCurrentHighEfficiencyModeState(pref_change_registrar_.prefs());
   if (!base::FeatureList::IsEnabled(features::kHighEfficiencyMultistateMode)) {
@@ -283,6 +284,10 @@ void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
     }
   }
   high_efficiency_mode_delegate_->ToggleHighEfficiencyMode(state);
+}
+
+void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
+  UpdateHighEfficiencyModeState();
   for (auto& obs : observers_) {
     obs.OnHighEfficiencyModeChanged();
   }
