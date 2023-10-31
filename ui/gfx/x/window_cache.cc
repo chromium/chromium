@@ -46,13 +46,15 @@ Window GetWindowAtPoint(const gfx::Point& point_px,
 ScopedShapeEventSelector::ScopedShapeEventSelector(Connection* connection,
                                                    Window window)
     : connection_(connection), window_(window) {
-  connection_->shape().SelectInput(
-      {.destination_window = window_, .enable = true}).IgnoreError();
+  connection_->shape()
+      .SelectInput({.destination_window = window_, .enable = true})
+      .IgnoreError();
 }
 
 ScopedShapeEventSelector::~ScopedShapeEventSelector() {
-  connection_->shape().SelectInput(
-      {.destination_window = window_, .enable = false}).IgnoreError();
+  connection_->shape()
+      .SelectInput({.destination_window = window_, .enable = false})
+      .IgnoreError();
 }
 
 WindowCache::WindowInfo::WindowInfo() = default;
@@ -103,8 +105,9 @@ void WindowCache::WaitUntilReady() {
       }
     }
   }
-  if (event)
+  if (event) {
     last_processed_event_ = events[event - 1].sequence();
+  }
 }
 
 void WindowCache::BeginDestroyTimer(std::unique_ptr<WindowCache> self) {
@@ -129,17 +132,20 @@ Window WindowCache::GetWindowAtPoint(gfx::Point point_px,
                                      Window window,
                                      const base::flat_set<Window>* ignore) {
   delete_when_destroy_timer_fires_ = true;
-  if (ignore && ignore->contains(window))
+  if (ignore && ignore->contains(window)) {
     return Window::None;
+  }
   auto* info = GetInfo(window);
-  if (!info || !info->mapped)
+  if (!info || !info->mapped) {
     return Window::None;
+  }
 
   gfx::Rect rect(info->x_px, info->y_px, info->width_px, info->height_px);
   rect.Outset(info->border_width_px);
   rect.Inset(info->gtk_frame_extents_px);
-  if (!rect.Contains(point_px))
+  if (!rect.Contains(point_px)) {
     return Window::None;
+  }
 
   point_px -= gfx::Vector2d(info->x_px, info->y_px);
   if (info->bounding_rects_px && info->input_rects_px) {
@@ -155,11 +161,13 @@ Window WindowCache::GetWindowAtPoint(gfx::Point point_px,
 
   for (Window child : base::Reversed(info->children)) {
     Window ret = GetWindowAtPoint(point_px, child, ignore);
-    if (ret != Window::None)
+    if (ret != Window::None) {
       return ret;
+    }
   }
-  if (info->has_wm_name)
+  if (info->has_wm_name) {
     return window;
+  }
   return Window::None;
 }
 
@@ -175,8 +183,9 @@ void WindowCache::OnEvent(const Event& event) {
   // we need and client events may have different semantics (eg.
   // ConfigureNotifyEvents are parent-relative if sent by the server but
   // root-relative when sent by the WM).
-  if (event.send_event())
+  if (event.send_event()) {
     return;
+  }
 
   if (auto* configure = event.As<ConfigureNotifyEvent>()) {
     if (auto* info = GetInfo(configure->window)) {
@@ -193,10 +202,11 @@ void WindowCache::OnEvent(const Event& event) {
         auto end = siblings->end();
         if (src != end && (dst != end || above == Window::None)) {
           dst = above == Window::None ? siblings->begin() : ++dst;
-          if (src < dst)
+          if (src < dst) {
             std::rotate(src, src + 1, dst);
-          else if (src > dst)
+          } else if (src > dst) {
             std::rotate(dst, src, src + 1);
+          }
         }
       }
     }
@@ -205,10 +215,11 @@ void WindowCache::OnEvent(const Event& event) {
       if (property->atom == Atom::WM_NAME) {
         info->has_wm_name = property->state != Property::Delete;
       } else if (property->atom == gtk_frame_extents_) {
-        if (property->state == Property::Delete)
+        if (property->state == Property::Delete) {
           info->gtk_frame_extents_px = gfx::Insets();
-        else
+        } else {
           GetProperty(property->window, gtk_frame_extents_, 4);
+        }
       }
     }
   } else if (auto* create = event.As<CreateNotifyEvent>()) {
@@ -218,22 +229,27 @@ void WindowCache::OnEvent(const Event& event) {
     }
   } else if (auto* destroy = event.As<DestroyNotifyEvent>()) {
     if (auto* info = GetInfo(destroy->window)) {
-      if (auto* siblings = GetChildren(info->parent))
+      if (auto* siblings = GetChildren(info->parent)) {
         base::Erase(*siblings, destroy->window);
+      }
       windows_.erase(destroy->window);
     }
   } else if (auto* map = event.As<MapNotifyEvent>()) {
-    if (auto* info = GetInfo(map->window))
+    if (auto* info = GetInfo(map->window)) {
       info->mapped = true;
+    }
   } else if (auto* unmap = event.As<UnmapNotifyEvent>()) {
-    if (auto* info = GetInfo(unmap->window))
+    if (auto* info = GetInfo(unmap->window)) {
       info->mapped = false;
+    }
   } else if (auto* reparent = event.As<ReparentNotifyEvent>()) {
     if (auto* info = GetInfo(reparent->window)) {
-      if (auto* old_siblings = GetChildren(info->parent))
+      if (auto* old_siblings = GetChildren(info->parent)) {
         base::Erase(*old_siblings, reparent->window);
-      if (auto* new_siblings = GetChildren(reparent->parent))
+      }
+      if (auto* new_siblings = GetChildren(reparent->parent)) {
         new_siblings->push_back(reparent->window);
+      }
       info->parent = reparent->parent;
     }
   } else if (auto* gravity = event.As<GravityNotifyEvent>()) {
@@ -245,10 +261,11 @@ void WindowCache::OnEvent(const Event& event) {
     if (auto* info = GetInfo(circulate->window)) {
       if (auto* siblings = GetChildren(info->parent)) {
         base::Erase(*siblings, circulate->window);
-        if (circulate->place == Place::OnTop)
+        if (circulate->place == Place::OnTop) {
           siblings->push_back(circulate->window);
-        else
+        } else {
           siblings->insert(siblings->begin(), circulate->window);
+        }
       }
     }
   } else if (auto* shape = event.As<Shape::NotifyEvent>()) {
@@ -262,8 +279,9 @@ void WindowCache::OnEvent(const Event& event) {
 }
 
 void WindowCache::AddWindow(Window window, Window parent) {
-  if (base::Contains(windows_, window))
+  if (base::Contains(windows_, window)) {
     return;
+  }
   WindowInfo& info = windows_[window];
   info.parent = parent;
   // Events must be selected before getting the initial window info to
@@ -295,14 +313,16 @@ void WindowCache::AddWindow(Window window, Window parent) {
 
 WindowCache::WindowInfo* WindowCache::GetInfo(Window window) {
   auto it = windows_.find(window);
-  if (it == windows_.end())
+  if (it == windows_.end()) {
     return nullptr;
+  }
   return &it->second;
 }
 
 std::vector<Window>* WindowCache::GetChildren(Window window) {
-  if (auto* info = GetInfo(window))
+  if (auto* info = GetInfo(window)) {
     return &info->children;
+  }
   return nullptr;
 }
 
@@ -321,16 +341,18 @@ WindowCache::WindowInfo* WindowCache::OnResponse(Window window,
     return nullptr;
   }
   auto it = windows_.find(window);
-  if (it == windows_.end())
+  if (it == windows_.end()) {
     return nullptr;
+  }
   return &it->second;
 }
 
 void WindowCache::OnGetWindowAttributesResponse(
     Window window,
     GetWindowAttributesResponse response) {
-  if (auto* info = OnResponse(window, response.reply.get()))
+  if (auto* info = OnResponse(window, response.reply.get())) {
     info->mapped = response->map_state != MapState::Unmapped;
+  }
 }
 
 void WindowCache::OnGetGeometryResponse(Window window,
@@ -348,8 +370,9 @@ void WindowCache::OnQueryTreeResponse(Window window,
   if (auto* info = OnResponse(window, response.reply.get())) {
     info->parent = response->parent;
     info->children = std::move(response->children);
-    for (auto child : info->children)
+    for (auto child : info->children) {
       AddWindow(child, window);
+    }
   }
 }
 
@@ -393,8 +416,9 @@ void WindowCache::OnGetRectanglesResponse(
 }
 
 void WindowCache::OnDestroyTimerExpired(std::unique_ptr<WindowCache> self) {
-  if (!delete_when_destroy_timer_fires_)
+  if (!delete_when_destroy_timer_fires_) {
     return;  // destroy `this`
+  }
 
   BeginDestroyTimer(std::move(self));
 }

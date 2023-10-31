@@ -49,7 +49,6 @@
 #include "ui/gfx/x/shm.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 
 #if BUILDFLAG(IS_FREEBSD)
 #include <sys/sysctl.h>
@@ -70,8 +69,9 @@ bool SupportsEWMH() {
     supports_ewmh_cached = true;
 
     x11::Window wm_window = x11::Window::None;
-    if (!GetProperty(GetX11RootWindow(),
-                     x11::GetAtom("_NET_SUPPORTING_WM_CHECK"), &wm_window)) {
+    if (!x11::Connection::Get()->GetPropertyAs(
+            GetX11RootWindow(), x11::GetAtom("_NET_SUPPORTING_WM_CHECK"),
+            &wm_window)) {
       supports_ewmh = false;
       return false;
     }
@@ -86,10 +86,10 @@ bool SupportsEWMH() {
     // property referencing an ID that's been recycled for another window), so
     // we check that too.
     x11::Window wm_window_property = x11::Window::None;
-    supports_ewmh =
-        GetProperty(wm_window, x11::GetAtom("_NET_SUPPORTING_WM_CHECK"),
-                    &wm_window_property) &&
-        wm_window_property == wm_window;
+    supports_ewmh = x11::Connection::Get()->GetPropertyAs(
+                        wm_window, x11::GetAtom("_NET_SUPPORTING_WM_CHECK"),
+                        &wm_window_property) &&
+                    wm_window_property == wm_window;
   }
 
   return supports_ewmh;
@@ -97,18 +97,22 @@ bool SupportsEWMH() {
 
 bool GetWindowManagerName(std::string* wm_name) {
   DCHECK(wm_name);
-  if (!SupportsEWMH())
+  if (!SupportsEWMH()) {
     return false;
+  }
 
   x11::Window wm_window = x11::Window::None;
-  if (!GetProperty(GetX11RootWindow(), x11::GetAtom("_NET_SUPPORTING_WM_CHECK"),
-                   &wm_window)) {
+  if (!x11::Connection::Get()->GetPropertyAs(
+          GetX11RootWindow(), x11::GetAtom("_NET_SUPPORTING_WM_CHECK"),
+          &wm_window)) {
     return false;
   }
 
   std::vector<char> str;
-  if (!GetArrayProperty(wm_window, x11::GetAtom("_NET_WM_NAME"), &str))
+  if (!x11::Connection::Get()->GetArrayProperty(
+          wm_window, x11::GetAtom("_NET_WM_NAME"), &str)) {
     return false;
+  }
   wm_name->assign(str.data(), str.size());
   return true;
 }
@@ -117,8 +121,9 @@ bool GetWindowManagerName(std::string* wm_name) {
 // screen saver.
 bool IsX11ScreenSaverAvailable() {
   // X Screen Saver isn't accessible in headless mode.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
     return false;
+  }
 
   auto version = x11::Connection::Get()
                      ->screensaver()
@@ -144,10 +149,13 @@ bool EventHasCoordinates(const x11::Event& event) {
 
 bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
   std::vector<uint32_t> hints32;
-  if (!GetArrayProperty(window, x11::Atom::WM_NORMAL_HINTS, &hints32))
+  if (!x11::Connection::Get()->GetArrayProperty(
+          window, x11::Atom::WM_NORMAL_HINTS, &hints32)) {
     return false;
-  if (hints32.size() != sizeof(SizeHints) / 4)
+  }
+  if (hints32.size() != sizeof(SizeHints) / 4) {
     return false;
+  }
   memcpy(hints, hints32.data(), sizeof(*hints));
   return true;
 }
@@ -155,16 +163,19 @@ bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
 void SetWmNormalHints(x11::Window window, const SizeHints& hints) {
   std::vector<uint32_t> hints32(sizeof(SizeHints) / 4);
   memcpy(hints32.data(), &hints, sizeof(SizeHints));
-  SetArrayProperty(window, x11::Atom::WM_NORMAL_HINTS, x11::Atom::WM_SIZE_HINTS,
-                   hints32);
+  x11::Connection::Get()->SetArrayProperty(window, x11::Atom::WM_NORMAL_HINTS,
+                                           x11::Atom::WM_SIZE_HINTS, hints32);
 }
 
 bool GetWmHints(x11::Window window, WmHints* hints) {
   std::vector<uint32_t> hints32;
-  if (!GetArrayProperty(window, x11::Atom::WM_HINTS, &hints32))
+  if (!x11::Connection::Get()->GetArrayProperty(window, x11::Atom::WM_HINTS,
+                                                &hints32)) {
     return false;
-  if (hints32.size() != sizeof(WmHints) / 4)
+  }
+  if (hints32.size() != sizeof(WmHints) / 4) {
     return false;
+  }
   memcpy(hints, hints32.data(), sizeof(*hints));
   return true;
 }
@@ -172,7 +183,8 @@ bool GetWmHints(x11::Window window, WmHints* hints) {
 void SetWmHints(x11::Window window, const WmHints& hints) {
   std::vector<uint32_t> hints32(sizeof(WmHints) / 4);
   memcpy(hints32.data(), &hints, sizeof(WmHints));
-  SetArrayProperty(window, x11::Atom::WM_HINTS, x11::Atom::WM_HINTS, hints32);
+  x11::Connection::Get()->SetArrayProperty(window, x11::Atom::WM_HINTS,
+                                           x11::Atom::WM_HINTS, hints32);
 }
 
 void WithdrawWindow(x11::Window window) {
@@ -183,7 +195,7 @@ void WithdrawWindow(x11::Window window) {
   x11::UnmapNotifyEvent event{.event = root, .window = window};
   auto mask =
       x11::EventMask::SubstructureNotify | x11::EventMask::SubstructureRedirect;
-  SendEvent(event, root, mask);
+  x11::Connection::Get()->SendEvent(event, root, mask);
 }
 
 void RaiseWindow(x11::Window window) {
@@ -226,8 +238,9 @@ void DrawPixmap(x11::Connection* connection,
   constexpr size_t kPutImageExtraSize = 32;
 
   const auto* visual_info = connection->GetVisualInfoFromId(visual);
-  if (!visual_info)
+  if (!visual_info) {
     return;
+  }
 
   size_t row_bytes = RowBytesForVisualWidth(*visual_info, width);
 
@@ -297,8 +310,9 @@ int CoalescePendingMotionEvents(const x11::Event& x11_event,
     // PropertyNotifyEvents that get interleaved between mouse events, so it is
     // necessary to skip over those to coalesce as many pending motion events as
     // possible so mouse dragging is smooth.
-    if (!EventHasCoordinates(event))
+    if (!EventHasCoordinates(event)) {
       continue;
+    }
 
     if (motion) {
       const auto* next_motion = event.As<x11::MotionNotifyEvent>();
@@ -313,8 +327,9 @@ int CoalescePendingMotionEvents(const x11::Event& x11_event,
       }
     } else {
       auto* next_device = event.As<x11::Input::DeviceEvent>();
-      if (!next_device)
+      if (!next_device) {
         break;
+      }
 
       // If this isn't from a valid device, throw the event away, as
       // that's what the message pump would do. Device events come in pairs
@@ -374,7 +389,7 @@ void SetUseOSWindowFrame(x11::Window window, bool use_os_window_frame) {
   std::vector<uint32_t> hints(sizeof(MotifWmHints) / sizeof(uint32_t));
   memcpy(hints.data(), &motif_hints, sizeof(MotifWmHints));
   x11::Atom hint_atom = x11::GetAtom("_MOTIF_WM_HINTS");
-  SetArrayProperty(window, hint_atom, hint_atom, hints);
+  x11::Connection::Get()->SetArrayProperty(window, hint_atom, hint_atom, hints);
 }
 
 bool IsShapeExtensionAvailable() {
@@ -386,32 +401,35 @@ x11::Window GetX11RootWindow() {
 }
 
 bool GetCurrentDesktop(int32_t* desktop) {
-  return GetProperty(GetX11RootWindow(), x11::GetAtom("_NET_CURRENT_DESKTOP"),
-                     desktop);
+  return x11::Connection::Get()->GetPropertyAs(
+      GetX11RootWindow(), x11::GetAtom("_NET_CURRENT_DESKTOP"), desktop);
 }
 
 void SetHideTitlebarWhenMaximizedProperty(x11::Window window,
                                           HideTitlebarWhenMaximized property) {
-  SetProperty(window, x11::GetAtom("_GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED"),
-              x11::Atom::CARDINAL, static_cast<uint32_t>(property));
+  x11::Connection::Get()->SetProperty(
+      window, x11::GetAtom("_GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED"),
+      x11::Atom::CARDINAL, static_cast<uint32_t>(property));
 }
 
 bool GetRawBytesOfProperty(x11::Window window,
                            x11::Atom property,
                            scoped_refptr<base::RefCountedMemory>* out_data,
                            x11::Atom* out_type) {
-  auto future = x11::Connection::Get()->GetProperty(x11::GetPropertyRequest{
+  auto future = x11::Connection::Get()->GetProperty({
       .window = window,
       .property = property,
       // Don't limit the amount of returned data.
       .long_length = std::numeric_limits<uint32_t>::max(),
   });
   auto response = future.Sync();
-  if (!response || !response->format)
+  if (!response || !response->format) {
     return false;
+  }
   *out_data = response->value;
-  if (out_type)
+  if (out_type) {
     *out_type = response->type;
+  }
   return true;
 }
 
@@ -422,15 +440,18 @@ void SetWindowClassHint(x11::Connection* connection,
   auto str =
       base::StringPrintf("%s%c%s", res_name.c_str(), '\0', res_class.c_str());
   std::vector<char> data(str.data(), str.data() + str.size() + 1);
-  SetArrayProperty(window, x11::Atom::WM_CLASS, x11::Atom::STRING, data);
+  x11::Connection::Get()->SetArrayProperty(window, x11::Atom::WM_CLASS,
+                                           x11::Atom::STRING, data);
 }
 
 void SetWindowRole(x11::Window window, const std::string& role) {
   x11::Atom prop = x11::GetAtom("WM_WINDOW_ROLE");
-  if (role.empty())
-    x11::DeleteProperty(window, prop);
-  else
-    x11::SetStringProperty(window, prop, x11::Atom::STRING, role);
+  if (role.empty()) {
+    x11::Connection::Get()->DeleteProperty(window, prop);
+  } else {
+    x11::Connection::Get()->SetStringProperty(window, prop, x11::Atom::STRING,
+                                              role);
+  }
 }
 
 void SetWMSpecState(x11::Window window,
@@ -467,13 +488,15 @@ bool HasWMSpecProperty(const base::flat_set<x11::Atom>& properties,
 
 bool GetCustomFramePrefDefault() {
   // _NET_WM_MOVERESIZE is needed for frame-drag-initiated window movement.
-  if (!WmSupportsHint(x11::GetAtom("_NET_WM_MOVERESIZE")))
+  if (!WmSupportsHint(x11::GetAtom("_NET_WM_MOVERESIZE"))) {
     return false;
+  }
 
   ui::WindowManagerName wm = GuessWindowManager();
   // If we don't know which WM is active, conservatively disable custom frames.
-  if (wm == WM_OTHER || wm == WM_UNNAMED)
+  if (wm == WM_OTHER || wm == WM_UNNAMED) {
     return false;
+  }
 
   // Stacking WMs should use custom frames.
   return !IsWmTiling(wm);
@@ -519,65 +542,90 @@ bool IsWmTiling(WindowManagerName window_manager) {
 }
 
 bool GetWindowDesktop(x11::Window window, int32_t* desktop) {
-  return GetProperty(window, x11::GetAtom("_NET_WM_DESKTOP"), desktop);
+  return x11::Connection::Get()->GetPropertyAs(
+      window, x11::GetAtom("_NET_WM_DESKTOP"), desktop);
 }
 
 WindowManagerName GuessWindowManager() {
   std::string name;
-  if (!GetWindowManagerName(&name))
+  if (!GetWindowManagerName(&name)) {
     return WM_UNNAMED;
+  }
   // These names are taken from the WMs' source code.
-  if (name == "awesome")
+  if (name == "awesome") {
     return WM_AWESOME;
-  if (name == "Blackbox")
+  }
+  if (name == "Blackbox") {
     return WM_BLACKBOX;
-  if (name == "Compiz" || name == "compiz")
+  }
+  if (name == "Compiz" || name == "compiz") {
     return WM_COMPIZ;
-  if (name == "e16" || name == "Enlightenment")
+  }
+  if (name == "e16" || name == "Enlightenment") {
     return WM_ENLIGHTENMENT;
-  if (name == "Fluxbox")
+  }
+  if (name == "Fluxbox") {
     return WM_FLUXBOX;
-  if (name == "i3")
+  }
+  if (name == "i3") {
     return WM_I3;
-  if (base::StartsWith(name, "IceWM", base::CompareCase::SENSITIVE))
+  }
+  if (base::StartsWith(name, "IceWM", base::CompareCase::SENSITIVE)) {
     return WM_ICE_WM;
-  if (name == "ion3")
+  }
+  if (name == "ion3") {
     return WM_ION3;
-  if (name == "KWin")
+  }
+  if (name == "KWin") {
     return WM_KWIN;
-  if (name == "matchbox")
+  }
+  if (name == "matchbox") {
     return WM_MATCHBOX;
-  if (name == "Metacity")
+  }
+  if (name == "Metacity") {
     return WM_METACITY;
-  if (name == "Mutter (Muffin)")
+  }
+  if (name == "Mutter (Muffin)") {
     return WM_MUFFIN;
-  if (name == "GNOME Shell")
+  }
+  if (name == "GNOME Shell") {
     return WM_MUTTER;  // GNOME Shell uses Mutter
-  if (name == "Mutter")
+  }
+  if (name == "Mutter") {
     return WM_MUTTER;
-  if (name == "notion")
+  }
+  if (name == "notion") {
     return WM_NOTION;
-  if (name == "Openbox")
+  }
+  if (name == "Openbox") {
     return WM_OPENBOX;
-  if (name == "qtile")
+  }
+  if (name == "qtile") {
     return WM_QTILE;
-  if (name == "ratpoison")
+  }
+  if (name == "ratpoison") {
     return WM_RATPOISON;
-  if (name == "stumpwm")
+  }
+  if (name == "stumpwm") {
     return WM_STUMPWM;
-  if (name == "wmii")
+  }
+  if (name == "wmii") {
     return WM_WMII;
-  if (name == "Xfwm4")
+  }
+  if (name == "Xfwm4") {
     return WM_XFWM4;
-  if (name == "xmonad")
+  }
+  if (name == "xmonad") {
     return WM_XMONAD;
+  }
   return WM_OTHER;
 }
 
 std::string GuessWindowManagerName() {
   std::string name;
-  if (GetWindowManagerName(&name))
+  if (GetWindowManagerName(&name)) {
     return name;
+  }
   return "Unknown";
 }
 
@@ -654,8 +702,8 @@ bool IsX11WindowFullScreen(x11::Window window) {
   x11::Atom fullscreen_atom = x11::GetAtom("_NET_WM_STATE_FULLSCREEN");
   if (WmSupportsHint(fullscreen_atom)) {
     std::vector<x11::Atom> atom_properties;
-    if (GetArrayProperty(window, x11::GetAtom("_NET_WM_STATE"),
-                         &atom_properties)) {
+    if (x11::Connection::Get()->GetArrayProperty(
+            window, x11::GetAtom("_NET_WM_STATE"), &atom_properties)) {
       return base::Contains(atom_properties, fullscreen_atom);
     }
   }
@@ -679,20 +727,23 @@ bool IsX11WindowFullScreen(x11::Window window) {
 
 bool SuspendX11ScreenSaver(bool suspend) {
   static const bool kScreenSaverAvailable = IsX11ScreenSaverAvailable();
-  if (!kScreenSaverAvailable)
+  if (!kScreenSaverAvailable) {
     return false;
+  }
 
   x11::Connection::Get()->screensaver().Suspend({suspend});
   return true;
 }
 
 bool WmSupportsHint(x11::Atom atom) {
-  if (!SupportsEWMH())
+  if (!SupportsEWMH()) {
     return false;
+  }
 
   std::vector<x11::Atom> supported_atoms;
-  if (!GetArrayProperty(GetX11RootWindow(), x11::GetAtom("_NET_SUPPORTED"),
-                        &supported_atoms)) {
+  if (!x11::Connection::Get()->GetArrayProperty(GetX11RootWindow(),
+                                                x11::GetAtom("_NET_SUPPORTED"),
+                                                &supported_atoms)) {
     return false;
   }
 
@@ -701,8 +752,9 @@ bool WmSupportsHint(x11::Atom atom) {
 
 gfx::ICCProfile GetICCProfileForMonitor(int monitor) {
   gfx::ICCProfile icc_profile;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
     return icc_profile;
+  }
   std::string atom_name = monitor == 0
                               ? "_ICC_PROFILE"
                               : base::StringPrintf("_ICC_PROFILE_%d", monitor);
@@ -753,8 +805,9 @@ SkColorType ColorTypeForVisual(x11::VisualId visual) {
   };
   auto* connection = x11::Connection::Get();
   const auto* vis = connection->GetVisualInfoFromId(visual);
-  if (!vis)
+  if (!vis) {
     return kUnknown_SkColorType;
+  }
   // We don't currently support anything other than TrueColor and DirectColor.
   if (!vis->visual_type->red_mask || !vis->visual_type->green_mask ||
       !vis->visual_type->blue_mask) {
@@ -783,7 +836,7 @@ x11::Future<void> SendClientMessage(x11::Window window,
                                     x11::EventMask event_mask) {
   x11::ClientMessageEvent event{.format = 32, .window = window, .type = type};
   event.data.data32 = data;
-  return SendEvent(event, target, event_mask);
+  return x11::Connection::Get()->SendEvent(event, target, event_mask);
 }
 
 bool IsVulkanSurfaceSupported() {
@@ -794,8 +847,9 @@ bool IsVulkanSurfaceSupported() {
   };
   auto* connection = x11::Connection::Get();
   for (const auto* extension : extensions) {
-    if (connection->QueryExtension(extension).Sync())
+    if (connection->QueryExtension(extension).Sync()) {
       return true;
+    }
   }
   return false;
 }
@@ -806,16 +860,18 @@ bool DoesVisualHaveAlphaForTest() {
   ui::XVisualManager::GetInstance()->ChooseVisualForWindow(
       true, nullptr, &depth, nullptr, &visual_has_alpha);
 
-  if (visual_has_alpha)
+  if (visual_has_alpha) {
     DCHECK_EQ(32, depth);
+  }
 
   return visual_has_alpha;
 }
 
 gfx::ImageSkia GetNativeWindowIcon(intptr_t target_window_id) {
   std::vector<uint32_t> data;
-  if (!GetArrayProperty(static_cast<x11::Window>(target_window_id),
-                        x11::GetAtom("_NET_WM_ICON"), &data)) {
+  if (!x11::Connection::Get()->GetArrayProperty(
+          static_cast<x11::Window>(target_window_id),
+          x11::GetAtom("_NET_WM_ICON"), &data)) {
     return gfx::ImageSkia();
   }
 
@@ -836,8 +892,9 @@ gfx::ImageSkia GetNativeWindowIcon(intptr_t target_window_id) {
     i += 2 + static_cast<int>(data[i] * data[i + 1]);
   }
 
-  if (width == 0 || height == 0)
+  if (width == 0 || height == 0) {
     return gfx::ImageSkia();
+  }
 
   SkBitmap result;
   SkImageInfo info = SkImageInfo::MakeN32(width, height, kUnpremul_SkAlphaType);
@@ -874,8 +931,9 @@ XVisualManager::XVisualManager() {
 
   // Choose the opaque visual.
   opaque_visual_id_ = visual_picker->system_visual();
-  if (opaque_visual_id_ == x11::VisualId{})
+  if (opaque_visual_id_ == x11::VisualId{}) {
     opaque_visual_id_ = connection->default_screen().root_visual;
+  }
   // opaque_visual_id_ may be unset in headless environments
   if (opaque_visual_id_ != x11::VisualId{}) {
     DCHECK(visuals_.find(opaque_visual_id_) != visuals_.end());
@@ -914,8 +972,9 @@ void XVisualManager::ChooseVisualForWindow(bool want_argb_visual,
   bool use_argb = want_argb_visual && ArgbVisualAvailable();
   x11::VisualId visual = use_argb ? transparent_visual_id_ : opaque_visual_id_;
 
-  if (visual_id)
+  if (visual_id) {
     *visual_id = visual;
+  }
   bool success = GetVisualInfo(visual, depth, colormap, visual_has_alpha);
   DCHECK(success);
 }
@@ -926,13 +985,15 @@ bool XVisualManager::GetVisualInfo(x11::VisualId visual_id,
                                    bool* visual_has_alpha) {
   DCHECK_NE(visual_id, x11::VisualId{});
   auto it = visuals_.find(visual_id);
-  if (it == visuals_.end())
+  if (it == visuals_.end()) {
     return false;
+  }
   XVisualData& data = *it->second;
   const x11::VisualType& info = *data.info;
 
-  if (depth)
+  if (depth) {
     *depth = data.depth;
+  }
   if (colormap) {
     bool is_default_visual =
         visual_id == x11::Connection::Get()->default_root_visual().visual_id;

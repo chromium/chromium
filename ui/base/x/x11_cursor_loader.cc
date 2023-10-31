@@ -30,7 +30,6 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"

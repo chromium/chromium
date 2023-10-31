@@ -73,11 +73,13 @@ void PropertyCache::OnEvent(const Event& xev) {
 }
 
 void PropertyCache::FetchProperty(PropertiesIterator it) {
-  it->second.future = connection_->GetProperty({
-      .window = window_,
-      .property = it->first,
-      .long_length = std::numeric_limits<uint32_t>::max(),
-  });
+  it->second.future =
+      static_cast<XProto*>(connection_)
+          ->GetProperty({
+              .window = window_,
+              .property = it->first,
+              .long_length = std::numeric_limits<uint32_t>::max(),
+          });
   it->second.future.OnResponse(base::BindOnce(
       &PropertyCache::OnGetPropertyResponse, weak_factory_.GetWeakPtr(), it));
 }

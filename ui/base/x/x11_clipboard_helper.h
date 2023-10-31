@@ -117,7 +117,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
   const SelectionFormatMap& LookupStorageForAtom(x11::Atom atom);
 
   // Our X11 state.
-  const raw_ptr<x11::Connection> connection_;
+  raw_ref<x11::Connection> connection_;
   const x11::Window x_root_window_;
 
   // Input-only window used as a selection owner.

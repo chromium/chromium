@@ -171,8 +171,6 @@ source_set("xproto") {
     "xproto_internal.h",
     "xproto_types.cc",
     "xproto_types.h",
-    "xproto_util.cc",
-    "xproto_util.h",
   ]
   deps = [
     ":xlib_loader",

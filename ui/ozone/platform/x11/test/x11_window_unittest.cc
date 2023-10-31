@@ -24,9 +24,9 @@
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
 
@@ -154,8 +154,10 @@ class WMStateWaiter : public X11PropertyChangeWaiter {
   // X11PropertyChangeWaiter:
   bool ShouldKeepOnWaiting() override {
     std::vector<x11::Atom> hints;
-    if (GetArrayProperty(xwindow(), x11::GetAtom("_NET_WM_STATE"), &hints))
+    if (x11::Connection::Get()->GetArrayProperty(
+            xwindow(), x11::GetAtom("_NET_WM_STATE"), &hints)) {
       return base::Contains(hints, x11::GetAtom(hint_)) != wait_till_set_;
+    }
     return true;
   }
 

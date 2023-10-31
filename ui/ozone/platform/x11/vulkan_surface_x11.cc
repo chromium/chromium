@@ -12,7 +12,6 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -122,7 +121,8 @@ void VulkanSurfaceX11::OnEvent(const x11::Event& event) {
 
   x11::ExposeEvent forwarded_event = *expose;
   forwarded_event.window = parent_window_;
-  x11::SendEvent(forwarded_event, parent_window_, x11::EventMask::Exposure);
+  x11::Connection::Get()->SendEvent(forwarded_event, parent_window_,
+                                    x11::EventMask::Exposure);
   x11::Connection::Get()->Flush();
 }
 

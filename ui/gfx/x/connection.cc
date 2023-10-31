@@ -48,8 +48,7 @@ void DefaultIOErrorHandler() {
 
 class UnknownError : public Error {
  public:
-  explicit UnknownError(Connection::RawError error_bytes)
-      : error_bytes_(error_bytes) {}
+  explicit UnknownError(RawError error_bytes) : error_bytes_(error_bytes) {}
 
   ~UnknownError() override = default;
 
@@ -70,7 +69,7 @@ class UnknownError : public Error {
   }
 
  private:
-  Connection::RawError error_bytes_;
+  RawError error_bytes_;
 };
 
 }  // namespace
@@ -182,71 +181,37 @@ XlibDisplay& Connection::GetXlibDisplay() {
   return *xlib_display_;
 }
 
-Connection::FutureImpl::FutureImpl(Connection* connection,
-                                   SequenceType sequence,
-                                   bool generates_reply,
-                                   const char* request_name_for_tracing)
-    : connection(connection),
-      sequence(sequence),
-      generates_reply(generates_reply),
-      request_name_for_tracing(request_name_for_tracing) {}
-
-void Connection::FutureImpl::Wait() {
-  connection->WaitForResponse(this);
+void Connection::DeleteProperty(x11::Window window, x11::Atom name) {
+  XProto::DeleteProperty({
+      .window = static_cast<x11::Window>(window),
+      .property = name,
+  });
 }
 
-void Connection::FutureImpl::DispatchNow() {
-  Wait();
-  ProcessResponse();
+void Connection::SetStringProperty(Window window,
+                                   Atom property,
+                                   Atom type,
+                                   const std::string& value) {
+  std::vector<char> str(value.begin(), value.end());
+  SetArrayProperty(window, property, type, str);
 }
 
-bool Connection::FutureImpl::AfterEvent(const Event& event) const {
-  return CompareSequenceIds(event.sequence(), sequence) > 0;
-}
-
-void Connection::FutureImpl::Sync(RawReply* raw_reply,
-                                  std::unique_ptr<Error>* error) {
-  Wait();
-  TakeResponse(raw_reply, error);
-}
-
-void Connection::FutureImpl::OnResponse(ResponseCallback callback) {
-  UpdateRequestHandler(std::move(callback));
-}
-
-void Connection::FutureImpl::UpdateRequestHandler(ResponseCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(connection->sequence_checker_);
-  DUMP_WILL_BE_CHECK(callback);
-
-  auto* request = connection->GetRequestForFuture(this);
-  // Make sure we haven't processed this request yet.
-  DUMP_WILL_BE_CHECK(request->callback);
-
-  request->callback = std::move(callback);
-}
-
-void Connection::FutureImpl::ProcessResponse() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(connection->sequence_checker_);
-
-  auto* request = connection->GetRequestForFuture(this);
-  DUMP_WILL_BE_CHECK(request->callback);
-  DUMP_WILL_BE_CHECK(request->have_response);
-
-  std::move(request->callback)
-      .Run(std::move(request->reply), std::move(request->error));
-}
-
-void Connection::FutureImpl::TakeResponse(RawReply* raw_reply,
-                                          std::unique_ptr<Error>* error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(connection->sequence_checker_);
-
-  auto* request = connection->GetRequestForFuture(this);
-  DUMP_WILL_BE_CHECK(request->callback);
-  DUMP_WILL_BE_CHECK(request->have_response);
-
-  *raw_reply = std::move(request->reply);
-  *error = std::move(request->error);
-  request->callback.Reset();
+Window Connection::CreateDummyWindow(const std::string& name) {
+  auto window = GenerateId<Window>();
+  CreateWindow(CreateWindowRequest{
+      .wid = window,
+      .parent = default_root(),
+      .x = -100,
+      .y = -100,
+      .width = 10,
+      .height = 10,
+      .c_class = WindowClass::InputOnly,
+      .override_redirect = Bool32(true),
+  });
+  if (!name.empty()) {
+    SetStringProperty(window, Atom::WM_NAME, Atom::STRING, name);
+  }
+  return window;
 }
 
 Connection::Request::Request(ResponseCallback callback)
@@ -522,7 +487,7 @@ void Connection::ProcessNextResponse() {
   }
 }
 
-std::unique_ptr<Connection::FutureImpl> Connection::SendRequest(
+std::unique_ptr<FutureImpl> Connection::SendRequestImpl(
     WriteBuffer* buf,
     const char* request_name_for_tracing,
     bool generates_reply,
@@ -637,12 +602,12 @@ void Connection::WaitForResponse(FutureImpl* future) {
 
   xcb_generic_error_t* error = nullptr;
   void* reply = nullptr;
-  if (future->generates_reply) {
-    if (!xcb_poll_for_reply(XcbConnection(), future->sequence, &reply,
+  if (future->generates_reply()) {
+    if (!xcb_poll_for_reply(XcbConnection(), future->sequence(), &reply,
                             &error)) {
       TRACE_EVENT1("ui", "xcb_wait_for_reply", "request",
-                   future->request_name_for_tracing);
-      reply = xcb_wait_for_reply(XcbConnection(), future->sequence, &error);
+                   future->request_name_for_tracing());
+      reply = xcb_wait_for_reply(XcbConnection(), future->sequence(), &error);
     }
   } else {
     // There's a special case here.  This request doesn't generate a reply, and
@@ -661,7 +626,7 @@ void Connection::WaitForResponse(FutureImpl* future) {
     } else {
       SequenceType last_non_void_offset =
           last_non_void_request_id_.value() - first_request_id_;
-      SequenceType sequence_offset = future->sequence - first_request_id_;
+      SequenceType sequence_offset = future->sequence() - first_request_id_;
       needs_extra_request_for_check = sequence_offset > last_non_void_offset;
     }
     if (needs_extra_request_for_check) {
@@ -678,8 +643,8 @@ void Connection::WaitForResponse(FutureImpl* future) {
 
     {
       TRACE_EVENT1("ui", "xcb_request_check", "request",
-                   future->request_name_for_tracing);
-      error = xcb_request_check(XcbConnection(), {future->sequence});
+                   future->request_name_for_tracing());
+      error = xcb_request_check(XcbConnection(), {future->sequence()});
     }
   }
   request->SetResponse(this, reply, error);
@@ -688,7 +653,7 @@ void Connection::WaitForResponse(FutureImpl* future) {
 Connection::Request* Connection::GetRequestForFuture(FutureImpl* future) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  SequenceType offset = future->sequence - first_request_id_;
+  SequenceType offset = future->sequence() - first_request_id_;
   DUMP_WILL_BE_CHECK_LT(offset, requests_.size());
   return &requests_[offset];
 }

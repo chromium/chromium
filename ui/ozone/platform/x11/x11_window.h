@@ -14,12 +14,14 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/x/x11_desktop_window_move_client.h"
 #include "ui/base/x/x11_drag_drop_client.h"
 #include "ui/base/x/x11_move_loop_delegate.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/sync.h"
 #include "ui/gfx/x/xfixes.h"
@@ -358,7 +360,7 @@ class X11Window : public PlatformWindow,
   std::unique_ptr<x11::XScopedEventSelector> source_window_events_;
 
   // The display and the native X window hosting the root window.
-  const raw_ptr<x11::Connection> connection_;
+  const raw_ref<x11::Connection> connection_;
   x11::Window xwindow_ = x11::Window::None;
   x11::Window x_root_window_ = x11::Window::None;
 

@@ -20,6 +20,15 @@ namespace x11 {
 
 class Error;
 
+using RawReply = scoped_refptr<base::RefCountedMemory>;
+using RawError = scoped_refptr<base::RefCountedMemory>;
+using ResponseCallback =
+    base::OnceCallback<void(RawReply reply, std::unique_ptr<Error> error)>;
+
+// xcb returns unsigned int when making requests.  This may be updated to
+// uint16_t if/when we stop using xcb for socket IO.
+using SequenceType = unsigned int;
+
 constexpr uint8_t kSendEventMask = 0x80;
 
 namespace detail {
@@ -28,8 +37,9 @@ template <typename T>
 void VerifyAlignment(T* t, size_t offset) {
   // On the wire, X11 types are always aligned to their size.  This is a sanity
   // check to ensure padding etc are working properly.
-  if (sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8)
+  if (sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8) {
     DUMP_WILL_BE_CHECK_EQ(offset % sizeof(*t), 0UL);
+  }
 }
 
 }  // namespace detail

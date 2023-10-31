@@ -29,6 +29,7 @@
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_internal.h"
 
 namespace x11 {

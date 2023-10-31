@@ -26,7 +26,6 @@ RENAME = {
     'CHARINFO': 'CharInfo',
     'COLORITEM': 'ColorItem',
     'COLORMAP': 'ColorMap',
-    'Connection': 'RandRConnection',
     'CP': 'CreatePictureAttribute',
     'CS': 'ClientSpec',
     'CW': 'CreateWindowAttribute',
@@ -62,6 +61,9 @@ RENAME = {
     'VISUALID': 'VisualId',
     'VISUALTYPE': 'VisualType',
     'WAITCONDITION': 'WaitCondition',
+
+    # Avoid name conflicts.
+    'Connection': 'RandRConnection',
 }
 
 READ_SPECIAL = set([
@@ -1325,6 +1327,7 @@ class GenXproto(FileWriter):
         self.write()
         self.write('#include "base/logging.h"')
         self.write('#include "base/posix/eintr_wrapper.h"')
+        self.write('#include "ui/gfx/x/connection.h"')
         self.write('#include "ui/gfx/x/xproto_internal.h"')
         self.write()
         self.write('namespace x11 {')
@@ -1601,7 +1604,7 @@ class GenReadError(FileWriter):
         self.write('namespace {')
         self.write()
         self.write('template <typename T>')
-        sig = 'std::unique_ptr<Error> MakeError(Connection::RawError error_)'
+        sig = 'std::unique_ptr<Error> MakeError(RawError error_)'
         with Indent(self, '%s {' % sig, '}'):
             self.write('ReadBuffer buf(error_);')
             self.write('auto error = std::make_unique<T>();')

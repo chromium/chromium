@@ -16,7 +16,7 @@ namespace {
 
 x11::Future<x11::GetPropertyReply> GetWorkspace() {
   auto* connection = x11::Connection::Get();
-  return connection->GetProperty(x11::GetPropertyRequest{
+  return connection->GetProperty({
       .window = connection->default_screen().root,
       .property = static_cast<x11::Atom>(x11::GetAtom("_NET_CURRENT_DESKTOP")),
       .type = static_cast<x11::Atom>(x11::Atom::CARDINAL),
@@ -40,8 +40,9 @@ X11WorkspaceHandler::~X11WorkspaceHandler() {
 }
 
 std::string X11WorkspaceHandler::GetCurrentWorkspace() {
-  if (workspace_.empty())
+  if (workspace_.empty()) {
     OnWorkspaceResponse(GetWorkspace().Sync());
+  }
   return workspace_;
 }
 
@@ -56,8 +57,9 @@ void X11WorkspaceHandler::OnEvent(const x11::Event& xev) {
 
 void X11WorkspaceHandler::OnWorkspaceResponse(
     x11::GetPropertyResponse response) {
-  if (!response || response->format != 32 || response->value->size() < 4)
+  if (!response || response->format != 32 || response->value->size() < 4) {
     return;
+  }
   DCHECK_EQ(response->bytes_after, 0U);
   DCHECK_EQ(response->type, static_cast<x11::Atom>(x11::Atom::CARDINAL));
 

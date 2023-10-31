@@ -19,7 +19,6 @@
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_window_event_manager.h"
-#include "ui/gfx/x/xproto_util.h"
 
 namespace remoting {
 
@@ -171,8 +170,8 @@ void ActiveDisplayMonitorX11::Core::GetAndSendActiveDisplay() {
 
 x11::Window ActiveDisplayMonitorX11::Core::GetFocusedWindow() const {
   x11::Window focused_window;
-  if (!x11::GetProperty(ui::GetX11RootWindow(), net_active_window_atom_,
-                        &focused_window)) {
+  if (!x11::Connection::Get()->GetPropertyAs(
+          ui::GetX11RootWindow(), net_active_window_atom_, &focused_window)) {
     LOG(ERROR) << "Failed to read _NET_ACTIVE_WINDOW on root window.";
     return x11::Window::None;
   }
