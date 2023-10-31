@@ -40,7 +40,7 @@ void ErrorReduction(CopyOrMoveHookDelegate::ErrorCallback callback,
   std::move(callback).Run(CopyOrMoveHookDelegate::ErrorAction::kDefault);
 }
 
-base::RepeatingCallback<void(std::pair<int, base::File::Error>)> GetBarrier(
+base::RepeatingCallback<void(std::pair<int, base::File::Error>)> CreateBarrier(
     size_t size,
     CopyOrMoveHookDelegate::StatusCallback callback) {
   return base::BarrierCallback<std::pair<int, base::File::Error>>(
@@ -48,12 +48,13 @@ base::RepeatingCallback<void(std::pair<int, base::File::Error>)> GetBarrier(
 }
 
 base::RepeatingCallback<void(CopyOrMoveHookDelegate::ErrorAction)>
-GetErrorBarrier(size_t size, CopyOrMoveHookDelegate::ErrorCallback callback) {
+CreateErrorBarrier(size_t size,
+                   CopyOrMoveHookDelegate::ErrorCallback callback) {
   return base::BarrierCallback<CopyOrMoveHookDelegate::ErrorAction>(
       size, base::BindOnce(&ErrorReduction, std::move(callback)));
 }
 
-CopyOrMoveHookDelegate::StatusCallback GetStatusCallback(
+CopyOrMoveHookDelegate::StatusCallback CreateStatusCallback(
     base::RepeatingCallback<void(std::pair<int, base::File::Error>)> barrier,
     size_t index) {
   return base::BindOnce(
@@ -65,7 +66,7 @@ CopyOrMoveHookDelegate::StatusCallback GetStatusCallback(
       barrier, index);
 }
 
-CopyOrMoveHookDelegate::ErrorCallback GetErrorCallback(
+CopyOrMoveHookDelegate::ErrorCallback CreateErrorCallback(
     base::RepeatingCallback<void(CopyOrMoveHookDelegate::ErrorAction)>
         barrier) {
   return base::BindOnce(
@@ -103,10 +104,10 @@ void CopyOrMoveHookDelegateComposite::OnBeginProcessFile(
     const FileSystemURL& destination_url,
     StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto barrier = GetBarrier(delegates_.size(), std::move(callback));
+  auto barrier = CreateBarrier(delegates_.size(), std::move(callback));
   for (size_t i = 0; i < delegates_.size(); ++i) {
     delegates_[i]->OnBeginProcessFile(source_url, destination_url,
-                                      GetStatusCallback(barrier, i));
+                                      CreateStatusCallback(barrier, i));
   }
 }
 
@@ -115,10 +116,10 @@ void CopyOrMoveHookDelegateComposite::OnBeginProcessDirectory(
     const FileSystemURL& destination_url,
     StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto barrier = GetBarrier(delegates_.size(), std::move(callback));
+  auto barrier = CreateBarrier(delegates_.size(), std::move(callback));
   for (size_t i = 0; i < delegates_.size(); ++i) {
     delegates_[i]->OnBeginProcessDirectory(source_url, destination_url,
-                                           GetStatusCallback(barrier, i));
+                                           CreateStatusCallback(barrier, i));
   }
 }
 
@@ -138,10 +139,10 @@ void CopyOrMoveHookDelegateComposite::OnError(
     base::File::Error error,
     ErrorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto barrier = GetErrorBarrier(delegates_.size(), std::move(callback));
+  auto barrier = CreateErrorBarrier(delegates_.size(), std::move(callback));
   for (std::unique_ptr<CopyOrMoveHookDelegate>& delegate : delegates_) {
     delegate->OnError(source_url, destination_url, error,
-                      GetErrorCallback(barrier));
+                      CreateErrorCallback(barrier));
   }
 }
 
