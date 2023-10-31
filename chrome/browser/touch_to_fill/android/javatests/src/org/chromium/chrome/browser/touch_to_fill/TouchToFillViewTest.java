@@ -58,7 +58,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -646,7 +645,6 @@ public class TouchToFillViewTest {
                                 CAM.getUsername()));
     }
 
-    @DisabledTest(message = "https:://crbug.com/1447085")
     @Test
     @MediumTest
     public void testSheetStartsInFullHeightForAccessibility() {
