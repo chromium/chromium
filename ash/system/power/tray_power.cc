@@ -101,9 +101,14 @@ void PowerTrayView::UpdateLabelOrImageViewColor(bool active) {
   }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
-  const SkColor icon_fg_color = GetColorProvider()->GetColor(
-      active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-             : cros_tokens::kCrosSysOnSurface);
+  cros_tokens::CrosSysColorIds icon_fg_token = cros_tokens::kCrosSysOnSurface;
+  if (active) {
+    icon_fg_token = cros_tokens::kCrosSysSystemOnPrimaryContainer;
+  } else if (features::IsBatterySaverAvailable() &&
+             PowerStatus::Get()->IsBatterySaverActive()) {
+    icon_fg_token = cros_tokens::kCrosSysSystemWarningInverse;
+  }
+  const SkColor icon_fg_color = GetColorProvider()->GetColor(icon_fg_token);
 
   PowerStatus::BatteryImageInfo info =
       PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color);
