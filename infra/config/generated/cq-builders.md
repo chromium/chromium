@@ -342,6 +342,11 @@ builder.
   * [`//content/browser/accessibility/.+`](https://cs.chromium.org/chromium/src/content/browser/accessibility/)
   * [`//ui/accessibility/.+`](https://cs.chromium.org/chromium/src/ui/accessibility/)
 
+* [gn-args-verifier](https://ci.chromium.org/p/chromium/builders/try/gn-args-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""gn-args-verifier""))
+
+  Location filters:
+  * [`//infra/config/generated/builders/[^/]+/[^/]+/gn-args\.json`](https://cs.chromium.org/search?q=+file:infra/config/generated/builders/[^/]+/[^/]+/gn-args\.json)
+
 * [gpu-fyi-cq-android-arm64](https://ci.chromium.org/p/chromium/builders/try/gpu-fyi-cq-android-arm64) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""gpu-fyi-cq-android-arm64""))
 
   Location filters:
