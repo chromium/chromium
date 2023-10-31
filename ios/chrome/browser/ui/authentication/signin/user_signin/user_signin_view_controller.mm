@@ -136,19 +136,20 @@ enum AuthenticationButtonType {
 
 - (void)updatePrimaryActionButtonStyle {
   if (![self.delegate unifiedConsentCoordinatorHasIdentity]) {
-    // User does not have an account on the device.
-    [self.primaryActionButton
-        setTitle:l10n_util::GetNSString(
-                     IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT)
-        forState:UIControlStateNormal];
-
     if (IsUIButtonConfigurationEnabled()) {
       DCHECK(self.primaryActionButton.configuration);
       UIButtonConfiguration* buttonConfiguration =
           self.primaryActionButton.configuration;
       buttonConfiguration.image = nil;
+      buttonConfiguration.title =
+          l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT);
       self.primaryActionButton.configuration = buttonConfiguration;
     } else {
+      // User does not have an account on the device.
+      [self.primaryActionButton
+          setTitle:l10n_util::GetNSString(
+                       IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT)
+          forState:UIControlStateNormal];
       [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
     }
     self.primaryActionButton.tag = AuthenticationButtonTypeAddAccount;
