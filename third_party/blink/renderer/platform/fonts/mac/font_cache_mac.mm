@@ -265,7 +265,8 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   NSFont* matched_font = nullptr;
   if (alternate_name == AlternateFontName::kLocalUniqueFace &&
       RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled()) {
-    matched_font = MatchUniqueFont(creation_params.Family(), size);
+    matched_font = base::apple::CFToNSOwnershipCast(
+        MatchUniqueFont(creation_params.Family(), size).release());
   } else {
     matched_font = MatchNSFontFamily(creation_params.Family(), traits,
                                      font_description.Weight(), size);

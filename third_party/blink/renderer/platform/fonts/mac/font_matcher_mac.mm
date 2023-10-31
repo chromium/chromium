@@ -39,6 +39,9 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #import "third_party/blink/renderer/platform/wtf/hash_set.h"
 #import "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+#import "third_party/blink/renderer/platform/wtf/text/string_impl.h"
+
+using base::apple::ScopedCFTypeRef;
 
 namespace blink {
 
@@ -116,40 +119,34 @@ NSFontWeight ToFontWeight(blink::FontSelectionValue font_weight) {
 
 }  // namespace
 
-NSFont* MatchUniqueFont(const AtomicString& unique_font_name, float size) {
+ScopedCFTypeRef<CTFontRef> MatchUniqueFont(const AtomicString& unique_font_name,
+                                           float size) {
   // Note the header documentation: when matching, the system first searches for
   // fonts with its value as their PostScript name, then falls back to searching
   // for fonts with its value as their family name, and then falls back to
   // searching for fonts with its value as their display name.
-  NSString* desired_name = unique_font_name;
-  NSDictionary* attributes = @{
-    base::apple::CFToNSPtrCast(kCTFontNameAttribute) : desired_name,
-    base::apple::CFToNSPtrCast(kCTFontSizeAttribute) : @(size)
-  };
-  base::apple::ScopedCFTypeRef<CTFontDescriptorRef> descriptor(
-      CTFontDescriptorCreateWithAttributes(
-          base::apple::NSToCFPtrCast(attributes)));
-
-  base::apple::ScopedCFTypeRef<CTFontRef> matched_font(
-      CTFontCreateWithFontDescriptor(descriptor.get(), 0, nullptr));
+  ScopedCFTypeRef<CFStringRef> desired_name(
+      unique_font_name.Impl()->CreateCFString());
+  ScopedCFTypeRef<CTFontRef> matched_font(
+      CTFontCreateWithName(desired_name.get(), size, nullptr));
   DCHECK(matched_font);
 
   // CoreText will usually give us *something* but not always an exactly matched
   // font.
-  NSString* matched_postscript_name = base::apple::CFToNSOwnershipCast(
-      CTFontCopyName(matched_font.get(), kCTFontPostScriptNameKey));
-  NSString* matched_full_font_name = base::apple::CFToNSOwnershipCast(
-      CTFontCopyName(matched_font.get(), kCTFontFullNameKey));
+  ScopedCFTypeRef<CFStringRef> matched_postscript_name(
+      CTFontCopyPostScriptName(matched_font.get()));
+  ScopedCFTypeRef<CFStringRef> matched_full_font_name(
+      CTFontCopyFullName(matched_font.get()));
   // If the found font does not match in PostScript name or full font name, it's
   // not the exact match that is required, so return nullptr.
-  if ([matched_postscript_name caseInsensitiveCompare:desired_name] !=
-          NSOrderedSame &&
-      [matched_full_font_name caseInsensitiveCompare:desired_name] !=
-          NSOrderedSame) {
-    return nullptr;
+  if (CFStringCompare(matched_postscript_name.get(), desired_name.get(),
+                      kCFCompareCaseInsensitive) != kCFCompareEqualTo &&
+      CFStringCompare(matched_full_font_name.get(), desired_name.get(),
+                      kCFCompareCaseInsensitive) != kCFCompareEqualTo) {
+    return ScopedCFTypeRef<CTFontRef>(nullptr);
   }
 
-  return base::apple::CFToNSOwnershipCast(matched_font.release());
+  return matched_font;
 }
 
 // Family name is somewhat of a misnomer here.  We first attempt to find an
