@@ -4101,7 +4101,7 @@ bool Element::RecalcSelfOrAncestorHasDirAuto() {
   }
   if (ShadowRoot* shadow_root = DynamicTo<ShadowRoot>(parent)) {
     if (TextControlElement* text_element =
-            HTMLElement::ElementIfAutoDirShouldUseValueOrNull(
+            HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
                 &shadow_root->host())) {
       if (text_element->HasDirectionAuto()) {
         return true;
@@ -4114,7 +4114,7 @@ bool Element::RecalcSelfOrAncestorHasDirAuto() {
 void Element::UpdateDescendantHasDirAutoAttribute(bool has_dir_auto) {
   if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
     if (ToHTMLSlotElementIfSupportsAssignmentOrNull(this) ||
-        HTMLElement::ElementIfAutoDirShouldUseValueOrNull(this)) {
+        HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(this)) {
       for (Node& node : FlatTreeTraversal::ChildrenOf(*this)) {
         if (Element* element = DynamicTo<Element>(node)) {
           if (!element->IsHTMLElement() ||
@@ -4220,7 +4220,7 @@ absl::optional<TextDirection> Element::ResolveAutoDirectionality(
 
   is_deferred = false;
   if (const TextControlElement* text_element =
-          HTMLElement::ElementIfAutoDirShouldUseValueOrNull(this)) {
+          HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(this)) {
     return BidiParagraph::BaseDirectionForStringOrLtr(text_element->Value());
   }
 
@@ -4433,7 +4433,7 @@ void Element::UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal) {
     if (ShadowRoot* shadow_root =
             DynamicTo<ShadowRoot>(element_to_adjust->parentNode())) {
       if (TextControlElement* text_control =
-              HTMLElement::ElementIfAutoDirShouldUseValueOrNull(
+              HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
                   &shadow_root->host())) {
         if (text_control->HasDirectionAuto() &&
             text_control->CalculateAndAdjustAutoDirectionality(text_control)) {

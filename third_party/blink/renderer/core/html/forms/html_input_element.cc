@@ -477,7 +477,8 @@ void HTMLInputElement::UpdateType() {
   const AtomicString& dir = FastGetAttribute(html_names::kDirAttr);
   if ((!dir && (old_type->IsTelephoneInputType() || IsTelephone())) ||
       (EqualIgnoringASCIICase(dir, "auto") &&
-       (old_type->ShouldAutoDirUseValue() || ShouldAutoDirUseValue()))) {
+       (old_type->IsAutoDirectionalityFormAssociated() ||
+        IsAutoDirectionalityFormAssociated()))) {
     const AtomicString& value_dir = AtomicString(DirectionForFormData());
     UpdateDirectionalityAfterInputTypeChange(dir, value_dir);
   }
@@ -1028,8 +1029,8 @@ bool HTMLInputElement::IsTelephone() const {
   return input_type_->IsTelephoneInputType();
 }
 
-bool HTMLInputElement::ShouldAutoDirUseValue() const {
-  return input_type_->ShouldAutoDirUseValue();
+bool HTMLInputElement::IsAutoDirectionalityFormAssociated() const {
+  return input_type_->IsAutoDirectionalityFormAssociated();
 }
 
 bool HTMLInputElement::HasBeenPasswordField() const {

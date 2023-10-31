@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -576,16 +575,6 @@ void TextFieldInputType::UpdatePlaceholderText(bool is_suggested_value) {
     placeholder->RemoveInlineStyleProperty(CSSPropertyID::kUserSelect);
   }
   placeholder->setTextContent(GetElement().GetPlaceholderValue());
-}
-
-void TextFieldInputType::AppendToFormData(FormData& form_data) const {
-  InputType::AppendToFormData(form_data);
-  const AtomicString& dirname_attr_value =
-      GetElement().FastGetAttribute(html_names::kDirnameAttr);
-  if (!dirname_attr_value.IsNull()) {
-    form_data.AppendFromElement(dirname_attr_value,
-                                GetElement().DirectionForFormData());
-  }
 }
 
 String TextFieldInputType::ConvertFromVisibleValue(

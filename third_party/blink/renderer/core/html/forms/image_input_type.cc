@@ -164,6 +164,10 @@ bool ImageInputType::IsEnumeratable() {
   return false;
 }
 
+bool ImageInputType::IsAutoDirectionalityFormAssociated() const {
+  return false;
+}
+
 bool ImageInputType::ShouldRespectHeightAndWidthAttributes() {
   return true;
 }

@@ -73,6 +73,10 @@ bool BaseButtonInputType::ShouldSaveAndRestoreFormControlState() const {
   return false;
 }
 
+bool BaseButtonInputType::IsAutoDirectionalityFormAssociated() const {
+  return RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled();
+}
+
 void BaseButtonInputType::AppendToFormData(FormData&) const {}
 
 ControlPart BaseButtonInputType::AutoAppearance() const {

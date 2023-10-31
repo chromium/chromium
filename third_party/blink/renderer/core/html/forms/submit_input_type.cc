@@ -50,6 +50,7 @@ SubmitInputType::SubmitInputType(HTMLInputElement& element)
 }
 
 void SubmitInputType::AppendToFormData(FormData& form_data) const {
+  InputType::AppendToFormData(form_data);
   if (GetElement().IsActivatedSubmit()) {
     form_data.AppendFromElement(GetElement().GetName(),
                                 GetElement().ValueOrDefaultLabel());

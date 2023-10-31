@@ -161,12 +161,13 @@ class CORE_EXPORT HTMLElement : public Element {
   static bool IsValidDirAttribute(const AtomicString& value);
   static bool ElementAffectsDirectionality(const Node* node);
   static bool ElementInheritsDirectionality(const Node* node);
-  static const TextControlElement* ElementIfAutoDirShouldUseValueOrNull(
-      const Element* element);
-  static TextControlElement* ElementIfAutoDirShouldUseValueOrNull(
+  static const TextControlElement*
+  ElementIfAutoDirectionalityFormAssociatedOrNull(const Element* element);
+  static TextControlElement* ElementIfAutoDirectionalityFormAssociatedOrNull(
       Element* element) {
-    return const_cast<TextControlElement*>(ElementIfAutoDirShouldUseValueOrNull(
-        const_cast<const Element*>(element)));
+    return const_cast<TextControlElement*>(
+        ElementIfAutoDirectionalityFormAssociatedOrNull(
+            const_cast<const Element*>(element)));
   }
 
   virtual bool IsHTMLBodyElement() const { return false; }

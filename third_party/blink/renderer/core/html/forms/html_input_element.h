@@ -110,7 +110,7 @@ class CORE_EXPORT HTMLInputElement
   bool IsTextField() const;
   bool IsTelephone() const;
   // To override from TextControlElement
-  bool ShouldAutoDirUseValue() const final;
+  bool IsAutoDirectionalityFormAssociated() const final;
   // Do not add type check predicates for concrete input types; e.g.  isImage,
   // isRadio, isFile.  If you want to check the input type, you may use
   // |input->FormControlType() == FormControlType::kInputImage|, etc.

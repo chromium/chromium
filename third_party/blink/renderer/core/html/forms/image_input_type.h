@@ -60,6 +60,7 @@ class ImageInputType final : public BaseButtonInputType {
   bool ShouldRespectAlignAttribute() override;
   bool CanBeSuccessfulSubmitButton() override;
   bool IsEnumeratable() override;
+  bool IsAutoDirectionalityFormAssociated() const override;
   bool ShouldRespectHeightAndWidthAttributes() override;
   unsigned Height() const override;
   unsigned Width() const override;

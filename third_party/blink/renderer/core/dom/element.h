@@ -1265,6 +1265,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     ExcludeSelf,  // ancestors, but not self
   };
   void UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal);
+  void AdjustDirectionalityIfNeededAfterChildrenChanged(
+      const ChildrenChange& change);
 
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }
@@ -1376,8 +1378,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void LangAttributeChanged();
 
   TextDirection ParentDirectionality() const;
-  void AdjustDirectionalityIfNeededAfterChildrenChanged(
-      const ChildrenChange& change);
   bool RecalcSelfOrAncestorHasDirAuto();
   template <typename Traversal>
   absl::optional<TextDirection> ResolveAutoDirectionality(

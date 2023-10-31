@@ -259,6 +259,17 @@ void ShadowRoot::ChildrenChanged(const ChildrenChange& change) {
         To<Element>(change.sibling_changed), change.sibling_before_change,
         change.sibling_after_change);
   }
+
+  // In the case of input types like button where the child element is not
+  // in a container, we need to explicit adjust directionality.
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
+      RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled()) {
+    if (TextControlElement* text_element =
+            HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
+                &host())) {
+      text_element->AdjustDirectionalityIfNeededAfterChildrenChanged(change);
+    }
+  }
 }
 
 void ShadowRoot::SetRegistry(CustomElementRegistry* registry) {

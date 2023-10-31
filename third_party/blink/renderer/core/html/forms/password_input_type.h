@@ -66,7 +66,7 @@ class PasswordInputType final : public BaseTextInputType {
 
   void HandleBlurEvent() override;
   bool SupportsInputModeAttribute() const override;
-  bool ShouldAutoDirUseValue() const override;
+  bool IsAutoDirectionalityFormAssociated() const override;
 
   bool should_draw_caps_lock_indicator_ = false;
   bool should_show_reveal_button_ = false;

@@ -2507,11 +2507,12 @@ bool HTMLElement::HasDirectionAuto() const {
          EqualIgnoringASCIICase(direction, "auto");
 }
 
-const TextControlElement* HTMLElement::ElementIfAutoDirShouldUseValueOrNull(
+const TextControlElement*
+HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
     const Element* element) {
   const TextControlElement* text_element =
       DynamicTo<TextControlElement>(element);
-  if (text_element && text_element->ShouldAutoDirUseValue()) {
+  if (text_element && text_element->IsAutoDirectionalityFormAssociated()) {
     return text_element;
   }
   return nullptr;

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/html/forms/hidden_input_type.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -98,6 +99,22 @@ void HiddenInputType::AppendToFormData(FormData& form_data) const {
 
 bool HiddenInputType::ShouldRespectHeightAndWidthAttributes() {
   return true;
+}
+
+bool HiddenInputType::IsAutoDirectionalityFormAssociated() const {
+  return RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled();
+}
+
+void HiddenInputType::ValueAttributeChanged() {
+  UpdateView();
+  // Hidden input need to adjust directionality explicitly since it has no
+  // descendant to propagate dir from.
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
+      RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled() &&
+      GetElement().HasDirectionAuto()) {
+    GetElement().UpdateAncestorWithDirAuto(
+        Element::UpdateAncestorTraversal::IncludeSelf);
+  }
 }
 
 }  // namespace blink
