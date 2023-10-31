@@ -95,6 +95,7 @@
 #include "services/network/sec_header_helpers.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/shared_storage/shared_storage_request_helper.h"
+#include "services/network/slop_bucket.h"
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "services/network/url_loader_factory.h"
@@ -1771,7 +1772,28 @@ void URLLoader::ReadMore() {
       case MOJO_RESULT_OK:
         break;
       case MOJO_RESULT_SHOULD_WAIT:
-        // The pipe is full. We need to wait for it to have more space.
+        CHECK(!pending_write_);
+        // SlopBucket is incompatible with the network service memory cache,
+        // so don't use it if the memory cache is in use.
+        if (base::FeatureList::IsEnabled(kSlopBucket) && !slop_bucket_ &&
+            !memory_cache_) {
+          slop_bucket_ = SlopBucket::RequestSlopBucket(url_request_.get());
+        }
+        if (slop_bucket_ && !slop_bucket_->read_in_progress() &&
+            !slop_bucket_->IsComplete()) {
+          // Read into the slop bucket while we're waiting for the mojo data
+          // pipe to empty out.
+          absl::optional<int> bytes_read_maybe = slop_bucket_->AttemptRead();
+          if (bytes_read_maybe.has_value()) {
+            int bytes_read = bytes_read_maybe.value();
+            if (bytes_read != net::ERR_IO_PENDING) {
+              // DidRead() will not delete `this` when `into_slop_bucket` is
+              // true, so it is safe to access member variables after this call.
+              DidRead(bytes_read, /*completed_synchronously=*/true,
+                      /*into_slop_bucket=*/true);
+            }
+          }
+        }  // The pipe is full. We need to wait for it to have more space.
         writable_handle_watcher_.ArmOrNotify();
         return;
       default:
@@ -1786,8 +1808,39 @@ void URLLoader::ReadMore() {
       DCHECK_GE(pending_write_buffer_size_,
                 static_cast<uint32_t>(net::kMaxBytesToSniff));
     }
+
+    // We may be able to fill up the buffer from the slop bucket.
+    if (slop_bucket_) {
+      const size_t consumed = slop_bucket_->Consume(pending_write_->buffer(),
+                                                    pending_write_buffer_size_);
+      if (consumed) {
+        // TODO(ricea): Refactor the way pending writes work so we don't need to
+        // poke a value into `pending_write_buffer_offset_` here.
+        pending_write_buffer_offset_ = consumed;
+        CompletePendingWrite(true);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(&URLLoader::ReadMore,
+                                      weak_ptr_factory_.GetWeakPtr()));
+        return;
+      } else if (slop_bucket_->read_in_progress()) {
+        // There were no bytes available, but a read is in progress. Need to
+        // prevent starting another read until it completes.
+        CompletePendingWrite(true);
+        return;
+      } else if (slop_bucket_->IsComplete()) {
+        // The SlopBucket didn't have any bytes available. It has finished
+        // reading from the URLRequest and now the render process has caught up,
+        // so we can notify completion.
+        CompletePendingWrite(true);
+        NotifyCompleted(slop_bucket_->completion_code());
+        // `this` is deleted.
+        return;
+      }
+      // Nothing was available. Read from `url_request_` as usual.
+    }
   }
 
+  CHECK(!slop_bucket_ || !slop_bucket_->IsComplete());
   auto buf = base::MakeRefCounted<NetToMojoIOBuffer>(
       pending_write_.get(), pending_write_buffer_offset_);
   read_in_progress_ = true;
@@ -1795,16 +1848,25 @@ void URLLoader::ReadMore() {
       buf.get(), static_cast<int>(pending_write_buffer_size_ -
                                   pending_write_buffer_offset_));
   if (bytes_read != net::ERR_IO_PENDING) {
-    DidRead(bytes_read, true);
+    DidRead(bytes_read, /*completed_synchronously=*/true,
+            /*into_slop_bucket=*/false);
     // |this| may have been deleted.
   }
 }
 
-void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
-  DCHECK(read_in_progress_);
+// Handles the completion of a read. `num_bytes` is the number of bytes read, 0
+// if we reached the end of the response body, or a net::Error otherwise.
+// `completed_synchronously` is true if the call to URLRequest::Read did not
+// return net::ERR_IO_PENDING. `into_slop_bucket` is true if this was actually a
+// read into `slop_bucket_` and not into our own buffer.
+void URLLoader::DidRead(int num_bytes,
+                        bool completed_synchronously,
+                        bool into_slop_bucket) {
+  DCHECK(read_in_progress_ || into_slop_bucket);
   read_in_progress_ = false;
 
   if (memory_cache_writer_ && pending_write_ && num_bytes > 0) {
+    CHECK(!into_slop_bucket);
     if (!memory_cache_writer_->OnDataRead(
             pending_write_->buffer() + pending_write_buffer_offset_,
             num_bytes)) {
@@ -1814,7 +1876,9 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
 
   size_t new_data_offset = pending_write_buffer_offset_;
   if (num_bytes > 0) {
-    pending_write_buffer_offset_ += num_bytes;
+    if (!into_slop_bucket) {
+      pending_write_buffer_offset_ += num_bytes;
+    }
 
     // Only notify client of download progress if we're done sniffing and
     // started sending response.
@@ -1830,6 +1894,13 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
 
   bool complete_read = true;
   if (consumer_handle_.is_valid()) {
+    // `consumer_handle_` is only valid when we are sniffing. Sniffing is only
+    // applied to the first 1024 bytes. The mojo data pipe is always larger than
+    // 1024 bytes, therefore it will never fill up while we are sniffing.
+    // Therefore a SlopBucket will not have been created yet and
+    // `into_slop_bucket` can't be true.
+    CHECK(!into_slop_bucket);
+
     // |pending_write_| may be null if the job self-aborts due to a suspend;
     // this will have |consumer_handle_| valid when the loader is paused.
     if (pending_write_) {
@@ -1896,14 +1967,21 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
     // reads when there's a pending read), and to cover all TCP socket uses,
     // since the concern is the effect that entering suspend mode has on
     // sockets. See https://crbug.com/651120.
-    if (pending_write_)
+    if (pending_write_) {
+      CHECK(!into_slop_bucket);
       CompletePendingWrite(num_bytes == 0);
-    NotifyCompleted(num_bytes);
-    // |this| will have been deleted.
+    }
+    // If we are reading into the SlopBucket then notification of completion
+    // will be postponed until the data has been forwarded to the mojo data
+    // pipe.
+    if (!into_slop_bucket) {
+      NotifyCompleted(num_bytes);
+      // |this| will have been deleted.
+    }
     return;
   }
 
-  if (complete_read) {
+  if (complete_read && !into_slop_bucket) {
     CompletePendingWrite(true /* success */);
   }
   if (completed_synchronously) {
@@ -1918,7 +1996,13 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
 void URLLoader::OnReadCompleted(net::URLRequest* url_request, int bytes_read) {
   DCHECK(url_request == url_request_.get());
 
-  DidRead(bytes_read, false);
+  bool into_slop_bucket = false;
+  if (slop_bucket_ && slop_bucket_->read_in_progress()) {
+    slop_bucket_->OnReadCompleted(bytes_read);
+    into_slop_bucket = true;
+  }
+
+  DidRead(bytes_read, /*completed_synchronously=*/false, into_slop_bucket);
   // |this| may have been deleted.
 }
 

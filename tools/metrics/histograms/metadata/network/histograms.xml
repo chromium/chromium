@@ -4604,6 +4604,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.SlopBucket.DisabledReason"
+    enum="SlopBucketDisabledReason" expires_after="2024-04-23">
+  <owner>ricea@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The reason why slop bucket is disabled, if it has been disabled. Is not
+    recorded when SlopBucket is disabled by feature setting. Recorded when
+    SlopBucket is first needed, and at most once every 24 hours afterwards. Also
+    recorded immediately if SlopBucket is disabled due to memory pressure.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.SlopBucket.PeakChunksAllocated" units="chunks"
+    expires_after="2024-04-23">
+  <owner>ricea@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The peak number of chunks allocated for a request. Recorded once per request
+    that made use of SlopBucket, when it is completed.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.SlopBucket.RequestedPriority"
+    enum="NetRequestPriority" expires_after="2024-04-23">
+  <owner>ricea@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The priority of all requests passed to SlopBucket::RequestSlopBucket() while
+    it is enabled. By default, requests with a priority lower than MEDIUM will
+    not receive a SlopBucket, but they are still recorded here. Recorded once
+    per request that attempts to make use of SlopBucket, ie. it filled up its
+    mojo pipe and SlopBucket was enabled.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.TimeToGrantCacheAccess" units="ms"
     expires_after="2024-04-28">
   <owner>wfh@chromium.org</owner>
