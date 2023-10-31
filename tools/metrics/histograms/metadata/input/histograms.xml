@@ -1184,17 +1184,6 @@ chromium-metrics-reviews@google.com.
   <summary>The result of the user pressing the mode change key.</summary>
 </histogram>
 
-<histogram name="InputMethod.MouseWheel.ScrollCharacters" units="characters"
-    expires_after="2021-11-01">
-  <owner>flackr@chromium.org</owner>
-  <owner>shawnpi@microsoft.com</owner>
-  <summary>
-    Records for each horizontal mouse wheel event the Windows system setting for
-    number of characters to horizontally scroll for each wheel tick. Used to
-    determine how this system setting impacts scroll velocity.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.MultilingualExperiment.Autocorrect.Actions"
     enum="IMEAutocorrectActions" expires_after="2023-12-01">
   <owner>tranbaoduy@google.com</owner>
