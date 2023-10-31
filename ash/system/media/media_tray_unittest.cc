@@ -374,4 +374,13 @@ TEST_F(MediaTrayTest, ShowBubbleWithItem) {
   EXPECT_NE(nullptr, media_tray()->GetBubbleView());
 }
 
+TEST_F(MediaTrayTest, CloseBubbleIsNoopWhenNoBubble) {
+  // Start out with no bubble.
+  ASSERT_EQ(nullptr, media_tray()->GetBubbleView());
+
+  // `OnBubbleClosing()` should not be called when there is no bubble to close.
+  EXPECT_CALL(*provider(), OnBubbleClosing).Times(0);
+  media_tray()->CloseBubble();
+}
+
 }  // namespace ash

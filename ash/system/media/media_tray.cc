@@ -285,6 +285,13 @@ void MediaTray::ShowBubble() {
 }
 
 void MediaTray::CloseBubble() {
+  if (!bubble_) {
+    CHECK(!is_active());
+    CHECK(!pin_button_);
+    CHECK(!content_view_);
+    CHECK(!empty_state_view_);
+    return;
+  }
   if (MediaNotificationProvider::Get()) {
     MediaNotificationProvider::Get()->OnBubbleClosing();
   }
