@@ -157,9 +157,42 @@ void MediaLicenseStorageHost::ReadFile(const media::CdmType& cdm_type,
       bucket_locator_,
       /*access_time=*/base::Time::Now());
 
+  // This is to read from the cdm_storage database when the migration is active
+  // and we've already migrated the data from the cdm_storage database to the
+  // media_license database.
+  if (manager_->cdm_storage_manager() &&
+      base::Contains(files_migrated_,
+                     CdmFileIdTwo{file_name, cdm_type, storage_key()})) {
+    manager_->cdm_storage_manager()->ReadFile(storage_key(), cdm_type,
+                                              file_name, std::move(callback));
+    return;
+  }
+
   db_.AsyncCall(&MediaLicenseDatabase::ReadFile)
       .WithArgs(cdm_type, file_name)
-      .Then(std::move(callback));
+      .Then(base::BindOnce(&MediaLicenseStorageHost::DidReadFile,
+                           weak_factory_.GetWeakPtr(), cdm_type, file_name,
+                           std::move(callback)));
+}
+
+void MediaLicenseStorageHost::DidReadFile(
+    const media::CdmType& cdm_type,
+    const std::string& file_name,
+    ReadFileCallback callback,
+    absl::optional<std::vector<uint8_t>> data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The code only reaches this callback during the migration when this is our
+  // first time reading this specific storage_key, cdm_type, and file name. If
+  // the data has value, then we write it to the cdm_storage database and from
+  // then on, read from the cdm_storage database through the media_license code
+  // when the migration is active.
+  if (data.has_value() && manager_->cdm_storage_manager()) {
+    manager_->cdm_storage_manager()->WriteFile(
+        storage_key(), cdm_type, file_name, data.value(), base::DoNothing());
+    files_migrated_.emplace_back(file_name, cdm_type, storage_key());
+  }
+  std::move(callback).Run(data);
 }
 
 void MediaLicenseStorageHost::WriteFile(const media::CdmType& cdm_type,

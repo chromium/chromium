@@ -112,6 +112,10 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
                    CdmStorageBindingContext binding_context,
                    OpenCallback callback,
                    MediaLicenseStorageHostOpenError error);
+  void DidReadFile(const media::CdmType& cdm_type,
+                   const std::string& file_name,
+                   ReadFileCallback callback,
+                   absl::optional<std::vector<uint8_t>> data);
   void DidWriteFile(WriteFileCallback callback, bool success);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -124,6 +128,15 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
   // `bucket_locator_` corresponds to the default bucket for the StorageKey this
   // host represents.
   const storage::BucketLocator bucket_locator_;
+
+  // This keeps track of the 'CdmFileIdTwo' values that have been migrated to
+  // the CdmStorageDatabase after the first read, so that when the Cdm goes to
+  // read during the migration, the second time and onwards, we read from the
+  // CdmStorageDatabase instead of the MediaLicenseDatabase. Note that this is
+  // not a permanent storage, so it has to be repopulated when user restarts
+  // Chrome.
+  std::vector<CdmFileIdTwo> files_migrated_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // All file operations are run through this member.
   base::SequenceBound<MediaLicenseDatabase> db_
