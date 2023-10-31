@@ -156,13 +156,12 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
   match.provider = this;
   match.type = AutocompleteMatch::Type::HISTORY_CLUSTER;
 
-  // TODO(manukh): Currently, history cluster suggestions only display when the
-  //  `text` is an exact match of a cluster keyword, and all cluster keywords
-  //  are treated equal. Therefore, we're limited to using a static value.
-  //  Ideally, relevance would depend on how many keywords matched, how
-  //  significant the keywords were, how significant their clusters were etc.
   match.relevance =
-      history_clusters::GetConfig().omnibox_history_cluster_provider_score;
+      history_clusters::GetConfig()
+              .omnibox_history_cluster_provider_inherit_search_match_score
+          ? search_match.relevance - 1
+          : history_clusters::GetConfig()
+                .omnibox_history_cluster_provider_score;
 
   const auto& text = search_match.contents;
 
