@@ -72,7 +72,7 @@ class PrintJobSubmitter {
 
   static base::AutoReset<bool> DisablePdfFlatteningForTesting();
 
-  static base::AutoReset<bool> SkipConfirmationDialogForTesting();
+  static void SkipConfirmationDialogForTesting();
 
  private:
   friend class PrintingAPIHandler;

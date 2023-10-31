@@ -490,15 +490,23 @@ static_library("test_support") {
       "../browser/printing/print_test_utils.h",
     ]
 
-    if (is_chromeos_ash && use_cups) {
+    if (is_chromeos) {
       sources += [
-        "../browser/extensions/api/printing/printing_test_utils.cc",
-        "../browser/extensions/api/printing/printing_test_utils.h",
+        "chromeos/printing/fake_local_printer_chromeos.cc",
+        "chromeos/printing/fake_local_printer_chromeos.h",
       ]
-      public_deps += [
-        "//chrome/services/printing/public/mojom",
-        "//printing/backend:test_support",
-      ]
+      if (use_cups) {
+        sources += [
+          "../browser/extensions/api/printing/fake_print_job_controller.cc",
+          "../browser/extensions/api/printing/fake_print_job_controller.h",
+          "../browser/extensions/api/printing/printing_test_utils.cc",
+          "../browser/extensions/api/printing/printing_test_utils.h",
+        ]
+        public_deps += [
+          "//chrome/services/printing/public/mojom",
+          "//printing/backend:test_support",
+        ]
+      }
     }
 
     public_deps += [
@@ -5606,7 +5614,10 @@ if (is_chromeos_lacros) {
     ]
 
     if (use_cups) {
-      sources += [ "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc" ]
+      sources += [
+        "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc",
+        "../browser/extensions/api/printing/printing_apitest.cc",
+      ]
       deps += [ "//chrome/browser/chromeos/extensions/printing_metrics" ]
     }
 
@@ -8175,8 +8186,6 @@ test("unit_tests") {
       "../browser/speech/tts_crosapi_util_unittest.cc",
       "../browser/ui/webui/certificate_provisioning_ui_handler_unittest.cc",
       "../browser/usb/usb_pinned_notification_unittest.cc",
-      "chromeos/printing/fake_local_printer_chromeos.cc",
-      "chromeos/printing/fake_local_printer_chromeos.h",
     ]
 
     deps += [
@@ -8197,8 +8206,6 @@ test("unit_tests") {
       sources += [
         "../browser/chromeos/printing/test_cups_wrapper.cc",
         "../browser/chromeos/printing/test_cups_wrapper.h",
-        "../browser/extensions/api/printing/fake_print_job_controller.cc",
-        "../browser/extensions/api/printing/fake_print_job_controller.h",
       ]
     }
   }

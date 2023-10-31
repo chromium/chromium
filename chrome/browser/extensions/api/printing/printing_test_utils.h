@@ -18,10 +18,12 @@
 
 class Profile;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash {
 class TestCupsPrintJobManager;
 class FakeCupsPrintersManager;
 }  // namespace ash
+#endif
 
 namespace content {
 class BrowserContext;
@@ -45,6 +47,7 @@ enum class ExtensionType {
   kExtensionMV3,
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class PrintingTestHelper {
  public:
   // BrowserContextDependencyManager subscriptions should be established before
@@ -84,6 +87,7 @@ class PrintingTestHelper {
 
   scoped_refptr<printing::TestPrintBackend> test_print_backend_;
 };
+#endif
 
 // Creates a printing extension with the correct manifest for the given `type`.
 std::unique_ptr<TestExtensionDir> CreatePrintingExtension(ExtensionType type);
