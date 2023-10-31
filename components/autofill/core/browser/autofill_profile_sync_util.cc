@@ -282,8 +282,17 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   if (!IsAutofillProfileSpecificsValid(specifics)) {
     return nullptr;
   }
+  // Update the country field, which can contain either a country code (if set
+  // by a newer version of Chrome), or a country name (if set by an older
+  // version of Chrome).
+  std::u16string country_name_or_code =
+      base::ASCIIToUTF16(specifics.address_home_country());
+  std::string country_code =
+      CountryNames::GetInstance()->GetCountryCode(country_name_or_code);
+
   std::unique_ptr<AutofillProfile> profile = std::make_unique<AutofillProfile>(
-      specifics.guid(), AutofillProfile::Source::kLocalOrSyncable);
+      specifics.guid(), AutofillProfile::Source::kLocalOrSyncable,
+      AddressCountryCode(country_code));
 
   // Set info that has a default value (and does not distinguish whether it is
   // set or not).
@@ -431,14 +440,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_dependent_locality_status()));
 
-  // Update the country field, which can contain either a country code (if set
-  // by a newer version of Chrome), or a country name (if set by an older
-  // version of Chrome).
-  // TODO(jkrcal): Move this migration logic into Address::SetRawInfo()?
-  std::u16string country_name_or_code =
-      base::ASCIIToUTF16(specifics.address_home_country());
-  std::string country_code =
-      CountryNames::GetInstance()->GetCountryCode(country_name_or_code);
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_COUNTRY, UTF8ToUTF16(country_code),
