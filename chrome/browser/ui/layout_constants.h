@@ -138,6 +138,18 @@ enum LayoutConstant {
   // The total height, including icons and insets, of buttons in the toolbar.
   TOOLBAR_BUTTON_HEIGHT,
 
+  // The corner radius for a divider in the toolbar.
+  TOOLBAR_DIVIDER_CORNER_RADIUS,
+
+  // The height for a divider in the toolbar.
+  TOOLBAR_DIVIDER_HEIGHT,
+
+  // The horizontal space on either side of a divider in the toolbar.
+  TOOLBAR_DIVIDER_SPACING,
+
+  // The width for a divider in the toolbar.
+  TOOLBAR_DIVIDER_WIDTH,
+
   // Additional horizontal padding between the elements in the toolbar.
   TOOLBAR_ELEMENT_PADDING,
 

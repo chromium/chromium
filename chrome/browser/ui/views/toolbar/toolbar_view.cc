@@ -174,10 +174,6 @@ auto& GetViewCommandMap() {
   return kViewCommandMap;
 }
 
-constexpr int kToolbarDividerWidth = 2;
-constexpr int kToolbarDividerHeight = 16;
-constexpr int kToolbarDividerCornerRadius = 1;
-constexpr int kToolbarDividerSpacing = 9;
 constexpr int kBrowserAppMenuRefreshExpandedMargin = 5;
 constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
 
@@ -395,7 +391,8 @@ void ToolbarView::Init() {
     toolbar_divider_ =
         container_view_->AddChildView(std::move(toolbar_divider));
     toolbar_divider_->SetPreferredSize(
-        gfx::Size(kToolbarDividerWidth, kToolbarDividerHeight));
+        gfx::Size(GetLayoutConstant(TOOLBAR_DIVIDER_WIDTH),
+                  GetLayoutConstant(TOOLBAR_DIVIDER_HEIGHT)));
   }
 
   if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
@@ -934,8 +931,9 @@ void ToolbarView::InitLayout() {
   }
 
   if (toolbar_divider_) {
-    toolbar_divider_->SetProperty(views::kMarginsKey,
-                                  gfx::Insets::VH(0, kToolbarDividerSpacing));
+    toolbar_divider_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
   }
 
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
@@ -1011,7 +1009,8 @@ void ToolbarView::LayoutCommon() {
     const SkColor toolbar_extension_separator_color =
         GetColorProvider()->GetColor(kColorToolbarExtensionSeparatorEnabled);
     toolbar_divider_->SetBackground(views::CreateRoundedRectBackground(
-        toolbar_extension_separator_color, kToolbarDividerCornerRadius));
+        toolbar_extension_separator_color,
+        GetLayoutConstant(TOOLBAR_DIVIDER_CORNER_RADIUS)));
   }
   // Cast button visibility is controlled externally.
 }

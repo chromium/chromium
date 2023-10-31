@@ -368,11 +368,11 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       Check(base::BindLambdaForTesting([=]() {
         return actions_model->Contains(kActionSidePanelShowBookmarks);
       })),
-      CheckResult(
-          base::BindLambdaForTesting([this]() {
-            return GetPinnedToolbarActionsContainer()->children().size();
-          }),
-          1),
+      CheckView(
+          kPinnedToolbarActionsContainerElementId,
+          [](views::View* view) { return view->children().size() == 2u; }),
+      CheckViewProperty(kPinnedToolbarActionsContainerDividerElementId,
+                        &views::View::GetVisible, true),
       // Verify the bookmarks pinned toolbar button is not highlighted.
       CheckPinnedToolbarActionsContainerChildInkDropState(0, false),
       // Open the bookmarks side panel.

@@ -10,6 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -20,6 +22,7 @@
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -111,6 +114,8 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
     : ToolbarIconContainerView(/*uses_highlight=*/false),
       browser_view_(browser_view),
       model_(PinnedToolbarActionsModel::Get(browser_view->GetProfile())) {
+  SetProperty(views::kElementIdentifierKey,
+              kPinnedToolbarActionsContainerElementId);
   // So we only get enter/exit messages when the mouse enters/exits the whole
   // container, even if it is entering/exiting a specific toolbar pinned
   // button view, too.
@@ -127,8 +132,25 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
       ->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
       .SetDefault(views::kFlexBehaviorKey,
                   hide_icon_flex_specification.WithOrder(3));
+  GetTargetLayoutManager()->SetCrossAxisAlignment(
+      views::LayoutAlignment::kCenter);
 
-  CreatePinnedActionButtons();
+  // Create the toolbar divider.
+  toolbar_divider_ = AddChildView(std::make_unique<views::View>());
+  toolbar_divider_->SetProperty(views::kElementIdentifierKey,
+                                kPinnedToolbarActionsContainerDividerElementId);
+  toolbar_divider_->SetPreferredSize(
+      gfx::Size(GetLayoutConstant(TOOLBAR_DIVIDER_WIDTH),
+                GetLayoutConstant(TOOLBAR_DIVIDER_HEIGHT)));
+  toolbar_divider_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
+  toolbar_divider_->SetVisible(false);
+
+  // Create the pinned action buttons.
+  for (const auto& id : model_->pinned_action_ids()) {
+    AddPinnedActionButtonFor(id);
+  }
 }
 
 PinnedToolbarActionsContainer::~PinnedToolbarActionsContainer() = default;
@@ -166,6 +188,14 @@ void PinnedToolbarActionsContainer::UpdateAllIcons() {
   }
 }
 
+void PinnedToolbarActionsContainer::OnThemeChanged() {
+  const SkColor toolbar_divider_color =
+      GetColorProvider()->GetColor(kColorToolbarExtensionSeparatorEnabled);
+  toolbar_divider_->SetBackground(views::CreateRoundedRectBackground(
+      toolbar_divider_color, GetLayoutConstant(TOOLBAR_DIVIDER_CORNER_RADIUS)));
+  ToolbarIconContainerView::OnThemeChanged();
+}
+
 void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
   const auto iter = base::ranges::find(
       pinned_buttons_, id, [](auto* button) { return button->GetActionId(); });
@@ -188,13 +218,6 @@ void PinnedToolbarActionsContainer::OnActionMoved(const actions::ActionId& id,
   ReorderChildView(GetPinnedButtonFor(id), to_index);
 }
 
-void PinnedToolbarActionsContainer::CreatePinnedActionButtons() {
-  DCHECK(pinned_buttons_.empty());
-  for (const auto& id : model_->pinned_action_ids()) {
-    AddPinnedActionButtonFor(id);
-  }
-}
-
 actions::ActionItem* PinnedToolbarActionsContainer::GetActionItemFor(
     const actions::ActionId& id) {
   return actions::ActionManager::Get().FindAction(
@@ -209,6 +232,7 @@ PinnedToolbarActionsContainer::AddPopOutButtonFor(const actions::ActionId& id) {
       std::make_unique<PinnedActionToolbarButton>(browser_view_->browser(), id);
   auto* button = popped_out_button.get();
   popped_out_buttons_.push_back(AddChildView(std::move(popped_out_button)));
+  ReorderViews();
   return button;
 }
 
@@ -223,6 +247,7 @@ void PinnedToolbarActionsContainer::RemovePoppedOutButtonFor(
   // This returns a unique_ptr which is immediately destroyed.
   RemoveChildViewT(*iter);
   popped_out_buttons_.erase(iter);
+  ReorderViews();
 }
 
 void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
@@ -259,9 +284,9 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
     RemoveChildViewT(*iter);
   } else {
     popped_out_buttons_.push_back(*iter);
-    ReorderViews();
   }
   pinned_buttons_.erase(iter);
+  ReorderViews();
 }
 
 PinnedToolbarActionsContainer::PinnedActionToolbarButton*
@@ -282,10 +307,21 @@ PinnedToolbarActionsContainer::GetPoppedOutButtonFor(
 
 void PinnedToolbarActionsContainer::ReorderViews() {
   size_t index = 0;
+  // Pinned buttons appear first.
   for (auto* pinned_button : pinned_buttons_) {
     ReorderChildView(pinned_button, index);
     index++;
   }
+  // The divider exist and is visible after the pinned buttons if any
+  // exist.
+  if (!pinned_buttons_.empty()) {
+    toolbar_divider_->SetVisible(true);
+    ReorderChildView(toolbar_divider_, index);
+    index++;
+  } else {
+    toolbar_divider_->SetVisible(false);
+  }
+  // Popped out buttons appear last.
   for (auto* popped_out_button : popped_out_buttons_) {
     ReorderChildView(popped_out_button, index);
     index++;

@@ -61,6 +61,7 @@ class PinnedToolbarActionsContainer
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
+  void OnThemeChanged() override;
 
   // PinnedToolbarActionsModel::Observer:
   void OnActionAdded(const actions::ActionId& id) override;
@@ -74,7 +75,6 @@ class PinnedToolbarActionsContainer
   friend class PinnedSidePanelInteractiveTest;
   friend class PinnedToolbarActionsContainerTest;
 
-  void CreatePinnedActionButtons();
   actions::ActionItem* GetActionItemFor(const actions::ActionId& id);
   PinnedActionToolbarButton* AddPopOutButtonFor(const actions::ActionId& id);
   void RemovePoppedOutButtonFor(const actions::ActionId& id);
@@ -89,6 +89,7 @@ class PinnedToolbarActionsContainer
 
   std::vector<PinnedActionToolbarButton*> pinned_buttons_;
   std::vector<PinnedActionToolbarButton*> popped_out_buttons_;
+  raw_ptr<views::View> toolbar_divider_;
   raw_ptr<PinnedToolbarActionsModel> model_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,

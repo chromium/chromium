@@ -131,6 +131,14 @@ int GetLayoutConstant(LayoutConstant constant) {
       } else {
         return touch_ui ? 48 : 28;
       }
+    case TOOLBAR_DIVIDER_CORNER_RADIUS:
+      return 1;
+    case TOOLBAR_DIVIDER_HEIGHT:
+      return touch_ui ? 20 : 16;
+    case TOOLBAR_DIVIDER_SPACING:
+      return 9;
+    case TOOLBAR_DIVIDER_WIDTH:
+      return 2;
     case TOOLBAR_ELEMENT_PADDING:
       return touch_ui ? 0 : 4;
     case TOOLBAR_ICON_DEFAULT_MARGIN:
