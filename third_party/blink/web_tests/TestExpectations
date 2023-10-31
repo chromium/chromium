@@ -6951,9 +6951,6 @@ crbug.com/1489489 [ Mac ] virtual/compositor-threaded-percent-based-scrolling/fa
 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/initial-empty-document/window-open-204-fragment.html [ Failure ]
 
 # Gardener 2023-09-27
-crbug.com/1486720 [ Mac ] virtual/view-transition/inspector-protocol/css/css-get-keyframes-for-view-transitions.js [ Failure Pass ]
-crbug.com/1486720 [ Mac ] virtual/view-transition-mpa-serialization/inspector-protocol/css/css-get-keyframes-for-view-transitions.js [ Failure Pass ]
-crbug.com/1486720 [ Mac ] virtual/view-transition-wide-gamut/inspector-protocol/css/css-get-keyframes-for-view-transitions.js [ Failure Pass ]
 crbug.com/1486105 animations/responsive/zoom-responsive-transform-animation-003.html [ Failure Pass ]
 
 # Gardener 2023-09-28
