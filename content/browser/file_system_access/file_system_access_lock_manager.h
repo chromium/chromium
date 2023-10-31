@@ -15,6 +15,7 @@
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
@@ -43,7 +44,7 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   using TakeLockCallback = base::OnceCallback<void(scoped_refptr<LockHandle>)>;
 
   // A handle to a `Lock` passed to the frame that holds the lock. The `Lock` is
-  // kept alive as long as `LockHandle` is kept alive.
+  // kept alive as long as there is some `LockHandle` to it.
   class CONTENT_EXPORT LockHandle : public base::RefCounted<LockHandle> {
    public:
     LockHandle(LockHandle const&) = delete;
@@ -58,7 +59,8 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
     friend class base::RefCounted<LockHandle>;
 
     LockHandle(base::WeakPtr<Lock> lock,
-               scoped_refptr<LockHandle> parent_lock_handle);
+               scoped_refptr<LockHandle> parent_lock_handle,
+               const GlobalRenderFrameHostId& frame_id);
 
     // On destruction, lets its `lock_` know it is no longer held.
     ~LockHandle();
@@ -70,6 +72,10 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
     const bool is_exclusive_;
 
     const scoped_refptr<LockHandle> parent_lock_handle_;
+
+    // The frame id of the associated render frame host that holds this lock
+    // handle.
+    const GlobalRenderFrameHostId frame_id_;
   };
 
   explicit FileSystemAccessLockManager(
@@ -83,7 +89,11 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   // Attempts to take a lock of `lock_type` on `url`. Passes a handle of the
   // lock to `callback` if successful. The lock is released when there are no
   // handles to it.
-  void TakeLock(const storage::FileSystemURL& url,
+  //
+  // `frame_id` is the `GlobalRenderFrameHostId` of the render frame host
+  // associated with the frame that holds this handle.
+  void TakeLock(const GlobalRenderFrameHostId& frame_id,
+                const storage::FileSystemURL& url,
                 LockType lock_type,
                 TakeLockCallback callback);
 

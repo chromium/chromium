@@ -4,9 +4,11 @@
 
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,25 +74,31 @@ class Lock {
     return nullptr;
   }
 
-  scoped_refptr<LockHandle> CreateLockHandle() {
+  scoped_refptr<LockHandle> CreateLockHandle(
+      const GlobalRenderFrameHostId& frame_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (!lock_handle_) {
+    // Insert `frame_id` if needed.
+    if (!frame_id_lock_handles_.contains(frame_id)) {
       // The lock handle is owned by the caller or the lock handle of a child
-      // lock. A raw pointer is stored in `lock_handle_` to be able to increase
-      // the refcount when a new lock handle is created for this.
+      // lock. A raw ref is stored in `frame_id_lock_handles_` to be able to
+      // increase the refcount when a new lock handle is created for this.
       //
-      // It is safe to store a raw pointer in `lock_handle_` because when it is
-      // destroyed, `this` is destroyed. This means that it will be a valid
-      // object for the lifetime of `Lock`, and is therefore safe to
-      // dereference.
+      // It is safe to store raw refs in `frame_id_lock_handles_` because when
+      // the lock handle is destroyed, it's entry in the map is erased. This
+      // means that any raw ref in the map points to a valid object, and is
+      // therefore safe to dereference.
       scoped_refptr<LockHandle> parent_lock_handle =
-          parent_lock_.has_value() ? parent_lock_->CreateLockHandle() : nullptr;
-      lock_handle_ =
-          new LockHandle(weak_factory_.GetWeakPtr(), parent_lock_handle);
+          parent_lock_.has_value() ? parent_lock_->CreateLockHandle(frame_id)
+                                   : nullptr;
+      frame_id_lock_handles_.emplace(
+          frame_id,
+          base::raw_ref<LockHandle>::from_ptr(new LockHandle(
+              weak_factory_.GetWeakPtr(), parent_lock_handle, frame_id)));
     }
 
-    return base::WrapRefCounted<LockHandle>(lock_handle_);
+    return base::WrapRefCounted<LockHandle>(
+        &frame_id_lock_handles_.at(frame_id).get());
   }
 
  protected:
@@ -117,16 +125,24 @@ class Lock {
   }
 
   // Called by a `LockHandle` when its destroyed.
-  void LockHandleDestroyed() {
+  void LockHandleDestroyed(const GlobalRenderFrameHostId& frame_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // `DestroySelf` will destroy `this`.
-    DestroySelf();
+    CHECK(frame_id_lock_handles_.contains(frame_id));
+
+    frame_id_lock_handles_.erase(frame_id);
+
+    // If nothing is holding this lock, release it.
+    if (frame_id_lock_handles_.empty()) {
+      // `DestroySelf` will destroy `this`.
+      DestroySelf();
+    }
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // The handle that holds this lock.
-  raw_ptr<LockHandle> lock_handle_ = nullptr;
+  // A map of frame ids to the lock handle for that frame.
+  base::flat_map<GlobalRenderFrameHostId, raw_ref<LockHandle>>
+      frame_id_lock_handles_;
 
   // The file path component of what we're locking within our parent `Lock`.
   const base::FilePath::StringType path_component_;
@@ -215,17 +231,19 @@ bool FileSystemAccessLockManager::RootLocator::operator<(
 }
 
 LockHandle::LockHandle(base::WeakPtr<Lock> lock,
-                       scoped_refptr<LockHandle> parent_lock_handle)
+                       scoped_refptr<LockHandle> parent_lock_handle,
+                       const GlobalRenderFrameHostId& frame_id)
     : lock_(lock),
       type_(lock->type()),
       is_exclusive_(lock->IsExclusive()),
-      parent_lock_handle_(std::move(parent_lock_handle)) {}
+      parent_lock_handle_(std::move(parent_lock_handle)),
+      frame_id_(frame_id) {}
 
 LockHandle::~LockHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(lock_);
   // May destroy `lock_`.
-  lock_->LockHandleDestroyed();
+  lock_->LockHandleDestroyed(frame_id_);
 }
 
 FileSystemAccessLockManager::FileSystemAccessLockManager(
@@ -261,9 +279,11 @@ bool FileSystemAccessLockManager::IsContentious(
   return false;
 }
 
-void FileSystemAccessLockManager::TakeLock(const storage::FileSystemURL& url,
-                                           LockType lock_type,
-                                           TakeLockCallback callback) {
+void FileSystemAccessLockManager::TakeLock(
+    const GlobalRenderFrameHostId& frame_id,
+    const storage::FileSystemURL& url,
+    LockType lock_type,
+    TakeLockCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // GetOrCreateRootLock should always succeed.
@@ -289,7 +309,7 @@ void FileSystemAccessLockManager::TakeLock(const storage::FileSystemURL& url,
   }
 
   // Successfully created the lock and passing a lock handle to the callback.
-  std::move(callback).Run(lock->CreateLockHandle());
+  std::move(callback).Run(lock->CreateLockHandle(frame_id));
 }
 
 void FileSystemAccessLockManager::ReleaseRoot(const RootLocator& root_locator) {

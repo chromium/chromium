@@ -68,17 +68,11 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
     auto url = manager_->CreateFileSystemURLFromPath(
         FileSystemAccessEntryFactory::PathType::kLocal, dir_.GetPath());
     handle_ = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
-        manager_.get(),
-        FileSystemAccessManagerImpl::BindingContext(
-            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
-        url,
+        manager_.get(), kBindingContext, url,
         FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
                                                        allow_grant_));
     denied_handle_ = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
-        manager_.get(),
-        FileSystemAccessManagerImpl::BindingContext(
-            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
-        url,
+        manager_.get(), kBindingContext, url,
         FileSystemAccessManagerImpl::SharedHandleState(deny_grant_,
                                                        deny_grant_));
   }
@@ -100,10 +94,7 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
       url.SetBucket(url_bucket_override.value());
     }
     auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
-        manager_.get(),
-        FileSystemAccessManagerImpl::BindingContext(
-            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
-        url,
+        manager_.get(), kBindingContext, url,
         FileSystemAccessManagerImpl::SharedHandleState(
             /*read_grant=*/read ? allow_grant_ : deny_grant_,
             /*write_grant=*/write ? allow_grant_ : deny_grant_));
@@ -111,12 +102,13 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
   }
 
   scoped_refptr<FileSystemAccessLockManager::LockHandle> TakeLockSync(
+      const FileSystemAccessManagerImpl::BindingContext binding_context,
       const storage::FileSystemURL& url,
       FileSystemAccessLockManager::LockType lock_type) {
     base::test::TestFuture<
         scoped_refptr<FileSystemAccessLockManager::LockHandle>>
         future;
-    manager_->TakeLock(url, lock_type, future.GetCallback());
+    manager_->TakeLock(binding_context, url, lock_type, future.GetCallback());
     return future.Take();
   }
 
@@ -124,6 +116,8 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
   const GURL test_src_url_ = GURL("http://example.com/foo");
   const blink::StorageKey test_src_storage_key_ =
       blink::StorageKey::CreateFromStringForTesting("http://example.com/foo");
+  const FileSystemAccessManagerImpl::BindingContext kBindingContext = {
+      test_src_storage_key_, test_src_url_, /*worker_process_id=*/1};
 
   BrowserTaskEnvironment task_environment_;
 
@@ -417,7 +411,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     EXPECT_FALSE(base::PathExists(file));
     // The lock acquired during the operation should be released by the time the
     // callback runs.
-    EXPECT_TRUE(TakeLockSync(file_url, exclusive_lock_type));
+    EXPECT_TRUE(TakeLockSync(kBindingContext, file_url, exclusive_lock_type));
   }
 
   // Acquire an exclusive lock on a file before removing to simulate when the
@@ -427,7 +421,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     auto base_name = storage::FilePathToString(file.BaseName());
     EXPECT_EQ(handle->GetChildURL(base_name, &file_url)->file_error,
               base::File::Error::FILE_OK);
-    auto lock = TakeLockSync(file_url, exclusive_lock_type);
+    auto lock = TakeLockSync(kBindingContext, file_url, exclusive_lock_type);
     EXPECT_TRUE(lock);
 
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
@@ -446,7 +440,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     auto base_name = storage::FilePathToString(file.BaseName());
     EXPECT_EQ(handle->GetChildURL(base_name, &file_url)->file_error,
               base::File::Error::FILE_OK);
-    auto lock = TakeLockSync(file_url, wfs_siloed_lock_type);
+    auto lock = TakeLockSync(kBindingContext, file_url, wfs_siloed_lock_type);
     ASSERT_TRUE(lock);
     EXPECT_TRUE(lock->type() == wfs_siloed_lock_type);
 

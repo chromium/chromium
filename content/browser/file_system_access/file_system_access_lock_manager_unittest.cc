@@ -67,12 +67,13 @@ class FileSystemAccessLockManagerTest : public testing::Test {
   }
 
   scoped_refptr<FileSystemAccessLockManager::LockHandle> TakeLockSync(
+      const FileSystemAccessManagerImpl::BindingContext binding_context,
       const storage::FileSystemURL& url,
       FileSystemAccessLockManager::LockType lock_type) {
     base::test::TestFuture<
         scoped_refptr<FileSystemAccessLockManager::LockHandle>>
         future;
-    manager_->TakeLock(url, lock_type, future.GetCallback());
+    manager_->TakeLock(binding_context, url, lock_type, future.GetCallback());
     return future.Take();
   }
 
@@ -83,62 +84,77 @@ class FileSystemAccessLockManagerTest : public testing::Test {
     LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
     // Parent cannot take an exclusive lock if child holds an exclusive lock.
     {
-      auto child_lock = TakeLockSync(child_url, exclusive_lock_type);
+      auto child_lock =
+          TakeLockSync(kBindingContext, child_url, exclusive_lock_type);
       ASSERT_TRUE(child_lock);
-      ASSERT_FALSE(TakeLockSync(parent_url, exclusive_lock_type));
+      ASSERT_FALSE(
+          TakeLockSync(kBindingContext, parent_url, exclusive_lock_type));
     }
 
     // Parent can take an ancestor lock if child holds an exclusive lock.
     {
-      auto child_lock = TakeLockSync(child_url, exclusive_lock_type);
+      auto child_lock =
+          TakeLockSync(kBindingContext, child_url, exclusive_lock_type);
       ASSERT_TRUE(child_lock);
-      ASSERT_TRUE(TakeLockSync(parent_url, ancestor_lock_type));
+      ASSERT_TRUE(
+          TakeLockSync(kBindingContext, parent_url, ancestor_lock_type));
     }
 
     // Child cannot take an exclusive lock if parent holds an exclusive lock.
     {
-      auto parent_lock = TakeLockSync(parent_url, exclusive_lock_type);
+      auto parent_lock =
+          TakeLockSync(kBindingContext, parent_url, exclusive_lock_type);
       ASSERT_TRUE(parent_lock);
-      ASSERT_FALSE(TakeLockSync(child_url, exclusive_lock_type));
+      ASSERT_FALSE(
+          TakeLockSync(kBindingContext, child_url, exclusive_lock_type));
     }
 
     // Child can take an exclusive lock if parent holds an ancestor lock.
     {
-      auto parent_lock = TakeLockSync(parent_url, ancestor_lock_type);
+      auto parent_lock =
+          TakeLockSync(kBindingContext, parent_url, ancestor_lock_type);
       ASSERT_TRUE(parent_lock);
-      ASSERT_TRUE(TakeLockSync(child_url, exclusive_lock_type));
+      ASSERT_TRUE(
+          TakeLockSync(kBindingContext, child_url, exclusive_lock_type));
     }
 
     // Parent cannot take an exclusive lock if child holds a shared lock.
     {
-      auto child_lock = TakeLockSync(child_url, shared_lock_type);
+      auto child_lock =
+          TakeLockSync(kBindingContext, child_url, shared_lock_type);
       ASSERT_TRUE(child_lock);
-      ASSERT_FALSE(TakeLockSync(parent_url, exclusive_lock_type));
+      ASSERT_FALSE(
+          TakeLockSync(kBindingContext, parent_url, exclusive_lock_type));
     }
 
     // Parent can take an ancestor lock if child holds a shared lock.
     {
-      auto child_lock = TakeLockSync(child_url, shared_lock_type);
+      auto child_lock =
+          TakeLockSync(kBindingContext, child_url, shared_lock_type);
       ASSERT_TRUE(child_lock);
-      ASSERT_TRUE(TakeLockSync(parent_url, ancestor_lock_type));
+      ASSERT_TRUE(
+          TakeLockSync(kBindingContext, parent_url, ancestor_lock_type));
     }
 
     // Child cannot take a shared lock if parent holds an exclusive lock.
     {
-      auto parent_lock = TakeLockSync(parent_url, exclusive_lock_type);
+      auto parent_lock =
+          TakeLockSync(kBindingContext, parent_url, exclusive_lock_type);
       ASSERT_TRUE(parent_lock);
-      ASSERT_FALSE(TakeLockSync(child_url, shared_lock_type));
+      ASSERT_FALSE(TakeLockSync(kBindingContext, child_url, shared_lock_type));
     }
 
     // Child can take a shared lock if parent holds an ancestor lock.
     {
-      auto parent_lock = TakeLockSync(parent_url, ancestor_lock_type);
+      auto parent_lock =
+          TakeLockSync(kBindingContext, parent_url, ancestor_lock_type);
       ASSERT_TRUE(parent_lock);
-      ASSERT_TRUE(TakeLockSync(child_url, shared_lock_type));
+      ASSERT_TRUE(TakeLockSync(kBindingContext, child_url, shared_lock_type));
     }
   }
 
  protected:
+  const GURL kTestURL = GURL("https://example.com/test");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
   const storage::BucketLocator kTestBucketLocator =
@@ -146,6 +162,11 @@ class FileSystemAccessLockManagerTest : public testing::Test {
                              kTestStorageKey,
                              blink::mojom::StorageType::kTemporary,
                              /*is_default=*/false);
+
+  // Default initializing kFrameId simulates a frame that is always active.
+  const GlobalRenderFrameHostId kFrameId;
+  const FileSystemAccessManagerImpl::BindingContext kBindingContext = {
+      kTestStorageKey, kTestURL, kFrameId};
 
   BrowserTaskEnvironment task_environment_;
 
@@ -165,17 +186,18 @@ TEST_F(FileSystemAccessLockManagerTest, ExclusiveLock) {
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
   LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
   {
-    auto exclusive_lock = TakeLockSync(url, exclusive_lock_type);
+    auto exclusive_lock =
+        TakeLockSync(kBindingContext, url, exclusive_lock_type);
     ASSERT_TRUE(exclusive_lock);
 
     // Cannot take another lock while the file is exclusively locked.
-    ASSERT_FALSE(TakeLockSync(url, exclusive_lock_type));
-    ASSERT_FALSE(TakeLockSync(url, shared_lock_type));
+    ASSERT_FALSE(TakeLockSync(kBindingContext, url, exclusive_lock_type));
+    ASSERT_FALSE(TakeLockSync(kBindingContext, url, shared_lock_type));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  ASSERT_TRUE(TakeLockSync(url, exclusive_lock_type));
+  ASSERT_TRUE(TakeLockSync(kBindingContext, url, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, SharedLock) {
@@ -187,19 +209,19 @@ TEST_F(FileSystemAccessLockManagerTest, SharedLock) {
   LockType shared_lock_type_1 = manager_->CreateSharedLockTypeForTesting();
   LockType shared_lock_type_2 = manager_->CreateSharedLockTypeForTesting();
   {
-    auto shared_lock = TakeLockSync(url, shared_lock_type_1);
+    auto shared_lock = TakeLockSync(kBindingContext, url, shared_lock_type_1);
     ASSERT_TRUE(shared_lock);
 
     // Can take another shared lock of the same type, but not an exclusive lock
     // or a shared lock of another type.
-    ASSERT_TRUE(TakeLockSync(url, shared_lock_type_1));
-    ASSERT_FALSE(TakeLockSync(url, exclusive_lock_type));
-    ASSERT_FALSE(TakeLockSync(url, shared_lock_type_2));
+    ASSERT_TRUE(TakeLockSync(kBindingContext, url, shared_lock_type_1));
+    ASSERT_FALSE(TakeLockSync(kBindingContext, url, exclusive_lock_type));
+    ASSERT_FALSE(TakeLockSync(kBindingContext, url, shared_lock_type_2));
   }
 
   // The shared locks have been released and we should be available to acquire
   // an exclusive lock.
-  ASSERT_TRUE(TakeLockSync(url, exclusive_lock_type));
+  ASSERT_TRUE(TakeLockSync(kBindingContext, url, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, SandboxedFile) {
@@ -211,17 +233,18 @@ TEST_F(FileSystemAccessLockManagerTest, SandboxedFile) {
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
   LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
   {
-    auto exclusive_lock = TakeLockSync(url, exclusive_lock_type);
+    auto exclusive_lock =
+        TakeLockSync(kBindingContext, url, exclusive_lock_type);
     ASSERT_TRUE(exclusive_lock);
 
     // Cannot take another lock while the file is exclusively locked.
-    ASSERT_FALSE(TakeLockSync(url, exclusive_lock_type));
-    ASSERT_FALSE(TakeLockSync(url, shared_lock_type));
+    ASSERT_FALSE(TakeLockSync(kBindingContext, url, exclusive_lock_type));
+    ASSERT_FALSE(TakeLockSync(kBindingContext, url, shared_lock_type));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  ASSERT_TRUE(TakeLockSync(url, exclusive_lock_type));
+  ASSERT_TRUE(TakeLockSync(kBindingContext, url, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesSamePath) {
@@ -244,14 +267,16 @@ TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesSamePath) {
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
 
   // Take a lock on the file in the first file system.
-  auto exclusive_lock1 = TakeLockSync(url1, exclusive_lock_type);
+  auto exclusive_lock1 =
+      TakeLockSync(kBindingContext, url1, exclusive_lock_type);
   ASSERT_TRUE(exclusive_lock1);
-  ASSERT_FALSE(TakeLockSync(url1, exclusive_lock_type));
+  ASSERT_FALSE(TakeLockSync(kBindingContext, url1, exclusive_lock_type));
 
   // Can still take a lock on the file in the second file system.
-  auto exclusive_lock2 = TakeLockSync(url2, exclusive_lock_type);
+  auto exclusive_lock2 =
+      TakeLockSync(kBindingContext, url2, exclusive_lock_type);
   ASSERT_TRUE(exclusive_lock2);
-  ASSERT_FALSE(TakeLockSync(url2, exclusive_lock_type));
+  ASSERT_FALSE(TakeLockSync(kBindingContext, url2, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesDifferentBucket) {
@@ -271,14 +296,16 @@ TEST_F(FileSystemAccessLockManagerTest, SandboxedFilesDifferentBucket) {
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
 
   // Take a lock on the file in the first file system.
-  auto exclusive_lock1 = TakeLockSync(url1, exclusive_lock_type);
+  auto exclusive_lock1 =
+      TakeLockSync(kBindingContext, url1, exclusive_lock_type);
   ASSERT_TRUE(exclusive_lock1);
-  ASSERT_FALSE(TakeLockSync(url1, exclusive_lock_type));
+  ASSERT_FALSE(TakeLockSync(kBindingContext, url1, exclusive_lock_type));
 
   // Can still take a lock on the file in the second file system.
-  auto exclusive_lock2 = TakeLockSync(url2, exclusive_lock_type);
+  auto exclusive_lock2 =
+      TakeLockSync(kBindingContext, url2, exclusive_lock_type);
   ASSERT_TRUE(exclusive_lock2);
-  ASSERT_FALSE(TakeLockSync(url2, exclusive_lock_type));
+  ASSERT_FALSE(TakeLockSync(kBindingContext, url2, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, DifferentBackends) {
@@ -299,15 +326,17 @@ TEST_F(FileSystemAccessLockManagerTest, DifferentBackends) {
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
 
   // Take a lock on the file in the local file system.
-  auto local_exclusive_lock = TakeLockSync(local_url, exclusive_lock_type);
+  auto local_exclusive_lock =
+      TakeLockSync(kBindingContext, local_url, exclusive_lock_type);
   ASSERT_TRUE(local_exclusive_lock);
-  ASSERT_FALSE(TakeLockSync(local_url, exclusive_lock_type));
+  ASSERT_FALSE(TakeLockSync(kBindingContext, local_url, exclusive_lock_type));
 
   // Can still take a lock on the file in the external file system.
   auto external_exclusive_lock =
-      TakeLockSync(external_url, exclusive_lock_type);
+      TakeLockSync(kBindingContext, external_url, exclusive_lock_type);
   ASSERT_TRUE(external_exclusive_lock);
-  ASSERT_FALSE(TakeLockSync(external_url, exclusive_lock_type));
+  ASSERT_FALSE(
+      TakeLockSync(kBindingContext, external_url, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, LockAcrossSites) {
@@ -327,17 +356,18 @@ TEST_F(FileSystemAccessLockManagerTest, LockAcrossSites) {
   LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
 
   {
-    auto exclusive_lock = TakeLockSync(url1, exclusive_lock_type);
+    auto exclusive_lock =
+        TakeLockSync(kBindingContext, url1, exclusive_lock_type);
     ASSERT_TRUE(exclusive_lock);
 
     // Other sites cannot access the file while it is exclusively locked.
-    ASSERT_FALSE(TakeLockSync(url2, exclusive_lock_type));
-    ASSERT_FALSE(TakeLockSync(url2, shared_lock_type));
+    ASSERT_FALSE(TakeLockSync(kBindingContext, url2, exclusive_lock_type));
+    ASSERT_FALSE(TakeLockSync(kBindingContext, url2, shared_lock_type));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  ASSERT_TRUE(TakeLockSync(url2, exclusive_lock_type));
+  ASSERT_TRUE(TakeLockSync(kBindingContext, url2, exclusive_lock_type));
 }
 
 TEST_F(FileSystemAccessLockManagerTest, AncestorLocks) {

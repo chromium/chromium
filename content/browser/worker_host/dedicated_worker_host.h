@@ -151,6 +151,8 @@ class DedicatedWorkerHost final
       mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
   void CreateBucketManagerHost(
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
+  void GetFileSystemAccessManager(
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver);
 
 #if !BUILDFLAG(IS_ANDROID)
   void BindSerialService(

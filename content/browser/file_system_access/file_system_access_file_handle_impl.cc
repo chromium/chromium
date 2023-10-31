@@ -266,7 +266,7 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
   }
 
   manager()->TakeLock(
-      url(), lock_type,
+      context(), url(), lock_type,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidTakeAccessHandleLock,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -552,7 +552,7 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
           : manager()->GetExclusiveLockType();
 
   manager()->TakeLock(
-      url(), lock_type,
+      context(), url(), lock_type,
       base::BindOnce(&FileSystemAccessFileHandleImpl::StartCreateSwapFile,
                      weak_factory_.GetWeakPtr(), 0, keep_existing_data,
                      auto_close, std::move(callback)));
@@ -607,7 +607,7 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
     if (!manager()->IsContentious(swap_url,
                                   manager()->GetExclusiveLockType())) {
       manager()->TakeLock(
-          swap_url, manager()->GetExclusiveLockType(),
+          context(), swap_url, manager()->GetExclusiveLockType(),
           base::BindOnce(&FileSystemAccessFileHandleImpl::DidTakeSwapLock,
                          weak_factory_.GetWeakPtr(), count, swap_url,
                          keep_existing_data, auto_close, std::move(lock),

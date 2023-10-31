@@ -127,7 +127,7 @@ void FileSystemAccessHandleBase::DoRequestPermission(
   // workers to get File System Access handles. While workers will never be able
   // to call chooseEntries(), they will be able to receive existing handles from
   // windows via postMessage() and IndexedDB.
-  if (current_status != PermissionStatus::ASK || context_.is_worker()) {
+  if (current_status != PermissionStatus::ASK || context_.is_worker) {
     std::move(callback).Run(file_system_access_error::Ok(), current_status);
     return;
   }
@@ -398,9 +398,9 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
       2, base::BindOnce(&FileSystemAccessHandleBase::DidTakeMoveLocks,
                         AsWeakPtr(), dest_url, has_transient_user_activation,
                         has_write_access, std::move(callback)));
-  manager()->TakeLock(url(), manager()->GetExclusiveLockType(),
+  manager()->TakeLock(context(), url(), manager()->GetExclusiveLockType(),
                       barrier_callback);
-  manager()->TakeLock(dest_url, manager()->GetExclusiveLockType(),
+  manager()->TakeLock(context(), dest_url, manager()->GetExclusiveLockType(),
                       barrier_callback);
 }
 
@@ -548,7 +548,7 @@ void FileSystemAccessHandleBase::DoRemove(
   // A locked file cannot be removed. Acquire a lock and release it after the
   // remove operation completes.
   manager()->TakeLock(
-      url, manager()->GetExclusiveLockType(),
+      context(), url, manager()->GetExclusiveLockType(),
       base::BindOnce(&FileSystemAccessHandleBase::DidTakeRemoveLock,
                      AsWeakPtr(), url, recurse, std::move(callback)));
 }

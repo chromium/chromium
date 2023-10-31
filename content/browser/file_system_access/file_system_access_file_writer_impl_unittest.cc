@@ -135,11 +135,13 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
       const FileSystemURL& file_url,
       const FileSystemURL& swap_url,
       mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>& remote) {
-    auto lock = TakeLockSync(file_url, writable_shared_lock_type_);
+    auto lock =
+        TakeLockSync(kBindingContext, file_url, writable_shared_lock_type_);
     if (!lock) {
       return nullptr;
     }
-    auto swap_lock = TakeLockSync(swap_url, manager_->GetExclusiveLockType());
+    auto swap_lock = TakeLockSync(kBindingContext, swap_url,
+                                  manager_->GetExclusiveLockType());
     if (!swap_lock) {
       return nullptr;
     }
@@ -239,12 +241,13 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
   }
 
   scoped_refptr<FileSystemAccessLockManager::LockHandle> TakeLockSync(
+      const FileSystemAccessManagerImpl::BindingContext binding_context,
       const storage::FileSystemURL& url,
       FileSystemAccessLockManager::LockType lock_type) {
     base::test::TestFuture<
         scoped_refptr<FileSystemAccessLockManager::LockHandle>>
         future;
-    manager_->TakeLock(url, lock_type, future.GetCallback());
+    manager_->TakeLock(binding_context, url, lock_type, future.GetCallback());
     return future.Take();
   }
 
@@ -323,7 +326,8 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
           quarantine_receivers_.Add(&quarantine_, std::move(receiver));
         });
 
-    auto lock = TakeLockSync(test_file_url_, writable_shared_lock_type_);
+    auto lock = TakeLockSync(kBindingContext, test_file_url_,
+                             writable_shared_lock_type_);
     ASSERT_TRUE(lock);
 
     handle_ = CreateWritable(test_file_url_, test_swap_url_, remote_);

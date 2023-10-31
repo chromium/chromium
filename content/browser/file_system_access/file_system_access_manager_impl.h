@@ -191,7 +191,11 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // Attempts to take a lock of `lock_type` on `url`. Passes a handle of the
   // lock to `callback` if successful. The lock is released when there are no
   // handles to it.
-  void TakeLock(const storage::FileSystemURL& url,
+  //
+  // `binding_context` is the `BindingContext` of the frame that holds this
+  // handle.
+  void TakeLock(const BindingContext& binding_context,
+                const storage::FileSystemURL& url,
                 FileSystemAccessLockManager::LockType lock_type,
                 FileSystemAccessLockManager::TakeLockCallback callback);
 

@@ -397,7 +397,7 @@ void FileSystemAccessManagerImpl::ChooseEntries(
 
   // ChooseEntries API is only available to windows, as we need a frame to
   // anchor the picker to.
-  if (context.is_worker()) {
+  if (context.is_worker) {
     receivers_.ReportBadMessage("ChooseEntries called from a worker");
     return;
   }
@@ -1092,11 +1092,13 @@ FileSystemAccessManagerImpl::CreateDirectoryHandle(
   return result;
 }
 void FileSystemAccessManagerImpl::TakeLock(
+    const BindingContext& binding_context,
     const storage::FileSystemURL& url,
     FileSystemAccessLockManager::LockType lock_type,
     FileSystemAccessLockManager::TakeLockCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  lock_manager_->TakeLock(url, lock_type, std::move(callback));
+  lock_manager_->TakeLock(binding_context.frame_id, url, lock_type,
+                          std::move(callback));
 }
 bool FileSystemAccessManagerImpl::IsContentious(
     const storage::FileSystemURL& url,

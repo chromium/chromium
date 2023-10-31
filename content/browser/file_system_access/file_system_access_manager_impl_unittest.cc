@@ -414,12 +414,13 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   }
 
   scoped_refptr<FileSystemAccessLockManager::LockHandle> TakeLockSync(
+      const FileSystemAccessManagerImpl::BindingContext binding_context,
       const storage::FileSystemURL& url,
       FileSystemAccessLockManager::LockType lock_type) {
     base::test::TestFuture<
         scoped_refptr<FileSystemAccessLockManager::LockHandle>>
         future;
-    manager_->TakeLock(url, lock_type, future.GetCallback());
+    manager_->TakeLock(binding_context, url, lock_type, future.GetCallback());
     return future.Take();
   }
 
@@ -649,10 +650,11 @@ TEST_F(FileSystemAccessManagerImplTest,
             storage::AsyncFileTestHelper::CreateFile(file_system_context_.get(),
                                                      test_swap_url));
 
-  auto lock = TakeLockSync(test_file_url, manager_->GetWFSSiloedLockType());
+  auto lock = TakeLockSync(kBindingContext, test_file_url,
+                           manager_->GetWFSSiloedLockType());
   ASSERT_TRUE(lock);
-  auto swap_lock =
-      TakeLockSync(test_swap_url, manager_->GetExclusiveLockType());
+  auto swap_lock = TakeLockSync(kBindingContext, test_swap_url,
+                                manager_->GetExclusiveLockType());
   ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
@@ -689,10 +691,11 @@ TEST_F(FileSystemAccessManagerImplTest, FileWriterCloseDoesNotAbortOnDestruct) {
             storage::AsyncFileTestHelper::CreateFileWithData(
                 file_system_context_.get(), test_swap_url, "foo", 3));
 
-  auto lock = TakeLockSync(test_file_url, manager_->GetWFSSiloedLockType());
+  auto lock = TakeLockSync(kBindingContext, test_file_url,
+                           manager_->GetWFSSiloedLockType());
   ASSERT_TRUE(lock);
-  auto swap_lock =
-      TakeLockSync(test_swap_url, manager_->GetExclusiveLockType());
+  auto swap_lock = TakeLockSync(kBindingContext, test_swap_url,
+                                manager_->GetExclusiveLockType());
   ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
@@ -740,10 +743,11 @@ TEST_F(FileSystemAccessManagerImplTest,
             storage::AsyncFileTestHelper::CreateFileWithData(
                 file_system_context_.get(), test_swap_url, "foo", 3));
 
-  auto lock = TakeLockSync(test_file_url, manager_->GetWFSSiloedLockType());
+  auto lock = TakeLockSync(kBindingContext, test_file_url,
+                           manager_->GetWFSSiloedLockType());
   ASSERT_TRUE(lock);
-  auto swap_lock =
-      TakeLockSync(test_swap_url, manager_->GetExclusiveLockType());
+  auto swap_lock = TakeLockSync(kBindingContext, test_swap_url,
+                                manager_->GetExclusiveLockType());
   ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
@@ -780,10 +784,11 @@ TEST_F(FileSystemAccessManagerImplTest,
             storage::AsyncFileTestHelper::CreateFileWithData(
                 file_system_context_.get(), test_swap_url, "foo", 3));
 
-  auto lock = TakeLockSync(test_file_url, manager_->GetWFSSiloedLockType());
+  auto lock = TakeLockSync(kBindingContext, test_file_url,
+                           manager_->GetWFSSiloedLockType());
   ASSERT_TRUE(lock);
-  auto swap_lock =
-      TakeLockSync(test_swap_url, manager_->GetExclusiveLockType());
+  auto swap_lock = TakeLockSync(kBindingContext, test_swap_url,
+                                manager_->GetExclusiveLockType());
   ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
