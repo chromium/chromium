@@ -3837,6 +3837,7 @@ test("base_unittests") {
       "allocator/partition_allocator/src/partition_alloc/compressed_pointer_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/freeslot_bitmap_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/hardening_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/lightweight_quarantine_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/memory_reclaimer_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/page_allocator_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits_pa_unittest.cc",

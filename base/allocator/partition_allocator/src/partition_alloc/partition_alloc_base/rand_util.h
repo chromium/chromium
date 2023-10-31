@@ -14,6 +14,11 @@
 
 namespace partition_alloc {
 class RandomGenerator;
+
+namespace internal {
+template <typename QuarantineEntry, size_t CountCapacity>
+class LightweightQuarantineList;
+}
 }  // namespace partition_alloc
 
 namespace partition_alloc::internal::base {
@@ -80,6 +85,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InsecureRandomGenerator {
   // need a secure PRNG, as it's used for ASLR and zeroing some allocations at
   // free() time.
   friend class ::partition_alloc::RandomGenerator;
+  template <typename QuarantineEntry, size_t CountCapacity>
+  friend class ::partition_alloc::internal::LightweightQuarantineList;
 
   PA_FRIEND_TEST_ALL_PREFIXES(
       PartitionAllocBaseRandUtilTest,

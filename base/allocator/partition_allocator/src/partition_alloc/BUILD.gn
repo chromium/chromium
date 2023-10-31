@@ -151,6 +151,8 @@ source_set("allocator_core") {
     "freeslot_bitmap_constants.h",
     "gwp_asan_support.cc",
     "gwp_asan_support.h",
+    "lightweight_quarantine.cc",
+    "lightweight_quarantine.h",
     "memory_reclaimer.cc",
     "memory_reclaimer.h",
     "oom.cc",
