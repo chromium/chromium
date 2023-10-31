@@ -9,15 +9,18 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
+#include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
 #include "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
+#include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/prediction_options.h"
@@ -25,12 +28,17 @@
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/service_proxy.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
 namespace segmentation_platform {
 namespace {
+
+using Segmentation_ModelExecutionUkmRecorder =
+    ::ukm::builders::Segmentation_ModelExecution;
 
 // Observer that waits for service_ initialization.
 class WaitServiceInitializedObserver : public ServiceProxy::Observer {
@@ -51,7 +59,8 @@ class WaitServiceInitializedObserver : public ServiceProxy::Observer {
 
 class SegmentationPlatformServiceFactoryTest : public testing::Test {
  protected:
-  SegmentationPlatformServiceFactoryTest() {
+  SegmentationPlatformServiceFactoryTest()
+      : task_environment_{base::test::TaskEnvironment::TimeSource::MOCK_TIME} {
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         kSegmentationPlatformRefreshResultsSwitch);
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
@@ -100,7 +109,10 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{optimization_guide::features::kOptimizationTargetPrediction, {}},
          {features::kSegmentationPlatformFeature, {}},
-         {features::kSegmentationPlatformUkmEngine, {}}},
+         {features::kSegmentationPlatformUkmEngine, {}},
+         {features::kContextualPageActionShareModel, {}},
+         {features::kSegmentationPlatformTimeDelaySampling,
+          {{"SamplingRate", "1"}}}},
         {});
 
     // Creating profile and initialising segmentation service.
@@ -109,6 +121,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
     service_ = SegmentationPlatformServiceFactory::GetForProfile(
         testing_profile_.get());
     WaitForServiceInit();
+    clock_.SetNow(base::Time::Now());
     // TODO(b/297091996): Remove this when leak is fixed.
     task_environment_.RunUntilIdle();
   }
@@ -207,7 +220,100 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
     pref_registrar_.RemoveAll();
   }
 
+  void ExpectUkm(std::vector<base::StringPiece> metric_names,
+                 std::vector<int64_t> expected_values) {
+    const auto& entries = test_recorder_.GetEntriesByName(
+        Segmentation_ModelExecutionUkmRecorder::kEntryName);
+    ASSERT_EQ(1u, entries.size());
+    for (size_t i = 0; i < metric_names.size(); ++i) {
+      test_recorder_.ExpectEntryMetric(entries[0], metric_names[i],
+                                       expected_values[i]);
+    }
+  }
+  void ExpectUkmCount(size_t count) {
+    const auto& entries = test_recorder_.GetEntriesByName(
+        Segmentation_ModelExecutionUkmRecorder::kEntryName);
+    ASSERT_EQ(count, entries.size());
+  }
+
+  void WaitForUkmRecord(proto::SegmentId segment_id) {
+    base::RunLoop run_loop;
+    test_recorder()->SetOnAddEntryCallback(
+        Segmentation_ModelExecutionUkmRecorder::kEntryName,
+        base::BindRepeating(
+            [](proto::SegmentId id, ukm::TestAutoSetUkmRecorder* test_recorder,
+               base::OnceClosure loop) {
+              const auto& entries = test_recorder->GetEntriesByName(
+                  Segmentation_ModelExecutionUkmRecorder::kEntryName);
+              if (entries.size() == 1u) {
+                const int64_t* metric = test_recorder->GetEntryMetric(
+                    entries[0], Segmentation_ModelExecutionUkmRecorder::
+                                    kOptimizationTargetName);
+                if (metric && *metric == id) {
+                  std::move(loop).Run();
+                }
+              }
+            },
+            segment_id, base::Unretained(test_recorder()),
+            run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  // This only checks for training data ukm records. Model execution UKM records
+  // are not collected for default model.
+  void WaitAndCheckUkmRecord(proto::SegmentId segment_id,
+                             std::vector<int64_t> inputs,
+                             std::vector<int64_t> outputs) {
+    WaitForUkmRecord(segment_id);
+    ExpectUkm({Segmentation_ModelExecutionUkmRecorder::kOptimizationTargetName},
+              {segment_id});
+
+    // Check for inputs in the model.
+    // Append more if required.
+    std::vector<base::StringPiece> inputs_ukm_metrics = {
+        Segmentation_ModelExecutionUkmRecorder::kInput0Name,
+        Segmentation_ModelExecutionUkmRecorder::kInput1Name,
+        Segmentation_ModelExecutionUkmRecorder::kInput2Name,
+        Segmentation_ModelExecutionUkmRecorder::kInput3Name,
+        Segmentation_ModelExecutionUkmRecorder::kInput4Name,
+        Segmentation_ModelExecutionUkmRecorder::kInput5Name,
+        Segmentation_ModelExecutionUkmRecorder::kInput6Name,
+        Segmentation_ModelExecutionUkmRecorder::kInput7Name,
+        Segmentation_ModelExecutionUkmRecorder::kInput8Name,
+        Segmentation_ModelExecutionUkmRecorder::kInput9Name,
+        Segmentation_ModelExecutionUkmRecorder::kInput10Name,
+    };
+    if (inputs.size() > 0) {
+      std::vector<base::StringPiece> input_metric_name(
+          inputs_ukm_metrics.begin(),
+          inputs_ukm_metrics.begin() + inputs.size());
+      ExpectUkm({input_metric_name}, {inputs});
+    }
+
+    // Check for output in the model.
+    // Append more if required.
+    std::vector<base::StringPiece> outputs_ukm_metrics = {
+        Segmentation_ModelExecutionUkmRecorder::kActualResultName,
+        Segmentation_ModelExecutionUkmRecorder::kActualResult2Name,
+        Segmentation_ModelExecutionUkmRecorder::kActualResult3Name,
+        Segmentation_ModelExecutionUkmRecorder::kActualResult4Name,
+        Segmentation_ModelExecutionUkmRecorder::kActualResult5Name,
+        Segmentation_ModelExecutionUkmRecorder::kActualResult6Name};
+    if (outputs.size() > 0) {
+      std::vector<base::StringPiece> output_metric_name(
+          outputs_ukm_metrics.begin(),
+          outputs_ukm_metrics.begin() + outputs.size());
+      ExpectUkm({output_metric_name}, {outputs});
+    }
+  }
+
+  base::SimpleTestClock* clock() { return &clock_; }
+
+  ukm::TestAutoSetUkmRecorder* test_recorder() { return &test_recorder_; }
+
+  base::SimpleTestClock clock_;
   content::BrowserTaskEnvironment task_environment_;
+  ukm::TestAutoSetUkmRecorder test_recorder_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
   PrefChangeRegistrar pref_registrar_;
@@ -327,6 +433,36 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
       std::vector<std::string>(1, kTabletProductivityUserModelLabelNone));
+}
+
+TEST_F(SegmentationPlatformServiceFactoryTest, TestContextualPageActionsShare) {
+  InitService();
+
+  PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto input_context = base::MakeRefCounted<InputContext>();
+  input_context->metadata_args.emplace(
+      segmentation_platform::kContextualPageActionModelInputPriceTracking,
+      segmentation_platform::processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kContextualPageActionModelInputReaderMode,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0));
+
+  ExpectGetClassificationResult(
+      kContextualPageActionsKey, prediction_options, input_context,
+      /*expected_status=*/PredictionStatus::kSucceeded,
+      /*expected_labels=*/
+      std::vector<std::string>(1,
+                               kContextualPageActionModelLabelPriceTracking));
+  clock()->Advance(base::Seconds(
+      ContextualPageActionsModel::kShareOutputCollectionDelayInSec));
+
+  WaitAndCheckUkmRecord(
+      proto::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+      /*inputs=*/
+      {SegmentationUkmHelper::FloatToInt64(1.f), 0, 0, 0, 0, 0, 0, 0},
+      /*outputs=*/{0, 0, 0, 0, 0, 0});
 }
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestFrequentFeatureModel) {
