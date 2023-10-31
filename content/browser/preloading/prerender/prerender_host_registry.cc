@@ -913,7 +913,7 @@ std::set<int> PrerenderHostRegistry::CancelHosts(
 
         std::unique_ptr<PrerenderNewTabHandle> handle = std::move(iter->second);
         prerender_new_tab_handle_by_frame_tree_node_id_.erase(iter);
-        // TODO(crbug.com/1350676, crbug.com/4849669): perform NotifyCancel.
+        NotifyCancel(host_id, reason);
         handle->CancelPrerendering(reason);
         cancelled_ids.insert(host_id);
       }

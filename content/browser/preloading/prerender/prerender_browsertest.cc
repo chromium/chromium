@@ -1738,13 +1738,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     PrerenderBrowserTest,
     CancelOnSpeculationCandidateRemoved_WithTargetHintBlank) {
-  // TODO(crbug.com/1350676, crbug.com/4849669): Support the
-  // prerender-into-new-tab case of prerender reset under
-  // kPrerender2NewLimitAndScheduler.
-  if (base::FeatureList::IsEnabled(features::kPrerender2NewLimitAndScheduler)) {
-    GTEST_SKIP();
-  }
-
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/title1.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
