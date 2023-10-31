@@ -162,6 +162,19 @@ union PaddingMode {
   SymmetricPadding symmetric;
 };
 
+// Represents matmul operation which compute the matrix product of two input tensors.
+struct Matmul {
+  // The id of `a` operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 a_operand_id;
+  // The id of `b` operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 b_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
 // Represents a pad operation which inflates the input tensor with constant or
 // mirrored values on the edges.
 struct Pad {
@@ -399,6 +412,7 @@ union Operation {
   Conv2d conv2d;
   ElementWiseBinary element_wise_binary;
   Gemm gemm;
+  Matmul matmul;
   Pad pad;
   Pool2d pool2d;
   Prelu prelu;

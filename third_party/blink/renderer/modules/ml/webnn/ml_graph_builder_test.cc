@@ -4415,8 +4415,8 @@ TEST_F(MLGraphBuilderTest, MatmulTest) {
               "The types of first two inputs don't match.");
   }
   {
-    // Test throwing exception when the number in first matrix mismatches with
-    // the numbers in second matrix is .
+    // Test throwing exception when the number of columns in first matrix
+    // mismatches with the number of rows in second matrix.
     auto* a = BuildInput(builder, "a", {2, 3}, V8MLOperandType::Enum::kFloat32,
                          scope.GetExceptionState());
     auto* b = BuildInput(builder, "b", {2, 4}, V8MLOperandType::Enum::kFloat32,
@@ -4431,7 +4431,7 @@ TEST_F(MLGraphBuilderTest, MatmulTest) {
               "the number of rows (2) in the second matrix.");
   }
   {
-    // Test throwing exception when the input shapes are not broadcastable..
+    // Test throwing exception when the input shapes are not broadcastable.
     auto* a =
         BuildInput(builder, "a", {3, 3, 4}, V8MLOperandType::Enum::kFloat32,
                    scope.GetExceptionState());

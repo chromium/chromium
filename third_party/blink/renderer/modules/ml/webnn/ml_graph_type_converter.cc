@@ -352,6 +352,17 @@ OperationPtr CreateGemmOperation(const OperandToIdMap& operand_to_id_map,
   return webnn::mojom::blink::Operation::NewGemm(std::move(gemm_mojo));
 }
 
+OperationPtr CreateMatmulOperation(const OperandToIdMap& operand_to_id_map,
+                                   const MLOperator* matmul) {
+  auto matmul_mojo = blink_mojom::Matmul::New();
+  matmul_mojo->a_operand_id = GetOperatorInputId(matmul, operand_to_id_map, 0);
+  matmul_mojo->b_operand_id = GetOperatorInputId(matmul, operand_to_id_map, 1);
+  matmul_mojo->output_operand_id =
+      GetOperatorOutputId(matmul, operand_to_id_map);
+
+  return blink_mojom::Operation::NewMatmul(std::move(matmul_mojo));
+}
+
 OperationPtr CreatePadOperation(const OperandToIdMap& operand_to_id_map,
                                 const MLOperator* op) {
   const auto* pad = static_cast<const blink::MLPadOperator*>(op);
@@ -623,6 +634,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateElementWiseBinaryOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kGemm:
       return CreateGemmOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kMatmul:
+      return CreateMatmulOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kPad:
       return CreatePadOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kAveragePool2d:

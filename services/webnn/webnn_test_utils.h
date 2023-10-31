@@ -152,6 +152,10 @@ class GraphInfoBuilder final {
         mojom::Operation::NewGemm(std::move(gemm)));
   }
 
+  void BuildMatmul(uint64_t a_operand_id,
+                   uint64_t b_operand_id,
+                   uint64_t output_operand_id);
+
   void BuildPad(uint64_t input_operand_id,
                 uint64_t output_operand_id,
                 const std::vector<uint32_t>& beginning_padding,

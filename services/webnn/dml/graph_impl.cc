@@ -96,6 +96,8 @@ std::string OpTagToString(Operation::Tag tag) {
       return "element-wise binary";
     case Operation::Tag::kGemm:
       return "gemm";
+    case Operation::Tag::kMatmul:
+      return "matmul";
     case Operation::Tag::kPad:
       return "pad";
     case Operation::Tag::kPool2d:

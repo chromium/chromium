@@ -148,6 +148,17 @@ void GraphInfoBuilder::BuildElementWiseBinary(
       mojom::Operation::NewElementWiseBinary(std::move(binary)));
 }
 
+void GraphInfoBuilder::BuildMatmul(uint64_t a_operand_id,
+                                   uint64_t b_operand_id,
+                                   uint64_t output_operand_id) {
+  mojom::MatmulPtr matmul = mojom::Matmul::New();
+  matmul->a_operand_id = a_operand_id;
+  matmul->b_operand_id = b_operand_id;
+  matmul->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewMatmul(std::move(matmul)));
+}
+
 void GraphInfoBuilder::BuildPrelu(uint64_t input_operand_id,
                                   uint64_t slope_operand_id,
                                   uint64_t output_operand_id) {

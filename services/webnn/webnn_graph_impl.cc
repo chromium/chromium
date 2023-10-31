@@ -386,6 +386,27 @@ bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateMatmul(const IdToOperandMap& id_to_operand_map,
+                    const mojom::MatmulPtr& matmul) {
+  auto* a = GetMojoOperand(id_to_operand_map, matmul->a_operand_id);
+  auto* b = GetMojoOperand(id_to_operand_map, matmul->b_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, matmul->output_operand_id);
+  if (!a || !b || !output || output == a || output == b) {
+    // The matmul operator is invalid.
+    return false;
+  }
+  auto validated_output = ValidateMatmulAndInferOutput(
+      ConvertToComponentOperand(a), ConvertToComponentOperand(b));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidatePad(const IdToOperandMap& id_to_operand_map,
                  const mojom::PadPtr& pad) {
   auto* input = GetMojoOperand(id_to_operand_map, pad->input_operand_id);
@@ -644,6 +665,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
                                        operation->get_element_wise_binary());
     case mojom::Operation::Tag::kGemm:
       return ValidateGemm(id_to_operand_map, operation->get_gemm());
+    case mojom::Operation::Tag::kMatmul:
+      return ValidateMatmul(id_to_operand_map, operation->get_matmul());
     case mojom::Operation::Tag::kPad:
       return ValidatePad(id_to_operand_map, operation->get_pad());
     case mojom::Operation::Tag::kPool2d:

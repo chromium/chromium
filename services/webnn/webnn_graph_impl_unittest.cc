@@ -957,6 +957,132 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
   }
 }
 
+struct MatmulTester {
+  OperandInfo a;
+  OperandInfo b;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t a_operand_id = builder.BuildInput("a", a.dimensions, a.type);
+    uint64_t b_operand_id = builder.BuildInput("b", b.dimensions, b.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+
+    builder.BuildMatmul(a_operand_id, b_operand_id, output_operand_id);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, MatmulTest) {
+  {
+    // Test building matmul with 2-D * 2-D.
+    MatmulTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building matmul with 2-D * 4-D.
+    MatmulTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kFloat32,
+              .dimensions = {2, 3, 3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 3, 2, 4}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building matmul with 3-D * 4-D using broadcasting.
+    MatmulTester{.a = {.type = mojom::Operand::DataType::kFloat32,
+                       .dimensions = {2, 2, 3}},
+                 .b = {.type = mojom::Operand::DataType::kFloat32,
+                       .dimensions = {3, 1, 3, 4}},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3, 2, 2, 4}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph for one input rank is smaller than 2.
+    MatmulTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the number of columns in first matrix
+    // mismatches with the number of rows in second matrix.
+    MatmulTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 2}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the input shapes are not broadcastable.
+    MatmulTester{.a = {.type = mojom::Operand::DataType::kFloat32,
+                       .dimensions = {3, 2, 3}},
+                 .b = {.type = mojom::Operand::DataType::kFloat32,
+                       .dimensions = {2, 3, 4}},
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3, 4}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    MatmulTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for input types are not same.
+    MatmulTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kInt32, .dimensions = {3, 4}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output type is not the same as input type.
+    MatmulTester{
+        .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3, 4}},
+        .output = {.type = mojom::Operand::DataType::kInt32,
+                   .dimensions = {2, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output is as same as one input.
+    GraphInfoBuilder builder;
+    uint64_t a_operand_id =
+        builder.BuildInput("a", {2, 3}, mojom::Operand::DataType::kFloat32);
+    uint64_t b_operand_id =
+        builder.BuildInput("b", {3, 4}, mojom::Operand::DataType::kFloat32);
+    builder.BuildMatmul(a_operand_id, b_operand_id, a_operand_id);
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
 struct PadTester {
   OperandInfo input;
   std::vector<uint32_t> beginning_padding;

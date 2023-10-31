@@ -1104,6 +1104,96 @@ TEST_P(MLGraphTestMojo, GemmTest) {
   }
 }
 
+struct MatmulTester {
+  OperandInfoBlink a;
+  OperandInfoBlink b;
+  OperandInfoMojo expected_operand;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* a_operand = BuildInput(builder, "a", a.dimensions, a.type,
+                                 scope.GetExceptionState());
+    auto* b_operand = BuildInput(builder, "b", b.dimensions, b.type,
+                                 scope.GetExceptionState());
+    auto* output_operand =
+        builder->matmul(a_operand, b_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    EXPECT_EQ(graph_info->id_to_operand_map.size(), 3u);
+    EXPECT_EQ(graph_info->input_operands.size(), 2u);
+    // Verify the a `mojo::Operand`.
+    auto a_operand_id = graph_info->input_operands[0];
+    auto a_operand_iter = graph_info->id_to_operand_map.find(a_operand_id);
+    ASSERT_TRUE(a_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(a_operand_iter->value->kind, blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(a_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(a_operand_iter->value->dimensions, a.dimensions);
+    EXPECT_EQ(a_operand_iter->value->name, "a");
+    // Verify the b `mojo::Operand`.
+    auto b_operand_id = graph_info->input_operands[1];
+    auto b_operand_iter = graph_info->id_to_operand_map.find(b_operand_id);
+    ASSERT_TRUE(b_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(b_operand_iter->value->kind, blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(b_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(b_operand_iter->value->dimensions, b.dimensions);
+    EXPECT_EQ(b_operand_iter->value->name, "b");
+    // Verify the output `mojo::Operand`.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_matmul(), true);
+  }
+};
+
+TEST_P(MLGraphTestMojo, MatmulTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test building matmul with 2-D * 2-D.
+    MatmulTester{
+        .a = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2, 3}},
+        .b = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {3, 4}},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 4}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building matmul with 3-D * 4-D using broadcasting.
+    MatmulTester{
+        .a = {.type = V8MLOperandType::Enum::kFloat16, .dimensions = {2, 2, 3}},
+        .b = {.type = V8MLOperandType::Enum::kFloat16,
+              .dimensions = {3, 1, 3, 4}},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {3, 2, 2, 4}}}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct PadTester {
   OperandInfoBlink input;
   Vector<uint32_t> beginning_padding;
