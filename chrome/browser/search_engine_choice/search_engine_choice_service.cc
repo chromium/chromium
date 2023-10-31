@@ -4,12 +4,14 @@
 
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -25,26 +27,6 @@
 
 namespace {
 bool g_dialog_disabled_for_testing = false;
-
-// Checks that the profile is the first profile that sees the search engine
-// choice dialog.
-bool IsSelectedChoiceProfile(Profile& profile, PrefService* local_state) {
-  base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  // Force-enable the choice screen for testing the screen itself.
-  if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
-    return true;
-  }
-
-  if (!local_state->HasPrefPath(prefs::kSearchEnginesChoiceProfile)) {
-    local_state->SetFilePath(prefs::kSearchEnginesChoiceProfile,
-                             profile.GetBaseName());
-    return true;
-  }
-
-  return profile.GetBaseName() ==
-         local_state->GetFilePath(prefs::kSearchEnginesChoiceProfile);
-}
 
 void RecordChoiceScreenNavigationCondition(
     search_engines::SearchEngineChoiceScreenConditions condition) {
@@ -188,58 +170,63 @@ SearchEngineChoiceService::GetSearchEngines() {
   return template_url_service_->GetTemplateURLsForChoiceScreen();
 }
 
-bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {
-  if (!IsSelectedChoiceProfile(profile_.get(),
-                               g_browser_process->local_state())) {
-    RecordChoiceScreenNavigationCondition(
-        search_engines::SearchEngineChoiceScreenConditions::kProfileOutOfScope);
-    return false;
-  }
-
+search_engines::SearchEngineChoiceScreenConditions
+SearchEngineChoiceService::ComputeDialogConditions(Browser& browser) {
   if (web_app::AppBrowserController::IsWebApp(&browser)) {
     // Showing a Chrome-specific search engine dialog on top of a window
     // dedicated to a specific web app is a horrible UX, we suppress it for this
     // window. When the user proceeds to a non-web app window they will get it.
-    return false;
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kUnsupportedBrowserType;
   }
 
   // Only show the dialog over normal and popup browsers. This is to avoid
   // showing it in picture-in-picture for example.
   if (!IsBrowserTypeSupported(browser)) {
-    RecordChoiceScreenNavigationCondition(
-        search_engines::SearchEngineChoiceScreenConditions::
-            kUnsupportedBrowserType);
-    return false;
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kUnsupportedBrowserType;
   }
 
   // To avoid conflict, the dialog should not be shown if a sign-in dialog is
   // being currently displayed.
   if (browser.signin_view_controller()->ShowsModalDialog()) {
-    return false;
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kSuppressedByOtherDialog;
   }
 
-  // Don't show the dialog if the default search engine is set by an extension.
-  if (template_url_service_->IsExtensionControlledDefaultSearch()) {
-    RecordChoiceScreenNavigationCondition(
-        search_engines::SearchEngineChoiceScreenConditions::
-            kExtensionContolled);
-    return false;
+  // Respect common conditions with other platforms.
+  search_engines::SearchEngineChoiceScreenConditions dynamic_conditions =
+      search_engines::GetDynamicChoiceScreenConditions(
+          CHECK_DEREF(profile_->GetPrefs()), *template_url_service_);
+  if (dynamic_conditions !=
+      search_engines::SearchEngineChoiceScreenConditions::kEligible) {
+    return dynamic_conditions;
   }
 
-  if (HasUserMadeChoice()) {
-    RecordChoiceScreenNavigationCondition(
-        search_engines::SearchEngineChoiceScreenConditions::kAlreadyCompleted);
-    return false;
+  // Lastly, we check if this profile can be the selected one for showing the
+  // dialogs. We check it last to make sure we don't mark to eagerly this one
+  // as the choice profile if one of the other conditions is not met.
+  if (!SearchEngineChoiceServiceFactory::IsSelectedChoiceProfile(
+          profile_.get(), /*try_claim=*/true)) {
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kProfileOutOfScope;
   }
 
+  return search_engines::SearchEngineChoiceScreenConditions::kEligible;
+}
+
+bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {
   // Dialog should not be shown if it is currently displayed
   if (g_dialog_disabled_for_testing || IsShowingDialog(&browser)) {
     return false;
   }
 
-  RecordChoiceScreenNavigationCondition(
-      search_engines::SearchEngineChoiceScreenConditions::kEligible);
-  return true;
+  search_engines::SearchEngineChoiceScreenConditions conditions =
+      ComputeDialogConditions(browser);
+  RecordChoiceScreenNavigationCondition(conditions);
+
+  return conditions ==
+         search_engines::SearchEngineChoiceScreenConditions::kEligible;
 }
 
 bool SearchEngineChoiceService::HasUserMadeChoice() const {

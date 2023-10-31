@@ -76,11 +76,17 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(browser->profile());
   if (!search_engine_choice_service ||
-      !search_engine_choice_service->CanShowDialog(*browser) ||
       !search_engine_choice_service->IsUrlSuitableForDialog(
           navigation_controller.GetLastCommittedEntry()->GetURL())) {
     return;
   }
+
+  // Note: `CanShowDialog()` will trigger condition metrics to be logged, so it
+  // needs to be checked last.
+  if (!search_engine_choice_service->CanShowDialog(*browser)) {
+    return;
+  }
+
   ShowSearchEngineChoiceDialog(*browser);
 }
 

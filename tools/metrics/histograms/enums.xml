@@ -96872,6 +96872,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="Eligible"/>
   <int value="7" label="Already completed"/>
   <int value="8" label="Unsupported browser type"/>
+  <int value="9" label="Choice Screen feature suppressed or disabled"/>
+  <int value="10" label="Is suppressed by another already triggered dialog"/>
 </enum>
 
 <enum name="SearchEngineChoiceScreenEvents">

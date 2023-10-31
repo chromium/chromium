@@ -9,8 +9,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-namespace policy {
-class PolicyService;
+namespace search_engines {
+enum class SearchEngineChoiceScreenConditions;
 }
 
 class SearchEngineChoiceService;
@@ -27,16 +27,19 @@ class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactory {
 
   static SearchEngineChoiceServiceFactory* GetInstance();
 
+  // Checks that the profile is the chosen one to display the choice dialog.
+  // If none is chosen yet and `try_claim` is `true`, then `profile` will be
+  // marked as the chosen one.
+  static bool IsSelectedChoiceProfile(Profile& profile, bool try_claim);
+
   // Overrides the check for branded build. This allows bots that run on
   // non-branded builds to test the code.
   static base::AutoReset<bool> ScopedChromeBuildOverrideForTesting(
       bool force_chrome_build);
 
-  // This calls IsProfileEligibleForChoiceScreen and should only be used for
-  // testing purposes.
-  static bool IsProfileEligibleForChoiceScreenForTesting(
-      const policy::PolicyService& policy_service,
-      Profile& profile);
+  // Checks static conditions for the profile and logs them to histograms.
+  // Exposes an internal helper and should only be used for testing purposes.
+  static bool IsProfileEligibleForChoiceScreenForTesting(Profile& profile);
 
  private:
   friend class base::NoDestructor<SearchEngineChoiceServiceFactory>;
@@ -47,12 +50,6 @@ class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
-
-  // Returns whether the profile is eligible for the Search Engine Choice dialog
-  // based on device policies and profile attributes.
-  static bool IsProfileEligibleForChoiceScreen(
-      const policy::PolicyService& policy_service,
-      Profile& profile);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_FACTORY_H

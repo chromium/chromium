@@ -37,14 +37,18 @@ enum class SearchEngineChoiceScreenConditions {
   // The profile is out of scope.
   kProfileOutOfScope = 4,
   // An extension controls the default search engine.
-  kExtensionContolled = 5,
+  kExtensionControlled = 5,
   // The user is eligible to see the screen at the next opportunity.
   kEligible = 6,
   // The choice has already been completed.
   kAlreadyCompleted = 7,
   // The browser type is unsupported.
   kUnsupportedBrowserType = 8,
-  kMaxValue = kUnsupportedBrowserType,
+  // The feature can't run, it is disabled by local or remote configuration.
+  kFeatureSuppressed = 9,
+  // Some other dialog is showing and interfering with the choice one.
+  kSuppressedByOtherDialog = 10,
+  kMaxValue = kSuppressedByOtherDialog,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -106,13 +110,34 @@ bool IsChoiceScreenFlagEnabled(ChoicePromo promo);
 
 // Returns which version of the settings screen for the default search engine
 // setting should be shown.
+// TODO(b/306367986): Restrict this function to iOS.
 bool ShouldShowUpdatedSettings(PrefService& profile_prefs);
 
 // Returns whether the search engine choice screen can be displayed or not based
 // on device policies and profile properties.
+// TODO(b/306367986): Restrict this function to iOS.
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties,
                             TemplateURLService* template_url_service);
+
+// Returns the choice screen eligibility condition most relevant for the profile
+// associated with `profile_prefs` and `template_url_service`.
+// Only checks dynamic conditions, that can change from one call to the other
+// during a profile's lifetime. Should be checked right before showing a choice
+// screen.
+SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
+    const PrefService& profile_prefs,
+    const TemplateURLService& template_url_service);
+
+// Returns the choice screen eligibility condition most relevant for the profile
+// described by `profile_properties`.
+// Only checks static conditions, such that if a non-eligible condition is
+// returned, it would take at least a restart for the state to change. So this
+// state can be checked and cached ahead of showing a choice screen.
+SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
+    const policy::PolicyService& policy_service,
+    const ProfileProperties& profile_properties,
+    const TemplateURLService& template_url_service);
 
 // Returns the country ID to use in the context of any search engine choice
 // logic. If `profile_prefs` are null, returns

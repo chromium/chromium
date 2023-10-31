@@ -19,6 +19,10 @@
 class Browser;
 class BrowserListObserver;
 
+namespace search_engines {
+enum class SearchEngineChoiceScreenConditions;
+}
+
 // Service handling the Search Engine Choice dialog.
 class SearchEngineChoiceService : public KeyedService {
  public:
@@ -119,6 +123,9 @@ class SearchEngineChoiceService : public KeyedService {
         this};
   };
   friend class SearchEngineChoiceServiceFactory;
+
+  search_engines::SearchEngineChoiceScreenConditions ComputeDialogConditions(
+      Browser& browser);
 
   // A map of Browser windows which have an open Search Engine Choice dialog to
   // the callback that will close the browser's dialog.

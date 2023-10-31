@@ -4,7 +4,6 @@
 
 #include "components/search_engines/search_engine_choice_utils.h"
 
-#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -152,12 +151,31 @@ bool ShouldShowUpdatedSettings(PrefService& profile_prefs) {
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties,
                             TemplateURLService* template_url_service) {
+  auto condition = GetStaticChoiceScreenConditions(
+      policy_service, profile_properties, CHECK_DEREF(template_url_service));
+
+  if (condition == SearchEngineChoiceScreenConditions::kEligible) {
+    condition = GetDynamicChoiceScreenConditions(
+        *profile_properties.pref_service, *template_url_service);
+  }
+
+  RecordChoiceScreenProfileInitCondition(condition);
+  return condition == SearchEngineChoiceScreenConditions::kEligible;
+}
+
+SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
+    const policy::PolicyService& policy_service,
+    const ProfileProperties& profile_properties,
+    const TemplateURLService& template_url_service) {
   if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
-    return false;
+    return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
   }
 
   if (!profile_properties.is_regular_profile) {
-    return false;
+    // Naming not exactly accurate, but still reflect the fact that incognito,
+    // kiosk, etc. are not supported and belongs in this bucked more than in
+    // `kProfileOutOfScope` for example.
+    return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
   }
 
   base::CommandLine* const command_line =
@@ -165,61 +183,76 @@ bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
   // A command line argument with the option for disabling the choice screen for
   // testing and automation environments.
   if (command_line->HasSwitch(switches::kDisableSearchEngineChoiceScreen)) {
-    return false;
-  }
-  // Force-enable the choice screen for testing the screen itself.
-  if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
-    return true;
+    return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
   }
 
-  CHECK(template_url_service);
-  // A custom search engine will have a `prepopulate_id` of 0.
-  const int kCustomSearchEnginePrepopulateId = 0;
-  const TemplateURL* default_search_engine =
-      template_url_service->GetDefaultSearchProvider();
-  // Don't show the dialog if the user as a custom search engine set a
-  // default.
-  if (default_search_engine && default_search_engine->prepopulate_id() ==
-                                   kCustomSearchEnginePrepopulateId) {
-    RecordChoiceScreenProfileInitCondition(
-        SearchEngineChoiceScreenConditions::kHasCustomSearchEngine);
-    return false;
+  // Force triggering the choice screen for testing the screen itself.
+  if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
+    return SearchEngineChoiceScreenConditions::kEligible;
   }
 
   PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
 
   // The timestamp indicates that the user has already made a search engine
   // choice in the choice screen.
-  if (prefs.GetInt64(
+  if (prefs.HasPrefPath(
           prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
-    RecordChoiceScreenProfileInitCondition(
-        SearchEngineChoiceScreenConditions::kAlreadyCompleted);
-    return false;
+    return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
   if (!IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(&prefs))) {
-    RecordChoiceScreenProfileInitCondition(
-        SearchEngineChoiceScreenConditions::kNotInRegionalScope);
-    return false;
+    return SearchEngineChoiceScreenConditions::kNotInRegionalScope;
   }
 
   // Initially exclude users with this type of override. Consult b/302675777 for
   // next steps.
   if (prefs.HasPrefPath(prefs::kSearchProviderOverrides)) {
-    RecordChoiceScreenProfileInitCondition(
-        SearchEngineChoiceScreenConditions::kSearchProviderOverride);
-    return false;
+    return SearchEngineChoiceScreenConditions::kSearchProviderOverride;
   }
 
   if (!IsSearchEngineChoiceScreenAllowedByPolicy(policy_service)) {
-    RecordChoiceScreenProfileInitCondition(
-        SearchEngineChoiceScreenConditions::kControlledByPolicy);
-    return false;
+    return SearchEngineChoiceScreenConditions::kControlledByPolicy;
   }
 
-  RecordChoiceScreenProfileInitCondition(
-      SearchEngineChoiceScreenConditions::kEligible);
-  return true;
+  return SearchEngineChoiceScreenConditions::kEligible;
+}
+
+SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
+    const PrefService& profile_prefs,
+    const TemplateURLService& template_url_service) {
+  // Don't show the dialog if the default search engine is set by an extension.
+  if (template_url_service.IsExtensionControlledDefaultSearch()) {
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kExtensionControlled;
+  }
+
+  // Don't show the dialog if the user has a custom search engine set as
+  // default.
+  const TemplateURL* default_search_engine =
+      template_url_service.GetDefaultSearchProvider();
+  if (default_search_engine &&
+      !template_url_service.IsPrepopulatedOrCreatedByPolicy(
+          default_search_engine)) {
+    return SearchEngineChoiceScreenConditions::kHasCustomSearchEngine;
+  }
+
+  // Force triggering the choice screen for testing the screen itself.
+  // Deliberately checked after the conditions overriding the default search
+  // engine with some custom one because they would put the choice screens in
+  // some unstable state and they are rather easy to change if we want to
+  // re-enable the triggering.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceSearchEngineChoiceScreen)) {
+    return SearchEngineChoiceScreenConditions::kEligible;
+  }
+
+  if (profile_prefs.HasPrefPath(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kAlreadyCompleted;
+  }
+
+  return SearchEngineChoiceScreenConditions::kEligible;
 }
 
 int GetSearchEngineChoiceCountryId(PrefService* profile_prefs) {
