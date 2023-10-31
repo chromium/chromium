@@ -253,7 +253,10 @@ class ExceptionHandlerServerTest : public testing::TestWithParam<bool> {
         pid_t last_client;
         ASSERT_TRUE(server_test_->Delegate()->WaitForException(
             5.0, &last_client, &last_address));
-        EXPECT_EQ(last_address, info.exception_information_address);
+        // `exception_information_address` is underaligned and `EXPECT_EQ`
+        // internally takes arguments by reference. Copy it into a temporary
+        // before comparing to avoid undefined behavior.
+        EXPECT_EQ(last_address, VMAddress{info.exception_information_address});
         EXPECT_EQ(last_client, ChildPID());
       } else {
         CheckedReadFileAtEOF(ReadPipeHandle());
