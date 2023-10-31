@@ -35,6 +35,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/update_client/crx_downloader.h"
@@ -204,31 +205,39 @@ GURL GURLWithNSURL(NSURL* url) {
 
 namespace update_client {
 
-class BackgroundDownloaderSharedSessionImpl
-    : public BackgroundDownloaderSharedSession {
+class BackgroundDownloaderSharedSessionImpl {
  public:
-  // Safe to call from the main sequence. All other method calls should occur on
-  // a MayBlock background sequence.
   BackgroundDownloaderSharedSessionImpl(
       scoped_refptr<base::SequencedTaskRunner> callback_sequence,
-      const base::FilePath& download_cache)
+      const base::FilePath& download_cache,
+      const std::string& session_identifier)
       : callback_sequence_(callback_sequence), download_cache_(download_cache) {
-    DETACH_FROM_SEQUENCE(sequence_checker_);
-  }
-
-  void Initialize(const std::string& session_identifier) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     DownloadDelegate* delegate = [[DownloadDelegate alloc]
            initWithDownloadCache:download_cache_
         downloadCompleteCallback:
             base::BindRepeating(
-                &BackgroundDownloaderSharedSessionImpl::OnDownloadComplete,
-                base::WrapRefCounted(this))
+                [](base::WeakPtr<BackgroundDownloaderSharedSessionImpl>
+                       weak_this,
+                   const GURL& url, const base::FilePath& location, int error,
+                   int64_t downloaded_bytes, int64_t total_bytes) {
+                  if (weak_this) {
+                    weak_this->OnDownloadComplete(
+                        url, location, error, downloaded_bytes, total_bytes);
+                  }
+                },
+                weak_factory_.GetWeakPtr())
         metricsCollectedCallback:
             base::BindRepeating(
-                &BackgroundDownloaderSharedSessionImpl::OnMetricsCollected,
-                base::WrapRefCounted(this))];
+                [](base::WeakPtr<BackgroundDownloaderSharedSessionImpl>
+                       weak_this,
+                   const GURL& url, uint64_t download_time_ms) {
+                  if (weak_this) {
+                    weak_this->OnMetricsCollected(url, download_time_ms);
+                  }
+                },
+                weak_factory_.GetWeakPtr())];
 
     NSURLSessionConfiguration* config = [NSURLSessionConfiguration
         backgroundSessionConfigurationWithIdentifier:base::SysUTF8ToNSString(
@@ -238,9 +247,11 @@ class BackgroundDownloaderSharedSessionImpl
                                         delegateQueue:nil];
   }
 
-  // Overrides for BackgroundDownloaderSharedSession.
-  void DoStartDownload(const GURL& url,
-                       OnDownloadCompleteCallback callback) override {
+  ~BackgroundDownloaderSharedSessionImpl() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  void DoStartDownload(const GURL& url, OnDownloadCompleteCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!session_) {
@@ -266,16 +277,16 @@ class BackgroundDownloaderSharedSessionImpl
     downloads_.emplace(url, callback);
     HasOngoingDownload(
         url, base::BindOnce(
-                 [](scoped_refptr<BackgroundDownloaderSharedSessionImpl> impl,
+                 [](base::WeakPtr<BackgroundDownloaderSharedSessionImpl> impl,
                     const GURL& url, bool has_download) {
-                   if (!has_download) {
+                   if (impl && !has_download) {
                      impl->CreateAndResumeDownloadTask(url);
                    }
                  },
-                 base::WrapRefCounted(this), url));
+                 weak_factory_.GetWeakPtr(), url));
   }
 
-  void InvalidateAndCancel() override {
+  void InvalidateAndCancel() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (session_) {
       [session_ invalidateAndCancel];
@@ -439,8 +450,6 @@ class BackgroundDownloaderSharedSessionImpl
     }
   }
 
-  ~BackgroundDownloaderSharedSessionImpl() override = default;
-
   // Returns a `CrxDownloader::DownloadMetrics` with url and downloader set.
   static CrxDownloader::DownloadMetrics GetDefaultMetrics(const GURL& url) {
     CrxDownloader::DownloadMetrics metrics;
@@ -465,6 +474,8 @@ class BackgroundDownloaderSharedSessionImpl
   // were started by a previous BackgroundDownloaderSharedSessionImpl.
   base::flat_map<GURL, OnDownloadCompleteCallback> downloads_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WeakPtrFactory<BackgroundDownloaderSharedSessionImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 BackgroundDownloader::BackgroundDownloader(
@@ -495,19 +506,45 @@ base::OnceClosure BackgroundDownloader::DoStartDownload(
   return base::DoNothing();
 }
 
+// BackgroundDownloaderSharedSessionProxy manages an implementation bound to a
+// background sequence.
+class BackgroundDownloaderSharedSessionProxy
+    : public BackgroundDownloaderSharedSession {
+ public:
+  BackgroundDownloaderSharedSessionProxy(
+      scoped_refptr<base::SequencedTaskRunner> background_sequence,
+      const base::FilePath& download_cache,
+      const std::string& session_identifier)
+      : impl_(background_sequence,
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              download_cache,
+              session_identifier) {}
+
+  void DoStartDownload(
+      const GURL& url,
+      OnDownloadCompleteCallback on_download_complete_callback) override {
+    impl_.AsyncCall(&BackgroundDownloaderSharedSessionImpl::DoStartDownload)
+        .WithArgs(url, std::move(on_download_complete_callback));
+  }
+
+  void InvalidateAndCancel() override {
+    impl_.AsyncCall(
+        &BackgroundDownloaderSharedSessionImpl::InvalidateAndCancel);
+  }
+
+ private:
+  ~BackgroundDownloaderSharedSessionProxy() override = default;
+
+  base::SequenceBound<BackgroundDownloaderSharedSessionImpl> impl_;
+};
+
 scoped_refptr<BackgroundDownloaderSharedSession>
 MakeBackgroundDownloaderSharedSession(
     scoped_refptr<base::SequencedTaskRunner> background_sequence,
     const base::FilePath& download_cache,
     const std::string& session_identifier) {
-  scoped_refptr<BackgroundDownloaderSharedSessionImpl> shared_session =
-      base::MakeRefCounted<BackgroundDownloaderSharedSessionImpl>(
-          base::SequencedTaskRunner::GetCurrentDefault(), download_cache);
-  background_sequence->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BackgroundDownloaderSharedSessionImpl::Initialize,
-                     shared_session, session_identifier));
-  return shared_session;
+  return base::MakeRefCounted<BackgroundDownloaderSharedSessionProxy>(
+      background_sequence, download_cache, session_identifier);
 }
 
 }  // namespace update_client
