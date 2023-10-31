@@ -14602,6 +14602,18 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebUI.ColorsStylesheetServingDuration" units="ms"
+    expires_after="2024-01-31">
+  <owner>skau@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time in milliseconds to generate chrome://theme/colors.css and queue it
+    to be sent to the renderer for WebUI. Does not include url parsing time.
+    Recorded for every request for colors.css. Lower is better.
+  </summary>
+</histogram>
+
 <histogram name="WebUI.CreatedForUrl" enum="WebUIUrlHashes"
     expires_after="2024-12-31">
   <owner>dpapad@chromium.org</owner>
