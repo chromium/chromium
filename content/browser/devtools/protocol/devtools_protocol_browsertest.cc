@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <cstddef>
 #include <memory>
 #include <utility>
 
@@ -69,6 +70,7 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/features.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -3881,6 +3883,48 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_THAT(*result.FindString("disallowedMojoInterface"),
               Eq("device.mojom.GamepadMonitor"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderDevToolsProtocolTest,
+    PrerenderStatusUpdatedReportsFailureWithPrerenderMismatchedHeaders) {
+  const std::string user_agent_override = "foo";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Navigate to an initial page.
+  const GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Enable user agent override for future navigations.
+  UserAgentInjector injector(shell()->web_contents(), user_agent_override);
+
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+
+  // Start prerendering.
+  const int host_id = AddPrerender(prerendering_url);
+
+  Attach();
+  SendCommandSync("Preload.enable");
+
+  RenderFrameHostImpl* prerender_rfh =
+      static_cast<RenderFrameHostImpl*>(GetPrerenderedMainFrameHost(host_id));
+  EXPECT_EQ(user_agent_override, EvalJs(prerender_rfh, "navigator.userAgent"));
+
+  // Stop overriding user agent from now on.
+  injector.set_is_overriding_user_agent(false);
+
+  // Activate the prerendered page.
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  NavigatePrimaryPage(prerendering_url);
+  host_observer.WaitForDestroyed();
+
+  base::Value::Dict result;
+  while (true) {
+    result = WaitForNotification("Preload.prerenderStatusUpdated", true);
+    if (*result.FindString("status") == "Failure") {
+      break;
+    }
+  }
+  EXPECT_TRUE(result.Find("mismatchedHeaders"));
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,

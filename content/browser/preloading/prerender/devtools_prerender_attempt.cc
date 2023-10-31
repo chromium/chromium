@@ -25,7 +25,8 @@ void DevToolsPrerenderAttempt::SetTriggeringOutcome(
       attributes.initiator_devtools_navigation_token.value(),
       attributes.prerendering_url, attributes.target_hint, outcome,
       /*prerender_status=*/absl::nullopt,
-      /*disallowed_mojo_interface=*/absl::nullopt);
+      /*disallowed_mojo_interface=*/absl::nullopt,
+      /*mismatched_headers=*/absl::nullopt);
 }
 
 void DevToolsPrerenderAttempt::SetFailureReason(
@@ -33,6 +34,8 @@ void DevToolsPrerenderAttempt::SetFailureReason(
     PrerenderFinalStatus prerender_status) {
   // Ensured by PrerenderCancellationReason.
   CHECK_NE(prerender_status, PrerenderFinalStatus::kMojoBinderPolicy);
+  CHECK_NE(prerender_status,
+           PrerenderFinalStatus::kActivationNavigationParameterMismatch);
 
   if (!attributes.initiator_devtools_navigation_token.has_value()) {
     return;
@@ -43,19 +46,29 @@ void DevToolsPrerenderAttempt::SetFailureReason(
       attributes.initiator_devtools_navigation_token.value(),
       attributes.prerendering_url, attributes.target_hint,
       PreloadingTriggeringOutcome::kFailure, prerender_status,
-      /*disallowed_mojo_interface=*/absl::nullopt);
+      /*disallowed_mojo_interface=*/absl::nullopt,
+      /*mismatched_headers=*/absl::nullopt);
 }
 
 void DevToolsPrerenderAttempt::SetFailureReason(
     const PrerenderAttributes& attributes,
     const PrerenderCancellationReason& reason) {
   PrerenderFinalStatus prerender_status = reason.final_status();
-  absl::optional<std::string> disallowed_mojo_interface =
-      reason.DisallowedMojoInterface();
+  absl::optional<std::string> disallowed_mojo_interface;
+  absl::optional<const PrerenderMismatchedHeaders*> mismatched_headers;
 
   // Ensured by PrerenderCancellationReason.
-  CHECK_EQ(prerender_status == PrerenderFinalStatus::kMojoBinderPolicy,
-           disallowed_mojo_interface.has_value());
+  switch (prerender_status) {
+    case PrerenderFinalStatus::kMojoBinderPolicy:
+      disallowed_mojo_interface = reason.DisallowedMojoInterface();
+      CHECK(disallowed_mojo_interface.has_value());
+      break;
+    case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
+      mismatched_headers = reason.GetPrerenderMismatchedHeaders();
+      break;
+    default:
+      break;
+  }
 
   if (!attributes.initiator_devtools_navigation_token.has_value()) {
     return;
@@ -66,7 +79,7 @@ void DevToolsPrerenderAttempt::SetFailureReason(
       attributes.initiator_devtools_navigation_token.value(),
       attributes.prerendering_url, attributes.target_hint,
       PreloadingTriggeringOutcome::kFailure, prerender_status,
-      disallowed_mojo_interface);
+      disallowed_mojo_interface, std::move(mismatched_headers));
 }
 
 }  // namespace content

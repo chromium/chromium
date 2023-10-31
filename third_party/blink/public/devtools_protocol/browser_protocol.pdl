@@ -11572,6 +11572,13 @@ experimental domain Preload
       PrefetchStatus prefetchStatus
       Network.RequestId requestId
 
+  # Information of headers to be displayed when the header mismatch occurred.
+  type PrerenderMismatchedHeaders extends object
+    properties
+      string headerName
+      optional string initialValue
+      optional string activationValue
+
   # Fired when a prerender attempt is updated.
   event prerenderStatusUpdated
     parameters
@@ -11581,6 +11588,7 @@ experimental domain Preload
       # This is used to give users more information about the name of Mojo interface
       # that is incompatible with prerender and has caused the cancellation of the attempt.
       optional string disallowedMojoInterface
+      optional array of PrerenderMismatchedHeaders mismatchedHeaders
 
   # Send a list of sources for all preloading attempts in a document.
   event preloadingAttemptSourcesUpdated

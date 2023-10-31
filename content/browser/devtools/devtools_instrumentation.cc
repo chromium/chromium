@@ -37,11 +37,11 @@
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/portal/portal.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
 #include "content/public/browser/browser_context.h"
@@ -675,7 +675,8 @@ void DidUpdatePrerenderStatus(
     absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
     PreloadingTriggeringOutcome status,
     absl::optional<PrerenderFinalStatus> prerender_status,
-    absl::optional<std::string> disallowed_mojo_interface) {
+    absl::optional<std::string> disallowed_mojo_interface,
+    absl::optional<const PrerenderMismatchedHeaders*> mismatched_headers) {
   auto* ftn = FrameTreeNode::GloballyFindByID(initiator_frame_tree_node_id);
   // ftn will be null if this is browser-initiated, which has no initiator.
   if (!ftn) {
@@ -685,7 +686,7 @@ void DidUpdatePrerenderStatus(
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrerenderStatus,
                    initiator_devtools_navigation_token, prerender_url,
                    target_hint, status, prerender_status,
-                   disallowed_mojo_interface);
+                   disallowed_mojo_interface, mismatched_headers);
 }
 
 namespace {

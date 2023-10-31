@@ -17,6 +17,24 @@
 
 namespace content {
 
+// TODO(miinak): support multiple headers
+struct PrerenderMismatchedHeaders {
+ public:
+  PrerenderMismatchedHeaders(const std::string& header_name,
+                             absl::optional<std::string> initial_value,
+                             absl::optional<std::string> activation_value);
+
+  ~PrerenderMismatchedHeaders();
+
+  PrerenderMismatchedHeaders(PrerenderMismatchedHeaders&& other);
+
+  PrerenderMismatchedHeaders& operator=(PrerenderMismatchedHeaders&& other);
+
+  std::string header_name;
+  absl::optional<std::string> initial_value;
+  absl::optional<std::string> activation_value;
+};
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Note: Please update GetCancelledInterfaceType() in the corresponding .cc file
@@ -53,14 +71,21 @@ enum class PrerenderCrossOriginRedirectionMismatch {
 class PrerenderCancellationReason {
  public:
   // Tagged by `final_status_`. See `BuildFor*` and `ToDevtoolReasonString`.
-  using DetailedReasonVariant =
-      absl::variant<absl::monostate, int32_t, uint64_t, std::string>;
+  using DetailedReasonVariant = absl::variant<absl::monostate,
+                                              int32_t,
+                                              uint64_t,
+                                              std::string,
+                                              PrerenderMismatchedHeaders>;
 
   static PrerenderCancellationReason BuildForDisallowActivationState(
       uint64_t disallow_activation_reason);
 
   static PrerenderCancellationReason BuildForMojoBinderPolicy(
       const std::string& interface_name);
+
+  static PrerenderCancellationReason
+  BuildForActivationNavigationParameterMismatch(
+      std::unique_ptr<PrerenderMismatchedHeaders> mismatched_headers);
 
   static PrerenderCancellationReason BuildForLoadingError(int32_t error_code);
 
@@ -79,13 +104,23 @@ class PrerenderCancellationReason {
   // `kMojoBinderPolicy`.
   absl::optional<std::string> DisallowedMojoInterface() const;
 
+  // Returns the pointer of PrerenderMismatchHeaders if prerender was cancelled
+  // due to header mismatch.
+  // Returns absl::nullopt in the following cases:
+  // 1. When the final status is not `kActivationNavigationParameterMismatch`.
+  // 2. When the final status is `kActivationNavigationParameterMismatch` but
+  //    the header mismatch did not occur.
+  // TODO(miinak): Do not return PrerenderMismatchHeaders if the header matches.
+  absl::optional<const PrerenderMismatchedHeaders*>
+  GetPrerenderMismatchedHeaders() const;
+
  private:
   PrerenderCancellationReason(PrerenderFinalStatus final_status,
                               DetailedReasonVariant explanation);
 
   const PrerenderFinalStatus final_status_;
 
-  const DetailedReasonVariant explanation_;
+  DetailedReasonVariant explanation_;
 };
 
 // Used by PrerenderNavigationThrottle. This is a breakdown enum for

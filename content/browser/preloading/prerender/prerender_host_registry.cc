@@ -1521,14 +1521,19 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   // Compare navigation params from activation with the navigation params
   // from the initial prerender navigation. If they don't match, the navigation
   // should not activate the prerendered page.
-  if (!host->AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
-          navigation_request)) {
+  if (std::unique_ptr<PrerenderMismatchedHeaders> mismatched_headers =
+          host->CheckInitialPrerenderNavigationParamsCompatibleWithNavigation(
+              navigation_request)) {
     // TODO(https://crbug.com/1328365): Report a detailed reason to devtools.
     // Currently users have to check
     // Prerender.Experimental.ActivationNavigationParamsMatch.
     // TODO(lingqi): We'd better cancel all hosts.
-    CancelHost(host->frame_tree_node_id(),
-               PrerenderFinalStatus::kActivationNavigationParameterMismatch);
+
+    PrerenderCancellationReason reason = PrerenderCancellationReason::
+        BuildForActivationNavigationParameterMismatch(
+            std::move(mismatched_headers));
+
+    CancelHost(host->frame_tree_node_id(), reason);
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 

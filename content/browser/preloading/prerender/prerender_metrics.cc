@@ -5,17 +5,20 @@
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 
 #include <cmath>
+#include <memory>
 
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_util.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_trigger_type_impl.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -151,6 +154,15 @@ PrerenderCancellationReason::BuildForMojoBinderPolicy(
                                      interface_name);
 }
 
+// static
+PrerenderCancellationReason
+PrerenderCancellationReason::BuildForActivationNavigationParameterMismatch(
+    std::unique_ptr<PrerenderMismatchedHeaders> mismatched_headers) {
+  return PrerenderCancellationReason(
+      PrerenderFinalStatus::kActivationNavigationParameterMismatch,
+      std::move(*mismatched_headers.get()));
+}
+
 //  static
 PrerenderCancellationReason PrerenderCancellationReason::BuildForLoadingError(
     int32_t error_code) {
@@ -196,6 +208,12 @@ void PrerenderCancellationReason::ReportMetrics(
       RecordDidFailLoadErrorType(absl::get<int32_t>(explanation_), trigger_type,
                                  embedder_histogram_suffix);
       break;
+    case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
+      CHECK(absl::holds_alternative<PrerenderMismatchedHeaders>(explanation_) ||
+            absl::holds_alternative<absl::monostate>(explanation_));
+      // TODO(https://crbug.com/1456673): Report
+      // ActivationNavigationParameterMismatch.
+      break;
     default:
       CHECK(absl::holds_alternative<absl::monostate>(explanation_));
       // Other types need not to report.
@@ -211,6 +229,24 @@ PrerenderCancellationReason::DisallowedMojoInterface() const {
     default:
       return absl::nullopt;
   }
+}
+
+PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
+    const std::string& header_name,
+    const absl::optional<std::string> initial_value,
+    const absl::optional<std::string> activation_value)
+    : header_name(header_name),
+      initial_value(initial_value),
+      activation_value(activation_value) {}
+
+PrerenderMismatchedHeaders::~PrerenderMismatchedHeaders() = default;
+
+PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
+    PrerenderMismatchedHeaders&& other) = default;
+
+absl::optional<const PrerenderMismatchedHeaders*>
+PrerenderCancellationReason::GetPrerenderMismatchedHeaders() const {
+  return absl::get_if<PrerenderMismatchedHeaders>(&explanation_);
 }
 
 void RecordPrerenderTriggered(ukm::SourceId ukm_id) {
