@@ -108,11 +108,6 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
   info.type = ContentSettingsType::COOKIES;
   info.setting = CONTENT_SETTING_ALLOW;
 
-  cookies_buttons_container_view_->AddChildView(
-      PageInfoViewFactory::CreateSeparator(
-          ChromeLayoutProvider::Get()->GetDistanceMetric(
-              DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
-
   // Create the cookie button, with a temporary value for the subtitle text
   // since the site count is not yet known.
   cookies_dialog_button_ = cookies_buttons_container_view_->AddChildView(
@@ -632,4 +627,9 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
           base::Unretained(this))));
   third_party_cookies_enforced_icon_ = third_party_cookies_row_->AddControl(
       std::make_unique<views::ImageView>());
+
+  third_party_cookies_container_->AddChildView(
+      PageInfoViewFactory::CreateSeparator(
+          ChromeLayoutProvider::Get()->GetDistanceMetric(
+              DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
 }
