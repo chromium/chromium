@@ -363,6 +363,8 @@ ts_templates = [
 ]
 
 ts_test_files = [
+  "file_manager/foreground/js/directory_contents_unittest.ts",
+
   # Common.
   "file_manager/common/js/entry_utils_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
@@ -525,7 +527,6 @@ unittest_files = [
   "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.js",
   "file_manager/foreground/js/file_manager_commands_unittest.js",
   "file_manager/foreground/js/thumbnail_loader_unittest.js",
-  "file_manager/foreground/js/directory_contents_unittest.js",
   "file_manager/foreground/js/file_list_model_unittest.js",
   "file_manager/foreground/js/providers_model_unittest.js",
   "file_manager/foreground/js/spinner_controller_unittest.js",

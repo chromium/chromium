@@ -238,17 +238,6 @@ js_library("directory_contents") {
   ]
 }
 
-js_unittest("directory_contents_unittest") {
-  deps = [
-    ":directory_contents",
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:entry_location",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-  ]
-}
-
 js_library("directory_model") {
   deps = [
     ":constants",
