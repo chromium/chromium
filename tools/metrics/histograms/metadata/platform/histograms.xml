@@ -555,7 +555,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.FlexHwis.ServerPostResult" enum="BooleanSuccess"
+<histogram name="Platform.FlexHwis.ServerDeleteSuccess" enum="BooleanSuccess"
+    expires_after="2024-08-03">
+  <owner>tinghaolin@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    Result of checking if the flex_hwis utility successfully calls DELETE API to
+    delete data.
+
+    When a user logs in to a ChromeOS Flex device, hardware data transmission
+    and related checks will be initiated. In ChromeOS Flex Hardware Information
+    Service (flex_hwis), if the user doesn't consent to send data, the client
+    service will send a request to the server to delete the hardware data stored
+    on the server.
+  </summary>
+</histogram>
+
+<histogram name="Platform.FlexHwis.ServerPostSuccess" enum="BooleanSuccess"
     expires_after="2024-08-03">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
@@ -574,7 +590,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.FlexHwis.ServerPutResult" enum="BooleanSuccess"
+<histogram name="Platform.FlexHwis.ServerPutSuccess" enum="BooleanSuccess"
     expires_after="2024-08-03">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
