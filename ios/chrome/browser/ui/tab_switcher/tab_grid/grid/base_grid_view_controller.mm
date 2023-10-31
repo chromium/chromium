@@ -377,7 +377,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
   NSUInteger selectedIndex = self.selectedIndex;
   if (previousMode != TabGridModeSelection && mode == TabGridModeNormal &&
-      selectedIndex != NSNotFound) {
+      selectedIndex != NSNotFound &&
+      static_cast<NSInteger>(selectedIndex) <
+          [self.collectionView numberOfItemsInSection:kOpenTabsSectionIndex]) {
     // Scroll to the selected item here, so the action of reloading and
     // scrolling happens at once.
     [self.collectionView
