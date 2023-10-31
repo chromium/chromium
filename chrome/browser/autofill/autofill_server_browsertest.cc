@@ -146,7 +146,8 @@ class AutofillServerTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         // Enabled.
         {features::test::kAutofillAllowNonHttpActivation,
-         features::test::kAutofillServerCommunication},
+         features::test::kAutofillServerCommunication,
+         features::kAutofillEnableSupportForApartmentNumbers},
         // Disabled.
         {});
 

@@ -541,6 +541,9 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
       ADDRESS_HOME_HOUSE_NUMBER,
       ADDRESS_HOME_STREET_NAME,
       ADDRESS_HOME_SUBPREMISE,
+      ADDRESS_HOME_APT,
+      ADDRESS_HOME_APT_NUM,
+      ADDRESS_HOME_APT_TYPE,
       EMAIL_ADDRESS,
       PHONE_HOME_WHOLE_NUMBER,
   };

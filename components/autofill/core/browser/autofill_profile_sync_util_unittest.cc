@@ -291,7 +291,8 @@ class AutofillProfileSyncUtilTest : public testing::Test {
         {features::kAutofillUseI18nAddressModel,
          features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2},
+         features::kAutofillEnableSupportForAdminLevel2,
+         features::kAutofillEnableSupportForApartmentNumbers},
         {});
   }
 

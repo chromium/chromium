@@ -250,6 +250,7 @@ class ContactInfoSyncUtilTest : public testing::Test {
          features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForAdminLevel2,
+         features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillTrackProfileTokenQuality},
         {});
   }

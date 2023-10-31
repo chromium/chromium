@@ -512,6 +512,11 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_subpremise_name_status()));
 
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_APT_NUM, UTF8ToUTF16(specifics.address_home_apt_num()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_apt_num_status()));
+
   // Set birthdate-related fields.
   profile->SetRawInfoAsInt(BIRTHDATE_DAY, specifics.birthdate_day());
   profile->SetRawInfoAsInt(BIRTHDATE_MONTH, specifics.birthdate_month());
