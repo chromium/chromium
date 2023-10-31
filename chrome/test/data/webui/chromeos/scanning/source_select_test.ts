@@ -5,9 +5,12 @@
 import './scanning_mojom_imports.js';
 import 'chrome://scanning/source_select.js';
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ColorMode, PageSize, SourceType} from 'chrome://scanning/scanning.mojom-webui.js';
+import {ColorMode, PageSize, ScanSource, SourceType} from 'chrome://scanning/scanning.mojom-webui.js';
 import {getSourceTypeString} from 'chrome://scanning/scanning_app_util.js';
+import {SourceSelectElement} from 'chrome://scanning/source_select.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {assertOrderedAlphabetically, createScannerSource} from './scanning_app_test_utils.js';
@@ -18,26 +21,28 @@ const colorModes =
 const resolutions = [75, 150, 300];
 
 suite('sourceSelectTest', function() {
-  /** @type {?SourceSelectElement} */
-  let sourceSelect = null;
+  let sourceSelect: SourceSelectElement|null = null;
 
   setup(() => {
-    sourceSelect = /** @type {!SourceSelectElement} */ (
-        document.createElement('source-select'));
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    sourceSelect = document.createElement('source-select');
     assertTrue(!!sourceSelect);
     document.body.appendChild(sourceSelect);
   });
 
   teardown(() => {
-    sourceSelect.remove();
+    sourceSelect?.remove();
     sourceSelect = null;
   });
 
   // Verify that adding sources results in the dropdown displaying the correct
   // options.
   test('initializeSourceSelect', () => {
+    assert(sourceSelect);
     // Before options are added, the dropdown should be enabled and empty.
-    const select = sourceSelect.shadowRoot.querySelector('select');
+    const select =
+        strictQuery('select', sourceSelect.shadowRoot, HTMLSelectElement);
     assertTrue(!!select);
     assertFalse(select.disabled);
 
@@ -46,7 +51,7 @@ suite('sourceSelectTest', function() {
         resolutions);
     const secondSource = createScannerSource(
         SourceType.kFlatbed, 'platen', pageSizes, colorModes, resolutions);
-    const sourceArr = [firstSource, secondSource];
+    const sourceArr: ScanSource[] = [firstSource, secondSource];
     sourceSelect.options = sourceArr;
     flush();
 
@@ -54,16 +59,17 @@ suite('sourceSelectTest', function() {
     assertEquals(2, select.length);
     assertEquals(
         getSourceTypeString(firstSource.type),
-        select.options[0].textContent.trim());
+        select.options[0]!.textContent!.trim());
     assertEquals(
         getSourceTypeString(secondSource.type),
-        select.options[1].textContent.trim());
+        select.options[1]!.textContent!.trim());
     assertEquals(secondSource.name, select.value);
   });
 
   // Verify the sources are sorted alphabetically.
   test('sourcesSortedAlphabetically', () => {
-    const sources = [
+    assert(sourceSelect);
+    const sources: ScanSource[] = [
       createScannerSource(
           SourceType.kFlatbed, 'C', pageSizes, colorModes, resolutions),
       createScannerSource(
@@ -76,12 +82,14 @@ suite('sourceSelectTest', function() {
     sourceSelect.options = sources;
     flush();
     assertOrderedAlphabetically(
-        sourceSelect.options, (source) => getSourceTypeString(source.type));
+        sourceSelect.options,
+        (source: ScanSource) => getSourceTypeString(source.type));
   });
 
   // Verify the default option is selected when available.
   test('flatbedSelectedByDefaultIfProvided', () => {
-    const sources = [
+    assert(sourceSelect);
+    const sources: ScanSource[] = [
       createScannerSource(
           SourceType.kFlatbed, 'C', pageSizes, colorModes, resolutions),
       createScannerSource(
@@ -92,14 +100,16 @@ suite('sourceSelectTest', function() {
     sourceSelect.options = sources;
     flush();
     const flatbedSource = sourceSelect.options.find(
-        source => source.type === SourceType.kFlatbed);
+        (source: ScanSource) => source.type === SourceType.kFlatbed);
+    assert(flatbedSource);
     assertEquals(sourceSelect.selectedOption, flatbedSource.name);
   });
 
   // Verify the first option is selected when the default option is not
   // available.
   test('firstSourceUsedWhenFlatbedNotProvided', () => {
-    const sources = [
+    assert(sourceSelect);
+    const sources: ScanSource[] = [
       createScannerSource(
           SourceType.kAdfSimplex, 'C', pageSizes, colorModes, resolutions),
       createScannerSource(
@@ -107,6 +117,6 @@ suite('sourceSelectTest', function() {
     ];
     sourceSelect.options = sources;
     flush();
-    assertEquals(sourceSelect.selectedOption, sourceSelect.options[0].name);
+    assertEquals(sourceSelect.selectedOption, sourceSelect.options[0]!.name);
   });
 });

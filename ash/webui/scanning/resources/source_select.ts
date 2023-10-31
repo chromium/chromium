@@ -25,7 +25,7 @@ const SourceSelectElementBase = SelectMixin(I18nMixin(PolymerElement)) as
         AbstractConstructor<SelectMixinInterface<ScanSource>>&
     {new (): PolymerElement & I18nMixinInterface};
 
-class SourceSelectElement extends SourceSelectElementBase {
+export class SourceSelectElement extends SourceSelectElementBase {
   static get is() {
     return 'source-select' as const;
   }
