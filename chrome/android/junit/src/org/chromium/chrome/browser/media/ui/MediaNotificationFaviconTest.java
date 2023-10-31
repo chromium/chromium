@@ -90,15 +90,6 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.N_MR1)
-    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
-    public void testSetNotificationIcon_lowMem_preO() {
-        mTabHolder.simulateMediaSessionStateChanged(true, false);
-        mTabHolder.simulateFaviconUpdated(mFavicon, mFaviconUrl);
-        assertEquals(mFavicon, getDisplayedIcon());
-    }
-
-    @Test
     @Config(sdk = Build.VERSION_CODES.O)
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testSetNotificationIcon_lowMem_O() {

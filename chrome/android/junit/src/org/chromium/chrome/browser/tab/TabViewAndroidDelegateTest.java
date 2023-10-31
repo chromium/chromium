@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.os.Build;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,7 +19,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -135,14 +132,6 @@ public class TabViewAndroidDelegateTest {
         mViewAndroidDelegate.destroy();
         assertNull(
                 "DragAndDropBrowserDelegate should be removed once destroyed.",
-                mViewAndroidDelegate.getDragAndDropBrowserDelegateForTesting());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.N)
-    public void testCreateDragAndDropBrowserDelegate_N() {
-        assertNull(
-                "DragAndDropBrowserDelegate be null on N.",
                 mViewAndroidDelegate.getDragAndDropBrowserDelegateForTesting());
     }
 }

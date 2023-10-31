@@ -13,7 +13,6 @@ import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
 
 import org.junit.After;
 import org.junit.Before;
@@ -85,16 +84,6 @@ public class MinimizedFeatureUtilsUnitTest {
     @After
     public void tearDown() {
         ShadowSysUtils.sIsLowEndDevice = false;
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.N_MR1)
-    public void testSdkLevel_preO() {
-        try (var ignored =
-                HistogramWatcher.newSingleRecordWatcher(
-                        HISTOGRAM, MinimizedFeatureAvailability.UNAVAILABLE_API_LEVEL)) {
-            assertFalse(MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mContext));
-        }
     }
 
     @Test

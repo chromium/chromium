@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 import static android.app.NotificationManager.IMPORTANCE_DEFAULT;
 import static android.app.NotificationManager.IMPORTANCE_NONE;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -115,18 +113,6 @@ public class DisclosureUiPickerTest {
 
         mPicker.onFinishNativeInitialization();
         verify(mSnackbar).showIfNeeded();
-    }
-
-    @Test
-    @Feature("TrustedWebActivities")
-    @Config(sdk = Build.VERSION_CODES.N_MR1)
-    public void doesntCheckChannelsOnPreO() {
-        setNotificationsEnabled(true);
-
-        mPicker.onFinishNativeInitialization();
-        verify(mNotification).onStartWithNative();
-
-        verify(mNotificationManager, never()).getNotificationChannel(any());
     }
 
     @Test

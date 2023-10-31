@@ -516,22 +516,6 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
-    @Config(sdk = VERSION_CODES.N_MR1)
-    public void testClipData_ImageWithUrl_PreO() {
-        final DropDataAndroid dropData =
-                DropDataAndroid.create(
-                        "",
-                        JUnitTestGURLs.EXAMPLE_URL,
-                        new byte[] {1, 2, 3, 4},
-                        "png",
-                        IMAGE_FILENAME);
-
-        ClipData clipData = mDragAndDropDelegateImpl.buildClipData(dropData);
-        Assert.assertEquals(
-                "Image ClipData should include only image info.", 1, clipData.getItemCount());
-    }
-
-    @Test
     public void testClipData_TextLink_NonNullIntent() {
         final DropDataAndroid dropData =
                 DropDataAndroid.create("", JUnitTestGURLs.EXAMPLE_URL, null, null, null);

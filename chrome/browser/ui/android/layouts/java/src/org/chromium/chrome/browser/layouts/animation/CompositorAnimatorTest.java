@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.layouts.animation;
 
 import static org.junit.Assert.assertEquals;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.os.Build;
+import android.os.Looper;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
@@ -22,6 +24,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         manifest = Config.NONE,
         // AnimatorSet seems to not work in Robolectric 3.4.2. Remove this SDK
         // specification once we upgrade to a version in which it works. crbug.com/774357
-        sdk = Build.VERSION_CODES.N_MR1)
+        sdk = Build.VERSION_CODES.TIRAMISU)
 public final class CompositorAnimatorTest {
     /** An animation update listener that counts calls to its methods. */
     private static class TestUpdateListener implements CompositorAnimator.AnimatorUpdateListener {
@@ -510,6 +513,7 @@ public final class CompositorAnimatorTest {
                 listener2.mStartCallbackHelper.getCallCount());
 
         mHandler.pushUpdate(15);
+        shadowOf(Looper.getMainLooper()).idle();
 
         assertEquals(
                 "There should be no active animations.", 0, mHandler.getActiveAnimationCount());
@@ -527,6 +531,7 @@ public final class CompositorAnimatorTest {
                 listener2.mEndCallbackHelper.getCallCount());
     }
 
+    @DisabledTest(message = "crbug.com/774357")
     @Test
     public void testAnimatorSet_playSequentially() {
         CompositorAnimator animator = new CompositorAnimator(mHandler);

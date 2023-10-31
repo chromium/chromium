@@ -28,7 +28,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
-import org.chromium.ui.util.ColorUtils;
 
 /** Tests for {@link CustomTabNavigationBarController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -79,22 +78,6 @@ public class CustomTabNavigationBarControllerTest {
         // Make sure calling the line below does not throw an exception, because the method does not
         // exist in android P+.
         CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.N_MR1) // SDK 25 is used to trigger supportsDarkButtons=false.
-    public void setsCorrectBarColor() {
-        when(mColorProvider.getNavigationBarDividerColor()).thenReturn(Color.RED);
-
-        // The case when needsDarkButtons=true.
-        when(mColorProvider.getNavigationBarColor()).thenReturn(Color.WHITE);
-        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-        verify(mWindow).setNavigationBarColor(ColorUtils.getDarkenedColorForStatusBar(Color.WHITE));
-
-        // The case when needsDarkButtons=false.
-        when(mColorProvider.getNavigationBarColor()).thenReturn(Color.BLACK);
-        CustomTabNavigationBarController.update(mWindow, mCustomTabIntentDataProvider, mContext);
-        verify(mWindow).setNavigationBarColor(Color.BLACK);
     }
 
     @Test
