@@ -10713,6 +10713,21 @@
             ]
         }
     ],
+    "NotificationsIgnoreRequireInteraction": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NotificationsIgnoreRequireInteraction"
+                    ]
+                }
+            ]
+        }
+    ],
     "NotifierCollision": [
         {
             "platforms": [
