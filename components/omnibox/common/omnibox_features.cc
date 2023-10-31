@@ -539,4 +539,12 @@ bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature) {
 BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch,
              "OmniboxTouchDownTriggerForPrefetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, site search engines defined by policy are saved into prefs and
+// committed to the keyword database, so that they can be accessed from the
+// Omnibox and the Settings page.
+BASE_FEATURE(kSiteSearchSettingsPolicy,
+             "SiteSearchSettingsPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace omnibox

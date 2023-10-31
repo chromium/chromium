@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//tools/json_to_struct/json_to_struct.gni")
 if (is_android) {
@@ -15,6 +16,8 @@ static_library("search_engines") {
     "default_search_manager.h",
     "default_search_policy_handler.cc",
     "default_search_policy_handler.h",
+    "enterprise_site_search_manager.cc",
+    "enterprise_site_search_manager.h",
     "keyword_table.cc",
     "keyword_table.h",
     "keyword_web_data_service.cc",
@@ -105,6 +108,13 @@ static_library("search_engines") {
 
     deps += [ "//components/search_engines/android:jni_headers" ]
   }
+
+  if (is_linux || is_win || is_mac || is_chromeos_ash) {
+    sources += [
+      "site_search_policy_handler.cc",
+      "site_search_policy_handler.h",
+    ]
+  }
 }
 
 source_set("search_engine_utils") {
@@ -151,6 +161,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "default_search_manager_unittest.cc",
+    "enterprise_site_search_manager_unittest.cc",
     "keyword_table_unittest.cc",
     "search_engine_choice_utils_unittest.cc",
     "search_host_to_urls_map_unittest.cc",
@@ -186,6 +197,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (is_linux || is_win || is_mac || is_chromeos_ash) {
+    sources += [ "site_search_policy_handler_unittest.cc" ]
+  }
 
   if (!is_ios) {
     sources += [ "default_search_policy_handler_unittest.cc" ]

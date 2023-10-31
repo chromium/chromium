@@ -26,6 +26,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/enterprise_site_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_host_to_urls_map.h"
 #include "components/search_engines/search_terms_data.h"
@@ -82,6 +83,8 @@ class TemplateURLService : public WebDataServiceConsumer,
   using TemplateURLVector = TemplateURL::TemplateURLVector;
   using OwnedTemplateURLVector = TemplateURL::OwnedTemplateURLVector;
   using SyncDataMap = std::map<std::string, syncer::SyncData>;
+  using OwnedTemplateURLDataVector =
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector;
 
   // Struct used for initializing the data store with fake data.
   // Each initializer is mapped to a TemplateURL.
@@ -616,6 +619,10 @@ class TemplateURLService : public WebDataServiceConsumer,
   void ApplyDefaultSearchChange(const TemplateURLData* new_dse_data,
                                 DefaultSearchManager::Source source);
 
+  // Applies site search changes and reports metrics if appropriate.
+  void EnterpriseSiteSearchChanged(
+      const OwnedTemplateURLDataVector& site_search_engines);
+
   // Applies a DSE change. May be called at startup or after transitioning to
   // the loaded state. Returns true if a change actually occurred.
   bool ApplyDefaultSearchChangeNoMetrics(const TemplateURLData* new_dse_data,
@@ -765,6 +772,11 @@ class TemplateURLService : public WebDataServiceConsumer,
   void EmitTemplateURLActiveOnStartupHistogram(
       OwnedTemplateURLVector* template_urls);
 
+  // Returns an instance of |EnterpriseSiteSearchManager| if feature
+  // |kSiteSearchSettingsPolicy| or nullptr otherwise.
+  std::unique_ptr<EnterpriseSiteSearchManager> GetEnterpriseSiteSearchManager(
+      PrefService* prefs);
+
   // ---------- Browser state related members ---------------------------------
   raw_ptr<PrefService> prefs_ = nullptr;
 
@@ -874,6 +886,10 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   // Helper class to manage the default search engine.
   DefaultSearchManager default_search_manager_;
+
+  // Site search engines defined by enterprise policy. Set as nullptr if feature
+  // |kSiteSearchSettingsPolicy| is not enabled.
+  std::unique_ptr<EnterpriseSiteSearchManager> enterprise_site_search_manager_;
 
   // This tracks how many Scoper handles exist. When the number of handles drops
   // to zero, a notification is made to observers if

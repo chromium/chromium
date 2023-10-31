@@ -159,6 +159,10 @@ bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature);
 // suggestions and only controls whether the signal is sent.
 BASE_DECLARE_FEATURE(kOmniboxTouchDownTriggerForPrefetch);
 
+// Enables the |SiteSearchSettings| policy, which allows admins to configure
+// intranet site search engines.
+BASE_DECLARE_FEATURE(kSiteSearchSettingsPolicy);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

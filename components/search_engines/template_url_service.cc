@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/search_engines/template_url_service.h"
+#include <memory>
 
 #include "base/auto_reset.h"
 #include "base/base64.h"
@@ -27,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
@@ -256,7 +258,8 @@ TemplateURLService::TemplateURLService(
       default_search_manager_(
           prefs_,
           base::BindRepeating(&TemplateURLService::ApplyDefaultSearchChange,
-                              base::Unretained(this))) {
+                              base::Unretained(this))),
+      enterprise_site_search_manager_(GetEnterpriseSiteSearchManager(prefs)) {
   DCHECK(search_terms_data_);
   Init(nullptr, 0);
 }
@@ -266,7 +269,8 @@ TemplateURLService::TemplateURLService(const Initializer* initializers,
     : default_search_manager_(
           prefs_,
           base::BindRepeating(&TemplateURLService::ApplyDefaultSearchChange,
-                              base::Unretained(this))) {
+                              base::Unretained(this))),
+      enterprise_site_search_manager_(GetEnterpriseSiteSearchManager(prefs_)) {
   Init(initializers, count);
 }
 
@@ -2075,6 +2079,12 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
   return true;
 }
 
+void TemplateURLService::EnterpriseSiteSearchChanged(
+    const OwnedTemplateURLDataVector& site_search_engines) {
+  // TODO(b/307544344): Save the contents of `site_search_engines` to the
+  // keywords database.
+}
+
 TemplateURL* TemplateURLService::Add(std::unique_ptr<TemplateURL> template_url,
                                      bool newly_adding) {
   DCHECK(template_url);
@@ -2532,4 +2542,19 @@ bool TemplateURLService::MatchesDefaultSearchProvider(TemplateURL* turl) const {
     return false;
 
   return turl->sync_guid() == default_provider->sync_guid();
+}
+
+std::unique_ptr<EnterpriseSiteSearchManager>
+TemplateURLService::GetEnterpriseSiteSearchManager(PrefService* prefs) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(omnibox::kSiteSearchSettingsPolicy)
+             ? std::make_unique<EnterpriseSiteSearchManager>(
+                   prefs, base::BindRepeating(
+                              &TemplateURLService::EnterpriseSiteSearchChanged,
+                              base::Unretained(this)))
+             : nullptr;
+#else
+  return nullptr;
+#endif
 }
